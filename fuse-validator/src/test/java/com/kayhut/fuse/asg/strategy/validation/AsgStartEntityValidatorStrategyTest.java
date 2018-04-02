@@ -1,6 +1,7 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.asg.strategy.AsgStartEntityValidatorStrategy;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -9,6 +10,7 @@ import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,8 +21,8 @@ import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.rel;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.relProp;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.unTyped;
-import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.eq;
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
 /**
@@ -32,7 +34,7 @@ public class AsgStartEntityValidatorStrategyTest {
     AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
             .next(unTyped(1))
             .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
-                    RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                    RelProp.of(10, START_DATE.type, of(eq, new Date())))))
             .next(unTyped(3))
             .build();
 
@@ -44,25 +46,25 @@ public class AsgStartEntityValidatorStrategyTest {
     @Test
     public void testValidQuery() {
         AsgStartEntityValidatorStrategy strategy = new AsgStartEntityValidatorStrategy();
-        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(validationContext.valid());
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(validationResult.valid());
     }
 
     @Test
     public void testNameMismatchQuery() {
         AsgStartEntityValidatorStrategy strategy = new AsgStartEntityValidatorStrategy();
         query.setOnt("bela");
-        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(validationContext.valid());
-        Assert.assertEquals(validationContext.errors()[0],AsgStartEntityValidatorStrategy.ERROR_1);
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertEquals(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0],AsgStartEntityValidatorStrategy.ERROR_1);
     }
 
     @Test
     public void testStartOnlyElementQuery() {
         AsgStartEntityValidatorStrategy strategy = new AsgStartEntityValidatorStrategy();
-        ValidationContext validationContext = strategy.apply(AsgQuery.Builder.start("Q1", "Dragon").build(), new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(validationContext.valid());
-        Assert.assertEquals(validationContext.errors()[0],AsgStartEntityValidatorStrategy.ERROR_2);
+        ValidationResult validationResult = strategy.apply(AsgQuery.Builder.start("Q1", "Dragon").build(), new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertEquals(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0],AsgStartEntityValidatorStrategy.ERROR_2);
     }
 
     @Test
@@ -70,15 +72,15 @@ public class AsgStartEntityValidatorStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(unTyped(1))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
-                        RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                        RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(unTyped(3))
                 .build();
 
         AsgQueryUtil.get(query.getStart(),3).get().addNextChild(new AsgEBase<>(new Start()));
 
         AsgStartEntityValidatorStrategy strategy = new AsgStartEntityValidatorStrategy();
-        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(validationContext.valid());
-        Assert.assertEquals(validationContext.errors()[0],AsgStartEntityValidatorStrategy.ERROR_3);
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertEquals(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0],AsgStartEntityValidatorStrategy.ERROR_3);
     }
 }

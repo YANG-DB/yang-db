@@ -314,12 +314,12 @@
       "type": "int"
     },
     {
-      "pType": "2147483647",
+      "pType": "id",
       "name": "id",
       "type": "string"
     },
     {
-      "pType": "2147483646",
+      "pType": "type",
       "name": "type",
       "type": "string"
     }

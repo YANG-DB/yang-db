@@ -355,13 +355,13 @@ public class DragonsOntology {
         return OntologyFinalizer.finalize(ontologyShortObj);
     }
 
-    public static enum Gender {
+    public enum Gender {
         MALE, FEMALE, OTHER;
         public static final String TYPE_GENDER = "TYPE_Gender";
 
     }
 
-    public static enum Color {
+    public enum Color {
         RED, BLUE, GREEN, YELLOW;
         public static final String TYPE_COLOR = "TYPE_Color";
 

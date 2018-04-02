@@ -47,15 +47,13 @@ public class FuseRunner {
         String confFilename = options.getApplicationConfFilename() !=null ? options.getApplicationConfFilename() : "application.conf";
         File configFile = new File(confFilename);
         if (!configFile.exists()) {
-            System.out.println("ConfigFile  " + confFilename + " Not Found - fallback to application.conf");
+            System.out.println("ConfigFile  " + confFilename + " Not Found - fallback getTo application.conf");
         }
 
-        Jooby.run(() -> {
-                    return app != null ?
-                            app :
-                            new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                                    .conf(configFile, options.getActiveProfile());
-                },
+        Jooby.run(() -> app != null ?
+                app :
+                new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                        .conf(configFile, options.getActiveProfile()),
                 joobyArgs);
     }
 

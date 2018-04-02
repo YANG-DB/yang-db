@@ -5,7 +5,7 @@ import java.util.Stack;
 /**
  * Created by Roman on 27/06/2017.
  */
-public class CountEstimatesCost implements Cost {
+public class CountEstimatesCost implements Cost, Cloneable {
     //region Constructors
     public CountEstimatesCost(double cost, double countEstimate) {
         this.cost = cost;
@@ -26,6 +26,10 @@ public class CountEstimatesCost implements Cost {
 
     public double peek() {
         return countEstimates.peek();
+    }
+
+    public void applyCountsUpdateFactor(double countUpdateFactor){
+        push(Math.ceil(countUpdateFactor * peek()));
     }
     //endregion
 
@@ -55,6 +59,11 @@ public class CountEstimatesCost implements Cost {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
+
+    public Object clone() throws CloneNotSupportedException {
+        return new CountEstimatesCost(this.getCost(), this.getCountEstimates());
+    }
+
     //endregion
 
     //region Properties

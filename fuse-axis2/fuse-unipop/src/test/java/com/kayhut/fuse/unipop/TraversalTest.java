@@ -3,20 +3,21 @@ package com.kayhut.fuse.unipop;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.PromiseElementController;
-import com.kayhut.fuse.unipop.controller.PromiseVertexController;
-import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHashProvider;
+import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.promise.TraversalPromise;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.structure.PromiseVertex;
+import com.kayhut.fuse.unipop.structure.FuseUniGraph;
+import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
@@ -27,7 +28,6 @@ import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -51,12 +51,18 @@ public class TraversalTest {
     public void g_V_hasXpromise_Promise_asXabcX_byX__hasXlabel_dragonXXX() throws Exception {
         MetricRegistry registry = new MetricRegistry();
         //region ControllerManagerFactory Implementation
-        UniGraph graph = new UniGraph(null, graph1 -> new ControllerManager() {
+        UniGraph graph = new FuseUniGraph(null, graph1 -> new ControllerManager() {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new PromiseElementController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry),
-                        new PromiseVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry));
+                        new ElementController(
+                                new LoggingSearchController(
+                                        new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider())
+                                        , registry),
+                                new LoggingSearchController(
+                                        new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                                        registry))
+                );
             }
 
             @Override
@@ -74,7 +80,7 @@ public class TraversalTest {
         Assert.assertTrue(!traversal.hasNext());
         Assert.assertTrue(vertex.getClass().equals(PromiseVertex.class));
 
-        PromiseVertex promiseVertex = (PromiseVertex)vertex;
+        PromiseVertex promiseVertex = (PromiseVertex) vertex;
         Assert.assertTrue(promiseVertex.id().equals("A"));
         Assert.assertTrue(promiseVertex.label().equals("promise"));
         Assert.assertTrue(promiseVertex.getPromise().getClass().equals(TraversalPromise.class));
@@ -88,12 +94,18 @@ public class TraversalTest {
     public void g_V_hasXpromise_Promise_asXabcX_byX__hasXlabel_dragonXXX_hasXconstraint_Constraint_byX__hasXlabel_dragonXXX() throws Exception {
         MetricRegistry registry = new MetricRegistry();
         //region ControllerManagerFactory Implementation
-        UniGraph graph = new UniGraph(null, graph1 -> new ControllerManager() {
+        UniGraph graph = new FuseUniGraph(null, graph1 -> new ControllerManager() {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new PromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(),registry),
-                        new PromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(),new MetricRegistry()));
+                        new ElementController(
+                                new LoggingSearchController(
+                                        new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider())
+                                        , registry),
+                                new LoggingSearchController(
+                                        new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                                        registry))
+                );
             }
 
             @Override
@@ -111,7 +123,7 @@ public class TraversalTest {
         Assert.assertTrue(!traversal.hasNext());
         Assert.assertTrue(vertex.getClass().equals(PromiseVertex.class));
 
-        PromiseVertex promiseVertex = (PromiseVertex)vertex;
+        PromiseVertex promiseVertex = (PromiseVertex) vertex;
         Assert.assertTrue(promiseVertex.id().equals("A"));
         Assert.assertTrue(promiseVertex.label().equals("promise"));
         Assert.assertTrue(promiseVertex.getPromise().getClass().equals(TraversalPromise.class));

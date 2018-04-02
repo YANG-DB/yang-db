@@ -4,6 +4,7 @@ import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.FuseRunner;
 import com.kayhut.fuse.services.engine2.data.DfsRedundantEntityRelationEntityTest;
+import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
@@ -24,7 +25,10 @@ import java.nio.file.Paths;
 public class RedundantTestSuite {
     @BeforeClass
     public static void setup() throws Exception {
-        elasticEmbeddedNode = new ElasticEmbeddedNode();
+        System.out.println("RedundantTestSuite start");
+        start = System.currentTimeMillis();
+
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.conf").toString()),
@@ -39,16 +43,12 @@ public class RedundantTestSuite {
             app.stop();
         }
 
-        if (elasticEmbeddedNode != null) {
-            if (elasticEmbeddedNode.getClient() != null) {
-                elasticEmbeddedNode.getClient().close();
-            }
-
-            elasticEmbeddedNode.close();
-        }
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println("RedundantTestSuite elapsed: " + elapsed);
     }
 
     //region Fields
+    private static long start;
     private static Jooby app;
     public static ElasticEmbeddedNode elasticEmbeddedNode;
     //endregion

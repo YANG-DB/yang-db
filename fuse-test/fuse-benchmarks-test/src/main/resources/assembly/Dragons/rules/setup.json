@@ -1,0 +1,43 @@
+{
+  "nodes": {
+    "Kingdom": {
+      "total": 100,
+      "name": 100,
+      "selectivity": 1000
+    },
+    "Person": {
+      "total": 100000,
+      "name": 10000,
+      "deathDate": 1000,
+      "birthDate": 1000,
+      "gender": 2,
+      "lastName": 5000,
+      "selectivity": 5
+    },
+    "Dragon": {
+      "total": 100000,
+      "name": 1000,
+      "power": 10,
+      "gender": 2,
+      "color": 5,
+      "selectivity": 50
+    }
+  },
+  "edges": {
+    "own": 10000,
+    "know": 100,
+    "memberOf": 10000,
+    "fire": 1000000,
+    "freeze": 10000,
+    "origin": 1000000,
+    "subject": 50000,
+    "originatedIn": 500000
+  },
+  "operators": {
+    "eq": 1.0,
+    "like": 0.8,
+    "likeAny": 0.4,
+    "inSet": 0.5,
+    "contains": 0.8
+  }
+}

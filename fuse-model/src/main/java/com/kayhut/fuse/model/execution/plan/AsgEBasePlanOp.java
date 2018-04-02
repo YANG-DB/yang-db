@@ -2,44 +2,36 @@ package com.kayhut.fuse.model.execution.plan;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
 
 /**
  * Created by Roman on 30/04/2017.
  */
-public abstract class AsgEBasePlanOp<T extends EBase> extends PlanOpBase{
+public abstract class AsgEBasePlanOp<T extends EBase> extends PlanOp implements AsgEBaseContainer<T> {
     //region Constructors
-    public AsgEBasePlanOp() {}
-
     public AsgEBasePlanOp(AsgEBase<T> asgEBase) {
-        this.asgEBase = asgEBase;
-//        this.asgEBase = new AsgEBase<>(asgEBase.geteBase());
+        this.asgEbase = asgEBase;
     }
     //endregion
 
     //region Override Methods
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "(" + this.getAsgEBase().toString() + ")";
-    }
-
-    @Override
-    public int geteNum() {
-        return this.asgEBase.geteNum();
+        return this.getClass().getSimpleName() + "(" + this.asgEbase.toString() + ")";
     }
     //endregion
 
     //region Properties
-    public AsgEBase<T> getAsgEBase() {
-        return asgEBase;
+    @Override
+    public AsgEBase<T> getAsgEbase() {
+        return asgEbase;
     }
 
-    public void setAsgEBase(AsgEBase<T> value) {
-        this.asgEBase = value;
+    public void setAsgEbase(AsgEBase<T> value) {
+        this.asgEbase = value;
     }
     //endregion
 
     //region Fields
-    private AsgEBase<T> asgEBase;
+    private AsgEBase<T> asgEbase;
     //endregion
 }

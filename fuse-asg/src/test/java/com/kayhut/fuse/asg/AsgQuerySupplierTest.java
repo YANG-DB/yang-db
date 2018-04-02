@@ -2,9 +2,11 @@ package com.kayhut.fuse.asg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
+import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
 import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
-import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
+import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
@@ -39,6 +41,20 @@ public class AsgQuerySupplierTest {
     private static Query q3_1Obj = new Query();
 
     @Test
+    public void queryPrints() throws Exception {
+        System.out.print(QueryDescriptor.print(q5Obj));
+        System.out.println("\n\n\n");
+        System.out.print(QueryDescriptor.print(q9Obj));
+        System.out.println("\n\n\n");
+        System.out.print(QueryDescriptor.print(q11Obj));
+        System.out.println("\n\n\n");
+        System.out.print(QueryDescriptor.print(q187Obj));
+        System.out.println("\n\n\n");
+        System.out.print(QueryDescriptor.print(q3_1Obj));
+        System.out.println("\n\n\n");
+    }
+
+    @Test
     public void transformQuery1ToAsgQuery() throws Exception {
         Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q1Obj,new NextEbaseFactory(), new BNextFactory());
         AsgQuery asgQuery = asgSupplier.get();
@@ -60,6 +76,7 @@ public class AsgQuerySupplierTest {
 
         //No next for the last element
         assertEquals(elementEbaseAsgEBase3.getNext().size() ,0);
+        System.out.println(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -84,6 +101,7 @@ public class AsgQuerySupplierTest {
         }
         HashSet<Integer> expectedNextSet = new HashSet<>(Arrays.asList(3,5,11));
         Assert.assertEquals(expectedNextSet, setOfNext);
+        System.out.println(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -113,6 +131,7 @@ public class AsgQuerySupplierTest {
 
         //Parent of enum=5 is enum=4
         assertEquals(asgEBase5.getParents().get(0).geteBase().geteNum(),3);
+        System.out.println(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -156,7 +175,7 @@ public class AsgQuerySupplierTest {
         //Entity Enum 7
         AsgEBase asgEBase7 = asgEBase5.getB().get(1);
         assertEquals(asgEBase7.geteBase().geteNum(),7);
-
+        System.out.println(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -180,6 +199,7 @@ public class AsgQuerySupplierTest {
         AsgEBase<? extends EBase> asgEBase3 = asgEBase2.getNext().get(0);
         assertEquals(asgEBase3.geteBase().geteNum(),3);
         assertEquals(asgEBase3.getNext().get(0).getParents().get(0).geteNum(),3);
+        System.out.println(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -187,8 +207,7 @@ public class AsgQuerySupplierTest {
         Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q11Obj,new NextEbaseFactory(), new BNextFactory());
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
-
-
+        System.out.println(AsgQueryDescriptor.print(asgQuery));
     }
 
 

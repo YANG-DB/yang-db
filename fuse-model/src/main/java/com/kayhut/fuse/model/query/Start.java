@@ -44,6 +44,11 @@ public class Start extends EBase implements Next<Integer> {
         return next;
     }
 
+    @Override
+    public boolean hasNext() {
+        return next > -1;
+    }
+
     public void setNext(Integer next) {
         this.next = next;
     }

@@ -31,8 +31,9 @@ public class UnTypedNodeCypherStrategy extends CypherStrategy {
 
             CypherCompilationState curState = getRelevantState(element);
 
-            CypherNode node = CypherNode.cypherNode()
-                                        .withTag(eUntyped.geteTag());
+            String tag = eUntyped.geteTag() == null ? curState.getStatement().getNewNodeTag() : eUntyped.geteTag();
+
+            CypherNode node = CypherNode.cypherNode().withTag(tag);
 
             CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement().withTag(node.tag);
 

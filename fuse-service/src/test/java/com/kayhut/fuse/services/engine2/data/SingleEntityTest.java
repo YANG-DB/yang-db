@@ -14,7 +14,12 @@ import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.NonRedundantTestSuite;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.MappingElasticConfigurer;
+import com.kayhut.test.framework.index.Mappings;
+import com.kayhut.test.framework.index.Mappings.Mapping;
+import com.kayhut.test.framework.index.Mappings.Mapping.Property;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import javaslang.collection.Stream;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
@@ -24,6 +29,7 @@ import org.junit.*;
 import java.io.IOException;
 import java.util.*;
 
+import static com.kayhut.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 import static io.restassured.RestAssured.given;
 
 /**
@@ -38,17 +44,25 @@ public class SingleEntityTest {
 
         TransportClient client = NonRedundantTestSuite.elasticEmbeddedNode.getClient();
 
-        new ElasticDataPopulator(
-                client,
-                "person",
-                "Person",
-                idField,
-                () -> createPeople(10)).populate();
+        new MappingElasticConfigurer("person", new Mappings().addMapping("pge",
+                new Mapping().addProperty("type", new Property(keyword))
+                    .addProperty("name", new Property(keyword)))).configure(client);
 
         new ElasticDataPopulator(
                 client,
+                "person",
+                "pge",
+                idField,
+                () -> createPeople(10)).populate();
+
+
+        new MappingElasticConfigurer("dragon", new Mappings().addMapping("pge",
+                new Mapping().addProperty("type", new Property(keyword))
+                        .addProperty("name", new Property(keyword)))).configure(client);
+        new ElasticDataPopulator(
+                client,
                 "dragon",
-                "Dragon",
+                "pge",
                 idField,
                 () -> createDragons(10)).populate();
 
@@ -172,7 +186,7 @@ public class SingleEntityTest {
             ids.add(assignment.getEntities().get(0).geteID());
 
             Assert.assertTrue(assignment.getEntities().get(0).geteTag().size() == 1);
-            Assert.assertTrue(assignment.getEntities().get(0).geteTag().get(0).equals("A"));
+            Assert.assertTrue(Stream.ofAll(assignment.getEntities().get(0).geteTag()).get(0).equals("A"));
             Assert.assertTrue(assignment.getEntities().get(0).geteType().equals(eType));
         });
 
@@ -214,7 +228,7 @@ public class SingleEntityTest {
                 ids.add(assignment.getEntities().get(0).geteID());
 
                 Assert.assertTrue(assignment.getEntities().get(0).geteTag().size() == 1);
-                Assert.assertTrue(assignment.getEntities().get(0).geteTag().get(0).equals("A"));
+                Assert.assertTrue(Stream.ofAll(assignment.getEntities().get(0).geteTag()).get(0).equals("A"));
                 Assert.assertTrue(assignment.getEntities().get(0).geteType().equals(eType));
             });
         }
@@ -254,6 +268,7 @@ public class SingleEntityTest {
         for(int i = 0 ; i < numPeople ; i++) {
             Map<String, Object> person = new HashMap<>();
             person.put("id", "p" + i);
+            person.put("type", "Person");
             person.put("name", "person" + i);
             people.add(person);
         }
@@ -265,6 +280,7 @@ public class SingleEntityTest {
         for(int i = 0 ; i < numDragons ; i++) {
             Map<String, Object> dragon = new HashMap<>();
             dragon.put("id", "d" + i);
+            dragon.put("type", "Dragon");
             dragon.put("name", "dragon" + i);
             dragons.add(dragon);
         }

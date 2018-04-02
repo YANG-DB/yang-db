@@ -1,18 +1,18 @@
 package com.kayhut.test.framework.populator;
 
-import com.kayhut.test.framework.providers.GenericDataProvider;
+/*import com.kayhut.test.framework.providers.GenericDataProvider;
 import org.neo4j.graphdb.*;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.stream.Stream;*/
 
 /**
  * Created by moti on 3/22/2017.
  */
-public class Neo4jGenericEdgeDataPopulator implements DataPopulator{
+/*public class Neo4jGenericEdgeDataPopulator implements DataPopulator{
     private GraphDatabaseService graphDatabaseService;
     private GenericDataProvider dataProvider;
     private String edgeLabel;
@@ -66,4 +66,4 @@ public class Neo4jGenericEdgeDataPopulator implements DataPopulator{
         transaction.success();
         transaction.close();
     }
-}
+}*/

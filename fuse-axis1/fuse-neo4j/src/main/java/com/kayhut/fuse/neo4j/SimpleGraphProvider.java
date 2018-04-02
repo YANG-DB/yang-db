@@ -1,13 +1,13 @@
 package com.kayhut.fuse.neo4j;
 
-import org.neo4j.driver.v1.*;
+/*import org.neo4j.driver.v1.*;
 
 import javax.inject.Inject;
 
 /**
  * Created by liorp on 3/16/2017.
  */
-public class SimpleGraphProvider implements GraphProvider {
+/*public class SimpleGraphProvider implements GraphProvider {
 
     private GraphConfig config;
 
@@ -23,4 +23,4 @@ public class SimpleGraphProvider implements GraphProvider {
         Session session = driver.session();
         return session;
     }
-}
+}*/

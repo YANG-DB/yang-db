@@ -1,41 +1,13 @@
 package com.kayhut.fuse.epb.plan.validation;
 
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
-import com.kayhut.fuse.epb.plan.PlanValidator;
-import com.kayhut.fuse.model.log.Trace;
-import com.kayhut.fuse.model.log.TraceComposite;
-import javaslang.Tuple2;
+import com.kayhut.fuse.model.validation.ValidationResult;
+import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import javaslang.collection.Stream;
-
-import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Created by Roman on 30/04/2017.
  */
-public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q>, TraceComposite<String> {
-    private TraceComposite<String> trace = TraceComposite.build(this.getClass().getSimpleName());
-
-    @Override
-    public void log(String event, Level level) {
-        trace.log(event,level);
-    }
-
-    @Override
-    public List<Tuple2<String,String>> getLogs(Level level) {
-        return trace.getLogs(level);
-    }
-
-    @Override
-    public void with(Trace<String> trace) {
-        this.trace.with(trace);
-    }
-
-    @Override
-    public String who() {
-        return trace.who();
-    }
-
+public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q> {
     public enum Mode {
         one,
         all
@@ -45,7 +17,6 @@ public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q>, TraceC
     public CompositePlanValidator(Mode mode, PlanValidator<P, Q>...validators) {
         this.mode = mode;
         this.validators = Stream.of(validators).toJavaList();
-        this.validators.forEach(this::with);
     }
 
     public CompositePlanValidator(Mode mode, Iterable<PlanValidator<P, Q>> validators) {
@@ -56,12 +27,12 @@ public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q>, TraceC
 
     //region PlanValidator Implementation
     @Override
-    public ValidationContext isPlanValid(P plan, Q query) {
+    public ValidationResult isPlanValid(P plan, Q query) {
         for(PlanValidator<P, Q> validator : this.validators) {
-            ValidationContext planValid = validator.isPlanValid(plan, query);
+            ValidationResult planValid = validator.isPlanValid(plan, query);
 
             if (planValid.valid() && this.mode == Mode.one) {
-                return ValidationContext.OK;
+                return ValidationResult.OK;
             }
 
             if (!planValid.valid() && this.mode == Mode.all) {
@@ -69,14 +40,16 @@ public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q>, TraceC
             }
         }
 
-        if(this.mode == Mode.all)
-            return ValidationContext.OK;
-        return new ValidationContext(false,"Not all valid");
+        if(this.mode == Mode.all) {
+            return ValidationResult.OK;
+        }
+
+        return new ValidationResult(false,"Not all valid");
     }
     //endregion
 
     //region Fields
-    private Mode mode;
-    private Iterable<PlanValidator<P, Q>> validators;
+    protected Mode mode;
+    protected Iterable<PlanValidator<P, Q>> validators;
     //endregion
 }

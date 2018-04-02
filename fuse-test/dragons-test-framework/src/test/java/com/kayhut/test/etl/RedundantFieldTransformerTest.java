@@ -1,14 +1,10 @@
 package com.kayhut.test.etl;
 
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.MappingElasticConfigurer;
-import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
-import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import com.kayhut.test.framework.providers.FileCsvDataProvider;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -29,15 +25,11 @@ public class RedundantFieldTransformerTest {
         ElasticDataPopulator populator = new ElasticDataPopulator(embeddedNode.getClient(), "dragons","dragon","id", csvDataProvider);
         populator.populate();*/
 
-        Settings settings = Settings.settingsBuilder()
-                .put("cluster.name", "fuse-test")
-                .build();
-
-        TransportClient transportClient = TransportClient.builder().settings(settings).build()
+        Settings settings = Settings.builder().put("cluster.name", "fuse-test").build();
+        TransportClient transportClient = new PreBuiltTransportClient(settings)
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.81.12.209"), 9300))
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.73.165.97"), 9300))
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("52.166.57.208"), 9300));
-
 
         Map<String, String> fields = new HashMap<>();
         fields.put("name", "entityB.name");

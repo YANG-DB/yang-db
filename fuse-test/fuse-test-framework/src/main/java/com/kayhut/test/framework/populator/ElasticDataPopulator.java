@@ -2,11 +2,13 @@ package com.kayhut.test.framework.populator;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.kayhut.test.framework.providers.GenericDataProvider;
+import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.transport.TransportClient;
 
 import java.io.IOException;
@@ -23,14 +25,32 @@ public class ElasticDataPopulator implements DataPopulator {
     private String indexName;
     private String docType;
     private String idField;
+    private boolean removeIdField;
+    private String routingField;
+    private boolean removeRoutingField;
     private GenericDataProvider provider;
-    private static int BULK_SIZE = 500;
+    private static int BULK_SIZE = 10000;
 
     public ElasticDataPopulator(TransportClient client, String indexName, String docType, String idField, GenericDataProvider provider) {
+        this(client, indexName, docType, idField, true, null, true, provider);
+    }
+
+    public ElasticDataPopulator(
+            TransportClient client,
+            String indexName,
+            String docType,
+            String idField,
+            boolean removeIdField,
+            String routingField,
+            boolean removeRoutingField,
+            GenericDataProvider provider) {
         this.client = client;
         this.indexName = indexName;
         this.docType = docType;
         this.idField = idField;
+        this.removeIdField = removeIdField;
+        this.routingField = routingField;
+        this.removeRoutingField = removeRoutingField;
         this.provider = provider;
     }
 
@@ -46,10 +66,21 @@ public class ElasticDataPopulator implements DataPopulator {
     private IndexRequestBuilder documentIndexRequest(Map<String, Object> doc){
         IndexRequestBuilder indexRequestBuilder = client.prepareIndex()
                 .setIndex(this.indexName)
+                .setRouting(this.routingField != null ? (String)doc.get(this.routingField) : (String)doc.get(this.idField))
                 .setType(this.docType)
                 .setOpType(IndexRequest.OpType.INDEX);
-        if(doc.containsKey(idField))
-            indexRequestBuilder = indexRequestBuilder.setId((String)doc.remove(idField));
+
+        if(doc.containsKey(this.idField)) {
+            indexRequestBuilder = indexRequestBuilder.setId((String)doc.get(this.idField));
+            if (this.removeIdField) {
+                doc.remove(this.idField);
+            }
+        }
+
+        if (this.routingField != null && this.removeRoutingField) {
+            doc.remove(this.routingField);
+        }
+
         indexRequestBuilder = indexRequestBuilder.setSource(doc);
         return indexRequestBuilder;
     }
@@ -58,7 +89,7 @@ public class ElasticDataPopulator implements DataPopulator {
     public void populate() throws Exception {
         int currentBulkSize = 0;
 
-        BulkRequestBuilder bulkRequestBuilder = client.prepareBulk();
+        BulkRequestBuilder bulkRequestBuilder = client.prepareBulk().setRefreshPolicy(WriteRequest.RefreshPolicy.NONE);
         for(Iterator<Map<String, Object>> iterator = this.provider.getDocuments().iterator(); iterator.hasNext();){
             Map<String, Object> document = iterator.next();
             currentBulkSize++;
@@ -69,7 +100,7 @@ public class ElasticDataPopulator implements DataPopulator {
                 if(bulkItemResponses.hasFailures()){
                     throw new IllegalArgumentException(bulkItemResponses.buildFailureMessage());
                 }
-                bulkRequestBuilder = client.prepareBulk();
+                bulkRequestBuilder = client.prepareBulk().setRefreshPolicy(WriteRequest.RefreshPolicy.NONE);
                 currentBulkSize = 0;
             }
         }

@@ -1,7 +1,7 @@
 package com.kayhut.fuse.dispatcher.resource;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -13,11 +13,11 @@ import java.util.Optional;
  */
 public class CursorResource {
     //region Constructors
-    public CursorResource(String cursorId, Cursor cursor, CreateCursorRequest.CursorType cursorType) {
+    public CursorResource(String cursorId, Cursor cursor, CreateCursorRequest cursorRequest) {
         this.cursorId = cursorId;
         this.pageResources = new HashMap<>();
         this.cursor = cursor;
-        this.cursorType = cursorType;
+        this.cursorRequest = cursorRequest;
 
         this.timeCreated = new Date(System.currentTimeMillis());
     }
@@ -56,14 +56,14 @@ public class CursorResource {
         return cursor;
     }
 
-    public CreateCursorRequest.CursorType getCursorType() {
-        return this.cursorType;
+    public CreateCursorRequest getCursorRequest() {
+        return this.cursorRequest;
     }
     //endregion
 
     //region Fields
     private String cursorId;
-    private CreateCursorRequest.CursorType cursorType;
+    private CreateCursorRequest cursorRequest;
     private Cursor cursor;
     private Date timeCreated;
 

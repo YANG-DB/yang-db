@@ -11,7 +11,7 @@ import java.util.List;
  * Created by benishue on 17/02/2017.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Quant2 extends QuantBase implements Next<List<Integer>> {
+public class Quant2 extends QuantBase {
 
     public List<Integer> getNext() {
         return next;
@@ -21,6 +21,10 @@ public class Quant2 extends QuantBase implements Next<List<Integer>> {
         this.next = next;
     }
 
+    @Override
+    public boolean hasNext() {
+        return !next.isEmpty();
+    }
 
     //region Fields
     private List<Integer> next = Collections.emptyList();

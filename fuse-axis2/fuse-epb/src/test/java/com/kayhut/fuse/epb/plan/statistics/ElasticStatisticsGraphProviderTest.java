@@ -4,7 +4,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.ImmutableList;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
-import com.kayhut.fuse.epb.plan.statistics.provider.ElasticClientProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatisticsGraphProvider;
@@ -23,21 +22,24 @@ import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
-import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
-import com.kayhut.fuse.unipop.structure.ElementType;
+import com.kayhut.fuse.unipop.schemaProviders.*;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
+import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import javaslang.Tuple2;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -49,40 +51,11 @@ import static org.mockito.Mockito.when;
  * Created by benishue on 25-May-17.
  */
 public class ElasticStatisticsGraphProviderTest {
-
-
-    private static TransportClient statClient;
-    private static ElasticEmbeddedNode elasticEmbeddedNode;
-    private static StatConfig statConfig;
-
-    private static final long NUM_OF_DRAGONS_IN_INDEX_1 = 1000L;
-
-    private static final String DATA_TYPE_DRAGON = "dragon";
-    private static final String DATA_TYPE_FIRE = "fire";
-
-    private static final String DATA_INDEX_NAME_1 = "index1";
-    private static final String DATA_INDEX_NAME_2 = "index2";
-    private static final String DATA_INDEX_NAME_3 = "index3";
-    private static final String DATA_INDEX_NAME_4 = "index4";
-
-    private static final String DATA_FIELD_NAME_NAME = "name"; //Dragon Name
-    private static final String DATA_FIELD_NAME_AGE = "age";
-    private static final String DATA_FIELD_NAME_ADDRESS = "address";
-    private static final String DATA_FIELD_NAME_COLOR = "color";
-    private static final String DATA_FIELD_NAME_GENDER = "gender";
-    private static final String DATA_FIELD_NAME_TYPE = "_type";
-
-    private static final List<String> DRAGON_GENDERS =
-            Arrays.asList("male", "female");
-
-    private static final List<String> VERTEX_INDICES = ImmutableList.of(DATA_INDEX_NAME_1, DATA_INDEX_NAME_2);
-    private static final List<String> EDGE_INDICES = ImmutableList.of(DATA_INDEX_NAME_3, DATA_INDEX_NAME_4);
-
-
     @Test
     public void getVertexCardinality() throws Exception {
-        OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(getOntology());
-        GraphVertexSchema vertexDragonSchema = ontologySchemaProvider.getVertexSchema(DATA_TYPE_DRAGON).get();
+        Ontology.Accessor ont = new Ontology.Accessor(getOntology());
+        GraphElementSchemaProvider schemaProvider = buildSchemaProvider(ont);
+        GraphVertexSchema vertexDragonSchema = Stream.ofAll(schemaProvider.getVertexSchemas(DATA_TYPE_DRAGON)).get(0);
 
         ElasticStatisticsGraphProvider statisticsGraphProvider = new ElasticStatisticsGraphProvider(statConfig,
                 new ElasticStatProvider(statConfig, new ElasticStatDocumentProvider(new MetricRegistry(), statClient, statConfig)),
@@ -98,6 +71,7 @@ public class ElasticStatisticsGraphProviderTest {
         //Populating the Elastic Stat Engine index: 'stat' type: 'termBucket', buckets of statistics
         populateTermStatDocs(VERTEX_INDICES, DATA_TYPE_DRAGON, DATA_FIELD_NAME_TYPE, termStatistics);
         //Checking that the ELASTIC STAT TERM TYPE created
+
         assertTrue(EsUtil.isTypeExists(statClient, statConfig.getStatIndexName(), statConfig.getStatTermTypeName()));
 
         //Sanity Checks
@@ -106,13 +80,7 @@ public class ElasticStatisticsGraphProviderTest {
         assertEquals(1, allIndices.length);
         assertEquals(allIndices[0], statConfig.getStatIndexName());
 
-        //We have only 1 type in the Elastic Index 'stat' = 'termBucket'
-        String[] allTypesFromIndex = EsUtil.getAllTypesFromIndex(statClient, statConfig.getStatIndexName());
-        Arrays.asList(allTypesFromIndex).forEach(type -> System.out.println(type));
-        assertEquals(1, allTypesFromIndex.length);
-        assertEquals(statConfig.getStatTermTypeName(), allTypesFromIndex[0]);
-
-        //Check that the bucket term exists (the bucket is calculated on the field _type which is value is 'Dragon')
+        //Check that the bucket term exists (the bucket is calculated on the field type which is value is 'Dragon')
         String docId = StatUtil.hashString(VERTEX_INDICES.get(0) + DATA_TYPE_DRAGON + DATA_FIELD_NAME_TYPE + DATA_TYPE_DRAGON);
         Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentSourceById(statClient, statConfig.getStatIndexName(), statConfig.getStatTermTypeName(), docId);
         assertTrue(doc6Result.isPresent());
@@ -158,20 +126,15 @@ public class ElasticStatisticsGraphProviderTest {
     public static void setup() throws Exception {
         statConfig = StatConfigTestUtil.getStatConfig(buildStatContainer());
 
-        elasticEmbeddedNode = new ElasticEmbeddedNode();
-        elasticEmbeddedNode.getClient().admin().indices().create(new CreateIndexRequest(statConfig.getStatIndexName())).actionGet();
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+        new MappingFileElasticConfigurer(statConfig.getStatIndexName(), MAPPING_STAT_FILE_PATH).configure(elasticEmbeddedNode.getClient());
 
-        statClient = new ElasticClientProvider(statConfig).getStatClient();
+        statClient = elasticEmbeddedNode.getClient();
     }
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        if (statClient != null) {
-            statClient.close();
-            statClient = null;
-        }
-
-        elasticEmbeddedNode.close();
+        statClient.admin().indices().prepareDelete(statConfig.getStatIndexName()).execute().actionGet();
     }
 
     /**
@@ -190,7 +153,7 @@ public class ElasticStatisticsGraphProviderTest {
         new ElasticDataPopulator(
                 statClient,
                 statConfig.getStatIndexName(),
-                statConfig.getStatTermTypeName(),
+                "statBucket",
                 "id",
                 () -> prepareTermStatisticsDocs(
                         indices,
@@ -198,6 +161,7 @@ public class ElasticStatisticsGraphProviderTest {
                         field,
                         termStatistics
                 )).populate();
+        statClient.admin().indices().prepareRefresh(statConfig.getStatIndexName()).execute().actionGet();
     }
 
     //region Private Methods
@@ -259,32 +223,47 @@ public class ElasticStatisticsGraphProviderTest {
                 .build();
     }
 
-    private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider(ontology, (label, elementType) -> {
-            if (elementType == ElementType.vertex) {
-                return () -> VERTEX_INDICES;
-            } else if (elementType == ElementType.edge) {
-                return () -> EDGE_INDICES;
-            } else {
-                // must fail
-                Assert.assertTrue(false);
-                return null;
-            }
-        });
+    private GraphElementSchemaProvider buildSchemaProvider(Ontology.Accessor ont) {
+        Iterable<GraphVertexSchema> vertexSchemas =
+                Stream.ofAll(ont.entities())
+                        .map(entity -> (GraphVertexSchema) new GraphVertexSchema.Impl(
+                                entity.geteType(),
+                                new StaticIndexPartitions(VERTEX_INDICES)))
+                        .toJavaList();
+
+        Iterable<GraphEdgeSchema> edgeSchemas =
+                Stream.ofAll(ont.relations())
+                        .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
+                                relation.getrType(),
+                                new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeA() + "IdA"),
+                                        Optional.of(relation.getePairs().get(0).geteTypeA()))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
+                                        Optional.of(relation.getePairs().get(0).geteTypeB()))),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.of(new StaticIndexPartitions(EDGE_INDICES)),
+                                Collections.emptyList()))
+                        .toJavaList();
+
+        return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
 
     private Ontology getOntology() {
         Ontology ontology = Mockito.mock(Ontology.class);
         List<EPair> ePairs = Arrays.asList(new EPair() {{
-            seteTypeA("2");
-            seteTypeB("1");
+            seteTypeA(DATA_TYPE_DRAGON);
+            seteTypeB(DATA_TYPE_DRAGON);
         }});
 
         RelationshipType fireRelationshipType = RelationshipType.Builder.get()
-                .withRType("1").withName(DATA_TYPE_FIRE).withEPairs(ePairs).build();
+                .withRType(DATA_TYPE_FIRE).withName(DATA_TYPE_FIRE).withEPairs(ePairs).build();
 
-        Property nameProp = new Property(DATA_FIELD_NAME_NAME, "1", "string");
-        Property ageProp = new Property(DATA_FIELD_NAME_AGE, "2", "int");
+        Property nameProp = new Property(DATA_FIELD_NAME_NAME, DATA_FIELD_NAME_NAME, "string");
+        Property ageProp = new Property(DATA_FIELD_NAME_AGE, DATA_FIELD_NAME_AGE, "int");
 
         when(ontology.getProperties()).then(invocationOnMock -> Collections.singletonList(nameProp));
 
@@ -292,7 +271,7 @@ public class ElasticStatisticsGraphProviderTest {
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType("2").withName(DATA_TYPE_DRAGON)
+                            .withEType(DATA_TYPE_DRAGON).withName(DATA_TYPE_DRAGON)
                             .withProperties(Collections.singletonList(ageProp.getpType()))
                             .build());
                     return entityTypes;
@@ -336,7 +315,7 @@ public class ElasticStatisticsGraphProviderTest {
             }
             j++;
         }
-        return StatUtil.prepareStatDocs(statRangeResults);
+        return StatUtil.prepareStatDocs(statConfig.getStatNumericTypeName(), statRangeResults);
     }
 
     /**
@@ -361,9 +340,38 @@ public class ElasticStatisticsGraphProviderTest {
                 statRangeResults.add(statTermResult);
             }
         }
-        return StatUtil.prepareStatDocs(statRangeResults);
+        return StatUtil.prepareStatDocs(statConfig.getStatTermTypeName(), statRangeResults);
     }
     //endregion
 
+    //region Fields
+    private static TransportClient statClient;
+    private static ElasticEmbeddedNode elasticEmbeddedNode;
+    private static StatConfig statConfig;
 
+    private static final String MAPPING_STAT_FILE_PATH = Paths.get("src", "test", "resources", "elastic.test.stat.mapping.json").toString();
+
+    private static final long NUM_OF_DRAGONS_IN_INDEX_1 = 1000L;
+
+    private static final String DATA_TYPE_DRAGON = "Dragon";
+    private static final String DATA_TYPE_FIRE = "fire";
+
+    private static final String DATA_INDEX_NAME_1 = "index1";
+    private static final String DATA_INDEX_NAME_2 = "index2";
+    private static final String DATA_INDEX_NAME_3 = "index3";
+    private static final String DATA_INDEX_NAME_4 = "index4";
+
+    private static final String DATA_FIELD_NAME_NAME = "name"; //Dragon Name
+    private static final String DATA_FIELD_NAME_AGE = "age";
+    private static final String DATA_FIELD_NAME_ADDRESS = "address";
+    private static final String DATA_FIELD_NAME_COLOR = "color";
+    private static final String DATA_FIELD_NAME_GENDER = "gender";
+    private static final String DATA_FIELD_NAME_TYPE = "type";
+
+    private static final List<String> DRAGON_GENDERS =
+            Arrays.asList("male", "female");
+
+    private static final List<String> VERTEX_INDICES = ImmutableList.of(DATA_INDEX_NAME_1, DATA_INDEX_NAME_2);
+    private static final List<String> EDGE_INDICES = ImmutableList.of(DATA_INDEX_NAME_3, DATA_INDEX_NAME_4);
+    //endregion
 }

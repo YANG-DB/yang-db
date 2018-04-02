@@ -55,6 +55,7 @@ public class StatTestUtil {
         for (int i = 0; i < numDragons; i++) {
             Map<String, Object> dragon = new HashedMap();
             dragon.put("id", Integer.toString(i));
+            dragon.put("type", "Dragon");
             dragon.put("name", generateRandomString(dragonNamePrefixLength) + "_dragon" + i);
             dragon.put("age", randomInt(dragonMinAge, dragonMaxAge));
             dragon.put("color", dragonColors.get(rand.nextInt(dragonColors.size())));

@@ -65,20 +65,12 @@ public class Assignment {
 
         //region Public Methods
         public Builder withEntity(Entity entity) {
-            // currently merging is disabled due to request from the UI
-            /*Entity entityToMerge = this.entities.get(entity.hashCode());
-            if (entityToMerge != null) {
-                entity = Entity.Builder.instance().withEntity(entity).withEntity(entityToMerge).build();
-            }*/
+            Entity currentEntity = this.entities.get(entity.geteID());
+            if (currentEntity != null) {
+                entity = Entity.Builder.instance().withEntity(currentEntity).withEntity(entity).build();
+            }
 
-            //entities.put(entity.hashCode(), entity);
-            entities.put(entity.geteTag().get(0), entity);
-            return this;
-        }
-
-        public Builder withEntities(List<Entity> entities) {
-            //entities.forEach(entity -> this.entities.put(entity.hashCode(), entity));
-            entities.forEach(entity -> this.entities.put(entity.geteTag().get(0), entity));
+            entities.put(entity.geteID(), entity);
             return this;
         }
 
@@ -95,7 +87,7 @@ public class Assignment {
         public Assignment build() {
             Assignment assignment = new Assignment();
             //assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
-            assignment.setEntities(Stream.ofAll(this.entities.values()).sortBy(entity -> entity.geteTag().get(0)).toJavaList());
+            assignment.setEntities(Stream.ofAll(this.entities.values()).sortBy(Entity::geteType).toJavaList());
             assignment.setRelationships(this.relationships);
             return assignment;
         }

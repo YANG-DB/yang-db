@@ -1,10 +1,10 @@
 {
   "mappings": [{
     "indices": ["index1", "index2"],
-    "types": ["dragon"]
+    "types": ["Dragon"]
   }],
   "types": [{
-    "type": "dragon",
+    "type": "Dragon",
     "fields": [
       {
       "field": "age",

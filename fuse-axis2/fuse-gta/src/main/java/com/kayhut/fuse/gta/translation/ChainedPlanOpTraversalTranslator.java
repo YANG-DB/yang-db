@@ -1,13 +1,14 @@
 package com.kayhut.fuse.gta.translation;
 
 import com.google.inject.Inject;
+import com.kayhut.fuse.dispatcher.gta.PlanTraversalTranslator;
+import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.gta.strategy.*;
 import com.kayhut.fuse.model.execution.plan.*;
-import org.apache.tinkerpop.gremlin.process.traversal.Path;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.Element;
 
 /**
  * Created by moti on 3/7/2017.
@@ -17,21 +18,28 @@ public class ChainedPlanOpTraversalTranslator implements PlanTraversalTranslator
     @Inject
     public ChainedPlanOpTraversalTranslator(PlanOpTranslationStrategy translationStrategy) {
         this.translationStrategy = translationStrategy;
+        this.startFrom = 0;
+    }
+
+    public ChainedPlanOpTraversalTranslator(PlanOpTranslationStrategy translationStrategy, int startFrom) {
+        this.translationStrategy = translationStrategy;
+        this.startFrom = startFrom;
     }
     //endregion
 
     //region PlanTraversalTranslator Implementation
-    public Traversal<Element, Path> translate(Plan plan, TranslationContext context) throws Exception {
+    public GraphTraversal<?, ?> translate(PlanWithCost<Plan, PlanDetailedCost> planWithCost, TranslationContext context) {
         GraphTraversal traversal = __.start();
-        for (PlanOpBase planOp : plan.getOps()) {
-            traversal = this.translationStrategy.translate(traversal, plan, planOp, context);
+        for (int planOpIndex = this.startFrom; planOpIndex < planWithCost.getPlan().getOps().size(); planOpIndex++) {
+            traversal = this.translationStrategy.translate(traversal, planWithCost, planWithCost.getPlan().getOps().get(planOpIndex), context);
         }
 
-        return traversal.path();
+        return traversal;
     }
     //endregion
 
     //region Fields
     private PlanOpTranslationStrategy translationStrategy;
+    private int startFrom;
     //endregion
 }

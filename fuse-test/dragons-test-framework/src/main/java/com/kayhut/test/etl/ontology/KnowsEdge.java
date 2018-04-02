@@ -1,6 +1,7 @@
 package com.kayhut.test.etl.ontology;
 
 import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.test.etl.*;
 import javaslang.collection.Stream;
 
@@ -30,11 +31,11 @@ public interface KnowsEdge {
         RedundantFieldTransformer redundantFieldTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(KNOWS, Direction.out,"A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(PERSON).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(PERSON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 PERSON,
                 redundant(KNOWS, Direction.out,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(PERSON).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(PERSON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 PERSON);
         DuplicateEdgeTransformer duplicateEdgeTransformer = new DuplicateEdgeTransformer(ENTITY_A_ID, ENTITY_B_ID);
 

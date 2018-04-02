@@ -2,7 +2,8 @@ package com.kayhut.fuse.model.query.properties;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.projection.Projection;
 
 /**
  * Created by benishue on 17/02/2017.
@@ -18,14 +19,19 @@ public class EProp extends BaseProp {
     public EProp(int eNum, String pType, Constraint con) {
         super(eNum, pType, con);
     }
+
+    public EProp(int eNum, String pType, Projection proj) {
+        super(eNum, pType, proj);
+    }
     //endregion
 
-    public static EProp of(String pType, int eNum, Constraint con) {
-        EProp eProp = new EProp();
-        eProp.setpType(pType);
-        eProp.setCon(con);
-        eProp.seteNum(eNum);
-        return eProp;
+    //region Static
+    public static EProp of(int eNum, String pType, Constraint con) {
+        return new EProp(eNum, pType, con);
     }
 
+    public static EProp of(int eNum, String pType, Projection proj) {
+        return new EProp(eNum, pType, proj);
+    }
+    //endregion
 }

@@ -5,12 +5,12 @@
     <parent>
         <artifactId>fuse</artifactId>
         <groupId>org.kayhut</groupId>
-        <version>0.1</version>
+        <version>0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>fuse-assembly</artifactId>
-    <packaging>pom</packaging>
+    <!--<packaging>pom</packaging>-->
 
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
@@ -25,10 +25,10 @@
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-dispatcher</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-neo4j</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-epb</artifactId>
@@ -40,6 +40,10 @@
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-unipop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kayhut</groupId>
+            <artifactId>fuse-unipop-asg</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
@@ -69,6 +73,18 @@
             <groupId>org.kayhut</groupId>
             <artifactId>geojson-jackson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.internetitem</groupId>
+            <artifactId>logback-elasticsearch-appender</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -79,9 +95,11 @@
                 <version>3.0.0</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>assembly/fuse.test.service.engine1.xml</descriptor>
-                        <descriptor>assembly/fuse.test.service.engine2.xml</descriptor>
-                        <descriptor>assembly/fuse.test.stat.engine2.xml</descriptor>
+                        <!--<descriptor>assembly/fuse.test.service.engine1.xml</descriptor>-->
+                        <!--<descriptor>assembly/fuse.test.service.engine2.xml</descriptor>-->
+                        <descriptor>assembly/fuse.test.service.engine3.knowledge.xml</descriptor>
+                        <!--<descriptor>assembly/fuse.test.service.engine3.knowledge.mock.xml</descriptor>-->
+                        <!--<descriptor>assembly/fuse.test.stat.engine2.xml</descriptor>-->
                     </descriptors>
                 </configuration>
                 <executions>

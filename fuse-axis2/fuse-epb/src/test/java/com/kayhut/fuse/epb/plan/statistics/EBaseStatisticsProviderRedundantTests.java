@@ -2,23 +2,22 @@ package com.kayhut.fuse.epb.plan.statistics;
 
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.PushdownRelProp;
+import com.kayhut.fuse.model.query.properties.RedundantRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -40,104 +39,28 @@ public class EBaseStatisticsProviderRedundantTests {
     public void setup(){
         ontology = OntologyTestUtils.createDragonsOntologyShort();
         graphElementSchemaProvider = mock(GraphElementSchemaProvider.class);
-        when(graphElementSchemaProvider.getVertexTypes()).thenReturn(Arrays.asList("Guild"));
+        when(graphElementSchemaProvider.getVertexLabels()).thenReturn(Arrays.asList("Guild"));
         GraphEdgeSchema ownSchema = mock(GraphEdgeSchema.class);
-        when(ownSchema.getIndexPartition()).thenReturn(() -> new ArrayList<>());
-        when(ownSchema.getDestination()).thenReturn(Optional.of(new GraphEdgeSchema.End(){
+        when(ownSchema.getIndexPartitions()).thenReturn(Optional.of(new StaticIndexPartitions(Collections.emptyList())));
+        when(ownSchema.getEndB()).thenReturn(Optional.of(
+                new GraphEdgeSchema.End.Impl(
+                        null,
+                        null,
+                        Collections.singletonList(
+                                new GraphRedundantPropertySchema.Impl("firstName", "EntityB.firstName", "string")
+                        ))));
 
-            @Override
-            public String getIdField() {
-                return null;
-            }
+        GraphVertexSchema graphVertexSchema = new GraphVertexSchema.Impl(
+                "Guild",
+                new GraphElementConstraint.Impl(__.has(T.label, "Guild")),
+                Optional.empty(),
+                Optional.of(new StaticIndexPartitions(Collections.emptyList())),
+                Arrays.asList(
+                        new GraphElementPropertySchema.Impl("firstName", "string"),
+                        new GraphElementPropertySchema.Impl("lastName", "string")));
 
-            @Override
-            public Optional<String> getType() {
-                return null;
-            }
-
-            @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                if(property.getName().equals("firstName")){
-                    return Optional.of(new GraphRedundantPropertySchema() {
-                        @Override
-                        public String getPropertyRedundantName() {
-                            return "EntityB.firstName";
-                        }
-
-                        @Override
-                        public String getName() {
-                            return "firstName";
-                        }
-
-                        @Override
-                        public String getType() {
-                            return "string";
-                        }
-                    });
-                }else{
-                    return Optional.empty();
-                }
-            }
-        }));
-
-        GraphVertexSchema graphVertexSchema = new GraphVertexSchema() {
-            @Override
-            public String getType() {
-                return "Guild";
-            }
-
-            @Override
-            public Optional<GraphElementRouting> getRouting() {
-                return null;
-            }
-
-            @Override
-            public IndexPartition getIndexPartition() {
-                return () -> Arrays.asList();
-            }
-
-            @Override
-            public Iterable<GraphElementPropertySchema> getProperties() {
-                return Arrays.asList(new GraphElementPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return "firstName";
-                    }
-
-                    @Override
-                    public String getType() {
-                        return "string";
-                    }
-                },new GraphElementPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return "lastName";
-                    }
-
-                    @Override
-                    public String getType() {
-                        return "string";
-                    }
-                } );
-            }
-
-            @Override
-            public Optional<GraphElementPropertySchema> getProperty(String name) {
-                return Optional.of(new GraphElementPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return name;
-                    }
-
-                    @Override
-                    public String getType() {
-                        return "string";
-                    }
-                });
-            }
-        };
-        when(graphElementSchemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(ownSchema));
-        when(graphElementSchemaProvider.getVertexSchema(any())).thenReturn(Optional.of(graphVertexSchema));
+        when(graphElementSchemaProvider.getEdgeSchemas(any())).thenReturn(Collections.singletonList(ownSchema));
+        when(graphElementSchemaProvider.getVertexSchemas(any())).thenReturn(Collections.singletonList(graphVertexSchema));
 
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.SummaryStatistics(1000,1000));
@@ -162,9 +85,9 @@ public class EBaseStatisticsProviderRedundantTests {
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.eq);
         prop.setCon(constraint);
-        PushdownRelProp pushdownRelProp = PushdownRelProp.of(0, "EntityB.firstName", "lastName", Constraint.of(ConstraintOp.ge, "abc"));
+        RedundantRelProp redundantRelProp = RedundantRelProp.of(0, "EntityB.firstName", "lastName", Constraint.of(ConstraintOp.ge, "abc"));
 
-        RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, pushdownRelProp));
+        RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, redundantRelProp));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType("Guild");

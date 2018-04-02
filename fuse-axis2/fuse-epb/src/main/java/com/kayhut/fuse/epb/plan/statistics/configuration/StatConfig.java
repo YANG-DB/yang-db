@@ -37,7 +37,7 @@ public class StatConfig {
         this.statFieldStringLowerName = "lower_bound_string";
         this.statFieldStringUpperName = "upper_bound_string";
 
-//        Optional<StatContainer> statJsonConfiguration = getStatJsonConfiguration(config.getString("elasticsearch.stat.configuration.file"));
+//        OptionalComp<StatContainer> statJsonConfiguration = getStatJsonConfiguration(config.getString("elasticsearch.stat.configuration.file"));
 //        statJsonConfiguration.ifPresent(statContainer -> this.statContainer = statContainer);
     }
 
@@ -96,7 +96,7 @@ public class StatConfig {
         try {
             statContainer = Optional.ofNullable(new ObjectMapper().readValue(statConfigJson, StatContainer.class));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load statistics configuration\n" + e.getMessage());
+            throw new RuntimeException("Failed getTo load statistics configuration\n" + e.getMessage());
         }
         return statContainer;
     }

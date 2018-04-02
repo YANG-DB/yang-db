@@ -2,9 +2,10 @@ package com.kayhut.fuse.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.eventbus.EventBus;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.query.EBase;
+import javaslang.collection.Stream;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -31,11 +32,6 @@ public interface Utils {
             }
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
-    }
-
-    static <T> T submit(EventBus eventBus, T data) {
-        eventBus.post(data);
-        return data;
     }
 
     static String getOrCreateId(String id) {
@@ -83,48 +79,5 @@ public interface Utils {
         String s = IOUtils.toString(stream);
         Object value = mapper.readValue(s, Object.class);
         return mapper.writeValueAsString(value);
-    }
-
-    static String baseUrl(String port) {
-        return "http://" + getHostAddress() + ":" + port + "/fuse";
-    }
-
-    static String getHostAddress() {
-        try {
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            return "127.0.0.1";
-        }
-    }
-
-    static String fullPattern(List<PlanOpBase> pattern) {
-        StringJoiner sj = new StringJoiner(":", "[", "]");
-        pattern.forEach(op -> sj.add(op.toString()));
-        return sj.toString();
-    }
-
-    static String pattern(List<PlanOpBase> pattern) {
-        StringJoiner sj = new StringJoiner(":", "", "");
-        pattern.forEach(op -> sj.add(op.getClass().getSimpleName()));
-        return sj.toString();
-    }
-
-    static String simplePattern(List<PlanOpBase> pattern) {
-        StringJoiner sj = new StringJoiner(":", "[", "]");
-        pattern.forEach(op -> sj.add(Integer.toString(op.geteNum())));
-        return sj.toString();
-    }
-
-    static List<Class<? extends PlanOpBase>> fromPattern(String pattern) {
-        if(pattern.split("\\:").length ==0)
-            return Collections.emptyList();
-
-        return Arrays.asList(pattern.split("\\:")).stream().map(element -> {
-            try {
-                return (Class<? extends PlanOpBase>)Class.forName(element);
-            } catch (ClassNotFoundException e) {
-                throw new IllegalArgumentException("Class.forName(element) failed for "+element);
-            }
-        }).collect(Collectors.toList());
     }
 }

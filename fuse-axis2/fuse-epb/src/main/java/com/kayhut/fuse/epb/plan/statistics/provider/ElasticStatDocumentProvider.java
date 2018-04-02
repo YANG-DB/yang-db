@@ -4,14 +4,11 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -39,7 +36,7 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
         searchBuilder.getIncludeSourceFields().add("*");
         searchBuilder.getQueryBuilder().query().filtered().filter().bool().push()
                 .must().terms("index", indices).pop().push()
-                .must().terms("type", types).pop().push()
+                .must().terms("sourceType", types).pop().push()
                 .must().terms("field", fields).pop().push();
 
         constraints.forEach((key, value) -> searchBuilder.getQueryBuilder().must().term(key, value).pop().push());
@@ -49,15 +46,14 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
         searchBuilder.setScrollTime(60000);
 
         SearchHitScrollIterable hits = new SearchHitScrollIterable(
-                metricRegistry,
                 this.client,
-                searchBuilder.compose(this.client, false),
+                searchBuilder.build(this.client, false),
                 searchBuilder.getLimit(),
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());
 
         return Stream.ofAll(hits)
-                .map(hit -> new MapBuilder<>(hit.sourceAsMap()).put("_type", hit.getType()).get())
+                .map(SearchHit::sourceAsMap)
                 .toJavaList();
     }
     //endregion

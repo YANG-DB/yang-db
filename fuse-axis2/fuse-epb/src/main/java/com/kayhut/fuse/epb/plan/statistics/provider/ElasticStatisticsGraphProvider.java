@@ -1,16 +1,18 @@
 package com.kayhut.fuse.epb.plan.statistics.provider;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
-import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.*;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,14 +22,14 @@ import java.util.stream.Collectors;
  */
 public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     //region Static
-    //todo move it to a global enum across modules
+    //todo move it getTo a global enum across modules
     private static final String DATE = "date";
     private static final String ENUM = "enum";
     private static final String INT = "int";
     private static final String FLOAT = "float";
     private static final String STRING = "string";
 
-    private static final String FIELD_NAME_TYPE = "_type";
+    private static final String FIELD_NAME_TYPE = "type";
     private static final String FIELD_NAME_EDGE = "entityA.id";
     //endregion
 
@@ -46,23 +48,35 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     @Override
     public Statistics.SummaryStatistics getVertexCardinality(GraphVertexSchema graphVertexSchema) {
         return getVertexCardinality(graphVertexSchema,
-                Lists.newArrayList(graphVertexSchema.getIndexPartition().getIndices()));
+                Stream.ofAll(graphVertexSchema.getIndexPartitions().get().getPartitions())
+                .flatMap(IndexPartitions.Partition::getIndices)
+                .toJavaList());
     }
 
     @Override
     public Statistics.SummaryStatistics getVertexCardinality(GraphVertexSchema graphVertexSchema, List<String> relevantIndices) {
-        return getSummaryStatistics(graphVertexSchema.getType(), relevantIndices);
+        String constraintLabel = Stream.ofAll(
+                new TraversalValuesByKeyProvider().getValueByKey(graphVertexSchema.getConstraint().getTraversalConstraint(), T.label.getAccessor()))
+                .get(0);
+
+        return getSummaryStatistics(constraintLabel, relevantIndices);
     }
 
     @Override
     public Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema) {
         return getEdgeCardinality(graphEdgeSchema,
-                Lists.newArrayList(graphEdgeSchema.getIndexPartition().getIndices()));
+                Stream.ofAll(graphEdgeSchema.getIndexPartitions().get().getPartitions())
+                        .flatMap(IndexPartitions.Partition::getIndices)
+                        .toJavaList());
     }
 
     @Override
     public Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices) {
-        return getSummaryStatistics(graphEdgeSchema.getType(), relevantIndices);
+        String constraintLabel = Stream.ofAll(
+                new TraversalValuesByKeyProvider().getValueByKey(graphEdgeSchema.getConstraint().getTraversalConstraint(), T.label.getAccessor()))
+                .get(0);
+
+        return getSummaryStatistics(constraintLabel, relevantIndices);
     }
 
     @Override
@@ -75,10 +89,13 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
         String statTypeName = getStatTypeName(graphElementPropertySchema);
 
+        String constraintLabel = Stream.ofAll(
+                new TraversalValuesByKeyProvider().getValueByKey(graphElementSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                .get(0);
 
         Map<String, List<Statistics.BucketInfo>> fieldStatisticsPerIndex = this.elasticStatProvider.getFieldStatisticsPerIndex(
                 relevantIndices,
-                Collections.singletonList(graphElementSchema.getType()),
+                Collections.singletonList(constraintLabel),
                 Collections.singletonList(((graphElementPropertySchema instanceof GraphRedundantPropertySchema) ?
                         ((GraphRedundantPropertySchema) graphElementPropertySchema).getPropertyRedundantName()
                         : graphElementPropertySchema.getName())));
@@ -97,7 +114,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     }
 
     /**
-     * convert to specific type boundaries
+     * convert getTo specific type boundaries
      *
      * @param fieldType
      * @param statistics
@@ -133,10 +150,14 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     public long getGlobalSelectivity(GraphEdgeSchema graphEdgeSchema,
                                      Rel.Direction direction,
                                      List<String> relevantIndices) {
+        String constraintLabel = Stream.ofAll(
+                new TraversalValuesByKeyProvider().getValueByKey(graphEdgeSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                .get(0);
+
         long globalSelectivity = 0;
         List<Statistics.BucketInfo<String>> buckets = this.elasticStatProvider.getEdgeGlobalStatistics(
                 relevantIndices,
-                Collections.singletonList(graphEdgeSchema.getType()),
+                Collections.singletonList(constraintLabel),
                 Collections.singletonList(FIELD_NAME_EDGE),
                 convertDirection(direction)
         );
@@ -212,7 +233,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
             case L:
                 return "IN";
             default:
-                throw new IllegalArgumentException("Not Supported Relation Direction: " + dir);
+                throw new IllegalArgumentException("Not Supported Relation DirectionSchema: " + dir);
         }
     }
     //endregion

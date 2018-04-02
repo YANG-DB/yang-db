@@ -4,7 +4,7 @@ import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Optional;
 
-public class PrefixedIdEdgeRedundancy extends PrefixedEdgeRedundancy {
+/*public class PrefixedIdEdgeRedundancy extends PrefixedEdgeRedundancy {
     //region Constructor
     public PrefixedIdEdgeRedundancy(GraphEdgeSchema.End end, String prefix) {
         super(prefix);
@@ -16,7 +16,7 @@ public class PrefixedIdEdgeRedundancy extends PrefixedEdgeRedundancy {
     @Override
     public Optional<String> getRedundantPropertyName(String propertyName) {
         if (propertyName.equals(T.id.getAccessor())) {
-            return Optional.of(this.end.getIdField());
+            return Optional.of(this.end.getIdFields());
         } else {
             return Optional.of(this.getPrefix() + propertyName);
         }
@@ -26,4 +26,4 @@ public class PrefixedIdEdgeRedundancy extends PrefixedEdgeRedundancy {
     //region Fields
     GraphEdgeSchema.End end;
     //endregion
-}
+}*/

@@ -116,7 +116,7 @@ public class ElasticIndexTests {
             populator.populate();
             client.admin().indices().refresh(new RefreshRequest(indexName)).actionGet();
             SearchResponse firesAtSearch = client.prepareSearch(indexName).setTypes("fires_at").execute().actionGet();
-            Map<String, Object> source = firesAtSearch.getHits().getAt(0).getSource();
+            Map<String, Object> source = firesAtSearch.getHits().getAt(0).sourceAsMap();
             Assert.assertTrue(source.containsKey("entityA"));
             Assert.assertTrue(source.containsKey("entityB"));
             Assert.assertTrue(source.get("entityA") instanceof Map);

@@ -1,12 +1,11 @@
 package com.kayhut.fuse.model.execution.plan;
 
-import com.kayhut.fuse.model.query.Constraint;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 
 /**
  * Created by User on 22/02/2017.
  */
-public class AttachedPropertyFilterOp extends PlanOpBase {
+public class AttachedPropertyFilterOp extends PlanOp {
     //region Constructor
     public AttachedPropertyFilterOp() {
 
@@ -33,13 +32,6 @@ public class AttachedPropertyFilterOp extends PlanOpBase {
 
     public void setCondition(Constraint value) {
         this.condition = value;
-    }
-    //endregion
-
-    //region Methods
-    @Override
-    public int geteNum() {
-        throw new NotImplementedException();
     }
     //endregion
 

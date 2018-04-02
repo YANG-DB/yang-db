@@ -8,9 +8,10 @@ import com.kayhut.fuse.stat.model.result.StatTermResult;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatTestUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
+import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -114,8 +115,8 @@ public class EsUtilTest {
 
         dragonsList.forEach(dragon -> {
             double age = ((Number) dragon.get(DATA_FIELD_NAME_AGE)).doubleValue();
-            double lowerBoundFirstBucket = ((Number) bucketRange_1dot0_TO_1dot5.getStart()).doubleValue();
-            double upperBoundFirstBucket = ((Number) bucketRange_1dot0_TO_1dot5.getEnd()).doubleValue();
+            double lowerBoundFirstBucket = (bucketRange_1dot0_TO_1dot5.getStart()).doubleValue();
+            double upperBoundFirstBucket = (bucketRange_1dot0_TO_1dot5.getEnd()).doubleValue();
 
             if (age >= lowerBoundFirstBucket && age < upperBoundFirstBucket) {
                 statRangeResult_1dot0_TO_1dot5.setDocCount(statRangeResult_1dot0_TO_1dot5.getDocCount() + 1);
@@ -131,7 +132,6 @@ public class EsUtilTest {
         assertEquals(manualBuckets.size(), manualHistogramResults.size());
 
         assertEquals(statRangeResult_1dot0_TO_1dot5.getDocCount(), manualHistogramResults.get(0).getDocCount());
-
     }
 
     @Test
@@ -221,7 +221,6 @@ public class EsUtilTest {
         for (int i = 0; i < NUM_OF_DRAGONS_IN_INDEX; i++) {
             Optional<String> documentTypeByDocId = EsUtil.getDocumentTypeByDocId(dataClient
                     , DATA_INDEX_NAME,
-                    DATA_TYPE_NAME,
                     Integer.toString(i));
 
             assertTrue(documentTypeByDocId.isPresent());
@@ -239,10 +238,12 @@ public class EsUtilTest {
                 DRAGON_GENDERS,
                 DRAGON_ADDRESS_LENGTH);
 
+        new MappingFileElasticConfigurer(DATA_INDEX_NAME, StatTestSuite.MAPPING_DATA_FILE_DRAGON_PATH).configure(dataClient);
+
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME,
-                DATA_TYPE_NAME,
+                "pge",
                 "id",
                 () -> dragonsList
         ).populate();

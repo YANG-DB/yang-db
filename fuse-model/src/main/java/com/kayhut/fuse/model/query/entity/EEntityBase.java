@@ -15,23 +15,14 @@ import java.util.List;
 public abstract class EEntityBase extends EBase implements Next<Integer>, Below<Integer> {
     //region Constructors
     public EEntityBase() {
-        this.reportProps = Collections.emptyList();
     }
 
     public EEntityBase(int eNum, String eTag, int next, int b) {
-        this(eNum, eTag, Collections.emptyList(), next, b);
-    }
-
-    public EEntityBase(int eNum, String eTag, List<String> reportProps, int next, int b) {
         super(eNum);
 
         this.eTag = eTag;
         this.next = next;
         this.b = b;
-
-        this.reportProps = reportProps != null ?
-                Stream.ofAll(reportProps).toJavaList() :
-                Collections.emptyList();
     }
     //endregion
 
@@ -50,15 +41,6 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
         if (next != that.next) return false;
         if (b != that.b) return false;
 
-        if ((reportProps == null && that.reportProps != null) ||
-                (reportProps != null && that.reportProps == null)) {
-            return false;
-        }
-
-        if (reportProps != null) {
-            return reportProps.equals(that.reportProps);
-        }
-
         return true;
     }
 
@@ -70,7 +52,6 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
         result = 31 * result + b;
 
         result = 31 * result + (eTag != null ? eTag.hashCode() : 0);
-        result = 31 * result + (reportProps!=null ? reportProps.hashCode() : 0);
         return result;
     }
     //endregion
@@ -92,6 +73,11 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
         this.next = next;
     }
 
+    @Override
+    public boolean hasNext() {
+        return next > -1;
+    }
+
     public Integer getB() {
         return b;
     }
@@ -99,23 +85,13 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
     public void setB(Integer b) {
         this.b = b;
     }
-
-    public List<String> getReportProps() {
-        return reportProps;
-    }
-
-    public void setReportProps(List<String> reportProps) {
-        this.reportProps = reportProps;
-    }
     //endregion
 
     //region Fields
     private String eTag;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private int next;
+    private int next = -1;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int b;
-
-    private List<String> reportProps;
     //endregion
 }

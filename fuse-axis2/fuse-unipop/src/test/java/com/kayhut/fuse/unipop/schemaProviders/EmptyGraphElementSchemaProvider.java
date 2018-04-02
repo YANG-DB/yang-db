@@ -1,5 +1,7 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
+import org.apache.tinkerpop.gremlin.structure.Direction;
+
 import java.util.Collections;
 import java.util.Optional;
 
@@ -11,18 +13,28 @@ public class EmptyGraphElementSchemaProvider implements GraphElementSchemaProvid
 
     //region GraphElementSchemaProvider Implementation
     @Override
-    public Optional<GraphVertexSchema> getVertexSchema(String type) {
-        return Optional.empty();
+    public Iterable<GraphVertexSchema> getVertexSchemas(String label) {
+        return Collections.emptyList();
     }
 
     @Override
-    public Optional<GraphEdgeSchema> getEdgeSchema(String type) {
-        return Optional.empty();
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
+        return Collections.emptyList();
     }
 
     @Override
-    public Optional<Iterable<GraphEdgeSchema>> getEdgeSchemas(String type) {
-        return Optional.empty();
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB) {
+        return Collections.emptyList();
     }
 
     @Override
@@ -31,12 +43,12 @@ public class EmptyGraphElementSchemaProvider implements GraphElementSchemaProvid
     }
 
     @Override
-    public Iterable<String> getVertexTypes() {
+    public Iterable<String> getVertexLabels() {
         return Collections.emptyList();
     }
 
     @Override
-    public Iterable<String> getEdgeTypes() {
+    public Iterable<String> getEdgeLabels() {
         return Collections.emptyList();
     }
     //endregion

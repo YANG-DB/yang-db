@@ -1,0 +1,98 @@
+{
+  "order": 0,
+  "template": "i*",
+  "settings": {
+    "index": {
+      "number_of_shards": "1",
+      "number_of_replicas": "0",
+      "refresh_interval": "100ms",
+      "analysis": {
+        "analyzer": {
+          "knowledge_ngram_analyzer": {
+            "type": "custom",
+            "tokenizer": "knowledge_ngram_tokenizer",
+            "filter": [ "standard", "knowledge_stopwords" ]
+          },
+          "knowledge_standard_analyzer": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [ "standard", "knowledge_stopwords" ]
+          }
+        },
+        "tokenizer": {
+          "knowledge_ngram_tokenizer": {
+            "type": "nGram",
+            "min_gram": "1",
+            "max_gram": "10",
+            "token_chars": [ "letter", "digit", "punctuation" ]
+          }
+        },
+        "filter": {
+          "knowledge_stopwords": {
+            "type": "stop",
+            "stopwords": "_none"
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "pge": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "type": {
+          "type": "keyword"
+        },
+        "context": {
+          "type": "keyword"
+        },
+        "value": {
+          "type": "text",
+          "analyzer": "knowledge_ngram_analyzer",
+          "search_analyzer": "knowledge_standard_analyzer",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "entityIds": {
+          "type": "keyword"
+        },
+        "refs": {
+          "type": "keyword"
+        },
+        "creationUser": {
+          "type": "keyword"
+        },
+        "creationTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        },
+        "lastUpdateUser": {
+          "type": "keyword"
+        },
+        "lastUpdateTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        },
+        "deleteUser": {
+          "type": "keyword"
+        },
+        "deleteTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        },
+        "authorization": {
+          "type": "keyword"
+        },
+        "authorizationCount": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "aliases": {}
+}

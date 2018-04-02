@@ -1,17 +1,24 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern;
 
-import com.codahale.metrics.Slf4jReporter;
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
+import com.kayhut.fuse.dispatcher.epb.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
+import com.kayhut.fuse.model.execution.plan.costs.JoinCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import javaslang.collection.Stream;
 
 import java.lang.reflect.Method;
@@ -20,7 +27,6 @@ import java.util.regex.Matcher;
 
 import static com.kayhut.fuse.epb.plan.estimation.pattern.Pattern.*;
 import static com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator.PatternPart.*;
-import static com.kayhut.fuse.model.Utils.pattern;
 
 /**
  * Created by moti on 01/04/2017.
@@ -70,7 +76,13 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
         //option 3 And node
         GOTO_ENTITY_RELATION_ENTITY("^(?<" + GOTO_ENTITY.value+">" + GoToEntityOp.class.getSimpleName() + ")" + ":" +
                 "(?<" + RELATION.value + ">" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_REL_FILTER.value + ">" + RelationFilterOp.class.getSimpleName() + ":)?" +
-                "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
+                "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$"),
+
+        ENTITY_JOIN("^(?<" + JOIN.value + ">" + EntityJoinOp.class.getSimpleName() + ")$" ),
+        ENTITY_JOIN_RELATION_ENTITY("^(?<" + JOIN.value+">" + EntityJoinOp.class.getSimpleName() + ")" + ":" +
+                "(?<" + RELATION.value + ">" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_REL_FILTER.value + ">" + RelationFilterOp.class.getSimpleName() + ":)?" +
+                "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$"),
+        GOTO("^(((?<" + ENTITY_ONE.value + ">" +EntityOp.class.getSimpleName() + ")" + "(:" + "(?<"+ OPTIONAL_ENTITY_ONE_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?)|(?<" + JOIN.value + ">"+ EntityJoinOp.class.getSimpleName()+"))"+":(?<" + GOTO_ENTITY.value+">" + GoToEntityOp.class.getSimpleName() + ")$" );
 
         //region Enum Constructors
         Pattern(String pattern) {
@@ -102,7 +114,9 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
         OPTIONAL_REL_FILTER("optionalRelFilter"),
         ENTITY_ONLY("entityOnly"),
         OPTIONAL_ENTITY_ONLY_FILTER("optionalEntityOnlyFilter"),
-        GOTO_ENTITY("gotoEntity");
+        GOTO_ENTITY("gotoEntity"),
+        JOIN("join");
+
 
         private String value;
 
@@ -128,29 +142,22 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
 
     //region CostEstimator Implementation
     @Override
-    @LoggerAnnotation(name = "estimate", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public PlanWithCost<Plan, PlanDetailedCost> estimate(
             Plan plan,
             IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery> context) {
         PlanWithCost<Plan, PlanDetailedCost> newPlan = null;
         Plan planStep = context.getPreviousCost().isPresent() ? extractNewPlanStep(plan) : plan;
 
-        String opsString = pattern(planStep.getOps());
+        String opsString = IterablePlanOpDescriptor.getLight().describe(planStep.getOps());
         Pattern[] supportedPattern = getSupportedPattern();
         for (Pattern regexPattern : supportedPattern) {
             java.util.regex.Pattern compile = regexPattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
-                Map<PatternPart, PlanOpBase> patternParts = getStepPatternParts(planStep, getNamedGroups(compile), matcher);
-
-                com.kayhut.fuse.epb.plan.estimation.pattern.Pattern pattern =
-                                regexPattern.equals(Pattern.ENTITY) ?  buildEntityPattern(patternParts) :
-                                regexPattern.equals(Pattern.ENTITY_RELATION_ENTITY) ? buildEntityRelationEntityPattern(patternParts) :
-                                regexPattern.equals(Pattern.GOTO_ENTITY_RELATION_ENTITY) ? buildGoToPattern(plan, patternParts) : null;
-
+                Map<PatternPart, PlanOp> patternParts = getStepPatternParts(planStep, getNamedGroups(compile), matcher);
+                com.kayhut.fuse.epb.plan.estimation.pattern.Pattern pattern = buildPattern(regexPattern, patternParts, plan);
                 PatternCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(pattern, context);
-
-                newPlan = buildNewPlan(result, context.getPreviousCost());
+                newPlan = pattern.buildNewPlan(result, context.getPreviousCost());
                 break;
             }
         }
@@ -160,7 +167,7 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
 
     //region Private Methods
     private static Plan extractNewPlanStep(Plan plan) {
-        List<PlanOpBase> planOps = new ArrayList<>();
+        List<PlanOp> planOps = new ArrayList<>();
         int entityCounter = 0;
         for (int i = plan.getOps().size() - 1 ; i >= 0 && entityCounter < 2; i--) {
             if (EntityOp.class.isAssignableFrom(plan.getOps().get(i).getClass())) {
@@ -173,50 +180,11 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
             return new Plan(planOps);
         }
 
-        return Plan.empty();
-    }
-    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(
-            PatternCostEstimator.Result<Plan, CountEstimatesCost> result,
-            Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
-
-        DoubleCost previousPlanGlobalCost;
-        List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts;
-        if (previousCost.isPresent()) {
-            previousPlanGlobalCost = previousCost.get().getCost().getGlobalCost();
-            previousPlanStepCosts = Stream.ofAll(previousCost.get().getCost().getPlanStepCosts())
-                    .map(planStepCost -> new PlanWithCost<>(
-                            planStepCost.getPlan(),
-                            new CountEstimatesCost(planStepCost.getCost().getCost(), planStepCost.getCost().getCountEstimates())))
-                    .toJavaList();
-        } else {
-            previousPlanGlobalCost = new DoubleCost(0);
-            previousPlanStepCosts = new ArrayList<>();
-        }
-
-        double lambda = result.lambda();
-        previousPlanStepCosts.forEach(planStepCost -> {
-            if(planStepCost.getPlan().getOps().get(0).getClass().equals(EntityOp.class)) {
-                planStepCost.getCost().push(planStepCost.getCost().peek() * lambda);
-            }
-        });
-
-        List<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts =
-                Stream.ofAll(result.getPlanStepCosts())
-                .filter(planStepCost -> !previousCost.isPresent() ||
-                        !PlanUtil.first(previousCost.get().getPlan(), planStepCost.getPlan().getOps().get(0)).isPresent())
-                .toJavaList();
-
-        double sumOfPlanStepCosts = Stream.ofAll(planStepCosts).map(planStepCost -> planStepCost.getCost().getCost()).sum().doubleValue();
-        double newCost = previousPlanGlobalCost.getCost() + sumOfPlanStepCosts;
-        List<PlanWithCost<Plan, CountEstimatesCost>> newPlanStepCosts = Stream.ofAll(previousPlanStepCosts).appendAll(planStepCosts).toJavaList();
-
-        Plan newPlan = new Plan(Stream.ofAll(newPlanStepCosts).flatMap(planStepCost -> Stream.ofAll(planStepCost.getPlan().getOps())).toJavaList());
-        PlanDetailedCost newDetailedCost = new PlanDetailedCost(new DoubleCost(newCost), newPlanStepCosts);
-        return new PlanWithCost<>(newPlan, newDetailedCost);
+        return new Plan();
     }
 
-    private Map<PatternPart, PlanOpBase> getStepPatternParts(Plan step, Map<String, Integer> groups, Matcher matcher) {
-        Map<PatternPart, PlanOpBase> map = new HashMap<>();
+    private Map<PatternPart, PlanOp> getStepPatternParts(Plan step, Map<String, Integer> groups, Matcher matcher) {
+        Map<PatternPart, PlanOp> map = new HashMap<>();
         TreeSet<Map.Entry<String, Integer>> entries = new TreeSet<>(Comparator.comparingInt(Map.Entry::getValue));
         entries.addAll(groups.entrySet());
         int stepIndex = 0;
@@ -230,6 +198,10 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
         return map;
     }
     //endregion
+
+    public PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> getEstimator() {
+        return estimator;
+    }
 
     //region Fields
     private PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator;

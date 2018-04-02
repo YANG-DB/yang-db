@@ -1,6 +1,7 @@
 package com.kayhut.fuse.stat;
 
 import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
+import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.configuration.Field;
 import com.kayhut.fuse.stat.model.configuration.Mapping;
@@ -11,6 +12,7 @@ import com.kayhut.fuse.stat.model.histogram.*;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatTestUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
+import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -49,14 +51,14 @@ public class StatCalculatorTest {
     private static final String DATA_INDEX_NAME_3 = "index3";
     private static final String DATA_INDEX_NAME_4 = "index4";
 
-    private static final String DATA_TYPE_DRAGON = "dragon";
+    private static final String DATA_TYPE_DRAGON = "Dragon";
     private static final String DATA_TYPE_FIRE = "fire";
 
     private static final String DATA_FIELD_NAME_AGE = "age";
     private static final String DATA_FIELD_NAME_ADDRESS = "address";
     private static final String DATA_FIELD_NAME_COLOR = "color";
     private static final String DATA_FIELD_NAME_GENDER = "gender";
-    private static final String DATA_FIELD_NAME_TYPE = "_type";
+    private static final String DATA_FIELD_NAME_TYPE = "type";
 
     private static final int DRAGON_MIN_AGE = 0;
     private static final int DRAGON_MAX_AGE = 100;
@@ -78,7 +80,8 @@ public class StatCalculatorTest {
     //Full - blown test using Statistics configuration File
     @Test
     public void statCalculatorTest() throws Exception {
-        StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
+        StatCalculator.run(dataClient, statClient, new StatConfiguration(CONFIGURATION_FILE_PATH).getInstance());
+        statClient.admin().indices().refresh(new RefreshRequest(STAT_INDEX_NAME)).actionGet();
 
         //Check if Stat index created
         assertTrue(EsUtil.isIndexExists(statClient, STAT_INDEX_NAME));
@@ -86,8 +89,6 @@ public class StatCalculatorTest {
         assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME));
         assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME));
         assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME));
-
-        statClient.admin().indices().refresh(new RefreshRequest(STAT_INDEX_NAME)).actionGet();
 
 
         //Check if age stat numeric bucket exists (bucket #1: 10.0-19.0)
@@ -99,7 +100,7 @@ public class StatCalculatorTest {
         assertTrue(EsUtil.isDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId2));
 
         //Check if color bucket exists (bucket with lower_bound: "grc", upper_bound: "grl")
-        String docId3 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_COLOR + "grc" + "grl");
+        String docId3 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_COLOR + "gqg" + "grq");
         assertTrue(EsUtil.isDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId3));
 
         //Check that the bucket ["grc", "grl") have the cardinality of 1 (i.e. Green Color)
@@ -122,7 +123,7 @@ public class StatCalculatorTest {
 
         //Check that there are 1000 dragons in Index: "index1", Type: "dragon"
         //Cardinality should be 1
-        String docId6 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_TYPE + "dragon");
+        String docId6 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_TYPE + "Dragon");
         Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentSourceById(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME, docId6);
         assertTrue(doc6Result.isPresent());
         assertEquals(1, (int) doc6Result.get().get("cardinality"));
@@ -132,16 +133,10 @@ public class StatCalculatorTest {
     @Test
     public void globalCardinalityTest() throws Exception {
         //Check to see if the mapping for Stat results for global was created
-        assertTrue(EsUtil.isMappingExistsInIndex(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME));
-        StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
-        for (String type : EsUtil.getAllTypesFromIndex(statClient, STAT_INDEX_NAME)) {
-            System.out.println(type);
-        }
-        for (ObjectObjectCursor<String, MappingMetaData> mapping : EsUtil.getMappingsOfIndex(statClient, STAT_INDEX_NAME)) {
-            System.out.println(mapping.key + ": \n" + mapping.value.getSourceAsMap() + "\n");
-        }
+        StatCalculator.run(dataClient, statClient, new StatConfiguration(CONFIGURATION_FILE_PATH).getInstance());
+        statClient.admin().indices().refresh(new RefreshRequest(STAT_INDEX_NAME)).actionGet();
+
         StatTestUtil.printAllDocs(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME);
-        SearchResponse firstNDocumentsInType = EsUtil.getFirstNDocumentsInType(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME, 1);
     }
 
     @Test
@@ -152,14 +147,6 @@ public class StatCalculatorTest {
         } catch (Exception expected) {
             // we should have reach here
         }
-    }
-
-    @Test
-    public void statAlphabetBucketsTest() throws Exception{
-        List<BucketRange<String>> bucketRanges = StatUtil.calculateAlphabeticBuckets(65, 56, 2, 10);
-//        bucketRanges.forEach(bucket -> {
-//            System.out.println(bucket.getStart() + "," + bucket.getEnd());
-//        });
     }
 
     @Test
@@ -180,30 +167,6 @@ public class StatCalculatorTest {
         assertTrue(EsUtil.isTypeExists(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_FIRE));
         assertTrue(EsUtil.isTypeExists(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_FIRE));
 
-        //Check on types
-        assertEquals(1, EsUtil.getAllTypesFromIndex(dataClient, DATA_INDEX_NAME_1).length);
-        assertEquals(1, EsUtil.getAllTypesFromIndex(dataClient, DATA_INDEX_NAME_2).length);
-        assertEquals(1, EsUtil.getAllTypesFromIndex(dataClient, DATA_INDEX_NAME_3).length);
-        assertEquals(1, EsUtil.getAllTypesFromIndex(dataClient, DATA_INDEX_NAME_4).length);
-
-        //Check on mappings
-        assertEquals(1, EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_1).size());
-        assertEquals(1, EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_2).size());
-
-        assertEquals(1, EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_3).size());
-        assertEquals(1, EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_4).size());
-
-        assertNotNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_1).get(DATA_TYPE_DRAGON).getSourceAsMap());
-        assertNotNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_2).get(DATA_TYPE_DRAGON).getSourceAsMap());
-        assertNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_3).get(DATA_TYPE_DRAGON));
-        assertNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_4).get(DATA_TYPE_DRAGON));
-
-        assertNotNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_3).get(DATA_TYPE_FIRE).getSourceAsMap());
-        assertNotNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_4).get(DATA_TYPE_FIRE).getSourceAsMap());
-        assertNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_1).get(DATA_TYPE_FIRE));
-        assertNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_2).get(DATA_TYPE_FIRE));
-
-
         //Check that we have documents and they are in the right place
         assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_DRAGON, 10).getHits().getTotalHits() > 0);
         assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_DRAGON, 10).getHits().getTotalHits() > 0);
@@ -219,10 +182,11 @@ public class StatCalculatorTest {
 
     @BeforeClass
     public static void setup() throws Exception {
+        new MappingFileElasticConfigurer(DATA_INDEX_NAME_1, MAPPING_DATA_FILE_DRAGON_PATH).configure(dataClient);
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_1,
-                DATA_TYPE_DRAGON,
+                "pge",
                 "id",
                 () -> StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX_1,
                         DRAGON_MIN_AGE,
@@ -232,10 +196,11 @@ public class StatCalculatorTest {
                         DRAGON_GENDERS,
                         DRAGON_ADDRESS_LENGTH)).populate();
 
+        new MappingFileElasticConfigurer(DATA_INDEX_NAME_2, MAPPING_DATA_FILE_DRAGON_PATH).configure(dataClient);
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_2,
-                DATA_TYPE_DRAGON,
+                "pge",
                 "id",
                 () -> StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX_2,
                         DRAGON_MIN_AGE,
@@ -245,11 +210,11 @@ public class StatCalculatorTest {
                         DRAGON_GENDERS,
                         DRAGON_ADDRESS_LENGTH)).populate();
 
-
+        new MappingFileElasticConfigurer(DATA_INDEX_NAME_3, MAPPING_DATA_FILE_FIRE_PATH).configure(dataClient);
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_3,
-                DATA_TYPE_FIRE,
+                "pge",
                 "id",
                 () -> StatTestUtil.createDragonFireDragonEdges(
                         NUM_OF_DRAGONS_IN_INDEX_3,
@@ -259,10 +224,11 @@ public class StatCalculatorTest {
                         DRAGON_MAX_TEMP
                 )).populate();
 
+        new MappingFileElasticConfigurer(DATA_INDEX_NAME_4, MAPPING_DATA_FILE_FIRE_PATH).configure(dataClient);
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_4,
-                DATA_TYPE_FIRE,
+                "pge",
                 "id",
                 () -> StatTestUtil.createDragonFireDragonEdges(
                         NUM_OF_DRAGONS_IN_INDEX_4,
@@ -271,6 +237,10 @@ public class StatCalculatorTest {
                         DRAGON_MIN_TEMP,
                         DRAGON_MAX_TEMP
                 )).populate();
+
+        if (statClient != null) {
+            new MappingFileElasticConfigurer(STAT_INDEX_NAME, MAPPING_STAT_FILE_PATH).configure(statClient);
+        }
 
         dataClient.admin().indices().refresh(new RefreshRequest(
                 DATA_INDEX_NAME_1, DATA_INDEX_NAME_2, DATA_INDEX_NAME_3, DATA_INDEX_NAME_4))
@@ -292,73 +262,4 @@ public class StatCalculatorTest {
             )).actionGet();
         }
     }
-
-    private StatContainer buildStatContainer() {
-        HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.get()
-                .withMin(10)
-                .withMax(100)
-                .withNumOfBins(10)
-                .build();
-
-        HistogramString histogramDragonName = HistogramString.Builder.get()
-                .withPrefixSize(3)
-                .withInterval(10)
-                .withNumOfChars(26)
-                .withFirstCharCode("97")
-                .build();
-
-        HistogramManual histogramDragonAddress = HistogramManual.Builder.get()
-                .withBuckets(Arrays.asList(
-                        new BucketRange("abc", "dzz"),
-                        new BucketRange("efg", "hij"),
-                        new BucketRange("klm", "xyz")
-                )).withDataType(DataType.string)
-                .build();
-
-        HistogramComposite histogramDragonColor = HistogramComposite.Builder.get()
-                .withBucket(new BucketRange("00", "11"))
-                .withBucket(new BucketRange("22", "33"))
-                .withBucket(new BucketRange("44", "55"))
-                .withDataType(DataType.string)
-                .withAutoBuckets(HistogramString.Builder.get()
-                        .withFirstCharCode("97")
-                        .withInterval(10)
-                        .withNumOfChars(26)
-                        .withPrefixSize(3).build())
-                .build();
-
-        HistogramTerm histogramTerm = HistogramTerm.Builder.get()
-                .withDataType(DataType.string)
-                .withTerm("male")
-                .withTerm("female")
-                .build();
-
-        HistogramTerm histogramDocType = HistogramTerm.Builder.get()
-                .withDataType(DataType.string)
-                .withTerm(DATA_TYPE_DRAGON)
-                .build();
-
-
-        Type typeDragon = Type.Builder.instance()
-                .withType(DATA_TYPE_DRAGON)
-                .withField(new Field("age", histogramDragonAge))
-                .withField(new Field("name", histogramDragonName))
-                .withField(new Field("address", histogramDragonAddress))
-                .withField(new Field("color", histogramDragonColor))
-                .withField(new Field("gender", histogramTerm))
-                .withField(new Field("_type", histogramDocType))
-                .build();
-
-        Mapping mapping = Mapping.Builder.get()
-                .withIndex(DATA_INDEX_NAME_1)
-                .withIndex(DATA_INDEX_NAME_2)
-                .withType(DATA_TYPE_DRAGON).build();
-
-        return StatContainer.Builder.get()
-                .withMapping(mapping)
-                .withType(typeDragon)
-                .build();
-    }
-
-
 }

@@ -1,12 +1,17 @@
 package com.kayhut.fuse.epb.plan.validation;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.epb.plan.PlanValidator;
+import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -16,13 +21,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
-import java.util.logging.Level;
 
-import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
+import static com.kayhut.fuse.epb.utils.PlanMockUtils.PlanMockBuilder.mock;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.ConstraintOp.*;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.RelProp.of;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
@@ -33,25 +37,25 @@ import static com.kayhut.fuse.model.query.quant.QuantType.all;
 public class M1PlanValidatorTests {
     public static AsgQuery simpleQuery1(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .next(typed(1, OntologyTestUtils.PERSON.type,"A"))
-                .next(rel(2,OWN.getrType(),R))
-                .next(typed(3, OntologyTestUtils.DRAGON.type,"B")).build();
+                .next(typed(1, OntologyTestUtils.PERSON.type, "A").next(eProp(101)))
+                .next(rel(2, OWN.getrType(), R))
+                .next(typed(3, OntologyTestUtils.DRAGON.type, "B")).build();
     }
 
     public static AsgQuery simpleQuery2(String queryName, String ontologyName) {
         long time = System.currentTimeMillis();
         return AsgQuery.Builder.start(queryName, ontologyName)
                 .next(typed(1, OntologyTestUtils.PERSON.type))
-                .next(rel(2, OWN.getrType(), R).below(relProp(10, of(START_DATE.type, 10, Constraint.of(eq, new Date())))))
+                .next(rel(2, OWN.getrType(), R).below(relProp(10, of(10, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of(NAME.type, 9, Constraint.of(eq, "smith")), EProp.of(GENDER.type, 9, Constraint.of(gt, MALE)))
+                .in(eProp(9, EProp.of(9, NAME.type, Constraint.of(eq, "smith")), EProp.of(9, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R)
                                 .next(unTyped(6))
                         , rel(7, FIRE.getrType(), R)
-                                .below(relProp(11, of(START_DATE.type, 11,
+                                .below(relProp(11, of(11, START_DATE.type,
                                         Constraint.of(ge, new Date(time - 1000 * 60))),
-                                        of(END_DATE.type, 11, Constraint.of(le, new Date(time + 1000 * 60)))))
+                                        of(11, END_DATE.type, Constraint.of(le, new Date(time + 1000 * 60)))))
                                 .next(concrete(8, "smoge", DRAGON.type, "Display:smoge", "D"))
                 )
                 .build();
@@ -59,30 +63,11 @@ public class M1PlanValidatorTests {
 
     //region Valid Plan Tests
     @Test
-    public void testValidPlan_entity1() {
-        AsgQuery asgQuery = simpleQuery1("name", "ont");
-        Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
-        );
-
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
-    }
-
-    @Test
-    public void testValidPlan_entity3() {
-        AsgQuery asgQuery = simpleQuery1("name", "ont");
-        Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
-        );
-
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
-    }
-
-    @Test
     public void testValidPlan_entity1_rel2() {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>element(asgQuery, 101).get()),
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
@@ -174,7 +159,6 @@ public class M1PlanValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
@@ -191,7 +175,6 @@ public class M1PlanValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
@@ -207,7 +190,6 @@ public class M1PlanValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get())
         );
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
 
@@ -226,7 +208,6 @@ public class M1PlanValidatorTests {
         );
 
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
 
@@ -354,15 +335,14 @@ public class M1PlanValidatorTests {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
         Plan plan = mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).plan();
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
+
     @Test
     public void testValidPlanEntityOp_3_EntityFilterOp_9_RelationOp_7_RelationFilterOp_11_EntityOp_8_GoToEntityOp_3_RelationOp_5_EntityOp_6_GoToEntityOp_3_RelationOp_2_RelationFilterOp_10_EntityOp_1() {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
-        Plan plan = mock(asgQuery).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).goTo(3).rel(2,Rel.Direction.L).relFilter(10).entity(1).plan();
+        Plan plan = mock(asgQuery).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).goTo(3).rel(2, Rel.Direction.L).relFilter(10).entity(1).plan();
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
 
@@ -399,6 +379,16 @@ public class M1PlanValidatorTests {
     //endregion
 
     //region Invalid Plan Tests
+    @Test
+    public void testIValidPlan_entity3_NotAdjacen() {
+        AsgQuery asgQuery = simpleQuery1("name", "ont");
+        Plan plan = new Plan(
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>element(asgQuery, 101).get()));
+
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
+    }
+
     @Test
     public void testInvalidPlan_entity1_entity3() {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
@@ -628,7 +618,7 @@ public class M1PlanValidatorTests {
     //endregion
 
     //region Private Methods
-    private AsgEBase<Rel> reverseRelation(AsgEBase<Rel> relAsgEBase) {
+    protected AsgEBase<Rel> reverseRelation(AsgEBase<Rel> relAsgEBase) {
         Rel reversedRel = new Rel();
         reversedRel.seteNum(relAsgEBase.geteNum());
         reversedRel.setrType(relAsgEBase.geteBase().getrType());
@@ -639,6 +629,6 @@ public class M1PlanValidatorTests {
     //endregion
 
     //region Fields
-    private PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
+    protected PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
     //endregion
 }

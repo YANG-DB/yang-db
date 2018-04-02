@@ -1,28 +1,48 @@
 package com.kayhut.fuse.services;
 
 import com.cedarsoftware.util.io.JsonWriter;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.TypeLiteral;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.*;
+import com.kayhut.fuse.model.transport.ContentResponse.Builder;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.services.controllers.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 import javaslang.Tuple2;
 import org.jooby.*;
 import org.jooby.caffeine.CaffeineCache;
+import org.jooby.handlers.CorsHandler;
 import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
 import org.jooby.scanner.Scanner;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.UUID.randomUUID;
+import static org.jooby.Status.NOT_FOUND;
+import static org.jooby.Status.OK;
 
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -56,7 +76,9 @@ public class FuseApp extends Jooby {
         //log all requests
         use("*", new RequestLogger().extended());
         //metrics statistics
-        use(new Metrics()
+        MetricRegistry metricRegistry = new MetricRegistry();
+        bind(metricRegistry);
+        use(new Metrics(metricRegistry)
                 .request()
                 .threadDump()
                 .ping()
@@ -70,23 +92,23 @@ public class FuseApp extends Jooby {
         use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {
         }));
         get("/", () -> HOME);
+        //'Access-Control-Allow-Origin' header
+        use("*", new CorsHandler());
+        //expose html assets
+        assets("public/assets/**");
+
 
         registerCors(localUrlSupplier);
         registerFuseApiDescription(localUrlSupplier);
         registerHealthApi(localUrlSupplier);
+        registerDataLoaderApi(localUrlSupplier);
         registerCatalogApi(localUrlSupplier);
         registerQueryApi(localUrlSupplier);
         registerCursorApi(localUrlSupplier);
         registerPageApi(localUrlSupplier);
         registerSearchApi(localUrlSupplier);
-
-        get("fuse/detailedPlan/Q1", () ->
-        {
-            String dummy = String.valueOf(System.currentTimeMillis());
-            String json = "{\"name\":\"" + dummy.substring(dummy.length() - 5) + "\",\"desc\":\"[EntityOp(Asg(ETyped(1)))]\",\"children\":[{\"name\":\"1\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3)))]\",\"children\":[{\"name\":\"3\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3))):RelationOp(Asg(Rel(3))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"blah\"}],\"invalidReason\":\"\"},{\"name\":\"2\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"children\":[{\"name\":\"4\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"sasaa\"}],\"invalidReason\":\"not valid because blah\"}],\"invalidReason\":\"\"}";
-            return Results.with(json, 200)
-                    .type("application/json");
-        });
+        registerInternals(localUrlSupplier);
+        registerIdGenerator(localUrlSupplier);
     }
     //endregion
 
@@ -117,12 +139,24 @@ public class FuseApp extends Jooby {
         return require(CatalogController.class);
     }
 
+    private DataLoaderController dataLoaderCtrl() {
+        return require(DataLoaderController.class);
+    }
+
+    private InternalsController internalsController() {
+        return require(InternalsController.class);
+    }
+
     private SearchController searchCtrl() {
         return require(SearchController.class);
     }
 
     private PageController pageCtrl() {
         return require(PageController.class);
+    }
+
+    private IdGeneratorController idGeneratorCtrl() {
+        return require(new TypeLiteral<IdGeneratorController<Object>>(){});
     }
     //endregion
 
@@ -152,12 +186,57 @@ public class FuseApp extends Jooby {
                 .get(() -> "Alive And Well...");
     }
 
+    private void registerInternals(AppUrlSupplier localUrlSupplier) {
+        /** get the health status of the service */
+        use("/fuse/internal/statisticsProvider/name")
+                .get(req -> Results.with(internalsController().getStatisticsProviderName()));
+        use("/fuse/internal/statisticsProvider/setup")
+                .get(req -> Results.with(internalsController().getStatisticsProviderSetup()));
+        use("/fuse/internal/statisticsProvider/refresh")
+                .put(req -> Results.with(internalsController().refreshStatisticsProviderSetup()));
+    }
+
+    private void registerIdGenerator(AppUrlSupplier localUrlSupplier) {
+        use("/fuse/idgen/:id").get(req -> idGeneratorCtrl().getNext(req.param("id").value(), req.param("numIds").intValue()));
+    }
+
+    private void registerDataLoaderApi(AppUrlSupplier localUrlSupplier) {
+        /** get the health status of the service */
+        use("/fuse/catalog/ontology/:id/init")
+                .get(req -> Results.with(dataLoaderCtrl().init(req.param("id").value())));
+
+        use("/fuse/catalog/ontology/:id/load")
+                .get(req -> Results.with(dataLoaderCtrl().load(req.param("id").value())));
+
+        use("/fuse/catalog/ontology/:id/drop")
+                .get(req -> Results.with(dataLoaderCtrl().drop(req.param("id").value())));
+    }
+
     private void registerCatalogApi(AppUrlSupplier localUrlSupplier) {
+        /** get available ontologies*/
+        use("/fuse/catalog/ontology")
+                .get(req -> {
+                    List<ContentResponse<Ontology>> responses = catalogCtrl().getOntologies();
+                    return Results.with(responses, !responses.isEmpty() ? responses.get(0).status() : Status.NO_CONTENT);
+                });
+
         /** get the ontology by id */
         use("/fuse/catalog/ontology/:id")
-                /** check health */
                 .get(req -> {
-                    ContentResponse response = catalogCtrl().get(req.param("id").value());
+                    ContentResponse response = catalogCtrl().getOntology(req.param("id").value());
+                    return Results.with(response, response.status());
+                });
+
+        /** get available schemas **/
+        use("/fuse/catalog/schema")
+                .get(req -> {
+                    List<ContentResponse> responses = catalogCtrl().getSchemas();
+                    return Results.with(responses, !responses.isEmpty() ? responses.get(0).status() : Status.NO_CONTENT);
+                });
+
+        use("/fuse/catalog/schema/:id")
+                .get(req -> {
+                    ContentResponse response = catalogCtrl().getSchema(req.param("id").value());
                     return Results.with(response, response.status());
                 });
     }
@@ -170,10 +249,10 @@ public class FuseApp extends Jooby {
         /** create a query */
         use(localUrlSupplier.queryStoreUrl())
                 .post(req -> {
-                    ContentResponse<QueryResourceInfo> response =
-                            req.param("fetch").isSet() && req.param("fetch").booleanValue() ?
-                                    queryCtrl().createAndFetch(req.body(CreateQueryAndFetchRequest.class)) :
-                                    queryCtrl().create(req.body(CreateQueryRequest.class));
+                    CreateQueryRequest createQueryRequest = req.body(CreateQueryRequest.class);
+                    req.set(CreateQueryRequest.class, createQueryRequest);
+                    req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
+                    ContentResponse<QueryResourceInfo> response = queryCtrl().create(createQueryRequest);
 
                     return Results.with(response, response.status());
                 });
@@ -192,7 +271,7 @@ public class FuseApp extends Jooby {
                     return Results.with(response, response.status());
                 });
 
-        /** get the query execution plan */
+        /** get the query verbose plan */
         use(localUrlSupplier.resourceUrl(":queryId") + "/planVerbose")
                 .get(req -> {
                     ContentResponse response = queryCtrl().planVerbose(req.param("queryId").value());
@@ -200,8 +279,53 @@ public class FuseApp extends Jooby {
                     return Results.with(new ObjectMapper().writeValueAsString(response.getData()), response.status())
                             .type("application/json");
                 });
+        /** get the print of the execution plan */
+        use(localUrlSupplier.resourceUrl(":queryId") + "/plan/print")
+                .get(req -> {
+                    ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = queryCtrl().explain(req.param("queryId").value());
+                    String print = PlanWithCostDescriptor.print(response.getData());
+                    ContentResponse<String> compose = Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                            .data(Optional.of(print))
+                            .compose();
+                    return Results.with(JsonWriter.objectToJson(compose), response.status());
+                });
 
-        /** get the query plan verbose */
+        /** get the query v1*/
+        use(localUrlSupplier.resourceUrl(":queryId") + "/v1")
+                .get(req -> {
+                    ContentResponse response = queryCtrl().getV1(req.param("queryId").value());
+                    return Results.with(JsonWriter.objectToJson(response), response.status());
+                });
+        /** get the query v1 print*/
+        use(localUrlSupplier.resourceUrl(":queryId") + "/v1/print")
+                .get(req -> {
+                    ContentResponse<Query> response = queryCtrl().getV1(req.param("queryId").value());
+                    String print = QueryDescriptor.print(response.getData());
+                    ContentResponse<String> compose = Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                            .data(Optional.of(print))
+                            .compose();
+                    return Results.with(JsonWriter.objectToJson(compose), response.status());
+                });
+
+        /** get the asg query */
+        use(localUrlSupplier.resourceUrl(":queryId") + "/asg")
+                .get(req -> {
+                    ContentResponse<AsgQuery> response = queryCtrl().getAsg(req.param("queryId").value());
+                    return Results.with(JsonWriter.objectToJson(response), response.status());
+                });
+
+        /** get the asg query print*/
+        use(localUrlSupplier.resourceUrl(":queryId") + "/asg/print")
+                .get(req -> {
+                    ContentResponse<AsgQuery> response = queryCtrl().getAsg(req.param("queryId").value());
+                    String print = AsgQueryDescriptor.print(response.getData());
+                    ContentResponse<String> compose = Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                            .data(Optional.of(print))
+                            .compose();
+                    return Results.with(JsonWriter.objectToJson(compose), response.status());
+                });
+
+        /** get the query plan execution */
         use(localUrlSupplier.resourceUrl(":queryId") + "/plan")
                 .get(req -> {
                     ContentResponse response = queryCtrl().explain(req.param("queryId").value());

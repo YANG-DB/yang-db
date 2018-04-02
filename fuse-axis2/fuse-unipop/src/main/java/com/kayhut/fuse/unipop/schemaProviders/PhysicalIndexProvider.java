@@ -1,7 +1,6 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.*;
 
 
@@ -11,22 +10,22 @@ import com.kayhut.fuse.unipop.structure.*;
 public interface PhysicalIndexProvider {
     class Constant implements PhysicalIndexProvider {
         //region Constructors
-        public Constant(IndexPartition indexPartition) {
-            this.indexPartition = indexPartition;
+        public Constant(IndexPartitions indexPartitions) {
+            this.indexPartitions = indexPartitions;
         }
         //endregion
 
         //region PhysicalIndexProvider Implementation
         @Override
-        public IndexPartition getIndexPartitionByLabel(String label, ElementType elementType) {
-            return this.indexPartition;
+        public IndexPartitions getIndexPartitionsByLabel(String label, ElementType elementType) {
+            return this.indexPartitions;
         }
         //endregion
 
         //region Fields
-        private IndexPartition indexPartition;
+        private IndexPartitions indexPartitions;
         //endregion
     }
 
-    IndexPartition getIndexPartitionByLabel(String label, ElementType elementType);
+    IndexPartitions getIndexPartitionsByLabel(String label, ElementType elementType);
 }

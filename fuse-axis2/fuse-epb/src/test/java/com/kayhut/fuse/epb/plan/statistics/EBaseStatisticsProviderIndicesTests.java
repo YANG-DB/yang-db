@@ -3,14 +3,18 @@ package com.kayhut.fuse.epb.plan.statistics;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
-import com.kayhut.fuse.unipop.structure.ElementType;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
+import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,16 +33,6 @@ import static org.mockito.Mockito.when;
  * Created by moti on 08/05/2017.
  */
 public class EBaseStatisticsProviderIndicesTests {
-    GraphElementSchemaProvider graphElementSchemaProvider;
-    GraphStatisticsProvider graphStatisticsProvider;
-    Ontology.Accessor ont;
-    EBaseStatisticsProvider statisticsProvider;
-    PhysicalIndexProvider indexProvider;
-    private static String INDEX_PREFIX = "idx-";
-    private static String INDEX_FORMAT = "idx-%s";
-    private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
-    private long nowTime;
     @Before
     public void setUp() throws Exception {
         List<Statistics.BucketInfo<Date>> secondDateBuckets = new ArrayList<>();
@@ -60,50 +54,15 @@ public class EBaseStatisticsProviderIndicesTests {
         firstStringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "z"));
         secondStringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "a", "z"));
 
-        indexProvider = Mockito.mock(PhysicalIndexProvider.class);
-        List<String> indices = Arrays.asList(String.format(INDEX_FORMAT,DATE_FORMAT.format(new Date(nowTime - 60*60*1000))),
-                                             String.format(INDEX_FORMAT,DATE_FORMAT.format(new Date(nowTime))));
-
-        when(indexProvider.getIndexPartitionByLabel(any(), eq(ElementType.edge)))
-                .thenReturn(new TimeSeriesIndexPartition() {
-            @Override
-            public String getDateFormat() {
-                return DATE_FORMAT_STRING;
-            }
-
-            @Override
-            public String getIndexPrefix() {
-                return INDEX_PREFIX;
-            }
-
-            @Override
-            public String getIndexFormat() {
-                return INDEX_FORMAT;
-            }
-
-            @Override
-            public String getTimeField() {
-                return "startDate";
-            }
-
-            @Override
-            public String getIndexName(Date date) {
-                return String.format(INDEX_FORMAT, DATE_FORMAT.format(date));
-            }
-
-            @Override
-            public Iterable<String> getIndices() {
-                return indices;
-            }
-        });
-
-
         ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
         RelationshipType relation2 = ont.$relation$(OWN.getrType());
         relation2.addProperty("firstName");
 
-        graphElementSchemaProvider = new OntologySchemaProvider(ont.get(), indexProvider);
+        graphElementSchemaProvider = buildSchemaProvider(ont);
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
+
+        List<String> indices = Arrays.asList(String.format(INDEX_FORMAT,DATE_FORMAT.format(new Date(nowTime - 60*60*1000))),
+                String.format(INDEX_FORMAT,DATE_FORMAT.format(new Date(nowTime))));
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.SummaryStatistics(1L, 1L));
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.SummaryStatistics(1L, 1L));
@@ -140,13 +99,12 @@ public class EBaseStatisticsProviderIndicesTests {
             }
 
 
-            List<Statistics.BucketInfo<String>> buckets = Arrays.asList(bucket);
+            List<Statistics.BucketInfo<String>> buckets = Collections.singletonList(bucket);
             return new Statistics.HistogramStatistics<>(buckets);
         });
 
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(Long.class))).thenReturn(new Statistics.HistogramStatistics<>(longBuckets));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(secondDateBuckets));
-        //when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
     }
@@ -294,4 +252,88 @@ public class EBaseStatisticsProviderIndicesTests {
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50, nodeStatistics.getTotal(), 0.1);
     }
+
+    //region Private Methods
+    private GraphElementSchemaProvider buildSchemaProvider(Ontology.Accessor ont) {
+        List<String> indices = Arrays.asList(String.format(INDEX_FORMAT,DATE_FORMAT.format(new Date(nowTime - 60*60*1000))),
+                String.format(INDEX_FORMAT,DATE_FORMAT.format(new Date(nowTime))));
+
+        Iterable<GraphVertexSchema> vertexSchemas =
+                Stream.ofAll(ont.entities())
+                        .map(entity -> (GraphVertexSchema) new GraphVertexSchema.Impl(
+                                entity.geteType(),
+                                entity.geteType().equals(OntologyTestUtils.PERSON.name) ? new StaticIndexPartitions(Arrays.asList("Persons1","Persons2")) :
+                                        entity.geteType().equals(OntologyTestUtils.DRAGON.name) ? new StaticIndexPartitions(Arrays.asList("Dragons1","Dragons2")) :
+                                                new StaticIndexPartitions(Collections.singletonList("idx1"))))
+                        .toJavaList();
+
+        Iterable<GraphEdgeSchema> edgeSchemas =
+                Stream.ofAll(ont.relations())
+                        .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
+                                relation.getrType(),
+                                new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeA() + "IdA"),
+                                        Optional.of(relation.getePairs().get(0).geteTypeA()))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
+                                        Optional.of(relation.getePairs().get(0).geteTypeB()))),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.of(new TimeSeriesIndexPartitions() {
+                                    @Override
+                                    public Optional<String> getPartitionField() {
+                                        return Optional.of("startDate");
+                                    }
+
+                                    @Override
+                                    public Iterable<Partition> getPartitions() {
+                                        return Collections.singletonList(() -> indices);
+                                    }
+
+                                    @Override
+                                    public String getDateFormat() {
+                                        return DATE_FORMAT_STRING;
+                                    }
+
+                                    @Override
+                                    public String getIndexPrefix() {
+                                        return INDEX_PREFIX;
+                                    }
+
+                                    @Override
+                                    public String getIndexFormat() {
+                                        return INDEX_FORMAT;
+                                    }
+
+                                    @Override
+                                    public String getTimeField() {
+                                        return "startDate";
+                                    }
+
+                                    @Override
+                                    public String getIndexName(Date date) {
+                                        return String.format(INDEX_FORMAT, DATE_FORMAT.format(date));
+                                    }
+                                }),
+                                Collections.emptyList()))
+                        .toJavaList();
+
+        return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
+    }
+    //endregion
+
+    //region Fields
+    private GraphElementSchemaProvider graphElementSchemaProvider;
+    private GraphStatisticsProvider graphStatisticsProvider;
+    private Ontology.Accessor ont;
+    private EBaseStatisticsProvider statisticsProvider;
+
+    private static String INDEX_PREFIX = "idx-";
+    private static String INDEX_FORMAT = "idx-%s";
+    private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
+    private long nowTime;
+    //endregion
 }

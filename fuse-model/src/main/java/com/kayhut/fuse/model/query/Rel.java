@@ -4,13 +4,19 @@ package com.kayhut.fuse.model.query;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.Below;
 import com.kayhut.fuse.model.Next;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.query.entity.Typed;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by user on 16-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.rTyped{
+
     public enum Direction {
         R,
         L,
@@ -18,7 +24,8 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
     }
 
     //region Constructors
-    public Rel() {}
+    public Rel() {
+    }
 
     public Rel(int eNum, String rType, Direction dir, String wrapper, int next, int b) {
         super(eNum);
@@ -61,6 +68,11 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
 
     public void setNext(Integer next) {
         this.next = next;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return next > -1;
     }
 
     public Integer getB() {

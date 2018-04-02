@@ -1,4 +1,4 @@
-package com.kayhut.fuse.neo4j.executor;
+/*package com.kayhut.fuse.neo4j.executor;
 
 import com.google.common.collect.Lists;
 import com.kayhut.fuse.model.ontology.EntityType;
@@ -13,12 +13,12 @@ import javaslang.control.Option;
 import org.neo4j.driver.internal.InternalNode;
 import org.neo4j.driver.internal.InternalRelationship;
 
-import java.util.ArrayList;
+import java.util.ArrayList;*/
 
 /**
  * Created by liorp on 3/16/2017.
  */
-abstract class NeoGraphUtils {
+/*abstract class NeoGraphUtils {
 
     public static Entity entityFromNodeValue(String tag, InternalNode node, Ontology ont) {
 
@@ -75,4 +75,4 @@ abstract class NeoGraphUtils {
                 .withProperties(props).build();
     }
 
-}
+}*/

@@ -30,6 +30,20 @@ public class HistogramTests {
     }
 
     @Test
+    public void testFindExistingValueLowerBound(){
+        Optional<Statistics.BucketInfo<String>> aaaBucket = histogram.findBucketContaining("a");
+        Assert.assertTrue(aaaBucket.isPresent());
+        Assert.assertEquals(aaaBucket.get().getLowerBound(), "a");
+        Assert.assertEquals(aaaBucket.get().getHigherBound(), "b");
+    }
+
+    @Test
+    public void testFindNonExistingValueUpperBound(){
+        Optional<Statistics.BucketInfo<String>> aaaBucket = histogram.findBucketContaining("b");
+        Assert.assertFalse(aaaBucket.isPresent());
+    }
+
+    @Test
     public void testFindNonExistingValue(){
         Optional<Statistics.BucketInfo<String>> aaaBucket = histogram.findBucketContaining("ba");
         Assert.assertFalse(aaaBucket.isPresent());

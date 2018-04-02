@@ -53,9 +53,8 @@ public class Property {
 
     //region Override Methods
     @Override
-    public String toString()
-    {
-        return "Property [agg = "+agg+", value = "+value+", pType = "+pType+"]";
+    public String toString() {
+        return String.format("Property [pType = %s, value = %s]", this.pType, this.value);
     }
     //endregion
 

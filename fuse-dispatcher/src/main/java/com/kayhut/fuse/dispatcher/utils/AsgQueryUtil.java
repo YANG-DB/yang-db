@@ -1,13 +1,14 @@
 package com.kayhut.fuse.dispatcher.utils;
 
-import com.kayhut.fuse.model.descriptor.Descriptor;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.quant.Quant2;
 
 import javax.management.relation.Relation;
 import java.util.*;
@@ -62,7 +63,7 @@ public class AsgQueryUtil {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext, predicate, adjacentDfsPredicate.apply(asgEBase));
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> nextAdjacentAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> adjacentAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, adjacentDfsPredicate.apply(asgEBase));
     }
 
@@ -71,9 +72,28 @@ public class AsgQueryUtil {
                 notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> nextAdjacentAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
-        return nextAdjacentAncestor(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> adjacentAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
+        return adjacentAncestor(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
                 notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
+    }
+
+    /**
+     * A leaf is:
+     * a node that has no next element OR has no parents and next descendant is not a quant
+     * @param asgEBase
+     * @param <T>
+     * @return
+     */
+    public static <T extends EBase>  Optional<Boolean> isLeaf(AsgEBase<T> asgEBase) {
+        if(!EEntityBase.class.isAssignableFrom(asgEBase.geteBase().getClass()))
+            return Optional.empty();
+        return Optional.of(!asgEBase.hasNext() || (isFirst(asgEBase) && !nextDescendant(asgEBase, Quant2.class).isPresent()));
+    }
+
+    private static <T extends EBase> boolean isFirst(AsgEBase<T> asgEBase) {
+        return ((asgEBase.geteBase().getClass().equals(Start.class)) ||
+            asgEBase.getParents().isEmpty() ||
+            asgEBase.getParents().get(0).geteBase().getClass().equals(Start.class));
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> nextAdjacentDescendant(AsgEBase<T> asgEBase, Class<?> klass, int hopes) {
@@ -97,9 +117,19 @@ public class AsgQueryUtil {
         return elements(asgEBase, emptyIterableFunction, AsgEBase::getNext, elementPredicate, dfsPredicate, Collections.emptyList());
     }
 
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextDescendants(AsgEBase<T> asgEBase, Class<?> klass) {
+        return nextDescendants(asgEBase, classPredicateFunction.apply(klass), truePredicate);
+    }
+
     public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextAdjacentDescendants(AsgEBase<T> asgEBase, Predicate<AsgEBase> elementPredicate) {
         return nextDescendants(asgEBase, elementPredicate, adjacentDfsPredicate.apply(asgEBase));
     }
+
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextDescendantsSingleHop(AsgEBase<T> asgEBase, Class<?> klass) {
+        return nextDescendants(asgEBase, (asgEBase1 -> classPredicateFunction.apply(klass).test(asgEBase1) && asgEBase1 != asgEBase), (asgEBase1 -> asgEBase1 == asgEBase || !classPredicateFunction.apply(klass).test(asgEBase1)) );
+    }
+
+
 
     public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextAdjacentDescendants(AsgEBase<T> asgEBase, Class<?> klass) {
         return nextDescendants(asgEBase, classPredicateFunction.apply(klass), adjacentDfsPredicate.apply(asgEBase));
@@ -132,6 +162,10 @@ public class AsgQueryUtil {
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> descendantBDescendant(AsgEBase<T> asgEBase, int eNum){
         return descendantBDescendant(asgEBase, enumPredicateFunction.apply(eNum));
+    }
+
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> descendantBDescendants(AsgEBase<T> asgEBase, Predicate<AsgEBase> elementPredicate, Predicate<AsgEBase> dfsPredicate){
+        return elements(asgEBase, AsgEBase::getB, AsgEBase::getNext, elementPredicate, dfsPredicate, Collections.emptyList());
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestorBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate){
@@ -226,6 +260,18 @@ public class AsgQueryUtil {
         }
 
         return path;
+    }
+
+    public static <T extends EBase, S extends EBase,Z extends EBase> Optional<AsgEBase<Z>> findFirstInPath(AsgEBase<T> sourceAsgEBase, AsgEBase<S> destinationAsgEBase, Predicate<AsgEBase> predicate) {
+        List<AsgEBase<? extends EBase>> path = pathToNextDescendant(sourceAsgEBase, destinationAsgEBase.geteNum());
+        if (path.isEmpty()) {
+            path = pathToAncestor(sourceAsgEBase, destinationAsgEBase.geteNum());
+        }
+        Optional<AsgEBase<? extends EBase>> first = path.stream().filter(p -> predicate.test(p)).findFirst();
+        if(first.isPresent())
+            return Optional.of((AsgEBase<Z>) first.get());
+
+        return Optional.empty();
     }
 
     public static List<AsgEBase<? extends EBase>> path(AsgQuery query, int sourceEnum, int destinationEnum) {
@@ -343,8 +389,12 @@ public class AsgQueryUtil {
         return newValues;
     }
 
+    public static List<AsgEBase> elements(AsgQuery query) {
+        return elements(query.getStart(), AsgEBase::getB, AsgEBase::getNext, truePredicate, truePredicate, Collections.EMPTY_LIST);
+    }
+
     public static String pattern(AsgQuery query) {
-        List<AsgEBase> elements = elements(query.getStart(), AsgEBase::getB, AsgEBase::getNext, truePredicate, truePredicate, Collections.EMPTY_LIST);
+        List<AsgEBase> elements = elements(query) ;
         StringJoiner joiner = new StringJoiner(":","","");
         elements.forEach(e-> {
             if(e.geteBase() instanceof EEntityBase)
@@ -357,23 +407,6 @@ public class AsgQueryUtil {
                 joiner.add(RelPropGroup.class.getSimpleName());
             else
                 joiner.add(e.geteBase().getClass().getSimpleName());
-        });
-        return joiner.toString();
-    }
-    public static String patternValue(AsgQuery query) {
-        List<AsgEBase> elements = elements(query.getStart(), AsgEBase::getB, AsgEBase::getNext, truePredicate, truePredicate, Collections.EMPTY_LIST);
-        StringJoiner joiner = new StringJoiner(":","","");
-        elements.forEach(e-> {
-            if(e.geteBase() instanceof EEntityBase)
-                joiner.add(EEntityBase.class.getSimpleName() +"["+e.geteNum()+"]");
-            else if(e.geteBase() instanceof Rel)
-                joiner.add(Relation.class.getSimpleName()+"["+e.geteNum()+"]");
-            else if(e.geteBase() instanceof EPropGroup)
-                joiner.add(EPropGroup.class.getSimpleName()+"["+e.geteNum()+"]");
-            else if(e.geteBase() instanceof RelPropGroup)
-                joiner.add(RelPropGroup.class.getSimpleName()+"["+e.geteNum()+"]");
-            else
-                joiner.add(e.geteBase().getClass().getSimpleName()+"["+e.geteNum()+"]");
         });
         return joiner.toString();
     }
@@ -417,17 +450,4 @@ public class AsgQueryUtil {
 
     private static Function<AsgEBase, Predicate<AsgEBase>> adjacentDfsPredicate = (asgEBase -> (asgEBase1 -> asgEBase == asgEBase1));
     //endregion
-
-    public static class AsgQueryDescriptor implements Descriptor<AsgQuery> {
-
-        @Override
-        public String name(AsgQuery query) {
-            return query.getName();
-        }
-
-        @Override
-        public String describe(AsgQuery query) {
-            return patternValue(query);
-        }
-    }
 }

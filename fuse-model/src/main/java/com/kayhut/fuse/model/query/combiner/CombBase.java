@@ -18,6 +18,11 @@ public class CombBase extends EBase implements Next<Integer> {
         this.next = next;
     }
 
+    @Override
+    public boolean hasNext() {
+        return next > -1;
+    }
+
     //region Fields
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int next;

@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.transport;
 
 import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 /**
  * Created by Roman on 6/26/2017.
@@ -26,18 +27,18 @@ public class CreateQueryAndFetchRequest extends CreateQueryRequest{
         this.createPageRequest = createPageRequest;
     }
 
-    public CreateQueryAndFetchRequest(String id, String name, Query query, boolean verbose) {
-        super(id, name, query, verbose);
+    public CreateQueryAndFetchRequest(String id, String name, Query query, PlanTraceOptions planTraceOptions) {
+        super(id, name, query, planTraceOptions);
     }
 
     public CreateQueryAndFetchRequest(
             String id,
             String name,
             Query query,
-            boolean verbose,
+            PlanTraceOptions planTraceOptions,
             CreateCursorRequest createCursorRequest,
             CreatePageRequest createPageRequest) {
-        super(id, name, query, verbose);
+        super(id, name, query, planTraceOptions);
         this.createCursorRequest = createCursorRequest;
         this.createPageRequest = createPageRequest;
     }

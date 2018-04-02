@@ -46,6 +46,7 @@ public class OntologyTestUtils {
     public static final RelationshipType FIRE = new RelationshipType("fire", "fire", true).withProperty(START_DATE.type, END_DATE.type,TEMPERATURE.type,TIMESTAMP.type);
     public static final RelationshipType FREEZE = new RelationshipType("freeze", "freeze", true).withProperty(START_DATE.type, END_DATE.type,TEMPERATURE.type);
     public static final RelationshipType ORIGIN = new RelationshipType("origin", "origin", true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType ORIGINATED_IN = new RelationshipType("originatedIn", "originatedIn", true).withProperty(START_DATE.type, END_DATE.type);
     public static final RelationshipType SUBJECT = new RelationshipType("subject", "subject", true).withProperty(START_DATE.type, END_DATE.type);
     public static final RelationshipType REGISTERED = new RelationshipType("registered", "registered", true).withProperty(START_DATE.type, END_DATE.type);
 
@@ -258,7 +259,7 @@ public class OntologyTestUtils {
                 get().build(GENDER.type,GENDER.name,TYPE_GENDER),
                 get().build(BIRTH_DATE.type,BIRTH_DATE.name,DATE),
                 get().build(DEATH_DATE.type,DEATH_DATE.name,DATE),
-                get().build(HEIGHT.type,HEIGHT.name,INT,CM),
+                get().build(HEIGHT.type,HEIGHT.name,INT),
                 get().build(NAME.type,NAME.name,STRING),
                 get().build(START_DATE.type,START_DATE.name,DATE),
                 get().build(END_DATE.type,END_DATE.name,DATE),

@@ -1,6 +1,8 @@
 package com.kayhut.test.framework.index;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +15,13 @@ public class Mappings {
         public static class Property {
             public enum Type {
                 integer,
+                @JsonProperty("long")
+                long_,
+                @JsonProperty("double")
+                double_,
                 string,
+                text,
+                keyword,
                 date
             }
 

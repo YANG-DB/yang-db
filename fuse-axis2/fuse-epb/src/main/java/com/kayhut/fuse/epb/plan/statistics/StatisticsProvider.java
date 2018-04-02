@@ -42,7 +42,7 @@ public interface StatisticsProvider {
     Statistics.SummaryStatistics getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter);
 
 
-    //Statistics.SummaryStatistics getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup,Direction direction);
+    //Statistics.SummaryStatistics getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup,DirectionSchema direction);
 
 
     Statistics.SummaryStatistics getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup);

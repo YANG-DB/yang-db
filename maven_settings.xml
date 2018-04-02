@@ -1,32 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <settings xsi:schemaLocation='http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd'
           xmlns='http://maven.apache.org/SETTINGS/1.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+
+    <mirrors>
+        <mirror>
+            <id>public-proxy</id>
+            <name>Local proxy of public repo</name>
+            <url>http://ec2-52-210-247-209.eu-west-1.compute.amazonaws.com:8081/repository/maven-public/</url>
+            <mirrorOf>*</mirrorOf>
+        </mirror>
+    </mirrors>
+
     <profiles>
         <profile>
             <repositories>
                 <repository>
-                    <id>nexus-releases</id>
-                    <name>mxsnapshots</name>
-                    <url>https://nexuss.westeurope.cloudapp.azure.com:8443/repository/maven-releases/</url>
+                    <id>public-proxy</id>
+                    <name>mxsnapshots-proxy</name>
+                    <url>http://ec2-52-210-247-209.eu-west-1.compute.amazonaws.com:8081/repository/maven-public/</url>
                 </repository>
             </repositories>
-            <id>nexuss</id>
+            <id>public</id>
         </profile>
     </profiles>
     <activeProfiles>
-        <activeProfile>nexuss</activeProfile>
+        <activeProfile>public</activeProfile>
     </activeProfiles>
 
     <servers>
         <server>
-            <id>nexuss.westeurope.cloudapp.azure.com-snapshots</id>
-            <username>admin</username>
-            <password>admin123</password>
+            <id>public-proxy</id>
+            <username>fuse</username>
+            <password>Xw4cMS15Hw4k3y3B09BM</password>
         </server>
         <server>
-            <id>nexuss.westeurope.cloudapp.azure.com-releases</id>
-            <username>admin</username>
-            <password>admin123</password>
+            <id>nexus-releases</id>
+            <username>fuse</username>
+            <password>Xw4cMS15Hw4k3y3B09BM</password>
         </server>
     </servers>
 </settings>

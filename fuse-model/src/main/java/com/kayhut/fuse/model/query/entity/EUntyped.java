@@ -26,15 +26,7 @@ public class EUntyped extends EEntityBase {
     }
 
     public EUntyped(int eNum, String eTag, Iterable<String> vTypes, Iterable<String> nvTypes, int next, int b) {
-        this(eNum, eTag, vTypes, nvTypes, Collections.emptyList(), next, b);
-    }
-
-    public EUntyped(int eNum, String eTag, List<String> reportProps, int next, int b) {
-        this(eNum, eTag, Collections.emptyList(), Collections.emptyList(), reportProps, next, b);
-    }
-
-    public EUntyped(int eNum, String eTag, Iterable<String> vTypes, Iterable<String> nvTypes, List<String> reportProps, int next, int b) {
-        super(eNum, eTag, reportProps, next, b);
+        super(eNum, eTag, next, b);
         this.vTypes = Stream.ofAll(vTypes).toJavaList();
         this.nvTypes = Stream.ofAll(nvTypes).toJavaList();
     }

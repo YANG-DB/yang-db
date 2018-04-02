@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.query.entity.ETyped;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Property {
-
+    //region Constructors
     public Property() {
     }
 
@@ -18,7 +19,9 @@ public class Property {
         this.name = name;
         this.type = type;
     }
+    //endregion
 
+    //region Properties
     public String getpType() {
         return pType;
     }
@@ -42,35 +45,39 @@ public class Property {
     public void setType(String type) {
         this.type = type;
     }
+    //endregion
 
-    public List<String> getReport() {
-        return report;
-    }
-
-    public void setReport(List<String> report) {
-        this.report = report;
-    }
-
-    public String getUnits() {
-        return units;
-    }
-
-    public void setUnits(String units) {
-        this.units = units;
-    }
-
+    //region Override Methods
     @Override
     public String toString()
     {
-        return "Property [name = "+name+", report = "+report+", type = "+type+", pType = "+pType+"]";
+        return String.format("Property [pType = %s, name = %s, type = %s]", this.pType, this.name, this.type);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!super.equals(o)) return false;
+        Property other = (Property) o;
+
+        return this.pType.equals(other.pType) &&
+                this.name.equals(other.name) &&
+                this.type.equals(other.type);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + this.pType.hashCode();
+        result = 31 * result + this.name.hashCode();
+        result = 31 * result + this.type.hashCode();
+        return result;
+    }
+    //endregion
 
     //region Fields
     private String pType;
     private String name;
     private String type;
-    private List<String> report;
-    private String units;
     //endregion
 
     //region Builder
@@ -78,8 +85,6 @@ public class Property {
         private String pType;
         private String name;
         private String type;
-        private List<String> report;
-        private String units;
 
         private Builder() {
         }
@@ -103,26 +108,11 @@ public class Property {
             return this;
         }
 
-        public Builder withReport(List<String> report) {
-            this.report = report;
-            return this;
-        }
-
-        public Builder withUnits(String units) {
-            this.units = units;
-            return this;
-        }
-
-        public Property build(String pType,String name,String type) {
-            return build(pType,name,type,null);
-        }
-
-        public Property build(String pType,String name,String type,String units ) {
+        public Property build(String pType, String name, String type ) {
             Property property = new Property();
             property.setName(name);
             property.setType(type);
             property.setpType(pType);
-            property.setUnits(units);
             return property;
         }
 
@@ -130,13 +120,9 @@ public class Property {
             Property property = new Property();
             property.setName(name);
             property.setType(type);
-            property.setReport(report);
-            property.setUnits(units);
             property.pType = this.pType;
             return property;
         }
-
-
     }
     //endregion
 

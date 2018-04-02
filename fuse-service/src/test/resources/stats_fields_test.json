@@ -18,10 +18,26 @@
     },
     {
       "indices": [
+        "kingdom"
+      ],
+      "types": [
+        "Kingdom"
+      ]
+    },
+    {
+      "indices": [
         "fire20170511","fire20170512","fire20170513"
       ],
       "types": [
         "fire"
+      ]
+    },
+    {
+      "indices": [
+        "originated_in"
+      ],
+      "types": [
+        "originatedIn"
       ]
     }
   ],
@@ -48,7 +64,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -76,13 +92,41 @@
         }
       ,
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
             "buckets": [
               {
                 "term": "Person"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "Kingdom",
+      "fields": [
+        {
+          "field": "name",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 2,
+            "interval": 10,
+            "firstCharCode": "65",
+            "numOfChars": 58
+          }
+        }
+      ,
+        {
+          "field": "type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Kingdom"
               }
             ]
           }
@@ -149,6 +193,44 @@
           }
         },
         {
+          "field": "entityB.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
           "field": "entityB.type",
           "histogram": {
             "histogramType": "term",
@@ -161,13 +243,121 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
             "buckets": [
               {
                 "term": "fire"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "originatedIn",
+      "fields": [
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term":"Dragon"
+              },
+              {
+                "term": "Kingdom"
+              }
+            ]
+          }
+        },
+        {
+          "field": "type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "originatedIn"
               }
             ]
           }

@@ -5,7 +5,7 @@
     <groupId>org.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>0.1</version>
+    <version>0.2</version>
 
     <modules>
         <module>data-gen</module>
@@ -41,6 +41,12 @@
         <!-- jackson -->
         <jackson.version>2.8.1</jackson.version>
 
+        <!-- com.github.cnsvili.snowflake.version -->
+        <com.github.cnsvili.snowflake.version>1.0.1</com.github.cnsvili.snowflake.version>
+
+        <!-- jansi -->
+        <jansi.version>1.16</jansi.version>
+
         <!-- commons -->
         <commons-io.version>2.5</commons-io.version>
         <commons-configuration.version>1.10</commons-configuration.version>
@@ -53,20 +59,30 @@
         <google.guice.version>4.1.0</google.guice.version>
 
         <!-- caffeine -->
-        <caffeine.version>2.3.3</caffeine.version>
+        <caffeine.version>2.6.2</caffeine.version>
 
         <!-- elasticsearch -->
-        <elasticsearch.version>2.4.5</elasticsearch.version>
+        <elasticsearch.version>5.3.2</elasticsearch.version>
+        <elasticsearch.client.version>5.3.2</elasticsearch.client.version>
+
+        <!-- lucene -->
+        <lucene.version>6.4.2</lucene.version>
+
+        <!-- vividsolutions -->
+        <vividsolutions.version>1.13</vividsolutions.version>
 
         <!-- neo4j -->
         <neo4j.version>3.1.0</neo4j.version>
         <neo4j-java-driver.version>1.1.0</neo4j-java-driver.version>
 
         <!-- tinkerpop -->
-        <tinkerpop.version>3.2.4</tinkerpop.version>
+        <tinkerpop.version>3.2.5</tinkerpop.version>
 
         <!-- unipop -->
         <unipop.version>0.2</unipop.version>
+
+        <!-- com.eaio.uuid -->
+        <com.eaio.uuid.version>3.2</com.eaio.uuid.version>
 
         <!-- opencsv -->
         <opencsv.version>3.8</opencsv.version>
@@ -77,10 +93,15 @@
         <!--jooby plugin -->
         <jooby.version>1.1.3</jooby.version>
 
+        <!-- fastutil -->
+        <fastutil.version>8.1.1</fastutil.version>
+
         <!-- logging -->
         <slf4j.version>1.7.13</slf4j.version>
         <slf4j-api.version>1.7.21</slf4j-api.version>
         <logback.version>1.1.7</logback.version>
+        <log4j.version>2.7</log4j.version>
+        <logback-elasticsearch-appender.version>1.6</logback-elasticsearch-appender.version>
 
         <!-- metrics -->
         <metrics-core.version>3.1.2</metrics-core.version>
@@ -148,6 +169,11 @@
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
+                <artifactId>fuse-unipop-asg</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
                 <artifactId>fuse-service</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
@@ -190,6 +216,22 @@
                 <version>${jackson.version}</version>
             </dependency>
             <!-- jackson -->
+
+            <!-- snowflake ids -->
+            <dependency>
+                <groupId>com.github.cnsvili</groupId>
+                <artifactId>snowflake</artifactId>
+                <version>${com.github.cnsvili.snowflake.version}</version>
+            </dependency>
+            <!-- snowflake ids -->
+
+            <!-- jansi -->
+            <dependency>
+                <groupId>org.fusesource.jansi</groupId>
+                <artifactId>jansi</artifactId>
+                <version>${jansi.version}</version>
+            </dependency>
+            <!-- jansi -->
 
             <!-- commons -->
             <dependency>
@@ -279,7 +321,29 @@
                 <artifactId>elasticsearch</artifactId>
                 <version>${elasticsearch.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>transport</artifactId>
+                <version>${elasticsearch.client.version}</version>
+            </dependency>
             <!-- elasticsearch -->
+
+            <!-- lucene -->
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-core</artifactId>
+                <version>${lucene.version}</version>
+            </dependency>
+            <!-- lucene -->
+
+            <!-- needed for elasticsearch geo coordinates -->
+            <!-- vividsolutions -->
+            <dependency>
+                <groupId>com.vividsolutions</groupId>
+                <artifactId>jts</artifactId>
+                <version>${vividsolutions.version}</version>
+            </dependency>
+            <!-- vividsolutions -->
 
             <!-- neo4j -->
             <dependency>
@@ -326,6 +390,14 @@
             </dependency>
             <!-- unipop -->
 
+            <!-- com.eaio.uuid -->
+            <dependency>
+                <groupId>com.eaio.uuid</groupId>
+                <artifactId>uuid</artifactId>
+                <version>${com.eaio.uuid.version}</version>
+            </dependency>
+            <!-- com.eaio.uuid -->
+
             <!-- opencsv -->
             <dependency>
                 <groupId>com.opencsv</groupId>
@@ -341,6 +413,12 @@
                 <version>${javaslang.version}</version>
             </dependency>
             <!-- javaslang -->
+
+            <dependency>
+                <groupId>it.unimi.dsi</groupId>
+                <artifactId>fastutil</artifactId>
+                <version>${fastutil.version}</version>
+            </dependency>
 
             <!-- logging -->
             <dependency>
@@ -362,6 +440,21 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.internetitem</groupId>
+                <artifactId>logback-elasticsearch-appender</artifactId>
+                <version>${logback-elasticsearch-appender.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
             </dependency>
             <!-- logging -->
 

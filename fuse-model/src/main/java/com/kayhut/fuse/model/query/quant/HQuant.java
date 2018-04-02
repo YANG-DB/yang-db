@@ -10,6 +10,8 @@ import java.util.List;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class HQuant extends QuantBase {
+    private List<Integer> next;
+
     public List<Integer> getB() {
         return b;
     }
@@ -20,5 +22,20 @@ public class HQuant extends QuantBase {
 
     //region Fields
     private List<Integer> b;
-    //endregion
+
+    @Override
+    public List<Integer> getNext() {
+        return next;
+    }
+
+    @Override
+    public void setNext(List<Integer> next) {
+        this.next = next;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return !next.isEmpty();
+    }
+//endregion
 }

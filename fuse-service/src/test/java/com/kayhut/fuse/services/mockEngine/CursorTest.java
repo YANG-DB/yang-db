@@ -1,22 +1,14 @@
 package com.kayhut.fuse.services.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.util.Modules;
-import com.kayhut.fuse.dispatcher.cursor.Cursor;
-import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
-import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
-import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
-import com.kayhut.fuse.services.FuseApp;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
-import org.jooby.test.JoobyRule;
+import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -26,9 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class CursorTest {
     @Before
@@ -70,10 +60,9 @@ public class CursorTest {
                 .contentType("application/json;charset=UTF-8");
 
 
-        //create cuyrsor resource
+        //create cursor resource
         AtomicReference<String> cursorId = new AtomicReference<>();
-        CreateCursorRequest cursorRequest = new CreateCursorRequest();
-        cursorRequest.setCursorType(CreateCursorRequest.CursorType.graph);
+        CreateCursorRequest cursorRequest = new CreateGraphCursorRequest();
         given()
                 .contentType("application/json")
                 .with().port(8888)
@@ -86,7 +75,7 @@ public class CursorTest {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
                         cursorId.set(data.get("resourceId").toString());
-                        assertTrue(data.containsKey("cursorType"));
+                        assertTrue(data.containsKey("cursorRequest"));
                         assertTrue(data.containsKey("pageStoreUrl"));
                         return contentResponse.getData()!=null;
                     } catch (Exception e) {
@@ -108,9 +97,26 @@ public class CursorTest {
                     try {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
-                        assertTrue(data.containsKey("cursorType"));
+                        assertTrue(data.containsKey("cursorRequest"));
                         assertTrue(data.containsKey("pageStoreUrl"));
                         return contentResponse.getData()!=null;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(200)
+                .contentType("application/json;charset=UTF-8");
+        given()
+                .contentType("application/json")
+                .with().port(8888)
+                .get("/fuse/query/1/plan/print")
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        String data = FuseClient.unwrapDouble(o.toString());
+                        return data!=null;
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;
@@ -155,8 +161,7 @@ public class CursorTest {
 
         //create cuyrsor resource
         AtomicReference<String> cursorId = new AtomicReference<>();
-        CreateCursorRequest cursorRequest = new CreateCursorRequest();
-        cursorRequest.setCursorType(CreateCursorRequest.CursorType.graph);
+        CreateCursorRequest cursorRequest = new CreateGraphCursorRequest();
         given()
                 .contentType("application/json")
                 .with().port(8888)
@@ -169,7 +174,7 @@ public class CursorTest {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
                         cursorId.set(data.get("resourceId").toString());
-                        assertTrue(data.containsKey("cursorType"));
+                        assertTrue(data.containsKey("cursorRequest"));
                         assertTrue(data.containsKey("pageStoreUrl"));
                         return contentResponse.getData()!=null;
                     } catch (Exception e) {
@@ -191,7 +196,7 @@ public class CursorTest {
                     try {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
-                        assertTrue(data.containsKey("cursorType"));
+                        assertTrue(data.containsKey("cursorRequest"));
                         assertTrue(data.containsKey("pageStoreUrl"));
                         return contentResponse.getData()!=null;
                     } catch (Exception e) {

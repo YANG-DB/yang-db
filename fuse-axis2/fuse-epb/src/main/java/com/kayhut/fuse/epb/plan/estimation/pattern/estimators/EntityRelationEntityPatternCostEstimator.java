@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern.estimators;
 
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.EntityRelationEntityPattern;
 import com.kayhut.fuse.epb.plan.estimation.pattern.Pattern;
@@ -9,10 +9,15 @@ import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.DetailedCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import com.kayhut.fuse.model.query.properties.*;
 
@@ -46,8 +51,8 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
      * <p>
      * N2 = min(N2-1, N2-2)
      * <p>
-     * lambda = (R/R1)*(N2/N2-1)
-     * N1' = lambda*N1 (back propagate count estimate)
+     * countsUpdateFactors = (R/R1)*(N2/N2-1)
+     * N1' = countsUpdateFactors*N1 (back propagate count estimate)
      * ********************************************************
      * @param config
      * @param statisticsProvider
@@ -72,36 +77,36 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
         CountEstimatesCost entityOneCost = previousCost.getPlanStepCost(start).get().getCost();
 
         //edge estimate =>
-        Direction direction = Direction.of(rel.getAsgEBase().geteBase().getDir());
+        Direction direction = Direction.of(rel.getAsgEbase().geteBase().getDir());
         //(relation estimate based on E1 count and global selectivity) = N1 * GS
-        long selectivity = statisticsProvider.getGlobalSelectivity(rel.getAsgEBase().geteBase(),
-                relationFilter.getAsgEBase().geteBase(),
-                start.getAsgEBase().geteBase(), direction);
+        long selectivity = statisticsProvider.getGlobalSelectivity(rel.getAsgEbase().geteBase(),
+                relationFilter.getAsgEbase().geteBase(),
+                start.getAsgEbase().geteBase(), direction);
         double N1 = entityOneCost.peek();
         double R1 = N1 * selectivity;
         //(relation filter estimate) = statistical_estimate(Rel + filter + E1 pushdown)
-        double R2 = statisticsProvider.getEdgeFilterStatistics(relationFilter.getRel().geteBase(), relationFilter.getAsgEBase().geteBase()).getTotal();
+        double R2 = statisticsProvider.getEdgeFilterStatistics(relationFilter.getRel().geteBase(), relationFilter.getAsgEbase().geteBase()).getTotal();
         //(rel estimate) = min(R1, R2)
         double R = Math.min(R1, R2);
 
-        EPropGroup clone = endFilter.getAsgEBase().geteBase().clone();
+        EPropGroup clone = endFilter.getAsgEbase().geteBase().clone();
         List<RelProp> pushdownProps = new LinkedList<>();
-        List<RelProp> collect = relationFilter.getAsgEBase().geteBase().getProps().stream().filter(f -> (f instanceof PushdownRelProp) &&
-                (!f.getpType().equals(OntologyFinalizer.ID_FIELD_P_TYPE) &&
-                        (!f.getpType().equals(OntologyFinalizer.TYPE_FIELD_P_TYPE))))
+        List<RelProp> collect = relationFilter.getAsgEbase().geteBase().getProps().stream().filter(f -> (f instanceof RedundantRelProp) &&
+                (!f.getpType().equals(OntologyFinalizer.ID_FIELD_PTYPE) &&
+                        (!f.getpType().equals(OntologyFinalizer.TYPE_FIELD_PTYPE))))
                 .collect(Collectors.toList());
         collect.forEach(p -> {
             pushdownProps.add(p);
-            clone.getProps().add(EProp.of(p.getpType(), p.geteNum(), p.getCon()));
+            clone.getProps().add(EProp.of(p.geteNum(), p.getpType(), p.getCon()));
         });
 
         // Z (E2 node pushdown props only estimate) = statistical_estimate(E1 pushdown filter only)
-        double Z = statisticsProvider.getRedundantNodeStatistics(end.getAsgEBase().geteBase(), RelPropGroup.of(pushdownProps)).getTotal();
+        double Z = statisticsProvider.getRedundantNodeStatistics(end.getAsgEbase().geteBase(), RelPropGroup.of(pushdownProps)).getTotal();
 
         // N2-1 (relation based estimate for E2) = min(R*alpha/GS, Z)
         double N2_1 = Math.min(R * config.getAlpha(), Z);
         //N2_2 (E2 complete estimate) = statistical_estimate(E1 + filter (with pushdown))
-        double N2_2 = statisticsProvider.getNodeFilterStatistics(end.getAsgEBase().geteBase(), clone).getTotal();
+        double N2_2 = statisticsProvider.getNodeFilterStatistics(end.getAsgEbase().geteBase(), clone).getTotal();
 
         //* N2 = min(N2-1, N2-2)
         double N2 = Math.min(N2_1, N2_2);
@@ -109,23 +114,28 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
         //estimate back propagation weight
         double lambdaEdge = R / R2;
         double lambdaNode = N2 / N2_2;
-        // lambda = (R/R1)*(N2/N2-1)
+        // countsUpdateFactors = (R/R1)*(N2/N2-1)
         double lambda = lambdaEdge * lambdaNode;
 
         //estimation if zero since the real estimation is residing on the adjacent filter (rel filter)
         DoubleCost relCost = new DetailedCost(R * config.getDelta(), lambdaNode, lambdaEdge, R, N2);
 
-        CountEstimatesCost newEntityOneCost = new CountEstimatesCost(entityOneCost.getCost(), N1);
-        newEntityOneCost.push(N1*lambda);
-        PlanWithCost<Plan, CountEstimatesCost> entityOnePlanCost = new PlanWithCost<>(new Plan(start, startFilter), newEntityOneCost);
+        CountEstimatesCost newEntityOneCost = new CountEstimatesCost(entityOneCost.getCost(), Math.ceil(N1));
+        newEntityOneCost.push(Math.ceil(N1*lambda));
+        PlanWithCost<Plan, CountEstimatesCost> entityOnePlanCost ;
+        if(startFilter == null){
+            entityOnePlanCost = new PlanWithCost<>(new Plan(start), newEntityOneCost);
+        } else{
+            entityOnePlanCost = new PlanWithCost<>(new Plan(start, startFilter), newEntityOneCost);
+        }
 
-        CountEstimatesCost newRelCost = new CountEstimatesCost(relCost.getCost(), R);
+        CountEstimatesCost newRelCost = new CountEstimatesCost(relCost.getCost(), Math.ceil(R));
         PlanWithCost<Plan, CountEstimatesCost> relPlanCost = new PlanWithCost<>(new Plan(rel, relationFilter), newRelCost);
 
-        CountEstimatesCost entityTwoCost = new CountEstimatesCost(N2, N2);
+        CountEstimatesCost entityTwoCost = new CountEstimatesCost(Math.ceil(N2), Math.ceil(N2));
         PlanWithCost<Plan, CountEstimatesCost> entityTwoOpCost = new PlanWithCost<>(new Plan(end, endFilter), entityTwoCost);
 
-        return PatternCostEstimator.Result.of(lambda, entityOnePlanCost, relPlanCost, entityTwoOpCost);
+        return PatternCostEstimator.Result.of(new double[]{lambda}, entityOnePlanCost, relPlanCost, entityTwoOpCost);
     }
     //endregion
 
