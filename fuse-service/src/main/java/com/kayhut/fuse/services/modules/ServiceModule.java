@@ -6,6 +6,7 @@ import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
@@ -32,6 +33,7 @@ public class ServiceModule extends ModuleBase {
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
         // bind common components
         binder.bind(RequestIdSupplier.class).to(RequestIdSupplier.Impl.class).asEagerSingleton();
+        binder.bind(ExternalRequestIdSupplier.class).to(ExternalRequestIdSupplier.Impl.class).in(RequestScoped.class);
 
         // bind service controller
         bindApiDescriptionController(env, config, binder);

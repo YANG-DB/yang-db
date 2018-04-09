@@ -6,9 +6,11 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
+import com.kayhut.fuse.logging.ExternalRequestId;
 import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -21,6 +23,8 @@ import com.kayhut.fuse.model.transport.CreateQueryAndFetchRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.controllers.QueryController;
 import org.slf4j.Logger;
+
+import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
@@ -41,10 +45,12 @@ public class LoggingQueryController implements QueryController {
             @Named(controllerParameter) QueryController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
+            ExternalRequestIdSupplier externalRequestIdSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
         this.requestIdSupplier = requestIdSupplier;
+        this.externalRequestIdSupplier = externalRequestIdSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -56,7 +62,9 @@ public class LoggingQueryController implements QueryController {
         boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
-                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(request.getId())).write();
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestIdByScope.of(request.getId())).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start create", LogType.of(start), create).log();
@@ -100,7 +108,9 @@ public class LoggingQueryController implements QueryController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfo.toString())).time();
         boolean thrownException = false;
 
-        Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestId.of(this.requestIdSupplier.get())).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getInfo", LogType.of(start), getInfo).log();
@@ -128,7 +138,9 @@ public class LoggingQueryController implements QueryController {
         boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
-                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(queryId)).write();
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestIdByScope.of(queryId)).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getInfoByQueryId", LogType.of(start), getInfoByQueryId).log();
@@ -155,7 +167,9 @@ public class LoggingQueryController implements QueryController {
         boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
-                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(queryId)).write();
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestIdByScope.of(queryId)).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getV1ByQueryId", LogType.of(start), getV1ByQueryId).log();
@@ -181,7 +195,9 @@ public class LoggingQueryController implements QueryController {
         boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
-                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(queryId)).write();
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestIdByScope.of(queryId)).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getAsgByQueryId", LogType.of(start), getAsgByQueryId).log();
@@ -244,7 +260,9 @@ public class LoggingQueryController implements QueryController {
         boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
-                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(queryId)).write();
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestIdByScope.of(queryId)).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start delete", LogType.of(start), delete).log();
@@ -269,6 +287,8 @@ public class LoggingQueryController implements QueryController {
     //region Fields
     private QueryController controller;
     private RequestIdSupplier requestIdSupplier;
+    private ExternalRequestIdSupplier externalRequestIdSupplier;
+
     private Logger logger;
     private MetricRegistry metricRegistry;
 

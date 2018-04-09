@@ -5,13 +5,17 @@ import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
+import com.kayhut.fuse.logging.ExternalRequestId;
 import com.kayhut.fuse.logging.RequestId;
+import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.services.controllers.ApiDescriptionController;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
+
+import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
@@ -30,10 +34,12 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
             @Named(controllerParameter) ApiDescriptionController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
+            ExternalRequestIdSupplier externalRequestIdSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
         this.requestIdSupplier = requestIdSupplier;
+        this.externalRequestIdSupplier = externalRequestIdSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -44,7 +50,9 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfo")).time();
         boolean thrownException = false;
 
-        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getInfo", LogType.of(start), getInfo).log();
@@ -69,6 +77,7 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
     //region Fields
     private Logger logger;
     private RequestIdSupplier requestIdSupplier;
+    private ExternalRequestIdSupplier externalRequestIdSupplier;
     private MetricRegistry metricRegistry;
     private ApiDescriptionController controller;
 

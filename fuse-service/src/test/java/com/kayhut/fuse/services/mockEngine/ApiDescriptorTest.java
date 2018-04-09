@@ -9,6 +9,7 @@ import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
+import io.restassured.http.Header;
 import org.jooby.test.JoobyRule;
 import org.junit.*;
 
@@ -35,6 +36,7 @@ public class ApiDescriptorTest {
     public void api() {
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse")
                 .then()
@@ -50,6 +52,7 @@ public class ApiDescriptorTest {
     public void checkHealth() {
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/health")
                 .then()

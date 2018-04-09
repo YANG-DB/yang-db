@@ -15,6 +15,7 @@ import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
+import io.restassured.http.Header;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -47,6 +48,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -80,6 +82,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -120,6 +123,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query?fetch=true")
@@ -165,6 +169,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -200,6 +205,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -224,6 +230,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1")
                 .then()
@@ -247,6 +254,7 @@ public class QueryTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor")
                 .then()
@@ -278,6 +286,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -302,6 +311,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/v1")
                 .then()
@@ -322,6 +332,7 @@ public class QueryTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor")
                 .then()
@@ -354,6 +365,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -380,6 +392,7 @@ public class QueryTest {
         final AsgQuery[] asgQuery = {null};
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/asg")
                 .then()
@@ -402,6 +415,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/asg/print")
                 .then()
@@ -422,6 +436,7 @@ public class QueryTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor")
                 .then()
@@ -454,6 +469,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -477,6 +493,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1")
                 .then()
@@ -499,6 +516,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/v1/print")
                 .then()
@@ -518,6 +536,7 @@ public class QueryTest {
         //delete query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .delete("/fuse/query/1")
                 .then()
@@ -528,6 +547,7 @@ public class QueryTest {
         //validate resource deleted
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1")
                 .then()

@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import io.restassured.http.Header;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +41,7 @@ public class DataTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -66,6 +68,7 @@ public class DataTest {
         CreateCursorRequest cursorRequest = new CreateGraphCursorRequest();
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(cursorRequest)
                 .post("/fuse/query/1/cursor")
@@ -90,6 +93,7 @@ public class DataTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get())
                 .then()
@@ -111,6 +115,7 @@ public class DataTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/plan/print")
                 .then()
@@ -133,6 +138,7 @@ public class DataTest {
         AtomicReference<String> pageId = new AtomicReference<>();
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(pageRequest)
                 .post("/fuse/query/1/cursor/"+cursorId.get()+"/page")
@@ -157,6 +163,7 @@ public class DataTest {
         //get page data resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get() +"/page/"+pageId.get() +"/data")
                 .then()

@@ -14,6 +14,7 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import io.restassured.http.Header;
 import org.jooby.test.JoobyRule;
 import org.junit.Assume;
 import org.junit.Before;
@@ -51,6 +52,7 @@ public class PlanTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -75,6 +77,7 @@ public class PlanTest {
         //get plan resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/plan")
                 .then()
@@ -92,6 +95,7 @@ public class PlanTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/plan/print")
                 .then()
