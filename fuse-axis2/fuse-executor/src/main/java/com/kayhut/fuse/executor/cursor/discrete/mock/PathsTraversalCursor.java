@@ -3,12 +3,10 @@ package com.kayhut.fuse.executor.cursor.discrete.mock;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
-import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -25,13 +23,13 @@ public class PathsTraversalCursor implements Cursor {
 
     //region Cursor Implementation
     @Override
-    public QueryResult getNextResults(int numResults) {
+    public AssignmentsQueryResult getNextResults(int numResults) {
         String queryName = context.getQueryResource().getQuery().getName();
         try {
-            return this.mapper.readValue(new File(Paths.get(this.mockResultsFolder, queryName + ".json").toString()), QueryResult.class);
+            return this.mapper.readValue(new File(Paths.get(this.mockResultsFolder, queryName + ".json").toString()), AssignmentsQueryResult.class);
         } catch (IOException e) {
             e.printStackTrace();
-            return new QueryResult();
+            return new AssignmentsQueryResult();
         }
     }
     //endregion

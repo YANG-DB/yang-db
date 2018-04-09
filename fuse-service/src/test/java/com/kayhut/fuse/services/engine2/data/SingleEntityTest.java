@@ -1,6 +1,5 @@
 package com.kayhut.fuse.services.engine2.data;
 
-import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -8,8 +7,7 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.services.FuseApp;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.NonRedundantTestSuite;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
@@ -23,7 +21,6 @@ import javaslang.collection.Stream;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
-import org.jooby.test.JoobyRule;
 import org.junit.*;
 
 import java.io.IOException;
@@ -174,7 +171,7 @@ public class SingleEntityTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         Assert.assertEquals(requestedPageSize, pageResourceInfo.getRequestedPageSize());
         Assert.assertEquals(actualPageSize, pageResourceInfo.getActualPageSize());
@@ -221,7 +218,7 @@ public class SingleEntityTest {
             Assert.assertTrue(pageResourceInfo.getRequestedPageSize() == pageSize);
             Assert.assertTrue(pageResourceInfo.getActualPageSize() == pageSize);
 
-            QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+            AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
             Assert.assertTrue(pageData.getAssignments().size() == pageSize);
             pageData.getAssignments().forEach(assignment -> {
                 Assert.assertTrue(assignment.getEntities().size() == 1);
@@ -237,7 +234,7 @@ public class SingleEntityTest {
         Assert.assertTrue(ids.containsAll(expectedIds));
 
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), pageSize);
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         Assert.assertTrue(pageResourceInfo.getRequestedPageSize() == pageSize);
         Assert.assertTrue(pageResourceInfo.getActualPageSize() == 0);

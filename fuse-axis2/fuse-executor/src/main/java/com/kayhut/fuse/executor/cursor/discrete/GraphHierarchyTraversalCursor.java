@@ -2,8 +2,8 @@ package com.kayhut.fuse.executor.cursor.discrete;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.model.results.Assignment;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.Entity;
-import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.results.Relationship;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -18,7 +18,7 @@ public class GraphHierarchyTraversalCursor implements Cursor {
     public GraphHierarchyTraversalCursor(Cursor cursor, Iterable<String> countTags) {
         this.cursor = cursor;
 
-        this.fullGraph = new QueryResult();
+        this.fullGraph = new AssignmentsQueryResult();
         this.fullGraph.setAssignments(new ArrayList<>());
         this.fullGraph.getAssignments().add(new Assignment());
         this.fullGraph.getAssignments().get(0).setEntities(new ArrayList<>());
@@ -34,15 +34,15 @@ public class GraphHierarchyTraversalCursor implements Cursor {
 
     //region Cursor Implementation
     @Override
-    public QueryResult getNextResults(int numResults) {
-        QueryResult newResult = this.cursor.getNextResults(numResults);
+    public AssignmentsQueryResult getNextResults(int numResults) {
+        AssignmentsQueryResult newResult = (AssignmentsQueryResult) this.cursor.getNextResults(numResults);
         while(newResult.getAssignments().size() > 0) {
             consolidateFullGraph(newResult);
             if (this.distinctIds.size() >= numResults) {
                 break;
             }
 
-            newResult = this.cursor.getNextResults(numResults);
+            newResult = (AssignmentsQueryResult) this.cursor.getNextResults(numResults);
         }
 
         this.fullGraph.getAssignments().get(0).setEntities(
@@ -57,7 +57,7 @@ public class GraphHierarchyTraversalCursor implements Cursor {
     //region Protected Methods
 
 
-    private void consolidateFullGraph(QueryResult result) {
+    private void consolidateFullGraph(AssignmentsQueryResult result) {
         Map<String, Stream<Entity>> newEntityStreams =
                 Stream.ofAll(result.getAssignments())
                         .flatMap(Assignment::getEntities)
@@ -96,7 +96,7 @@ public class GraphHierarchyTraversalCursor implements Cursor {
 
     //region Fields
     private Cursor cursor;
-    private QueryResult fullGraph;
+    private AssignmentsQueryResult fullGraph;
 
     private Set<String> entityIds;
     private Set<String> relationshipIds;

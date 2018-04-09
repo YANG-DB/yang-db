@@ -1,10 +1,9 @@
 package com.kayhut.fuse.services.appRegistrars;
 
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.kayhut.fuse.model.results.TextContent;
 import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
-import org.jooby.Jooby;
-import org.jooby.Request;
-import org.jooby.Response;
+import org.jooby.*;
 
 import java.util.Optional;
 
@@ -35,6 +34,15 @@ public class BeforeAfterAppRegistrar implements AppRegistrar {
     private void registerAfterHandlers(Jooby app) {
         app.after((req, resp, result) ->  {
             addExternalIdResponseHeader(req, resp);
+            return result;
+        });
+
+        app.after((req, resp, result) ->  {
+            Object content = result.get();
+            if(req.type().name().equals(MediaType.plain.name()) && TextContent.class.isAssignableFrom(content.getClass())){
+                result.set(((TextContent)content).content());
+                result.type(MediaType.plain);
+            }
             return result;
         });
     }

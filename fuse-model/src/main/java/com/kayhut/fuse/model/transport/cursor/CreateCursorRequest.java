@@ -11,7 +11,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @JsonSubTypes.Type(name = "paths", value = CreatePathsCursorRequest.class),
         @JsonSubTypes.Type(name = "graph", value = CreateGraphCursorRequest.class),
-        @JsonSubTypes.Type(name = "graphHierarchy", value = CreateGraphHierarchyCursorRequest.class)
+        @JsonSubTypes.Type(name = "graphHierarchy", value = CreateGraphHierarchyCursorRequest.class),
+        @JsonSubTypes.Type(name = "csv", value = CreateCsvCursorRequest.class),
 })
 public abstract class CreateCursorRequest {
 }

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.transport;
 
+import com.kayhut.fuse.model.results.TextContent;
 import org.jooby.Status;
 
 import java.util.Optional;
@@ -8,7 +9,7 @@ import java.util.function.Predicate;
 /**
  * Created by lior on 19/02/2017.
  */
-public class ContentResponse<T> implements Response {
+public class ContentResponse<T> implements Response, TextContent {
     public static final ContentResponse NOT_FOUND =  new ContentResponse("NOT-FOUND");
     private Status status = Status.NOT_FOUND;
     private String id;
@@ -31,6 +32,24 @@ public class ContentResponse<T> implements Response {
 
     public Status status() {
         return status;
+    }
+
+    @Override
+    public String content() {
+        if(this.data != null && TextContent.class.isAssignableFrom(this.data.getClass())){
+            return ((TextContent)this.data).content();
+        }else{
+            return this.toString();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "ContentResponse{" +
+                "status=" + status +
+                ", id='" + id + '\'' +
+                ", data=" + data +
+                '}';
     }
 
     public static class Builder<T> {
