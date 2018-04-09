@@ -5,6 +5,8 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.services.TestsConfiguration;
+import io.restassured.http.Header;
+import org.jooby.test.JoobyRule;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +33,7 @@ public class CatalogTest {
         Ontology ontology = OntologyFinalizer.finalize(TestUtils.loadOntology("Dragons.json"));
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/catalog/ontology/Dragons")
                 .then()
@@ -57,6 +60,7 @@ public class CatalogTest {
         Ontology ontology = OntologyFinalizer.finalize(TestUtils.loadOntology("Dragons.json"));
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/catalog/ontology")
                 .then()
@@ -83,6 +87,7 @@ public class CatalogTest {
         Ontology ontology = OntologyFinalizer.finalize(TestUtils.loadOntology("Dragons.json"));
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/catalog/schema")
                 .then()

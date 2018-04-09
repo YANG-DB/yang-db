@@ -6,14 +6,18 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
+import com.kayhut.fuse.logging.ExternalRequestId;
 import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.services.controllers.PageController;
+import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import org.slf4j.Logger;
+
+import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
@@ -33,10 +37,13 @@ public class LoggingPageController implements PageController {
             @Named(controllerParameter) PageController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
+            ExternalRequestIdSupplier externalRequestIdSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
         this.requestIdSupplier = requestIdSupplier;
+        this.externalRequestIdSupplier = externalRequestIdSupplier;
+
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -49,6 +56,7 @@ public class LoggingPageController implements PageController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
 
         try {
@@ -78,6 +86,7 @@ public class LoggingPageController implements PageController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
 
         try {
@@ -106,6 +115,7 @@ public class LoggingPageController implements PageController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).page(pageId).get())).write();
 
         try {
@@ -134,6 +144,7 @@ public class LoggingPageController implements PageController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).page(pageId).get())).write();
 
         try {
@@ -159,6 +170,7 @@ public class LoggingPageController implements PageController {
     //region Fields
     private Logger logger;
     private RequestIdSupplier requestIdSupplier;
+    private ExternalRequestIdSupplier externalRequestIdSupplier;
     private MetricRegistry metricRegistry;
     private PageController controller;
 

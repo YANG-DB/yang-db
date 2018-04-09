@@ -6,7 +6,9 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
+import com.kayhut.fuse.logging.ExternalRequestId;
 import com.kayhut.fuse.logging.RequestId;
+import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
@@ -15,6 +17,8 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.services.controllers.CursorController;
 import org.jooby.scope.RequestScoped;
 import org.slf4j.Logger;
+
+import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
@@ -36,10 +40,12 @@ public class LoggingCursorController implements CursorController {
             @Named(controllerParameter) CursorController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
+            ExternalRequestIdSupplier externalRequestIdSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
         this.requestIdSupplier = requestIdSupplier;
+        this.externalRequestIdSupplier = externalRequestIdSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -52,6 +58,7 @@ public class LoggingCursorController implements CursorController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).get())).write();
 
         try {
@@ -80,6 +87,7 @@ public class LoggingCursorController implements CursorController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).get())).write();
 
         try {
@@ -108,6 +116,7 @@ public class LoggingCursorController implements CursorController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
 
         try {
@@ -136,6 +145,7 @@ public class LoggingCursorController implements CursorController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
 
         try {
@@ -161,6 +171,7 @@ public class LoggingCursorController implements CursorController {
     //region Fields
     private Logger logger;
     private RequestIdSupplier requestIdSupplier;
+    private ExternalRequestIdSupplier externalRequestIdSupplier;
     private MetricRegistry metricRegistry;
     private CursorController controller;
 

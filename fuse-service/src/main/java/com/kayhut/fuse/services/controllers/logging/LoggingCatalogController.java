@@ -5,7 +5,9 @@ import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
+import com.kayhut.fuse.logging.ExternalRequestId;
 import com.kayhut.fuse.logging.RequestId;
+import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.transport.ContentResponse;
@@ -14,6 +16,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.slf4j.Logger;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
@@ -34,10 +37,12 @@ public class LoggingCatalogController implements CatalogController {
             @Named(controllerParameter) CatalogController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
+            ExternalRequestIdSupplier externalRequestIdSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
         this.requestIdSupplier = requestIdSupplier;
+        this.externalRequestIdSupplier = externalRequestIdSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -48,7 +53,9 @@ public class LoggingCatalogController implements CatalogController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getOntology.toString())).time();
         boolean thrownException = false;
 
-        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getOntology", LogType.of(start), getOntology).log();
@@ -74,7 +81,9 @@ public class LoggingCatalogController implements CatalogController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getOntology.toString())).time();
         boolean thrownException = false;
 
-        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getOntology", LogType.of(start), getOntology).log();
@@ -100,7 +109,9 @@ public class LoggingCatalogController implements CatalogController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getSchema.toString())).time();
         boolean thrownException = false;
 
-        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getSchema", LogType.of(start), getSchema).log();
@@ -126,7 +137,9 @@ public class LoggingCatalogController implements CatalogController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getSchema.toString())).time();
         boolean thrownException = false;
 
-        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getSchema", LogType.of(start), getSchema).log();
@@ -151,6 +164,7 @@ public class LoggingCatalogController implements CatalogController {
     //region Fields
     private Logger logger;
     private RequestIdSupplier requestIdSupplier;
+    private ExternalRequestIdSupplier externalRequestIdSupplier;
     private MetricRegistry metricRegistry;
     private CatalogController controller;
 

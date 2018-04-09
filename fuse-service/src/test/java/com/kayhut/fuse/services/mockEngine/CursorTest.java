@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import io.restassured.http.Header;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +40,7 @@ public class CursorTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -65,6 +67,7 @@ public class CursorTest {
         CreateCursorRequest cursorRequest = new CreateGraphCursorRequest();
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(cursorRequest)
                 .post("/fuse/query/1/cursor")
@@ -89,6 +92,7 @@ public class CursorTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get())
                 .then()
@@ -109,6 +113,7 @@ public class CursorTest {
                 .contentType("application/json;charset=UTF-8");
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/plan/print")
                 .then()
@@ -138,6 +143,7 @@ public class CursorTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -164,6 +170,7 @@ public class CursorTest {
         CreateCursorRequest cursorRequest = new CreateGraphCursorRequest();
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(cursorRequest)
                 .post("/fuse/query/1/cursor")
@@ -188,6 +195,7 @@ public class CursorTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get())
                 .then()
@@ -211,6 +219,7 @@ public class CursorTest {
         //delete cursor
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .delete("/fuse/query/1/cursor/"+cursorId.get())
                 .then()
@@ -222,6 +231,7 @@ public class CursorTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get())
                 .then()

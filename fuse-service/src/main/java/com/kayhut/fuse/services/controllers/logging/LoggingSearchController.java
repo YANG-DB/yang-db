@@ -6,13 +6,17 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
+import com.kayhut.fuse.logging.ExternalRequestId;
 import com.kayhut.fuse.logging.RequestId;
+import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.controllers.SearchController;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
+
+import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
@@ -33,10 +37,12 @@ public class LoggingSearchController implements SearchController{
             @Named(controllerParameter) SearchController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
+            ExternalRequestIdSupplier externalRequestIdSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
         this.requestIdSupplier = requestIdSupplier;
+        this.externalRequestIdSupplier = externalRequestIdSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -48,7 +54,9 @@ public class LoggingSearchController implements SearchController{
         boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
-                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(request.getId())).write();
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestIdByScope.of(request.getId())).write();
 
         try {
             new LogMessage.Impl(this.logger, trace, "start search", LogType.of(start), search).log();
@@ -73,6 +81,7 @@ public class LoggingSearchController implements SearchController{
     //region Fields
     private Logger logger;
     private RequestIdSupplier requestIdSupplier;
+    private Supplier<String> externalRequestIdSupplier;
     private MetricRegistry metricRegistry;
     private SearchController controller;
 
