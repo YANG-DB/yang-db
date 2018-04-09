@@ -49,6 +49,11 @@
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-unipop</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>${opencsv.version}</version>
+        </dependency>
         <!-- runtime -->
 
         <!-- test -->

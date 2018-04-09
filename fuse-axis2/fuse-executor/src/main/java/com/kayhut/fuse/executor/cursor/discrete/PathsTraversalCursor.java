@@ -8,29 +8,21 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.*;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Property;
-import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
-import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
-import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.*;
 
-import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
+import static com.kayhut.fuse.model.results.AssignmentsQueryResult.Builder.instance;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -72,7 +64,7 @@ public class PathsTraversalCursor implements Cursor {
 
     //region Cursor Implementation
     @Override
-    public QueryResult getNextResults(int numResults) {
+    public AssignmentsQueryResult getNextResults(int numResults) {
         return toQuery(numResults);
     }
     //endregion
@@ -84,8 +76,8 @@ public class PathsTraversalCursor implements Cursor {
     //endregion
 
     //region Private Methods
-    private QueryResult toQuery(int numResults) {
-        QueryResult.Builder builder = instance();
+    private AssignmentsQueryResult toQuery(int numResults) {
+        AssignmentsQueryResult.Builder builder = instance();
         builder.withPattern(context.getQueryResource().getQuery());
         //build assignments
         (context.getTraversal().next(numResults)).forEach(path -> {

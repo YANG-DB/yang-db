@@ -6,7 +6,7 @@ import com.google.inject.util.Modules;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.FuseRunner;
 import org.jooby.Jooby;
@@ -41,7 +41,7 @@ public class TestSuite {
     @BeforeClass
     public static void setup() {
         Cursor cursor = mock(Cursor.class);
-        when(cursor.getNextResults(anyInt())).thenReturn(QueryResult.Builder.instance().build());
+        when(cursor.getNextResults(anyInt())).thenReturn(AssignmentsQueryResult.Builder.instance().build());
 
         CursorFactory cursorFactory = mock(CursorFactory.class);
         when(cursorFactory.createCursor(any())).thenReturn(cursor);

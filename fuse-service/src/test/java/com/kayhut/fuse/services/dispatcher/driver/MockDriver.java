@@ -17,7 +17,8 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.QueryMetadata;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 import java.util.Optional;
@@ -79,9 +80,9 @@ public class MockDriver {
 
         //region PageDriverBase Implementation
         @Override
-        protected PageResource<QueryResult> createResource(QueryResource queryResource, CursorResource cursorResource, String pageId, int pageSize) {
-            QueryResult queryResult = cursorResource.getCursor().getNextResults(pageSize);
-            return new PageResource<>(pageId, queryResult, pageSize, 0);
+        protected PageResource<QueryResultBase> createResource(QueryResource queryResource, CursorResource cursorResource, String pageId, int pageSize) {
+            QueryResultBase assignmentsQueryResult = cursorResource.getCursor().getNextResults(pageSize);
+            return new PageResource<>(pageId, assignmentsQueryResult, pageSize, 0);
         }
         //endregion
     }

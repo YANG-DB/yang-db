@@ -9,11 +9,15 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.Quant1;
@@ -24,8 +28,9 @@ import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
+import com.kayhut.fuse.model.transport.cursor.CreateCsvCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
-import com.kayhut.fuse.services.engine2.JoinE2ETestSuite;
+import com.kayhut.fuse.services.engine2.CsvCursorTestSuite;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
@@ -50,15 +55,15 @@ import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
-public class JoinE2ETests {
+public class CsvCursorTests {
     @BeforeClass
     public static void setup() throws Exception {
-        setup(JoinE2ETestSuite.elasticEmbeddedNode.getClient(), true);
+        setup(CsvCursorTestSuite.elasticEmbeddedNode.getClient(), true);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        cleanup(JoinE2ETestSuite.elasticEmbeddedNode.getClient());
+        cleanup(CsvCursorTestSuite.elasticEmbeddedNode.getClient());
     }
 
 
@@ -203,25 +208,6 @@ public class JoinE2ETests {
     public void before() {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
-
-    private void testAndAssertQuery(Query query, AssignmentsQueryResult expectedAssignmentsQueryResult) throws Exception {
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
-
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
-
-        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        QueryResultAssert.assertEquals(expectedAssignmentsQueryResult, actualAssignmentsQueryResult, shouldIgnoreRelId());
-    }
-
-
 
     private static Iterable<Map<String, Object>> createPeople(int numPeople) {
         List<Map<String, Object>> people = new ArrayList<>();
@@ -404,14 +390,24 @@ public class JoinE2ETests {
     public void testDragonOriginKingdomX2Path() throws IOException, InterruptedException, ParseException {
         Query query = getDragonOriginKingdomX2Query();
 
-        runQueryAndValidate(query, dragonOriginKingdomX2Results(), dragonOriginKingdomX2Plan(query));
+        CreateCsvCursorRequest request = CreateCsvCursorRequest.Builder.instance().withElement(new CreateCsvCursorRequest.CsvElement("A", "id", CreateCsvCursorRequest.ElementType.Entity))
+                .withElement(new CreateCsvCursorRequest.CsvElement("B", "id", CreateCsvCursorRequest.ElementType.Entity))
+                .withElement(new CreateCsvCursorRequest.CsvElement("C", "id", CreateCsvCursorRequest.ElementType.Entity)).request();
+        runQueryAndValidate(query,dragonOriginKingdomX2Results(),  dragonOriginKingdomX2Plan(query),request);
     }
 
     @Test
     public void testDragonOriginKingdomX3Path() throws IOException, InterruptedException, ParseException {
         Query query = getDragonOriginKingdomX3Query();
-
-        runQueryAndValidate(query, dragonOriginKingdomX3Results(), dragonOriginKingdomX3Plan(query));
+        CreateCsvCursorRequest request = CreateCsvCursorRequest.Builder.instance().
+                withElement(new CreateCsvCursorRequest.CsvElement("A", "id", CreateCsvCursorRequest.ElementType.Entity))
+                .withElement(new CreateCsvCursorRequest.CsvElement("A", "name", CreateCsvCursorRequest.ElementType.Entity))
+                .withElement(new CreateCsvCursorRequest.CsvElement("A","B","rType", CreateCsvCursorRequest.ElementType.Rel))
+                .withElement(new CreateCsvCursorRequest.CsvElement("B", "id", CreateCsvCursorRequest.ElementType.Entity))
+                .withElement(new CreateCsvCursorRequest.CsvElement("C", "id", CreateCsvCursorRequest.ElementType.Entity))
+                .withElement(new CreateCsvCursorRequest.CsvElement("D", "id", CreateCsvCursorRequest.ElementType.Entity))
+                .withElement(new CreateCsvCursorRequest.CsvElement("G", "id", CreateCsvCursorRequest.ElementType.Entity)).request();
+        runQueryAndValidate(query, dragonOriginKingdomX3Results(),dragonOriginKingdomX3Plan(query), request);
     }
 
     private Plan dragonOriginKingdomX3Plan(Query query) {
@@ -447,102 +443,12 @@ public class JoinE2ETests {
         return new Plan(new EntityJoinOp(innerJoin, rightBranch2));
     }
 
-    private AssignmentsQueryResult dragonOriginKingdomX3Results() throws ParseException {
-        Function<Integer, Long> birthDateValueFunction =
-                birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
-
-        AssignmentsQueryResult.Builder builder = AssignmentsQueryResult.Builder.instance();
-        Entity entityA = Entity.Builder.instance()
-                .withEID("Dragon_1" )
-                .withETag(singleton("A"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(Arrays.asList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "B"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(1))))))
-                .build();
-        Entity entityB = Entity.Builder.instance()
-                .withEID("Kingdom_1" )
-                .withETag(singleton("B"))
-                .withEType($ont.eType$(KINGDOM.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "kingdom1")))
-                .build();
-
-        List<Entity> entitiesC = new ArrayList<>();
-        entitiesC.add(Entity.Builder.instance()
-                .withEID("Dragon_3" )
-                .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(Arrays.asList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(3))))))
-                .build());
-
-        entitiesC.add(Entity.Builder.instance()
-                .withEID("Dragon_61" )
-                .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(Arrays.asList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(61))))))
-                .build());
-
-        List<Entity> entitiesD = new ArrayList<>();
-        entitiesD.add(Entity.Builder.instance()
-                .withEID("Dragon_5" )
-                .withETag(singleton("D"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(Arrays.asList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "F"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(5))))))
-                .build());
-        entitiesD.add(Entity.Builder.instance()
-                .withEID("Dragon_63" )
-                .withETag(singleton("D"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(Arrays.asList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "F"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(63))))))
-                .build());
-
-        for(Entity entityC : entitiesC) {
-            for (Entity entityD : entitiesD) {
-                Relationship relationship1 = Relationship.Builder.instance()
-                        .withRID("123")
-                        .withDirectional(false)
-                        .withEID1(entityA.geteID())
-                        .withEID2(entityB.geteID())
-                        .withETag1("A")
-                        .withETag2("B")
-                        .withRType($ont.rType$(ORIGINATED_IN.getName()))
-                        .build();
-
-
-                Relationship relationship2 = Relationship.Builder.instance()
-                        .withRID("123")
-                        .withDirectional(false)
-                        .withEID1(entityC.geteID())
-                        .withEID2(entityB.geteID())
-                        .withETag1("C")
-                        .withETag2("B")
-                        .withRType($ont.rType$(ORIGINATED_IN.getName()))
-                        .build();
-
-                Relationship relationship3 = Relationship.Builder.instance()
-                        .withRID("123")
-                        .withDirectional(false)
-                        .withEID1(entityD.geteID())
-                        .withEID2(entityB.geteID())
-                        .withETag1("D")
-                        .withETag2("B")
-                        .withRType($ont.rType$(ORIGINATED_IN.getName()))
-                        .build();
-
-                Assignment assignment = Assignment.Builder.instance().withEntity(entityA).withEntity(entityB).withEntity(entityC).withEntity(entityD)
-                        .withRelationship(relationship1).withRelationship(relationship2).withRelationship(relationship3).build();
-                builder.withAssignment(assignment);
-            }
-        }
+    private CsvQueryResult dragonOriginKingdomX3Results() throws ParseException {
+        CsvQueryResult.Builder builder = CsvQueryResult.Builder.instance();
+        builder.withLine("\"Dragon_1\",\"B\",\"originatedIn\",\"Kingdom_1\",\"Dragon_3\",\"Dragon_5\",");
+        builder.withLine("\"Dragon_1\",\"B\",\"originatedIn\",\"Kingdom_1\",\"Dragon_3\",\"Dragon_63\",");
+        builder.withLine("\"Dragon_1\",\"B\",\"originatedIn\",\"Kingdom_1\",\"Dragon_61\",\"Dragon_5\",");
+        builder.withLine("\"Dragon_1\",\"B\",\"originatedIn\",\"Kingdom_1\",\"Dragon_61\",\"Dragon_63\",");
 
         return builder.build();
 
@@ -569,83 +475,20 @@ public class JoinE2ETests {
         return new Plan(new EntityJoinOp(leftBranch, rightBranch));
     }
 
-    private AssignmentsQueryResult dragonOriginKingdomX2Results() throws ParseException {
-        Function<Integer, Long> birthDateValueFunction =
-                birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
-
-        AssignmentsQueryResult.Builder builder = AssignmentsQueryResult.Builder.instance();
-        Entity entityA = Entity.Builder.instance()
-                .withEID("Dragon_1" )
-                .withETag(singleton("A"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(Arrays.asList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "B"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(1))))))
-                .build();
-        Entity entityB = Entity.Builder.instance()
-                .withEID("Kingdom_1" )
-                .withETag(singleton("B"))
-                .withEType($ont.eType$(KINGDOM.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "kingdom1")))
-                .build();
-
-        List<Entity> entitiesC = new ArrayList<>();
-        entitiesC.add(Entity.Builder.instance()
-                .withEID("Dragon_3" )
-                .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(Arrays.asList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(3))))))
-                .build());
-
-        entitiesC.add(Entity.Builder.instance()
-                .withEID("Dragon_61" )
-                .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(Arrays.asList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(61))))))
-                .build());
-
-        for(Entity entityC : entitiesC) {
-            Relationship relationship1 = Relationship.Builder.instance()
-                    .withRID("123")
-                    .withDirectional(false)
-                    .withEID1(entityA.geteID())
-                    .withEID2(entityB.geteID())
-                    .withETag1("A")
-                    .withETag2("B")
-                    .withRType($ont.rType$(ORIGINATED_IN.getName()))
-                    .build();
-
-
-            Relationship relationship2 = Relationship.Builder.instance()
-                    .withRID("123")
-                    .withDirectional(false)
-                    .withEID1(entityC.geteID())
-                    .withEID2(entityB.geteID())
-                    .withETag1("C")
-                    .withETag2("B")
-                    .withRType($ont.rType$(ORIGINATED_IN.getName()))
-                    .build();
-
-            Assignment assignment = Assignment.Builder.instance().withEntity(entityA).withEntity(entityB).withEntity(entityC)
-                    .withRelationship(relationship1).withRelationship(relationship2).build();
-            builder.withAssignment(assignment);
-        }
-
+    private CsvQueryResult dragonOriginKingdomX2Results() throws ParseException {
+        CsvQueryResult.Builder builder = CsvQueryResult.Builder.instance();
+        builder.withLine("\"Dragon_1\",\"Kingdom_1\",\"Dragon_3\"");
+        builder.withLine("\"Dragon_1\",\"Kingdom_1\",\"Dragon_61\"");
         return builder.build();
 
     }
 
 
-    private void runQueryAndValidate(Query query, AssignmentsQueryResult expectedAssignmentsQueryResult, Plan expectedPlan) throws IOException, InterruptedException {
+    private void runQueryAndValidate(Query query, CsvQueryResult expectedQueryResult, Plan expectedPlan, CreateCsvCursorRequest csvCursorRequest) throws IOException, InterruptedException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), csvCursorRequest );
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -655,11 +498,11 @@ public class JoinE2ETests {
             }
         }
 
-        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        CsvQueryResult actualCsvQueryResult = (CsvQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         PlanAssert.assertEquals(expectedPlan, actualPlan);
 
 
-        QueryResultAssert.assertEquals(expectedAssignmentsQueryResult, actualAssignmentsQueryResult, shouldIgnoreRelId());
+        QueryResultAssert.assertEquals(expectedQueryResult, actualCsvQueryResult);
     }
 
     private Query getDragonOriginKingdomX2Query() {

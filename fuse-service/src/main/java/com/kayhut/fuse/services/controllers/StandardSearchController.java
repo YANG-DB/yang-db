@@ -25,7 +25,7 @@ public class StandardSearchController implements SearchController {
                 //todo implement this
                 .queryResourceResult(new QueryResourceInfo())
                 .data(GraphContent.GraphBuilder.builder(request.getId())
-                        .data(new QueryResult())
+                        .data(new AssignmentsQueryResult())
                         .build())
                 .build();
         return response;*/

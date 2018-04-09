@@ -1,6 +1,6 @@
 package com.kayhut.fuse.services;
 
-import com.kayhut.fuse.services.engine2.JoinE2ETestSuite;
+import com.kayhut.fuse.services.engine2.data.CsvCursorTests;
 import com.kayhut.fuse.services.engine2.data.JoinE2EEpbMockTests;
 import com.kayhut.fuse.services.engine2.data.JoinE2ETests;
 
@@ -44,6 +44,7 @@ public class TestsConfiguration {
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.SingleEntityTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.DfsRedundantEntityRelationEntityTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest.class);
+        this.testClassesToRun.add(CsvCursorTests.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.SmartEpbRedundantEntityRelationEntityTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.SmartEpbM2RedundantEntityRelationEntityTest.class);
 

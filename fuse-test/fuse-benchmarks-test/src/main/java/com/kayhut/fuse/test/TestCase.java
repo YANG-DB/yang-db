@@ -6,7 +6,7 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.test.util.FuseClient;
 
 public abstract class TestCase {
@@ -30,7 +30,7 @@ public abstract class TestCase {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         long end = System.currentTimeMillis();
 
@@ -38,10 +38,10 @@ public abstract class TestCase {
         System.out.println("Total time: " + (end -start));
         totalTime = end-start;
         planTime = queryEnd - queryStart;
-        assignments = actualQueryResult.getAssignments().size();
+        assignments = actualAssignmentsQueryResult.getAssignments().size();
 
         System.out.println("Assignments: " + assignments);
-        System.out.println(actualQueryResult);
+        System.out.println(actualAssignmentsQueryResult);
     }
 
     public long getTotalTime() {
