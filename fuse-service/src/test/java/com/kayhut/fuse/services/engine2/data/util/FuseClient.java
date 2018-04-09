@@ -14,6 +14,7 @@ import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
+import org.jooby.MediaType;
 
 import java.io.IOException;
 import java.util.Map;
@@ -108,6 +109,10 @@ public class FuseClient {
         return new ObjectMapper().readValue(unwrap(getRequest(pageDataUrl)), QueryResultBase.class);
     }
 
+    public String getPageDataPlain(String pageDataUrl) throws IOException {
+        return getRequest(pageDataUrl, MediaType.plain.name());
+    }
+
     public String getPlan(String planUrl) throws IOException {
         return getRequest(planUrl);
     }
@@ -134,7 +139,11 @@ public class FuseClient {
     }
 
     public static String getRequest(String url) {
-        return given().contentType("application/json")
+        return getRequest(url, "application/json");
+    }
+
+    public static String getRequest(String url, String contentType) {
+        return given().contentType(contentType)
                 .get(url)
                 .thenReturn()
                 .print();

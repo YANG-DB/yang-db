@@ -397,6 +397,16 @@ public class CsvCursorTests {
     }
 
     @Test
+    public void testDragonOriginKingdomX2PathPlain() throws IOException, InterruptedException, ParseException {
+        Query query = getDragonOriginKingdomX2Query();
+
+        CreateCsvCursorRequest request = CreateCsvCursorRequest.Builder.instance().withElement(new CreateCsvCursorRequest.CsvElement("A", "id", CreateCsvCursorRequest.ElementType.Entity))
+                .withElement(new CreateCsvCursorRequest.CsvElement("B", "id", CreateCsvCursorRequest.ElementType.Entity))
+                .withElement(new CreateCsvCursorRequest.CsvElement("C", "id", CreateCsvCursorRequest.ElementType.Entity)).request();
+        runQueryPlain(query,dragonOriginKingdomX2Results(),  dragonOriginKingdomX2Plan(query),request);
+    }
+
+    @Test
     public void testDragonOriginKingdomX3Path() throws IOException, InterruptedException, ParseException {
         Query query = getDragonOriginKingdomX3Query();
         CreateCsvCursorRequest request = CreateCsvCursorRequest.Builder.instance().
@@ -503,6 +513,27 @@ public class CsvCursorTests {
 
 
         QueryResultAssert.assertEquals(expectedQueryResult, actualCsvQueryResult);
+    }
+
+    private void runQueryPlain(Query query, CsvQueryResult expectedQueryResult, Plan expectedPlan, CreateCsvCursorRequest csvCursorRequest) throws IOException, InterruptedException {
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), csvCursorRequest );
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        String res = fuseClient.getPageDataPlain(pageResourceInfo.getDataUrl());
+        PlanAssert.assertEquals(expectedPlan, actualPlan);
+        Assert.assertEquals(expectedQueryResult.content(), res);
+
+
     }
 
     private Query getDragonOriginKingdomX2Query() {
