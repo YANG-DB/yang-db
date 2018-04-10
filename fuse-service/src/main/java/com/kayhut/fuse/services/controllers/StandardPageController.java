@@ -8,6 +8,8 @@ import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 
+import java.util.Optional;
+
 import static com.kayhut.fuse.model.transport.ContentResponse.Builder.builder;
 import static java.util.UUID.randomUUID;
 import static org.jooby.Status.*;
@@ -28,6 +30,31 @@ public class StandardPageController implements PageController {
     public ContentResponse<PageResourceInfo> create(String queryId, String cursorId, CreatePageRequest createPageRequest) {
         return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR )
                 .data(this.driver.create(queryId, cursorId, createPageRequest.getPageSize()))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<PageResourceInfo> createAndFetch(String queryId, String cursorId, CreatePageRequest createPageRequest) {
+        ContentResponse<PageResourceInfo> pageResourceInfoResponse = this.create(queryId, cursorId, createPageRequest);
+        if (pageResourceInfoResponse.status() == SERVER_ERROR) {
+            return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR)
+                    .data(Optional.of(pageResourceInfoResponse.getData()))
+                    .successPredicate(response -> false)
+                    .compose();
+        }
+
+        ContentResponse<Object> pageDataResponse = this.getData(queryId, cursorId, pageResourceInfoResponse.getData().getResourceId());
+        if (pageDataResponse.status() == SERVER_ERROR) {
+            return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR)
+                    .data(Optional.of(pageResourceInfoResponse.getData()))
+                    .successPredicate(response -> false)
+                    .compose();
+        }
+
+        pageResourceInfoResponse.getData().setData(pageDataResponse.getData());
+
+        return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR)
+                .data(Optional.of(pageResourceInfoResponse.getData()))
                 .compose();
     }
 

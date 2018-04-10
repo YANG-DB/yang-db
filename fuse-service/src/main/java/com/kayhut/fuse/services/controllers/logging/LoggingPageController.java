@@ -83,6 +83,38 @@ public class LoggingPageController implements PageController {
     }
 
     @Override
+    public ContentResponse<PageResourceInfo> createAndFetch(String queryId, String cursorId, CreatePageRequest createPageRequest) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), createAndFetch.toString())).time();
+
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
+
+        ContentResponse<PageResourceInfo> response = null;
+
+        try {
+            new LogMessage.Impl(this.logger, trace, "start createAndFetch", LogType.of(start), createAndFetch).log();
+            response = this.controller.createAndFetch(queryId, cursorId, createPageRequest);
+            new LogMessage.Impl(this.logger, info, "finish createAndFetch",
+                    LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish createAndFetch", LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), createAndFetch.toString(), "success")).mark();
+        } catch (Exception ex) {
+            new LogMessage.Impl(this.logger, error, "failed createAndFetch", LogType.of(failure), createAndFetch, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), createAndFetch.toString(), "failure")).mark();
+            response = ContentResponse.internalError(ex);
+        }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
+    }
+
+    @Override
     public ContentResponse<StoreResourceInfo> getInfo(String queryId, String cursorId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfoByQueryIdAndCursorId.toString())).time();
 
@@ -215,6 +247,7 @@ public class LoggingPageController implements PageController {
     private PageController controller;
 
     private static MethodName.MDCWriter create = MethodName.of("create");
+    private static MethodName.MDCWriter createAndFetch = MethodName.of("createAndFetch");
     private static MethodName.MDCWriter getInfoByQueryIdAndCursorId = MethodName.of("getInfoByQueryIdAndCursorId");
     private static MethodName.MDCWriter getInfoByQueryIdAndCursorIdAndPageId = MethodName.of("getInfoByQueryIdAndCursorIdAndPageId");
     private static MethodName.MDCWriter getData = MethodName.of("getData");

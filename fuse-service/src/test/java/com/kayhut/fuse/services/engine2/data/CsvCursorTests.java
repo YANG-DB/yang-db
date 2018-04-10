@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2.data;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -28,6 +29,7 @@ import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
+import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateCsvCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.CsvCursorTestSuite;
@@ -495,20 +497,20 @@ public class CsvCursorTests {
 
 
     private void runQueryAndValidate(Query query, CsvQueryResult expectedQueryResult, Plan expectedPlan, CreateCsvCursorRequest csvCursorRequest) throws IOException, InterruptedException {
+        csvCursorRequest.setCreatePageRequest(new CreatePageRequest(1000, true));
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(
+                fuseResourceInfo.getQueryStoreUrl(),
+                query,
+                "1",
+                "1",
+                csvCursorRequest);
+
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), csvCursorRequest );
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
+        Object pageData = queryResourceInfo.getCursorResourceInfos().iterator().next().getPageResourceInfos().iterator().next().getData();
+        CsvQueryResult actualCsvQueryResult = new ObjectMapper().convertValue(pageData, CsvQueryResult.class);
 
-        CsvQueryResult actualCsvQueryResult = (CsvQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         PlanAssert.assertEquals(expectedPlan, actualPlan);
 
 

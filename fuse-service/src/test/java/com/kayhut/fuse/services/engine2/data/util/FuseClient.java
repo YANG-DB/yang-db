@@ -9,7 +9,6 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.*;
-import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
@@ -63,23 +62,13 @@ public class FuseClient {
         return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
     }
 
-    public QueryCursorPageResourceInfo postQueryAndFetch(
-            String queryStoreUrl,
-            Query query,
-            String id,
-            String name,
-            CreateCursorRequest cursorRequest,
-            int pageSize) throws IOException {
-
-        CreateQueryAndFetchRequest request = new CreateQueryAndFetchRequest(
-                id,
-                name,
-                query,
-                cursorRequest,
-                new CreatePageRequest(pageSize)
-        );
-
-        return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl + "?fetch=true", request)), QueryCursorPageResourceInfo.class);
+    public QueryResourceInfo postQuery(String queryStoreUrl, Query query, String id, String name, CreateCursorRequest createCursorRequest) throws IOException {
+        CreateQueryRequest request = new CreateQueryRequest();
+        request.setId(id);
+        request.setName(name);
+        request.setQuery(query);
+        request.setCreateCursorRequest(createCursorRequest);
+        return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
     }
 
     public CursorResourceInfo postCursor(String cursorStoreUrl) throws IOException {

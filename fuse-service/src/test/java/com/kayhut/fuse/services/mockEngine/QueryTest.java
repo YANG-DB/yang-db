@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
@@ -107,26 +108,25 @@ public class QueryTest {
     }
 
     @Test
-    @Ignore
     public void createQueryAndFetch() throws IOException {
-        CreateCursorRequest createCursorRequest = new CreatePathsCursorRequest();
-
         CreatePageRequest createPageRequest = new CreatePageRequest();
         createPageRequest.setPageSize(10);
 
-        CreateQueryAndFetchRequest request = new CreateQueryAndFetchRequest();
+        CreateCursorRequest createCursorRequest = new CreatePathsCursorRequest();
+        createCursorRequest.setCreatePageRequest(createPageRequest);
+
+        CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
         request.setQuery(TestUtils.loadQuery("Q001.json"));
         request.setCreateCursorRequest(createCursorRequest);
-        request.setCreatePageRequest(createPageRequest);
         //submit query
         given()
                 .contentType("application/json")
                 .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
-                .post("/fuse/query?fetch=true")
+                .post("/fuse/query")
                 .then()
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
@@ -136,10 +136,11 @@ public class QueryTest {
                         assertTrue(data.get("resourceUrl").toString().endsWith("/fuse/query/1"));
                         assertTrue(data.get("cursorStoreUrl").toString().endsWith("/fuse/query/1/cursor"));
                         assertTrue(data.get("v1QueryUrl").toString().endsWith("/fuse/query/1/v1"));
-                        assertTrue(((Map) data.get("cursorResourceInfo")).containsKey("cursorType"));
-                        assertTrue(((Map) data.get("cursorResourceInfo")).containsKey("pageStoreUrl"));
-                        assertTrue(((Map) data.get("pageResourceInfo")).containsKey("dataUrl"));
-                        assertTrue(((Map) data.get("pageResourceInfo")).containsKey("actualPageSize"));
+                        assertTrue(((Map)(((List) data.get("cursorResourceInfos")).get(0))).containsKey("cursorRequest"));
+                        assertTrue(((Map)(((List) data.get("cursorResourceInfos")).get(0))).containsKey("pageStoreUrl"));
+                        assertTrue(((Map)(((List) data.get("cursorResourceInfos")).get(0))).containsKey("pageResourceInfos"));
+                        assertTrue(((Map)((List)((Map)(((List) data.get("cursorResourceInfos")).get(0))).get("pageResourceInfos")).get(0)).containsKey("dataUrl"));
+                        assertTrue(((Map)((List)((Map)(((List) data.get("cursorResourceInfos")).get(0))).get("pageResourceInfos")).get(0)).containsKey("actualPageSize"));
                         return contentResponse.getData() != null;
                     } catch (Exception e) {
                         e.printStackTrace();

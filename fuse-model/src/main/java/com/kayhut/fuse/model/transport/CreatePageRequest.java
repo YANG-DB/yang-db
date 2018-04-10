@@ -10,7 +10,12 @@ public class CreatePageRequest {
     }
 
     public CreatePageRequest(int pageSize) {
+        this(pageSize, false);
+    }
+
+    public CreatePageRequest(int pageSize, boolean fetch) {
         this.pageSize = pageSize;
+        this.fetch = fetch;
     }
     //endregion
 
@@ -22,9 +27,18 @@ public class CreatePageRequest {
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
+
+    public boolean isFetch() {
+        return fetch;
+    }
+
+    public void setFetch(boolean fetch) {
+        this.fetch = fetch;
+    }
     //endregion
 
     //region Fields
     private int pageSize;
+    private boolean fetch;
     //endregion
 }

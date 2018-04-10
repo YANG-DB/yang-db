@@ -22,7 +22,6 @@ import org.jooby.Status;
 
 import java.util.Optional;
 
-import static java.util.UUID.randomUUID;
 import static org.jooby.Status.NOT_FOUND;
 import static org.jooby.Status.OK;
 
@@ -46,7 +45,10 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     CreateQueryRequest createQueryRequest = req.body(CreateQueryRequest.class);
                     req.set(CreateQueryRequest.class, createQueryRequest);
                     req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
-                    ContentResponse<QueryResourceInfo> response = this.getController(app).create(createQueryRequest);
+
+                    ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
+                            this.getController(app).create(createQueryRequest) :
+                            this.getController(app).createAndFetch(createQueryRequest);
 
                     return Results.with(response, response.status());
                 });

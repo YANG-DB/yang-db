@@ -99,6 +99,14 @@ public class ServiceModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
+                this.bind(CursorController.class)
+                        .annotatedWith(named(StandardQueryController.cursorControllerParameter))
+                        .to(StandardCursorController.class);
+
+                this.bind(PageController.class)
+                        .annotatedWith(named(StandardQueryController.pageControllerParameter))
+                        .to(StandardPageController.class);
+
                 this.bind(QueryController.class)
                         .annotatedWith(named(LoggingQueryController.controllerParameter))
                         .to(StandardQueryController.class);
