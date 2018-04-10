@@ -15,6 +15,7 @@ import com.kayhut.fuse.services.controllers.ApiDescriptionController;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
@@ -71,7 +72,7 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
                 .externalRequestId(this.externalRequestIdSupplier.get())
-                .elapsed(timerContext.stop())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
     //endregion

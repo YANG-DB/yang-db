@@ -38,7 +38,7 @@ public class ServiceModule extends ModuleBase {
                 .annotatedWith(named(CachedRequestIdSupplier.RequestIdSupplierParameter))
                 .to(SnowflakeRequestIdSupplier.class)
                 .asEagerSingleton();
-        binder.bind(RequestIdSupplier.class).to(RequestIdSupplier.Impl.class).in(RequestScoped.class);
+        binder.bind(RequestIdSupplier.class).to(CachedRequestIdSupplier.class).in(RequestScoped.class);
         binder.bind(ExternalRequestIdSupplier.class).to(ExternalRequestIdSupplier.Impl.class).in(RequestScoped.class);
 
         // bind service controller

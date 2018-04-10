@@ -15,7 +15,6 @@ import java.util.Arrays;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
 import static com.kayhut.fuse.model.OntologyTestUtils.ORIGINATED_IN;
-import static java.util.Collections.singletonList;
 
 public class DragonKingdomQueryTest extends TestCase {
 

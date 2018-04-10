@@ -18,6 +18,7 @@ import com.kayhut.fuse.services.controllers.CursorController;
 import org.jooby.scope.RequestScoped;
 import org.slf4j.Logger;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
@@ -78,7 +79,7 @@ public class LoggingCursorController implements CursorController {
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
                 .externalRequestId(this.externalRequestIdSupplier.get())
-                .elapsed(timerContext.stop())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
 
@@ -109,7 +110,7 @@ public class LoggingCursorController implements CursorController {
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
                 .externalRequestId(this.externalRequestIdSupplier.get())
-                .elapsed(timerContext.stop())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
 
@@ -140,7 +141,7 @@ public class LoggingCursorController implements CursorController {
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
                 .externalRequestId(this.externalRequestIdSupplier.get())
-                .elapsed(timerContext.stop())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
 
@@ -171,7 +172,7 @@ public class LoggingCursorController implements CursorController {
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
                 .externalRequestId(this.externalRequestIdSupplier.get())
-                .elapsed(timerContext.stop())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
     //endregion

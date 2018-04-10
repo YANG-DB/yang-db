@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.transport;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.results.TextContent;
 import org.jooby.Status;
 
@@ -32,14 +33,16 @@ public class ContentResponse<T> implements Response, TextContent {
         return this.requestId;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public String getExternalRequestId() {
         return this.externalRequestId;
     }
 
-    public long elapsed() {
+    public long getElapsed() {
         return this.elapsed;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public T getData() {
         return this.data;
     }
@@ -48,7 +51,8 @@ public class ContentResponse<T> implements Response, TextContent {
         return this.status;
     }
 
-    public Exception error() {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Exception getError() {
         return this.error;
     }
 

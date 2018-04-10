@@ -12,6 +12,8 @@ import com.kayhut.fuse.services.controllers.DataLoaderController;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import org.slf4j.Logger;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
 import static com.kayhut.fuse.dispatcher.logging.LogType.*;
@@ -61,7 +63,7 @@ public class LoggingDataLoaderController implements DataLoaderController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .elapsed(timerContext.stop())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
     //region CatalogController Implementation
@@ -88,7 +90,7 @@ public class LoggingDataLoaderController implements DataLoaderController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .elapsed(timerContext.stop())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
     //region CatalogController Implementation
@@ -115,7 +117,7 @@ public class LoggingDataLoaderController implements DataLoaderController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .elapsed(timerContext.stop())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
     //endregion
