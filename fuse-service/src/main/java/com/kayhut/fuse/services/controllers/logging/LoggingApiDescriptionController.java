@@ -48,29 +48,31 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
     @Override
     public ContentResponse<FuseResourceInfo> getInfo() {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfo")).time();
-        boolean thrownException = false;
 
         LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
                 ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
 
+        ContentResponse<FuseResourceInfo> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start getInfo", LogType.of(start), getInfo).log();
-            return controller.getInfo();
+            response = this.controller.getInfo();
+            new LogMessage.Impl(this.logger, info, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed getInfo", LogType.of(failure), getInfo, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "failure")).mark();
-            throw new RuntimeException(ex);
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(timerContext.stop())
+                .compose();
     }
     //endregion
 

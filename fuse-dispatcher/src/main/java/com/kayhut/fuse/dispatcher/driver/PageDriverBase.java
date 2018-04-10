@@ -118,6 +118,22 @@ public abstract class PageDriverBase implements PageDriver {
 
         return Optional.ofNullable(pageResource.get().getData());
     }
+
+    @Override
+    public Optional<Boolean> delete(String queryId, String cursorId, String pageId) {
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
+        if (!queryResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        if (!cursorResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        cursorResource.get().deletePageResource(pageId);
+        return Optional.of(true);
+    }
     //endregion
 
     //region Protected Abstract Methods

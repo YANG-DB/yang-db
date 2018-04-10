@@ -25,19 +25,19 @@ public class StandardInternalsController implements InternalsController{
 
     @Override
     public ContentResponse<String> getStatisticsProviderName() {
-        return Builder.<String>builder(randomUUID().toString(),ACCEPTED, NOT_FOUND)
+        return Builder.<String>builder(ACCEPTED, NOT_FOUND)
                 .data(this.driver.getStatisticsProviderName()).compose();
     }
 
     @Override
     public ContentResponse<String> getStatisticsProviderSetup() {
-        return Builder.<String>builder(randomUUID().toString(),ACCEPTED, NOT_FOUND)
+        return Builder.<String>builder(ACCEPTED, NOT_FOUND)
                 .data(this.driver.getStatisticsProviderSetup()).compose();
     }
 
     @Override
     public ContentResponse<String> refreshStatisticsProviderSetup() {
-        return Builder.<String>builder(randomUUID().toString(),ACCEPTED, NOT_FOUND)
+        return Builder.<String>builder(ACCEPTED, NOT_FOUND)
                 .data(this.driver.refreshStatisticsProviderSetup()).compose();
     }
     //endregion

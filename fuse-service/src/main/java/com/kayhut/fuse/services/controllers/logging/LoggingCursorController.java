@@ -54,117 +54,125 @@ public class LoggingCursorController implements CursorController {
     @Override
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), create.toString())).time();
-        boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
                 ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).get())).write();
 
+        ContentResponse<CursorResourceInfo> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start create", LogType.of(start), create).log();
-            return controller.create(queryId, createCursorRequest);
+            response = this.controller.create(queryId, createCursorRequest);
+            new LogMessage.Impl(this.logger, info, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed create", LogType.of(failure), create, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "failure")).mark();
-            throw new RuntimeException(ex);
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(timerContext.stop())
+                .compose();
     }
 
     @Override
     public ContentResponse<StoreResourceInfo> getInfo(String queryId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfoByQueryId.toString())).time();
-        boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
                 ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).get())).write();
 
+        ContentResponse<StoreResourceInfo> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start getInfoByQueryId", LogType.of(start), getInfoByQueryId).log();
-            return controller.getInfo(queryId);
+            response = this.controller.getInfo(queryId);
+            new LogMessage.Impl(this.logger, info, "finish getInfoByQueryId", LogType.of(success), getInfoByQueryId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryId", LogType.of(success), getInfoByQueryId, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryId.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed getInfoByQueryId", LogType.of(failure), getInfoByQueryId, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryId.toString(), "failure")).mark();
-            return null;
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish getInfoByQueryId", LogType.of(success), getInfoByQueryId, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryId", LogType.of(success), getInfoByQueryId, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryId.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(timerContext.stop())
+                .compose();
     }
 
     @Override
     public ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfoByQueryIdAndCursorId.toString())).time();
-        boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
                 ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
 
+        ContentResponse<CursorResourceInfo> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorId", LogType.of(start), getInfoByQueryIdAndCursorId).log();
-            return controller.getInfo(queryId, cursorId);
+            response = this.controller.getInfo(queryId, cursorId);
+            new LogMessage.Impl(this.logger, info, "finish getInfoByQueryIdAndCursorId", LogType.of(success), getInfoByQueryIdAndCursorId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryIdAndCursorId", LogType.of(success), getInfoByQueryIdAndCursorId, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryIdAndCursorId.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed getInfoByQueryIdAndCursorId", LogType.of(failure), getInfoByQueryIdAndCursorId, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryIdAndCursorId.toString(), "failure")).mark();
-            return null;
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish getInfoByQueryIdAndCursorId", LogType.of(success), getInfoByQueryIdAndCursorId, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryIdAndCursorId", LogType.of(success), getInfoByQueryIdAndCursorId, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryIdAndCursorId.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(timerContext.stop())
+                .compose();
     }
 
     @Override
     public ContentResponse<Boolean> delete(String queryId, String cursorId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), delete.toString())).time();
-        boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
                 ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
 
+        ContentResponse<Boolean> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start delete", LogType.of(start), delete).log();
-            return controller.delete(queryId, cursorId);
+            response = this.controller.delete(queryId, cursorId);
+            new LogMessage.Impl(this.logger, info, "finish delete", LogType.of(success), delete, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish delete", LogType.of(success), delete, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), delete.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed delete", LogType.of(failure), delete, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), delete.toString(), "failure")).mark();
-            return null;
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish delete", LogType.of(success), delete, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish delete", LogType.of(success), delete, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), delete.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(timerContext.stop())
+                .compose();
     }
     //endregion
 

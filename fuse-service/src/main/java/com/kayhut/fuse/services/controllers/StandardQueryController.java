@@ -45,7 +45,7 @@ public class StandardQueryController implements QueryController {
         String queryId = getOrCreateId(request.getId());
         QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis());
 
-        return Builder.<QueryResourceInfo>builder(request.getId(), CREATED, SERVER_ERROR )
+        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
                 .data(driver.create(metadata, request.getQuery()))
                 .successPredicate(response -> response.getData() != null && response.getData().getError() == null)
                 .compose();
@@ -55,14 +55,14 @@ public class StandardQueryController implements QueryController {
     public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryAndFetchRequest request) {
         ContentResponse<QueryResourceInfo> queryResourceInfoResponse = this.create(request);
         if (queryResourceInfoResponse.status() == SERVER_ERROR) {
-            return Builder.<QueryResourceInfo>builder(request.getId(), CREATED, SERVER_ERROR)
+            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                     .data(Optional.of(queryResourceInfoResponse.getData()))
                     .successPredicate(response -> false)
                     .compose();
         }
 
         if (request.getCreateCursorRequest() == null) {
-            return Builder.<QueryResourceInfo>builder(request.getId(), CREATED, SERVER_ERROR)
+            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                     .data(Optional.of(queryResourceInfoResponse.getData()))
                     .compose();
         }
@@ -70,7 +70,7 @@ public class StandardQueryController implements QueryController {
         ContentResponse<CursorResourceInfo> cursorResourceInfoResponse =
                 this.cursorController.create(queryResourceInfoResponse.getData().getResourceId(), request.getCreateCursorRequest());
         if (cursorResourceInfoResponse.status() == SERVER_ERROR) {
-            return Builder.<QueryResourceInfo>builder(request.getId(), CREATED, SERVER_ERROR)
+            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                     .data(Optional.of(new QueryCursorPageResourceInfo(
                             queryResourceInfoResponse.getData().getResourceUrl(),
                             queryResourceInfoResponse.getData().getResourceId(),
@@ -83,7 +83,7 @@ public class StandardQueryController implements QueryController {
         }
 
         if (request.getCreatePageRequest() == null) {
-            return Builder.<QueryResourceInfo>builder(request.getId(), CREATED, SERVER_ERROR)
+            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                     .data(Optional.of(new QueryCursorPageResourceInfo(
                             queryResourceInfoResponse.getData().getResourceUrl(),
                             queryResourceInfoResponse.getData().getResourceId(),
@@ -100,7 +100,7 @@ public class StandardQueryController implements QueryController {
                         request.getCreatePageRequest());
         if (pageResourceInfoResponse.status() == SERVER_ERROR) {
             this.delete(queryResourceInfoResponse.getData().getResourceId());
-            return Builder.<QueryResourceInfo>builder(request.getId(), CREATED, SERVER_ERROR)
+            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                     .data(Optional.of(new QueryCursorPageResourceInfo(
                             queryResourceInfoResponse.getData().getResourceUrl(),
                             queryResourceInfoResponse.getData().getResourceId(),
@@ -111,7 +111,7 @@ public class StandardQueryController implements QueryController {
                     .compose();
         }
 
-        return Builder.<QueryResourceInfo>builder(request.getId(), CREATED, SERVER_ERROR)
+        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                 .data(Optional.of(new QueryCursorPageResourceInfo(
                         queryResourceInfoResponse.getData().getResourceUrl(),
                         queryResourceInfoResponse.getData().getResourceId(),
@@ -123,49 +123,49 @@ public class StandardQueryController implements QueryController {
 
     @Override
     public ContentResponse<StoreResourceInfo> getInfo() {
-        return Builder.<StoreResourceInfo>builder(randomUUID().toString(),OK, NOT_FOUND)
+        return Builder.<StoreResourceInfo>builder(OK, NOT_FOUND)
                 .data(this.driver.getInfo())
                 .compose();
     }
 
     @Override
     public ContentResponse<QueryResourceInfo> getInfo(String queryId) {
-        return Builder.<QueryResourceInfo>builder(randomUUID().toString(),OK, NOT_FOUND)
+        return Builder.<QueryResourceInfo>builder(OK, NOT_FOUND)
                 .data(this.driver.getInfo(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<Query> getV1(String queryId) {
-        return Builder.<Query>builder(randomUUID().toString(),OK, NOT_FOUND)
+        return Builder.<Query>builder(OK, NOT_FOUND)
                 .data(this.driver.getV1(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<AsgQuery> getAsg(String queryId) {
-        return Builder.<AsgQuery>builder(randomUUID().toString(),OK, NOT_FOUND)
+        return Builder.<AsgQuery>builder(OK, NOT_FOUND)
                 .data(this.driver.getAsg(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<PlanNode<Plan>> planVerbose(String queryId) {
-        return Builder.<PlanNode<Plan>>builder(randomUUID().toString(),OK, NOT_FOUND)
+        return Builder.<PlanNode<Plan>>builder(OK, NOT_FOUND)
                 .data(this.driver.planVerbose(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId) {
-        return Builder.<PlanWithCost<Plan, PlanDetailedCost>>builder(randomUUID().toString(),OK, NOT_FOUND)
+        return Builder.<PlanWithCost<Plan, PlanDetailedCost>>builder(OK, NOT_FOUND)
                 .data(this.driver.explain(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<Boolean> delete(String queryId) {
-        return Builder.<Boolean>builder(randomUUID().toString(),ACCEPTED, NOT_FOUND)
+        return Builder.<Boolean>builder(ACCEPTED, NOT_FOUND)
                 .data(this.driver.delete(queryId))
                 .compose();
     }

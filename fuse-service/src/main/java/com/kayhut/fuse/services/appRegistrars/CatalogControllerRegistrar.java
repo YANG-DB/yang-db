@@ -4,6 +4,7 @@ import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.services.controllers.CatalogController;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.jooby.Jooby;
 import org.jooby.Results;
 import org.jooby.Status;
@@ -23,8 +24,8 @@ public class CatalogControllerRegistrar extends AppControllerRegistrarBase<Catal
         /** get available ontologies*/
         app.use("/fuse/catalog/ontology")
                 .get(req -> {
-                    List<ContentResponse<Ontology>> responses = this.getController(app).getOntologies();
-                    return Results.with(responses, !responses.isEmpty() ? responses.get(0).status() : Status.NO_CONTENT);
+                    ContentResponse<List<Ontology>> response = this.getController(app).getOntologies();
+                    return Results.with(response, response.status());
                 });
 
         /** get the ontology by id */
@@ -37,8 +38,8 @@ public class CatalogControllerRegistrar extends AppControllerRegistrarBase<Catal
         /** get available schemas **/
         app.use("/fuse/catalog/schema")
                 .get(req -> {
-                    List<ContentResponse> responses = this.getController(app).getSchemas();
-                    return Results.with(responses, !responses.isEmpty() ? responses.get(0).status() : Status.NO_CONTENT);
+                    ContentResponse<List<GraphElementSchemaProvider>> response = this.getController(app).getSchemas();
+                    return Results.with(response, response.status());
                 });
 
         app.use("/fuse/catalog/schema/:id")

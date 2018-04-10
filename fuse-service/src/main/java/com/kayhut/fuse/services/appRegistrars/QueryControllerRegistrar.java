@@ -78,7 +78,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                 .get(req -> {
                     ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = this.getController(app).explain(req.param("queryId").value());
                     String print = PlanWithCostDescriptor.print(response.getData());
-                    ContentResponse<String> compose = ContentResponse.Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                    ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                             .data(Optional.of(print))
                             .compose();
                     return Results.with(JsonWriter.objectToJson(compose), response.status());
@@ -95,7 +95,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                 .get(req -> {
                     ContentResponse<Query> response = this.getController(app).getV1(req.param("queryId").value());
                     String print = QueryDescriptor.print(response.getData());
-                    ContentResponse<String> compose = ContentResponse.Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                    ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                             .data(Optional.of(print))
                             .compose();
                     return Results.with(JsonWriter.objectToJson(compose), response.status());
@@ -113,7 +113,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                 .get(req -> {
                     ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param("queryId").value());
                     String print = AsgQueryDescriptor.print(response.getData());
-                    ContentResponse<String> compose = ContentResponse.Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                    ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                             .data(Optional.of(print))
                             .compose();
                     return Results.with(JsonWriter.objectToJson(compose), response.status());
