@@ -65,23 +65,22 @@ public class FuseClient {
         return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
     }
 
-    public QueryCursorPageResourceInfo postQueryAndFetch(
+    public QueryResourceInfo postQuery(
             String queryStoreUrl,
             Query query,
             String id,
             String name,
-            CreateCursorRequest cursorRequest,
-            int pageSize) throws IOException {
+            CreateCursorRequest cursorRequest) throws IOException {
 
-        CreateQueryAndFetchRequest request = new CreateQueryAndFetchRequest(
+        CreateQueryRequest request = new CreateQueryRequest(
                 id,
                 name,
                 query,
-                cursorRequest,
-                new CreatePageRequest(pageSize)
+                PlanTraceOptions.of(PlanTraceOptions.Level.none),
+                cursorRequest
         );
 
-        return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl + "?fetch=true", request)), QueryCursorPageResourceInfo.class);
+        return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl + "?fetch=true", request)), QueryResourceInfo.class);
     }
 
     public CursorResourceInfo postCursor(String cursorStoreUrl) throws IOException {

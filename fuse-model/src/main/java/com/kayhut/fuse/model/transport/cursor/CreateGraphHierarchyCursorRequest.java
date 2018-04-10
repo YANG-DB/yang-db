@@ -1,15 +1,24 @@
 package com.kayhut.fuse.model.transport.cursor;
 
+import com.kayhut.fuse.model.transport.CreatePageRequest;
+
+import java.util.Collections;
+
 /**
  * Created by roman.margolis on 11/03/2018.
  */
 public class CreateGraphHierarchyCursorRequest extends CreateCursorRequest {
     //region Constructors
     public CreateGraphHierarchyCursorRequest() {
-
+        this(Collections.emptyList());
     }
 
     public CreateGraphHierarchyCursorRequest(Iterable<String> countTags) {
+        this(countTags, null);
+    }
+
+    public CreateGraphHierarchyCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest) {
+        super(createPageRequest);
         this.countTags = countTags;
     }
     //endregion

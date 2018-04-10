@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.transport.cursor;
 
+import com.kayhut.fuse.model.transport.CreatePageRequest;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
@@ -9,14 +10,22 @@ import java.util.List;
  * Created by roman.margolis on 11/03/2018.
  */
 public class CreateCsvCursorRequest extends CreateCursorRequest {
-
+    //region Constructors
     public CreateCsvCursorRequest() {
+        this(null, null);
     }
 
     public CreateCsvCursorRequest(CsvElement[] csvElements) {
-        this.csvElements = csvElements;
+        this(csvElements, null);
     }
 
+    public CreateCsvCursorRequest(CsvElement[] csvElements, CreatePageRequest createPageRequest) {
+        super(createPageRequest);
+        this.csvElements = csvElements;
+    }
+    //endregion
+
+    //region Properties
     public CsvElement[] getCsvElements() {
         return csvElements;
     }
@@ -24,9 +33,13 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
     public void setCsvElements(CsvElement[] csvElements) {
         this.csvElements = csvElements;
     }
+    //endregion
 
+    //region Fields
     private CsvElement[] csvElements;
+    //endregion
 
+    //region Builder
     public static final class Builder{
         public Builder() {
             csvElements = new ArrayList<>();
@@ -47,8 +60,9 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
 
         private List<CsvElement> csvElements;
     }
+    //endregion
 
-
+    //region CsvElement
     public static class CsvElement{
         public CsvElement() {
         }
@@ -103,6 +117,7 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
         private String property;
         private ElementType elementType;
     }
+    //endregion
 
     public enum ElementType{
         Entity,

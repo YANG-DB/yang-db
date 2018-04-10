@@ -1,6 +1,8 @@
 package com.kayhut.fuse.model.transport;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 /**
  * Created by lior on 19/02/2017.
@@ -24,6 +26,11 @@ public class CreateQueryRequest {
     public CreateQueryRequest(String id, String name, Query query, PlanTraceOptions planTraceOptions) {
         this(id, name, query);
         this.planTraceOptions = planTraceOptions;
+    }
+
+    public CreateQueryRequest(String id, String name, Query query, PlanTraceOptions planTraceOptions, CreateCursorRequest createCursorRequest) {
+        this(id, name, query, planTraceOptions);
+        this.createCursorRequest = createCursorRequest;
     }
     //endregion
 
@@ -59,6 +66,15 @@ public class CreateQueryRequest {
     public void setPlanTraceOptions(PlanTraceOptions planTraceOptions) {
         this.planTraceOptions = planTraceOptions;
     }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public CreateCursorRequest getCreateCursorRequest() {
+        return createCursorRequest;
+    }
+
+    public void setCreateCursorRequest(CreateCursorRequest createCursorRequest) {
+        this.createCursorRequest = createCursorRequest;
+    }
     //endregion
 
     //region Fields
@@ -66,5 +82,7 @@ public class CreateQueryRequest {
     private String name;
     private Query query;
     private PlanTraceOptions planTraceOptions;
+
+    private CreateCursorRequest createCursorRequest;
     //endregion
 }

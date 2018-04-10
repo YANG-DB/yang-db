@@ -10,6 +10,7 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
  */
 public interface PageController {
     ContentResponse<PageResourceInfo> create(String queryId, String cursorId, CreatePageRequest createPageRequest);
+    ContentResponse<PageResourceInfo> createAndFetch(String queryId, String cursorId, CreatePageRequest createPageRequest);
     ContentResponse<StoreResourceInfo> getInfo(String queryId, String cursorId);
     ContentResponse<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId);
     ContentResponse<Object> getData(String queryId, String cursorId, String pageId);

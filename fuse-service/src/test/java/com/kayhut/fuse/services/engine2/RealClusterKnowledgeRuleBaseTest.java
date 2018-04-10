@@ -18,6 +18,7 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
@@ -670,18 +671,11 @@ public class RealClusterKnowledgeRuleBaseTest {
         )).build();
 
 
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, "1", "1",
+                new CreateGraphCursorRequest(new CreatePageRequest(1000, true)));
 
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
-
-        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        Object pageDataObj = queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData();
+        AssignmentsQueryResult pageData = new ObjectMapper().convertValue(pageDataObj, AssignmentsQueryResult.class);
         int x = 5;
     }
 

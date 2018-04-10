@@ -1,7 +1,7 @@
 package com.kayhut.fuse.services.controllers;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -14,25 +14,26 @@ import com.kayhut.fuse.model.resourceInfo.*;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
-import com.kayhut.fuse.model.transport.CreateQueryAndFetchRequest;
 
+import java.util.Collections;
 import java.util.Optional;
-import org.slf4j.MDC;
 
 import static com.kayhut.fuse.model.Utils.getOrCreateId;
-import static java.util.UUID.randomUUID;
 import static org.jooby.Status.*;
 
 /**
  * Created by lior on 19/02/2017.
  */
 public class StandardQueryController implements QueryController {
+    public static final String cursorControllerParameter = "StandardQueryController.@cursorController";
+    public static final String pageControllerParameter = "StandardQueryController.@pageController";
+
     //region Constructors
     @Inject
     public StandardQueryController(
             QueryDriver driver,
-            CursorController cursorController,
-            PageController pageController) {
+            @Named(cursorControllerParameter) CursorController cursorController,
+            @Named(pageControllerParameter) PageController pageController) {
         this.driver = driver;
         this.cursorController = cursorController;
         this.pageController = pageController;
@@ -52,7 +53,7 @@ public class StandardQueryController implements QueryController {
     }
 
     @Override
-    public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryAndFetchRequest request) {
+    public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryRequest request) {
         ContentResponse<QueryResourceInfo> queryResourceInfoResponse = this.create(request);
         if (queryResourceInfoResponse.status() == SERVER_ERROR) {
             return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
@@ -71,25 +72,21 @@ public class StandardQueryController implements QueryController {
                 this.cursorController.create(queryResourceInfoResponse.getData().getResourceId(), request.getCreateCursorRequest());
         if (cursorResourceInfoResponse.status() == SERVER_ERROR) {
             return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
-                    .data(Optional.of(new QueryCursorPageResourceInfo(
+                    .data(Optional.of(new QueryResourceInfo(
                             queryResourceInfoResponse.getData().getResourceUrl(),
                             queryResourceInfoResponse.getData().getResourceId(),
-                            queryResourceInfoResponse.getData().getCursorStoreUrl(),
-                            cursorResourceInfoResponse.getData(),
-                            null
-                    )))
+                            queryResourceInfoResponse.getData().getCursorStoreUrl())))
                     .successPredicate(response -> false)
                     .compose();
         }
 
-        if (request.getCreatePageRequest() == null) {
+        if (request.getCreateCursorRequest().getCreatePageRequest() == null) {
             return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
-                    .data(Optional.of(new QueryCursorPageResourceInfo(
+                    .data(Optional.of(new QueryResourceInfo(
                             queryResourceInfoResponse.getData().getResourceUrl(),
                             queryResourceInfoResponse.getData().getResourceId(),
                             queryResourceInfoResponse.getData().getCursorStoreUrl(),
-                            cursorResourceInfoResponse.getData(),
-                            null)))
+                            cursorResourceInfoResponse.getData())))
                     .compose();
         }
 
@@ -97,27 +94,45 @@ public class StandardQueryController implements QueryController {
                 this.pageController.create(
                         queryResourceInfoResponse.getData().getResourceId(),
                         cursorResourceInfoResponse.getData().getResourceId(),
-                        request.getCreatePageRequest());
+                        request.getCreateCursorRequest().getCreatePageRequest());
         if (pageResourceInfoResponse.status() == SERVER_ERROR) {
-            this.delete(queryResourceInfoResponse.getData().getResourceId());
             return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
-                    .data(Optional.of(new QueryCursorPageResourceInfo(
+                    .data(Optional.of(new QueryResourceInfo(
                             queryResourceInfoResponse.getData().getResourceUrl(),
                             queryResourceInfoResponse.getData().getResourceId(),
                             queryResourceInfoResponse.getData().getCursorStoreUrl(),
-                            cursorResourceInfoResponse.getData(),
-                            pageResourceInfoResponse.getData())))
+                            cursorResourceInfoResponse.getData())))
                     .successPredicate(response -> false)
                     .compose();
         }
 
+        cursorResourceInfoResponse.getData().setPageResourceInfos(Collections.singletonList(pageResourceInfoResponse.getData()));
+
+        ContentResponse<Object> pageDataResponse = this.pageController.getData(
+                queryResourceInfoResponse.getData().getResourceId(),
+                cursorResourceInfoResponse.getData().getResourceId(),
+                pageResourceInfoResponse.getData().getResourceId());
+
+        if (pageDataResponse.status() == SERVER_ERROR) {
+            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
+                    .data(Optional.of(new QueryResourceInfo(
+                            queryResourceInfoResponse.getData().getResourceUrl(),
+                            queryResourceInfoResponse.getData().getResourceId(),
+                            queryResourceInfoResponse.getData().getCursorStoreUrl(),
+                            cursorResourceInfoResponse.getData())))
+                    .successPredicate(response -> false)
+                    .compose();
+        }
+
+        pageResourceInfoResponse.getData().setData(pageDataResponse.getData());
+        cursorResourceInfoResponse.getData().setPageResourceInfos(Collections.singletonList(pageResourceInfoResponse.getData()));
+
         return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
-                .data(Optional.of(new QueryCursorPageResourceInfo(
+                .data(Optional.of(new QueryResourceInfo(
                         queryResourceInfoResponse.getData().getResourceUrl(),
                         queryResourceInfoResponse.getData().getResourceId(),
                         queryResourceInfoResponse.getData().getCursorStoreUrl(),
-                        cursorResourceInfoResponse.getData(),
-                        pageResourceInfoResponse.getData())))
+                        cursorResourceInfoResponse.getData())))
                 .compose();
     }
 

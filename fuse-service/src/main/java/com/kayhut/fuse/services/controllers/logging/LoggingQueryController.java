@@ -19,13 +19,11 @@ import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.CreateQueryAndFetchRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.controllers.QueryController;
 import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
@@ -89,21 +87,34 @@ public class LoggingQueryController implements QueryController {
     }
 
     @Override
-    public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryAndFetchRequest request) {
-        boolean thrownException = false;
+    public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryRequest request) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), createAndFetch.toString())).time();
+
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestIdByScope.of(request.getId())).write();
+
+        ContentResponse<QueryResourceInfo> response = null;
 
         try {
-            this.logger.trace("start createAndFetch");
-            return controller.createAndFetch(request);
+            new LogMessage.Impl(this.logger, trace, "start createAndFetch", LogType.of(start), createAndFetch).log();
+            response = this.controller.createAndFetch(request);
+            new LogMessage.Impl(this.logger, info, "finish createAndFetch", LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish createAndFetch", LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), "createAndFetch", "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
-            this.logger.error("failed createAndFetch", ex);
-            return null;
-        } finally {
-            if (!thrownException) {
-                this.logger.trace("finish createAndFetch");
-            }
+            new LogMessage.Impl(this.logger, error, "failed createAndFetch", LogType.of(failure), createAndFetch, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), createAndFetch.toString(), "failure")).mark();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
     }
 
     @Override
@@ -306,6 +317,7 @@ public class LoggingQueryController implements QueryController {
     private MetricRegistry metricRegistry;
 
     private static MethodName.MDCWriter create = MethodName.of("create");
+    private static MethodName.MDCWriter createAndFetch = MethodName.of("createAndFetch");
     private static MethodName.MDCWriter getInfo = MethodName.of("getInfo");
     private static MethodName.MDCWriter getV1ByQueryId = MethodName.of("getV1ByQueryId");
     private static MethodName.MDCWriter getAsgByQueryId = MethodName.of("getAsgByQueryId");
