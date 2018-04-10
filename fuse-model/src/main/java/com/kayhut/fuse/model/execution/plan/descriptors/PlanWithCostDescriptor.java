@@ -149,13 +149,23 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
 
     public static class GraphElement {
         private AsgEBaseContainer planOp;
+        private double cost;
 
         public GraphElement(AsgEBaseContainer planOp) {
+            this(planOp,0);
+        }
+
+        public GraphElement(AsgEBaseContainer planOp,double cost) {
             this.planOp = planOp;
+            this.cost = cost;
         }
 
         public AsgEBaseContainer getPlanOp() {
             return planOp;
+        }
+
+        public double getCost() {
+            return cost;
         }
 
         @Override
