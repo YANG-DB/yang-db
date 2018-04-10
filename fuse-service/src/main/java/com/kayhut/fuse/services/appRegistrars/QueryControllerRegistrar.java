@@ -2,6 +2,7 @@ package com.kayhut.fuse.services.appRegistrars;
 
 import com.cedarsoftware.util.io.JsonWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.graph.Graph;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -20,9 +21,12 @@ import org.jooby.Jooby;
 import org.jooby.Results;
 import org.jooby.Status;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static java.util.UUID.randomUUID;
 import static org.jooby.Status.NOT_FOUND;
 import static org.jooby.Status.OK;
 
@@ -101,11 +105,24 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     return Results.with(JsonWriter.objectToJson(compose), response.status());
                 });
 
+
+        /** view the asg query with d3 html*/
+        app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg/view")
+                .get(req -> Results.redirect("/public/assets/AsgTreeViewer.html?q="+req.param("queryId").value()));
+
+
         /** get the asg query */
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg")
                 .get(req -> {
                     ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param("queryId").value());
                     return Results.with(JsonWriter.objectToJson(response), response.status());
+                });
+
+        /** get the asg query */
+        app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg/json")
+                .get(req -> {
+                    ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param("queryId").value());
+                    return Results.json(response.getData());
                 });
 
         /** get the asg query print*/
@@ -126,6 +143,31 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     //temporary fix for jason serialization of object graphs
                     return Results.with(JsonWriter.objectToJson(response), response.status());
                 });
+
+        /** get the query verbose plan */
+        app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/json")
+                .get(req -> {
+                    ContentResponse response = this.getController(app).explain(req.param("queryId").value());
+                    return Results.json(response.getData());
+                });
+
+        /** get the query verbose plan */
+        app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/graph")
+                .get(req -> {
+                    ContentResponse response = this.getController(app).explain(req.param("queryId").value());
+                    Boolean cycle = Boolean.valueOf(req.param("cycle").toOptional().orElse("true"));
+                    Graph<PlanWithCostDescriptor.GraphElement> graph = PlanWithCostDescriptor.graph((PlanWithCost<Plan, PlanDetailedCost>) response.getData(),cycle);
+                    Map<String, Set> map = new HashMap<>();
+                    map.put("nodes",graph.nodes());
+                    map.put("edges",graph.edges().stream().map(v->new Object[] {v.nodeU(),v.nodeV()}).collect(Collectors.toSet()));
+                    return Results.json(map);
+                });
+
+        app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/view")
+                .get(req -> Results.redirect("/public/assets/PlanTreeViewer.html?q="+req.param("queryId").value()));
+
+        app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/sankey")
+                .get(req -> Results.redirect("/public/assets/PlanSankeyViewer.html?q="+req.param("queryId").value()));
     }
     //endregion
 }

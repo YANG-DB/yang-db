@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan;
 
+import com.google.common.graph.Graph;
 import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
 import com.kayhut.fuse.dispatcher.epb.PlanSelector;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
@@ -25,6 +26,7 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.JoinCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
@@ -321,7 +323,8 @@ public class EpbJoinTests {
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
-        planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> search = planSearcher.search(query);
+        PlanWithCostDescriptor.graph(search,true);
         Assert.assertEquals(2,Stream.ofAll(globalPlanSelector.getPlans()).length());
 
         assertNoJoinPlans(globalPlanSelector.getPlans());
