@@ -3,7 +3,6 @@ package com.kayhut.fuse.assembly.knowlegde;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
-import org.apache.commons.collections.map.HashedMap;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;

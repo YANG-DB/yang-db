@@ -45,6 +45,9 @@ public class FuseApp extends Jooby {
         use(new Jackson());
         use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {
         }));
+        get("", () ->  Results.redirect("/public/assets/earth.html"));
+        get("/", () ->  Results.redirect("/public/assets/earth.html"));
+        get("/collision", () ->  Results.redirect("/public/assets/collision.html"));
         //'Access-Control-Allow-Origin' header
         use("*", new CorsHandler());
         //expose html assets

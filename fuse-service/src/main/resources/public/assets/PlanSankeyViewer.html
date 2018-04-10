@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type='text/javascript' src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script type='text/javascript' src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script  type='text/javascript' src="http://rawgit.com/d3/d3-plugins/master/sankey/sankey.js"></script>
+    <title>Plan Sankey Visualizer</title>
+    <style>
+        .node rect {
+            cursor: move;
+            fill-opacity: .9;
+            shape-rendering: crispEdges;
+        }
+        .node text {
+            pointer-events: none;
+            text-shadow: 0 1px 0 #fff;
+        }
+        .link {
+            fill: none;
+            stroke: #000;
+            stroke-opacity: .2;
+        }
+        .link hover {
+            stroke-opacity: .5;
+        }
+    </style>
+
+</head>
+
+<body>
+<div style="margin-left:30px;">
+    <input type="text" class="inputUrl" size="35"/>
+    <button class="btnGetData">Get Data</button>
+</div>
+
+<div id="body"></div>
+
+<script>
+    let searchParams = new URLSearchParams(window.location.search);
+
+    if (searchParams.has('q')) {
+        let query = searchParams.get('q');
+        $('.btnGetData').value = query;
+        run(`${window.location.origin}/fuse/query/${query}/plan/graph?cycle=false`)
+    } else {
+        $('.btnGetData').click(function () {
+            run($('.inputUrl').val());
+        })
+    }
+
+    function run(root) {
+        d3.json(root, function (error, dataset) {
+            if (error) throw error;
+
+            var margin = {
+                    top: 0,
+                    right: 500,
+                    bottom: 1000,
+                    left: 0
+                },
+                width = 1500 - margin.left - margin.right,
+                height = 1500 - margin.top - margin.bottom;
+
+            var formatNumber = d3.format(",.0f"),
+                format = function (d) {
+                    return formatNumber(d) + " TWh";
+                },
+                color = d3.scale.category20();
+
+            var svg = d3.select("body").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var sankey = d3.sankey()
+                .nodeWidth(15)
+                .nodePadding(50)
+                .size([width, height]);
+
+            var path = sankey.link();
+
+            var dataNodes = dataset.nodes.map(v => {
+                let val = new Object();
+                val.type = v.planOp.asgEbase.eBase.type;
+                val.eNum = v.planOp.asgEbase.eBase.eNum;
+                val.index = dataset.nodes.findIndex(node => node.planOp.asgEbase.eBase.eNum === val.eNum);
+                val.name = `${val.index}:${val.eNum}`;
+                return val;
+            });
+
+            var dataEdges = dataset.edges.map(v => {
+                let val = new Object();
+                val.source = dataNodes.findIndex(node => node.eNum === v[0].planOp.asgEbase.eBase.eNum);
+                val.sourceName = dataNodes[val.source].type;
+                val.from = v[0].planOp.asgEbase.eBase.eNum;
+                val.target = dataNodes.findIndex(node => node.eNum === v[1].planOp.asgEbase.eBase.eNum);
+                val.targetName = dataNodes[val.target].type;
+                val.to = v[1].planOp.asgEbase.eBase.eNum;
+                val.value = 1;
+                return val;
+            });
+
+            sankey
+                .nodes(dataNodes)
+                .links(dataEdges)
+                .layout(32);
+
+            var link = svg.append("g").selectAll(".link")
+                .data(dataEdges)
+                .enter().append("path")
+                .attr("class", "link")
+                .attr("d", path)
+                .style("stroke-width", function (d) {
+                    return Math.max(1, d.dy);
+                });
+
+            link.append("title")
+                .text(function (d) {
+                    return d.sourceName + " -> " + d.targetName ;
+                });
+
+            var node = svg.append("g").selectAll(".node")
+                .data(dataNodes)
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function (d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                });
+
+            node.filter(function (d) {
+                return !d.pieData;
+            })
+                .append("rect")
+                .attr("height", function (d) {
+                    return d.dy;
+                })
+                .attr("width", sankey.nodeWidth())
+                .style("fill", function (d) {
+                    return d.color = color(d.type.replace(/ .*/, ""));
+                })
+                .style("stroke", function (d) {
+                    return d3.rgb(d.color).darker(2);
+                })
+                .append("title")
+                .text(function (d) {
+                    return `${d.name}-[${d.type}]`;
+                });
+
+            var pColor = d3.scale.ordinal()
+                .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+            var arc = d3.svg.arc()
+                .outerRadius(50)
+                .innerRadius(20);
+
+            var pie = d3.layout.pie()
+                .sort(null)
+                .value(function (d) {
+                    return d.value;
+                });
+
+            var g = node.filter(function (d) {
+                return d.pieData;
+            })
+                .append("g")
+                .attr('transform', function (d, i) {
+                    return 'translate(' + d.dx / 2 + ',' + d.dy / 2 + ')';
+                })
+                .attr("class", "donut")
+                .selectAll(".arc")
+                .data(function (d) {
+                    return pie(d.pieData);
+                })
+                .enter().append("g")
+                .attr("class", "arc");
+
+            g.append("path")
+                .attr("d", arc)
+                .style("fill", function (d, i) {
+                    return color(i);
+                });
+
+            node.append("text")
+                .attr("x", -6)
+                .attr("y", function (d) {
+                    return d.dy / 2;
+                })
+                .attr("dy", ".35em")
+                .attr("text-anchor", "end")
+                .attr("transform", null)
+                .text(function (d) {
+                    return d.name;
+                })
+                .filter(function (d) {
+                    return d.x < width / 2;
+                })
+                .attr("x", 6 + sankey.nodeWidth())
+                .attr("text-anchor", "start");
+        });
+    }
+</script>
+</body>
+
+</html>
