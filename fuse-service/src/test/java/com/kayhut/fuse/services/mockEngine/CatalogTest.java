@@ -68,9 +68,9 @@ public class CatalogTest {
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
                         String expected = new ObjectMapper().writeValueAsString(ontology);
-                        List<ContentResponse<Ontology>> contentResponse = new ObjectMapper().readValue(o.toString(), List.class);
+                        ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         //todo compare to expected
-                        return ((Map)contentResponse.get(0)).containsKey("data");
+                        return contentResponse.getData() != null;
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;
@@ -95,9 +95,9 @@ public class CatalogTest {
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
                         String expected = new ObjectMapper().writeValueAsString(ontology);
-                        List<ContentResponse<Ontology>> contentResponse = new ObjectMapper().readValue(o.toString(), List.class);
+                        ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         //todo compare to expected
-                        return ((Map)contentResponse.get(0)).containsKey("data");
+                        return contentResponse.getData() != null;
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;

@@ -8,20 +8,20 @@ public interface ExternalRequestIdSupplier extends Supplier<String> {
     class Impl implements ExternalRequestIdSupplier {
         //region Constructors
         @Inject
-        public Impl(String externalId) {
-            this.externalId = externalId;
+        public Impl(String externalRequestId) {
+            this.externalRequestId = externalRequestId;
         }
         //endregion
 
         //region ExternalRequestIdSupplier Implementation
         @Override
         public String get() {
-            return this.externalId;
+            return this.externalRequestId;
         }
         //endregion
 
         //region Fields
-        private String externalId;
+        private String externalRequestId;
         //endregion
     }
 }

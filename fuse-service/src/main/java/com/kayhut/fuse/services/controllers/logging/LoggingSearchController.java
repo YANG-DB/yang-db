@@ -16,6 +16,7 @@ import com.kayhut.fuse.services.controllers.SearchController;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
@@ -51,30 +52,32 @@ public class LoggingSearchController implements SearchController{
     @Override
     public ContentResponse search(CreateQueryRequest request) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), search.toString())).time();
-        boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
                 ExternalRequestId.of(this.externalRequestIdSupplier.get()),
                 RequestIdByScope.of(request.getId())).write();
 
+        ContentResponse response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start search", LogType.of(start), search).log();
-            return controller.search(request);
+            response = this.controller.search(request);
+            new LogMessage.Impl(this.logger, info, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed search", LogType.of(failure), search, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "failure")).mark();
-            throw new RuntimeException(ex);
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
     }
     //endregion
 

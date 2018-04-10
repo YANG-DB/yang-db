@@ -16,6 +16,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.slf4j.Logger;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
@@ -51,113 +52,121 @@ public class LoggingCatalogController implements CatalogController {
     @Override
     public ContentResponse<Ontology> getOntology(String id) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getOntology.toString())).time();
-        boolean thrownException = false;
 
         LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
                 ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
 
+        ContentResponse<Ontology> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start getOntology", LogType.of(start), getOntology).log();
-            return controller.getOntology(id);
+            response = this.controller.getOntology(id);
+            new LogMessage.Impl(this.logger, info, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed getOntology", LogType.of(failure), getOntology, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "failure")).mark();
-            throw new RuntimeException(ex);
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
     }
 
     @Override
-    public List<ContentResponse<Ontology>> getOntologies() {
+    public ContentResponse<List<Ontology>> getOntologies() {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getOntology.toString())).time();
-        boolean thrownException = false;
 
         LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
                 ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
 
+        ContentResponse<List<Ontology>> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start getOntology", LogType.of(start), getOntology).log();
-            return controller.getOntologies();
+            response = this.controller.getOntologies();
+            new LogMessage.Impl(this.logger, info, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed getOntology", LogType.of(failure), getOntology, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "failure")).mark();
-            return null;
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
     }
 
     @Override
     public ContentResponse<GraphElementSchemaProvider> getSchema(String id) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getSchema.toString())).time();
-        boolean thrownException = false;
 
         LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
                 ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
 
+        ContentResponse<GraphElementSchemaProvider> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start getSchema", LogType.of(start), getSchema).log();
-            return controller.getSchema(id);
+            response = this.controller.getSchema(id);
+            new LogMessage.Impl(this.logger, info, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed getSchema", LogType.of(failure), getSchema, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "failure")).mark();
-            return null;
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
     }
 
     @Override
-    public List<ContentResponse> getSchemas() {
+    public ContentResponse<List<GraphElementSchemaProvider>> getSchemas() {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getSchema.toString())).time();
-        boolean thrownException = false;
 
         LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
                 ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
 
+        ContentResponse<List<GraphElementSchemaProvider>> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start getSchema", LogType.of(start), getSchema).log();
-            return controller.getSchemas();
+            response = this.controller.getSchemas();
+            new LogMessage.Impl(this.logger, info, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed getSchema", LogType.of(failure), getSchema, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "failure")).mark();
-            return null;
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .externalRequestId(this.externalRequestIdSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
     }
     //endregion
 

@@ -14,9 +14,7 @@ import javaslang.collection.Stream;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static java.util.UUID.randomUUID;
 import static org.jooby.Status.NOT_FOUND;
 import static org.jooby.Status.OK;
 
@@ -36,15 +34,15 @@ public class StandardCatalogController implements CatalogController {
     //region CatalogController Implementation
 
     @Override
-    public List<ContentResponse<Ontology>> getOntologies() {
-        return ontologyProvider.getAll().stream().map(ont ->
-                Builder.<Ontology>builder(randomUUID().toString(),OK, NOT_FOUND).data(Optional.of(ont)).compose()).
-                collect(Collectors.toList());
+    public ContentResponse<List<Ontology>> getOntologies() {
+        return Builder.<List<Ontology>>builder(OK, NOT_FOUND)
+                .data(Optional.of(Stream.ofAll(this.ontologyProvider.getAll()).toJavaList()))
+                .compose();
     }
 
     @Override
     public ContentResponse<Ontology> getOntology(String id) {
-        return Builder.<Ontology>builder(randomUUID().toString(),OK, NOT_FOUND)
+        return Builder.<Ontology>builder(OK, NOT_FOUND)
                 .data(ontologyProvider.get(id))
                 .compose();
     }
@@ -53,25 +51,22 @@ public class StandardCatalogController implements CatalogController {
     public ContentResponse<GraphElementSchemaProvider> getSchema(String id) {
         Optional<Ontology> ontology = this.ontologyProvider.get(id);
         if (!ontology.isPresent()) {
-            return Builder.<GraphElementSchemaProvider>builder(randomUUID().toString(),OK, NOT_FOUND)
-                    .data(Optional.empty())
-                    .compose();
+            return ContentResponse.notFound();
         }
 
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(this.ontologyProvider.get(id).get());
-        return Builder.<GraphElementSchemaProvider>builder(randomUUID().toString(), OK, NOT_FOUND)
+        return Builder.<GraphElementSchemaProvider>builder(OK, NOT_FOUND)
                 .data(Optional.of(createSerializableSchemaProvider(schemaProvider)))
                 .compose();
     }
 
     @Override
-    public List<ContentResponse> getSchemas() {
-        List<ContentResponse<Ontology>> ontologies = this.getOntologies();
-
-        return ontologies.stream().map(ont ->
-                Builder.<GraphElementSchemaProvider>builder(randomUUID().toString(), OK, NOT_FOUND)
-                        .data(Optional.of(createSerializableSchemaProvider(this.schemaProviderFactory.get(ont.getData()))))
-                        .compose()).collect(Collectors.toList());
+    public ContentResponse<List<GraphElementSchemaProvider>> getSchemas() {
+        return Builder.<List<GraphElementSchemaProvider>>builder(OK, NOT_FOUND)
+                .data(Optional.of(Stream.ofAll(this.ontologyProvider.getAll())
+                        .map(ont -> createSerializableSchemaProvider(this.schemaProviderFactory.get(ont)))
+                        .toJavaList()))
+                .compose();
     }
     //endregion
 

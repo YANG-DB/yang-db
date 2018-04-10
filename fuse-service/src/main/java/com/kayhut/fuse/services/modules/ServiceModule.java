@@ -6,6 +6,7 @@ import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.services.suppliers.CachedRequestIdSupplier;
 import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
@@ -14,6 +15,7 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.services.controllers.*;
 import com.kayhut.fuse.services.controllers.logging.*;
+import com.kayhut.fuse.services.suppliers.SnowflakeRequestIdSupplier;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
@@ -32,7 +34,11 @@ public class ServiceModule extends ModuleBase {
     @Override
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
         // bind common components
-        binder.bind(RequestIdSupplier.class).to(RequestIdSupplier.Impl.class).asEagerSingleton();
+        binder.bind(RequestIdSupplier.class)
+                .annotatedWith(named(CachedRequestIdSupplier.RequestIdSupplierParameter))
+                .to(SnowflakeRequestIdSupplier.class)
+                .asEagerSingleton();
+        binder.bind(RequestIdSupplier.class).to(CachedRequestIdSupplier.class).in(RequestScoped.class);
         binder.bind(ExternalRequestIdSupplier.class).to(ExternalRequestIdSupplier.Impl.class).in(RequestScoped.class);
 
         // bind service controller

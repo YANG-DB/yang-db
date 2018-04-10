@@ -13,27 +13,20 @@ public interface RequestIdSupplier extends Supplier<String> {
     class Impl implements RequestIdSupplier {
         //region Constructors
         @Inject
-        public Impl() {
-            IdSequenceFactory idSequenceFactory = new IdSequenceFactory();
-            idSequenceFactory.setTimeBits(41);
-            idSequenceFactory.setWorkerBits(6);
-            idSequenceFactory.setSeqBits(16);
-
-            idSequenceFactory.setWorkerId(1L);
-
-            this.sequence = idSequenceFactory.create();
+        public Impl(String requestId) {
+            this.requestId = requestId;
         }
         //endregion
 
         //region RequestIdSupplier Implementation
         @Override
         public String get() {
-            return String.format("FR%s", this.sequence.nextId());
+            return this.requestId;
         }
         //endregion
 
         //region Fields
-        private IdSequence sequence;
+        private String requestId;
         //endregion
     }
 }

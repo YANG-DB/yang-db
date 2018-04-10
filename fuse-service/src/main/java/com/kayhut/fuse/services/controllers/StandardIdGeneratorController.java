@@ -25,7 +25,7 @@ public class StandardIdGeneratorController<TId> implements IdGeneratorController
     //region IdGenerator Implementation
     @Override
     public ContentResponse<TId> getNext(String genName, int numIds) {
-        return ContentResponse.Builder.<TId>builder(randomUUID().toString(), CREATED, SERVER_ERROR )
+        return ContentResponse.Builder.<TId>builder(CREATED, SERVER_ERROR )
                 .data(Optional.of(this.driver.getNext(genName, numIds)))
                 .compose();
     }
