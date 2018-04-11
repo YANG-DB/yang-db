@@ -20,8 +20,6 @@ import com.kayhut.fuse.model.query.QueryMetadata;
  * Created by lior on 20/02/2017.
  */
 public class StandardQueryDriver extends QueryDriverBase {
-    private static Object sync = new Object();
-
     //region Constructors
     @Inject
     public StandardQueryDriver(

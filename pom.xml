@@ -5,7 +5,7 @@
     <groupId>org.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>0.2-SNAPSHOT</version>
+    <version>${fuse.version}</version>
 
     <modules>
         <module>data-gen</module>
@@ -41,7 +41,7 @@
         <maven-checkstyle-plugin.version>2.12.1</maven-checkstyle-plugin.version>
 
         <!-- fuse -->
-        <fuse.version>${project.version}</fuse.version>
+        <fuse.version>0.3-SNAPSHOT</fuse.version>
 
         <!-- jackson -->
         <jackson.version>2.8.1</jackson.version>
@@ -64,7 +64,7 @@
         <google.guice.version>4.1.0</google.guice.version>
 
         <!-- caffeine -->
-        <caffeine.version>2.3.3</caffeine.version>
+        <caffeine.version>2.6.2</caffeine.version>
 
         <!-- elasticsearch -->
         <elasticsearch.version>5.3.2</elasticsearch.version>

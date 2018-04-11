@@ -1,23 +1,14 @@
 package com.kayhut.fuse.services.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.util.Modules;
-import com.kayhut.fuse.dispatcher.cursor.Cursor;
-import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
-import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
-import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
-import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
-import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import io.restassured.http.Header;
 import org.jooby.test.JoobyRule;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -28,9 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class PlanTest {
     @Before
@@ -51,6 +40,7 @@ public class PlanTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -75,6 +65,7 @@ public class PlanTest {
         //get plan resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/plan")
                 .then()
@@ -92,6 +83,7 @@ public class PlanTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/plan/print")
                 .then()

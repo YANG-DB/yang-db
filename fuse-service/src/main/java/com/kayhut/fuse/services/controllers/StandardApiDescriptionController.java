@@ -25,7 +25,7 @@ public class StandardApiDescriptionController implements ApiDescriptionControlle
     //region ApiDescriptionController Implementation
     @Override
     public ContentResponse<FuseResourceInfo> getInfo() {
-        return ContentResponse.Builder.<FuseResourceInfo>builder(randomUUID().toString(),OK, NOT_FOUND)
+        return ContentResponse.Builder.<FuseResourceInfo>builder(OK, NOT_FOUND)
                 .data(Optional.of(new FuseResourceInfo(
                         "/fuse",
                         "/fuse/health",

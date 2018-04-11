@@ -2,22 +2,26 @@ package com.kayhut.fuse.services.engine2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
+import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
-import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.*;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -27,7 +31,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateRequest;
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
@@ -56,7 +59,7 @@ import static com.kayhut.fuse.model.query.Rel.Direction.R;
 /**
  * Created by roman.margolis on 02/10/2017.
  */
-public class RealClusterTest {
+public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_fetchEntityById() throws IOException, InterruptedException {
@@ -79,7 +82,7 @@ public class RealClusterTest {
         )).build();
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -91,7 +94,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -120,7 +123,7 @@ public class RealClusterTest {
         )).build();
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -132,7 +135,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -163,7 +166,7 @@ public class RealClusterTest {
         )).build();
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -175,7 +178,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -201,7 +204,7 @@ public class RealClusterTest {
         )).build();
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -213,7 +216,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -239,7 +242,7 @@ public class RealClusterTest {
         )).build();
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -251,7 +254,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -274,7 +277,7 @@ public class RealClusterTest {
         )).build();
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -286,7 +289,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -305,7 +308,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -315,7 +318,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -335,7 +338,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -345,7 +348,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -368,7 +371,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -378,7 +381,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -400,7 +403,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -410,7 +413,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -433,7 +436,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -443,7 +446,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -465,7 +468,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -475,7 +478,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -497,7 +500,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -507,7 +510,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -533,7 +536,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -543,7 +546,67 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void test18() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3,4,9,14,28), 0),
+                new EProp(3, "context", Constraint.of(ConstraintOp.eq,"globAL")),
+                new Rel(4, $ont.rType$("hasEvalue"), R, null, 5, 0),
+                new ETyped(5, "B", $ont.eType$("Evalue"), 6, 0),
+                new Quant1(6, QuantType.all, Arrays.asList(7,8,29), 0),
+                new EProp(7, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
+                new EProp(8, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like,"*")),
+                new Rel(9, $ont.rType$("hasEvalue"), R, null, 10, 0),
+                new ETyped(10, "B", $ont.eType$("Evalue"), 11, 0),
+                new Quant1(11, QuantType.all, Arrays.asList(12,13,30), 0),
+                new EProp(12, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
+                new EProp(13, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like,"***")),
+                new Rel(14, $ont.rType$("hasEntity"), L, null, 15, 0),
+                new ETyped(15, "B", $ont.eType$("LogicalEntity"), 16, 0),
+                new Rel(16, $ont.rType$("hasEntity"), R, null, 17, 0),
+                new ETyped(17, "B", $ont.eType$("Entity"), 18, 0),
+                new Quant1(18, QuantType.all, Arrays.asList(19,20,21,22,31), 0),
+                new EProp(19, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "global")),
+                new EProp(20, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(21, $ont.pType$("category"), Constraint.of(ConstraintOp.eq,"balla")),
+                new OptionalComp(22,23),
+                new Rel(23, $ont.rType$("hasEvalue"), R, null, 24, 0),
+                new ETyped(24, "B", $ont.eType$("Evalue"), 25, 0),
+                new Quant1(25, QuantType.all, Arrays.asList(26,27,32), 0),
+                new EProp(26, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "description")),
+                new EProp(27, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "*")),
+
+                new EProp(28, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty)),
+                new EProp(29, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty)),
+                new EProp(30, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty)),
+                new EProp(31, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty)),
+                new EProp(32, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty))
+        )).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -608,18 +671,11 @@ public class RealClusterTest {
         )).build();
 
 
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, "1", "1",
+                new CreateGraphCursorRequest(new CreatePageRequest(1000, true)));
 
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
-
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        Object pageDataObj = queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData();
+        AssignmentsQueryResult pageData = new ObjectMapper().convertValue(pageDataObj, AssignmentsQueryResult.class);
         int x = 5;
     }
 
@@ -709,7 +765,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -719,7 +775,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         System.out.println("finished " + i);
         int x = 5;
     }
@@ -746,7 +802,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -756,7 +812,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         System.out.println("finished " + i);
         int x = 5;
@@ -811,7 +867,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -821,51 +877,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        int x = 5;
-    }
-
-    @Test
-    @Ignore
-    public void testRelationWithEntity() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
-
-        String logicalId = "e00000000";
-
-        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
-                new Start(0, 1),
-                new ETyped(1, "SRelation", "Relation", 2, 0),
-                new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                new EProp(3, "id", Constraint.of(ConstraintOp.eq, "r00000000")),
-                new Rel(4, "hasRelation", Rel.Direction.L, null, 5, 0),
-                new ETyped(5, "RelationEntity", "Entity", 6, 0),
-                new Quant1(6, QuantType.all, Arrays.asList(7), 0),
-                new Rel(7, "hasEntity", Rel.Direction.L, null, 8, 0),
-                new ETyped(8, "RelationLogicalEntity", "LogicalEntity", 9, 0),
-                new Rel(9, "hasEntity", Rel.Direction.R, null, 10, 0),
-                new ETyped(10, "RelationGlobalEntity", "Entity", 11, 0),
-                new Quant1(11, QuantType.all, Arrays.asList(12, 13), 0),
-                new EProp(12, "context", Constraint.of(ConstraintOp.eq, "global")),
-                new Rel(13, "hasEvalue", Rel.Direction.R, null, 14, 0),
-                new ETyped(14, "GlobalEvalue", "Evalue", 15, 0),
-                new EProp(15, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames")))
-        )).build();
-
-
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
-
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
-
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -891,7 +903,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -901,7 +913,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -927,7 +939,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -937,7 +949,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -965,7 +977,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -975,7 +987,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -1004,7 +1016,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -1014,7 +1026,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -1049,7 +1061,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -1059,7 +1071,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -1082,7 +1094,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -1094,7 +1106,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1133,7 +1145,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -1145,7 +1157,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1173,7 +1185,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -1185,7 +1197,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1206,7 +1218,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -1218,7 +1230,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1242,7 +1254,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -1254,7 +1266,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1270,7 +1282,7 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
-                new Quant1(2, QuantType.all, Arrays.asList(111, 112), 0),
+                new Quant1(2, QuantType.all, Arrays.asList(111), 0),
                 new OptionalComp(111, 3),
                 new Rel(3, $ont.rType$("hasEvalue"), R, null, 4, 0),
                 new ETyped(4, "B", $ont.eType$("Evalue"), 5, 0),
@@ -1278,15 +1290,15 @@ public class RealClusterTest {
                 new OptionalComp(6, 7),
                 new Rel(7, $ont.rType$("hasEvalueReference"), R, null, 8, 0),
                 new ETyped(8, "C", $ont.eType$("Reference"), 9, 0),
-                new Quant1(9, QuantType.all, Collections.emptyList(), 0),
-                new EProp(112, "logicalId", Constraint.of(ConstraintOp.eq, "e00000000")))).build();
+                new Quant1(9, QuantType.all, Collections.emptyList(), 0)))
+                .build();
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 5);
 
         while (!pageResourceInfo.isAvailable()) {
             pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
@@ -1295,7 +1307,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1318,7 +1330,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -1330,7 +1342,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1345,7 +1357,7 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", "Reference", 2, 0),
-                new Quant1(2, QuantType.all, Arrays.asList(3, 10, 20, 30, 40), 0),
+                new Quant1(2, QuantType.all, Arrays.asList(10, 20, 30, 40), 0),
                 //new EProp(3, "url", Constraint.of(ConstraintOp.eq, "http://87c2d17b-1ab7-4fd2-bf6b-6ab5125920b9.net")),
                 new EProp(3, "url", Constraint.of(ConstraintOp.eq, "http://402d45d7-43fc-49f4-9817-9e8c82e2ec44.ac")),
 
@@ -1374,10 +1386,10 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphHierarchyCursorRequest(Arrays.asList("B", "D")));
 
         long start = System.currentTimeMillis();
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 10);
 
         while (!pageResourceInfo.isAvailable()) {
             pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
@@ -1386,7 +1398,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1414,7 +1426,7 @@ public class RealClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -1426,7 +1438,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1453,7 +1465,7 @@ public class RealClusterTest {
                 .build();
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, PlanTraceOptions.of(PlanTraceOptions.Level.verbose));
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -1465,7 +1477,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1500,7 +1512,7 @@ public class RealClusterTest {
                 .build();
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -1512,7 +1524,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1533,7 +1545,7 @@ public class RealClusterTest {
         String a = new ObjectMapper().writeValueAsString(query);
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, PlanTraceOptions.of(PlanTraceOptions.Level.verbose));
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -1545,8 +1557,49 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void testIdGen() throws IOException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        Map<String, Object> map = (Map<String, Object>)fuseClient.getId("entity", 10);
+        long lower = ((Number)map.get("lower")).longValue();
+        long upper = ((Number)map.get("upper")).longValue();
+
+
+    }
+
+    @Test
+    @Ignore
+    public void testParallelIdgen() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        Random random = new Random();
+
+        List<Long> lowers = Collections.synchronizedList(new ArrayList<>());
+        List<Long> uppers = Collections.synchronizedList(new ArrayList<>());
+
+        ExecutorService executorService = Executors.newFixedThreadPool(50);
+        for(int i = 0 ; i < 1000; i++) {
+            String eId = "e" + String.format("%08d", random.nextInt(100));
+            final int ii = i;
+            executorService.execute(() -> {
+                try {
+                    Map<String, Object> map = (Map<String, Object>)fuseClient.getId("entity", 10);
+                    long lower = ((Number)map.get("lower")).longValue();
+                    long upper = ((Number)map.get("upper")).longValue();
+                    lowers.add(lower);
+                    uppers.add(upper);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+        Thread.sleep(10000);
         int x = 5;
     }
 

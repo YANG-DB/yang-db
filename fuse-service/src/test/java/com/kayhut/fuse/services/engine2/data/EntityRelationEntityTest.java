@@ -818,7 +818,7 @@ public abstract class EntityRelationEntityTest {
             String entityBId,
             Iterable<String> entityBTypes);
 
-    private void testAndAssertQuery(Query query, QueryResult expectedQueryResult) throws Exception {
+    private void testAndAssertQuery(Query query, AssignmentsQueryResult expectedAssignmentsQueryResult) throws Exception {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
@@ -831,8 +831,8 @@ public abstract class EntityRelationEntityTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult, shouldIgnoreRelId());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        QueryResultAssert.assertEquals(expectedAssignmentsQueryResult, actualAssignmentsQueryResult, shouldIgnoreRelId());
     }
 
 
@@ -946,7 +946,7 @@ public abstract class EntityRelationEntityTest {
     //endregion
 
     //region QueryResults
-    private static QueryResult queryResult_Dragons_Fire_Dragon(
+    private static AssignmentsQueryResult queryResult_Dragons_Fire_Dragon(
             int numDragons,
             Rel.Direction direction,
             TraversalConstraint constraint,
@@ -955,7 +955,7 @@ public abstract class EntityRelationEntityTest {
         String eTag1 = direction == Rel.Direction.R ? "A" : "B";
         String eTag2 = direction == Rel.Direction.R ? "B" : "A";
 
-        QueryResult.Builder builder = QueryResult.Builder.instance();
+        AssignmentsQueryResult.Builder builder = AssignmentsQueryResult.Builder.instance();
         HashEdgeIdProvider edgeIdProvider = new HashEdgeIdProvider(Optional.of(constraint));
 
         Function<Integer, Long> birthDateValueFunction =

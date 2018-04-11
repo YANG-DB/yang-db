@@ -3,19 +3,32 @@ package com.kayhut.fuse.model.results;
 import javaslang.collection.Stream;
 import org.junit.Assert;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Created by Roman on 15/05/2017.
  */
 public class QueryResultAssert {
-    public static void assertEquals(QueryResult expected, QueryResult actual) {
+    public static void assertEquals(AssignmentsQueryResult expected, AssignmentsQueryResult actual) {
         assertEquals(expected, actual, false);
     }
+
+    public static void assertEquals(CsvQueryResult expected, CsvQueryResult actual){
+        assertIfBothNull(expected, actual);
+        assertIfBothNotNull(expected, actual);
+
+        assertIfBothNull(expected.getCsvLines(), actual.getCsvLines());
+        assertIfBothNotNull(expected.getCsvLines(), actual.getCsvLines());
+
+        Assert.assertEquals(expected.getSize(), actual.getSize());
+        for (int i = 0; i < expected.getSize(); i++) {
+            Assert.assertEquals(expected.getCsvLines()[i], actual.getCsvLines()[i]);
+        }
+
+    }
+
     //region Public Methods
-    public static void assertEquals(QueryResult expected, QueryResult actual, boolean ignoreRelId) {
+    public static void assertEquals(AssignmentsQueryResult expected, AssignmentsQueryResult actual, boolean ignoreRelId) {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 

@@ -33,7 +33,6 @@ import static com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstima
  */
 public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
     //region Static
-    public final static String costEstimatorName = "RegexPatternCostEstimator.@costEstimatorName";
     private static Map<Pattern, java.util.regex.Pattern> compiledPatterns;
 
     public static Pattern[] getSupportedPattern() {

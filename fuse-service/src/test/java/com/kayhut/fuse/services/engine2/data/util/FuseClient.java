@@ -1,19 +1,19 @@
 package com.kayhut.fuse.services.engine2.data.util;
 
 import com.cedarsoftware.util.io.JsonReader;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.*;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.*;
-import io.restassured.response.ResponseBody;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
+import org.jooby.MediaType;
 
 import java.io.IOException;
 import java.util.Map;
@@ -34,6 +34,10 @@ public class FuseClient {
     //region Public Methods
     public FuseResourceInfo getFuseInfo() throws IOException {
         return new ObjectMapper().readValue(unwrap(getRequest(this.fuseUrl)), FuseResourceInfo.class);
+    }
+
+    public Object getId(String name, int numIds) throws IOException {
+        return new ObjectMapper().readValue(unwrap(getRequest(this.fuseUrl + "/idgen/" + name + "?numIds=" + numIds)), Map.class);
     }
 
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException {
@@ -58,34 +62,21 @@ public class FuseClient {
         return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
     }
 
-    public QueryCursorPageResourceInfo postQueryAndFetch(
-            String queryStoreUrl,
-            Query query,
-            String id,
-            String name,
-            CreateCursorRequest.CursorType cursorType,
-            int pageSize) throws IOException {
-
-        CreateQueryAndFetchRequest request = new CreateQueryAndFetchRequest(
-                id,
-                name,
-                query,
-                new CreateCursorRequest(cursorType),
-                new CreatePageRequest(pageSize)
-        );
-
-        return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl + "?fetch=true", request)), QueryCursorPageResourceInfo.class);
+    public QueryResourceInfo postQuery(String queryStoreUrl, Query query, String id, String name, CreateCursorRequest createCursorRequest) throws IOException {
+        CreateQueryRequest request = new CreateQueryRequest();
+        request.setId(id);
+        request.setName(name);
+        request.setQuery(query);
+        request.setCreateCursorRequest(createCursorRequest);
+        return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
     }
 
     public CursorResourceInfo postCursor(String cursorStoreUrl) throws IOException {
-        return this.postCursor(cursorStoreUrl, CreateCursorRequest.CursorType.paths);
+        return this.postCursor(cursorStoreUrl, new CreatePathsCursorRequest());
     }
 
-    public CursorResourceInfo postCursor(String cursorStoreUrl, CreateCursorRequest.CursorType cursorType) throws IOException {
-        CreateCursorRequest request = new CreateCursorRequest();
-        request.setCursorType(cursorType);
-
-        return new ObjectMapper().readValue(unwrap(postRequest(cursorStoreUrl, request)), CursorResourceInfo.class);
+    public CursorResourceInfo postCursor(String cursorStoreUrl, CreateCursorRequest cursorRequest) throws IOException {
+        return new ObjectMapper().readValue(unwrap(postRequest(cursorStoreUrl, cursorRequest)), CursorResourceInfo.class);
     }
 
     public PageResourceInfo postPage(String pageStoreUrl, int pageSize) throws IOException {
@@ -103,8 +94,12 @@ public class FuseClient {
         return new ObjectMapper().readValue(unwrap(getRequest(ontologyUrl)), Ontology.class);
     }
 
-    public QueryResult getPageData(String pageDataUrl) throws IOException {
-        return new ObjectMapper().readValue(unwrap(getRequest(pageDataUrl)), QueryResult.class);
+    public QueryResultBase getPageData(String pageDataUrl) throws IOException {
+        return new ObjectMapper().readValue(unwrap(getRequest(pageDataUrl)), QueryResultBase.class);
+    }
+
+    public String getPageDataPlain(String pageDataUrl) throws IOException {
+        return getRequest(pageDataUrl, MediaType.plain.name());
     }
 
     public String getPlan(String planUrl) throws IOException {
@@ -133,7 +128,11 @@ public class FuseClient {
     }
 
     public static String getRequest(String url) {
-        return given().contentType("application/json")
+        return getRequest(url, "application/json");
+    }
+
+    public static String getRequest(String url, String contentType) {
+        return given().contentType(contentType)
                 .get(url)
                 .thenReturn()
                 .print();

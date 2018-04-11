@@ -7,9 +7,8 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
@@ -100,7 +99,7 @@ public class SingleEntityTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         Assert.assertEquals(requestedPageSize, pageResourceInfo.getRequestedPageSize());
         Assert.assertEquals(actualPageSize, pageResourceInfo.getActualPageSize());

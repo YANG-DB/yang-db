@@ -3,7 +3,7 @@ package com.kayhut.fuse.executor.cursor.discrete;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.Entity;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.Relationship;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -18,7 +18,7 @@ public class GraphTraversalCursor implements Cursor {
     public GraphTraversalCursor(Cursor cursor) {
         this.cursor = cursor;
 
-        this.fullGraph = new QueryResult();
+        this.fullGraph = new AssignmentsQueryResult();
         this.fullGraph.setAssignments(new ArrayList<>());
         this.fullGraph.getAssignments().add(new Assignment());
         this.fullGraph.getAssignments().get(0).setEntities(new ArrayList<>());
@@ -31,8 +31,8 @@ public class GraphTraversalCursor implements Cursor {
 
     //region Cursor Implementation
     @Override
-    public QueryResult getNextResults(int numResults) {
-        QueryResult newResult = this.cursor.getNextResults(numResults);
+    public AssignmentsQueryResult getNextResults(int numResults) {
+        AssignmentsQueryResult newResult = (AssignmentsQueryResult) this.cursor.getNextResults(numResults);
         consolidateFullGraph(newResult);
 
         return this.fullGraph;
@@ -40,7 +40,7 @@ public class GraphTraversalCursor implements Cursor {
     //endregion
 
     //region Protected Methods
-    private void consolidateFullGraph(QueryResult result) {
+    private void consolidateFullGraph(AssignmentsQueryResult result) {
         Map<String, Stream<Entity>> newEntityStreams =
                 Stream.ofAll(result.getAssignments())
                 .flatMap(Assignment::getEntities)
@@ -77,7 +77,7 @@ public class GraphTraversalCursor implements Cursor {
 
     //region Fields
     private Cursor cursor;
-    private QueryResult fullGraph;
+    private AssignmentsQueryResult fullGraph;
 
     private Set<String> entityIds;
     private Set<String> relationshipIds;

@@ -4,12 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.epb.*;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
-import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;

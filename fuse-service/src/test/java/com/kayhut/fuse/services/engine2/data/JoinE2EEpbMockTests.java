@@ -57,7 +57,6 @@ import java.util.function.Function;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static java.util.Collections.singleton;
-import static java.util.Collections.singletonList;
 
 public class JoinE2EEpbMockTests {
     @BeforeClass
@@ -185,7 +184,7 @@ public class JoinE2EEpbMockTests {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 
-    private void testAndAssertQuery(Query query, QueryResult expectedQueryResult) throws Exception {
+    private void testAndAssertQuery(Query query, AssignmentsQueryResult expectedAssignmentsQueryResult) throws Exception {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
@@ -198,8 +197,8 @@ public class JoinE2EEpbMockTests {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult, shouldIgnoreRelId());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        QueryResultAssert.assertEquals(expectedAssignmentsQueryResult, actualAssignmentsQueryResult, shouldIgnoreRelId());
     }
 
 
@@ -662,7 +661,7 @@ public class JoinE2EEpbMockTests {
     }
 
 
-    private void runQueryAndValidate(Query query, QueryResult expectedQueryResult) throws IOException, InterruptedException {
+    private void runQueryAndValidate(Query query, AssignmentsQueryResult expectedAssignmentsQueryResult) throws IOException, InterruptedException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
@@ -675,8 +674,8 @@ public class JoinE2EEpbMockTests {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult, shouldIgnoreRelId());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        QueryResultAssert.assertEquals(expectedAssignmentsQueryResult, actualAssignmentsQueryResult, shouldIgnoreRelId());
     }
 
     private Query getDragonFireDragonX2Query() {
@@ -718,11 +717,11 @@ public class JoinE2EEpbMockTests {
         )).build();
     }
 
-    private QueryResult dragonFireDragonX3Results() throws ParseException {
+    private AssignmentsQueryResult dragonFireDragonX3Results() throws ParseException {
         Function<Integer, Long> birthDateValueFunction =
                 birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
 
-        QueryResult.Builder builder = QueryResult.Builder.instance();
+        AssignmentsQueryResult.Builder builder = AssignmentsQueryResult.Builder.instance();
         Entity entityB = Entity.Builder.instance()
                 .withEID("Dragon_7" )
                 .withETag(singleton("B"))
@@ -797,11 +796,11 @@ public class JoinE2EEpbMockTests {
         return builder.build();
     }
 
-    private QueryResult dragonFireDragonGotoResults() throws ParseException {
+    private AssignmentsQueryResult dragonFireDragonGotoResults() throws ParseException {
         Function<Integer, Long> birthDateValueFunction =
                 birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
 
-        QueryResult.Builder builder = QueryResult.Builder.instance();
+        AssignmentsQueryResult.Builder builder = AssignmentsQueryResult.Builder.instance();
         Entity entityB = Entity.Builder.instance()
                 .withEID("Dragon_7" )
                 .withETag(singleton("B"))
@@ -876,11 +875,11 @@ public class JoinE2EEpbMockTests {
         return builder.build();
     }
 
-    private QueryResult dragonFireDragonX2Results() throws ParseException {
+    private AssignmentsQueryResult dragonFireDragonX2Results() throws ParseException {
         Function<Integer, Long> birthDateValueFunction =
                 birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
 
-        QueryResult.Builder builder = QueryResult.Builder.instance();
+        AssignmentsQueryResult.Builder builder = AssignmentsQueryResult.Builder.instance();
         Entity entityA = Entity.Builder.instance()
                 .withEID("Dragon_4" )
                 .withETag(singleton("A"))

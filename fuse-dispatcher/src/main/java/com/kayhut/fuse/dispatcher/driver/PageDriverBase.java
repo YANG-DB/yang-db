@@ -8,7 +8,8 @@ import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.model.results.QueryResultBase;
 import javaslang.collection.Stream;
 
 import java.util.Optional;
@@ -40,7 +41,7 @@ public abstract class PageDriverBase implements PageDriver {
 
         String pageId = cursorResource.get().getNextPageId();
 
-        PageResource<QueryResult> pageResource = this.createResource(queryResource.get(), cursorResource.get(), pageId, pageSize);
+        PageResource<QueryResultBase> pageResource = this.createResource(queryResource.get(), cursorResource.get(), pageId, pageSize);
         this.resourceStore.addPageResource(queryId, cursorId, pageResource);
 
         return Optional.of(new PageResourceInfo(
@@ -117,10 +118,26 @@ public abstract class PageDriverBase implements PageDriver {
 
         return Optional.ofNullable(pageResource.get().getData());
     }
+
+    @Override
+    public Optional<Boolean> delete(String queryId, String cursorId, String pageId) {
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
+        if (!queryResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        if (!cursorResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        cursorResource.get().deletePageResource(pageId);
+        return Optional.of(true);
+    }
     //endregion
 
     //region Protected Abstract Methods
-    protected abstract PageResource<QueryResult> createResource(QueryResource queryResource, CursorResource cursorResource, String pageId, int pageSize);
+    protected abstract PageResource<QueryResultBase> createResource(QueryResource queryResource, CursorResource cursorResource, String pageId, int pageSize);
     //endregion
 
     //region Fields

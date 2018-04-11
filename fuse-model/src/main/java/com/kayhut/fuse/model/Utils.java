@@ -2,16 +2,15 @@ package com.kayhut.fuse.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
-import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.query.EBase;
-import javaslang.collection.Stream;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,11 +40,11 @@ public interface Utils {
     static String readJsonFile(String name) {
         String result = "{}";
         try {
-            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + name );
-                if (stream != null) {
+            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + name);
+            if (stream != null) {
                 result = loadJsonString(stream);
             } else {
-                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name );
+                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
                 result = loadJsonString(stream);
             }
         } catch (Exception e) {
@@ -56,7 +55,7 @@ public interface Utils {
         }
     }
 
-    static Optional<String> match(String step,String ... supportedPattern) {
+    static Optional<String> match(String step, String... supportedPattern) {
         for (String pattern : supportedPattern) {
             Pattern compile = Pattern.compile(pattern);
             Matcher matcher = compile.matcher(step);
@@ -80,4 +79,10 @@ public interface Utils {
         Object value = mapper.readValue(s, Object.class);
         return mapper.writeValueAsString(value);
     }
+
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface SkipSerialisation {
+    }
+
 }

@@ -10,9 +10,12 @@ import com.kayhut.fuse.model.query.QueryAssert;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.transport.*;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
+import io.restassured.http.Header;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -20,6 +23,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
@@ -45,6 +49,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -78,6 +83,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -102,26 +108,25 @@ public class QueryTest {
     }
 
     @Test
-    @Ignore
     public void createQueryAndFetch() throws IOException {
-        CreateCursorRequest createCursorRequest = new CreateCursorRequest();
-        createCursorRequest.setCursorType(CreateCursorRequest.CursorType.paths);
-
         CreatePageRequest createPageRequest = new CreatePageRequest();
         createPageRequest.setPageSize(10);
 
-        CreateQueryAndFetchRequest request = new CreateQueryAndFetchRequest();
+        CreateCursorRequest createCursorRequest = new CreatePathsCursorRequest();
+        createCursorRequest.setCreatePageRequest(createPageRequest);
+
+        CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
         request.setQuery(TestUtils.loadQuery("Q001.json"));
         request.setCreateCursorRequest(createCursorRequest);
-        request.setCreatePageRequest(createPageRequest);
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
-                .post("/fuse/query?fetch=true")
+                .post("/fuse/query")
                 .then()
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
@@ -131,10 +136,11 @@ public class QueryTest {
                         assertTrue(data.get("resourceUrl").toString().endsWith("/fuse/query/1"));
                         assertTrue(data.get("cursorStoreUrl").toString().endsWith("/fuse/query/1/cursor"));
                         assertTrue(data.get("v1QueryUrl").toString().endsWith("/fuse/query/1/v1"));
-                        assertTrue(((Map) data.get("cursorResourceInfo")).containsKey("cursorType"));
-                        assertTrue(((Map) data.get("cursorResourceInfo")).containsKey("pageStoreUrl"));
-                        assertTrue(((Map) data.get("pageResourceInfo")).containsKey("dataUrl"));
-                        assertTrue(((Map) data.get("pageResourceInfo")).containsKey("actualPageSize"));
+                        assertTrue(((Map)(((List) data.get("cursorResourceInfos")).get(0))).containsKey("cursorRequest"));
+                        assertTrue(((Map)(((List) data.get("cursorResourceInfos")).get(0))).containsKey("pageStoreUrl"));
+                        assertTrue(((Map)(((List) data.get("cursorResourceInfos")).get(0))).containsKey("pageResourceInfos"));
+                        assertTrue(((Map)((List)((Map)(((List) data.get("cursorResourceInfos")).get(0))).get("pageResourceInfos")).get(0)).containsKey("dataUrl"));
+                        assertTrue(((Map)((List)((Map)(((List) data.get("cursorResourceInfos")).get(0))).get("pageResourceInfos")).get(0)).containsKey("actualPageSize"));
                         return contentResponse.getData() != null;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -164,6 +170,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -199,6 +206,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -223,6 +231,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1")
                 .then()
@@ -246,6 +255,7 @@ public class QueryTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor")
                 .then()
@@ -277,6 +287,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -301,6 +312,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/v1")
                 .then()
@@ -321,6 +333,7 @@ public class QueryTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor")
                 .then()
@@ -353,6 +366,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -379,6 +393,7 @@ public class QueryTest {
         final AsgQuery[] asgQuery = {null};
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/asg")
                 .then()
@@ -401,6 +416,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/asg/print")
                 .then()
@@ -421,6 +437,7 @@ public class QueryTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor")
                 .then()
@@ -453,6 +470,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -476,6 +494,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1")
                 .then()
@@ -498,6 +517,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/v1/print")
                 .then()
@@ -517,6 +537,7 @@ public class QueryTest {
         //delete query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .delete("/fuse/query/1")
                 .then()
@@ -527,6 +548,7 @@ public class QueryTest {
         //validate resource deleted
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1")
                 .then()

@@ -1,10 +1,11 @@
 package com.kayhut.fuse.dispatcher.cursor;
 
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.model.results.QueryResultBase;
 
 /**
  * Created by User on 06/03/2017.
  */
 public interface Cursor {
-    QueryResult getNextResults(int numResults);
+    QueryResultBase getNextResults(int numResults);
 }

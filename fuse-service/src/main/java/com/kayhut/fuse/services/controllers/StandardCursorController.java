@@ -1,14 +1,12 @@
 package com.kayhut.fuse.services.controllers;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
-import com.typesafe.config.Config;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 import static java.util.UUID.randomUUID;
 import static org.jooby.Status.*;
@@ -27,28 +25,28 @@ public class StandardCursorController implements CursorController {
     //region CursorController Implementation
     @Override
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
-        return Builder.<CursorResourceInfo>builder(randomUUID().toString(),CREATED, SERVER_ERROR)
-                .data(this.driver.create(queryId, createCursorRequest.getCursorType()))
+        return Builder.<CursorResourceInfo>builder(CREATED, SERVER_ERROR)
+                .data(this.driver.create(queryId, createCursorRequest))
                 .compose();
     }
 
     @Override
     public ContentResponse<StoreResourceInfo> getInfo(String queryId) {
-        return Builder.<StoreResourceInfo>builder(randomUUID().toString(),OK, NOT_FOUND)
+        return Builder.<StoreResourceInfo>builder(OK, NOT_FOUND)
                 .data(this.driver.getInfo(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId) {
-        return Builder.<CursorResourceInfo>builder(randomUUID().toString(),OK, NOT_FOUND)
+        return Builder.<CursorResourceInfo>builder(OK, NOT_FOUND)
                 .data(this.driver.getInfo(queryId, cursorId))
                 .compose();
     }
 
     @Override
     public ContentResponse<Boolean> delete(String queryId, String cursorId) {
-        return Builder.<Boolean>builder(randomUUID().toString(),ACCEPTED, NOT_FOUND)
+        return Builder.<Boolean>builder(ACCEPTED, NOT_FOUND)
                 .data(this.driver.delete(queryId, cursorId)).compose();
     }
     //endregion

@@ -11,6 +11,8 @@ import javaslang.collection.Stream;
  */
 public class CompositeAsgEBasePlanOp<T extends EBase> extends CompositePlanOp implements AsgEBaseContainer<T> {
     //region Constructors
+    public CompositeAsgEBasePlanOp() {}
+
     public CompositeAsgEBasePlanOp(AsgEBase<T> asgElement, Iterable<PlanOp> ops) {
         super(ops);
         this.asgEbase = asgElement;

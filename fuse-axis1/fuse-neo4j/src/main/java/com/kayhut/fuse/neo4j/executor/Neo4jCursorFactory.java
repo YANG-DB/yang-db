@@ -1,23 +1,11 @@
 //package com.kayhut.fuse.neo4j.executor;
 
-import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.cursor.Cursor;
-import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
-import com.kayhut.fuse.dispatcher.resource.QueryResource;
-import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.results.Assignment;
-import com.kayhut.fuse.model.results.Entity;
-import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.results.Relationship;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
 //import com.kayhut.fuse.neo4j.GraphProvider;
 /*import org.neo4j.driver.internal.InternalNode;
 import org.neo4j.driver.internal.InternalRelationship;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;*/
-
-import java.util.*;
 
 /**
  * Created by Roman on 02/04/2017.

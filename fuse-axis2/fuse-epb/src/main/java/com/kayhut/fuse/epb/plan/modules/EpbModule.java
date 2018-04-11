@@ -37,7 +37,7 @@ import static com.google.inject.name.Names.named;
 public class EpbModule extends BaseEpbModule {
 
     @Override
-    protected PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector() {
+    protected PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector(Config config) {
         return new CheapestPlanSelector();
     }
 
@@ -70,7 +70,7 @@ public class EpbModule extends BaseEpbModule {
     }
 
     @Override
-    protected Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy() {
+    protected Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy(Config config) {
         return M1PlanExtensionStrategy.class;
     }
 

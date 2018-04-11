@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan;
 
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.epb.plan.estimation.pattern.FirstStepOnlyCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.pattern.PredicateCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1.M1DfsRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.pruners.CheapestPlanPruneStrategy;
@@ -15,8 +15,6 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
-import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
-import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
@@ -175,6 +173,8 @@ public class DfsRuleBasedBottomUpPlanSearcherWithQuantTests {
                 new AllCompletePlanSelector<>(),
                 new AllCompletePlanSelector<>(),
                 new M1PlanValidator(),
-                new FirstStepOnlyCostEstimator(new RegexPatternCostEstimator(ruleBaseEstimator(ont))));
+                new PredicateCostEstimator<>(plan -> plan.getOps().size() <= 2,
+                        new RegexPatternCostEstimator(ruleBaseEstimator(ont)),
+                        (plan, context) -> new PlanWithCost<>(plan, context.getPreviousCost().get().getCost())));
     }
 }

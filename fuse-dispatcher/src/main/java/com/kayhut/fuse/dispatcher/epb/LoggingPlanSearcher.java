@@ -22,7 +22,8 @@ import static com.kayhut.fuse.dispatcher.logging.LogType.*;
  * Created by roman.margolis on 28/11/2017.
  */
 public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
-    public static final String planSearcherParameter = "LoggingPlanSearcher.@planSearcher";
+    public static final String planSearcherParameter = "LoggingPlanSearcher.@descriptor";
+    public static final String descriptorParameter = "LoggingPlanSearcher.@planSearcher";
     public static final String loggerParameter = "LoggingPlanSearcher.@logger";
 
     //region Constructors

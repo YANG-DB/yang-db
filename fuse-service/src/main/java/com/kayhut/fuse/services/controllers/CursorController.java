@@ -3,7 +3,7 @@ package com.kayhut.fuse.services.controllers;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 /**
  * Created by lior on 22/02/2017.

@@ -1,20 +1,39 @@
 package com.kayhut.fuse.model.resourceInfo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * Created by User on 08/03/2017.
  */
 public class PageResourceInfo extends ResourceInfoBase{
-
+    //region Constructor
     public PageResourceInfo() {}
 
-    //region Constructor
-    public PageResourceInfo(String resourceUrl,String resourceId, int requestedPageSize, int actualPageSize,long executionTime, boolean isAvailable) {
+    public PageResourceInfo(
+            String resourceUrl,
+            String resourceId,
+            int requestedPageSize,
+            int actualPageSize,
+            long executionTime,
+            boolean isAvailable) {
+        this(resourceUrl, resourceId, requestedPageSize, actualPageSize, executionTime, isAvailable, null);
+    }
+
+    public PageResourceInfo(
+            String resourceUrl,
+            String resourceId,
+            int requestedPageSize,
+            int actualPageSize,
+            long executionTime,
+            boolean isAvailable,
+            Object data) {
         super(resourceUrl,resourceId);
         this.executionTime = executionTime;
         this.dataUrl = this.getResourceUrl() + "/data";
         this.requestedPageSize = requestedPageSize;
         this.actualPageSize = actualPageSize;
         this.isAvailable = isAvailable;
+        this.data = data;
     }
     //region Properties
     public String getDataUrl() {
@@ -53,6 +72,15 @@ public class PageResourceInfo extends ResourceInfoBase{
         isAvailable = available;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
     //endregion
 
     //region Fields
@@ -61,5 +89,6 @@ public class PageResourceInfo extends ResourceInfoBase{
     private int requestedPageSize;
     private int actualPageSize;
     private boolean isAvailable;
+    private Object data;
     //endregion
 }

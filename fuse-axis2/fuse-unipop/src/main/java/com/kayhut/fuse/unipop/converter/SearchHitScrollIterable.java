@@ -2,6 +2,7 @@ package com.kayhut.fuse.unipop.converter;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
@@ -144,6 +145,10 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
                     this.searchHits.add(hit);
                     counter++;
                 }
+            }
+
+            if (response.getHits().getHits().length == 0) {
+                this.iterable.getClient().prepareClearScroll().addScrollId(this.scrollId).execute().actionGet();
             }
         }
         //endregion

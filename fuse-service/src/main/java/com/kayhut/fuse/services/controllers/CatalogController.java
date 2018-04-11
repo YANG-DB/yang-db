@@ -13,9 +13,9 @@ public interface CatalogController {
 
     ContentResponse<Ontology> getOntology(String id);
 
-    List<ContentResponse<Ontology>> getOntologies();
+    ContentResponse<List<Ontology>> getOntologies();
 
     ContentResponse<GraphElementSchemaProvider> getSchema(String id);
 
-    List<ContentResponse> getSchemas();
+    ContentResponse<List<GraphElementSchemaProvider>> getSchemas();
 }

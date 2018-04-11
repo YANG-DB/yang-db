@@ -162,11 +162,6 @@ public class Entity {
             e1.eTag.addAll(e2.eTag);
             e1.properties.putAll(e2.properties);
 
-            /*e1.setAttachedProperties(Stream.ofAll(e1.getAttachedProperties())
-                .appendAll(e2.getAttachedProperties())
-                .distinctBy(AttachedProperty::getpName)
-                .toJavaList());*/
-
             return e1;
         }
         //endregion

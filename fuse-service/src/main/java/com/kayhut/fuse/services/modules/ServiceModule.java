@@ -2,15 +2,22 @@ package com.kayhut.fuse.services.modules;
 
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
+import com.google.inject.TypeLiteral;
+import com.google.inject.util.Providers;
+import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.model.transport.ExternalMetadata;
+import com.kayhut.fuse.services.suppliers.CachedRequestIdSupplier;
+import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.services.controllers.*;
 import com.kayhut.fuse.services.controllers.logging.*;
+import com.kayhut.fuse.services.suppliers.SnowflakeRequestIdSupplier;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
@@ -29,7 +36,13 @@ public class ServiceModule extends ModuleBase {
     @Override
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
         // bind common components
-        binder.bind(RequestIdSupplier.class).to(RequestIdSupplier.Impl.class).asEagerSingleton();
+        binder.bind(RequestIdSupplier.class)
+                .annotatedWith(named(CachedRequestIdSupplier.RequestIdSupplierParameter))
+                .to(SnowflakeRequestIdSupplier.class)
+                .asEagerSingleton();
+        binder.bind(RequestIdSupplier.class).to(CachedRequestIdSupplier.class).in(RequestScoped.class);
+
+        binder.bind(RequestExternalMetadataSupplier.class).to(RequestExternalMetadataSupplier.Impl.class).in(RequestScoped.class);
 
         // bind service controller
         bindApiDescriptionController(env, config, binder);
@@ -40,11 +53,12 @@ public class ServiceModule extends ModuleBase {
         bindSearchController(env, config, binder);
         bindCatalogController(env, config, binder);
         bindDataLoaderController(env, config, binder);
+        bindIdGeneratorController(env, config, binder);
 
         // bind requests
         binder.bind(InternalsDriver.class).to(StandardInternalsDriver.class);
         binder.bind(CreateQueryRequest.class).in(RequestScoped.class);
-        binder.bind(CreateCursorRequest.class).in(RequestScoped.class);
+        //binder.bind(CreateCursorRequest.class).in(RequestScoped.class);
         binder.bind(CreatePageRequest.class).in(RequestScoped.class);
 
         //bind request parameters
@@ -88,6 +102,14 @@ public class ServiceModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
+                this.bind(CursorController.class)
+                        .annotatedWith(named(StandardQueryController.cursorControllerParameter))
+                        .to(StandardCursorController.class);
+
+                this.bind(PageController.class)
+                        .annotatedWith(named(StandardQueryController.pageControllerParameter))
+                        .to(StandardPageController.class);
+
                 this.bind(QueryController.class)
                         .annotatedWith(named(LoggingQueryController.controllerParameter))
                         .to(StandardQueryController.class);
@@ -200,6 +222,18 @@ public class ServiceModule extends ModuleBase {
                         .to(LoggingDataLoaderController.class);
 
                 this.expose(DataLoaderController.class);
+            }
+        });
+    }
+
+    private void bindIdGeneratorController(Env env, Config config, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                this.bind(new TypeLiteral<IdGeneratorController<Object>>(){})
+                        .to(new TypeLiteral<StandardIdGeneratorController<Object>>(){}).asEagerSingleton();
+
+                this.expose(new TypeLiteral<IdGeneratorController<Object>>(){});
             }
         });
     }

@@ -10,6 +10,9 @@ import javaslang.collection.Stream;
  */
 public class OptionalOp extends CompositeAsgEBasePlanOp<OptionalComp> {
     //region Constructors
+
+    public OptionalOp() {}
+
     public OptionalOp(AsgEBase<OptionalComp> asgEBase, Iterable<PlanOp> ops) {
         super(asgEBase, ops);
     }

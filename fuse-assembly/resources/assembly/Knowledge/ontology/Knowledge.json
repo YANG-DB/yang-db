@@ -26,6 +26,7 @@
       "eType": "Evalue",
       "name": "Evalue",
       "properties": [
+        "entityId",
         "logicalId",
         "context",
         "authorization",
@@ -65,6 +66,7 @@
       "eType": "Rvalue",
       "name": "Rvalue",
       "properties": [
+        "relationId",
         "context",
         "authorization",
         "lastUpdateUser",
@@ -85,7 +87,7 @@
       "name": "Reference",
       "properties": [
         "title",
-        "value",
+        "content",
         "url",
         "system",
         "authorization",
@@ -255,6 +257,11 @@
       "type": "string"
     },
     {
+      "pType": "relationId",
+      "name": "relationId",
+      "type": "string"
+    },
+    {
       "pType": "context",
       "name": "context",
       "type": "string"
@@ -267,6 +274,11 @@
     {
       "pType": "title",
       "name": "title",
+      "type": "string"
+    },
+    {
+      "pType": "entityId",
+      "name": "entityId",
       "type": "string"
     },
     {

@@ -31,51 +31,51 @@ public class StandardDataLoaderController implements DataLoaderController {
     public ContentResponse<String> load(String ontology) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
-                return Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                return Builder.<String>builder(OK, NOT_FOUND)
                         .data(Optional.of("Elements loaded:" + this.graphDataLoader.load()))
                         .compose();
             } catch (IOException e) {
-                return Builder.<String>builder(randomUUID().toString(), BAD_REQUEST, NOT_FOUND)
+                return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)
                         .data(Optional.of(e.getMessage()))
                         .compose();
             }
-        } else {
-            return ContentResponse.NOT_FOUND;
         }
+
+        return ContentResponse.notFound();
     }
 
     @Override
     public ContentResponse<String> init(String ontology) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
-                return Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                return Builder.<String>builder(OK, NOT_FOUND)
                         .data(Optional.of("indices created:" + this.graphDataLoader.init()))
                         .compose();
             } catch (IOException e) {
-                return Builder.<String>builder(randomUUID().toString(), BAD_REQUEST, NOT_FOUND)
+                return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)
                         .data(Optional.of(e.getMessage()))
                         .compose();
             }
-        } else {
-            return ContentResponse.NOT_FOUND;
         }
+
+        return ContentResponse.notFound();
     }
 
     @Override
     public ContentResponse<String> drop(String ontology) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
-                return Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                return Builder.<String>builder(OK, NOT_FOUND)
                         .data(Optional.of("indices dropped:" + this.graphDataLoader.drop()))
                         .compose();
             } catch (IOException e) {
-                return Builder.<String>builder(randomUUID().toString(), BAD_REQUEST, NOT_FOUND)
+                return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)
                         .data(Optional.of(e.getMessage()))
                         .compose();
             }
-        } else {
-            return ContentResponse.NOT_FOUND;
         }
+
+        return ContentResponse.notFound();
     }
 //endregion
 

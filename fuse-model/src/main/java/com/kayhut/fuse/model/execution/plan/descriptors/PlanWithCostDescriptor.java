@@ -1,26 +1,22 @@
 package com.kayhut.fuse.model.execution.plan.descriptors;
 
+import com.google.common.graph.Graph;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import com.google.inject.Inject;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.descriptors.Descriptor;
+import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
 import com.kayhut.fuse.model.execution.plan.AsgEBasePlanOp;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.CompositeAsgEBasePlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.OptionalOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityNoOp;
-import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import com.kayhut.fuse.model.query.quant.QuantBase;
 
 import java.util.*;
 
@@ -46,43 +42,87 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
     }
     //endregion
 
+    public static Graph<GraphElement> graph(PlanWithCost<Plan, PlanDetailedCost> planWithCost,boolean cycle) {
+
+        MutableGraph<GraphElement> build = GraphBuilder.directed().allowsSelfLoops(cycle).build();
+        List<PlanOp> elements = planWithCost.getPlan().getOps();
+        if (elements.isEmpty())
+            return build;
+
+        build.addNode(new GraphElement(((AsgEBaseContainer) elements.get(0))));
+
+        for (int i = 1; i < elements.size(); i++) {
+            //region optional
+            if (elements.get(i) instanceof OptionalOp) {
+                //add optional branch to graph
+                List<PlanOp> ops = ((OptionalOp) elements.get(i)).getOps();
+                build.addNode(new GraphElement(((AsgEBaseContainer) ops.get(0))));
+
+                //continue optional sib branch
+                for (int j = 1; j < ops.size(); j++) {
+                    build.addNode(new GraphElement(((AsgEBaseContainer) ops.get(j))));
+                    build.putEdge(new GraphElement(((AsgEBaseContainer) ops.get(j - 1))),
+                                  new GraphElement(((AsgEBaseContainer) ops.get(j))));
+                }
+            } else {
+                //endregion
+                build.addNode(new GraphElement(((AsgEBaseContainer) elements.get(i))));
+                if (cycle && elements.get(i - 1) instanceof OptionalOp) {
+                    OptionalOp planOp = (OptionalOp) elements.get(i - 1);
+                    AsgEBaseContainer lastOp = (AsgEBaseContainer) planOp.getOps().get(planOp.getOps().size() - 1);
+                    build.putEdge(new GraphElement(lastOp), new GraphElement(((AsgEBaseContainer) elements.get(i))));
+                } else {
+                    if(!cycle && elements.get(i) instanceof GoToEntityOp) {
+                       continue;
+                    }
+                    build.putEdge(new GraphElement(((AsgEBaseContainer) elements.get(i - 1))),
+                                  new GraphElement(((AsgEBaseContainer) elements.get(i))));
+                }
+            }
+        }
+        return build;
+    }
+
     public static String print(PlanWithCost<Plan, PlanDetailedCost> planWithCost) {
         List<String> builder = new LinkedList<>();
-        builder.add("cost:" + planWithCost.getCost().getGlobalCost()+"\n");
-        print(builder, planWithCost.getPlan().getOps(), 1);
+        builder.add("cost:" + planWithCost.getCost().getGlobalCost() + "\n");
+        print(new HashMap<>(), builder, planWithCost.getPlan().getOps(), 1);
         return builder.toString();
     }
 
 
-    static <T extends EBase> String print(List<String> builder, List<PlanOp> ops, int level) {
-        Map<Integer, Integer> cursorLocations = new HashMap<>();
+    static <T extends EBase> String print(Map<Integer, Integer> cursorLocations, List<String> builder, List<PlanOp> ops, int level) {
         builder.add("");
         int currentLine = 0;
-        for (int i = 0; i < ops.size(); i++) {
-            AsgEBasePlanOp<T> planOp = (AsgEBasePlanOp<T>) ops.get(i);
-            String text = QueryDescriptor.getPrefix(isTail(planOp), planOp.getAsgEbase().geteBase()) + shortLabel(planOp, new StringJoiner(":"));
-            if (planOp instanceof GoToEntityOp) {
-                char[] zeros = new char[cursorLocations.get(((GoToEntityOp) planOp).getAsgEbase().geteNum()) - 5];
-                Arrays.fill(zeros, ' ');
-                builder.add("\n" + String.valueOf(zeros) + text);
-                level++;
-            } else if (planOp instanceof EntityJoinOp) {
-                char[] zeros = new char[cursorLocations.getOrDefault(((EntityJoinOp) planOp).getAsgEbase().geteNum(), 0)];
-                Arrays.fill(zeros, ' ');
-                builder.add("\n" + String.valueOf(zeros) + text);
-                level++;
-                builder.add("\n\t\t" + print(new ArrayList<>(), ((EntityJoinOp) planOp).getLeftBranch().getOps(), 0));
-                level++;
-                builder.add("\n\t\t" + print(new ArrayList<>(), ((EntityJoinOp) planOp).getRightBranch().getOps(), 0));
-                level++;
-            } else if (planOp instanceof EntityNoOp) {
-                char[] zeros = new char[cursorLocations.get(((EntityNoOp) planOp).getAsgEbase().geteNum()) - 5];
-                Arrays.fill(zeros, ' ');
-                builder.add("\n" + String.valueOf(zeros) + text);
-                level++;
-            } else {
-                builder.set(level + currentLine, builder.get(level + currentLine) + text);
-                cursorLocations.put(planOp.getAsgEbase().geteNum(), builder.get(level + currentLine).length() - 1);
+        for (PlanOp currentOp : ops) {
+            if (currentOp instanceof CompositeAsgEBasePlanOp) {
+                builder.add(print(cursorLocations, new ArrayList<>(), ((CompositeAsgEBasePlanOp<T>) currentOp).getOps(), 0));
+            } else if (currentOp instanceof AsgEBasePlanOp) {
+                AsgEBasePlanOp<T> planOp = (AsgEBasePlanOp<T>) currentOp;
+                String text = QueryDescriptor.getPrefix(isTail(planOp), planOp.getAsgEbase().geteBase()) + shortLabel(planOp, new StringJoiner(":"));
+                if (planOp instanceof GoToEntityOp) {
+                    char[] zeros = new char[cursorLocations.get(((GoToEntityOp) planOp).getAsgEbase().geteNum()) - 5];
+                    Arrays.fill(zeros, ' ');
+                    builder.add("\n" + String.valueOf(zeros) + text);
+                    level++;
+                } else if (planOp instanceof EntityJoinOp) {
+                    char[] zeros = new char[cursorLocations.getOrDefault(((EntityJoinOp) planOp).getAsgEbase().geteNum(), 0)];
+                    Arrays.fill(zeros, ' ');
+                    builder.add("\n" + String.valueOf(zeros) + text);
+                    level++;
+                    builder.add("\n\t\t" + print(cursorLocations, new ArrayList<>(), ((EntityJoinOp) planOp).getLeftBranch().getOps(), 0));
+                    level++;
+                    builder.add("\n\t\t" + print(cursorLocations, new ArrayList<>(), ((EntityJoinOp) planOp).getRightBranch().getOps(), 0));
+                    level++;
+                } else if (planOp instanceof EntityNoOp) {
+                    char[] zeros = new char[cursorLocations.get(((EntityNoOp) planOp).getAsgEbase().geteNum()) - 5];
+                    Arrays.fill(zeros, ' ');
+                    builder.add("\n" + String.valueOf(zeros) + text);
+                    level++;
+                } else {
+                    builder.set(level + currentLine, builder.get(level + currentLine) + text);
+                    cursorLocations.put(planOp.getAsgEbase().geteNum(), builder.get(level + currentLine).length() - 1);
+                }
             }
         }
         return builder.toString();
@@ -105,6 +145,43 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
             return joiner.add("Opt[" + element.getAsgEbase().geteNum() + "]").toString();
         } else
             return AsgQueryDescriptor.shortLabel(element.getAsgEbase(), joiner);
+    }
+
+    public static class GraphElement {
+        private AsgEBaseContainer planOp;
+        private double cost;
+
+        public GraphElement(AsgEBaseContainer planOp) {
+            this(planOp,0);
+        }
+
+        public GraphElement(AsgEBaseContainer planOp,double cost) {
+            this.planOp = planOp;
+            this.cost = cost;
+        }
+
+        public AsgEBaseContainer getPlanOp() {
+            return planOp;
+        }
+
+        public double getCost() {
+            return cost;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            GraphElement that = (GraphElement) o;
+
+            return planOp != null ? planOp.getAsgEbase().equals(that.planOp.getAsgEbase()) : that.planOp == null;
+        }
+
+        @Override
+        public int hashCode() {
+            return planOp != null ? planOp.getAsgEbase().hashCode() : 0;
+        }
     }
 
     //region Fields

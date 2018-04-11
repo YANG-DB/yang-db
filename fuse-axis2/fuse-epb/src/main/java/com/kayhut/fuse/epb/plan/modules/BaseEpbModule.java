@@ -67,16 +67,21 @@ public abstract class BaseEpbModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
-                this.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>() {})
-                        .annotatedWith(named(PlanTracer.ExtensionStrategy.Provider.planExtensionStrategyParameter))
-                        .to(planExtensionStrategy());
-                this.bindConstant()
-                        .annotatedWith(named(PlanTracer.ExtensionStrategy.Provider.planExtensionStrategyNameParameter))
-                        .to(M1DfsRedundantPlanExtensionStrategy.class.getSimpleName());
-                this.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>() {})
-                        .toProvider(new TypeLiteral<PlanTracer.ExtensionStrategy.Provider<Plan, PlanDetailedCost, AsgQuery>>() {});
+                try {
+                    this.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>() {})
+                            .annotatedWith(named(PlanTracer.ExtensionStrategy.Provider.planExtensionStrategyParameter))
+                            .to(planExtensionStrategy(conf));
 
-                this.expose(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>() {});
+                    this.bindConstant()
+                            .annotatedWith(named(PlanTracer.ExtensionStrategy.Provider.planExtensionStrategyNameParameter))
+                            .to(M1DfsRedundantPlanExtensionStrategy.class.getSimpleName());
+                    this.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>() {})
+                            .toProvider(new TypeLiteral<PlanTracer.ExtensionStrategy.Provider<Plan, PlanDetailedCost, AsgQuery>>() {});
+
+                    this.expose(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>() {});
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -87,7 +92,7 @@ public abstract class BaseEpbModule extends ModuleBase {
             protected void configure() {
                 this.bind(new TypeLiteral<PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery>>() {})
                         .annotatedWith(named(PlanTracer.Selector.Provider.planSelectorParameter))
-                        .toInstance(localPlanSelector());
+                        .toInstance(localPlanSelector(conf));
                 this.bindConstant().annotatedWith(named(PlanTracer.Selector.Provider.planSelectorNameParameter)).to("Local:" + AllCompletePlanSelector.class.getSimpleName());
                 this.bind(new TypeLiteral<PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery>>() {})
                         .annotatedWith(named(BottomUpPlanSearcher.localPlanSelectorParameter))
@@ -102,7 +107,7 @@ public abstract class BaseEpbModule extends ModuleBase {
             protected void configure() {
                 this.bind(new TypeLiteral<PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery>>() {})
                         .annotatedWith(named(PlanTracer.Selector.Provider.planSelectorParameter))
-                        .toInstance(globalPlanSelector());
+                        .toInstance(globalPlanSelector(conf));
                 this.bindConstant().annotatedWith(named(PlanTracer.Selector.Provider.planSelectorNameParameter)).to("Global:" + AllCompletePlanSelector.class.getSimpleName());
                 this.bind(new TypeLiteral<PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery>>() {})
                         .annotatedWith(named(BottomUpPlanSearcher.globalPlanSelectorParameter))
@@ -114,11 +119,11 @@ public abstract class BaseEpbModule extends ModuleBase {
         });
     }
 
-    protected PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector() {
+    protected PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector(Config conf) {
         return new AllCompletePlanSelector<>();
     }
 
-    protected PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector() {
+    protected PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector(Config conf) {
         return new AllCompletePlanSelector<>();
     }
 
@@ -164,17 +169,17 @@ public abstract class BaseEpbModule extends ModuleBase {
 
 
     private void bindPlanPruneStrategy(Env env, Config conf, Binder binder) {
-        localPruner(binder);
-        globalPruner(binder);
+        localPruner(binder, conf);
+        globalPruner(binder, conf);
     }
 
-    protected void globalPruner(Binder binder) {
+    protected void globalPruner(Binder binder, Config conf) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
                 this.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>() {})
                         .annotatedWith(named(PlanTracer.PruneStrategy.Provider.planPruneStrategyParameter))
-                        .toInstance(globalPrunerStrategy());
+                        .toInstance(globalPrunerStrategy(conf));
                 this.bindConstant().annotatedWith(named(PlanTracer.PruneStrategy.Provider.planPruneStrategyNameParameter)).to("Global:" + NoPruningPruneStrategy.class.getSimpleName());
                 this.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>() {})
                         .annotatedWith(named(BottomUpPlanSearcher.globalPruneStrategyParameter))
@@ -186,13 +191,13 @@ public abstract class BaseEpbModule extends ModuleBase {
         });
     }
 
-    protected void localPruner(Binder binder) {
+    protected void localPruner(Binder binder, Config conf) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
                 this.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>() {})
                         .annotatedWith(named(PlanTracer.PruneStrategy.Provider.planPruneStrategyParameter))
-                        .toInstance(localPrunerStrategy());
+                        .toInstance(localPrunerStrategy(conf));
                 this.bindConstant().annotatedWith(named(PlanTracer.PruneStrategy.Provider.planPruneStrategyNameParameter)).to("Local:" + NoPruningPruneStrategy.class.getSimpleName());
                 this.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>() {})
                         .annotatedWith(named(BottomUpPlanSearcher.localPruneStrategyParameter))
@@ -204,16 +209,16 @@ public abstract class BaseEpbModule extends ModuleBase {
         });
     }
 
-    protected PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> localPrunerStrategy() {
+    protected PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> localPrunerStrategy(Config conf) {
         return new NoPruningPruneStrategy<>();
     }
 
-    protected PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> globalPrunerStrategy() {
+    protected PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> globalPrunerStrategy(Config conf) {
         return new NoPruningPruneStrategy<>();
     }
 
 
-    protected abstract Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy();
+    protected abstract Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy(Config conf) throws ClassNotFoundException;
 
     //endregion
 

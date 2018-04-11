@@ -204,7 +204,7 @@ public class JoinE2ETests {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 
-    private void testAndAssertQuery(Query query, QueryResult expectedQueryResult) throws Exception {
+    private void testAndAssertQuery(Query query, AssignmentsQueryResult expectedAssignmentsQueryResult) throws Exception {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
@@ -217,8 +217,8 @@ public class JoinE2ETests {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult, shouldIgnoreRelId());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        QueryResultAssert.assertEquals(expectedAssignmentsQueryResult, actualAssignmentsQueryResult, shouldIgnoreRelId());
     }
 
 
@@ -447,11 +447,11 @@ public class JoinE2ETests {
         return new Plan(new EntityJoinOp(innerJoin, rightBranch2));
     }
 
-    private QueryResult dragonOriginKingdomX3Results() throws ParseException {
+    private AssignmentsQueryResult dragonOriginKingdomX3Results() throws ParseException {
         Function<Integer, Long> birthDateValueFunction =
                 birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
 
-        QueryResult.Builder builder = QueryResult.Builder.instance();
+        AssignmentsQueryResult.Builder builder = AssignmentsQueryResult.Builder.instance();
         Entity entityA = Entity.Builder.instance()
                 .withEID("Dragon_1" )
                 .withETag(singleton("A"))
@@ -569,11 +569,11 @@ public class JoinE2ETests {
         return new Plan(new EntityJoinOp(leftBranch, rightBranch));
     }
 
-    private QueryResult dragonOriginKingdomX2Results() throws ParseException {
+    private AssignmentsQueryResult dragonOriginKingdomX2Results() throws ParseException {
         Function<Integer, Long> birthDateValueFunction =
                 birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
 
-        QueryResult.Builder builder = QueryResult.Builder.instance();
+        AssignmentsQueryResult.Builder builder = AssignmentsQueryResult.Builder.instance();
         Entity entityA = Entity.Builder.instance()
                 .withEID("Dragon_1" )
                 .withETag(singleton("A"))
@@ -641,7 +641,7 @@ public class JoinE2ETests {
     }
 
 
-    private void runQueryAndValidate(Query query, QueryResult expectedQueryResult, Plan expectedPlan) throws IOException, InterruptedException {
+    private void runQueryAndValidate(Query query, AssignmentsQueryResult expectedAssignmentsQueryResult, Plan expectedPlan) throws IOException, InterruptedException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
@@ -655,11 +655,11 @@ public class JoinE2ETests {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         PlanAssert.assertEquals(expectedPlan, actualPlan);
 
 
-        QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult, shouldIgnoreRelId());
+        QueryResultAssert.assertEquals(expectedAssignmentsQueryResult, actualAssignmentsQueryResult, shouldIgnoreRelId());
     }
 
     private Query getDragonOriginKingdomX2Query() {

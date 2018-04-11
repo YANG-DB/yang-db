@@ -1,6 +1,10 @@
 package com.kayhut.fuse.model.resourceInfo;
 
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import javaslang.collection.Stream;
+
+import java.util.List;
 
 /**
  * Created by User on 06/03/2017.
@@ -9,10 +13,25 @@ public class CursorResourceInfo extends ResourceInfoBase {
     //region Constructors
     public CursorResourceInfo() {}
 
-    public CursorResourceInfo(String resourceUrl,String resourceId, CreateCursorRequest.CursorType cursorType, String pageStoreUrl) {
+    public CursorResourceInfo(
+            String resourceUrl,
+            String resourceId,
+            CreateCursorRequest cursorRequest,
+            String pageStoreUrl,
+            PageResourceInfo...pageResourceInfos) {
+        this(resourceUrl, resourceId, cursorRequest, pageStoreUrl, Stream.of(pageResourceInfos));
+    }
+
+    public CursorResourceInfo(
+            String resourceUrl,
+            String resourceId,
+            CreateCursorRequest cursorRequest,
+            String pageStoreUrl,
+            Iterable<PageResourceInfo> pageResourceInfos) {
         super(resourceUrl,resourceId);
         this.pageStoreUrl = pageStoreUrl;
-        this.cursorType = cursorType;
+        this.cursorRequest = cursorRequest;
+        this.pageResourceInfos = Stream.ofAll(pageResourceInfos).toJavaList();
     }
     //endregion
 
@@ -21,22 +40,32 @@ public class CursorResourceInfo extends ResourceInfoBase {
         return this.pageStoreUrl;
     }
 
-    public CreateCursorRequest.CursorType getCursorType() {
-        return this.cursorType;
-    }
-
-    public void setCursorType(CreateCursorRequest.CursorType cursorType) {
-        this.cursorType = cursorType;
-    }
-
     public void setPageStoreUrl(String pageStoreUrl) {
         this.pageStoreUrl = pageStoreUrl;
+    }
+
+    public CreateCursorRequest getCursorRequest() {
+        return cursorRequest;
+    }
+
+    public void setCursorRequest(CreateCursorRequest cursorRequest) {
+        this.cursorRequest = cursorRequest;
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public List<PageResourceInfo> getPageResourceInfos() {
+        return pageResourceInfos;
+    }
+
+    public void setPageResourceInfos(List<PageResourceInfo> pageResourceInfos) {
+        this.pageResourceInfos = pageResourceInfos;
     }
 
     //endregion
 
     //region Fields
-    private CreateCursorRequest.CursorType cursorType;
+    private CreateCursorRequest cursorRequest;
     private String pageStoreUrl;
+    private List<PageResourceInfo> pageResourceInfos;
     //endregion
 }
