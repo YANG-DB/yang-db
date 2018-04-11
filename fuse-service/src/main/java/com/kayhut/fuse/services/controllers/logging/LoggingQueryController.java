@@ -6,11 +6,11 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
-import com.kayhut.fuse.logging.ExternalRequestId;
+import com.kayhut.fuse.logging.RequestExternalMetadata;
 import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
+import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -44,12 +44,12 @@ public class LoggingQueryController implements QueryController {
             @Named(controllerParameter) QueryController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
-            ExternalRequestIdSupplier externalRequestIdSupplier,
+            RequestExternalMetadataSupplier requestExternalMetadataSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
         this.requestIdSupplier = requestIdSupplier;
-        this.externalRequestIdSupplier = externalRequestIdSupplier;
+        this.requestExternalMetadataSupplier = requestExternalMetadataSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -61,7 +61,7 @@ public class LoggingQueryController implements QueryController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(request.getId())).write();
 
         ContentResponse<QueryResourceInfo> response = null;
@@ -81,7 +81,7 @@ public class LoggingQueryController implements QueryController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -92,7 +92,7 @@ public class LoggingQueryController implements QueryController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(request.getId())).write();
 
         ContentResponse<QueryResourceInfo> response = null;
@@ -112,7 +112,7 @@ public class LoggingQueryController implements QueryController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -122,7 +122,7 @@ public class LoggingQueryController implements QueryController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfo.toString())).time();
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestId.of(this.requestIdSupplier.get())).write();
 
         ContentResponse<StoreResourceInfo> response = null;
@@ -143,7 +143,7 @@ public class LoggingQueryController implements QueryController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -154,7 +154,7 @@ public class LoggingQueryController implements QueryController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(queryId)).write();
 
         ContentResponse<QueryResourceInfo> response = null;
@@ -174,7 +174,7 @@ public class LoggingQueryController implements QueryController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -185,7 +185,7 @@ public class LoggingQueryController implements QueryController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(queryId)).write();
 
         ContentResponse<Query> response = null;
@@ -205,7 +205,7 @@ public class LoggingQueryController implements QueryController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -215,7 +215,7 @@ public class LoggingQueryController implements QueryController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(queryId)).write();
 
         ContentResponse<AsgQuery> response = null;
@@ -235,7 +235,7 @@ public class LoggingQueryController implements QueryController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -282,7 +282,7 @@ public class LoggingQueryController implements QueryController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(queryId)).write();
 
         ContentResponse<Boolean> response = null;
@@ -302,7 +302,7 @@ public class LoggingQueryController implements QueryController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -311,7 +311,7 @@ public class LoggingQueryController implements QueryController {
     //region Fields
     private QueryController controller;
     private RequestIdSupplier requestIdSupplier;
-    private ExternalRequestIdSupplier externalRequestIdSupplier;
+    private RequestExternalMetadataSupplier requestExternalMetadataSupplier;
 
     private Logger logger;
     private MetricRegistry metricRegistry;

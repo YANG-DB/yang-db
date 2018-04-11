@@ -3,11 +3,13 @@ package com.kayhut.fuse.services.modules;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
+import com.google.inject.util.Providers;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.model.transport.ExternalMetadata;
 import com.kayhut.fuse.services.suppliers.CachedRequestIdSupplier;
-import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
+import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
@@ -39,7 +41,8 @@ public class ServiceModule extends ModuleBase {
                 .to(SnowflakeRequestIdSupplier.class)
                 .asEagerSingleton();
         binder.bind(RequestIdSupplier.class).to(CachedRequestIdSupplier.class).in(RequestScoped.class);
-        binder.bind(ExternalRequestIdSupplier.class).to(ExternalRequestIdSupplier.Impl.class).in(RequestScoped.class);
+
+        binder.bind(RequestExternalMetadataSupplier.class).to(RequestExternalMetadataSupplier.Impl.class).in(RequestScoped.class);
 
         // bind service controller
         bindApiDescriptionController(env, config, binder);

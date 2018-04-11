@@ -6,20 +6,18 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
-import com.kayhut.fuse.logging.ExternalRequestId;
+import com.kayhut.fuse.logging.RequestExternalMetadata;
 import com.kayhut.fuse.logging.RequestId;
-import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
+import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.services.controllers.CursorController;
-import org.jooby.scope.RequestScoped;
 import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
@@ -41,12 +39,12 @@ public class LoggingCursorController implements CursorController {
             @Named(controllerParameter) CursorController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
-            ExternalRequestIdSupplier externalRequestIdSupplier,
+            RequestExternalMetadataSupplier requestExternalMetadataSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
         this.requestIdSupplier = requestIdSupplier;
-        this.externalRequestIdSupplier = externalRequestIdSupplier;
+        this.requestExternalMetadataSupplier = requestExternalMetadataSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -58,7 +56,7 @@ public class LoggingCursorController implements CursorController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(query(queryId).get())).write();
 
         ContentResponse<CursorResourceInfo> response = null;
@@ -78,7 +76,7 @@ public class LoggingCursorController implements CursorController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -89,7 +87,7 @@ public class LoggingCursorController implements CursorController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(query(queryId).get())).write();
 
         ContentResponse<StoreResourceInfo> response = null;
@@ -109,7 +107,7 @@ public class LoggingCursorController implements CursorController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -120,7 +118,7 @@ public class LoggingCursorController implements CursorController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
 
         ContentResponse<CursorResourceInfo> response = null;
@@ -140,7 +138,7 @@ public class LoggingCursorController implements CursorController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -151,7 +149,7 @@ public class LoggingCursorController implements CursorController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
 
         ContentResponse<Boolean> response = null;
@@ -171,7 +169,7 @@ public class LoggingCursorController implements CursorController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -180,7 +178,7 @@ public class LoggingCursorController implements CursorController {
     //region Fields
     private Logger logger;
     private RequestIdSupplier requestIdSupplier;
-    private ExternalRequestIdSupplier externalRequestIdSupplier;
+    private RequestExternalMetadataSupplier requestExternalMetadataSupplier;
     private MetricRegistry metricRegistry;
     private CursorController controller;
 

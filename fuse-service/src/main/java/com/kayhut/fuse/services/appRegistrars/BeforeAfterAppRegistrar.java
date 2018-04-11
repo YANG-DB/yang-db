@@ -2,7 +2,8 @@ package com.kayhut.fuse.services.appRegistrars;
 
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.results.TextContent;
-import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
+import com.kayhut.fuse.model.transport.ExternalMetadata;
+import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import org.jooby.*;
 
 import java.util.Optional;
@@ -17,23 +18,13 @@ public class BeforeAfterAppRegistrar implements AppRegistrar {
     //endregion
 
     //region Private Methods
-    private void bindExternalIdProvider(Request request) {
-        Optional<String> externalId = request.header(FUSE_EXTERNAL_ID_HEADER).toOptional();
-        externalId.ifPresent(id -> request.set(ExternalRequestIdSupplier.class, new ExternalRequestIdSupplier.Impl(id)));
-    }
-
-    private void addExternalIdResponseHeader(Request request, Response response) {
-        Optional<String> externalId = request.header(FUSE_EXTERNAL_ID_HEADER).toOptional();
-        externalId.ifPresent(id -> response.header(FUSE_EXTERNAL_ID_HEADER, id));
-    }
-
     private void registerBeforeHandlers(Jooby app) {
-        app.before((req, resp) -> bindExternalIdProvider(req));
+        app.before((req, resp) -> bindExternalMetadataSupplier(req));
     }
 
     private void registerAfterHandlers(Jooby app) {
         app.after((req, resp, result) ->  {
-            addExternalIdResponseHeader(req, resp);
+            addExternalMetadataResponseHeaders(req, resp);
             return result;
         });
 
@@ -46,9 +37,29 @@ public class BeforeAfterAppRegistrar implements AppRegistrar {
             return result;
         });
     }
+
+    private void bindExternalMetadataSupplier(Request request) {
+        Optional<String> id = request.header(FUSE_EXTERNAL_ID_HEADER).toOptional();
+        Optional<String> operation = request.header(FUSE_EXTERNAL_OPERATION_HEADER).toOptional();
+
+        if (id.isPresent() || operation.isPresent()) {
+            request.set(RequestExternalMetadataSupplier.class,
+                    new RequestExternalMetadataSupplier.Impl(
+                            new ExternalMetadata(id.orElse(null), operation.orElse(null))));
+        }
+    }
+
+    private void addExternalMetadataResponseHeaders(Request request, Response response) {
+        Optional<String> id = request.header(FUSE_EXTERNAL_ID_HEADER).toOptional();
+        Optional<String> operation = request.header(FUSE_EXTERNAL_OPERATION_HEADER).toOptional();
+
+        id.ifPresent(id1 -> response.header(FUSE_EXTERNAL_ID_HEADER, id1));
+        operation.ifPresent(operation1 -> response.header(FUSE_EXTERNAL_OPERATION_HEADER, operation1));
+    }
     //endregion
 
     //region Fields
     private static final String FUSE_EXTERNAL_ID_HEADER = "fuse-external-id";
+    private static final String FUSE_EXTERNAL_OPERATION_HEADER = "fuse-external-operation";
     //endregion
 }

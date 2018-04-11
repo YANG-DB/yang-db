@@ -5,9 +5,9 @@ import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
-import com.kayhut.fuse.logging.ExternalRequestId;
+import com.kayhut.fuse.logging.RequestExternalMetadata;
 import com.kayhut.fuse.logging.RequestId;
-import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
+import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.transport.ContentResponse;
@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
@@ -38,12 +37,12 @@ public class LoggingCatalogController implements CatalogController {
             @Named(controllerParameter) CatalogController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
-            ExternalRequestIdSupplier externalRequestIdSupplier,
+            RequestExternalMetadataSupplier requestExternalMetadataSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
         this.requestIdSupplier = requestIdSupplier;
-        this.externalRequestIdSupplier = externalRequestIdSupplier;
+        this.requestExternalMetadataSupplier = requestExternalMetadataSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -55,7 +54,7 @@ public class LoggingCatalogController implements CatalogController {
 
         LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get())).write();
 
         ContentResponse<Ontology> response = null;
 
@@ -74,7 +73,7 @@ public class LoggingCatalogController implements CatalogController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -85,7 +84,7 @@ public class LoggingCatalogController implements CatalogController {
 
         LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get())).write();
 
         ContentResponse<List<Ontology>> response = null;
 
@@ -104,7 +103,7 @@ public class LoggingCatalogController implements CatalogController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -115,7 +114,7 @@ public class LoggingCatalogController implements CatalogController {
 
         LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get())).write();
 
         ContentResponse<GraphElementSchemaProvider> response = null;
 
@@ -134,7 +133,7 @@ public class LoggingCatalogController implements CatalogController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -145,7 +144,7 @@ public class LoggingCatalogController implements CatalogController {
 
         LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get())).write();
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get())).write();
 
         ContentResponse<List<GraphElementSchemaProvider>> response = null;
 
@@ -164,7 +163,7 @@ public class LoggingCatalogController implements CatalogController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -173,7 +172,7 @@ public class LoggingCatalogController implements CatalogController {
     //region Fields
     private Logger logger;
     private RequestIdSupplier requestIdSupplier;
-    private ExternalRequestIdSupplier externalRequestIdSupplier;
+    private RequestExternalMetadataSupplier requestExternalMetadataSupplier;
     private MetricRegistry metricRegistry;
     private CatalogController controller;
 

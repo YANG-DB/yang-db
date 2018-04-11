@@ -6,19 +6,18 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
-import com.kayhut.fuse.logging.ExternalRequestId;
+import com.kayhut.fuse.logging.RequestExternalMetadata;
 import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.services.controllers.PageController;
-import com.kayhut.fuse.services.suppliers.ExternalRequestIdSupplier;
+import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
@@ -38,12 +37,12 @@ public class LoggingPageController implements PageController {
             @Named(controllerParameter) PageController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
-            ExternalRequestIdSupplier externalRequestIdSupplier,
+            RequestExternalMetadataSupplier requestExternalMetadataSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
         this.requestIdSupplier = requestIdSupplier;
-        this.externalRequestIdSupplier = externalRequestIdSupplier;
+        this.requestExternalMetadataSupplier = requestExternalMetadataSupplier;
 
         this.metricRegistry = metricRegistry;
     }
@@ -56,7 +55,7 @@ public class LoggingPageController implements PageController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
 
         ContentResponse<PageResourceInfo> response = null;
@@ -77,7 +76,7 @@ public class LoggingPageController implements PageController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -88,7 +87,7 @@ public class LoggingPageController implements PageController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
 
         ContentResponse<PageResourceInfo> response = null;
@@ -109,7 +108,7 @@ public class LoggingPageController implements PageController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -120,7 +119,7 @@ public class LoggingPageController implements PageController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
 
         ContentResponse<StoreResourceInfo> response = null;
@@ -140,7 +139,7 @@ public class LoggingPageController implements PageController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -151,7 +150,7 @@ public class LoggingPageController implements PageController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).page(pageId).get())).write();
 
         ContentResponse<PageResourceInfo> response = null;
@@ -171,7 +170,7 @@ public class LoggingPageController implements PageController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -182,7 +181,7 @@ public class LoggingPageController implements PageController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).page(pageId).get())).write();
 
         ContentResponse<Object> response = null;
@@ -202,7 +201,7 @@ public class LoggingPageController implements PageController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -213,7 +212,7 @@ public class LoggingPageController implements PageController {
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
                 RequestId.of(this.requestIdSupplier.get()),
-                ExternalRequestId.of(this.externalRequestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(query(queryId).cursor(cursorId).page(pageId).get())).write();
 
         ContentResponse<Boolean> response = null;
@@ -233,7 +232,7 @@ public class LoggingPageController implements PageController {
 
         return ContentResponse.Builder.builder(response)
                 .requestId(this.requestIdSupplier.get())
-                .externalRequestId(this.externalRequestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
@@ -242,7 +241,7 @@ public class LoggingPageController implements PageController {
     //region Fields
     private Logger logger;
     private RequestIdSupplier requestIdSupplier;
-    private ExternalRequestIdSupplier externalRequestIdSupplier;
+    private RequestExternalMetadataSupplier requestExternalMetadataSupplier;
     private MetricRegistry metricRegistry;
     private PageController controller;
 

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.transport;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.results.TextContent;
 import org.jooby.Status;
@@ -10,6 +11,7 @@ import java.util.function.Predicate;
 /**
  * Created by lior on 19/02/2017.
  */
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class ContentResponse<T> implements Response, TextContent {
     public static <T> ContentResponse<T> notFound() {
         return Builder.<T>builder(Status.NOT_FOUND, Status.NOT_FOUND)
@@ -25,7 +27,8 @@ public class ContentResponse<T> implements Response, TextContent {
     }
 
     //region Constructors
-    public ContentResponse() {}
+    public ContentResponse() {
+    }
     //endregion
 
     //region Properties
@@ -34,8 +37,8 @@ public class ContentResponse<T> implements Response, TextContent {
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public String getExternalRequestId() {
-        return this.externalRequestId;
+    public ExternalMetadata getExternal() {
+        return this.external;
     }
 
     public long getElapsed() {
@@ -68,10 +71,10 @@ public class ContentResponse<T> implements Response, TextContent {
 
     @Override
     public String toString() {
-        return String.format("ContentResponse{status=%s, requestId=%s, externalRequestId=%s, elapsed=%d, data=%s}",
+        return String.format("ContentResponse{status=%s, requestId=%s, external=%s, elapsed=%d, data=%s}",
                 status,
                 requestId,
-                externalRequestId,
+                external,
                 elapsed,
                 data);
     }
@@ -79,7 +82,7 @@ public class ContentResponse<T> implements Response, TextContent {
     //region Fields
     private Status status = Status.NOT_FOUND;
     private String requestId;
-    private String externalRequestId;
+    private ExternalMetadata external;
     private long elapsed;
     private T data;
     private Exception error;
@@ -119,8 +122,8 @@ public class ContentResponse<T> implements Response, TextContent {
             return this;
         }
 
-        public Builder<T> externalRequestId(String externalRequestId) {
-            this.response.externalRequestId = externalRequestId;
+        public Builder<T> external(ExternalMetadata external) {
+            this.response.external = external;
             return this;
         }
 
