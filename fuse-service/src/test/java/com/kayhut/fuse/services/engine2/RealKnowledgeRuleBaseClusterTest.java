@@ -956,7 +956,7 @@ public class RealKnowledgeRuleBaseClusterTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -966,7 +966,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult)fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
