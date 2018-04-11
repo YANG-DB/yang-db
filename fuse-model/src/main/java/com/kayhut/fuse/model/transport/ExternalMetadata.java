@@ -10,58 +10,43 @@ import java.util.*;
  * Using the NON_EMPTY jackson attribute include value will call the isEmpty() method which will cause this object not
  * to be serialized when it was constructed using the default ctor (Tried to achieve this with NON_DEFAULT as well but that didn't work)
  */
-public class ExternalMetadata extends AbstractMap<String, String> {
+public class ExternalMetadata extends HashMap<String, String> {
     //region Constructors
     public ExternalMetadata() {
 
     }
 
     public ExternalMetadata(String id, String operation) {
-        this.id = id;
-        this.operation = operation;
-    }
-    //endregion
-
-    //region AbstractMap Implementation
-    @Override
-    public Set<Entry<String, String>> entrySet() {
-        return Stream.<Entry<String, String>>of(
-                new AbstractMap.SimpleEntry<>("id", this.id),
-                new AbstractMap.SimpleEntry<>("operation", this.operation))
-                .filter(entry -> entry.getValue() != null)
-                .toJavaSet();
+        this.setId(id);
+        this.setOperation(operation);
     }
     //endregion
 
     //region Properties
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public String getId() {
-        return id;
+        return this.get("id");
     }
 
     public void setId(String id) {
-        this.id = id;
+        if (id != null) {
+            this.put("id", id);
+        } else {
+            this.remove("id");
+        }
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public String getOperation() {
-        return operation;
+        return this.get("operation");
     }
 
     public void setOperation(String operation) {
-        this.operation = operation;
+        if (operation != null) {
+            this.put("operation", operation);
+        } else {
+            this.remove("operation");
+        }
     }
-    //endregion
-
-    //region Override Methods
-    @Override
-    public String toString() {
-        return String.format("{id: %s, operation: %s}", this.id, this.operation);
-    }
-    //endregion
-
-    //region Fields
-    private String id;
-    private String operation;
     //endregion
 }
