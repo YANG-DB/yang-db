@@ -32,7 +32,7 @@ import static com.kayhut.fuse.model.query.Rel.Direction.R;
 public class RealClusterKnowledgeRuleBasedSearchTest {
 
     @Test
-//    @Ignore
+    @Ignore
     public void testAdvancedSearch() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

@@ -5,7 +5,7 @@
     <groupId>org.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>${fuse.version}</version>
+    <version>0.3-SNAPSHOT</version>
 
     <modules>
         <module>data-gen</module>
@@ -130,72 +130,72 @@
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-model</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-dispatcher</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-asg</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-neo4j</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-epb</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-executor</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-stat</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-gta</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-unipop</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-unipop-asg</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-service</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-validator</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>geojson-jackson</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>dragons-test-framework</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
             </dependency>
             <!-- fuse -->
 
@@ -316,6 +316,11 @@
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-metrics</artifactId>
+                <version>${jooby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jooby</groupId>
+                <artifactId>jooby-swagger</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
             <!-- jooby -->
@@ -476,27 +481,27 @@
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-test-framework</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-model</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-unipop</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-asg</artifactId>
-                <version>${fuse.version}</version>
+                <version>0.3-SNAPSHOT</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
