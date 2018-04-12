@@ -20,6 +20,7 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
@@ -672,7 +673,10 @@ public class RealClusterKnowledgeRuleBaseTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, "1", "1",
-                new CreateGraphCursorRequest(new CreatePageRequest(1000, true)));
+                new CreateGraphHierarchyCursorRequest(
+                        CreateCursorRequest.Include.entities,
+                        Collections.singletonList("SE"),
+                        new CreatePageRequest(1000, true)));
 
         Object pageDataObj = queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData();
         AssignmentsQueryResult pageData = new ObjectMapper().convertValue(pageDataObj, AssignmentsQueryResult.class);

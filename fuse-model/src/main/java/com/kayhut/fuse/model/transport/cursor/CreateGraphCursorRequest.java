@@ -14,5 +14,9 @@ public class CreateGraphCursorRequest extends CreateCursorRequest {
     public CreateGraphCursorRequest(CreatePageRequest createPageRequest) {
         super(createPageRequest);
     }
+
+    public CreateGraphCursorRequest(Include include, CreatePageRequest createPageRequest) {
+        super(include, createPageRequest);
+    }
     //endregion
 }

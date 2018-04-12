@@ -12,6 +12,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Property;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.Stream;
@@ -33,30 +34,39 @@ public class PathsTraversalCursor implements Cursor {
         this.context = context;
         this.ont = new Ontology.Accessor(context.getOntology());
 
+        this.includeEntities = context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.all) ||
+                context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.entities);
+        this.includeRelationships = context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.all) ||
+                context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.relationships);
+
         Plan flatPlan = PlanUtil.flat(context.getQueryResource().getExecutionPlan().getPlan());
-        this.eEntityBases = Stream.ofAll(flatPlan.getOps())
-                .filter(planOp -> planOp instanceof EntityOp)
-                .map(planOp -> (EntityOp)planOp)
-                .toJavaMap(planOp -> new Tuple2<>(planOp.getAsgEbase().geteBase().geteTag(), planOp.getAsgEbase().geteBase()));
+        if (this.includeEntities) {
+            this.eEntityBases = Stream.ofAll(flatPlan.getOps())
+                    .filter(planOp -> planOp instanceof EntityOp)
+                    .map(planOp -> (EntityOp) planOp)
+                    .toJavaMap(planOp -> new Tuple2<>(planOp.getAsgEbase().geteBase().geteTag(), planOp.getAsgEbase().geteBase()));
+        }
 
-        this.eRels = Stream.ofAll(flatPlan.getOps())
-                .filter(planOp -> planOp instanceof RelationOp)
-                .toJavaMap(planOp -> {
-                    RelationOp relationOp = (RelationOp)planOp;
-                    Optional<EntityOp> prevEntityOp =
-                            PlanUtil.prev(flatPlan, planOp, EntityOp.class);
-                    Optional<EntityOp> nextEntityOp =
-                            PlanUtil.next(flatPlan, planOp, EntityOp.class);
+        if (this.includeRelationships) {
+            this.eRels = Stream.ofAll(flatPlan.getOps())
+                    .filter(planOp -> planOp instanceof RelationOp)
+                    .toJavaMap(planOp -> {
+                        RelationOp relationOp = (RelationOp) planOp;
+                        Optional<EntityOp> prevEntityOp =
+                                PlanUtil.prev(flatPlan, planOp, EntityOp.class);
+                        Optional<EntityOp> nextEntityOp =
+                                PlanUtil.next(flatPlan, planOp, EntityOp.class);
 
-                    String relationLabel = prevEntityOp.get().getAsgEbase().geteBase().geteTag() +
-                            ConversionUtil.convertDirectionGraphic(relationOp.getAsgEbase().geteBase().getDir()) +
-                            nextEntityOp.get().getAsgEbase().geteBase().geteTag();
+                        String relationLabel = prevEntityOp.get().getAsgEbase().geteBase().geteTag() +
+                                ConversionUtil.convertDirectionGraphic(relationOp.getAsgEbase().geteBase().getDir()) +
+                                nextEntityOp.get().getAsgEbase().geteBase().geteTag();
 
-                    return new Tuple2<>(relationLabel,
-                            new Tuple3<>(prevEntityOp.get().getAsgEbase().geteBase(),
-                                    relationOp.getAsgEbase().geteBase(),
-                                    nextEntityOp.get().getAsgEbase().geteBase()));
-                });
+                        return new Tuple2<>(relationLabel,
+                                new Tuple3<>(prevEntityOp.get().getAsgEbase().geteBase(),
+                                        relationOp.getAsgEbase().geteBase(),
+                                        nextEntityOp.get().getAsgEbase().geteBase()));
+                    });
+        }
 
         this.typeProperty = this.ont.property$("type");
     }
@@ -95,9 +105,9 @@ public class PathsTraversalCursor implements Cursor {
             Object pathObject = pathObjects.get(objectIndex);
             String pathLabel = pathlabels.get(objectIndex).iterator().next();
 
-            if (Vertex.class.isAssignableFrom(pathObject.getClass())) {
+            if (Vertex.class.isAssignableFrom(pathObject.getClass()) && this.includeEntities) {
                 builder.withEntity(toEntity((Vertex)pathObject, this.eEntityBases.get(pathLabel)));
-            } else if (Edge.class.isAssignableFrom(pathObject.getClass())) {
+            } else if (Edge.class.isAssignableFrom(pathObject.getClass()) && this.includeRelationships) {
                 Tuple3<EEntityBase, Rel, EEntityBase> relTuple = this.eRels.get(pathLabel);
                 builder.withRelationship(toRelationship(
                         (Edge)pathObject,
@@ -166,5 +176,8 @@ public class PathsTraversalCursor implements Cursor {
     private Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
 
     private com.kayhut.fuse.model.ontology.Property typeProperty;
+
+    boolean includeEntities;
+    boolean includeRelationships;
     //endregion
 }

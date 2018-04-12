@@ -22,8 +22,11 @@ public class TraversalCursorFactory implements CursorFactory {
         } else if (traversalCursorContext.getCursorRequest() instanceof CreateGraphCursorRequest) {
             return new GraphTraversalCursor(new PathsTraversalCursor(traversalCursorContext));
         } else if (traversalCursorContext.getCursorRequest() instanceof CreateGraphHierarchyCursorRequest) {
-            return new GraphHierarchyTraversalCursor(
+            /*return new GraphHierarchyTraversalCursor(
                     new PathsTraversalCursor(traversalCursorContext),
+                    ((CreateGraphHierarchyCursorRequest)traversalCursorContext.getCursorRequest()).getCountTags());*/
+
+            return new NewGraphHierarchyTraversalCursor(traversalCursorContext,
                     ((CreateGraphHierarchyCursorRequest)traversalCursorContext.getCursorRequest()).getCountTags());
         }else if(traversalCursorContext.getCursorRequest() instanceof CreateCsvCursorRequest){
             return new CsvTraversalCursor(new PathsTraversalCursor(traversalCursorContext), (CreateCsvCursorRequest) traversalCursorContext.getCursorRequest());
