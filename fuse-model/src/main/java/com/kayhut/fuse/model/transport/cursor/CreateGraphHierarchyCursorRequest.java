@@ -18,7 +18,11 @@ public class CreateGraphHierarchyCursorRequest extends CreateCursorRequest {
     }
 
     public CreateGraphHierarchyCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest) {
-        super(createPageRequest);
+        this(Include.all, countTags, createPageRequest);
+    }
+
+    public CreateGraphHierarchyCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest) {
+        super(include, createPageRequest);
         this.countTags = countTags;
     }
     //endregion

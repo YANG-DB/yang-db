@@ -4,35 +4,37 @@ import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.executor.utils.ConversionUtil;
-import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
-import com.kayhut.fuse.model.ontology.*;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.results.*;
-import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
+import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
+import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.*;
 
-import static com.kayhut.fuse.model.results.AssignmentsQueryResult.Builder.instance;
-
-/**
- * Created by roman.margolis on 02/10/2017.
- */
-public class PathsTraversalCursor implements Cursor {
+public class NewGraphHierarchyTraversalCursor implements Cursor {
     //region Constructors
-    public PathsTraversalCursor(TraversalCursorContext context) {
+    public NewGraphHierarchyTraversalCursor(TraversalCursorContext context, Iterable<String> countTags) {
+        this.countTags = Stream.ofAll(countTags).toJavaSet();
+        this.distinctIds = new HashSet<>();
+
         this.context = context;
         this.ont = new Ontology.Accessor(context.getOntology());
+        this.typeProperty = this.ont.property$("type");
 
         this.includeEntities = context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.all) ||
                 context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.entities);
@@ -67,62 +69,63 @@ public class PathsTraversalCursor implements Cursor {
                                         nextEntityOp.get().getAsgEbase().geteBase()));
                     });
         }
-
-        this.typeProperty = this.ont.property$("type");
     }
     //endregion
 
     //region Cursor Implementation
     @Override
-    public AssignmentsQueryResult getNextResults(int numResults) {
-        return toQuery(numResults);
-    }
-    //endregion
+    public QueryResultBase getNextResults(int numResults) {
+        Map<String, Map<Vertex, Set<String>>> idVertexEtagsMap = new HashMap<>();
+        Map<String, Tuple2<Edge, String>> idEdgeEtagMap = new HashMap<>();
 
-    //region Properties
-    public TraversalCursorContext getContext() {
-        return context;
+        try {
+            while(this.distinctIds.size() < numResults) {
+                Path path = context.getTraversal().next();
+                List<Object> pathObjects = path.objects();
+                List<Set<String>> pathLabels = path.labels();
+                for (int objectIndex = 0; objectIndex < path.objects().size(); objectIndex++) {
+                    Element element = (Element) pathObjects.get(objectIndex);
+                    String pathLabel = pathLabels.get(objectIndex).iterator().next();
+
+                    if (this.countTags.contains(pathLabel)) {
+                        this.distinctIds.add(element.id().toString());
+                    }
+
+                    if (Vertex.class.isAssignableFrom(element.getClass()) && this.includeEntities) {
+                        Map<Vertex, Set<String>> vertexEtagsMap = idVertexEtagsMap.computeIfAbsent(element.id().toString(), id -> new HashMap<>());
+                        vertexEtagsMap.computeIfAbsent((Vertex)element, vertex -> new HashSet<>()).add(pathLabel);
+                    } else if (Edge.class.isAssignableFrom(element.getClass()) && this.includeRelationships) {
+                        idEdgeEtagMap.computeIfAbsent(element.id().toString(), id -> new Tuple2<>((Edge)element, pathLabel));
+                    }
+                }
+            }
+        } catch (NoSuchElementException ex) {
+
+        }
+
+        Assignment.Builder builder = Assignment.Builder.instance();
+
+        for(Map.Entry<String, Map<Vertex, Set<String>>> idVertexEtagsEntry : idVertexEtagsMap.entrySet()) {
+            Vertex mergedVertex = mergeVertices(Stream.ofAll(idVertexEtagsEntry.getValue().keySet()).toJavaList());
+            Set<String> etags = Stream.ofAll(idVertexEtagsEntry.getValue().values()).flatMap(etags1 -> etags1).toJavaSet();
+            builder.withEntity(toEntity(mergedVertex, etags));
+        }
+
+        for(Map.Entry<String, Tuple2<Edge, String>> idEdgeEtagEntry : idEdgeEtagMap.entrySet()) {
+            Tuple3<EEntityBase, Rel, EEntityBase> relTuple = this.eRels.get(idEdgeEtagEntry.getValue()._2());
+            builder.withRelationship(toRelationship(
+                    idEdgeEtagEntry.getValue()._1(),
+                    relTuple._1(),
+                    relTuple._2(),
+                    relTuple._3()));
+        }
+
+        return AssignmentsQueryResult.Builder.instance().withAssignment(builder.build()).build();
     }
     //endregion
 
     //region Private Methods
-    private AssignmentsQueryResult toQuery(int numResults) {
-        AssignmentsQueryResult.Builder builder = instance();
-        builder.withPattern(context.getQueryResource().getQuery());
-        //build assignments
-        (context.getTraversal().next(numResults)).forEach(path -> {
-            builder.withAssignment(toAssignment(path));
-        });
-        return builder.build();
-    }
-
-    private Assignment toAssignment(Path path) {
-        Assignment.Builder builder = Assignment.Builder.instance();
-
-        List<Object> pathObjects = path.objects();
-        List<Set<String>> pathlabels = path.labels();
-        for(int objectIndex = 0 ; objectIndex < pathObjects.size() ; objectIndex++) {
-            Object pathObject = pathObjects.get(objectIndex);
-            String pathLabel = pathlabels.get(objectIndex).iterator().next();
-
-            if (Vertex.class.isAssignableFrom(pathObject.getClass()) && this.includeEntities) {
-                builder.withEntity(toEntity((Vertex)pathObject, this.eEntityBases.get(pathLabel)));
-            } else if (Edge.class.isAssignableFrom(pathObject.getClass()) && this.includeRelationships) {
-                Tuple3<EEntityBase, Rel, EEntityBase> relTuple = this.eRels.get(pathLabel);
-                builder.withRelationship(toRelationship(
-                        (Edge)pathObject,
-                        relTuple._1(),
-                        relTuple._2(),
-                        relTuple._3()));
-            } else {
-                throw new UnsupportedOperationException("unexpected object in path");
-            }
-        }
-
-        return builder.build();
-    }
-
-    private Entity toEntity(Vertex vertex, EEntityBase element) {
+    private Entity toEntity(Vertex vertex, Set<String> eTags) {
         String eType = vertex.label();
         List<Property> properties = Stream.ofAll(vertex::properties)
                 .map(this::toProperty)
@@ -133,7 +136,7 @@ public class PathsTraversalCursor implements Cursor {
         Entity.Builder builder = Entity.Builder.instance();
         builder.withEID(vertex.id().toString());
         builder.withEType(eType);
-        builder.withETag(new HashSet<>(Collections.singletonList(element.geteTag())));
+        builder.withETag(eTags);
         builder.withProperties(properties);
         return builder.build();
     }
@@ -167,15 +170,41 @@ public class PathsTraversalCursor implements Cursor {
                 .map(property -> new Property(property.get().getpType(), "raw", vertexProperty.value()))
                 .toJavaOptional();
     }
+
+    private Vertex mergeVertices(List<Vertex> vertices) {
+        Vertex firstVertex = vertices.get(0);
+
+        if (Stream.ofAll(vertices).map(vertex -> vertex.keys().size()).distinct().size() == 1) {
+            return firstVertex;
+        }
+
+        Set<String> firstVertexPropertyKeys = firstVertex.keys();
+
+        Stream.ofAll(vertices)
+                .drop(1)
+                .flatMap(vertex -> vertex::properties)
+                .filter(property -> !firstVertexPropertyKeys.contains(property.key()))
+                .distinctBy(org.apache.tinkerpop.gremlin.structure.Property::key)
+                .forEach(property -> firstVertex.property(property.key(), property.value()));
+
+        return firstVertex;
+    }
+
+    private Edge mergeEdges(List<Edge> edges) {
+        return edges.get(0);
+    }
     //endregion
 
     //region Fields
     private TraversalCursorContext context;
+    private Set<String> countTags;
+    private Set<String> distinctIds;
     private Ontology.Accessor ont;
-    private Map<String, EEntityBase> eEntityBases;
-    private Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
 
     private com.kayhut.fuse.model.ontology.Property typeProperty;
+
+    private Map<String, EEntityBase> eEntityBases;
+    private Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
 
     boolean includeEntities;
     boolean includeRelationships;
