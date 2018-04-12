@@ -92,6 +92,141 @@
           }
         }
       }
+    },
+    "/query/{id}/plan" : {
+      "get" : {
+        "tags" : [ "plan" ],
+        "summary" : "Fetch query plan by query ID",
+        "description" : "Fetch query plan by query ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema" : {
+              "$ref" : "#/definitions/QueryInfo"
+            }
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "query" ],
+        "summary" : "Deletes a query by ID",
+        "description" : "Deletes a query by ID.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "A <code>204</code>",
+            "schema" : {
+              "$ref" : "#/definitions/void"
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor" : {
+      "get" : {
+        "tags" : [ "query" ],
+        "summary" : "Fetch query info by ID",
+        "description" : "Fetch query info by ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema" : {
+              "$ref" : "#/definitions/QueryInfo"
+            }
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "query" ],
+        "summary" : "Deletes a query by ID",
+        "description" : "Deletes a query by ID.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "A <code>204</code>",
+            "schema" : {
+              "$ref" : "#/definitions/void"
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}/page" : {
+      "get" : {
+        "tags" : [ "query" ],
+        "summary" : "Fetch query info by ID",
+        "description" : "Fetch query info by ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema" : {
+              "$ref" : "#/definitions/QueryInfo"
+            }
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "query" ],
+        "summary" : "Deletes a query by ID",
+        "description" : "Deletes a query by ID.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "A <code>204</code>",
+            "schema" : {
+              "$ref" : "#/definitions/void"
+            }
+          }
+        }
+      }
     }
   },
   "definitions" : {
