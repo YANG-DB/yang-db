@@ -12,12 +12,15 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 import javaslang.Tuple2;
-import org.jooby.*;
+import org.jooby.Jooby;
+import org.jooby.RequestLogger;
+import org.jooby.Results;
 import org.jooby.caffeine.CaffeineCache;
 import org.jooby.handlers.CorsHandler;
 import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
 import org.jooby.scanner.Scanner;
+import org.jooby.swagger.SwaggerUI;
 
 import java.io.File;
 import java.util.List;
@@ -28,6 +31,8 @@ public class FuseApp extends Jooby {
     //region Consructors
     public FuseApp(AppUrlSupplier localUrlSupplier) {
         //log all requests
+        use(new Scanner());
+        use(new Jackson());
         use("*", new RequestLogger().extended());
         //metrics statistics
         MetricRegistry metricRegistry = new MetricRegistry();
@@ -41,13 +46,12 @@ public class FuseApp extends Jooby {
                 .metric("gc", new GarbageCollectorMetricSet())
                 .metric("fs", new FileDescriptorRatioGauge()));
 
-        use(new Scanner());
-        use(new Jackson());
-        use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {
-        }));
+        use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {}));
         get("", () ->  Results.redirect("/public/assets/earth.html"));
         get("/", () ->  Results.redirect("/public/assets/earth.html"));
         get("/collision", () ->  Results.redirect("/public/assets/collision.html"));
+        get("swagger/swagger.json", () ->  Results.redirect("/public/assets/swagger/swagger.json"));
+
         //'Access-Control-Allow-Origin' header
         use("*", new CorsHandler());
         //expose html assets
@@ -66,6 +70,9 @@ public class FuseApp extends Jooby {
         new SearchControllerRegistrar().register(this, localUrlSupplier);
         new InternalsControllerRegistrar().register(this, localUrlSupplier);
         new IdGeneratorControllerRegistrar().register(this, localUrlSupplier);
+        new SwaggerUI()
+                .filter(route -> route.pattern().startsWith("/fuse"))
+                .install(this);
     }
     //endregion
 
