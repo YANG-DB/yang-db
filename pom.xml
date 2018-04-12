@@ -41,7 +41,7 @@
         <maven-checkstyle-plugin.version>2.12.1</maven-checkstyle-plugin.version>
 
         <!-- fuse -->
-        <fuse.version>0.3-SNAPSHOT</fuse.version>
+        <fuse.version>${project.version}</fuse.version>
 
         <!-- jackson -->
         <jackson.version>2.8.1</jackson.version>
@@ -130,72 +130,72 @@
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-model</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-dispatcher</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-asg</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-neo4j</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-epb</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-executor</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-stat</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-gta</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-unipop</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-unipop-asg</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-service</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-validator</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>geojson-jackson</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>dragons-test-framework</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
             </dependency>
             <!-- fuse -->
 
@@ -481,27 +481,27 @@
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-test-framework</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-model</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-unipop</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-asg</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
