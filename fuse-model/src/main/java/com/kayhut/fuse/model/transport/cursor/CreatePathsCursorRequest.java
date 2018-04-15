@@ -14,5 +14,9 @@ public class CreatePathsCursorRequest extends CreateCursorRequest {
     public CreatePathsCursorRequest(CreatePageRequest createPageRequest) {
         super(createPageRequest);
     }
+
+    public CreatePathsCursorRequest(Include include, CreatePageRequest createPageRequest) {
+        super(include, createPageRequest);
+    }
     //endregion
 }

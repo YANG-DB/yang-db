@@ -1,13 +1,13 @@
 package com.kayhut.fuse.unipop.process.traversal.traverser;
 
+import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.ImmutablePath;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Roman on 1/27/2018.

@@ -3,7 +3,7 @@
     <parent>
         <artifactId>fuse</artifactId>
         <groupId>org.kayhut</groupId>
-        <version>${fuse.version}</version>
+        <version>0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -17,6 +17,10 @@
 
     <dependencies>
         <!-- runtime -->
+        <dependency>
+            <groupId>io.javaslang</groupId>
+            <artifactId>javaslang</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-jackson</artifactId>

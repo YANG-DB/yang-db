@@ -17,12 +17,23 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
         @JsonSubTypes.Type(name = "csv", value = CreateCsvCursorRequest.class),
 })
 public abstract class CreateCursorRequest {
+    public enum Include {
+        all,
+        entities,
+        relationships
+    }
+
     //region Constructors
     public CreateCursorRequest() {
-
+        this.include = Include.all;
     }
 
     public CreateCursorRequest(CreatePageRequest createPageRequest) {
+        this(Include.all, createPageRequest);
+    }
+
+    public CreateCursorRequest(Include include, CreatePageRequest createPageRequest) {
+        this.include = include;
         this.createPageRequest = createPageRequest;
     }
     //endregion
@@ -36,9 +47,21 @@ public abstract class CreateCursorRequest {
     public void setCreatePageRequest(CreatePageRequest createPageRequest) {
         this.createPageRequest = createPageRequest;
     }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Include getInclude() {
+        return include;
+    }
+
+    public void setInclude(Include include) {
+        this.include = include;
+    }
+
     //endregions
 
     //region Fields
     private CreatePageRequest createPageRequest;
+
+    private Include include;
     //endregion
 }
