@@ -86,16 +86,17 @@
             .attr("font-size", 10)
             .selectAll("g");
 
-
         d3.json(source, function (error, dataset) {
             if (error) throw error;
 
             var dataNodes = dataset.nodes.map(v => {
                 let val = new Object();
                 val.type = v.planOp.asgEbase.eBase.type;
+                val.opType = v.planOpType;
+                val.label = v.label;
                 val.eNum = v.planOp.asgEbase.eBase.eNum;
                 val.index = dataset.nodes.findIndex(node => node.planOp.asgEbase.eBase.eNum === val.eNum);
-                val.name = `${val.index}:${val.eNum}`;
+                val.name = `#${val.index} id(${val.eNum})`;
                 return val;
             });
 
@@ -127,6 +128,18 @@
                 .text(function (d) {
                     return d.sourceName + " -> " + d.targetName;
                 });
+
+
+            // add color stroke to links
+            link.style('stroke', (d, i) => {
+                if(d.source.label==='OptionalOp')
+                    return "#ff9f20";
+                if(d.target.opType==='RelationFilterOp' || d.target.opType==='EntityFilterOp')
+                    return "#c8bdff";
+
+                return "#787878";
+            });
+
 
             node = node
                 .data(graph.nodes)
@@ -172,7 +185,7 @@
 
             node.append("title")
                 .text(function (d) {
-                    return `${d.name}-[${d.type}]`;
+                    return `${d.opType}-[${d.name}]`;
                 });
         });
     }
