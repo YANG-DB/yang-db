@@ -14,21 +14,25 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.quant.QuantType;
+import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
  * Created by roman.margolis on 07/03/2018.
  */
-public class LikeAnyConstraintTransofmrationAsgStrategy implements AsgStrategy {
+public class LikeAnyConstraintTransformationAsgStrategy implements AsgStrategy {
     //region Constructors
-    public LikeAnyConstraintTransofmrationAsgStrategy(OntologyProvider ontologyProvider, GraphElementSchemaProviderFactory schemaProviderFactory) {
+    public LikeAnyConstraintTransformationAsgStrategy(OntologyProvider ontologyProvider, GraphElementSchemaProviderFactory schemaProviderFactory) {
         this.ontologyProvider = ontologyProvider;
         this.schemaProviderFactory = schemaProviderFactory;
     }
@@ -75,9 +79,19 @@ public class LikeAnyConstraintTransofmrationAsgStrategy implements AsgStrategy {
                     continue;
                 }
 
-                Iterable<EProp> newEprops = LikeUtil.applyWildcardRules(eProp, propertySchema.get());
+                EPropGroup newEpropGroup = new EPropGroup(
+                        eProp.geteNum(),
+                        QuantType.some,
+                        Collections.emptyList(),
+                        Stream.ofAll(CollectionUtil.listFromObjectValue(eProp.getCon().getExpr()))
+                        .map(value -> new EPropGroup(
+                                eProp.geteNum(),
+                                LikeUtil.applyWildcardRules(
+                                    EProp.of(eProp.geteNum(), eProp.getpType(), Constraint.of(ConstraintOp.like, value)),
+                                    propertySchema.get()))));
+
                 ePropGroupAsgEBase.geteBase().getProps().remove(eProp);
-                ePropGroupAsgEBase.geteBase().getProps().addAll(Stream.ofAll(newEprops).toJavaList());
+                ePropGroupAsgEBase.geteBase().getGroups().add(newEpropGroup);
             }
         });
     }
