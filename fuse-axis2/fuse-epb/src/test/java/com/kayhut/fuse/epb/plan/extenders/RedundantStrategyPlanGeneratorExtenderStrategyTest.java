@@ -138,6 +138,18 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
                 .build();
     }
 
+    private AsgQuery query3() {
+        return AsgQuery.Builder.start("name", "ont")
+                .next(typed(1,  PERSON.type))
+                .next(rel(2, OWN.getrType(), R)
+                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
+                .next(typed(3,  DRAGON.type))
+                .next(quant1(4, all))
+                .in(ePropGroup(9, EProp.of(9, "firstName", of(eq, "value1")),
+                        EProp.of(9, "gender", of(gt, "value3"))))
+                .build();
+    }
+
     private GraphElementSchemaProvider buildSchemaProvider(Ontology.Accessor ont) {
         Iterable<GraphVertexSchema> vertexSchemas =
                 Stream.ofAll(ont.entities())

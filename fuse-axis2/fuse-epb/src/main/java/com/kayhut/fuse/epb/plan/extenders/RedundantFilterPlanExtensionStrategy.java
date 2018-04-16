@@ -21,6 +21,7 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import javaslang.collection.Stream;
 
@@ -145,8 +146,10 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
 
         Plan newPlan = new Plan(plan.get().getOps());
 
+        RedundantGroups redundantGroups = null;
         if(lastEntityFilterOp.isPresent()) {
-            AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEbase().geteBase().clone()).build();
+            redundantGroups = buildRedundantGroups(lastEntityFilterOp.get().getAsgEbase().geteBase(), endSchema, schemaProvider, $ont);
+            /*AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEbase().geteBase().clone()).build();
             Stream.ofAll(ePropGroup.geteBase().getProps())
                     .filter(eProp -> eProp.getCon() != null)
                     .toJavaList()
@@ -168,14 +171,107 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
             });
 
             EntityFilterOp newEntityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(ePropGroup.geteBase()).build());
-            newPlan = PlanUtil.replace(newPlan, lastEntityFilterOp.get(), newEntityFilterOp);
+            newPlan = PlanUtil.replace(newPlan, lastEntityFilterOp.get(), newEntityFilterOp);*/
         }
+
+        if (redundantGroups != null) {
+            EntityFilterOp newEntityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(redundantGroups.getEPropGroup()).build());
+            newPlan = PlanUtil.replace(newPlan, lastEntityFilterOp.get(), newEntityFilterOp);
+
+            relPropGroup.getProps().addAll(redundantGroups.getRelPropGroup().getProps());
+            relPropGroup.getGroups().addAll(redundantGroups.getRelPropGroup().getGroups());
+        }
+
         RelationFilterOp newRelationFilterOp = new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(relPropGroup).build());
         newPlan = PlanUtil.replace(newPlan, lastRelationFilterOp.get(), newRelationFilterOp);
 
         return Collections.singleton(newPlan);
     }
     //region
+
+    //region Private Methods
+    private RedundantGroups buildRedundantGroups(
+            EPropGroup ePropGroup,
+            GraphEdgeSchema.End endSchema,
+            GraphElementSchemaProvider schemaProvider,
+            Ontology.Accessor $ont) {
+
+        List<RedundantGroups> childRedundantGroups =
+                Stream.ofAll(ePropGroup.getGroups())
+                .map(childGroup -> buildRedundantGroups(childGroup, endSchema, schemaProvider, $ont))
+                .toJavaList();
+
+        RedundantGroups propertiesRedundantGroups = buildRedudnantPropGroups(ePropGroup, endSchema, schemaProvider, $ont);
+
+        EPropGroup redundantEpropGroup = new EPropGroup(
+                ePropGroup.geteNum(),
+                ePropGroup.getQuantType(),
+                propertiesRedundantGroups.ePropGroup.getProps(),
+                Stream.ofAll(childRedundantGroups).map(RedundantGroups::getEPropGroup).toJavaList());
+
+        RelPropGroup redundantRelpropGroup = new RelPropGroup(
+                0,
+                ePropGroup.getQuantType(),
+                propertiesRedundantGroups.getRelPropGroup().getProps(),
+                Stream.ofAll(childRedundantGroups).map(RedundantGroups::getRelPropGroup).toJavaList());
+
+        return new RedundantGroups(redundantEpropGroup, redundantRelpropGroup);
+    }
+
+    private RedundantGroups buildRedudnantPropGroups(
+            EPropGroup ePropGroup,
+            GraphEdgeSchema.End endSchema,
+            GraphElementSchemaProvider schemaProvider,
+            Ontology.Accessor $ont) {
+        EPropGroup clonedEpropGroup = ePropGroup.clone();
+        RelPropGroup relPropGroup = new RelPropGroup(0, ePropGroup.getQuantType(), Collections.emptyList(), Collections.emptyList());
+
+        for(EProp eProp : Stream.ofAll(ePropGroup.getProps()).filter(eProp -> eProp.getCon() != null)) {
+            Optional<GraphRedundantPropertySchema> redundantVertexProperty = endSchema
+                    .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(eProp.getpType()).getName()).get());
+            if (redundantVertexProperty.isPresent()) {
+                RelProp relProp = RedundantRelProp.of(
+                        0,
+                        redundantVertexProperty.get().getPropertyRedundantName(),
+                        SchematicEProp.class.isAssignableFrom(eProp.getClass()) ?
+                                ((SchematicEProp) eProp).getSchematicName() :
+                                redundantVertexProperty.get().getPropertyRedundantName(),
+                        eProp.getpType(),
+                        eProp.getCon());
+                relPropGroup.getProps().add(relProp);
+                clonedEpropGroup.getProps().remove(eProp);
+            } else if (ePropGroup.getQuantType().equals(QuantType.some)){
+                return new RedundantGroups(ePropGroup, null);
+            }
+        }
+
+        return new RedundantGroups(clonedEpropGroup, relPropGroup);
+    }
+    //endregion
+
+    private static class RedundantGroups {
+        //region Constructors
+        public RedundantGroups(EPropGroup ePropGroup, RelPropGroup relPropGroup) {
+            this.ePropGroup = ePropGroup;
+            this.relPropGroup = relPropGroup;
+        }
+        //endregion
+
+        //region Properties
+        public EPropGroup getEPropGroup() {
+            return ePropGroup;
+        }
+
+        public RelPropGroup getRelPropGroup() {
+            return relPropGroup;
+        }
+        //endregion
+
+        //region Fields
+        private EPropGroup ePropGroup;
+        private RelPropGroup relPropGroup;
+        //endregion
+    }
 
     //region Fields
     private OntologyProvider ontologyProvider;
