@@ -116,7 +116,7 @@ public class AsgQueryUtilTests {
 
 
         AsgQueryAssert.assertEquals(expectedMain, optionalStrippedQuery.getMainQuery());
-        AsgQueryAssert.assertEquals(expectedOptionalQuery, optionalStrippedQuery.getOptionalQueries().get(0));
+        AsgQueryAssert.assertEquals(expectedOptionalQuery, optionalStrippedQuery.getOptionalQueries().get(0)._2);
     }
 
     @Test
@@ -142,7 +142,7 @@ public class AsgQueryUtilTests {
 
 
         AsgQueryAssert.assertEquals(expectedMain, optionalStrippedQuery.getMainQuery());
-        AsgQueryAssert.assertEquals(expectedOptionalQuery, optionalStrippedQuery.getOptionalQueries().get(0));
+        AsgQueryAssert.assertEquals(expectedOptionalQuery, optionalStrippedQuery.getOptionalQueries().get(0)._2);
     }
 
     @Test
@@ -183,7 +183,7 @@ public class AsgQueryUtilTests {
 
 
         AsgQueryAssert.assertEquals(expectedMain, optionalStrippedQuery.getMainQuery());
-        AsgQueryAssert.assertEquals(expectedOptionalQuery1, optionalStrippedQuery.getOptionalQueries().get(0));
-        AsgQueryAssert.assertEquals(expectedOptionalQuery2, optionalStrippedQuery.getOptionalQueries().get(1));
+        AsgQueryAssert.assertEquals(expectedOptionalQuery1, optionalStrippedQuery.getOptionalQueries().get(0)._2);
+        AsgQueryAssert.assertEquals(expectedOptionalQuery2, optionalStrippedQuery.getOptionalQueries().get(1)._2);
     }
 }

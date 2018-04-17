@@ -4,8 +4,6 @@ import com.kayhut.fuse.dispatcher.epb.PlanSearcher;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
-import com.kayhut.fuse.model.asgQuery.IQuery;
-import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -17,15 +15,11 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityNoOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
-import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.Start;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class OptionalSplitPlanSearcher implements PlanSearcher<Plan, Cost, AsgQuery> {
 
@@ -49,7 +43,7 @@ public class OptionalSplitPlanSearcher implements PlanSearcher<Plan, Cost, AsgQu
             return null;
         }
 
-        //plan each optional\
+        //plan each optional
         List<Tuple2<AsgEBase<OptionalComp>,PlanWithCost<Plan, Cost>>> optionalPlansWithCost = Stream.ofAll(optionalStrippedQuery.getOptionalQueries()).map(q -> new Tuple2<>(q._1, optionalPlanSearcher.search(q._2))).toJavaList();
 
         // append optional plans
@@ -57,6 +51,9 @@ public class OptionalSplitPlanSearcher implements PlanSearcher<Plan, Cost, AsgQu
 
         for (Tuple2<AsgEBase<OptionalComp>,PlanWithCost<Plan, Cost>> optionalPlanWithCost : optionalPlansWithCost) {
             Plan optionalPlan = optionalPlanWithCost._2.getPlan();
+            if(optionalPlan == null){
+                return null;
+            }
             CompositePlanOp subPlan = optionalPlan.from(PlanUtil.first$(optionalPlan, RelationOp.class));
             List<PlanOp> ops = new ArrayList<>(subPlan.getOps().size()+1);
             ops.add(new EntityNoOp(PlanUtil.first(optionalPlan, EntityOp.class).get().getAsgEbase()));
@@ -64,12 +61,11 @@ public class OptionalSplitPlanSearcher implements PlanSearcher<Plan, Cost, AsgQu
             OptionalOp optionalOp = new OptionalOp(optionalPlanWithCost._1 , ops);
 
             mainPlan = mainPlan.withOp(new GoToEntityOp(PlanUtil.first(optionalPlan, EntityOp.class).get().getAsgEbase()));
-            mainPlan.withOp(optionalOp);
+            mainPlan = mainPlan.withOp(optionalOp);
 
         }
 
         return new PlanWithCost<>(new PlanWithCost<>(mainPlan, planWithCost.getCost()));
-
     }
 
 
