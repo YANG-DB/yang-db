@@ -7,16 +7,19 @@ import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.RedundantRelProp;
-import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
@@ -43,7 +46,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
+public class RedundantFilterPlanExtensionStrategyTest {
     @Before
     public void setup(){
         this.ontologyProvider = mock(OntologyProvider.class);
@@ -109,6 +112,49 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
         Assert.assertTrue(typeRelProp.isPresent());
         Assert.assertEquals("Dragon",((List<String>)typeRelProp.get().getCon().getExpr()).get(0));
     }
+
+    @Test
+    public void test_simpleQuery3() {
+        AsgQuery asgQuery = query3();
+
+        Plan plan = new Plan(
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
+
+        RedundantFilterPlanExtensionStrategy strategy = new RedundantFilterPlanExtensionStrategy(this.ontologyProvider, this.schemaProviderFactory);
+
+        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+
+        assertEquals(extendedPlans.size(), 1);
+
+        Plan actualPlan = extendedPlans.get(0);
+
+        Plan expectedPlan = new Plan(
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(
+                        RelPropGroup.of(10, QuantType.all,
+                                Stream.of(
+                                        RelProp.of(10, START_DATE.type, of(eq, new Date(1000))),
+                                        RedundantRelProp.of(10, "entityB.type", "type", of(eq, Collections.singletonList("Dragon"))),
+                                        RedundantRelProp.of(10, "entityB.name", "name", of(eq, "value1"))),
+                                Stream.of(RelPropGroup.of(10, QuantType.some,
+                                        RelPropGroup.of(10, RedundantRelProp.of(10, "entityB.gender", "gender", of(eq, "male"))),
+                                        RelPropGroup.of(10, RedundantRelProp.of(10, "entityB.gender", "gender", of(eq, "female")))))))
+                        .build()),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(
+                        EPropGroup.of(9, QuantType.all,
+                                EPropGroup.of(9, QuantType.some,
+                                        EPropGroup.of(9, EProp.of(9, "gender", of(eq, "male")), EProp.of(9, "color", of(eq, "red"))),
+                                        EPropGroup.of(9, EProp.of(9, "gender", of(eq, "female")), EProp.of(9, "color", of(eq, "blue"))))))
+                        .build()));
+
+        PlanAssert.assertEquals(expectedPlan, actualPlan);
+    }
     //endregion
 
     //region Private Methods
@@ -142,11 +188,14 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
         return AsgQuery.Builder.start("name", "ont")
                 .next(typed(1,  PERSON.type))
                 .next(rel(2, OWN.getrType(), R)
-                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
+                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date(1000))))))
                 .next(typed(3,  DRAGON.type))
                 .next(quant1(4, all))
-                .in(ePropGroup(9, EProp.of(9, "firstName", of(eq, "value1")),
-                        EProp.of(9, "gender", of(gt, "value3"))))
+                .in(eProp(9, QuantType.all,
+                        Stream.of(EProp.of(9, "name", of(eq, "value1"))),
+                        Stream.of(EPropGroup.of(9, QuantType.some,
+                                EPropGroup.of(9, EProp.of(9, "gender", of(eq, "male")), EProp.of(9, "color", of(eq, "red"))),
+                                EPropGroup.of(9, EProp.of(9, "gender", of(eq, "female")), EProp.of(9, "color", of(eq, "blue")))))))
                 .build();
     }
 
@@ -171,6 +220,7 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
                                         Optional.of(relation.getePairs().get(0).geteTypeB()),
                                         Arrays.asList(
                                                 new GraphRedundantPropertySchema.Impl("firstName", "entityB.firstName", ont.property$("firstName").getType()),
+                                                new GraphRedundantPropertySchema.Impl("name", "entityB.name", ont.property$("name").getType()),
                                                 new GraphRedundantPropertySchema.Impl("gender", "entityB.gender", ont.property$("gender").getType()),
                                                 new GraphRedundantPropertySchema.Impl("id", "entityB.id", ont.property$("firstName").getType()),
                                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", ont.property$("type").getType())

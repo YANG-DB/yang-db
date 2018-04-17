@@ -1,6 +1,8 @@
 package com.kayhut.fuse.model.query.properties;
 
 import com.kayhut.fuse.model.query.quant.QuantType;
+import javaslang.collection.Stream;
+
 import java.util.Collections;
 
 /**
@@ -49,6 +51,28 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
                 this.getQuantType(),
                 this.getProps(),
                 this.getGroups());
+    }
+    //endregion
+
+    //region Static
+    public static EPropGroup of(int eNum, EProp...props) {
+        return new EPropGroup(eNum, props);
+    }
+
+    public static EPropGroup of(int eNum, QuantType quantType, EProp...props) {
+        return new EPropGroup(eNum, quantType, Stream.of(props));
+    }
+
+    public static EPropGroup of(int eNum, EPropGroup...groups) {
+        return new EPropGroup(eNum, QuantType.all, Collections.emptyList(), Stream.of(groups));
+    }
+
+    public static EPropGroup of(int eNum, QuantType quantType, EPropGroup...groups) {
+        return new EPropGroup(eNum, quantType, Stream.empty(), Stream.of(groups));
+    }
+
+    public static EPropGroup of(int eNum, QuantType quantType, Iterable<EProp> props, Iterable<EPropGroup> groups) {
+        return new EPropGroup(eNum, quantType, props, groups);
     }
     //endregion
 }

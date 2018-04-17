@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.query.properties;
 
 import com.kayhut.fuse.model.query.quant.QuantType;
+import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,5 +58,25 @@ public class RelPropGroup extends BasePropGroup<RelProp, RelPropGroup> {
 
     public static RelPropGroup of(List<RelProp> props) {
         return new RelPropGroup(props);
+    }
+
+    public static RelPropGroup of(int eNum, RelProp...props) {
+        return new RelPropGroup(eNum, props);
+    }
+
+    public static RelPropGroup of(int eNum, QuantType quantType, RelProp...props) {
+        return new RelPropGroup(eNum, quantType, Stream.of(props));
+    }
+
+    public static RelPropGroup of(int eNum, RelPropGroup...groups) {
+        return new RelPropGroup(eNum, QuantType.all, Collections.emptyList(), Stream.of(groups));
+    }
+
+    public static RelPropGroup of(int eNum, QuantType quantType, RelPropGroup...groups) {
+        return new RelPropGroup(eNum, quantType, Stream.empty(), Stream.of(groups));
+    }
+
+    public static RelPropGroup of(int eNum, QuantType quantType, Iterable<RelProp> props, Iterable<RelPropGroup> groups) {
+        return new RelPropGroup(eNum, quantType, props, groups);
     }
 }

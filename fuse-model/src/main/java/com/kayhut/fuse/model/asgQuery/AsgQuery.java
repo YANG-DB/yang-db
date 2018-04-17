@@ -267,6 +267,10 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return new AsgEBase<>(rel);
         }
 
+        public static AsgEBase<EPropGroup> eProp(int eNum) {
+            return new AsgEBase<>(new EPropGroup(eNum));
+        }
+
         public static AsgEBase<EPropGroup> eProp(int eNum, EProp... props) {
             return new AsgEBase<>(new EPropGroup(eNum, Arrays.asList(props)));
         }
