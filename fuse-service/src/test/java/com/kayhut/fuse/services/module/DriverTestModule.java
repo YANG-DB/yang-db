@@ -17,6 +17,7 @@ import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.typesafe.config.Config;
 import org.elasticsearch.client.Client;
 import org.jooby.Env;
+import org.jooby.scope.RequestScoped;
 
 /**
  * Created by Roman on 04/04/2017.
@@ -24,9 +25,9 @@ import org.jooby.Env;
 public class DriverTestModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(QueryDriver.class).to(MockDriver.Query.class).asEagerSingleton();
-        binder.bind(CursorDriver.class).to(MockDriver.Cursor.class).asEagerSingleton();
-        binder.bind(PageDriver.class).to(MockDriver.Page.class).asEagerSingleton();
+        binder.bind(QueryDriver.class).to(MockDriver.Query.class).in(RequestScoped.class);
+        binder.bind(CursorDriver.class).to(MockDriver.Cursor.class).in(RequestScoped.class);
+        binder.bind(PageDriver.class).to(MockDriver.Page.class).in(RequestScoped.class);
 
         binder.bind(GraphElementSchemaProviderFactory.class)
                 .toInstance(ontology -> new OntologySchemaProvider(ontology,new M2DragonsPhysicalSchemaProvider()));

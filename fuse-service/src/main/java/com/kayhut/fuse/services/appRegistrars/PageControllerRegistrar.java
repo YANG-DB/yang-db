@@ -29,6 +29,7 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
         app.use(appUrlSupplier.pageStoreUrl(":queryId", ":cursorId"))
                 .post(req -> {
                     CreatePageRequest createPageRequest = req.body(CreatePageRequest.class);
+                    req.set(CreatePageRequest.class,createPageRequest);
                     ContentResponse<PageResourceInfo> entity = createPageRequest.isFetch() ?
                             this.getController(app).createAndFetch(req.param("queryId").value(), req.param("cursorId").value(), createPageRequest) :
                             this.getController(app).create(req.param("queryId").value(), req.param("cursorId").value(), createPageRequest);

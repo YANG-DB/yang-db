@@ -32,6 +32,7 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -58,7 +59,7 @@ public class ElasticStatisticsGraphProviderTest {
         GraphVertexSchema vertexDragonSchema = Stream.ofAll(schemaProvider.getVertexSchemas(DATA_TYPE_DRAGON)).get(0);
 
         ElasticStatisticsGraphProvider statisticsGraphProvider = new ElasticStatisticsGraphProvider(statConfig,
-                new ElasticStatProvider(statConfig, new ElasticStatDocumentProvider(new MetricRegistry(), statClient, statConfig)),
+                new ElasticStatProvider(statConfig, new ElasticStatDocumentProvider(new MetricRegistry(), () -> statClient, statConfig)),
                 Caffeine.newBuilder()
                         .maximumSize(10_000)
                         .expireAfterWrite(5, TimeUnit.MINUTES)

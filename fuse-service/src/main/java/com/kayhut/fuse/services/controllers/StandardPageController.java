@@ -11,7 +11,6 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.transport.ContentResponse.Builder.builder;
-import static java.util.UUID.randomUUID;
 import static org.jooby.Status.*;
 
 /**
