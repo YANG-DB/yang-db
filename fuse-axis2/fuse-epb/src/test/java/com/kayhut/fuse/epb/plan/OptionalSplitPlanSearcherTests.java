@@ -1,10 +1,13 @@
 package com.kayhut.fuse.epb.plan;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.kayhut.fuse.dispatcher.epb.PlanSearcher;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
+import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.OptionalOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
@@ -13,6 +16,8 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityNoOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Value;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -108,10 +113,22 @@ public class OptionalSplitPlanSearcherTests {
         PlanDetailedCost optionalPlanDetailedCost = new PlanDetailedCost(new DoubleCost(10), Stream.of(new PlanWithCost(expectedOptionalPlan, new CountEstimatesCost(10,10))));
         Mockito.when(optionalPlanSearcherMock.search(any())).thenReturn(new PlanWithCost<>(expectedOptionalPlan, optionalPlanDetailedCost));
 
+        Plan expectedCompletePlan = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 2)),
+                new GoToEntityOp(AsgQueryUtil.element$(query, 1)),
+                new OptionalOp(AsgQueryUtil.element$(query, 50),
+                        new EntityNoOp(AsgQueryUtil.element$(query, 1)),
+                        new RelationOp(AsgQueryUtil.element$(query, 12)),
+                        new EntityOp(AsgQueryUtil.element$(query, 13)),
+                        new EntityFilterOp(AsgQueryUtil.element$(query, 14)
+                        ))
+                );
+
+
 
         OptionalSplitPlanSearcher planSearcher = new OptionalSplitPlanSearcher(mainPlanSearcherMock, optionalPlanSearcherMock);
         PlanWithCost<Plan, Cost> planWithCost = planSearcher.search(query);
-        int x = 2;
+        PlanAssert.assertEquals(expectedCompletePlan, planWithCost.getPlan());
     }
 
 }

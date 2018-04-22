@@ -25,6 +25,7 @@ public class PlanAssert {
         Assert.assertTrue(expectedCompositePlanOp.getAsgEbase() != null && actualCompositePlanOp.getAsgEbase() != null);
         Assert.assertEquals(expectedCompositePlanOp.getAsgEbase().geteNum(), actualCompositePlanOp.getAsgEbase().geteNum());
         Assert.assertTrue(expectedCompositePlanOp.getAsgEbase().geteBase().getClass().equals(actualCompositePlanOp.getAsgEbase().geteBase().getClass()));
+        assertEquals(expectedCompositePlanOp, (CompositePlanOp)actualCompositePlanOp);
     }
 
     public static void assertEquals(CompositePlanOp expectedCompositePlanOp, CompositePlanOp actualCompositePlanOp) {
