@@ -44,7 +44,7 @@ import static org.mockito.Matchers.any;
 
 public class OptionalSplitPlanSearcherTests {
 
-    private AsgQuery query(){
+    private AsgQuery queryMultiOptional(){
         return AsgQuery.Builder.start("q", "O")
                 .next(typed(1, OntologyTestUtils.PERSON.type)
                         .next(eProp(2,EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189)))))
@@ -57,10 +57,10 @@ public class OptionalSplitPlanSearcherTests {
                                 .next(unTyped(13)
                                         .next(eProp(14,EProp.of(15, NAME.type, Constraint.of(ConstraintOp.notContains, "bob"))))
                                 ))
-                        , rel(16, FIRE.getrType(), R)
+                        , optional(60).next(rel(16, FIRE.getrType(), R)
                         .next(concrete(20, "smoge", DRAGON.type, "Display:smoge", "D")
                             .next(eProp(21,EProp.of(22, NAME.type, Constraint.of(ConstraintOp.eq, "smoge"))))
-                        )
+                        ))
                 )
                 .build();
     }
@@ -106,7 +106,6 @@ public class OptionalSplitPlanSearcherTests {
 
         PlanSearcher<Plan, Cost, AsgQuery> optionalPlanSearcherMock = Mockito.mock(PlanSearcher.class);
         Plan expectedOptionalPlan = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)),
-                new EntityFilterOp(AsgQueryUtil.element$(query, 2)),
                 new RelationOp(AsgQueryUtil.element$(query, 12)),
                 new EntityOp(AsgQueryUtil.element$(query, 13)),
                 new EntityFilterOp(AsgQueryUtil.element$(query, 14)));
@@ -123,6 +122,71 @@ public class OptionalSplitPlanSearcherTests {
                         new EntityFilterOp(AsgQueryUtil.element$(query, 14)
                         ))
                 );
+
+
+
+        OptionalSplitPlanSearcher planSearcher = new OptionalSplitPlanSearcher(mainPlanSearcherMock, optionalPlanSearcherMock);
+        PlanWithCost<Plan, Cost> planWithCost = planSearcher.search(query);
+        PlanAssert.assertEquals(expectedCompletePlan, planWithCost.getPlan());
+    }
+
+    @Test
+    public void testMultiOptional(){
+        AsgQuery query = queryMultiOptional();
+        PlanSearcher<Plan, Cost, AsgQuery> mainPlanSearcherMock = Mockito.mock(PlanSearcher.class);
+        Plan expectedPlan = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 2)),
+                new RelationOp(AsgQueryUtil.element$(query, 4)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 5)),
+                new EntityOp(AsgQueryUtil.element$(query, 7)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 9)));
+
+        PlanDetailedCost planDetailedCost = new PlanDetailedCost(new DoubleCost(10), Stream.of(new PlanWithCost(expectedPlan, new CountEstimatesCost(10,10))));
+        Mockito.when(mainPlanSearcherMock.search(any())).thenReturn(new PlanWithCost<>(expectedPlan, planDetailedCost));
+
+        PlanSearcher<Plan, Cost, AsgQuery> optionalPlanSearcherMock = Mockito.mock(PlanSearcher.class);
+        Plan expectedOptionalPlan1 = new Plan(new EntityOp(AsgQueryUtil.element$(query, 7)),
+                new RelationOp(AsgQueryUtil.element$(query, 12)),
+                new EntityOp(AsgQueryUtil.element$(query, 13)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 14)));
+        PlanDetailedCost optionalPlanDetailedCost1 = new PlanDetailedCost(new DoubleCost(10), Stream.of(new PlanWithCost(expectedOptionalPlan1, new CountEstimatesCost(10,10))));
+
+
+        Plan expectedOptionalPlan2 = new Plan(new EntityOp(AsgQueryUtil.element$(query, 7)),
+                new RelationOp(AsgQueryUtil.element$(query, 16)),
+                new EntityOp(AsgQueryUtil.element$(query, 20)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 21)));
+        PlanDetailedCost optionalPlanDetailedCost2 = new PlanDetailedCost(new DoubleCost(10), Stream.of(new PlanWithCost(expectedOptionalPlan2, new CountEstimatesCost(10,10))));
+
+        Mockito.when(optionalPlanSearcherMock.search(any())).thenAnswer(invocationOnMock -> {
+            AsgQuery asgQuery = invocationOnMock.getArgumentAt(0, AsgQuery.class);
+            if(Stream.ofAll(asgQuery.getElements()).last().geteNum() == 14){
+                return new PlanWithCost<>(expectedOptionalPlan1, optionalPlanDetailedCost1);
+            }
+            return new PlanWithCost<>(expectedOptionalPlan2, optionalPlanDetailedCost2);
+        });
+
+        Plan expectedCompletePlan = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 2)),
+                new RelationOp(AsgQueryUtil.element$(query, 4)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 5)),
+                new EntityOp(AsgQueryUtil.element$(query, 7)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 9)),
+                new GoToEntityOp(AsgQueryUtil.element$(query, 7)),
+                new OptionalOp(AsgQueryUtil.element$(query, 50),
+                        new EntityNoOp(AsgQueryUtil.element$(query, 7)),
+                        new RelationOp(AsgQueryUtil.element$(query, 12)),
+                        new EntityOp(AsgQueryUtil.element$(query, 13)),
+                        new EntityFilterOp(AsgQueryUtil.element$(query, 14)
+                        )),
+                new GoToEntityOp(AsgQueryUtil.element$(query, 7)),
+                new OptionalOp(AsgQueryUtil.element$(query, 60),
+                        new EntityNoOp(AsgQueryUtil.element$(query, 7)),
+                        new RelationOp(AsgQueryUtil.element$(query, 16)),
+                        new EntityOp(AsgQueryUtil.element$(query, 20)),
+                        new EntityFilterOp(AsgQueryUtil.element$(query, 21)
+                        ))
+        );
 
 
 
