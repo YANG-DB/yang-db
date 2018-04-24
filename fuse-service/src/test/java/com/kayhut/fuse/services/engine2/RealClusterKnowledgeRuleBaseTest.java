@@ -26,6 +26,10 @@ import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.utils.ConcurrentTest;
+import com.kayhut.fuse.utils.ConcurrentTestsRule;
+import com.kayhut.fuse.utils.Repeat;
+import com.kayhut.fuse.utils.RepeatRule;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -42,7 +46,9 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.junit.Assert;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
@@ -516,7 +522,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test8() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -535,10 +541,9 @@ public class RealClusterKnowledgeRuleBaseTest {
                 new EProp(8, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty))
         )).build();
 
-
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CreateGraphCursorRequest cursorRequest = new CreateGraphCursorRequest();
-        cursorRequest.setTimeout(1000);
+        cursorRequest.setTimeout(1500);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
@@ -550,7 +555,9 @@ public class RealClusterKnowledgeRuleBaseTest {
         }
 
         AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        int x = 5;
+        Assert.assertFalse(pageData.getAssignments().isEmpty());
+        String result = fuseClient.deleteQuery(queryResourceInfo);
+        Assert.assertNotNull(result);
     }
 
     @Test
@@ -678,7 +685,7 @@ public class RealClusterKnowledgeRuleBaseTest {
                 new CreateGraphHierarchyCursorRequest(
                         CreateCursorRequest.Include.entities,
                         Collections.singletonList("SE"),
-                        new CreatePageRequest(1000, true),3*60*1000));
+                        new CreatePageRequest(1000, true), 3 * 60 * 1000));
 
         Object pageDataObj = queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData();
         AssignmentsQueryResult pageData = new ObjectMapper().convertValue(pageDataObj, AssignmentsQueryResult.class);
@@ -1392,7 +1399,7 @@ public class RealClusterKnowledgeRuleBaseTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphHierarchyCursorRequest(Arrays.asList("B", "D"),3*60*1000));
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphHierarchyCursorRequest(Arrays.asList("B", "D"), 3 * 60 * 1000));
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 10);

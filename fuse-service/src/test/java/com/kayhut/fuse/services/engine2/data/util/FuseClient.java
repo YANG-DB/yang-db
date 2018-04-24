@@ -138,6 +138,13 @@ public class FuseClient {
                 .print();
     }
 
+    public String deleteQuery(QueryResourceInfo queryResourceInfo) {
+        return given().contentType("application/json")
+                .delete(queryResourceInfo.getResourceUrl())
+                .thenReturn()
+                .print();
+    }
+
     public static String unwrap(String response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> responseMap = mapper.readValue(response, new TypeReference<Map<String, Object>>(){});
