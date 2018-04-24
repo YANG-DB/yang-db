@@ -42,7 +42,7 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
     }
     //endregion
 
-    public static Graph<GraphElement> graph(PlanWithCost<Plan, PlanDetailedCost> planWithCost,boolean cycle) {
+    public static Graph<GraphElement> graph(PlanWithCost<Plan, PlanDetailedCost> planWithCost, boolean cycle) {
 
         MutableGraph<GraphElement> build = GraphBuilder.directed().allowsSelfLoops(cycle).build();
         List<PlanOp> elements = planWithCost.getPlan().getOps();
@@ -53,30 +53,39 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
 
         for (int i = 1; i < elements.size(); i++) {
             //region optional
+            GraphElement nodeV = new GraphElement(((AsgEBaseContainer) elements.get(i)));
             if (elements.get(i) instanceof OptionalOp) {
+                //add OptionalOp
+                build.addNode(nodeV.withLabel(OptionalOp.class.getSimpleName()));
+                //connect
                 //add optional branch to graph
                 List<PlanOp> ops = ((OptionalOp) elements.get(i)).getOps();
-                build.addNode(new GraphElement(((AsgEBaseContainer) ops.get(0))));
+                //add optional starting (GoTo) step (not part of the optional branch but rather its stating point
+                GraphElement optionalStep = new GraphElement(((AsgEBaseContainer) ops.get(0)));
+                build.addNode(optionalStep);
+                //connect starting (GoTo) step with optional step
+                build.putEdge(optionalStep, nodeV);
+                //connect optional step to continuation of optional branch
+                build.putEdge(nodeV,new GraphElement(((AsgEBaseContainer) ops.get(1)),OptionalOp.class.getSimpleName()));
 
                 //continue optional sib branch
-                for (int j = 1; j < ops.size(); j++) {
-                    build.addNode(new GraphElement(((AsgEBaseContainer) ops.get(j))));
-                    build.putEdge(new GraphElement(((AsgEBaseContainer) ops.get(j - 1))),
-                                  new GraphElement(((AsgEBaseContainer) ops.get(j))));
+                for (int j = 2; j < ops.size(); j++) {
+                    GraphElement node = new GraphElement(((AsgEBaseContainer) ops.get(j)), OptionalOp.class.getSimpleName());
+                    build.addNode(node);
+                    build.putEdge(new GraphElement(((AsgEBaseContainer) ops.get(j - 1)),OptionalOp.class.getSimpleName()),node);
                 }
             } else {
                 //endregion
-                build.addNode(new GraphElement(((AsgEBaseContainer) elements.get(i))));
+                build.addNode(nodeV);
                 if (cycle && elements.get(i - 1) instanceof OptionalOp) {
                     OptionalOp planOp = (OptionalOp) elements.get(i - 1);
                     AsgEBaseContainer lastOp = (AsgEBaseContainer) planOp.getOps().get(planOp.getOps().size() - 1);
-                    build.putEdge(new GraphElement(lastOp), new GraphElement(((AsgEBaseContainer) elements.get(i))));
+                    build.putEdge(new GraphElement(lastOp), nodeV);
                 } else {
-                    if(!cycle && elements.get(i) instanceof GoToEntityOp) {
-                       continue;
+                    if (!cycle && elements.get(i) instanceof GoToEntityOp) {
+                        continue;
                     }
-                    build.putEdge(new GraphElement(((AsgEBaseContainer) elements.get(i - 1))),
-                                  new GraphElement(((AsgEBaseContainer) elements.get(i))));
+                    build.putEdge(new GraphElement(((AsgEBaseContainer) elements.get(i - 1))),nodeV);
                 }
             }
         }
@@ -149,23 +158,39 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
 
     public static class GraphElement {
         private AsgEBaseContainer planOp;
+        private String label;
+        private String planOpType;
         private double cost;
 
         public GraphElement(AsgEBaseContainer planOp) {
-            this(planOp,0);
+            this(planOp, 0, planOp.getClass().getSimpleName(), "");
         }
 
-        public GraphElement(AsgEBaseContainer planOp,double cost) {
+        public GraphElement(AsgEBaseContainer planOp, String label) {
+            this(planOp, 0, planOp.getClass().getSimpleName(), label);
+        }
+
+        public GraphElement(AsgEBaseContainer planOp, double cost, String opType, String label) {
             this.planOp = planOp;
             this.cost = cost;
+            this.planOpType = opType;
+            this.label = label;
         }
 
         public AsgEBaseContainer getPlanOp() {
             return planOp;
         }
 
+        public String getPlanOpType() {
+            return planOpType;
+        }
+
         public double getCost() {
             return cost;
+        }
+
+        public String getLabel() {
+            return label;
         }
 
         @Override
@@ -181,6 +206,11 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
         @Override
         public int hashCode() {
             return planOp != null ? planOp.getAsgEbase().hashCode() : 0;
+        }
+
+        public GraphElement withLabel(String label) {
+            this.label = label;
+            return this;
         }
     }
 

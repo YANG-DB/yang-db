@@ -5,9 +5,7 @@ package com.kayhut.fuse.model.transport;
  */
 public class CreatePageRequest {
     //region Constructors
-    public CreatePageRequest() {
-
-    }
+    public CreatePageRequest() {}
 
     public CreatePageRequest(int pageSize) {
         this(pageSize, false);

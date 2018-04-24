@@ -516,7 +516,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test8() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -537,7 +537,9 @@ public class RealClusterKnowledgeRuleBaseTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
+        CreateGraphCursorRequest cursorRequest = new CreateGraphCursorRequest();
+        cursorRequest.setTimeout(1000);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -561,30 +563,30 @@ public class RealClusterKnowledgeRuleBaseTest {
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
-                new Quant1(2, QuantType.all, Arrays.asList(3,4,9,14,28), 0),
-                new EProp(3, "context", Constraint.of(ConstraintOp.eq,"globAL")),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4, 9, 14, 28), 0),
+                new EProp(3, "context", Constraint.of(ConstraintOp.eq, "globAL")),
                 new Rel(4, $ont.rType$("hasEvalue"), R, null, 5, 0),
                 new ETyped(5, "B", $ont.eType$("Evalue"), 6, 0),
-                new Quant1(6, QuantType.all, Arrays.asList(7,8,29), 0),
+                new Quant1(6, QuantType.all, Arrays.asList(7, 8, 29), 0),
                 new EProp(7, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
-                new EProp(8, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like,"*")),
+                new EProp(8, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "*")),
                 new Rel(9, $ont.rType$("hasEvalue"), R, null, 10, 0),
                 new ETyped(10, "B", $ont.eType$("Evalue"), 11, 0),
-                new Quant1(11, QuantType.all, Arrays.asList(12,13,30), 0),
+                new Quant1(11, QuantType.all, Arrays.asList(12, 13, 30), 0),
                 new EProp(12, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
-                new EProp(13, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like,"***")),
+                new EProp(13, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "***")),
                 new Rel(14, $ont.rType$("hasEntity"), L, null, 15, 0),
                 new ETyped(15, "B", $ont.eType$("LogicalEntity"), 16, 0),
                 new Rel(16, $ont.rType$("hasEntity"), R, null, 17, 0),
                 new ETyped(17, "B", $ont.eType$("Entity"), 18, 0),
-                new Quant1(18, QuantType.all, Arrays.asList(19,20,21,22,31), 0),
+                new Quant1(18, QuantType.all, Arrays.asList(19, 20, 21, 22, 31), 0),
                 new EProp(19, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "global")),
                 new EProp(20, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new EProp(21, $ont.pType$("category"), Constraint.of(ConstraintOp.eq,"balla")),
-                new OptionalComp(22,23),
+                new EProp(21, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "balla")),
+                new OptionalComp(22, 23),
                 new Rel(23, $ont.rType$("hasEvalue"), R, null, 24, 0),
                 new ETyped(24, "B", $ont.eType$("Evalue"), 25, 0),
-                new Quant1(25, QuantType.all, Arrays.asList(26,27,32), 0),
+                new Quant1(25, QuantType.all, Arrays.asList(26, 27, 32), 0),
                 new EProp(26, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "description")),
                 new EProp(27, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "*")),
 
@@ -676,7 +678,7 @@ public class RealClusterKnowledgeRuleBaseTest {
                 new CreateGraphHierarchyCursorRequest(
                         CreateCursorRequest.Include.entities,
                         Collections.singletonList("SE"),
-                        new CreatePageRequest(1000, true)));
+                        new CreatePageRequest(1000, true),3*60*1000));
 
         Object pageDataObj = queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData();
         AssignmentsQueryResult pageData = new ObjectMapper().convertValue(pageDataObj, AssignmentsQueryResult.class);
@@ -689,7 +691,7 @@ public class RealClusterKnowledgeRuleBaseTest {
         Random random = new Random();
 
         ExecutorService executorService = Executors.newFixedThreadPool(50);
-        for(int i = 0 ; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             String eId = "e" + String.format("%08d", random.nextInt(100));
             final int ii = i;
             executorService.execute(() -> {
@@ -1390,7 +1392,7 @@ public class RealClusterKnowledgeRuleBaseTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphHierarchyCursorRequest(Arrays.asList("B", "D")));
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphHierarchyCursorRequest(Arrays.asList("B", "D"),3*60*1000));
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 10);
@@ -1570,9 +1572,9 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Ignore
     public void testIdGen() throws IOException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
-        Map<String, Object> map = (Map<String, Object>)fuseClient.getId("entity", 10);
-        long lower = ((Number)map.get("lower")).longValue();
-        long upper = ((Number)map.get("upper")).longValue();
+        Map<String, Object> map = (Map<String, Object>) fuseClient.getId("entity", 10);
+        long lower = ((Number) map.get("lower")).longValue();
+        long upper = ((Number) map.get("upper")).longValue();
 
 
     }
@@ -1587,14 +1589,14 @@ public class RealClusterKnowledgeRuleBaseTest {
         List<Long> uppers = Collections.synchronizedList(new ArrayList<>());
 
         ExecutorService executorService = Executors.newFixedThreadPool(50);
-        for(int i = 0 ; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             String eId = "e" + String.format("%08d", random.nextInt(100));
             final int ii = i;
             executorService.execute(() -> {
                 try {
-                    Map<String, Object> map = (Map<String, Object>)fuseClient.getId("entity", 10);
-                    long lower = ((Number)map.get("lower")).longValue();
-                    long upper = ((Number)map.get("upper")).longValue();
+                    Map<String, Object> map = (Map<String, Object>) fuseClient.getId("entity", 10);
+                    long lower = ((Number) map.get("lower")).longValue();
+                    long upper = ((Number) map.get("upper")).longValue();
                     lowers.add(lower);
                     uppers.add(upper);
                 } catch (IOException e) {

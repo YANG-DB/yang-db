@@ -2,6 +2,7 @@ package com.kayhut.fuse.services.appRegistrars;
 
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.transport.ExecutionScope;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.services.controllers.CursorController;
 import org.jooby.Jooby;
@@ -27,7 +28,9 @@ public class CursorControllerRegistrar extends AppControllerRegistrarBase<Cursor
         /** create a query cursor */
         app.use(appUrlSupplier.cursorStoreUrl(":queryId"))
                 .post(req -> {
-                    ContentResponse response = this.getController(app).create(req.param("queryId").value(), req.body(CreateCursorRequest.class));
+                    CreateCursorRequest cursorRequest = req.body(CreateCursorRequest.class);
+                    req.set(ExecutionScope.class,new ExecutionScope(cursorRequest.getTimeout()));
+                    ContentResponse response = this.getController(app).create(req.param("queryId").value(), cursorRequest);
                     return Results.with(response, response.status());
                 });
 

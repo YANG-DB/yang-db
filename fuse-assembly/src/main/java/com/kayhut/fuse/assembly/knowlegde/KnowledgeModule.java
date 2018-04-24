@@ -7,6 +7,7 @@ import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.typesafe.config.Config;
 import org.jooby.Env;
+import org.jooby.scope.RequestScoped;
 
 import static com.google.inject.name.Names.named;
 
@@ -20,7 +21,7 @@ public class KnowledgeModule extends ModuleBase {
         String indexName = conf.getString(conf.getString("assembly")+".idGenerator_indexName");
         binder.bindConstant().annotatedWith(named(KnowledgeIdGenerator.indexNameParameter)).to(indexName);
         binder.bind(new TypeLiteral<IdGeneratorDriver<Object>>(){})
-                .to(KnowledgeIdGenerator.class).asEagerSingleton();
+                .to(KnowledgeIdGenerator.class).in(RequestScoped.class);
     }
     //endregion
 }

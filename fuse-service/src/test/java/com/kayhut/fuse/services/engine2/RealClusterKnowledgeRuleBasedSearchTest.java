@@ -32,7 +32,7 @@ import static com.kayhut.fuse.model.query.Rel.Direction.R;
 public class RealClusterKnowledgeRuleBasedSearchTest {
 
     @Test
-    @Ignore
+//    @Ignore
     public void testAdvancedSearch() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -77,7 +77,8 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
+        CreateGraphCursorRequest cursorRequest = new CreateGraphCursorRequest();
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
