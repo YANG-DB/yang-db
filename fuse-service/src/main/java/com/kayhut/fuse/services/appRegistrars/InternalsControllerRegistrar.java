@@ -18,6 +18,8 @@ public class InternalsControllerRegistrar extends AppControllerRegistrarBase<Int
         /** get the health status of the service */
         app.use("/fuse/internal/statisticsProvider/name")
                 .get(req -> Results.with(this.getController(app).getStatisticsProviderName()));
+        app.use("/fuse/internal/version")
+                .get(req -> Results.with(this.getController(app).getVersion()));
         app.use("/fuse/internal/statisticsProvider/setup")
                 .get(req -> Results.with(this.getController(app).getStatisticsProviderSetup()));
         app.use("/fuse/internal/statisticsProvider/refresh")
