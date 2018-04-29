@@ -115,7 +115,18 @@ public class RedundantFilterPlanExtensionStrategyTest {
 
     @Test
     public void test_simpleQuery3() {
-        AsgQuery asgQuery = query3();
+        AsgQuery asgQuery = AsgQuery.Builder.start("name", "ont")
+                .next(typed(1, PERSON.type))
+                .next(rel(2, OWN.getrType(), R)
+                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date(1000))))))
+                .next(typed(3, DRAGON.type))
+                .next(quant1(4, all))
+                .in(eProp(9, QuantType.all,
+                        Stream.of(EProp.of(9, "name", of(eq, "value1"))),
+                        Stream.of(EPropGroup.of(9, QuantType.some,
+                                EPropGroup.of(9, EProp.of(9, "gender", of(eq, "male")), EProp.of(9, "color", of(eq, "red"))),
+                                EPropGroup.of(9, EProp.of(9, "gender", of(eq, "female")), EProp.of(9, "color", of(eq, "blue")))))))
+                .build();
 
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
