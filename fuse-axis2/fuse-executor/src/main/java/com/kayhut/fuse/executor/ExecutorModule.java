@@ -2,7 +2,6 @@ package com.kayhut.fuse.executor;
 
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
-import com.google.inject.Provider;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
@@ -250,7 +249,7 @@ public class ExecutorModule extends ModuleBase {
         return (Class<? extends  CursorFactory>)Class.forName(conf.getString(conf.getString("assembly")+".cursor_factory"));
     }
 
-    private List<String> getStringList(Config conf, String key) {
+    public static List<String> getStringList(Config conf, String key) {
          try {
              return conf.getStringList(key);
          } catch (Exception ex) {

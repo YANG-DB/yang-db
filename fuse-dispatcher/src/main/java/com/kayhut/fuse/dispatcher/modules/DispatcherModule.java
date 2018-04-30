@@ -2,7 +2,6 @@ package com.kayhut.fuse.dispatcher.modules;
 
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
-import com.kayhut.fuse.dispatcher.driver.*;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.store.InMemoryResourceStore;
 import com.kayhut.fuse.dispatcher.resource.store.LoggingResourceStore;

@@ -1,11 +1,16 @@
 package com.kayhut.fuse.services.modules;
 
+import com.codahale.metrics.MetricFilter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.ScheduledReporter;
 import com.google.inject.Binder;
+import com.google.inject.Guice;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
+import com.kayhut.fuse.logging.reporting.ElasticsearchReporter;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecutionScope;
@@ -18,12 +23,19 @@ import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.services.suppliers.SnowflakeRequestIdSupplier;
 import com.typesafe.config.Config;
+import javaslang.collection.Stream;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import static com.google.inject.name.Names.named;
+import static com.kayhut.fuse.executor.ExecutorModule.getStringList;
+import static com.kayhut.fuse.logging.reporting.ElasticsearchReporter.forRegistry;
 
 /**
  * Created by lior on 15/02/2017.
@@ -35,7 +47,7 @@ public class ServiceModule extends ModuleBase {
     @Override
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
         // bind common components
-        long defaultTimeout = config.hasPath("fuse.cursor.timeout") ? config.getLong("fuse.cursor.timeout") : 60*1000*3;
+        long defaultTimeout = config.hasPath("fuse.cursor.timeout") ? config.getLong("fuse.cursor.timeout") : 60 * 1000 * 3;
         binder.bindConstant()
                 .annotatedWith(named(CreateCursorRequest.defaultTimeout))
                 .to(defaultTimeout);
@@ -239,13 +251,36 @@ public class ServiceModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
-                this.bind(new TypeLiteral<IdGeneratorController<Object>>(){})
-                        .to(new TypeLiteral<StandardIdGeneratorController<Object>>(){})
+                this.bind(new TypeLiteral<IdGeneratorController<Object>>() {
+                })
+                        .to(new TypeLiteral<StandardIdGeneratorController<Object>>() {
+                        })
                         .in(RequestScoped.class);
 
-                this.expose(new TypeLiteral<IdGeneratorController<Object>>(){});
+                this.expose(new TypeLiteral<IdGeneratorController<Object>>() {
+                });
             }
         });
     }
+
+    public static ScheduledReporter buildElasticReporter(MetricRegistry registry, Config conf) {
+        try {
+            return forRegistry(registry)
+                    .hosts(Stream.ofAll(getStringList(conf, "elasticsearch.hosts"))
+                            .map(element -> element +":"+ (conf.hasPath("elasticsearch.http.port") ? conf.getString("elasticsearch.http.port") : "9200"))
+                            .toJavaArray(String.class))
+                    .prefixedWith(conf.hasPath("elasticsearch.metrics.report.index.prefix")
+                            ? conf.getString("elasticsearch.metrics.report.index.prefix") : "metrics_report_index_prefix")
+                    .convertRatesTo(TimeUnit.SECONDS)
+                    .convertDurationsTo(TimeUnit.MILLISECONDS)
+                    .filter(MetricFilter.ALL)
+                    .index(conf.hasPath("elasticsearch.metrics.report.index.name")
+                            ? conf.getString("elasticsearch.metrics.report.index.name") : "metrics_report_index_name")
+                    .build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     //endregion
 }

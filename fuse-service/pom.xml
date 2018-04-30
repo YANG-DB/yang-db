@@ -107,6 +107,11 @@
             <groupId>com.github.cnsvili</groupId>
             <artifactId>snowflake</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-afterburner</artifactId>
+        </dependency>
+
         <!-- runtime -->
 
         <!-- tests -->
