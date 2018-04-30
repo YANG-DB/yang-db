@@ -28,6 +28,7 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -39,6 +40,7 @@ import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.gt;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -58,7 +60,12 @@ public class RedundantFilterPlanExtensionStrategyTest {
     //region Test Methods
     @Test
     public void test_EConcreteRedundantFilterSplitPlan() {
-        AsgQuery asgQuery = query1();
+        AsgQuery asgQuery = AsgQuery.Builder.start("name", "ont" )
+                .next(typed(1, PERSON.type))
+                .next(rel(2, OWN.getrType(), R)
+                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
+                .next(concrete(3, "123", DRAGON.type, "B", "tag"))
+                .build();
 
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
@@ -82,7 +89,20 @@ public class RedundantFilterPlanExtensionStrategyTest {
 
     @Test
     public void test_simpleQuery2RedundantFilterSplitPlan() {
-        AsgQuery asgQuery = query2();
+        AsgQuery asgQuery = AsgQuery.Builder.start("name", "ont")
+                .next(typed(1,  PERSON.type))
+                .next(rel(2, OWN.getrType(), R)
+                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
+                .next(typed(3,  DRAGON.type))
+                .next(quant1(4, all))
+                .in(eProp(9, EProp.of(9, "firstName", of(eq, "value1")), EProp.of(9, "gender", of(gt, "value3")))
+                        , rel(5, "4", R)
+                                .next(unTyped( 6))
+                        , rel(7, "5", R)
+                                .below(relProp(11, RelProp.of(11, "deathDate", of(eq, "value5")), RelProp.of(11, "birthDate", of(eq, "value4"))))
+                                .next(concrete(8, "concrete1", "3", "Concrete1", "D"))
+                )
+                .build();
 
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
@@ -118,14 +138,14 @@ public class RedundantFilterPlanExtensionStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("name", "ont")
                 .next(typed(1, PERSON.type))
                 .next(rel(2, OWN.getrType(), R)
-                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date(1000))))))
+                        .below(relProp(10, RelProp.of(0, START_DATE.type, of(eq, new Date(1000))))))
                 .next(typed(3, DRAGON.type))
                 .next(quant1(4, all))
                 .in(eProp(9, QuantType.all,
-                        Stream.of(EProp.of(9, "name", of(eq, "value1"))),
-                        Stream.of(EPropGroup.of(9, QuantType.some,
-                                EPropGroup.of(9, EProp.of(9, "gender", of(eq, "male")), EProp.of(9, "color", of(eq, "red"))),
-                                EPropGroup.of(9, EProp.of(9, "gender", of(eq, "female")), EProp.of(9, "color", of(eq, "blue")))))))
+                        Stream.of(EProp.of(0, "name", of(eq, "value1"))),
+                        Stream.of(EPropGroup.of(0, QuantType.some,
+                                EPropGroup.of(0, EProp.of(0, "gender", of(eq, "male")), EProp.of(0, "color", of(eq, "red"))),
+                                EPropGroup.of(0, EProp.of(0, "gender", of(eq, "female")), EProp.of(0, "color", of(eq, "blue")))))))
                 .build();
 
         Plan plan = new Plan(
@@ -149,19 +169,19 @@ public class RedundantFilterPlanExtensionStrategyTest {
                 new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(
                         RelPropGroup.of(10, QuantType.all,
                                 Stream.of(
-                                        RelProp.of(10, START_DATE.type, of(eq, new Date(1000))),
-                                        RedundantRelProp.of(10, "entityB.type", "type", of(eq, Collections.singletonList("Dragon"))),
-                                        RedundantRelProp.of(10, "entityB.name", "name", of(eq, "value1"))),
-                                Stream.of(RelPropGroup.of(10, QuantType.some,
-                                        RelPropGroup.of(10, RedundantRelProp.of(10, "entityB.gender", "gender", of(eq, "male"))),
-                                        RelPropGroup.of(10, RedundantRelProp.of(10, "entityB.gender", "gender", of(eq, "female")))))))
+                                        RelProp.of(0, START_DATE.type, of(eq, new Date(1000))),
+                                        RedundantRelProp.of(0, "entityB.type", "type", of(inSet, Collections.singletonList("Dragon"))),
+                                        RedundantRelProp.of(0, "entityB.name", "name", of(eq, "value1"))),
+                                Stream.of(RelPropGroup.of(0, QuantType.some,
+                                        RelPropGroup.of(0, RedundantRelProp.of(0, "entityB.gender", "gender", of(eq, "male"))),
+                                        RelPropGroup.of(0, RedundantRelProp.of(0, "entityB.gender", "gender", of(eq, "female")))))))
                         .build()),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(
                         EPropGroup.of(9, QuantType.all,
-                                EPropGroup.of(9, QuantType.some,
-                                        EPropGroup.of(9, EProp.of(9, "gender", of(eq, "male")), EProp.of(9, "color", of(eq, "red"))),
-                                        EPropGroup.of(9, EProp.of(9, "gender", of(eq, "female")), EProp.of(9, "color", of(eq, "blue"))))))
+                                EPropGroup.of(0, QuantType.some,
+                                        EPropGroup.of(0, EProp.of(0, "gender", of(eq, "male")), EProp.of(0, "color", of(eq, "red"))),
+                                        EPropGroup.of(0, EProp.of(0, "gender", of(eq, "female")), EProp.of(0, "color", of(eq, "blue"))))))
                         .build()));
 
         PlanAssert.assertEquals(expectedPlan, actualPlan);
@@ -169,47 +189,6 @@ public class RedundantFilterPlanExtensionStrategyTest {
     //endregion
 
     //region Private Methods
-    private AsgQuery query1() {
-        return AsgQuery.Builder.start("name", "ont" )
-                .next(typed(1, PERSON.type))
-                .next(rel(2, OWN.getrType(), R)
-                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(concrete(3, "123", DRAGON.type, "B", "tag"))
-                .build();
-    }
-
-    private AsgQuery query2() {
-        return AsgQuery.Builder.start("name", "ont")
-                .next(typed(1,  PERSON.type))
-                .next(rel(2, OWN.getrType(), R)
-                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(typed(3,  DRAGON.type))
-                .next(quant1(4, all))
-                .in(eProp(9, EProp.of(9, "firstName", of(eq, "value1")), EProp.of(9, "gender", of(gt, "value3")))
-                        , rel(5, "4", R)
-                                .next(unTyped( 6))
-                        , rel(7, "5", R)
-                                .below(relProp(11, RelProp.of(11, "deathDate", of(eq, "value5")), RelProp.of(11, "birthDate", of(eq, "value4"))))
-                                .next(concrete(8, "concrete1", "3", "Concrete1", "D"))
-                )
-                .build();
-    }
-
-    private AsgQuery query3() {
-        return AsgQuery.Builder.start("name", "ont")
-                .next(typed(1,  PERSON.type))
-                .next(rel(2, OWN.getrType(), R)
-                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date(1000))))))
-                .next(typed(3,  DRAGON.type))
-                .next(quant1(4, all))
-                .in(eProp(9, QuantType.all,
-                        Stream.of(EProp.of(9, "name", of(eq, "value1"))),
-                        Stream.of(EPropGroup.of(9, QuantType.some,
-                                EPropGroup.of(9, EProp.of(9, "gender", of(eq, "male")), EProp.of(9, "color", of(eq, "red"))),
-                                EPropGroup.of(9, EProp.of(9, "gender", of(eq, "female")), EProp.of(9, "color", of(eq, "blue")))))))
-                .build();
-    }
-
     private GraphElementSchemaProvider buildSchemaProvider(Ontology.Accessor ont) {
         Iterable<GraphVertexSchema> vertexSchemas =
                 Stream.ofAll(ont.entities())

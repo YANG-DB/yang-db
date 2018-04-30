@@ -96,7 +96,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
         EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(3, "name", "name.keyword", Constraint.of(ConstraintOp.eq, "Sherley"))));
+                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.eq, "Sherley"))));
 
         Assert.assertEquals(expected, actual);
     }
@@ -114,7 +114,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
         EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(3, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*Sherley"))));
+                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*Sherley"))));
 
         Assert.assertEquals(expected, actual);
     }
@@ -132,8 +132,8 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
         EPropGroup expected = new EPropGroup(3, Arrays.asList(
-                new SchematicEProp(3, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
-                new SchematicEProp(3, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley"))));
+                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
+                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley"))));
 
         Assert.assertEquals(expected, actual);
     }
@@ -151,7 +151,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
         EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(3, "name", "name.keyword", Constraint.of(ConstraintOp.like, "Sherley*"))));
+                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "Sherley*"))));
 
         Assert.assertEquals(expected, actual);
     }
@@ -169,8 +169,8 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
         EPropGroup expected = new EPropGroup(3, Arrays.asList(
-                new SchematicEProp(3, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "She")),
-                new SchematicEProp(3, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley"))));
+                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "She")),
+                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley"))));
 
         Assert.assertEquals(expected, actual);
     }
@@ -188,7 +188,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
         EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(3, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "Sherley"))));
+                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "Sherley"))));
 
         Assert.assertEquals(expected, actual);
     }
@@ -206,8 +206,8 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
         EPropGroup expected = new EPropGroup(3, Arrays.asList(
-                new SchematicEProp(3, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
-                new SchematicEProp(3, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "rley"))));
+                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
+                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "rley"))));
 
         Assert.assertEquals(expected, actual);
     }
@@ -225,7 +225,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
         EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(3, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*Sherley"))));
+                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*Sherley"))));
 
         Assert.assertEquals(expected, actual);
     }
@@ -243,8 +243,8 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
         EPropGroup expected = new EPropGroup(3, Arrays.asList(
-                new SchematicEProp(3, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
-                new SchematicEProp(3, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley"))));
+                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
+                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley"))));
 
         Assert.assertEquals(expected, actual);
     }
@@ -262,7 +262,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
         EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(3, "name", "name.keyword", Constraint.of(ConstraintOp.like, "Sherley*"))));
+                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "Sherley*"))));
 
         Assert.assertEquals(expected, actual);
     }
@@ -294,8 +294,8 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
         EPropGroup expected = new EPropGroup(3, Arrays.asList(
-                new SchematicEProp(3, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "She")),
-                new SchematicEProp(3, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "rley"))));
+                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "She")),
+                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "rley"))));
 
         Assert.assertEquals(expected, actual);
     }

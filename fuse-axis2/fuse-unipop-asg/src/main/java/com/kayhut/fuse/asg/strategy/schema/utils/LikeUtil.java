@@ -25,7 +25,7 @@ public class LikeUtil {
         String expr = (String) eProp.getCon().getExpr();
         if (expr == null || expr.equals("")) {
             return Collections.singletonList(new SchematicEProp(
-                    eProp.geteNum(),
+                    0,
                     eProp.getpType(),
                     exactIndexingSchema.get().getName(),
                     Constraint.of(ConstraintOp.eq, eProp.getCon().getExpr())));
@@ -39,7 +39,7 @@ public class LikeUtil {
 
         if (exact) {
             return Collections.singletonList(new SchematicEProp(
-                    eProp.geteNum(),
+                    0,
                     eProp.getpType(),
                     exactIndexingSchema.get().getName(),
                     Constraint.of(ConstraintOp.eq, eProp.getCon().getExpr())));
@@ -51,28 +51,28 @@ public class LikeUtil {
 
             if (wildcardPartIndex == 0 && prefix) {
                 newEprops.add(new SchematicEProp(
-                        eProp.geteNum(),
+                        0,
                         eProp.getpType(),
                         exactIndexingSchema.get().getName(),
                         Constraint.of(ConstraintOp.like, wildcardParts.get(0) + "*")));
 
             } else if (wildcardPartIndex == wildcardParts.size() - 1 && suffix) {
                 newEprops.add(new SchematicEProp(
-                        eProp.geteNum(),
+                        0,
                         eProp.getpType(),
                         exactIndexingSchema.get().getName(),
                         Constraint.of(ConstraintOp.like, "*" + wildcardParts.get(wildcardParts.size() - 1))));
 
             } else if (ngramsApplicable(eProp, propertySchema, wildcardPart)) {
                 newEprops.add(new SchematicEProp(
-                        eProp.geteNum(),
+                        0,
                         eProp.getpType(),
                         propertySchema.getIndexingSchema(ngrams).get().getName(),
                         Constraint.of(ConstraintOp.eq, wildcardPart)));
 
             } else {
                 newEprops.add(new SchematicEProp(
-                        eProp.geteNum(),
+                        0,
                         eProp.getpType(),
                         exactIndexingSchema.get().getName(),
                         Constraint.of(ConstraintOp.like, "*" + wildcardParts.get(wildcardPartIndex) + "*")));

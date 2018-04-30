@@ -124,7 +124,7 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
                     .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(OntologyFinalizer.TYPE_FIELD_PTYPE).getName()).get());
 
             if(redundantTypeProperty.isPresent()) {
-                RelProp relProp = RedundantRelProp.of(maxEnum.addAndGet(1), redundantTypeProperty.get().getPropertyRedundantName(),
+                RelProp relProp = RedundantRelProp.of(0, redundantTypeProperty.get().getPropertyRedundantName(),
                         OntologyFinalizer.TYPE_FIELD_PTYPE, constraint);
                 relPropGroup.getProps().add(relProp);
             }
@@ -138,7 +138,7 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
                     .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(OntologyFinalizer.ID_FIELD_PTYPE).getName()).get());
 
             if(redundantIdProperty.isPresent()) {
-                RelProp relProp = RedundantRelProp.of(maxEnum.addAndGet(1), redundantIdProperty.get().getPropertyRedundantName(),
+                RelProp relProp = RedundantRelProp.of(0, redundantIdProperty.get().getPropertyRedundantName(),
                         OntologyFinalizer.ID_FIELD_PTYPE, constraint);
                 relPropGroup.getProps().add(relProp);
             }
@@ -146,40 +146,26 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
 
         Plan newPlan = new Plan(plan.get().getOps());
 
-        RedundantGroups redundantGroups = null;
+        RelPropGroup redundantRelPropGroup = null;
+        EPropGroup nonRedundantEPropGroup = null;
         if(lastEntityFilterOp.isPresent()) {
-            redundantGroups = buildRedundantGroups(lastEntityFilterOp.get().getAsgEbase().geteBase(), endSchema, schemaProvider, $ont);
-            /*AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEbase().geteBase().clone()).build();
-            Stream.ofAll(ePropGroup.geteBase().getProps())
-                    .filter(eProp -> eProp.getCon() != null)
-                    .toJavaList()
-                    .forEach(p -> {
-                Optional<GraphRedundantPropertySchema> redundantVertexProperty = endSchema
-                        .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(p.getpType()).getName()).get());
-                if(redundantVertexProperty.isPresent()){
-                    RelProp relProp = RedundantRelProp.of(
-                            maxEnum.addAndGet(1),
-                            redundantVertexProperty.get().getPropertyRedundantName(),
-                            SchematicEProp.class.isAssignableFrom(p.getClass()) ?
-                                    ((SchematicEProp)p).getSchematicName() :
-                                    redundantVertexProperty.get().getPropertyRedundantName(),
-                            p.getpType(),
-                            p.getCon());
-                    relPropGroup.getProps().add(relProp);
-                    ePropGroup.geteBase().getProps().remove(p);
-                }
-            });
-
-            EntityFilterOp newEntityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(ePropGroup.geteBase()).build());
-            newPlan = PlanUtil.replace(newPlan, lastEntityFilterOp.get(), newEntityFilterOp);*/
+            Map<EPropGroup, Redundancy> redundancy = buildRedundancyMap(lastEntityFilterOp.get().getAsgEbase().geteBase(), endSchema, schemaProvider, $ont);
+            redundantRelPropGroup = buildRedundantRelPropGroup(lastEntityFilterOp.get().getAsgEbase().geteBase(), endSchema, schemaProvider, $ont, redundancy);
+            nonRedundantEPropGroup = buildNonRedundantEpropGroup(lastEntityFilterOp.get().getAsgEbase().geteBase(), endSchema, schemaProvider, $ont, redundancy);
         }
 
-        if (redundantGroups != null) {
-            EntityFilterOp newEntityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(redundantGroups.getEPropGroup()).build());
-            newPlan = PlanUtil.replace(newPlan, lastEntityFilterOp.get(), newEntityFilterOp);
+        if (nonRedundantEPropGroup != null) {
+            nonRedundantEPropGroup.seteNum(lastEntityFilterOp.get().getAsgEbase().geteBase().geteNum());
+            nonRedundantEPropGroup.getProps().addAll(
+                    Stream.ofAll(lastEntityFilterOp.get().getAsgEbase().geteBase().getProps()).filter(eprop -> eprop.getProj() != null).toJavaList());
 
-            relPropGroup.getProps().addAll(redundantGroups.getRelPropGroup().getProps());
-            relPropGroup.getGroups().addAll(redundantGroups.getRelPropGroup().getGroups());
+            EntityFilterOp newEntityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(nonRedundantEPropGroup).build());
+            newPlan = PlanUtil.replace(newPlan, lastEntityFilterOp.get(), newEntityFilterOp);
+        }
+
+        if (redundantRelPropGroup != null) {
+            relPropGroup.getProps().addAll(redundantRelPropGroup.getProps());
+            relPropGroup.getGroups().addAll(redundantRelPropGroup.getGroups());
         }
 
         RelationFilterOp newRelationFilterOp = new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(relPropGroup).build());
@@ -190,91 +176,111 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
     //region
 
     //region Private Methods
-    private RedundantGroups buildRedundantGroups(
+    private Map<EPropGroup, Redundancy> buildRedundancyMap(
             EPropGroup ePropGroup,
             GraphEdgeSchema.End endSchema,
             GraphElementSchemaProvider schemaProvider,
             Ontology.Accessor $ont) {
-
-        List<RedundantGroups> childRedundantGroups =
-                Stream.ofAll(ePropGroup.getGroups())
-                .map(childGroup -> buildRedundantGroups(childGroup, endSchema, schemaProvider, $ont))
-                .toJavaList();
-
-        RedundantGroups propertiesRedundantGroups = buildRedudnantPropGroups(ePropGroup, endSchema, schemaProvider, $ont);
-
-        EPropGroup redundantEpropGroup = new EPropGroup(
-                ePropGroup.geteNum(),
-                ePropGroup.getQuantType(),
-                propertiesRedundantGroups.ePropGroup.getProps(),
-                Stream.ofAll(childRedundantGroups).map(RedundantGroups::getEPropGroup).toJavaList());
-
-        RelPropGroup redundantRelpropGroup = new RelPropGroup(
-                0,
-                ePropGroup.getQuantType(),
-                propertiesRedundantGroups.getRelPropGroup().getProps(),
-                Stream.ofAll(childRedundantGroups).map(RedundantGroups::getRelPropGroup).toJavaList());
-
-        return new RedundantGroups(redundantEpropGroup, redundantRelpropGroup);
-    }
-
-    private RedundantGroups buildRedudnantPropGroups(
-            EPropGroup ePropGroup,
-            GraphEdgeSchema.End endSchema,
-            GraphElementSchemaProvider schemaProvider,
-            Ontology.Accessor $ont) {
-        EPropGroup clonedEpropGroup = ePropGroup.clone();
-        RelPropGroup relPropGroup = new RelPropGroup(0, ePropGroup.getQuantType(), Collections.emptyList(), Collections.emptyList());
-
-        for(EProp eProp : Stream.ofAll(ePropGroup.getProps()).filter(eProp -> eProp.getCon() != null)) {
-            Optional<GraphRedundantPropertySchema> redundantVertexProperty = endSchema
-                    .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(eProp.getpType()).getName()).get());
-            if (redundantVertexProperty.isPresent()) {
-                RelProp relProp = RedundantRelProp.of(
-                        0,
-                        redundantVertexProperty.get().getPropertyRedundantName(),
-                        SchematicEProp.class.isAssignableFrom(eProp.getClass()) ?
-                                ((SchematicEProp) eProp).getSchematicName() :
-                                redundantVertexProperty.get().getPropertyRedundantName(),
-                        eProp.getpType(),
-                        eProp.getCon());
-                relPropGroup.getProps().add(relProp);
-                clonedEpropGroup.getProps().remove(eProp);
-            } else if (ePropGroup.getQuantType().equals(QuantType.some)){
-                return new RedundantGroups(ePropGroup, null);
+        Map<EPropGroup, Redundancy> redundancy = new HashMap<>();
+        if (!ePropGroup.getGroups().isEmpty()) {
+            for(EPropGroup childGroup : ePropGroup.getGroups()) {
+                redundancy.putAll(buildRedundancyMap(childGroup, endSchema, schemaProvider, $ont));
             }
         }
 
-        return new RedundantGroups(clonedEpropGroup, relPropGroup);
+        int numUnsafePartialGroups = Stream.ofAll(redundancy.values()).filter(redundancy1 -> redundancy1.equals(Redundancy.unsafePartial)).size();
+        int numSafePartialGroups = Stream.ofAll(redundancy.values()).filter(redundancy1 -> redundancy1.equals(Redundancy.safePartial)).size();
+        Redundancy groupRedundancy = numUnsafePartialGroups > 0 ?
+                Redundancy.unsafePartial : numSafePartialGroups > 0 ?
+                Redundancy.safePartial : Redundancy.full;
+
+        boolean fullyRedundantProps =
+                Stream.ofAll(ePropGroup.getProps())
+                .filter(eProp -> eProp.getCon() != null)
+                .map(eProp -> endSchema.getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(eProp.getpType()).getName()).get()))
+                .filter(redudantProp -> !redudantProp.isPresent())
+                .isEmpty();
+
+        Redundancy propRedundancy = fullyRedundantProps ? Redundancy.full :
+            ePropGroup.getQuantType().equals(QuantType.all) ?
+            Redundancy.safePartial : Redundancy.unsafePartial;
+
+        Set<Redundancy> propAndGroupRedundancies = Stream.of(groupRedundancy, propRedundancy).toJavaSet();
+        Redundancy thisRedundancy = propAndGroupRedundancies.contains(Redundancy.unsafePartial) ?
+                Redundancy.unsafePartial : propAndGroupRedundancies.contains(Redundancy.safePartial) ?
+                Redundancy.safePartial : Redundancy.full;
+
+        redundancy.put(ePropGroup, thisRedundancy);
+        return redundancy;
+    }
+
+    private RelPropGroup buildRedundantRelPropGroup(
+            EPropGroup ePropGroup,
+            GraphEdgeSchema.End endSchema,
+            GraphElementSchemaProvider schemaProvider,
+            Ontology.Accessor $ont,
+            Map<EPropGroup, Redundancy> redundancy) {
+
+        List<RelPropGroup> childRedundantRelPropGroups =
+                Stream.ofAll(ePropGroup.getGroups())
+                .map(childGroup -> buildRedundantRelPropGroup(childGroup, endSchema, schemaProvider, $ont, redundancy))
+                .toJavaList();
+
+        List<RelProp> redundantRelProps = new ArrayList<>();
+        Redundancy thisRedundancy = redundancy.get(ePropGroup);
+        if (thisRedundancy.equals(Redundancy.safePartial) || thisRedundancy.equals(Redundancy.full)) {
+            for (EProp eProp : Stream.ofAll(ePropGroup.getProps()).filter(eProp -> eProp.getCon() != null)) {
+                Optional<GraphRedundantPropertySchema> redundantVertexProperty = endSchema
+                        .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(eProp.getpType()).getName()).get());
+                redundantVertexProperty.ifPresent(graphRedundantPropertySchema -> redundantRelProps.add(RedundantRelProp.of(
+                        0,
+                        graphRedundantPropertySchema.getPropertyRedundantName(),
+                        SchematicEProp.class.isAssignableFrom(eProp.getClass()) ?
+                                ((SchematicEProp) eProp).getSchematicName() :
+                                graphRedundantPropertySchema.getPropertyRedundantName(),
+                        eProp.getpType(),
+                        eProp.getCon())));
+            }
+        }
+
+        return new RelPropGroup(0, ePropGroup.getQuantType(), redundantRelProps, childRedundantRelPropGroups);
+    }
+
+    private EPropGroup buildNonRedundantEpropGroup(
+            EPropGroup ePropGroup,
+            GraphEdgeSchema.End endSchema,
+            GraphElementSchemaProvider schemaProvider,
+            Ontology.Accessor $ont,
+            Map<EPropGroup, Redundancy> redundancy) {
+
+        if (redundancy.get(ePropGroup).equals(Redundancy.full)) {
+            return new EPropGroup(0);
+        }
+
+        List<EPropGroup> childNonRedundantEPropGroups =
+                Stream.ofAll(ePropGroup.getGroups())
+                        .filter(childGroup -> !redundancy.get(childGroup).equals(Redundancy.full))
+                        .toJavaList();
+
+        List<EProp> nonRedundantEProps = new ArrayList<>();
+        for (EProp eProp : Stream.ofAll(ePropGroup.getProps()).filter(eProp -> eProp.getCon() != null)) {
+            if (!endSchema.getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(eProp.getpType()).getName()).get()).isPresent()) {
+                nonRedundantEProps.add(eProp);
+            }
+        }
+
+        return new EPropGroup(0, ePropGroup.getQuantType(), nonRedundantEProps, childNonRedundantEPropGroups);
     }
     //endregion
-
-    private static class RedundantGroups {
-        //region Constructors
-        public RedundantGroups(EPropGroup ePropGroup, RelPropGroup relPropGroup) {
-            this.ePropGroup = ePropGroup;
-            this.relPropGroup = relPropGroup;
-        }
-        //endregion
-
-        //region Properties
-        public EPropGroup getEPropGroup() {
-            return ePropGroup;
-        }
-
-        public RelPropGroup getRelPropGroup() {
-            return relPropGroup;
-        }
-        //endregion
-
-        //region Fields
-        private EPropGroup ePropGroup;
-        private RelPropGroup relPropGroup;
-        //endregion
-    }
 
     //region Fields
     private OntologyProvider ontologyProvider;
     private GraphElementSchemaProviderFactory schemaProviderFactory;
     //endregion
+
+    private enum Redundancy {
+        unsafePartial,
+        safePartial,
+        full
+    }
 }
