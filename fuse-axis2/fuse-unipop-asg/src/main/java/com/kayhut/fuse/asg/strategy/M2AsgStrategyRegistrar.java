@@ -1,10 +1,7 @@
 package com.kayhut.fuse.asg.strategy;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.asg.strategy.constraint.ConstraintIterableTransformationAsgStrategy;
-import com.kayhut.fuse.asg.strategy.constraint.ConstraintTypeTransformationAsgStrategy;
-import com.kayhut.fuse.asg.strategy.constraint.RedundantLikeAnyConstraintAsgStrategy;
-import com.kayhut.fuse.asg.strategy.constraint.RedundantLikeConstraintAsgStrategy;
+import com.kayhut.fuse.asg.strategy.constraint.*;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.EntityPropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.HQuantifierPropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.Quant1PropertiesGroupingAsgStrategy;
@@ -49,6 +46,8 @@ public class M2AsgStrategyRegistrar  implements AsgStrategyRegistrar {
                 new ExactConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 new LikeConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 new LikeAnyConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
+                new RedundantInSetConstraintAsgStrategy(),
+                new RedundantPropGroupAsgStrategy(),
                 new DefaultSelectionAsgStrategy(this.ontologyProvider)
         );
     }

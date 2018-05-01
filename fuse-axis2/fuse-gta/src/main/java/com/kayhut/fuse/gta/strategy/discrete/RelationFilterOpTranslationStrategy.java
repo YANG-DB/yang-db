@@ -13,10 +13,7 @@ import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.properties.RedundantRelProp;
-import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import com.kayhut.fuse.model.query.properties.SchematicRelProp;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import javaslang.collection.Stream;
@@ -27,9 +24,11 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.structure.T;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kayhut.fuse.model.query.quant.QuantType.some;
 import static com.kayhut.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
 
 /**
@@ -71,14 +70,15 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
             Ontology.Accessor ont) {
 
         String relationTypeName = ont.$relation$(rel.getrType()).getName();
-        List<Traversal> traversals = Stream.ofAll(relPropGroup.getProps())
-                .filter(relProp -> relProp.getCon() != null)
-                .map(relProp -> convertRelPropToTraversal(relProp, ont))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toJavaList();
 
-        traversals.add(0, __.has(T.label, P.eq(relationTypeName)));
+        List<Traversal> relPropGroupTraversals = Collections.emptyList();
+        if (!relPropGroup.getProps().isEmpty() || !relPropGroup.getGroups().isEmpty()) {
+            relPropGroupTraversals = Collections.singletonList(convertRelPropGroupToTraversal(relPropGroup, ont));
+        }
+
+
+        List<Traversal> traversals = Stream.<Traversal>of(__.has(T.label, P.eq(relationTypeName)))
+                .appendAll(relPropGroupTraversals).toJavaList();
 
         return traversals.size() == 1 ?
                 traversal.has(CONSTRAINT, Constraint.by(traversals.get(0))) :
@@ -87,6 +87,33 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
     //endregion
 
     //region Private Methods
+    private Traversal convertRelPropGroupToTraversal(RelPropGroup relPropGroup, Ontology.Accessor ont) {
+        List<Traversal> childGroupTraversals = Stream.ofAll(relPropGroup.getGroups())
+                .map(childGroup -> convertRelPropGroupToTraversal(childGroup, ont))
+                .toJavaList();
+
+        List<Traversal> epropTraversals = Stream.ofAll(relPropGroup.getProps())
+                .filter(relProp -> relProp.getCon() != null)
+                .map(relProp -> convertRelPropToTraversal(relProp, ont))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toJavaList();
+
+        Traversal[] traversals = Stream.ofAll(epropTraversals).appendAll(childGroupTraversals).toJavaArray(Traversal.class);
+
+        switch (relPropGroup.getQuantType()) {
+            case all:
+                if (traversals.length == 1) {
+                    return traversals[0];
+                }
+
+                return __.and(traversals);
+            case some: __.or(traversals);
+
+            default: return __.and(traversals);
+        }
+    }
+
     private Optional<Traversal> convertRelPropToTraversal(RelProp relProp, Ontology.Accessor ont) {
         Optional<Property> property = ont.$property(relProp.getpType());
         if (property.isPresent()) {

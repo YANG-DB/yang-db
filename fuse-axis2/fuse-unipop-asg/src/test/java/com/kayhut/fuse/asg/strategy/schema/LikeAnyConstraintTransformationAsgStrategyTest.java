@@ -101,9 +101,10 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
-                                Collections.emptyList(),
                                 Collections.singletonList(
-                                        new EPropGroup(3, new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.eq, "Sherley")))))));
+                                        new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))
+                                ),
+                                Collections.emptyList())));
 
         Assert.assertEquals(expected, actual);
     }
@@ -235,11 +236,10 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
-                                Collections.emptyList(),
                                 Collections.singletonList(
-                                        new EPropGroup(3,
-                                                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "Sherley")))))));
-
+                                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))
+                                ),
+                                Collections.emptyList())));
 
         Assert.assertEquals(expected, actual);
     }

@@ -100,6 +100,10 @@ public abstract class BasePropGroup<T extends BaseProp, S extends BasePropGroup<
         return quantType;
     }
 
+    public void setQuantType(QuantType quantType) {
+        this.quantType = quantType;
+    }
+
     public List<S> getGroups() {
         return groups;
     }
