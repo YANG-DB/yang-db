@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
-public class ElasticsearchReporter extends ScheduledReporter {
+public class ElasticsearchHttpReporter extends ScheduledReporter {
 
     public static Builder forRegistry(MetricRegistry registry) {
         return new Builder(registry);
@@ -187,8 +187,8 @@ public class ElasticsearchReporter extends ScheduledReporter {
             return this;
         }
 
-        public ElasticsearchReporter build() throws IOException {
-            return new ElasticsearchReporter(registry,
+        public ElasticsearchHttpReporter build() throws IOException {
+            return new ElasticsearchHttpReporter(registry,
                     hosts,
                     timeout,
                     index,
@@ -205,7 +205,7 @@ public class ElasticsearchReporter extends ScheduledReporter {
         }
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchReporter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchHttpReporter.class);
 
     private final String[] hosts;
     private final Clock clock;
@@ -220,9 +220,9 @@ public class ElasticsearchReporter extends ScheduledReporter {
     private SimpleDateFormat indexDateFormat = null;
     private boolean checkedForIndexTemplate = false;
 
-    public ElasticsearchReporter(MetricRegistry registry, String[] hosts, int timeout,
-                                 String index, String indexDateFormat, int bulkSize, Clock clock, String prefix, TimeUnit rateUnit, TimeUnit durationUnit,
-                                 MetricFilter filter, MetricFilter percolationFilter, String timestampFieldname, Map<String, Object> additionalFields) throws MalformedURLException {
+    public ElasticsearchHttpReporter(MetricRegistry registry, String[] hosts, int timeout,
+                                     String index, String indexDateFormat, int bulkSize, Clock clock, String prefix, TimeUnit rateUnit, TimeUnit durationUnit,
+                                     MetricFilter filter, MetricFilter percolationFilter, String timestampFieldname, Map<String, Object> additionalFields) throws MalformedURLException {
         super(registry, "elasticsearch-reporter", filter, rateUnit, durationUnit);
         this.hosts = hosts;
         this.index = index;

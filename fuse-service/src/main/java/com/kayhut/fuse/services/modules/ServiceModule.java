@@ -4,13 +4,10 @@ import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
 import com.google.inject.Binder;
-import com.google.inject.Guice;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
-import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
-import com.kayhut.fuse.logging.reporting.ElasticsearchReporter;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecutionScope;
@@ -30,12 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.inject.name.Names.named;
 import static com.kayhut.fuse.executor.ExecutorModule.getStringList;
-import static com.kayhut.fuse.logging.reporting.ElasticsearchReporter.forRegistry;
+import static com.kayhut.fuse.logging.reporting.ElasticsearchHttpReporter.forRegistry;
 
 /**
  * Created by lior on 15/02/2017.

@@ -1,22 +1,16 @@
 package com.kayhut.fuse.services;
 
-import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.ScheduledReporter;
-import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
-import com.google.inject.Guice;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.services.appRegistrars.*;
-import com.kayhut.fuse.services.modules.ServiceModule;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 import javaslang.Tuple2;
-import javaslang.collection.Stream;
 import org.jooby.Jooby;
 import org.jooby.RequestLogger;
 import org.jooby.Results;
@@ -28,12 +22,7 @@ import org.jooby.scanner.Scanner;
 import org.jooby.swagger.SwaggerUI;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static com.kayhut.fuse.executor.ExecutorModule.getStringList;
-import static com.kayhut.fuse.logging.reporting.ElasticsearchReporter.forRegistry;
 
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -53,19 +42,13 @@ public class FuseApp extends Jooby {
                 .ping()
                 .metric("memory", new MemoryUsageGaugeSet())
                 .metric("threads", new ThreadStatesGaugeSet())
-                .metric("gc", new GarbageCollectorMetricSet())
-                .reporter(((registry, config) -> {
-                    ScheduledReporter reporter = ServiceModule.buildElasticReporter(registry, config);
-                    reporter.start(10, TimeUnit.SECONDS);
-                    return reporter;
-                })));
+                .metric("gc", new GarbageCollectorMetricSet()));
 
-        use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {
-        }));
-        get("", () -> Results.redirect("/public/assets/earth.html"));
-        get("/", () -> Results.redirect("/public/assets/earth.html"));
-        get("/collision", () -> Results.redirect("/public/assets/collision.html"));
-        get("swagger/swagger.json", () -> Results.redirect("/public/assets/swagger/swagger.json"));
+        use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {}));
+        get("", () ->  Results.redirect("/public/assets/earth.html"));
+        get("/", () ->  Results.redirect("/public/assets/earth.html"));
+        get("/collision", () ->  Results.redirect("/public/assets/collision.html"));
+        get("swagger/swagger.json", () ->  Results.redirect("/public/assets/swagger/swagger.json"));
 
         //'Access-Control-Allow-Origin' header
         use("*", new CorsHandler());
