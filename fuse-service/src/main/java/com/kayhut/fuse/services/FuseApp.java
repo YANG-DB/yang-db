@@ -1,7 +1,6 @@
 package com.kayhut.fuse.services;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
@@ -43,8 +42,7 @@ public class FuseApp extends Jooby {
                 .ping()
                 .metric("memory", new MemoryUsageGaugeSet())
                 .metric("threads", new ThreadStatesGaugeSet())
-                .metric("gc", new GarbageCollectorMetricSet())
-                .metric("fs", new FileDescriptorRatioGauge()));
+                .metric("gc", new GarbageCollectorMetricSet()));
 
         use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {}));
         get("", () ->  Results.redirect("/public/assets/earth.html"));

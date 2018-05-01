@@ -62,15 +62,18 @@ public class LoggingPageController implements PageController {
 
         try {
             new LogMessage.Impl(this.logger, trace, "start create", LogType.of(start), create).log();
+            this.metricRegistry.counter(name(this.logger.getName(), "count")).inc();
             response = this.controller.create(queryId, cursorId, createPageRequest);
             new LogMessage.Impl(this.logger, info, "finish create",
                     LogType.of(success), create, ElapsedFrom.now()).log();
             new LogMessage.Impl(this.logger, trace, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
+            this.metricRegistry.counter(name(this.logger.getName(), "count")).dec();
             this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "success")).mark();
         } catch (Exception ex) {
             new LogMessage.Impl(this.logger, error, "failed create", LogType.of(failure), create, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "failure")).mark();
+            this.metricRegistry.counter(name(this.logger.getName(), "count")).dec();
             response = ContentResponse.internalError(ex);
         }
 
