@@ -29,17 +29,19 @@ public interface StatisticsProvider {
     /**
      *
      * @param item
+     * @param source
      * @return
      */
-    Statistics.SummaryStatistics getEdgeStatistics(Rel item);
+    Statistics.SummaryStatistics getEdgeStatistics(Rel item, EEntityBase source);
 
     /**
      *
      * @param item
      * @param entityFilter
+     * @param source
      * @return
      */
-    Statistics.SummaryStatistics getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter);
+    Statistics.SummaryStatistics getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter, EEntityBase source);
 
 
     //Statistics.SummaryStatistics getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup,DirectionSchema direction);

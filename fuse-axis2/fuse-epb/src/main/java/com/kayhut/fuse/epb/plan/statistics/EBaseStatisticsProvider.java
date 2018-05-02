@@ -92,7 +92,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     @Override
-    public Statistics.SummaryStatistics getEdgeStatistics(Rel rel) {
+    public Statistics.SummaryStatistics getEdgeStatistics(Rel rel, EEntityBase source) {
         Iterable<GraphEdgeSchema> edgeSchemas = graphElementSchemaProvider.getEdgeSchemas(ont.$relation$(rel.getrType()).getName());
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             // what to do what to do
@@ -105,7 +105,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     @Override
-    public Statistics.SummaryStatistics getEdgeFilterStatistics(Rel rel, RelPropGroup relFilter) {
+    public Statistics.SummaryStatistics getEdgeFilterStatistics(Rel rel, RelPropGroup relFilter, EEntityBase source) {
         Iterable<GraphEdgeSchema> graphEdgeSchemas = graphElementSchemaProvider.getEdgeSchemas(ont.$relation$(rel.getrType()).getName());
         if (Stream.ofAll(graphEdgeSchemas).isEmpty()) {
             // what to do what to do

@@ -85,7 +85,7 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
         double N1 = entityOneCost.peek();
         double R1 = N1 * selectivity;
         //(relation filter estimate) = statistical_estimate(Rel + filter + E1 pushdown)
-        double R2 = statisticsProvider.getEdgeFilterStatistics(relationFilter.getRel().geteBase(), relationFilter.getAsgEbase().geteBase()).getTotal();
+        double R2 = statisticsProvider.getEdgeFilterStatistics(relationFilter.getRel().geteBase(), relationFilter.getAsgEbase().geteBase(),start.getAsgEbase().geteBase() ).getTotal();
         //(rel estimate) = min(R1, R2)
         double R = Math.min(R1, R2);
 

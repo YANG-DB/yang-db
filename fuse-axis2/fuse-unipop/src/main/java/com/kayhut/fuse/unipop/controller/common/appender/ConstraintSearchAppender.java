@@ -37,17 +37,18 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
                 context.getConstraint().get().getTraversal().asAdmin().clone() :
                 __.has(T.label, P.within(labels));
 
-        List<GraphElementConstraint> elementConstraints = context.getElementType().equals(ElementType.vertex) ?
-                Stream.ofAll(labels)
-                        .flatMap(label -> context.getSchemaProvider().getVertexSchemas(label))
-                        .map(GraphElementSchema::getConstraint)
-                        .toJavaList() :
-                Stream.ofAll(context.getSchemaProvider().getEdgeSchemas(
-                        Stream.ofAll(context.getBulkVertices()).get(0).label(),
-                        context.getDirection(),
-                        Stream.ofAll(new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor())).get(0)))
-                    .map(GraphElementSchema::getConstraint)
-                    .toJavaList();
+        List<GraphElementConstraint> elementConstraints =
+                    context.getElementType().equals(ElementType.vertex) ?
+                            Stream.ofAll(labels)
+                                    .flatMap(label -> context.getSchemaProvider().getVertexSchemas(label))
+                                    .map(GraphElementSchema::getConstraint)
+                                    .toJavaList() :
+                            Stream.ofAll(context.getSchemaProvider().getEdgeSchemas(
+                                    Stream.ofAll(context.getBulkVertices()).get(0).label(),
+                                    context.getDirection(),
+                                    Stream.ofAll(new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor())).get(0)))
+                                    .map(GraphElementSchema::getConstraint)
+                                    .toJavaList();
 
         if (!elementConstraints.isEmpty()) {
             List<HasStep> labelHasSteps = Stream.ofAll(new TraversalHasStepFinder(step -> step.getHasContainers().get(0).getKey().equals(T.label.getAccessor()))

@@ -26,12 +26,12 @@ public final class NoStatsProvider implements StatisticsProviderFactory{
             }
 
             @Override
-            public Statistics.SummaryStatistics getEdgeStatistics(Rel item) {
+            public Statistics.SummaryStatistics getEdgeStatistics(Rel item, EEntityBase source) {
                 return null;
             }
 
             @Override
-            public Statistics.SummaryStatistics getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter) {
+            public Statistics.SummaryStatistics getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter, EEntityBase source) {
                 return null;
             }
 

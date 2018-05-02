@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan.statistics;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Value;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
@@ -82,18 +83,22 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel(0, OWN.getrType(), Rel.Direction.L, null, 0,0);
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeStatistics(rel);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeStatistics(rel, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(1d, nodeStatistics.getTotal(), 0);
     }
 
     @Test
     public void eRelDateEqFilterHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel(0,REGISTERED.getrType(), Rel.Direction.L, null, 0, 0);
         RelProp prop = RelProp.of(0, START_DATE.type, Constraint.of(ConstraintOp.eq, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(5, nodeStatistics.getTotal(), 0.1);
     }
@@ -101,46 +106,54 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelDateGtFilterHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel(0, SUBJECT.getrType(), Rel.Direction.L, null, 0, 0);
         RelProp prop = RelProp.of(0, END_DATE.type, Constraint.of(ConstraintOp.gt, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(25, nodeStatistics.getTotal(), 0.1);
     }
 
     @Test
     public void eRelDateGeFilterHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel(0,FREEZE.getrType(), Rel.Direction.L, null, 0,0);
 
         RelProp prop = RelProp.of(0, END_DATE.type, Constraint.of(ConstraintOp.ge, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(25, nodeStatistics.getTotal(), 0.1);
     }
 
     @Test
     public void eRelDateLtFilterHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel(0,FIRE.getrType(), Rel.Direction.L, null,0,0);
 
         RelProp prop = RelProp.of(0, START_DATE.type, Constraint.of(ConstraintOp.lt, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(35, nodeStatistics.getTotal(), 0.1);
     }
 
     @Test
     public void eRelDateLeFilterHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel(0,OWN.getrType(), Rel.Direction.L, null,0,0);
 
         RelProp prop = RelProp.of(0, END_DATE.type, Constraint.of(ConstraintOp.le, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(35, nodeStatistics.getTotal(), 0.1);
     }

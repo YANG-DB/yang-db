@@ -69,7 +69,7 @@ public class StatisticsMockUtils {
 
         });
         //mock statistics provider
-        when(mock.getEdgeFilterStatistics(any(), any())).thenAnswer(invocationOnMock -> {
+        when(mock.getEdgeFilterStatistics(any(), any(), any())).thenAnswer(invocationOnMock -> {
             Rel item = (Rel) invocationOnMock.getArguments()[0];
             RelPropGroup ePropGroup = (RelPropGroup) invocationOnMock.getArguments()[1];
 
@@ -88,7 +88,7 @@ public class StatisticsMockUtils {
             return new Statistics.SummaryStatistics(1, 1);
         });
 
-        when(mock.getEdgeStatistics(any())).thenAnswer(invocationOnMock -> {
+        when(mock.getEdgeStatistics(any(), any())).thenAnswer(invocationOnMock -> {
             Rel item = (Rel) invocationOnMock.getArguments()[0];
 
             if (item != null) {
