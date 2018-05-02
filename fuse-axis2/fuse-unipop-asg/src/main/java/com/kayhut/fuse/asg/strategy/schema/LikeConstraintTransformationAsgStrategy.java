@@ -1,6 +1,7 @@
 package com.kayhut.fuse.asg.strategy.schema;
 
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
+import com.kayhut.fuse.asg.strategy.schema.utils.LikeUtil;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
@@ -22,6 +23,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,88 +82,11 @@ public class LikeConstraintTransformationAsgStrategy implements AsgStrategy {
                     continue;
                 }
 
-                applyWildcardRules(ePropGroupAsgEBase.geteBase(), eProp, propertySchema.get());
+                Iterable<EProp> newEprops = LikeUtil.applyWildcardRules(eProp, propertySchema.get());
+                ePropGroupAsgEBase.geteBase().getProps().remove(eProp);
+                ePropGroupAsgEBase.geteBase().getProps().addAll(Stream.ofAll(newEprops).toJavaList());
             }
-
         });
-    }
-    //endregion
-
-    //region Private Methods
-    private void applyWildcardRules(EPropGroup ePropGroup, EProp eProp, GraphElementPropertySchema propertySchema) {
-        ePropGroup.getProps().remove(eProp);
-
-        Optional<GraphElementPropertySchema.ExactIndexingSchema> exactIndexingSchema = propertySchema.getIndexingSchema(exact);
-
-        String expr = (String) eProp.getCon().getExpr();
-        if (expr == null || expr.equals("")) {
-            ePropGroup.getProps().add(new SchematicEProp(
-                    eProp.geteNum(),
-                    eProp.getpType(),
-                    exactIndexingSchema.get().getName(),
-                    Constraint.of(ConstraintOp.eq, eProp.getCon().getExpr())));
-            return;
-        }
-
-        List<String> wildcardParts = Stream.of(expr.split("\\*")).filter(part -> !part.equals("")).toJavaList();
-
-        boolean prefix = !expr.startsWith("*");
-        boolean suffix = !expr.endsWith("*");
-        boolean exact = prefix && suffix && wildcardParts.size() == 1;
-
-        if (exact) {
-            ePropGroup.getProps().add(new SchematicEProp(
-                    eProp.geteNum(),
-                    eProp.getpType(),
-                    exactIndexingSchema.get().getName(),
-                    Constraint.of(ConstraintOp.eq, eProp.getCon().getExpr())));
-            return;
-        }
-
-        for (int wildcardPartIndex = 0; wildcardPartIndex < wildcardParts.size(); wildcardPartIndex++) {
-            String wildcardPart = wildcardParts.get(wildcardPartIndex);
-
-            if (wildcardPartIndex == 0 && prefix) {
-                ePropGroup.getProps().add(new SchematicEProp(
-                        eProp.geteNum(),
-                        eProp.getpType(),
-                        exactIndexingSchema.get().getName(),
-                        Constraint.of(ConstraintOp.like, wildcardParts.get(0) + "*")));
-
-            } else if (wildcardPartIndex == wildcardParts.size() - 1 && suffix) {
-                ePropGroup.getProps().add(new SchematicEProp(
-                        eProp.geteNum(),
-                        eProp.getpType(),
-                        exactIndexingSchema.get().getName(),
-                        Constraint.of(ConstraintOp.like, "*" + wildcardParts.get(wildcardParts.size() - 1))));
-
-            } else if (ngramsApplicable(eProp, propertySchema, wildcardPart)) {
-                ePropGroup.getProps().add(new SchematicEProp(
-                        eProp.geteNum(),
-                        eProp.getpType(),
-                        propertySchema.getIndexingSchema(ngrams).get().getName(),
-                        Constraint.of(ConstraintOp.eq, wildcardPart)));
-
-            } else {
-                ePropGroup.getProps().add(new SchematicEProp(
-                        eProp.geteNum(),
-                        eProp.getpType(),
-                        exactIndexingSchema.get().getName(),
-                        Constraint.of(ConstraintOp.like, "*" + wildcardParts.get(wildcardPartIndex) + "*")));
-            }
-        }
-    }
-
-    private boolean ngramsApplicable(EProp eProp, GraphElementPropertySchema propertySchema, String wildcardPart) {
-        Optional<GraphElementPropertySchema.NgramsIndexingSchema> ngramsIndexingSchema = propertySchema.getIndexingSchema(ngrams);
-
-        if (!wildcardPart.contains(" ") &&
-                ngramsIndexingSchema.isPresent() &&
-                wildcardPart.length() <= (ngramsIndexingSchema.get()).getMaxSize()) {
-            return true;
-        }
-
-        return false;
     }
     //endregion
 

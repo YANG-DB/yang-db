@@ -264,7 +264,8 @@ public class OntologyTestUtils {
                 get().build(START_DATE.type,START_DATE.name,DATE),
                 get().build(END_DATE.type,END_DATE.name,DATE),
                 get().build(TIMESTAMP.type,TIMESTAMP.name,DATE),
-                get().build(TEMPERATURE.type,TEMPERATURE.name,INT)));
+                get().build(TEMPERATURE.type,TEMPERATURE.name,INT),
+                get().build(COLOR.type, COLOR.name, TYPE_COLOR)));
 
         ontologyShortObj.setRelationshipTypes(Arrays.asList(
                 KNOW,

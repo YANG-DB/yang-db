@@ -22,31 +22,27 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
         AsgQueryUtil.<Quant1>elements(query, Quant1.class).forEach(quant -> {
-            if (quant.geteBase().getqType() == QuantType.all) {
-
                 List<AsgEBase<EProp>> ePropsAsgChildren = AsgQueryUtil.nextAdjacentDescendants(quant, EProp.class);
                 List<EProp> eProps = Stream.ofAll(ePropsAsgChildren).map(AsgEBase::geteBase).toJavaList();
 
                 if (eProps.size() > 0) {
-                    EPropGroup ePropGroup = new EPropGroup(eProps);
-                    ePropGroup.seteNum(Stream.ofAll(eProps).map(EProp::geteNum).min().get());
+                    EPropGroup ePropGroup = new EPropGroup(
+                            Stream.ofAll(eProps).map(EProp::geteNum).min().get(),
+                            quant.geteBase().getqType(),
+                            eProps);
+
                     ePropsAsgChildren.forEach(quant::removeNextChild);
                     quant.addNextChild(new AsgEBase<>(ePropGroup));
                 } else {
                     List<AsgEBase<EPropGroup>> ePropsGroupAsgChildren = AsgQueryUtil.nextAdjacentDescendants(quant, EPropGroup.class);
                     if (ePropsGroupAsgChildren.isEmpty()) {
-                        EPropGroup ePropGroup = new EPropGroup();
+                        EPropGroup ePropGroup = new EPropGroup(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get() + 1);
                         AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
-                        ePropGroup.seteNum(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get() + 1);
                         quant.addNextChild(ePropGroupAsgEbase);
                     }
                 }
-
-              }
             }
         );
     }
-
-
     //endregion
 }
