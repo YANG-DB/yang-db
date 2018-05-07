@@ -1,5 +1,6 @@
 package com.kayhut.fuse.asg.strategy.schema;
 
+import com.kayhut.fuse.asg.strategy.AsgElementStrategy;
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.asg.strategy.schema.utils.LikeUtil;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
@@ -10,6 +11,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
@@ -33,7 +35,7 @@ import static com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema.
 /**
  * Created by roman.margolis on 05/02/2018.
  */
-public class LikeConstraintTransformationAsgStrategy implements AsgStrategy {
+public class LikeConstraintTransformationAsgStrategy implements AsgStrategy, AsgElementStrategy<EPropGroup> {
     //region Constructors
     public LikeConstraintTransformationAsgStrategy(OntologyProvider ontologyProvider, GraphElementSchemaProviderFactory schemaProviderFactory) {
         this.ontologyProvider = ontologyProvider;
@@ -44,48 +46,8 @@ public class LikeConstraintTransformationAsgStrategy implements AsgStrategy {
     //region AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        Optional<Ontology> ontology = this.ontologyProvider.get(query.getOnt());
-        if (!ontology.isPresent()) {
-            return;
-        }
-
-        Ontology.Accessor ont = new Ontology.Accessor(ontology.get());
-        GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(ont.get());
-
         AsgQueryUtil.elements(query, EPropGroup.class).forEach(ePropGroupAsgEBase -> {
-            //currently supporting only ETyped or EConcrete
-            Optional<AsgEBase<ETyped>> eTypedAsgEBase = AsgQueryUtil.ancestor(ePropGroupAsgEBase, EEntityBase.class);
-            if (!eTypedAsgEBase.isPresent()) {
-                return;
-            }
-
-            for (EProp eProp : new ArrayList<>(ePropGroupAsgEBase.geteBase().getProps())) {
-                if (!eProp.getCon().getOp().equals(ConstraintOp.like)) {
-                    continue;
-                }
-
-                Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(eTypedAsgEBase.get().geteBase().geteType());
-                if (Stream.ofAll(vertexSchemas).isEmpty()) {
-                    continue;
-                }
-
-                // currently supports a single vertex schema
-                GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
-
-                Optional<Property> property = ont.$property(eProp.getpType());
-                if (!property.isPresent()) {
-                    continue;
-                }
-
-                Optional<GraphElementPropertySchema> propertySchema = vertexSchema.getProperty(property.get().getName());
-                if (!propertySchema.isPresent()) {
-                    continue;
-                }
-
-                Iterable<EProp> newEprops = LikeUtil.applyWildcardRules(eProp, propertySchema.get());
-                ePropGroupAsgEBase.geteBase().getProps().remove(eProp);
-                ePropGroupAsgEBase.geteBase().getProps().addAll(Stream.ofAll(newEprops).toJavaList());
-            }
+            apply(query, ePropGroupAsgEBase, context);
         });
     }
     //endregion
@@ -93,5 +55,51 @@ public class LikeConstraintTransformationAsgStrategy implements AsgStrategy {
     //region Fields
     private GraphElementSchemaProviderFactory schemaProviderFactory;
     private OntologyProvider ontologyProvider;
+
+    @Override
+    public void apply(AsgQuery query, AsgEBase<EPropGroup> ePropGroupAsgEBase, AsgStrategyContext context) {
+        Optional<Ontology> ontology = this.ontologyProvider.get(query.getOnt());
+        if (!ontology.isPresent()) {
+            return;
+        }
+
+        Ontology.Accessor ont = new Ontology.Accessor(ontology.get());
+        GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(ont.get());
+        //currently supporting only ETyped or EConcrete
+        Optional<AsgEBase<ETyped>> eTypedAsgEBase = AsgQueryUtil.ancestor(ePropGroupAsgEBase, EEntityBase.class);
+        if (!eTypedAsgEBase.isPresent()) {
+            return;
+        }
+
+        for (EProp eProp : new ArrayList<>(ePropGroupAsgEBase.geteBase().getProps())) {
+            if (!eProp.getCon().getOp().equals(ConstraintOp.like)) {
+                continue;
+            }
+
+            Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(eTypedAsgEBase.get().geteBase().geteType());
+            if (Stream.ofAll(vertexSchemas).isEmpty()) {
+                continue;
+            }
+
+            // currently supports a single vertex schema
+            GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
+
+            Optional<Property> property = ont.$property(eProp.getpType());
+            if (!property.isPresent()) {
+                continue;
+            }
+
+            Optional<GraphElementPropertySchema> propertySchema = vertexSchema.getProperty(property.get().getName());
+            if (!propertySchema.isPresent()) {
+                continue;
+            }
+
+            Iterable<EProp> newEprops = LikeUtil.applyWildcardRules(eProp, propertySchema.get());
+            ePropGroupAsgEBase.geteBase().getProps().remove(eProp);
+            ePropGroupAsgEBase.geteBase().getProps().addAll(Stream.ofAll(newEprops).toJavaList());
+        }
+
+
+    }
     //endregion
 }
