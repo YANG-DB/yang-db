@@ -6,7 +6,7 @@ import com.kayhut.fuse.model.query.properties.projection.Projection;
 /**
  * Eprop with a boost to rank the query results according to the desired boost
  */
-public class ScoreEProp extends EProp implements RankingEProp {
+public class ScoreEProp extends EProp implements RankingProp {
     //region Constructors
     public ScoreEProp(EProp eProp, long boost) {
         this(eProp.geteNum(),eProp.getpType(),eProp.getCon(),boost);

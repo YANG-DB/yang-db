@@ -47,7 +47,8 @@ public class QueryBuilder {
         exists,
         queryBuilderFilter,
         param,
-        geoShape
+        geoShape,
+        boost
     }
 
     private enum SeekMode {

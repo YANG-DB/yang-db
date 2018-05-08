@@ -1,21 +1,13 @@
 package com.kayhut.fuse.assembly.knowlegde;
 
-import com.kayhut.fuse.asg.strategy.AsgElementStrategy;
 import com.kayhut.fuse.asg.strategy.AsgPredicateRoutingStrategy;
 import com.kayhut.fuse.asg.strategy.RuleBoostProvider;
 import com.kayhut.fuse.asg.strategy.schema.LikeConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import javaslang.collection.HashSet;
 import javaslang.collection.Stream;
-
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<EPropGroup> {
     public static HashSet<String> fieldNames = HashSet.of("title").add("nicknames");

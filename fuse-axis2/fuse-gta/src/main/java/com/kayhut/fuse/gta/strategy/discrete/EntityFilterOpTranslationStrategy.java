@@ -18,11 +18,10 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.SchematicEProp;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
+import com.kayhut.fuse.unipop.step.BoostingStepWrapper;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
@@ -193,19 +192,30 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
                 .map(eprop -> convertEPropToTraversal(eprop, ont))
                 .toJavaList();
 
-        Traversal[] traversals = Stream.ofAll(epropTraversals).appendAll(childGroupTraversals).toJavaArray(Traversal.class);
 
+        Stream<Traversal> traversalStream = Stream.ofAll(epropTraversals).appendAll(childGroupTraversals);
+
+        Traversal[] traversals = traversalStream.toJavaArray(Traversal.class);
+
+        Traversal ret;
         switch (ePropGroup.getQuantType()) {
             case all:
                 if (traversals.length == 1) {
-                    return traversals[0];
+                    ret = traversals[0];
+                }else {
+                    ret = __.and(traversals);
                 }
-
-                return __.and(traversals);
-            case some: __.or(traversals);
-
-            default: return __.and(traversals);
+                break;
+            case some: ret = __.or(traversals);
+            break;
+            default: ret =__.and(traversals);
         }
+
+        if(ePropGroup instanceof RankingProp){
+            GraphTraversal.Admin admin = __.start().asAdmin();
+            ret = admin.addStep(new BoostingStepWrapper(ret.asAdmin().getEndStep(), ((RankingProp) ePropGroup).getBoost()));
+        }
+        return ret;
     }
 
     private Traversal convertEPropToTraversal(EProp eProp, Ontology.Accessor ont) {
@@ -217,7 +227,13 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
         String actualPropertyName = SchematicEProp.class.isAssignableFrom(eProp.getClass()) ?
                 ((SchematicEProp)eProp).getSchematicName() : property.get().getName();
 
-        return __.has(actualPropertyName, ConversionUtil.convertConstraint(eProp.getCon()));
+        GraphTraversal<Object, Object> traversal = __.has(actualPropertyName, ConversionUtil.convertConstraint(eProp.getCon()));
+        if(eProp instanceof RankingProp){
+            GraphTraversal.Admin admin = __.start().asAdmin();
+            traversal = admin.addStep(new BoostingStepWrapper<>(traversal.asAdmin().getEndStep(), ((RankingProp) eProp).getBoost()));
+        }
+        return traversal;
+
     }
 
     private boolean isFilterVertexStep(VertexStep vertexStep) {

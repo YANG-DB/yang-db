@@ -8,7 +8,7 @@ import com.kayhut.fuse.model.query.quant.QuantType;
  *   - boosting of the group will be applied with a specific rule that will calculate the entire group's
  *     ranking taking into account each ScoreEProp element within the group
  */
-public class ScoreEPropGroup extends EPropGroup {
+public class ScoreEPropGroup extends EPropGroup implements RankingProp {
 
     public ScoreEPropGroup(long boost) {
         this.boost = boost;
@@ -17,6 +17,10 @@ public class ScoreEPropGroup extends EPropGroup {
     public ScoreEPropGroup(int eNum, long boost) {
         super(eNum);
         this.boost = boost;
+    }
+
+    public ScoreEPropGroup(EPropGroup group, long boost) {
+        this(group.geteNum(),group.quantType,group.props,group.groups,boost);
     }
 
     public ScoreEPropGroup(long boost, EProp... props) {
