@@ -229,17 +229,28 @@ public class AsgRankingPropagationGroupingStrategyTest {
         assertTrue(groupElement.get().geteBase() instanceof ScoreEPropGroup);
         ScoreEPropGroup group = (ScoreEPropGroup) groupElement.get().geteBase();
         assertEquals(group.getBoost(),1 );
+
+        //group 3
         EPropGroup innerGroup = group.getGroups().get(0);
         assertTrue(innerGroup instanceof ScoreEPropGroup);
         assertEquals(((ScoreEPropGroup) innerGroup).getBoost(),1 );
+
+        //group 5
         innerGroup = innerGroup.getGroups().get(0);
-        assertFalse(innerGroup instanceof ScoreEPropGroup);
-        innerGroup = innerGroup.getGroups().get(1);
         assertTrue(innerGroup instanceof ScoreEPropGroup);
-        assertEquals(((ScoreEPropGroup) innerGroup).getBoost(),1 );
+
+        //group 9
+        assertFalse(innerGroup.getGroups().get(0) instanceof ScoreEPropGroup);
+
+        //group 8
+        assertTrue(innerGroup.getGroups().get(1) instanceof ScoreEPropGroup);
+
+        //group 2
         innerGroup = group.getGroups().get(1);
         assertTrue(innerGroup instanceof ScoreEPropGroup);
         assertEquals(((ScoreEPropGroup) innerGroup).getBoost(),1 );
+
+        //group 7
         innerGroup = innerGroup.getGroups().get(1);
         assertTrue(innerGroup instanceof ScoreEPropGroup);
         assertEquals(((ScoreEPropGroup) innerGroup).getBoost(),1 );
