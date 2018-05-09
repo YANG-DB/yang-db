@@ -56,6 +56,9 @@
         "elapsedFrom": {
           "type": "integer"
         },
+        "elasticElapsedTotal": {
+          "type": "integer"
+        },
         "requestId": {
           "type": "keyword"
         },
