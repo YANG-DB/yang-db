@@ -84,6 +84,12 @@
 
         <!-- tests-->
         <dependency>
+            <groupId>org.kayhut</groupId>
+            <artifactId>fuse-model</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>

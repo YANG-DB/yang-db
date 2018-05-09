@@ -27,6 +27,9 @@ public class BoostingStepWrapper<S,E> implements Step<S,E> {
         return boosting;
     }
 
+    public Step<S, E> getInnerStep() {
+        return innerStep;
+    }
 
     @Override
     public void addStarts(Iterator<Traverser.Admin<S>> starts) {
@@ -111,6 +114,14 @@ public class BoostingStepWrapper<S,E> implements Step<S,E> {
     @Override
     public Traverser.Admin<E> next() {
         return innerStep.next();
+    }
+
+    @Override
+    public String toString() {
+        return "BoostingStepWrapper{" +
+                "innerStep=" + innerStep +
+                ", boosting=" + boosting +
+                '}';
     }
 
     private Step<S,E> innerStep;

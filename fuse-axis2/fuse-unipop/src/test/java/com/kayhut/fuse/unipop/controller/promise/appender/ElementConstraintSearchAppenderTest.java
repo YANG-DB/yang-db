@@ -62,7 +62,32 @@ public class ElementConstraintSearchAppenderTest {
 
         Assert.assertTrue(appendResult);
         JSONAssert.assertEquals(
-                "{\"bool\":{\"must\":[{\"match_all\":{\"boost\":1}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"dragon\",\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}",
+                "{\n" +
+                        "  \"bool\" : {\n" +
+                        "    \"filter\" : [\n" +
+                        "      {\n" +
+                        "        \"bool\" : {\n" +
+                        "          \"must\" : [\n" +
+                        "            {\n" +
+                        "              \"term\" : {\n" +
+                        "                \"type\" : {\n" +
+                        "                  \"value\" : \"dragon\",\n" +
+                        "                  \"boost\" : 1.0\n" +
+                        "                }\n" +
+                        "              }\n" +
+                        "            }\n" +
+                        "          ],\n" +
+                        "          \"disable_coord\" : false,\n" +
+                        "          \"adjust_pure_negative\" : true,\n" +
+                        "          \"boost\" : 1.0\n" +
+                        "        }\n" +
+                        "      }\n" +
+                        "    ],\n" +
+                        "    \"disable_coord\" : false,\n" +
+                        "    \"adjust_pure_negative\" : true,\n" +
+                        "    \"boost\" : 1.0\n" +
+                        "  }\n" +
+                        "}",
                 searchBuilder.getQueryBuilder().getQuery().toString(),
                 JSONCompareMode.LENIENT);
     }
@@ -83,7 +108,58 @@ public class ElementConstraintSearchAppenderTest {
 
         Assert.assertTrue(appendResult);
         JSONAssert.assertEquals(
-                "{\"bool\":{\"must\":[{\"match_all\":{\"boost\":1}}],\"filter\":[{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"dragon\",\"boost\":1}}},{\"term\":{\"name\":{\"value\":\"Drogar\",\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}",
+                "{\n" +
+                        "  \"bool\" : {\n" +
+                        "    \"filter\" : [\n" +
+                        "      {\n" +
+                        "        \"bool\" : {\n" +
+                        "          \"must\" : [\n" +
+                        "            {\n" +
+                        "              \"bool\" : {\n" +
+                        "                \"filter\" : [\n" +
+                        "                  {\n" +
+                        "                    \"bool\" : {\n" +
+                        "                      \"must\" : [\n" +
+                        "                        {\n" +
+                        "                          \"term\" : {\n" +
+                        "                            \"type\" : {\n" +
+                        "                              \"value\" : \"dragon\",\n" +
+                        "                              \"boost\" : 1.0\n" +
+                        "                            }\n" +
+                        "                          }\n" +
+                        "                        },\n" +
+                        "                        {\n" +
+                        "                          \"term\" : {\n" +
+                        "                            \"name\" : {\n" +
+                        "                              \"value\" : \"Drogar\",\n" +
+                        "                              \"boost\" : 1.0\n" +
+                        "                            }\n" +
+                        "                          }\n" +
+                        "                        }\n" +
+                        "                      ],\n" +
+                        "                      \"disable_coord\" : false,\n" +
+                        "                      \"adjust_pure_negative\" : true,\n" +
+                        "                      \"boost\" : 1.0\n" +
+                        "                    }\n" +
+                        "                  }\n" +
+                        "                ],\n" +
+                        "                \"disable_coord\" : false,\n" +
+                        "                \"adjust_pure_negative\" : true,\n" +
+                        "                \"boost\" : 1.0\n" +
+                        "              }\n" +
+                        "            }\n" +
+                        "          ],\n" +
+                        "          \"disable_coord\" : false,\n" +
+                        "          \"adjust_pure_negative\" : true,\n" +
+                        "          \"boost\" : 1.0\n" +
+                        "        }\n" +
+                        "      }\n" +
+                        "    ],\n" +
+                        "    \"disable_coord\" : false,\n" +
+                        "    \"adjust_pure_negative\" : true,\n" +
+                        "    \"boost\" : 1.0\n" +
+                        "  }\n" +
+                        "}",
                 searchBuilder.getQueryBuilder().getQuery().toString(),
                 JSONCompareMode.LENIENT);
     }

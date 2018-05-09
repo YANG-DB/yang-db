@@ -40,8 +40,7 @@ public class EdgeBulkSearchAppender extends SearchQueryAppenderBase<VertexContro
         // currently, taking the first id field for query
         // TODO: add support for querying multiple id fields
         String idField = Stream.ofAll(endSchema.getIdFields()).get(0);
-
-        queryBuilder.seekRoot().query().filtered().filter().bool().must()
+        queryBuilder.seekRoot().query().bool().filter().bool().must()
                 .terms(idField,
                         idField,
                         Stream.ofAll(context.getBulkVertices()).map(vertex -> vertex.id().toString()).toJavaList());

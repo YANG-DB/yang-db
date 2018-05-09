@@ -58,7 +58,7 @@ public class DualEdgeDirectionSearchAppender extends SearchQueryAppenderBase<Ver
         }
 
         TraversalQueryTranslator traversalQueryTranslator =
-                new TraversalQueryTranslator(queryBuilder.seekRoot().query().filtered().filter().bool().must(), false);
+                new TraversalQueryTranslator(queryBuilder.seekRoot().query().bool().filter().bool().must(), false);
         traversalQueryTranslator.visit(directionConstraint);
         return true;
     }
