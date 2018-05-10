@@ -115,14 +115,14 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
                 constraintTraversal = __.has(T.label, P.within(eTypeNames));
             }
 
-            List<Traversal> epropTraversals =
-                    Stream.ofAll(ePropGroup.getProps())
-                            .filter(eProp -> eProp.getCon() != null)
-                            .map(eProp -> convertEPropToTraversal(eProp, ont)).toJavaList();
+            List<Traversal> epropGroupTraversals = Collections.emptyList();
+            if (!ePropGroup.getProps().isEmpty() || !ePropGroup.getGroups().isEmpty()) {
+                epropGroupTraversals = Collections.singletonList(convertEPropGroupToTraversal(ePropGroup, ont));
+            }
 
-            if (!epropTraversals.isEmpty()) {
-                epropTraversals.add(0, constraintTraversal);
-                constraintTraversal = __.and(Stream.ofAll(epropTraversals).toJavaArray(Traversal.class));
+            if (!epropGroupTraversals.isEmpty()) {
+                List<Traversal> traversals = Stream.of(constraintTraversal).appendAll(epropGroupTraversals).toJavaList();
+                constraintTraversal = __.and(Stream.ofAll(traversals).toJavaArray(Traversal.class));
             }
 
             traversal.has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal));
@@ -142,12 +142,12 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
             entityTraversals = Collections.singletonList(getEntityFilterTraversal(entity, ont));
         }
 
-        List<Traversal> epropTraversals =
-                Stream.ofAll(ePropGroup.getProps())
-                        .filter(eProp -> eProp.getCon() != null)
-                        .map(eProp -> convertEPropToTraversal(eProp, ont)).toJavaList();
+        List<Traversal> epropGroupTraversals = Collections.emptyList();
+        if (!ePropGroup.getProps().isEmpty() || !ePropGroup.getGroups().isEmpty()) {
+            epropGroupTraversals = Collections.singletonList(convertEPropGroupToTraversal(ePropGroup, ont));
+        }
 
-        List<Traversal> traversals = Stream.ofAll(entityTraversals).appendAll(epropTraversals).toJavaList();
+        List<Traversal> traversals = Stream.ofAll(entityTraversals).appendAll(epropGroupTraversals).toJavaList();
         if (traversals.isEmpty()) {
             return traversal;
         }
@@ -181,6 +181,31 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
         }
 
         return null;
+    }
+
+    private Traversal convertEPropGroupToTraversal(EPropGroup ePropGroup, Ontology.Accessor ont) {
+        List<Traversal> childGroupTraversals = Stream.ofAll(ePropGroup.getGroups())
+                .map(childGroup -> convertEPropGroupToTraversal(childGroup, ont))
+                .toJavaList();
+
+        List<Traversal> epropTraversals = Stream.ofAll(ePropGroup.getProps())
+                .filter(eProp -> eProp.getCon() != null)
+                .map(eprop -> convertEPropToTraversal(eprop, ont))
+                .toJavaList();
+
+        Traversal[] traversals = Stream.ofAll(epropTraversals).appendAll(childGroupTraversals).toJavaArray(Traversal.class);
+
+        switch (ePropGroup.getQuantType()) {
+            case all:
+                if (traversals.length == 1) {
+                    return traversals[0];
+                }
+
+                return __.and(traversals);
+            case some: __.or(traversals);
+
+            default: return __.and(traversals);
+        }
     }
 
     private Traversal convertEPropToTraversal(EProp eProp, Ontology.Accessor ont) {

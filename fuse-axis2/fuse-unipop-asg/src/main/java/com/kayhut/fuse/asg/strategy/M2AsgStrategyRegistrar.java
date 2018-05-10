@@ -1,14 +1,13 @@
 package com.kayhut.fuse.asg.strategy;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.asg.strategy.constraint.ConstraintIterableTransformationAsgStrategy;
-import com.kayhut.fuse.asg.strategy.constraint.ConstraintTypeTransformationAsgStrategy;
-import com.kayhut.fuse.asg.strategy.constraint.RedundantLikeConstraintAsgStrategy;
+import com.kayhut.fuse.asg.strategy.constraint.*;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.EntityPropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.HQuantifierPropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.Quant1PropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.schema.ExactConstraintTransformationAsgStrategy;
+import com.kayhut.fuse.asg.strategy.schema.LikeAnyConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.asg.strategy.schema.LikeConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
 import com.kayhut.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
@@ -43,8 +42,12 @@ public class M2AsgStrategyRegistrar  implements AsgStrategyRegistrar {
                 new ConstraintTypeTransformationAsgStrategy(),
                 new ConstraintIterableTransformationAsgStrategy(),
                 new RedundantLikeConstraintAsgStrategy(),
+                new RedundantLikeAnyConstraintAsgStrategy(),
                 new ExactConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 new LikeConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
+                new LikeAnyConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
+                new RedundantInSetConstraintAsgStrategy(),
+                new RedundantPropGroupAsgStrategy(),
                 new DefaultSelectionAsgStrategy(this.ontologyProvider)
         );
     }

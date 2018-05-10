@@ -67,15 +67,18 @@ public class LoggingQueryController implements QueryController {
         ContentResponse<QueryResourceInfo> response = null;
 
         try {
+            this.metricRegistry.counter(name(this.logger.getName(), "count")).inc();
             new LogMessage.Impl(this.logger, trace, "start create", LogType.of(start), create).log();
             response = this.controller.create(request);
             new LogMessage.Impl(this.logger, info, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
             new LogMessage.Impl(this.logger, trace, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), "create", "success")).mark();
+            this.metricRegistry.counter(name(this.logger.getName(), "count")).dec();
         } catch (Exception ex) {
             new LogMessage.Impl(this.logger, error, "failed create", LogType.of(failure), create, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "failure")).mark();
+            this.metricRegistry.counter(name(this.logger.getName(), "count")).dec();
             response = ContentResponse.internalError(ex);
         }
 

@@ -1,26 +1,33 @@
 package com.kayhut.fuse.unipop.converter;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.search.*;
+import com.kayhut.fuse.dispatcher.logging.ElapsedFrom;
+import com.kayhut.fuse.dispatcher.logging.LogMessage;
+import com.kayhut.fuse.dispatcher.logging.LogType;
+import com.kayhut.fuse.dispatcher.logging.MethodName;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.concurrent.TimeUnit;
 
-import static com.codahale.metrics.MetricRegistry.name;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
+import static com.kayhut.fuse.dispatcher.logging.LogType.log;
 
 /**
  * Created by r on 3/16/2015.
  */
 public class SearchHitScrollIterable implements Iterable<SearchHit> {
+    private final static Logger logger = LoggerFactory.getLogger(SearchHitScrollIterable.class);
+    private static MethodName.MDCWriter searchHitScrollIterable = MethodName.of("SearchHitScrollIterable()");
+
     //region Constructor
     public SearchHitScrollIterable(
             Client client,
@@ -33,6 +40,8 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
         this.scrollSize = scrollSize;
         this.scrollTime = scrollTime;
         this.client = client;
+        //log elastic query
+        new LogMessage.Impl(logger, trace, searchRequestBuilder.toString(), LogType.of(log), searchHitScrollIterable, ElapsedFrom.now()).log();
     }
     //endregion
 
@@ -157,7 +166,6 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
         private SearchHitScrollIterable iterable;
         private ArrayList<SearchHit> searchHits;
         private String scrollId;
-
         private long counter;
         //endregion
     }

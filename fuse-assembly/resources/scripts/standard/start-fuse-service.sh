@@ -1,6 +1,7 @@
+#!/bin/sh
 mainClass=com.kayhut.fuse.services.FuseRunner
 configFile=config/application.conf
-classPath=".;lib/*"
+classPath=".:lib/*"
 activeProfile=activeProfile
 logbackConfigurationFilename=config/logback.xml
 heapSize=1g

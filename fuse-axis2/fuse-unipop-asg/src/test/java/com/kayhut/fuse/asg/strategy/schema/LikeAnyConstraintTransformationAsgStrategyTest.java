@@ -9,11 +9,12 @@ import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
-import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.SchematicEProp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -28,13 +29,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.ePropGroup;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.quant1;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
-/**
- * Created by roman.margolis on 05/02/2018.
- */
-public class LikeConstraintTransofrmationAsgStrategyTest {
+public class LikeAnyConstraintTransformationAsgStrategyTest {
     //region Setup
     @BeforeClass
     public static void setup() {
@@ -77,7 +77,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
 
         GraphElementSchemaProviderFactory schemaProviderFactory = ontology1 -> schemaProvider;
 
-        asgStrategy = new LikeConstraintTransformationAsgStrategy(ontologyProvider, schemaProviderFactory);
+        asgStrategy = new LikeAnyConstraintTransformationAsgStrategy(ontologyProvider, schemaProviderFactory);
         context = new AsgStrategyContext(new Ontology.Accessor(ontology));
     }
     //endregion
@@ -88,15 +88,23 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "Sherley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "Sherley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
-        EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.eq, "Sherley"))));
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.singletonList(
+                                        new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))
+                                ),
+                                Collections.emptyList())));
 
         Assert.assertEquals(expected, actual);
     }
@@ -106,15 +114,23 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "*Sherley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "*Sherley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
-        EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*Sherley"))));
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.emptyList(),
+                                Collections.singletonList(
+                                        new EPropGroup(3, new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*Sherley")))))));
+
 
         Assert.assertEquals(expected, actual);
     }
@@ -124,16 +140,25 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "She*rley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "She*rley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
-        EPropGroup expected = new EPropGroup(3, Arrays.asList(
-                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
-                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley"))));
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.emptyList(),
+                                Collections.singletonList(
+                                        new EPropGroup(3,
+                                                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
+                                                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley")))))));
+
 
         Assert.assertEquals(expected, actual);
     }
@@ -143,15 +168,24 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "Sherley*"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "Sherley*"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
-        EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "Sherley*"))));
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.emptyList(),
+                                Collections.singletonList(
+                                        new EPropGroup(3,
+                                                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "Sherley*")))))));
+
 
         Assert.assertEquals(expected, actual);
     }
@@ -161,16 +195,25 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "*She*rley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "*She*rley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
-        EPropGroup expected = new EPropGroup(3, Arrays.asList(
-                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "She")),
-                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley"))));
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.emptyList(),
+                                Collections.singletonList(
+                                        new EPropGroup(3,
+                                                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "She")),
+                                                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley")))))));
+
 
         Assert.assertEquals(expected, actual);
     }
@@ -180,15 +223,23 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "*Sherley*"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "*Sherley*"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
-        EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "Sherley"))));
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.singletonList(
+                                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))
+                                ),
+                                Collections.emptyList())));
 
         Assert.assertEquals(expected, actual);
     }
@@ -198,16 +249,25 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "She*rley*"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "She*rley*"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
-        EPropGroup expected = new EPropGroup(3, Arrays.asList(
-                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
-                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "rley"))));
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.emptyList(),
+                                Collections.singletonList(
+                                        new EPropGroup(3,
+                                                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
+                                                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "rley")))))));
+
 
         Assert.assertEquals(expected, actual);
     }
@@ -217,15 +277,24 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "**Sherley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "**Sherley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
-        EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*Sherley"))));
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.emptyList(),
+                                Collections.singletonList(
+                                        new EPropGroup(3,
+                                                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*Sherley")))))));
+
 
         Assert.assertEquals(expected, actual);
     }
@@ -235,16 +304,25 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "She**rley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "She**rley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
-        EPropGroup expected = new EPropGroup(3, Arrays.asList(
-                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
-                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley"))));
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.emptyList(),
+                                Collections.singletonList(
+                                        new EPropGroup(3,
+                                                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "She*")),
+                                                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*rley")))))));
+
 
         Assert.assertEquals(expected, actual);
     }
@@ -254,15 +332,24 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "Sherley**"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "Sherley**"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
-        EPropGroup expected = new EPropGroup(3, Collections.singletonList(
-                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "Sherley*"))));
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.emptyList(),
+                                Collections.singletonList(
+                                        new EPropGroup(3,
+                                                new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "Sherley*")))))));
+
 
         Assert.assertEquals(expected, actual);
     }
@@ -272,7 +359,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "**"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "**"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -286,16 +373,24 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "*She*rley*"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, "*She*rley*"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
 
-        EPropGroup expected = new EPropGroup(3, Arrays.asList(
-                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "She")),
-                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "rley"))));
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.emptyList(),
+                                Collections.singletonList(
+                                        new EPropGroup(3,
+                                                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "She")),
+                                                new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "rley")))))));
 
         Assert.assertEquals(expected, actual);
     }
