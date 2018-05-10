@@ -285,6 +285,69 @@ public class KnowledgeDataInfraManager  {
         _entitiesValues.add(_mapper.writeValueAsString(on));
     }
 
+    private final String cInsight = "insight";
+    private List<String> _insights;
+
+    private void PrepareInsights() throws JsonProcessingException {
+        int id = 1;
+        String insightId = "i" + String.format(schema.getIdFormat("insight"), id);
+
+        ObjectNode on = _mapper.createObjectNode();
+        on.put("type", cInsight);
+        on.put("content", "Very important, superb insight");
+        on.put("context", "context1");
+
+        ArrayNode entityIds = _mapper.createArrayNode();
+        entityIds.add("e" + String.format(schema.getIdFormat("entity"), 1));
+
+        on.put("entityIds", entityIds);
+
+        ArrayNode authNode = _mapper.createArrayNode();
+        authNode.add("source1.procedure1");
+        authNode.add("source2.procedure2");
+
+        ArrayNode refsNode = _mapper.createArrayNode();
+        refsNode.add("ref" + String.format(schema.getIdFormat("reference"), 1));
+
+        on.put("refs", refsNode);
+        on.put("authorization", authNode);
+        on.put("authorizationCount", 1);
+        on.put("lastUpdateUser", "Michal");
+        on.put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())));
+        on.put("creationUser", "Hana");
+        on.put("creationTime", sdf.format(new Date(System.currentTimeMillis())));
+
+        _insights.add(_mapper.writeValueAsString(on));
+
+        on = _mapper.createObjectNode();
+        on.put("type", cInsight);
+        on.put("content", "Quite poor, and mostly unuseful insight just tobe tested");
+        on.put("context", "context1");
+
+        entityIds = _mapper.createArrayNode();
+        entityIds.add("e" + String.format(schema.getIdFormat("entity"), 1));
+        entityIds.add("e" + String.format(schema.getIdFormat("entity"), 2));
+
+        on.put("entityIds", entityIds);
+
+        authNode = _mapper.createArrayNode();
+        authNode.add("source1.procedure1");
+        authNode.add("source2.procedure2");
+
+        refsNode = _mapper.createArrayNode();
+        refsNode.add("ref" + String.format(schema.getIdFormat("reference"), 1));
+        refsNode.add("ref" + String.format(schema.getIdFormat("reference"), 2));
+
+        on.put("refs", refsNode);
+        on.put("authorization", authNode);
+        on.put("authorizationCount", 1);
+        on.put("lastUpdateUser", "Michal");
+        on.put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())));
+        on.put("creationUser", "Eve");
+        on.put("creationTime", sdf.format(new Date(System.currentTimeMillis())));
+        _insights.add(_mapper.writeValueAsString(on));
+    }
+
     private final String cReference = "reference";
     private final String cIndexType = "pge";
 
@@ -1057,6 +1120,7 @@ public class KnowledgeDataInfraManager  {
         }
         count += bulk.execute().actionGet().getItems().length;*/
 
+        PrepareInsights();
         // Insights
         /*bulk = client.prepareBulk();
         int iId = 0;
