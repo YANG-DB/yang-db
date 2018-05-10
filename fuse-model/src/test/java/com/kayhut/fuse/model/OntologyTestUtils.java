@@ -33,6 +33,7 @@ public class OntologyTestUtils {
     public static Property HEIGHT = new Property("height", INT, "height");
     public static Property NAME = new Property("name", STRING, "name");
     public static Property COLOR = new Property("color", TYPE_COLOR, "color");
+    public static Property POWER = new Property("power", INT, "power");
 
     public static Property START_DATE = new Property("startDate", DATE, "startDate");
     public static Property END_DATE = new Property("endDate", DATE, "endDate");

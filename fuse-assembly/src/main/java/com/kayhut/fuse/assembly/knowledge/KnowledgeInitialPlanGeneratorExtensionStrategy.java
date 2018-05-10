@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowlegde;
+package com.kayhut.fuse.assembly.knowledge;
 
 import com.kayhut.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;

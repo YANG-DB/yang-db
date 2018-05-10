@@ -1,5 +1,6 @@
-package com.kayhut.fuse.services.engine2.data;
+package com.kayhut.fuse.assembly.knowledge.service;
 
+import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -9,7 +10,9 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -26,7 +29,6 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.services.TestsConfiguration;
-import com.kayhut.fuse.services.engine2.JoinE2ETestSuite;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
@@ -47,32 +49,23 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.OntologyTestUtils.BIRTH_DATE;
-import static com.kayhut.fuse.model.OntologyTestUtils.GENDER;
-import static com.kayhut.test.data.DragonsOntology.*;
-import static com.kayhut.test.data.DragonsOntology.COLOR;
-import static com.kayhut.test.data.DragonsOntology.FIRE;
-import static com.kayhut.test.data.DragonsOntology.NAME;
-import static com.kayhut.test.data.DragonsOntology.POWER;
-import static com.kayhut.test.data.DragonsOntology.TEMPERATURE;
-import static com.kayhut.test.data.DragonsOntology.TIMESTAMP;
+import static com.kayhut.test.data.DragonsOntology.KING;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
-public class JoinE2ETests {
+@Ignore
+public class RankingScoreBasedE2ETests {
     @BeforeClass
     public static void setup() throws Exception {
-        setup(JoinE2ETestSuite.elasticEmbeddedNode.getClient(), true);
+        setup(KnowledgeE2ETestSuite.elasticEmbeddedNode.getClient(), true);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        cleanup(JoinE2ETestSuite.elasticEmbeddedNode.getClient());
+        cleanup(KnowledgeE2ETestSuite.elasticEmbeddedNode.getClient());
     }
-
 
     public static void setup(TransportClient client, boolean calcStats) throws Exception {
         fuseClient = new FuseClient("http://localhost:8888/fuse");
@@ -186,9 +179,6 @@ public class JoinE2ETests {
             client.admin().indices().refresh(new RefreshRequest("stat")).actionGet();
         }
     }
-
-
-
 
     public static void cleanup(TransportClient client) throws Exception {
         cleanup(client, true);
@@ -378,13 +368,13 @@ public class JoinE2ETests {
         int counter = 0;
         for(int i = 0;i<numDragons;i++){
             Map<String, Object> originEdgeOut = new HashMap<>();
-            originEdgeOut.put("id", ORIGINATED_IN.getName() + counter);
-            originEdgeOut.put("type", ORIGINATED_IN.getName());
+            originEdgeOut.put("id", OntologyTestUtils.ORIGINATED_IN.getName() + counter);
+            originEdgeOut.put("type", OntologyTestUtils.ORIGINATED_IN.getName());
             originEdgeOut.put("direction", Direction.OUT.name());
 
             Map<String, Object> originEdgeIn = new HashMap<>();
-            originEdgeIn.put("id", ORIGINATED_IN.getName() + counter+1);
-            originEdgeIn.put("type", ORIGINATED_IN.getName());
+            originEdgeIn.put("id", OntologyTestUtils.ORIGINATED_IN.getName() + counter+1);
+            originEdgeIn.put("type", OntologyTestUtils.ORIGINATED_IN.getName());
             originEdgeIn.put("direction", Direction.IN.name());
 
 
@@ -434,7 +424,7 @@ public class JoinE2ETests {
                         new EProp(0, NAME.type, new IdentityProjection()),
                         new EProp(0, BIRTH_DATE.type, new IdentityProjection()),
                         new EProp(0, POWER.type, new IdentityProjection()),
-                        new EProp(0, GENDER.type, new IdentityProjection()),
+                        new EProp(0, OntologyTestUtils.GENDER.type, new IdentityProjection()),
                         new EProp(0, COLOR.type, new IdentityProjection())))),
                 new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(201,
@@ -442,11 +432,8 @@ public class JoinE2ETests {
                 new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
                 new EntityFilterOp(new AsgEBase<>(new EPropGroup(102,
                         new EProp(0, NAME.type, new IdentityProjection()),
-                        new EProp(0, KING.type, new IdentityProjection()),
-                        new EProp(0, QUEEN.type, new IdentityProjection()),
-                        new EProp(0, INDEPENDENCE_DAY.type, new IdentityProjection()),
-                        new EProp(0, FUNDS.type, new IdentityProjection()))))
-        );
+                        new EProp(0, KING.type, new IdentityProjection())))));
+
         Rel rel = (Rel) query.getElements().get(5).clone();
         rel.setDir(Rel.Direction.R);
         Plan rightBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
@@ -455,18 +442,14 @@ public class JoinE2ETests {
                         new EProp(0, NAME.type, new IdentityProjection()),
                         new EProp(0, BIRTH_DATE.type, new IdentityProjection()),
                         new EProp(0, POWER.type, new IdentityProjection()),
-                        new EProp(0, GENDER.type, new IdentityProjection()),
+                        new EProp(0, OntologyTestUtils.GENDER.type, new IdentityProjection()),
                         new EProp(0, COLOR.type, new IdentityProjection())))),
                 new RelationOp(new AsgEBase<>( rel)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(501))),
                 new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
                 new EntityFilterOp(new AsgEBase<>(new EPropGroup(102,
                         new EProp(0, NAME.type, new IdentityProjection()),
-                        new EProp(0, KING.type, new IdentityProjection()),
-                        new EProp(0, QUEEN.type, new IdentityProjection()),
-                        new EProp(0, INDEPENDENCE_DAY.type, new IdentityProjection()),
-                        new EProp(0, FUNDS.type, new IdentityProjection()))))
-        );
+                        new EProp(0, KING.type, new IdentityProjection())))));
 
         Plan innerJoin = new Plan(new EntityJoinOp(leftBranch, rightBranch));
         Rel rel2 = (Rel) query.getElements().get(8).clone();
@@ -477,18 +460,14 @@ public class JoinE2ETests {
                         new EProp(0, NAME.type, new IdentityProjection()),
                         new EProp(0, BIRTH_DATE.type, new IdentityProjection()),
                         new EProp(0, POWER.type, new IdentityProjection()),
-                        new EProp(0, GENDER.type, new IdentityProjection()),
+                        new EProp(0, OntologyTestUtils.GENDER.type, new IdentityProjection()),
                         new EProp(0, COLOR.type, new IdentityProjection())))),
                 new RelationOp(new AsgEBase<>( rel2)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(801))),
                 new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
                 new EntityFilterOp(new AsgEBase<>(new EPropGroup(102,
                         new EProp(0, NAME.type, new IdentityProjection()),
-                        new EProp(0, KING.type, new IdentityProjection()),
-                        new EProp(0, QUEEN.type, new IdentityProjection()),
-                        new EProp(0, INDEPENDENCE_DAY.type, new IdentityProjection()),
-                        new EProp(0, FUNDS.type, new IdentityProjection()))))
-        );
+                        new EProp(0, KING.type, new IdentityProjection())))));
         return new Plan(new EntityJoinOp(innerJoin, rightBranch2));
     }
 
@@ -559,7 +538,7 @@ public class JoinE2ETests {
                         .withEID2(entityB.geteID())
                         .withETag1("A")
                         .withETag2("B")
-                        .withRType($ont.rType$(ORIGINATED_IN.getName()))
+                        .withRType($ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()))
                         .build();
 
 
@@ -570,7 +549,7 @@ public class JoinE2ETests {
                         .withEID2(entityB.geteID())
                         .withETag1("C")
                         .withETag2("B")
-                        .withRType($ont.rType$(ORIGINATED_IN.getName()))
+                        .withRType($ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()))
                         .build();
 
                 Relationship relationship3 = Relationship.Builder.instance()
@@ -580,7 +559,7 @@ public class JoinE2ETests {
                         .withEID2(entityB.geteID())
                         .withETag1("D")
                         .withETag2("B")
-                        .withRType($ont.rType$(ORIGINATED_IN.getName()))
+                        .withRType($ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()))
                         .build();
 
                 Assignment assignment = Assignment.Builder.instance().withEntity(entityA).withEntity(entityB).withEntity(entityC).withEntity(entityD)
@@ -599,7 +578,7 @@ public class JoinE2ETests {
                                             new EProp(0, NAME.type, new IdentityProjection()),
                                             new EProp(0, BIRTH_DATE.type, new IdentityProjection()),
                                             new EProp(0, POWER.type, new IdentityProjection()),
-                                            new EProp(0, GENDER.type, new IdentityProjection()),
+                                            new EProp(0, OntologyTestUtils.GENDER.type, new IdentityProjection()),
                                             new EProp(0, COLOR.type, new IdentityProjection())))),
                                     new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
                                     new RelationFilterOp(new AsgEBase<>(new RelPropGroup(201,
@@ -607,10 +586,7 @@ public class JoinE2ETests {
                                     new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
                                     new EntityFilterOp(new AsgEBase<>(new EPropGroup(301,
                                             new EProp(0, NAME.type, new IdentityProjection()),
-                                            new EProp(0, KING.type, new IdentityProjection()),
-                                            new EProp(0, QUEEN.type, new IdentityProjection()),
-                                            new EProp(0, INDEPENDENCE_DAY.type, new IdentityProjection()),
-                                            new EProp(0, FUNDS.type, new IdentityProjection()))))
+                                            new EProp(0, KING.type, new IdentityProjection()))))
                                 );
         Rel rel = (Rel) query.getElements().get(4).clone();
         rel.setDir(Rel.Direction.R);
@@ -620,18 +596,14 @@ public class JoinE2ETests {
                         new EProp(0, NAME.type, new IdentityProjection()),
                         new EProp(0, BIRTH_DATE.type, new IdentityProjection()),
                         new EProp(0, POWER.type, new IdentityProjection()),
-                        new EProp(0, GENDER.type, new IdentityProjection()),
+                        new EProp(0, OntologyTestUtils.GENDER.type, new IdentityProjection()),
                         new EProp(0, COLOR.type, new IdentityProjection())))),
                 new RelationOp(new AsgEBase<>( rel)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(401))),
                 new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
                 new EntityFilterOp(new AsgEBase<>(new EPropGroup(301,
                         new EProp(0, NAME.type, new IdentityProjection()),
-                        new EProp(0, KING.type, new IdentityProjection()),
-                        new EProp(0, QUEEN.type, new IdentityProjection()),
-                        new EProp(0, INDEPENDENCE_DAY.type, new IdentityProjection()),
-                        new EProp(0, FUNDS.type, new IdentityProjection()))))
-        );
+                        new EProp(0, KING.type, new IdentityProjection())))));
 
         return new Plan(new EntityJoinOp(leftBranch, rightBranch));
     }
@@ -684,7 +656,7 @@ public class JoinE2ETests {
                     .withEID2(entityB.geteID())
                     .withETag1("A")
                     .withETag2("B")
-                    .withRType($ont.rType$(ORIGINATED_IN.getName()))
+                    .withRType($ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()))
                     .build();
 
 
@@ -695,7 +667,7 @@ public class JoinE2ETests {
                     .withEID2(entityB.geteID())
                     .withETag1("C")
                     .withETag2("B")
-                    .withRType($ont.rType$(ORIGINATED_IN.getName()))
+                    .withRType($ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()))
                     .build();
 
             Assignment assignment = Assignment.Builder.instance().withEntity(entityA).withEntity(entityB).withEntity(entityC)
@@ -733,9 +705,9 @@ public class JoinE2ETests {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new EConcrete(1, "A", $ont.eType$(DragonsOntology.DRAGON.name), "Dragon_1", "D0", 2, 0),
-                new Rel(2, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
+                new Rel(2, $ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
                 new ETyped(3, "B", $ont.eType$(DragonsOntology.KINGDOM.name), 4, 0),
-                new Rel(4, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 5, 0),
+                new Rel(4, $ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()), Rel.Direction.L, null, 5, 0),
                 new ETyped(5, "C", $ont.eType$(DragonsOntology.DRAGON.name), 6, 0),
                 new EProp(6, NAME.type, Constraint.of(ConstraintOp.eq, "D"))
         )).build();
@@ -745,13 +717,13 @@ public class JoinE2ETests {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new EConcrete(1, "A", $ont.eType$(DragonsOntology.DRAGON.name), "Dragon_1", "D0", 2, 0),
-                new Rel(2, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
+                new Rel(2, $ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
                 new ETyped(3, "B", $ont.eType$(DragonsOntology.KINGDOM.name), 4, 0),
                 new Quant1(4, QuantType.all, Arrays.asList(5,8),0),
-                new Rel(5, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 6, 0),
+                new Rel(5, $ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()), Rel.Direction.L, null, 6, 0),
                 new ETyped(6, "C", $ont.eType$(DragonsOntology.DRAGON.name), 7, 0),
                 new EProp(7, NAME.type, Constraint.of(ConstraintOp.eq, "D")),
-                new Rel(8, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 9, 0),
+                new Rel(8, $ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()), Rel.Direction.L, null, 9, 0),
                 new ETyped(9, "D", $ont.eType$(DragonsOntology.DRAGON.name), 10, 0),
                 new EProp(10, NAME.type, Constraint.of(ConstraintOp.eq, "F"))
         )).build();

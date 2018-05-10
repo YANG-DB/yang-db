@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowlegde;
+package com.kayhut.fuse.assembly.knowledge;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

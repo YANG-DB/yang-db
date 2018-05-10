@@ -3,9 +3,12 @@ package com.kayhut.fuse.unipop;
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
@@ -97,6 +100,10 @@ public class ElementControllerCompositTest {
     @Ignore
     public void testSingleIdPromiseVertexWithLimit() {
         UniGraph graph = mock(UniGraph.class);
+        SearchOrderProviderFactory orderProvider = context -> {
+            return SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
+        };
+
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Collections.emptyList());
 
@@ -108,7 +115,7 @@ public class ElementControllerCompositTest {
         SearchQuery.SearchController elementController =
                 new ElementController(
                         new LoggingSearchController(
-                                new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider())
+                                new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),orderProvider)
                                 , registry),
                         new LoggingSearchController(
                                 new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider()),

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowlegde;
+package com.kayhut.fuse.assembly.knowledge;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.epb.PlanExtensionStrategy;
@@ -12,10 +12,10 @@ import javaslang.collection.Stream;
 /**
  * Created by roman.margolis on 15/03/2018.
  */
-public class KnowledgeM1DfsRedundantPlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan, AsgQuery> {
+public class KnowledgeM2DfsRedundantPlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan, AsgQuery> {
     //region Constructors
     @Inject
-    public KnowledgeM1DfsRedundantPlanExtensionStrategy(
+    public KnowledgeM2DfsRedundantPlanExtensionStrategy(
             OntologyProvider ontologyProvider,
             GraphElementSchemaProviderFactory schemaProviderFactory) {
         super();
@@ -23,7 +23,10 @@ public class KnowledgeM1DfsRedundantPlanExtensionStrategy extends CompositePlanE
         this.innerExtenders = Stream.<PlanExtensionStrategy<Plan, AsgQuery>>of(
                 new ChainPlanExtensionStrategy<>(
                         new CompositePlanExtensionStrategy<>(
-                                new KnowledgeInitialPlanGeneratorExtensionStrategy(),
+                                new FirstNotEmptyPlanExtensionStrategy<>(
+                                        new InitialPlanBoostExtensionStrategy(),
+                                        new KnowledgeInitialPlanGeneratorExtensionStrategy()
+                                ),
                                 new StepAdjacentDfsStrategy(),
                                 new OptionalOpExtensionStrategy(this)
                         ),

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowlegde;
+package com.kayhut.fuse.assembly.knowledge;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;

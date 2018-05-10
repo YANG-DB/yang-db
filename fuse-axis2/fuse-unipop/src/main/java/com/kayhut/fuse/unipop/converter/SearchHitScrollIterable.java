@@ -4,13 +4,13 @@ import com.kayhut.fuse.dispatcher.logging.ElapsedFrom;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import com.kayhut.fuse.dispatcher.logging.LogType;
 import com.kayhut.fuse.dispatcher.logging.MethodName;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +32,12 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
     public SearchHitScrollIterable(
             Client client,
             SearchRequestBuilder searchRequestBuilder,
+            SearchOrderProvider orderProvider,
             long limit,
             int scrollSize,
             int scrollTime) {
         this.searchRequestBuilder = searchRequestBuilder;
+        this.orderProvider = orderProvider;
         this.limit = limit;
         this.scrollSize = scrollSize;
         this.scrollTime = scrollTime;
@@ -57,6 +59,10 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
         return this.searchRequestBuilder;
     }
 
+    public SearchOrderProvider getOrderProvider() {
+        return orderProvider;
+    }
+
     protected Client getClient() {
         return this.client;
     }
@@ -76,6 +82,7 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
 
     //region Fields
     private SearchRequestBuilder searchRequestBuilder;
+    private SearchOrderProvider orderProvider;
     private long limit;
     private Client client;
 
@@ -134,15 +141,8 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
             if (counter >= this.iterable.getLimit()) {
                 return;
             }
-
             SearchResponse response = this.scrollId == null ?
-                    this.iterable.getSearchRequestBuilder()
-                            .addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
-                            .setScroll(new TimeValue(iterable.getScrollTime()))
-                            .setSize(Math.min(iterable.getScrollSize(),
-                                    (int) Math.min((long) Integer.MAX_VALUE, iterable.getLimit())))
-                            .execute()
-                            .actionGet() :
+                    getSearchResponse() :
                     this.iterable.getClient().prepareSearchScroll(this.scrollId)
                             .setScroll(new TimeValue(this.iterable.getScrollTime()))
                             .execute()
@@ -159,6 +159,28 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
             if (response.getHits().getHits().length == 0) {
                 this.iterable.getClient().prepareClearScroll().addScrollId(this.scrollId).execute().actionGet();
             }
+        }
+
+        private SearchResponse getSearchResponse() {
+            SearchOrderProvider.Sort sort = getOrderProvider().getSort(this.iterable.getSearchRequestBuilder());
+            SearchType searchType = getOrderProvider().getSearchType(this.iterable.getSearchRequestBuilder());
+
+            return sort !=SearchOrderProvider.EMPTY  ?
+                this.iterable.getSearchRequestBuilder()
+                        .addSort(sort.getSortField(), sort.getSortOrder())
+                        .setScroll(new TimeValue(iterable.getScrollTime()))
+                        .setSearchType(searchType)
+                        .setSize(Math.min(iterable.getScrollSize(),
+                                (int) Math.min((long) Integer.MAX_VALUE, iterable.getLimit())))
+                        .execute()
+                        .actionGet() :
+            this.iterable.getSearchRequestBuilder()
+                    .setScroll(new TimeValue(iterable.getScrollTime()))
+                    .setSearchType(searchType)
+                    .setSize(Math.min(iterable.getScrollSize(),
+                            (int) Math.min((long) Integer.MAX_VALUE, iterable.getLimit())))
+                    .execute()
+                    .actionGet();
         }
         //endregion
 

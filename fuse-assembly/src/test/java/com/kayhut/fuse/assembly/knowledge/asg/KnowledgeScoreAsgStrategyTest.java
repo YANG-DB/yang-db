@@ -1,9 +1,9 @@
-package com.kayhut.fuse.assembly.knowlegde.asg;
+package com.kayhut.fuse.assembly.knowledge.asg;
 
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.asg.strategy.RuleBoostProvider;
-import com.kayhut.fuse.assembly.knowlegde.KnowledgeRankingAsgStrategy;
-import com.kayhut.fuse.assembly.knowlegde.KnowledgeRuleBoostProvider;
+import com.kayhut.fuse.assembly.knowledge.KnowledgeRankingAsgStrategy;
+import com.kayhut.fuse.assembly.knowledge.KnowledgeRuleBoostProvider;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
@@ -24,10 +24,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;

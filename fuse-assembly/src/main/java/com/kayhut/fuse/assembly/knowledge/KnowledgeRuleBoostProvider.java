@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowlegde;
+package com.kayhut.fuse.assembly.knowledge;
 
 import com.kayhut.fuse.asg.strategy.RuleBoostProvider;
 import com.kayhut.fuse.model.query.properties.EProp;
