@@ -5,6 +5,8 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.search.sort.SortOrder;
 
+import java.util.Objects;
+
 public interface SearchOrderProvider {
     Sort EMPTY = new Sort(null,null);
 
@@ -44,6 +46,21 @@ public interface SearchOrderProvider {
 
         public SortOrder getSortOrder() {
             return sortOrder;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Sort sort = (Sort) o;
+            return Objects.equals(sortField, sort.sortField) &&
+                    sortOrder == sort.sortOrder;
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(sortField, sortOrder);
         }
     }
 }
