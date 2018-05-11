@@ -19,6 +19,13 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
     //region Constructors
     @Inject
     public KnowledgeM2AsgStrategyRegistrar(OntologyProvider ontologyProvider,
+                                           GraphElementSchemaProviderFactory schemaProviderFactory) {
+        this.ontologyProvider = ontologyProvider;
+        this.schemaProviderFactory = schemaProviderFactory;
+        this.ruleBoostProvider = new KnowledgeRuleBoostProvider();
+    }
+
+    public KnowledgeM2AsgStrategyRegistrar(OntologyProvider ontologyProvider,
                                            GraphElementSchemaProviderFactory schemaProviderFactory,
                                            RuleBoostProvider ruleBoostProvider) {
         this.ontologyProvider = ontologyProvider;

@@ -21,7 +21,6 @@ import java.nio.file.Paths;
 @Suite.SuiteClasses({
         RankingScoreBasedE2ETests.class,
 })
-@Ignore
 public class KnowledgeE2ETestSuite {
 
     @BeforeClass
@@ -32,7 +31,7 @@ public class KnowledgeE2ETestSuite {
         elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf(new File(Paths.get("resources", "assembly","Knowledge","config", "application.test.engine3.m1.dfs.knowledge.public.conf").toString()), "m2.smartEpb");
+                .conf(new File(Paths.get("src","test","resources",  "application.test.engine3.m1.dfs.knowledge.public.conf").toString()));
 
         app.start("server.join=false");
     }
