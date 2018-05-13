@@ -96,11 +96,21 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasEntityReference"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Reference"), 9, 0),
-                new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
+                new Quant1(9, QuantType.all, Arrays.asList(10, 11), 0),
                 new EProp(10, $ont.pType$("url"), Constraint.of(ConstraintOp.like, "*clown")),
-                new EProp(11, $ont.pType$("title"), Constraint.of(ConstraintOp.contains, "sample")),
-                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
-        )).build();
+                new EProp(11, $ont.pType$("title"), Constraint.of(ConstraintOp.notEmpty)/*, "sample")*/))
+        ).build();
+
+        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10);
+        int resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
+        String rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,2);
+            Assert.assertEquals(relationsCount,1);
+        }
 
         /*Query query = Query.Builder.instance().withName("ComplexQuery").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -115,17 +125,6 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();*/
 
-        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10);
-        int resultsSize = pageData.getSize();
-        Assert.assertEquals(resultsSize,1);
-        String rtype = pageData.getResultType();
-        for(int i=0;i<resultsSize; i++) {
-            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
-            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,2);
-            Assert.assertEquals(relationsCount,1);
-        }
-
         query = Query.Builder.instance().withName("ComplexQuery1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
@@ -134,8 +133,8 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
-                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.startsWith, "Nic")),
-                new EProp(11, $ont.pType$("bdt"), Constraint.of(ConstraintOp.notEndsWith, "mes")),
+                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "Nic*")),
+                new EProp(11, $ont.pType$("creationTime"), Constraint.of(ConstraintOp.gt, "2018-01-01 00:00:00.000")),
                 new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
 
@@ -153,6 +152,37 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
          */
+
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10);
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            Assert.assertNull(pageData.getAssignments().get(i).getEntities());
+            Assert.assertNull(pageData.getAssignments().get(i).getRelationships());
+            /*int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,2);
+            Assert.assertEquals(relationsCount,1);*/
+        }
+
+        query = Query.Builder.instance().withName("ComplexQuery2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.some, Arrays.asList( 6,7,13), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
+                new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
+                new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
+                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "Nic*")),
+                new EProp(11, $ont.pType$("creationTime"), Constraint.of(ConstraintOp.gt, "2018-01-01 00:00:00.000")),
+                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(13, $ont.rType$("hasEntityReference"), R, null, 14, 0),
+                new ETyped(14, "B", $ont.eType$("Reference"), 15, 0),
+                new Quant1(15, QuantType.all, Arrays.asList(16, 17), 0),
+                new EProp(16, $ont.pType$("url"), Constraint.of(ConstraintOp.like, "*circus")),
+                new EProp(17, $ont.pType$("creationTime"), Constraint.of(ConstraintOp.gt, "2018-01-01 00:00:00.000"))
+        )).build();
 
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10);
         resultsSize = pageData.getSize();
