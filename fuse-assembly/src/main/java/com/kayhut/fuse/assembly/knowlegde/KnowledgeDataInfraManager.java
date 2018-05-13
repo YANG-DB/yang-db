@@ -222,7 +222,8 @@ public class KnowledgeDataInfraManager  {
 
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cEntityValue);
-        on.put("entityId", "e" + String.format(schema.getIdFormat("entity"), 1));
+        on.put("logicalId", "e" + String.format(schema.getIdFormat("entity"), 1));
+        on.put("entityId", "e" + String.format(schema.getIdFormat("entity"), 1) + ".context1");
         on.put("context", "context1");
         on.put("authorizationCount", 1);
         on.put("fieldId", "nicknames");
@@ -244,7 +245,8 @@ public class KnowledgeDataInfraManager  {
 
         on = _mapper.createObjectNode();
         on.put("type", cEntityValue);
-        on.put("entityId", "e" + String.format(schema.getIdFormat("entity"), 2));
+        on.put("logicalId", "e" + String.format(schema.getIdFormat("entity"), 2));
+        on.put("entityId", "e" + String.format(schema.getIdFormat("entity"), 2) + ".context1");
         on.put("context", "context1");
         on.put("authorizationCount", 1);
         on.put("fieldId", "nicknames");
@@ -265,7 +267,8 @@ public class KnowledgeDataInfraManager  {
 
         on = _mapper.createObjectNode();
         on.put("type", cEntityValue);
-        on.put("entityId", "e" + String.format(schema.getIdFormat("entity"), 2));
+        on.put("logicalId", "e" + String.format(schema.getIdFormat("entity"), 2));
+        on.put("entityId", "e" + String.format(schema.getIdFormat("entity"), 2) + ".context1");
         on.put("context", "context1");
         on.put("authorizationCount", 1);
         on.put("fieldId", "age");
@@ -289,6 +292,7 @@ public class KnowledgeDataInfraManager  {
     private List<String> _insights;
 
     private void PrepareInsights() throws JsonProcessingException {
+        _insights = new ArrayList<String>();
         int id = 1;
         String insightId = "i" + String.format(schema.getIdFormat("insight"), id);
 
@@ -380,7 +384,7 @@ public class KnowledgeDataInfraManager  {
 
         for(int i=1; i<=_entitiesValues.size(); i++) {
             String logicalId = "e" + String.format(schema.getIdFormat("entity"), evalues.get(i-1));
-            bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId("ev" + evalues.get(i-1))
+            bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId("ev" + i)
                     .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                     .setSource(_entitiesValues.get(i-1), XContentType.JSON)).get();
         }
