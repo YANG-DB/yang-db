@@ -4,6 +4,7 @@ import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.translation.M1QueryTranslator;
 import com.kayhut.fuse.unipop.controller.search.translation.PredicateQueryTranslator;
 import com.kayhut.fuse.unipop.step.BoostingStepWrapper;
+import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -67,9 +68,10 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
 
         queryBuilder.bool(currentBoolLabel);
         List<? extends Traversal.Admin<?, ?>> localChildren = andStep.getLocalChildren();
-
-        Stream<? extends Traversal.Admin<?, ?>> filters = Stream.ofAll(localChildren).filter(t -> t.getStartStep().getClass() != BoostingStepWrapper.class);
-        Stream<? extends Traversal.Admin<?, ?>> mustFilters = Stream.ofAll(localChildren).filter(t -> t.getStartStep().getClass() == BoostingStepWrapper.class);
+        BoostingTraversalVisitor boostingTraversalVisitor = new BoostingTraversalVisitor();
+        Stream<Tuple2<Traversal, Boolean>> isBoostingTraversal = Stream.ofAll(localChildren).map(t -> new Tuple2(t, boostingTraversalVisitor.visit(t)));
+        Stream<Traversal> filters = isBoostingTraversal.filter(t -> !t._2).map(t -> t._1);
+        Stream<Traversal> mustFilters = isBoostingTraversal.filter(t -> t._2).map(t -> t._1);
 
         queryBuilder.filter(currentFilterLabel).bool().must();
         filters.forEach(f -> super.visitRecursive(f));

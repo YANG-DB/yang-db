@@ -12,6 +12,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 import javaslang.collection.Stream;
+import org.apache.commons.collections.ArrayStack;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -165,6 +166,15 @@ public class RankingKnowledgeDataInfraManager {
                     "2018-03-24 14:02:40.533",
                     "2018-03-24 14:02:40.533");
             _entities.add(_mapper.writeValueAsString(on));
+            on = createEntityObject(getEntityId(i),
+                    "global",
+                    "person",
+                    1,
+                    "User",
+                    "User",
+                    "2018-03-24 14:02:40.533",
+                    "2018-03-24 14:02:40.533");
+            _entities.add(_mapper.writeValueAsString(on));
         }
     }
 
@@ -213,7 +223,9 @@ public class RankingKnowledgeDataInfraManager {
     private void PrepareEntityValuesValues() throws JsonProcessingException {
         _entitiesValues = new ArrayList<>();
         _evEntityId = new ArrayList<>();
-        String context = "context1";
+        String context = "global";
+
+        List<String> nicks = Arrays.asList("moti", "moti cohen", "motico", "yomo", "bla bla", "comoti", "roman");
 
         for (int i = 1 ; i <= numPersons; i++) {
             _evEntityId.add(i);
@@ -228,7 +240,7 @@ public class RankingKnowledgeDataInfraManager {
                     "2018-03-24 14:02:40.533",
                     "User",
                     "2018-03-24 14:02:40.533",
-                    "My nick"
+                    nicks.get(i%nicks.size())
                     );
             _entitiesValues.add(_mapper.writeValueAsString(on));
             on = createEntityValueObject(getEntityId(i)+ "." + context,
@@ -241,7 +253,7 @@ public class RankingKnowledgeDataInfraManager {
                     "2018-03-24 14:02:40.533",
                     "User",
                     "2018-03-24 14:02:40.533",
-                    "My nick"
+                    nicks.get(i%nicks.size())
             );
             _entitiesValues.add(_mapper.writeValueAsString(on));
         }
@@ -378,10 +390,11 @@ public class RankingKnowledgeDataInfraManager {
         String index = Stream.ofAll(schema.getPartitions(cEntity)).map(partition -> (IndexPartitions.Partition.Range) partition)
                 .filter(partition -> partition.isWithin(getEntityId(1))).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
+        List<String> contexts = Arrays.asList("context1", "global");
         for(int i=1; i<=_entities.size(); i++) {
             String mylogicalId = getEntityId(i);
 
-            bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId(mylogicalId + "." + "context1")
+            bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId(mylogicalId + "." + contexts.get( (i-1) % 2))
                     .setOpType(IndexRequest.OpType.INDEX).setRouting(mylogicalId)
                     .setSource(_entities.get(i-1), XContentType.JSON)).get();
         }

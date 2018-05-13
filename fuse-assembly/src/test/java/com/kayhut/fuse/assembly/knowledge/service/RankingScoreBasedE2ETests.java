@@ -1,6 +1,5 @@
 package com.kayhut.fuse.assembly.knowledge.service;
 
-import com.kayhut.fuse.assembly.knowledge.KnowlegdeOntology;
 import com.kayhut.fuse.assembly.knowledge.RankingKnowledgeDataInfraManager;
 import com.kayhut.fuse.assembly.knowlegde.KnowledgeDataInfraManager;
 import com.kayhut.fuse.model.OntologyTestUtils;
@@ -22,9 +21,9 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.*;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
-import org.elasticsearch.client.transport.TransportClient;
 import org.junit.*;
 
 import java.io.IOException;
@@ -52,114 +51,6 @@ public class RankingScoreBasedE2ETests {
             manager.drop();
         }
 
-    }
-
-    public static void setup(TransportClient client, boolean calcStats) throws Exception {
-
-
-/*
-        String idField = "id";
-
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        Path indexTemplatesFolder = Paths.get("resources", "assembly", "Knowledge", "indexTemplates");
-        client.admin().indices().preparePutTemplate("e*").setSource((Map<String, Object>) objectMapper.readValue(new File(Paths.get(indexTemplatesFolder.toString(), "e.json").toString()), new TypeReference<Map<String, Object>>() {
-        })).execute().actionGet();
-
-        client.admin().indices().preparePutTemplate("i*").setSource((Map<String, Object>) objectMapper.readValue(new File(Paths.get(indexTemplatesFolder.toString(), "i.json").toString()), new TypeReference<Map<String, Object>>() {
-        })).execute().actionGet();
-
-        client.admin().indices().preparePutTemplate("ref*").setSource((Map<String, Object>) objectMapper.readValue(new File(Paths.get(indexTemplatesFolder.toString(), "ref.json").toString()), new TypeReference<Map<String, Object>>() {
-        })).execute().actionGet();
-
-        client.admin().indices().preparePutTemplate("rel*").setSource((Map<String, Object>) objectMapper.readValue(new File(Paths.get(indexTemplatesFolder.toString(), "rel.json").toString()), new TypeReference<Map<String, Object>>() {
-        })).execute().actionGet();
-
-
-
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        int numPersons = 100;
-        int numDragons = 100;
-        int numKingdoms = 2;
-
-        new ElasticDataPopulator(
-                client,
-                "e0",
-                "pge",
-                idField,
-                () -> createPeople(numPersons)).populate();
-*/
-        /*
-        new ElasticDataPopulator(
-                client,
-                DragonsOntology.DRAGON.name.toLowerCase(),
-                "pge",
-                idField,
-                () -> createDragons(numDragons, birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L)))
-                .populate(); // date interval is ~ 1 month
-
-        new ElasticDataPopulator(client,
-                DragonsOntology.KINGDOM.name.toLowerCase(),
-                "pge",
-                idField,
-                ()-> createKingdoms(numKingdoms))
-                .populate();
-
-        new ElasticDataPopulator(client,
-                "originated_in",
-                "pge",
-                idField,
-                () -> createOriginEdges(numDragons, numKingdoms)
-                ).populate();
-
-        new ElasticDataPopulator(
-                client,
-                FIRE.getName().toLowerCase() + "20170511",
-                "pge",
-                idField,
-                () -> createDragonFireDragonEdges(
-                        numDragons,
-                        timestampValueFunctionFactory.apply(sdf.parse("2017-05-11 00:00:00").getTime()).apply(1200000L),
-                        temperatureValueFunction))
-                .populate(); // date interval is 20 min
-
-        new ElasticDataPopulator(
-                client,
-                FIRE.getName().toLowerCase() + "20170512",
-                "pge",
-                idField,
-                () -> createDragonFireDragonEdges(
-                        numDragons,
-                        timestampValueFunctionFactory.apply(sdf.parse("2017-05-12 00:00:00").getTime()).apply(600000L),
-                        temperatureValueFunction))
-                .populate(); // date interval is 10 min
-
-        new ElasticDataPopulator(
-                client,
-                FIRE.getName().toLowerCase() + "20170513",
-                "pge",
-                idField,
-                () -> createDragonFireDragonEdges(
-                        numDragons,
-                        timestampValueFunctionFactory.apply(sdf.parse("2017-05-13 00:00:00").getTime()).apply(300000L),
-                        temperatureValueFunction))
-                .populate(); // date interval is 5 min
-
-        client.admin().indices().refresh(new RefreshRequest(
-            "e0"
-        )).actionGet();
-*/
-
-    }
-
-    public static void cleanup(TransportClient client) throws Exception {
-        /*client.admin().indices()
-                .delete(new DeleteIndexRequest(
-                        "e0"
-                ))
-                .actionGet();
-        */
     }
 
 
@@ -220,10 +111,11 @@ public class RankingScoreBasedE2ETests {
         QueryResultAssert.assertEquals(expectedAssignmentsQueryResult, actualAssignmentsQueryResult, shouldIgnoreRelId());
     }
 
-    private AssignmentsQueryResult runQuery(Query query) throws IOException, InterruptedException {
+    private AssignmentsQueryResult runQuery(Query query, Iterable<String> tags) throws IOException, InterruptedException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
+        //CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphHierarchyCursorRequest(tags, 100000));
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
@@ -244,8 +136,8 @@ public class RankingScoreBasedE2ETests {
 
     @Test
     public void test() throws IOException, InterruptedException {
-        Query query = getEntities();
-        AssignmentsQueryResult assignmentsQueryResult = runQuery(query);
+        Query query = getByNicknames();
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         int a = 2;
     }
 
@@ -259,6 +151,23 @@ public class RankingScoreBasedE2ETests {
                 new ETyped(5, "C", $ont.eType$("Entity"), 6,0),
                 new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
                 new ETyped(7, "D", $ont.eType$("Evalue"), 0,0)
+        )).build();
+    }
+
+    private Query getByNicknames() {
+        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2,0),
+                new Rel(2,$ont.rType$("hasEntity"), Rel.Direction.L, "", 3, 0),
+                new ETyped(3,"B", $ont.eType$("LogicalEntity"), 4,0 ),
+                new Rel(4, $ont.rType$("hasEntity"), Rel.Direction.R, "", 5, 0),
+                new ETyped(5, "C", $ont.eType$("Entity"), 6,0),
+                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
+                new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
+                new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
+                new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
+                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "*moti*"))
+
         )).build();
     }
 

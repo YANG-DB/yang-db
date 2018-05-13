@@ -52,8 +52,8 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
 //                new LikeConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 new LikeAnyConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 //knowledge ranking asg strategies
-                new RankingPropertiesPropagationAsgStrategy(),
                 new KnowledgeLikeCombinerStrategy(ruleBoostProvider, ontologyProvider, schemaProviderFactory),
+                new RankingPropertiesPropagationAsgStrategy(),
                 new RedundantInSetConstraintAsgStrategy(),
                 new RedundantPropGroupAsgStrategy(),
                 new DefaultSelectionAsgStrategy(this.ontologyProvider)

@@ -83,7 +83,7 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
             List<EProp> fieldProp = Stream.ofAll(eProp.geteBase().getProps())
                     .filter(p -> p.getpType().equals("fieldId")
                             && p.getCon().getOp().equals(ConstraintOp.eq)
-                            && java.util.stream.Stream.of(p.getCon().getExpr()).anyMatch(v -> !this.fieldNames.contains(v.toString())))
+                            && java.util.stream.Stream.of(p.getCon().getExpr()).anyMatch(v -> this.fieldNames.contains(v.toString())))
                     .toJavaList();
             if (!fieldProp.isEmpty()) {
                 Option<EProp> stringValue = Stream.ofAll(eProp.geteBase().getProps()).find(p -> p.getpType().equals("stringValue") &&
@@ -177,7 +177,7 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
 
         EPropGroup groupRule2Score = new ScoreEPropGroup(stringValue.geteNum(), boostProvider.getBoost(fieldProp, ruleIndex));
         groupRule2Score.setQuantType(QuantType.all);
-        Set<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0).toJavaSet();
+        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0).toJavaList();
         groupRule2Score.getProps().add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.inSet, terms)));
         group.getGroups().add(groupRule2Score);
         return group;
@@ -188,7 +188,8 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
      */
     private EPropGroup translateEquals(AsgQuery query, EProp stringValue, EProp fieldProp) {
         EProp adjustedStringValue = new ScoreEProp(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.eq, stringValue.getCon().getExpr().toString().replace("*", " ").trim()), boostProvider.getBoost(fieldProp, 1));
-        EPropGroup group = new EPropGroup(stringValue.geteNum());
+        //EPropGroup group = new EPropGroup(stringValue.geteNum());
+        EPropGroup group = new ScoreEPropGroup( stringValue.geteNum(),boostProvider.getBoost(fieldProp, 1));
         group.setQuantType(QuantType.all);
         group.getProps().add(adjustedStringValue);
         return group;
