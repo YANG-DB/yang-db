@@ -115,8 +115,8 @@ public class RankingScoreBasedE2ETests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
-        //CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphHierarchyCursorRequest(tags, 100000));
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphHierarchyCursorRequest(tags, 100000));
+        //CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -157,11 +157,7 @@ public class RankingScoreBasedE2ETests {
     private Query getByNicknames() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$("Entity"), 2,0),
-                new Rel(2,$ont.rType$("hasEntity"), Rel.Direction.L, "", 3, 0),
-                new ETyped(3,"B", $ont.eType$("LogicalEntity"), 4,0 ),
-                new Rel(4, $ont.rType$("hasEntity"), Rel.Direction.R, "", 5, 0),
-                new ETyped(5, "C", $ont.eType$("Entity"), 6,0),
+                new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
                 new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
                 new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
                 new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),

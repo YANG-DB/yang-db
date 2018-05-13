@@ -35,11 +35,15 @@ public class DiscreteVertexConverter<E extends Element> implements ElementConver
     //region ElementConverter Implementation
     @Override
     public Iterable<E> convert(SearchHit searchHit) {
+        Map<String, Object> source = new HashMap<>(searchHit.sourceAsMap());
+        if(searchHit.getScore() > 0){
+            source.put("score", searchHit.getScore());
+        }
         return Arrays.asList((E)new DiscreteVertex(
                 searchHit.getId(),
-                this.typeToLabelVertexSchemas.get(searchHit.sourceAsMap().get("type")).getLabel(),
+                this.typeToLabelVertexSchemas.get(source.get("type")).getLabel(),
                 context.getGraph(),
-                searchHit.sourceAsMap()));
+                source));
     }
     //endregion
 
