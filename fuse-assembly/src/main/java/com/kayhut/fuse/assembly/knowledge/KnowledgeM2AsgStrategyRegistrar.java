@@ -51,12 +51,13 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 //remove like Constraint Strategy since we have it inside the combiner
 //                new LikeConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 new LikeAnyConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
-                new RedundantInSetConstraintAsgStrategy(),
-                new RedundantPropGroupAsgStrategy(),
-                new DefaultSelectionAsgStrategy(this.ontologyProvider),
                 //knowledge ranking asg strategies
                 new RankingPropertiesPropagationAsgStrategy(),
-                new KnowledgeLikeCombinerStrategy(ruleBoostProvider, ontologyProvider, schemaProviderFactory)
+                new KnowledgeLikeCombinerStrategy(ruleBoostProvider, ontologyProvider, schemaProviderFactory),
+                new RedundantInSetConstraintAsgStrategy(),
+                new RedundantPropGroupAsgStrategy(),
+                new DefaultSelectionAsgStrategy(this.ontologyProvider)
+
         );
     }
     //endregion

@@ -1,7 +1,8 @@
 package com.kayhut.fuse.assembly.knowledge.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.assembly.knowledge.KnowlegdeOntology;
+import com.kayhut.fuse.assembly.knowledge.RankingKnowledgeDataInfraManager;
+import com.kayhut.fuse.assembly.knowlegde.KnowledgeDataInfraManager;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -21,42 +22,42 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.*;
-import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
-import com.kayhut.test.data.KnowledgeOntology;
-import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.*;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Function;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 
 public class RankingScoreBasedE2ETests {
     @BeforeClass
     public static void setup() throws Exception {
-        setup(KnowledgeE2ETestSuite.elasticEmbeddedNode.getClient(), true);
-    }
-
-    @AfterClass
-    public static void cleanup() throws Exception {
-        cleanup(KnowledgeE2ETestSuite.elasticEmbeddedNode.getClient());
-    }
-
-    public static void setup(TransportClient client, boolean calcStats) throws Exception {
         fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
+        RankingKnowledgeDataInfraManager manager = new RankingKnowledgeDataInfraManager(KnowledgeE2ETestSuite.CONFIG_PATH);
+        manager.client_connect();
+        manager.init();
+        manager.load();
+        manager.client_close();
+    }
+
+    @AfterClass
+    public static void cleanup() throws Exception {
+        if(manager != null) {
+            manager.drop();
+        }
+
+    }
+
+    public static void setup(TransportClient client, boolean calcStats) throws Exception {
+
+
+/*
         String idField = "id";
 
 
@@ -88,7 +89,7 @@ public class RankingScoreBasedE2ETests {
                 "pge",
                 idField,
                 () -> createPeople(numPersons)).populate();
-
+*/
         /*
         new ElasticDataPopulator(
                 client,
@@ -145,27 +146,22 @@ public class RankingScoreBasedE2ETests {
                         temperatureValueFunction))
                 .populate(); // date interval is 5 min
 
-*/
         client.admin().indices().refresh(new RefreshRequest(
             "e0"
         )).actionGet();
-
+*/
 
     }
 
     public static void cleanup(TransportClient client) throws Exception {
-        cleanup(client, true);
-    }
-
-    public static void cleanup(TransportClient client, boolean statsUsed) throws Exception {
-        client.admin().indices()
+        /*client.admin().indices()
                 .delete(new DeleteIndexRequest(
                         "e0"
-        ))
+                ))
                 .actionGet();
-
-
+        */
     }
+
 
     private void testAndAssertQuery(Query query, AssignmentsQueryResult expectedAssignmentsQueryResult) throws Exception {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -256,7 +252,20 @@ public class RankingScoreBasedE2ETests {
     private Query getEntities() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(KnowledgeOntology.Entity.name), 0,0)
+                new ETyped(1, "A", $ont.eType$("Entity"), 2,0),
+                new Rel(2,$ont.rType$("hasEntity"), Rel.Direction.L, "", 3, 0),
+                new ETyped(3,"B", $ont.eType$("LogicalEntity"), 4,0 ),
+                new Rel(4, $ont.rType$("hasEntity"), Rel.Direction.R, "", 5, 0),
+                new ETyped(5, "C", $ont.eType$("Entity"), 6,0),
+                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
+                new ETyped(7, "D", $ont.eType$("Evalue"), 0,0)
+        )).build();
+    }
+
+    private Query getEValues() {
+        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Evalue"), 0,0)
         )).build();
     }
 
@@ -282,9 +291,6 @@ public class RankingScoreBasedE2ETests {
     }
     private static FuseClient fuseClient;
     private static Ontology.Accessor $ont;
-    private static SimpleDateFormat sdf;
+    private static KnowledgeDataInfraManager manager;
 
-    private static Function<Long, Function<Long, Function<Integer, Long>>> timestampValueFunctionFactory;
-    private static Function<Long, Function<Long, Function<Integer, Long>>> birthDateValueFunctionFactory;
-    private static Function<Integer, Integer> temperatureValueFunction;
 }

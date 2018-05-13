@@ -31,7 +31,7 @@ public class KnowledgeE2ETestSuite {
         elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf(new File(Paths.get("src","test","resources",  "application.test.engine3.m1.dfs.knowledge.public.conf").toString()));
+                .conf(new File(CONFIG_PATH));
 
         app.start("server.join=false");
     }
@@ -50,5 +50,7 @@ public class KnowledgeE2ETestSuite {
     private static long start;
     private static Jooby app;
     public static ElasticEmbeddedNode elasticEmbeddedNode;
+
+    public static String CONFIG_PATH = Paths.get("src","test","resources",  "application.test.engine3.m1.dfs.knowledge.public.conf").toString();
     //endregion
 }
