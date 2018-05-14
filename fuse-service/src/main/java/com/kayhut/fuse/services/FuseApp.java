@@ -54,7 +54,7 @@ public class FuseApp extends Jooby {
         //expose html assets
         assets("public/assets/**");
 
-        new LoggingJacksonRendererRegistrar(null, metricRegistry).register(this, localUrlSupplier);
+        new LoggingJacksonRendererRegistrar(metricRegistry).register(this, localUrlSupplier);
 
         new BeforeAfterAppRegistrar().register(this, localUrlSupplier);
         new HomeAppRegistrar().register(this, localUrlSupplier);

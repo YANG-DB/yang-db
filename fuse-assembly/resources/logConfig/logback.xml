@@ -10,6 +10,7 @@
   <conversionRule conversionWord="methodName" converterClass="com.kayhut.fuse.dispatcher.logging.MethodName$Converter" />
   <conversionRule conversionWord="hostName" converterClass="com.kayhut.fuse.dispatcher.logging.HostName$Converter" />
   <conversionRule conversionWord="requestScope" converterClass="com.kayhut.fuse.dispatcher.logging.RequestIdByScope$Converter" />
+  <conversionRule conversionWord="route" converterClass="com.kayhut.fuse.logging.Route$Converter" />
 
   <!-- appenders -->
   <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
@@ -108,6 +109,10 @@
       <property>
         <name>requestExternalOperation</name>
         <value>%requestExternalOperation</value>
+      </property>
+      <property>
+        <name>route</name>
+        <value>%route</value>
       </property>
     </properties>
     <headers>

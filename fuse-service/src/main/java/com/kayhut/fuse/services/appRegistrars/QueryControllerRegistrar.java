@@ -4,6 +4,7 @@ import com.cedarsoftware.util.io.JsonWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.graph.Graph;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.kayhut.fuse.logging.Route;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -42,11 +43,16 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** get the query store info */
         app.use(appUrlSupplier.queryStoreUrl())
-                .get(req -> Results.with(this.getController(app).getInfo(), Status.OK));
+                .get(req -> {
+                    Route.of("getQueryStore").write();
+                    return Results.with(this.getController(app).getInfo(), Status.OK);
+                });
 
         /** create a query */
         app.use(appUrlSupplier.queryStoreUrl())
                 .post(req -> {
+                    Route.of("postQuery").write();
+
                     CreateQueryRequest createQueryRequest = req.body(CreateQueryRequest.class);
                     req.set(CreateQueryRequest.class, createQueryRequest);
                     req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
@@ -61,6 +67,8 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /** get the query info */
         app.use(appUrlSupplier.resourceUrl(":queryId"))
                 .get(req -> {
+                    Route.of("getQuery").write();
+
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value());
                     return Results.with(response, response.status());
                 });
@@ -68,6 +76,8 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /** delete a query */
         app.use(appUrlSupplier.resourceUrl(":queryId"))
                 .delete(req -> {
+                    Route.of("deleteQuery").write();
+
                     ContentResponse response = this.getController(app).delete(req.param("queryId").value());
                     return Results.with(response, response.status());
                 });

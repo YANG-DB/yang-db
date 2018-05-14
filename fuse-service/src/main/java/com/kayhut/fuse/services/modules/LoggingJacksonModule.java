@@ -17,6 +17,7 @@ import org.jooby.Jooby;
 import org.jooby.MediaType;
 import org.jooby.Renderer;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -25,11 +26,9 @@ import java.util.TimeZone;
 public class LoggingJacksonModule extends ModuleBase {
     //region Constructors
     public LoggingJacksonModule() {
-        int x = 5;
     }
 
-    public LoggingJacksonModule(Logger logger, MetricRegistry metricRegistry) {
-        this.logger = logger;
+    public LoggingJacksonModule(MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
         this.enabled = true;
     }
@@ -48,7 +47,7 @@ public class LoggingJacksonModule extends ModuleBase {
             mapper.registerModule(new JavaTimeModule());
             mapper.registerModule(new ParameterNamesModule());
 
-            Renderer renderer = new JacksonLoggingRenderer(mapper, MediaType.json, this.logger, this.metricRegistry);
+            Renderer renderer = new JacksonLoggingRenderer(mapper, MediaType.json, LoggerFactory.getLogger(JacksonLoggingRenderer.class), this.metricRegistry);
 
             Multibinder.newSetBinder(binder, Renderer.class).addBinding().toInstance(renderer);
             binder.bind(Key.get(Renderer.class, Names.named(renderer.toString()))).toInstance(renderer);
@@ -58,7 +57,6 @@ public class LoggingJacksonModule extends ModuleBase {
 
     //region Fields
     private MetricRegistry metricRegistry;
-    private Logger logger;
 
     private boolean enabled = false;
     //endregion

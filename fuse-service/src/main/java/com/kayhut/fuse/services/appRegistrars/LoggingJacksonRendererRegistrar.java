@@ -15,8 +15,7 @@ import org.slf4j.Logger;
 
 public class LoggingJacksonRendererRegistrar implements AppRegistrar {
     //region Constructors
-    public LoggingJacksonRendererRegistrar(Logger logger, MetricRegistry metricRegistry) {
-        this.logger = logger;
+    public LoggingJacksonRendererRegistrar(MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -24,13 +23,12 @@ public class LoggingJacksonRendererRegistrar implements AppRegistrar {
     //region AppRegistrar Implementation
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
-        app.use(new LoggingJacksonModule(this.logger, this.metricRegistry));
+        app.use(new LoggingJacksonModule(this.metricRegistry));
         app.use(new Jackson());
     }
     //endregion
 
     //region Fields
-    protected Logger logger;
     protected MetricRegistry metricRegistry;
     //endregion
 }

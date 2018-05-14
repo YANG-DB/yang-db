@@ -25,6 +25,9 @@
         "methodName": {
           "type": "keyword"
         },
+        "route": {
+          "type": "keyword"
+        },
         "thread": {
           "type": "text",
           "fields": {

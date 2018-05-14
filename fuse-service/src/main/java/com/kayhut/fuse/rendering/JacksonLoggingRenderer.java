@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.primitives.Bytes;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.kayhut.fuse.dispatcher.logging.ElapsedFrom;
+import com.kayhut.fuse.dispatcher.logging.LogMessage;
+import com.kayhut.fuse.dispatcher.logging.LogType;
 import com.kayhut.fuse.dispatcher.logging.MethodName;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import org.jooby.MediaType;
@@ -14,6 +17,9 @@ import org.slf4j.Logger;
 import java.util.concurrent.TimeUnit;
 
 import static com.codahale.metrics.MetricRegistry.name;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
+import static com.kayhut.fuse.dispatcher.logging.LogType.start;
+import static com.kayhut.fuse.dispatcher.logging.LogType.success;
 
 public class JacksonLoggingRenderer extends JacksonBaseRenderer {
     public static final String mapperParameter = "JacksonLoggingRenderer.@mapper";
@@ -36,21 +42,21 @@ public class JacksonLoggingRenderer extends JacksonBaseRenderer {
 
     //region JacksonBaseRenderer Implementation
     protected void renderValue(final Object value, final Context ctx) throws Exception {
+        new LogMessage.Impl(this.logger, trace, "start renderValue", LogType.of(start), renderValue).log();
+
         Timer.Context timerContext = this.metricRegistry.timer(MetricRegistry.name(this.getClass().getName(), renderValue.toString())).time();
         byte[] bytes = this.mapper.writeValueAsBytes(value);
-        long renderElapsed = TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS);
-        long totalElapsed = value != null && value instanceof ContentResponse ?
-                Long.parseLong(((ContentResponse)value).getElapsed()) + renderElapsed :
-                0;
 
-        byte[] renderElapsedValueBytes = String.format("%08d", renderElapsed).getBytes();
-        byte[] totalElapsedValueBytes = String.format("%08d", totalElapsed).getBytes();
+        long renderElapsed = 0;
 
         byte[] tmpBytes = null;
 
         int indexOfRenderElapsed = Bytes.indexOf(bytes, renderElapsedBytes);
         if (indexOfRenderElapsed >= 0) {
-            tmpBytes = new byte[2 * (renderElapsedBytes.length + columnBytes.length + renderElapsedValueBytes.length)];
+            tmpBytes = new byte[2 * (renderElapsedBytes.length + columnBytes.length + sampleValueBytes.length)];
+
+            renderElapsed = TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS);
+            byte[] renderElapsedValueBytes = String.format("%08d", renderElapsed).getBytes();
 
             System.arraycopy(bytes, indexOfRenderElapsed, tmpBytes, 0, Math.min(tmpBytes.length, bytes.length - indexOfRenderElapsed + 1));
             indexOfRenderElapsed += Bytes.indexOf(tmpBytes, zeroBytes);
@@ -61,8 +67,14 @@ public class JacksonLoggingRenderer extends JacksonBaseRenderer {
         int indexOfTotalElapsed = Bytes.indexOf(bytes, totalElapsedBytes);
         if (indexOfTotalElapsed >= 0) {
             if (tmpBytes == null) {
-                tmpBytes = new byte[2 * (renderElapsedBytes.length + columnBytes.length + renderElapsedValueBytes.length)];
+                tmpBytes = new byte[2 * (renderElapsedBytes.length + columnBytes.length + sampleValueBytes.length)];
             }
+
+            long totalElapsed = value != null && value instanceof ContentResponse ?
+                    Long.parseLong(((ContentResponse)value).getElapsed()) + renderElapsed :
+                    0;
+
+            byte[] totalElapsedValueBytes = String.format("%08d", totalElapsed).getBytes();
 
             System.arraycopy(bytes, indexOfTotalElapsed, tmpBytes, 0, Math.min(tmpBytes.length, bytes.length - indexOfTotalElapsed + 1));
             indexOfTotalElapsed += Bytes.indexOf(tmpBytes, zeroBytes);
@@ -71,6 +83,8 @@ public class JacksonLoggingRenderer extends JacksonBaseRenderer {
         }
 
         ctx.length((long)bytes.length).send(bytes);
+
+        new LogMessage.Impl(this.logger, trace, "finish renderValue", LogType.of(success), renderValue, ElapsedFrom.now()).log();
     }
 
     @Override
@@ -87,6 +101,8 @@ public class JacksonLoggingRenderer extends JacksonBaseRenderer {
 
     private static byte[] renderElapsedBytes = "renderElapsed".getBytes();
     private static byte[] totalElapsedBytes = "totalElapsed".getBytes();
+
+    private static byte[] sampleValueBytes = String.format("%08d", 0).getBytes();
 
     private static byte[] columnBytes = ":".getBytes();
     private static byte[] zeroBytes = "0".getBytes();
