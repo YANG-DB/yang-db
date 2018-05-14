@@ -112,19 +112,6 @@ public class KnowledgeOntologySimpleE2ETest {
             Assert.assertEquals(relationsCount,1);
         }
 
-        /*Query query = Query.Builder.instance().withName("ComplexQuery").withOnt($ont.name()).withElements(Arrays.asList(
-                new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
-                new Quant1(2, QuantType.all, Arrays.asList( 6,7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
-                new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
-                new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
-                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "*k1")),
-                new EProp(11, $ont.pType$("bdt"), Constraint.of(ConstraintOp.eq, "nicknames")),
-                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
-        )).build();*/
-
         query = Query.Builder.instance().withName("ComplexQuery1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
@@ -137,21 +124,6 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(11, $ont.pType$("creationTime"), Constraint.of(ConstraintOp.gt, "2018-01-01 00:00:00.000")),
                 new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
-
-        /*
-        query = Query.Builder.instance().withName("SimpleQuery").withOnt($ont.name()).withElements(Arrays.asList(
-                new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
-                new Quant1(2, QuantType.all, Arrays.asList( 6,7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
-                new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
-                new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
-                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "Nic*")),
-                new EProp(11, $ont.pType$("bdt"), Constraint.of(ConstraintOp.match, "nicknames")),
-                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
-        )).build();
-         */
 
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10);
         resultsSize = pageData.getSize();
@@ -313,7 +285,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new ETyped(8, "B", $ont.eType$("Reference"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList( 11, 12), 0),
                 new EProp(11, $ont.pType$("system"), Constraint.of(ConstraintOp.eq, "system7")),
-                new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Test2"))
+                new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Arla Nava"))
         )).build();
 
         queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
@@ -338,6 +310,76 @@ public class KnowledgeOntologySimpleE2ETest {
             int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
             Assert.assertEquals(entitiesCount,2);
             Assert.assertEquals(relationsCount,1);
+        }
+
+        query = Query.Builder.instance().withName("SimpleQuery3").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,7), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasInsight"), R, null, 8, 0),
+                new ETyped(8, "B", $ont.eType$("Insight"), 9, 0),
+                new Quant1(9, QuantType.all, Arrays.asList(  12), 0),
+                new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Eve"))
+        )).build();
+
+        queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        cursorRequest = new CreateGraphCursorRequest();
+        cursorRequest.setTimeout(60000);
+        cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
+        pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,3);
+            Assert.assertEquals(relationsCount,2);
+        }
+
+        query = Query.Builder.instance().withName("SimpleQuery4").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,7), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasRelation"), R, null, 8, 0),
+                new ETyped(8, "B", $ont.eType$("Relation"), 9, 0),
+                new Quant1(9, QuantType.all, Arrays.asList(  12), 0),
+                new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Shani"))
+        )).build();
+
+        queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        cursorRequest = new CreateGraphCursorRequest();
+        cursorRequest.setTimeout(60000);
+        cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
+        pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,3);
+            Assert.assertEquals(relationsCount,2);
         }
     }
 
