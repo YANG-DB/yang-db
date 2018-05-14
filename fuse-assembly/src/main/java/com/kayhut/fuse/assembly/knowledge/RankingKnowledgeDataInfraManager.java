@@ -225,39 +225,73 @@ public class RankingKnowledgeDataInfraManager {
         _evEntityId = new ArrayList<>();
         String context = "global";
 
-        List<String> nicks = Arrays.asList("moti", "moti cohen", "roman", "mot", "motic");
-        //List<String> nicks = Arrays.asList("moti", "moti cohen", "motico", "yomo", "bla bla", "comoti", "roman");
 
-        for (int i = 1 ; i <= numPersons; i++) {
-            _evEntityId.add(i);
-            _evEntityId.add(i);
-            int nick = (i-1) % nicks.size();
-            ObjectNode on = createEntityValueObject(getEntityId(i) + "." + context,
-                    context,
-                    1,
-                    "nicknames",
-                    "nickname",
-                    "[\"\"]",
-                    "User",
-                    "2018-03-24 14:02:40.533",
-                    "User",
-                    "2018-03-24 14:02:40.533",
-                    nicks.get(nick)
-                    );
-            _entitiesValues.add(_mapper.writeValueAsString(on));
-            on = createEntityValueObject(getEntityId(i)+ "." + context,
-                    context,
-                    1,
-                    "title",
-                    "title",
-                    "[\"\"]",
-                    "User",
-                    "2018-03-24 14:02:40.533",
-                    "User",
-                    "2018-03-24 14:02:40.533",
-                    nicks.get(nick)
-            );
-            _entitiesValues.add(_mapper.writeValueAsString(on));
+        List<List<String>> nicks = Arrays.asList(
+                Arrays.asList("moti", "moti cohen"),
+                Arrays.asList("moti"),
+                Arrays.asList("moti cohen", "roman"),
+                Arrays.asList("motic"),
+                Arrays.asList("roman"),
+                Arrays.asList("tonette kwon"),
+                Arrays.asList("veorgiana vanasse"),
+                Arrays.asList("veorgiana vanasse suzette")
+
+        );
+        List<List<String>> titles = Arrays.asList(
+                Arrays.asList("moti cohen"),
+                Arrays.asList("moti"),
+                Arrays.asList("roman"),
+                Arrays.asList("motic"),
+                Arrays.asList("roman"),
+                Arrays.asList("tonette kwon"),
+                Arrays.asList("veorgiana vanasse"),
+                Arrays.asList("veorgiana vanasse suzette")
+        );
+        for (int i = 1 ; i <= nicks.size(); i++) {
+
+            int finalI = i;
+            nicks.get(i-1).forEach(nick -> {
+                _evEntityId.add(finalI);
+                ObjectNode on = createEntityValueObject(getEntityId(finalI) + "." + context,
+                        context,
+                        1,
+                        "nicknames",
+                        "nickname",
+                        "[\"\"]",
+                        "User",
+                        "2018-03-24 14:02:40.533",
+                        "User",
+                        "2018-03-24 14:02:40.533",
+                        nick
+                );
+                try {
+                    _entitiesValues.add(_mapper.writeValueAsString(on));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            titles.get(i-1).forEach(title -> {
+                _evEntityId.add(finalI);
+                ObjectNode on = createEntityValueObject(getEntityId(finalI) + "." + context,
+                        context,
+                        1,
+                        "title",
+                        "title",
+                        "[\"\"]",
+                        "User",
+                        "2018-03-24 14:02:40.533",
+                        "User",
+                        "2018-03-24 14:02:40.533",
+                        title
+                );
+                try {
+                    _entitiesValues.add(_mapper.writeValueAsString(on));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            });
+
         }
     }
 

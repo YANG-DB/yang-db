@@ -94,11 +94,14 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
                 if (!stringValue.isEmpty()) {
                     EPropGroup wrapperGroup = new EPropGroup(eProp.geteNum());
                     wrapperGroup.setQuantType(QuantType.some);
+                    EProp fieldPropElm = fieldProp.get(0);
                     fieldNames.forEach(field ->
                             appendRanking(query, eProp, new AsgEBase<>(wrapperGroup),
-                                    EProp.of(fieldProp.get(0).geteNum(), fieldProp.get(0).getpType(), new Constraint(ConstraintOp.eq, field)),
+                                    EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), new Constraint(ConstraintOp.eq, field)),
                                     stringValue.get()));
                     eProp.geteBase().getGroups().add(wrapperGroup);
+                    eProp.geteBase().getProps().remove(fieldPropElm);
+                    eProp.geteBase().getProps().add(EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), Constraint.of(ConstraintOp.inSet, fieldNames.toJavaList())));
                 }
             }
         }

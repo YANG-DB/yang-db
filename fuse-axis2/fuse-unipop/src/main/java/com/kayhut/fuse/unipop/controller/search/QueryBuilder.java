@@ -314,8 +314,8 @@ public class QueryBuilder {
             throw new UnsupportedOperationException("'terms' may not appear as first statement");
         }
 
-        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
-            throw new UnsupportedOperationException("'terms' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should && current.op != Op.boost) {
+            throw new UnsupportedOperationException("'terms' may only appear in the 'filter', 'must', 'mustNot', 'should' or 'boost' context");
         }
 
         if (!(Iterable.class.isAssignableFrom(value.getClass()))) {

@@ -21,6 +21,7 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.*;
+import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
@@ -28,6 +29,7 @@ import org.junit.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 
@@ -135,10 +137,94 @@ public class RankingScoreBasedE2ETests {
 
 
     @Test
-    public void test() throws IOException, InterruptedException {
-        Query query = getByNicknames();
+    public void testMotiEqNick() throws IOException, InterruptedException {
+        Query query = getByNicknamesEq("moti");
         AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
-        int a = 2;
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(2, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+    }
+
+    @Test
+    public void testMotiEqTitle() throws IOException, InterruptedException {
+        Query query = getByTitleEq("moti");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(2, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+    }
+
+
+    @Test
+    @Ignore // Ask roman
+    public void testMotiLikeNoWildcard() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("moti");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(2, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+    }
+
+
+    @Test
+    public void testMotiNickLike() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*moti*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(4, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+        Assert.assertEquals("e00000003.global", globalEntitiesSorted.get(2).geteID());
+        Assert.assertEquals("e00000004.global", globalEntitiesSorted.get(3).geteID());
+    }
+
+    @Test
+    public void testMotiTitleLike() throws IOException, InterruptedException {
+        Query query = getByTitleLike("*moti*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(4, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+        Assert.assertEquals("e00000003.global", globalEntitiesSorted.get(2).geteID());
+        Assert.assertEquals("e00000004.global", globalEntitiesSorted.get(3).geteID());
+    }
+
+
+    @Test
+    public void testMotiCoNickLike() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*moti co*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(2, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000003.global", globalEntitiesSorted.get(1).geteID());
+    }
+
+    @Test
+    public void testMotiCoTitleLike() throws IOException, InterruptedException {
+        Query query = getByTitleLike("*moti co*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(2, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000003.global", globalEntitiesSorted.get(1).geteID());
+    }
+
+
+    private List<Entity> getGlobalEntitesSorted(AssignmentsQueryResult assignmentsQueryResult) {
+        return assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).sorted((o1, o2) -> -1*Double.compare((double) o1.getProperties().stream().filter(p -> p.getpType().equals("score")).findFirst().get().getValue(),
+                (double) o2.getProperties().stream().filter(p -> p.getpType().equals("score")).findFirst().get().getValue())).collect(Collectors.toList());
     }
 
     private Query getEntities() {
@@ -154,7 +240,7 @@ public class RankingScoreBasedE2ETests {
         )).build();
     }
 
-    private Query getByNicknames() {
+    private Query getByNicknamesLike(String nick) {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
@@ -162,10 +248,47 @@ public class RankingScoreBasedE2ETests {
                 new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
                 new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
                 new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
-                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "*moti"))
-
+                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, nick))
         )).build();
     }
+
+    private Query getByTitleLike(String nick) {
+        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
+                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
+                new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
+                new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
+                new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
+                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, nick))
+        )).build();
+    }
+
+
+    private Query getByNicknamesEq(String nick) {
+        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
+                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
+                new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
+                new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
+                new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
+                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, nick))
+        )).build();
+    }
+
+    private Query getByTitleEq(String nick) {
+        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
+                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
+                new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
+                new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
+                new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
+                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, nick))
+        )).build();
+    }
+
 
     private Query getEValues() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
