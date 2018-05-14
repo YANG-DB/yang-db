@@ -304,20 +304,31 @@ public class ConstraintSearchAppenderTest {
                 "      \"must\" : [\n" +
                 "        {\n" +
                 "          \"bool\" : {\n" +
+                "            \"filter\" : [\n" +
+                "              {\n" +
+                "                \"bool\" : {\n" +
+                "                  \"should\" : [\n" +
+                "                    {\n" +
+                "                      \"term\" : {\n" +
+                "                        \"edf\" : {\n" +
+                "                          \"value\" : \"bla bla\",\n" +
+                "                          \"boost\" : 1.0\n" +
+                "                        }\n" +
+                "                      }\n" +
+                "                    }\n" +
+                "                  ],\n" +
+                "                  \"disable_coord\" : false,\n" +
+                "                  \"adjust_pure_negative\" : true,\n" +
+                "                  \"boost\" : 1.0\n" +
+                "                }\n" +
+                "              }\n" +
+                "            ],\n" +
                 "            \"should\" : [\n" +
                 "              {\n" +
                 "                \"term\" : {\n" +
                 "                  \"abc\" : {\n" +
                 "                    \"value\" : \"123\",\n" +
                 "                    \"boost\" : 100.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              },\n" +
-                "              {\n" +
-                "                \"term\" : {\n" +
-                "                  \"edf\" : {\n" +
-                "                    \"value\" : \"bla bla\",\n" +
-                "                    \"boost\" : 1.0\n" +
                 "                  }\n" +
                 "                }\n" +
                 "              }\n" +
@@ -515,15 +526,26 @@ public class ConstraintSearchAppenderTest {
                 "      \"must\" : [\n" +
                 "        {\n" +
                 "          \"bool\" : {\n" +
-                "            \"should\" : [\n" +
+                "            \"filter\" : [\n" +
                 "              {\n" +
-                "                \"wildcard\" : {\n" +
-                "                  \"qwerty\" : {\n" +
-                "                    \"wildcard\" : \"*bla*\",\n" +
-                "                    \"boost\" : 1.0\n" +
-                "                  }\n" +
+                "                \"bool\" : {\n" +
+                "                  \"should\" : [\n" +
+                "                    {\n" +
+                "                      \"wildcard\" : {\n" +
+                "                        \"qwerty\" : {\n" +
+                "                          \"wildcard\" : \"*bla*\",\n" +
+                "                          \"boost\" : 1.0\n" +
+                "                        }\n" +
+                "                      }\n" +
+                "                    }\n" +
+                "                  ],\n" +
+                "                  \"disable_coord\" : false,\n" +
+                "                  \"adjust_pure_negative\" : true,\n" +
+                "                  \"boost\" : 1.0\n" +
                 "                }\n" +
-                "              },\n" +
+                "              }\n" +
+                "            ],\n" +
+                "            \"should\" : [\n" +
                 "              {\n" +
                 "                \"bool\" : {\n" +
                 "                  \"must\" : [\n" +

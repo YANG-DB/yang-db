@@ -225,11 +225,13 @@ public class RankingKnowledgeDataInfraManager {
         _evEntityId = new ArrayList<>();
         String context = "global";
 
-        List<String> nicks = Arrays.asList("moti", "moti cohen", "motico", "yomo", "bla bla", "comoti", "roman");
+        List<String> nicks = Arrays.asList("moti", "moti cohen", "roman", "mot", "motic");
+        //List<String> nicks = Arrays.asList("moti", "moti cohen", "motico", "yomo", "bla bla", "comoti", "roman");
 
         for (int i = 1 ; i <= numPersons; i++) {
             _evEntityId.add(i);
             _evEntityId.add(i);
+            int nick = (i-1) % nicks.size();
             ObjectNode on = createEntityValueObject(getEntityId(i) + "." + context,
                     context,
                     1,
@@ -240,7 +242,7 @@ public class RankingKnowledgeDataInfraManager {
                     "2018-03-24 14:02:40.533",
                     "User",
                     "2018-03-24 14:02:40.533",
-                    nicks.get(i%nicks.size())
+                    nicks.get(nick)
                     );
             _entitiesValues.add(_mapper.writeValueAsString(on));
             on = createEntityValueObject(getEntityId(i)+ "." + context,
@@ -253,7 +255,7 @@ public class RankingKnowledgeDataInfraManager {
                     "2018-03-24 14:02:40.533",
                     "User",
                     "2018-03-24 14:02:40.533",
-                    nicks.get(i%nicks.size())
+                    nicks.get(nick)
             );
             _entitiesValues.add(_mapper.writeValueAsString(on));
         }
@@ -392,11 +394,12 @@ public class RankingKnowledgeDataInfraManager {
 
         List<String> contexts = Arrays.asList("context1", "global");
         for(int i=1; i<=_entities.size(); i++) {
-            String mylogicalId = getEntityId(i);
+            String myLogicalId = getEntityId(i);
 
-            bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId(mylogicalId + "." + contexts.get( (i-1) % 2))
-                    .setOpType(IndexRequest.OpType.INDEX).setRouting(mylogicalId)
-                    .setSource(_entities.get(i-1), XContentType.JSON)).get();
+            int finalI = i;
+            contexts.forEach(ctx -> bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId(myLogicalId + "." + ctx)
+                    .setOpType(IndexRequest.OpType.INDEX).setRouting(myLogicalId)
+                    .setSource(_entities.get(finalI -1), XContentType.JSON)).get());
         }
 
         for(int i=1; i<=_entitiesValues.size(); i++) {

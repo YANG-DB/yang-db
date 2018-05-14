@@ -162,7 +162,7 @@ public class RankingScoreBasedE2ETests {
                 new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
                 new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
                 new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
-                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "*moti*"))
+                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "*moti"))
 
         )).build();
     }

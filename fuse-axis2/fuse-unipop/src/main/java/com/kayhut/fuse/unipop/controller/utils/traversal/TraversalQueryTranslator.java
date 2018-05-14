@@ -52,10 +52,25 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
     @Override
     protected Boolean visitOrStep(OrStep<?> orStep) {
         int nextSequenceNumber = sequenceSupplier.get();
-        String currentLabel = "should_" + nextSequenceNumber;
-        queryBuilder.bool().should(currentLabel);
+        String currentBoolLabel = "bool_" + nextSequenceNumber;
+        String currentFilterLabel = "filter_" + nextSequenceNumber;
+        String currentShouldLabel = "should_" + nextSequenceNumber;
+        queryBuilder.bool(currentBoolLabel);
 
-        super.visitOrStep(orStep);
+        List<? extends Traversal.Admin<?, ?>> localChildren = orStep.getLocalChildren();
+        BoostingTraversalVisitor boostingTraversalVisitor = new BoostingTraversalVisitor();
+        Stream<Tuple2<Traversal, Boolean>> isBoostingTraversal = Stream.ofAll(localChildren).map(t -> new Tuple2(t, boostingTraversalVisitor.visit(t)));
+        Stream<Traversal> filters = isBoostingTraversal.filter(t -> !t._2).map(t -> t._1);
+        Stream<Traversal> shouldFilters = isBoostingTraversal.filter(t -> t._2).map(t -> t._1);
+
+        if(filters.size() > 0) {
+            queryBuilder.filter(currentFilterLabel).bool().should();
+            filters.forEach(f -> super.visitRecursive(f));
+            queryBuilder.seek(currentBoolLabel);
+        }
+        queryBuilder.should(currentShouldLabel);
+        shouldFilters.forEach(f -> super.visitRecursive(f));
+
         return Boolean.TRUE;
     }
 
@@ -73,10 +88,11 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
         Stream<Traversal> filters = isBoostingTraversal.filter(t -> !t._2).map(t -> t._1);
         Stream<Traversal> mustFilters = isBoostingTraversal.filter(t -> t._2).map(t -> t._1);
 
-        queryBuilder.filter(currentFilterLabel).bool().must();
-        filters.forEach(f -> super.visitRecursive(f));
-        queryBuilder.seek(currentBoolLabel);
-
+        if(filters.size() > 0) {
+            queryBuilder.filter(currentFilterLabel).bool().must();
+            filters.forEach(f -> super.visitRecursive(f));
+            queryBuilder.seek(currentBoolLabel);
+        }
         queryBuilder.must(currentMustLabel);
         mustFilters.forEach(f -> super.visitRecursive(f));
 

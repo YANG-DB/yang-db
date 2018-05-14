@@ -92,7 +92,10 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
                         addedIds.add(element.id().toString());
                     }
                     if(element.label().equals("Evalue")){
-                        eValueScores.add((Float) element.property("score").value());
+                        org.apache.tinkerpop.gremlin.structure.Property<Object> score = element.property("score");
+                        if(score.isPresent()) {
+                            eValueScores.add((Float) score.value());
+                        }
                     }
 
                     if (Vertex.class.isAssignableFrom(element.getClass()) && this.includeEntities) {
@@ -123,6 +126,9 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
 
         for(Map.Entry<String, Map<Vertex, Set<String>>> idVertexEtagsEntry : idVertexEtagsMap.entrySet()) {
             Vertex mergedVertex = mergeVertices(Stream.ofAll(idVertexEtagsEntry.getValue().keySet()).toJavaList());
+            if(this.idsScore.containsKey(mergedVertex.id())) {
+                mergedVertex.property("score", this.idsScore.get(mergedVertex.id()));
+            }
             Set<String> etags = Stream.ofAll(idVertexEtagsEntry.getValue().values()).flatMap(etags1 -> etags1).toJavaSet();
             builder.withEntity(toEntity(mergedVertex, etags));
         }
@@ -141,13 +147,6 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
 
 
         Assignment assignment = builder.build();
-
-
-        if( this.idsScore.size() > 0 ){
-            assignment.getEntities().sort(Comparator.comparing(o -> idsScore.getOrDefault(o.geteID(), 0f)
-                    , (o1, o2) -> -1 * Float.compare(o1, o2)));
-        }
-
         return AssignmentsQueryResult.Builder.instance().withAssignment(assignment).build();
     }
     //endregion
