@@ -6,7 +6,7 @@ import com.kayhut.fuse.dispatcher.logging.LogMessage;
 
 public class Route {
     public static LogMessage.MDCWriter of(String route) {
-        return new LogMessage.MDCWriter.KeyValue(RequestId.Converter.key, route);
+        return new LogMessage.MDCWriter.KeyValue(Converter.key, route);
     }
 
     public static class Converter extends ClassicConverter {
