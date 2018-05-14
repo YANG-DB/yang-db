@@ -41,8 +41,16 @@ public class JacksonLoggingRenderer extends JacksonBaseRenderer {
     //endregion
 
     //region JacksonBaseRenderer Implementation
+    @Override
+    public void render(final Object value, final Context ctx) throws Exception {
+        if (ctx.accepts(this.type) && value instanceof ContentResponse) {
+            ctx.type(this.type);
+            this.renderValue(value, ctx);
+        }
+    }
+
     protected void renderValue(final Object value, final Context ctx) throws Exception {
-        new LogMessage.Impl(this.logger, trace, "start renderValue", LogType.of(start), renderValue).log();
+        new LogMessage.Impl(this.logger, trace, "start renderValue", LogType.of(start), renderValue, ElapsedFrom.now()).log();
 
         Timer.Context timerContext = this.metricRegistry.timer(MetricRegistry.name(this.getClass().getName(), renderValue.toString())).time();
         byte[] bytes = this.mapper.writeValueAsBytes(value);
