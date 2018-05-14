@@ -29,9 +29,8 @@ import java.util.List;
 public class FuseApp extends Jooby {
     //region Consructors
     public FuseApp(AppUrlSupplier localUrlSupplier) {
-        //log all requests
         use(new Scanner());
-        use(new Jackson());
+
         use("*", new RequestLogger().extended());
         //metrics statistics
         MetricRegistry metricRegistry = new MetricRegistry();
@@ -54,6 +53,8 @@ public class FuseApp extends Jooby {
         use("*", new CorsHandler());
         //expose html assets
         assets("public/assets/**");
+
+        new LoggingJacksonRendererRegistrar(null, metricRegistry).register(this, localUrlSupplier);
 
         new BeforeAfterAppRegistrar().register(this, localUrlSupplier);
         new HomeAppRegistrar().register(this, localUrlSupplier);

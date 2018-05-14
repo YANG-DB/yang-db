@@ -88,14 +88,14 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                             .data(Optional.of(print))
                             .compose();
-                    return Results.with(JsonWriter.objectToJson(compose), response.status());
+                    return Results.with(compose, compose.status());
                 });
 
         /** get the query v1*/
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/v1")
                 .get(req -> {
                     ContentResponse response = this.getController(app).getV1(req.param("queryId").value());
-                    return Results.with(JsonWriter.objectToJson(response), response.status());
+                    return Results.with(response, response.status());
                 });
         /** get the query v1 print*/
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/v1/print")
@@ -105,7 +105,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                             .data(Optional.of(print))
                             .compose();
-                    return Results.with(JsonWriter.objectToJson(compose), response.status());
+                    return Results.with(compose, compose.status());
                 });
 
 
@@ -118,7 +118,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg")
                 .get(req -> {
                     ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param("queryId").value());
-                    return Results.with(JsonWriter.objectToJson(response), response.status());
+                    return Results.with(response, response.status());
                 });
 
         /** get the asg query */
@@ -136,7 +136,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                             .data(Optional.of(print))
                             .compose();
-                    return Results.with(JsonWriter.objectToJson(compose), response.status());
+                    return Results.with(compose, compose.status());
                 });
 
         /** get the query plan execution */
