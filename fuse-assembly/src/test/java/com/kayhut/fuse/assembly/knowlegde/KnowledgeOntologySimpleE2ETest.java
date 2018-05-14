@@ -313,6 +313,43 @@ public class KnowledgeOntologySimpleE2ETest {
             Assert.assertEquals(entitiesCount,3);
             Assert.assertEquals(relationsCount,2);
         }
+
+        query = Query.Builder.instance().withName("SimpleQuery5").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,7), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasRelation"), R, null, 8, 0),
+                new ETyped(8, "B", $ont.eType$("Relation"), 9, 0),
+                new Quant1(9, QuantType.all, Arrays.asList(  12, 13), 0),
+                new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Shani")),
+                new Rel(13, $ont.rType$("hasRvalue"), R, null, 14, 0),
+                new ETyped(14, "C", $ont.eType$("Rvalue"), 15, 0),
+                new Quant1(15, QuantType.all, Arrays.asList(  16), 0),
+                new EProp(16, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "sum"))
+        )).build();
+
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,4);
+            Assert.assertEquals(relationsCount,3);
+        }
+
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 1);
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,4);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,3);
+            Assert.assertEquals(relationsCount,2);
+        }
     }
 
     @AfterClass

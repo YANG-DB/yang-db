@@ -645,7 +645,7 @@ public class KnowledgeDataInfraManager  {
             bulk.add(client.prepareIndex().setIndex(relationIndex).setType(cIndexType).setId(relationIdString)
                     .setOpType(IndexRequest.OpType.INDEX)
                     .setSource(_relations.get(i), XContentType.JSON));
-            bulk.add(client.prepareIndex().setIndex(relationIndex).setType(cIndexType).setId("rv" + 1)
+            bulk.add(client.prepareIndex().setIndex(relationIndex).setType(cIndexType).setId("rv" + i)
                     .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
                     .setSource(_relationValues.get(i), XContentType.JSON));
         }
@@ -782,28 +782,6 @@ public class KnowledgeDataInfraManager  {
 
         PrepareReferenceValues();
         BulkLoadReferences();
-
-        /*for (int refId = 0; refId < 400; refId++) {
-            String referenceId = "ref" + String.format(schema.getIdFormat("reference"), refId);
-            String index = Stream.ofAll(schema.getPartitions("reference")).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
-                    .filter(partition -> partition.isWithin(referenceId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-
-            bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(referenceId)
-                    .setOpType(IndexRequest.OpType.INDEX)
-                    .setSource(new MapBuilder<String, Object>()
-                            .put("type", "reference")
-                            .put("title", "Title of - " + referenceId)
-                            .put("url", "http://" + UUID.randomUUID().toString() + "." + domains.get(random.nextInt(domains.size())))
-                            .put("value", contents.get(random.nextInt(contents.size())))
-                            .put("system", "system" + random.nextInt(10))
-                            .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                            .put("authorizationCount", 1)
-                            .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                            .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                            .put("creationUser", users.get(random.nextInt(users.size())))
-                            .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
-        }
-        count += bulk.execute().actionGet().getItems().length;*/
 
         PrepareEntityValues();
         PrepareEntityValuesValues();
@@ -1208,7 +1186,7 @@ public class KnowledgeDataInfraManager  {
         }
         count += bulk.execute().actionGet().getItems().length;*/
 
-        BulkRequestBuilder bulk = client.prepareBulk();
+        /*BulkRequestBuilder bulk = client.prepareBulk();
         // Inserting single relation
         String relationIdString = "r" + String.format(schema.getIdFormat("relation"), 0);
         String index = Stream.ofAll(schema.getPartitions("relation")).map(partition -> (IndexPartitions.Partition.Range) partition)
@@ -1236,155 +1214,7 @@ public class KnowledgeDataInfraManager  {
                         .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                         .put("creationUser", "User1")
                         .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
-        bulk.execute();
-
-        /*int relationId = 0;
-        int rvalueId = 0;
-        for (int i = 0; i < 20; i++) {
-            for (String context : Stream.ofAll(contexts).filter(context -> !context.equals("global"))) {
-                String relationIdString = "r" + String.format(schema.getIdFormat("relation"), relationId++);
-                String index = Stream.ofAll(schema.getPartitions("relation")).map(partition -> (IndexPartitions.Partition.Range) partition)
-                        .filter(partition -> partition.isWithin(relationIdString)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-                String category = "own";
-
-                String personLogicalId = "e" + String.format(schema.getIdFormat("entity"), i);
-                String personEntityId = personLogicalId + "." + context;
-                String personIndex = Stream.ofAll(schema.getPartitions("entity")).map(partition -> (IndexPartitions.Partition.Range) partition)
-                        .filter(partition -> partition.isWithin(personLogicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-
-                String propertyLogicalId = "e" + String.format(schema.getIdFormat("entity"), 100 + i);
-                String propertyEntityId = propertyLogicalId + "." + context;
-                String propertyCategory = ((i / 5) % 2) == 0 ? "car" : "boat";
-                String propertyIndex = Stream.ofAll(schema.getPartitions("entity")).map(partition -> (IndexPartitions.Partition.Range) partition)
-                        .filter(partition -> partition.isWithin(propertyLogicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-
-                String relationLastUpdateUser = users.get(random.nextInt(users.size()));
-                String relationCreationUser = users.get(random.nextInt(users.size()));
-                String relationLastUpdateTime = sdf.format(new Date(System.currentTimeMillis()));
-                String relationCreateTime = sdf.format(new Date(System.currentTimeMillis()));
-
-                bulk.add(client.prepareIndex().setIndex(personIndex).setType("pge").setId(relationIdString + ".out")
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(personLogicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("type", "e.relation")
-                                .put("entityAId", personEntityId)
-                                .put("entityACategory", "person")
-                                .put("entityBId", propertyEntityId)
-                                .put("entityBCategory", propertyCategory)
-                                .put("relationId", relationIdString)
-                                .put("direction", "out")
-                                .put("context", context)
-                                .put("category", category)
-                                .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                .put("authorizationCount", 1)
-                                .put("lastUpdateUser", relationLastUpdateUser)
-                                .put("lastUpdateTime", relationLastUpdateTime)
-                                .put("creationUser", relationCreationUser)
-                                .put("creationTime", relationCreateTime).get()));
-
-                bulk.add(client.prepareIndex().setIndex(propertyIndex).setType("pge").setId(relationIdString + ".in")
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(propertyLogicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("type", "e.relation")
-                                .put("entityBId", personEntityId)
-                                .put("entityBCategory", "person")
-                                .put("entityAId", propertyEntityId)
-                                .put("entityACategory", propertyCategory)
-                                .put("relationId", relationIdString)
-                                .put("direction", "in")
-                                .put("context", context)
-                                .put("category", category)
-                                .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                .put("authorizationCount", 1)
-                                .put("lastUpdateUser", relationLastUpdateUser)
-                                .put("lastUpdateTime", relationLastUpdateTime)
-                                .put("creationUser", relationCreationUser)
-                                .put("creationTime", relationCreateTime).get()));
-
-                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(relationIdString)
-                        .setOpType(IndexRequest.OpType.INDEX)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("type", "relation")
-                                .put("entityAId", personEntityId)
-                                .put("entityACategory", "person")
-                                .put("entityALogicalId", personLogicalId)
-                                .put("entityBId", propertyEntityId)
-                                .put("entityBCategory", propertyCategory)
-                                .put("entityBLogicalId", propertyLogicalId)
-                                .put("context", context)
-                                .put("category", category)
-                                .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                .put("authorizationCount", 1)
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                        .toJavaList())
-                                .put("lastUpdateUser", relationLastUpdateUser)
-                                .put("lastUpdateTime", relationLastUpdateTime)
-                                .put("creationUser", relationCreationUser)
-                                .put("creationTime", relationCreateTime).get()));
-
-                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("rv" + rvalueId++)
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("type", "r.value")
-                                .put("relationId", relationIdString)
-                                .put("context", context)
-                                .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                .put("authorizationCount", 1)
-                                .put("fieldId", "since")
-                                .put("bdt", "date")
-                                .put("dateValue", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                        .toJavaList())
-                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", users.get(random.nextInt(users.size())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
-
-                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("rv" + rvalueId++)
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("type", "r.value")
-                                .put("relationId", relationIdString)
-                                .put("context", context)
-                                .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                .put("authorizationCount", 1)
-                                .put("fieldId", "paid")
-                                .put("bdt", "payment")
-                                .put("intValue", random.nextInt(1000))
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                        .toJavaList())
-                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", users.get(random.nextInt(users.size())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
-
-                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("rv" + rvalueId++)
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("type", "r.value")
-                                .put("relationId", relationIdString)
-                                .put("context", context)
-                                .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                .put("authorizationCount", 1)
-                                .put("fieldId", "paid")
-                                .put("bdt", "payment")
-                                .put("intValue", random.nextInt(1000))
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                        .toJavaList())
-                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", users.get(random.nextInt(users.size())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
-            }
-        }
-        count += bulk.execute().actionGet().getItems().length;*/
+        bulk.execute();*/
 
         PrepareRelationsAndValues();
         BulkLoadRelationsAndValues();
