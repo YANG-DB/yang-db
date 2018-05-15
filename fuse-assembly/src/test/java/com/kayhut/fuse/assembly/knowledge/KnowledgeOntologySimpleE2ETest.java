@@ -17,6 +17,7 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
@@ -65,10 +66,25 @@ public class KnowledgeOntologySimpleE2ETest {
         fuseClient = new FuseClient("http://localhost:8888/fuse");
     }
 
-    private AssignmentsQueryResult GetAssignmentForQuery(Query query, FuseResourceInfo resourceInfo, int timeout, int sleeptime) throws IOException, InterruptedException
+    private AssignmentsQueryResult GetAssignmentForQuery(Query query, FuseResourceInfo resourceInfo, int timeout, int sleeptime, int cursorType) throws IOException, InterruptedException
     {
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(resourceInfo.getQueryStoreUrl(), query);
-        CreateGraphCursorRequest cursorRequest = new CreateGraphCursorRequest();
+        CreateCursorRequest cursorRequest = null;
+
+        switch (cursorType) {
+            case 0:
+                cursorRequest = new CreateGraphCursorRequest();
+                break;
+            case 1:
+                cursorRequest = new CreatePathsCursorRequest();
+                break;
+            case 2:
+                cursorRequest = new CreateGraphHierarchyCursorRequest();
+                break;
+            default:
+                cursorRequest = new CreateGraphCursorRequest();
+                break;
+        }
         cursorRequest.setTimeout(timeout);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
@@ -95,26 +111,12 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasEntityReference"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Reference"), 9, 0),
-                new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
+                new Quant1(9, QuantType.all, Arrays.asList(10, 11), 0),
                 new EProp(10, $ont.pType$("url"), Constraint.of(ConstraintOp.like, "*clown")),
-                new EProp(11, $ont.pType$("title"), Constraint.of(ConstraintOp.contains, "sample")),
-                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
-        )).build();
+                new EProp(11, $ont.pType$("title"), Constraint.of(ConstraintOp.notEmpty)/*, "sample")*/))
+        ).build();
 
-        /*Query query = Query.Builder.instance().withName("ComplexQuery").withOnt($ont.name()).withElements(Arrays.asList(
-                new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
-                new Quant1(2, QuantType.all, Arrays.asList( 6,7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
-                new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
-                new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
-                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "*k1")),
-                new EProp(11, $ont.pType$("bdt"), Constraint.of(ConstraintOp.eq, "nicknames")),
-                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
-        )).build();*/
-
-        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10);
+        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10,0);
         int resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize,1);
         String rtype = pageData.getResultType();
@@ -133,35 +135,49 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
-                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.startsWith, "Nic")),
-                new EProp(11, $ont.pType$("bdt"), Constraint.of(ConstraintOp.notEndsWith, "mes")),
-                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
-        )).build();
-
-        /*
-        query = Query.Builder.instance().withName("SimpleQuery").withOnt($ont.name()).withElements(Arrays.asList(
-                new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
-                new Quant1(2, QuantType.all, Arrays.asList( 6,7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
-                new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
-                new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
                 new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "Nic*")),
-                new EProp(11, $ont.pType$("bdt"), Constraint.of(ConstraintOp.match, "nicknames")),
+                new EProp(11, $ont.pType$("creationTime"), Constraint.of(ConstraintOp.gt, "2018-01-01 00:00:00.000")),
                 new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
-         */
 
-        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10);
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
         resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize,1);
         rtype = pageData.getResultType();
         for(int i=0;i<resultsSize; i++) {
             int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
             int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,2);
-            Assert.assertEquals(relationsCount,1);
+            Assert.assertEquals(entitiesCount,4);
+            Assert.assertEquals(relationsCount,2);
+        }
+
+        query = Query.Builder.instance().withName("ComplexQuery2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,7,13), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
+                new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
+                new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
+                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "Nic*")),
+                new EProp(11, $ont.pType$("creationTime"), Constraint.of(ConstraintOp.gt, "2018-01-01 00:00:00.000")),
+                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(13, $ont.rType$("hasEntityReference"), R, null, 14, 0),
+                new ETyped(14, "C", $ont.eType$("Reference"), 15, 0),
+                new Quant1(15, QuantType.all, Arrays.asList(16, 17), 0),
+                new EProp(16, $ont.pType$("url"), Constraint.of(ConstraintOp.eq, "http://1.1.1.1:6200/circus")),
+                new EProp(17, $ont.pType$("creationTime"), Constraint.of(ConstraintOp.gt, "2018-01-01 00:00:00.000"))
+        )).build();
+
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,3);
+            Assert.assertEquals(relationsCount,2);
         }
     }
 
@@ -196,21 +212,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
 
-        /*QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CreateGraphCursorRequest cursorRequest = new CreateGraphCursorRequest();
-        cursorRequest.setTimeout(60000);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
-
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
-
-        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());*/
-        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10);
+        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
         int resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize,1);
         String rtype = pageData.getResultType();
@@ -233,21 +235,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
 
-        /*QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CreateGraphCursorRequest cursorRequest = new CreateGraphCursorRequest();
-        cursorRequest.setTimeout(60000);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
-
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
-
-        pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());*/
-        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10);
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
         resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize,1);
         rtype = pageData.getResultType();
@@ -256,23 +244,6 @@ public class KnowledgeOntologySimpleE2ETest {
             int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
             Assert.assertEquals(entitiesCount,4);
             Assert.assertEquals(relationsCount,2);
-        }
-
-        //CreateGraphHierarchyCursorRequest hcursorRequest = new CreateGraphHierarchyCursorRequest(5000);
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CreatePathsCursorRequest pCursorRequest = new CreatePathsCursorRequest(5000);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), pCursorRequest);
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
-
-        pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        resultsSize = pageData.getSize();
-        Assert.assertEquals(resultsSize,2);
-        rtype = pageData.getResultType();
-        for(int i=0;i<resultsSize; i++) {
-            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
-            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,2);
-            Assert.assertEquals(relationsCount,1);
         }
 
         query = Query.Builder.instance().withName("SimpleQuery2").withOnt($ont.name()).withElements(Arrays.asList(
@@ -284,23 +255,10 @@ public class KnowledgeOntologySimpleE2ETest {
                 new ETyped(8, "B", $ont.eType$("Reference"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList( 11, 12), 0),
                 new EProp(11, $ont.pType$("system"), Constraint.of(ConstraintOp.eq, "system7")),
-                new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Test2"))
+                new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Arla Nava"))
         )).build();
 
-        queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CreateGraphCursorRequest cursorRequest = new CreateGraphCursorRequest();
-        cursorRequest.setTimeout(60000);
-        cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
-        pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
-
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
-
-        pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
         resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize,1);
         rtype = pageData.getResultType();
@@ -309,6 +267,87 @@ public class KnowledgeOntologySimpleE2ETest {
             int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
             Assert.assertEquals(entitiesCount,2);
             Assert.assertEquals(relationsCount,1);
+        }
+
+        query = Query.Builder.instance().withName("SimpleQuery3").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,7), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasInsight"), R, null, 8, 0),
+                new ETyped(8, "B", $ont.eType$("Insight"), 9, 0),
+                new Quant1(9, QuantType.all, Arrays.asList(  12), 0),
+                new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Eve"))
+        )).build();
+
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,3);
+            Assert.assertEquals(relationsCount,2);
+        }
+
+        query = Query.Builder.instance().withName("SimpleQuery4").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,7), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasRelation"), R, null, 8, 0),
+                new ETyped(8, "B", $ont.eType$("Relation"), 9, 0),
+                new Quant1(9, QuantType.all, Arrays.asList(  12), 0),
+                new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Shani"))
+        )).build();
+
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,3);
+            Assert.assertEquals(relationsCount,2);
+        }
+
+        query = Query.Builder.instance().withName("SimpleQuery5").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,7), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasRelation"), R, null, 8, 0),
+                new ETyped(8, "B", $ont.eType$("Relation"), 9, 0),
+                new Quant1(9, QuantType.all, Arrays.asList(  12, 13), 0),
+                new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Shani")),
+                new Rel(13, $ont.rType$("hasRvalue"), R, null, 14, 0),
+                new ETyped(14, "C", $ont.eType$("Rvalue"), 15, 0),
+                new Quant1(15, QuantType.all, Arrays.asList(  16), 0),
+                new EProp(16, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "sum"))
+        )).build();
+
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,4);
+            Assert.assertEquals(relationsCount,3);
+        }
+
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 1);
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,4);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,3);
+            Assert.assertEquals(relationsCount,2);
         }
     }
 
