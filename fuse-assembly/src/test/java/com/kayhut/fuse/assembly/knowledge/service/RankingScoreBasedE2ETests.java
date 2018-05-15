@@ -40,11 +40,11 @@ public class RankingScoreBasedE2ETests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
-        RankingKnowledgeDataInfraManager manager = new RankingKnowledgeDataInfraManager(KnowledgeE2ETestSuite.CONFIG_PATH);
+        manager = new RankingKnowledgeDataInfraManager(KnowledgeE2ETestSuite.CONFIG_PATH);
         manager.client_connect();
         manager.init();
         manager.load();
-        manager.client_close();
+        //manager.client_close();
     }
 
     @AfterClass
@@ -317,6 +317,6 @@ public class RankingScoreBasedE2ETests {
     }
     private static FuseClient fuseClient;
     private static Ontology.Accessor $ont;
-    private static KnowledgeDataInfraManager manager;
+    private static RankingKnowledgeDataInfraManager manager;
 
 }
