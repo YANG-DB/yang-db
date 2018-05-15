@@ -38,6 +38,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -118,35 +119,37 @@ public class KnowledgeDataInfraManager  {
     List<String> _references;
     ObjectMapper _mapper;
 
-    private void PrepareReferenceValues() throws JsonProcessingException {
+    private void PrepareReferenceValues() throws JsonProcessingException, ParseException {
         _references = new ArrayList<String>();
 
         List<String> auth = Arrays.asList("source1.procedure1", "source1.procedure1");
         KnowledgeReference ref = new KnowledgeReference();
-        ref.setAuthorization(auth);
-        ref.setSystem("system7");
-        ref.setCreationUser("Arla Nava");
-        ref.setAuthorizationCount(1);
-        ref.setLastUpdateUser("Lucia Mark");
-        ref.setType("reference");
-        ref.setUrl("http://1.1.1.1:6200/clown");
-        ref.setTitle("Sample Title 1");
-        ref.setCreationTime("2018-04-26 14:02:40.533");
-        ref.setLastUpdateTime("2018-04-29 13:02:40.133");
+        Reference reference = ref.getRef();
+        reference.setAuthorization(auth);
+        reference.setSystem("system7");
+        reference.setCreationUser("Arla Nava");
+        reference.setAuthorizationCount(1);
+        reference.setLastUpdateUser("Lucia Mark");
+        reference.setType("reference");
+        reference.setUrl("http://1.1.1.1:6200/clown");
+        reference.setTitle("Sample Title 1");
+        reference.setCreationTime(sdf.parse("2018-04-26 14:02:40.533"));
+        reference.setLastUpdateTime(sdf.parse("2018-04-29 13:02:40.133"));
 
         _references.add(_mapper.writeValueAsString(ref));
 
         ref = new KnowledgeReference();
-        ref.setAuthorization(auth);
-        ref.setSystem("system7");
-        ref.setCreationUser("Haim Moshe");
-        ref.setAuthorizationCount(1);
-        ref.setLastUpdateUser("Mark Rucinovitch");
-        ref.setType("reference");
-        ref.setUrl("http://1.1.1.1:6200/circus");
-        ref.setTitle("Sample Title 2");
-        ref.setCreationTime("2018-04-24 14:02:40.533");
-        ref.setLastUpdateTime("2018-04-27 13:02:40.133");
+        reference = ref.getRef();
+        reference.setAuthorization(auth);
+        reference.setSystem("system7");
+        reference.setCreationUser("Haim Moshe");
+        reference.setAuthorizationCount(1);
+        reference.setLastUpdateUser("Mark Rucinovitch");
+        reference.setType("reference");
+        reference.setUrl("http://1.1.1.1:6200/circus");
+        reference.setTitle("Sample Title 2");
+        reference.setCreationTime(sdf.parse( "2018-04-24 14:02:40.533"));
+        reference.setLastUpdateTime(sdf.parse("2018-04-27 13:02:40.133"));
 
         _references.add(_mapper.writeValueAsString(ref));
     }
@@ -655,7 +658,7 @@ public class KnowledgeDataInfraManager  {
         bulk.execute();
     }
 
-    public long load() throws IOException {
+    public long load() throws IOException, ParseException {
         long count = 0;
         int currentEntityLogicalId = 0;
         int evalueId = 0;

@@ -85,8 +85,6 @@
             <groupId>com.internetitem</groupId>
             <artifactId>logback-elasticsearch-appender</artifactId>
         </dependency>
-
-
         <!--Tests-->
         <dependency>
             <groupId>io.rest-assured</groupId>
