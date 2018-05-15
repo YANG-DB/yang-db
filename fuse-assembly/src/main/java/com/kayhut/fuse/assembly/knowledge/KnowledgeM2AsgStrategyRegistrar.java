@@ -47,6 +47,7 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new ConstraintIterableTransformationAsgStrategy(),
                 new RedundantLikeConstraintAsgStrategy(),
                 new RedundantLikeAnyConstraintAsgStrategy(),
+                new LikeToEqTransformationAsgStrategy(),
                 new ExactConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 //remove like Constraint Strategy since we have it inside the combiner
 //                new LikeConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),

@@ -153,14 +153,12 @@ public class RankingScoreBasedE2ETests {
         AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
-        Assert.assertEquals(2, globalEntitiesSorted.size());
+        Assert.assertEquals(1, globalEntitiesSorted.size());
         Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
-        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
     }
 
 
     @Test
-    @Ignore // Ask roman
     public void testMotiLikeNoWildcard() throws IOException, InterruptedException {
         Query query = getByNicknamesLike("moti");
         AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));

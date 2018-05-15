@@ -100,8 +100,10 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
                                     EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), new Constraint(ConstraintOp.eq, field)),
                                     stringValue.get()));
                     eProp.geteBase().getGroups().add(wrapperGroup);
-                    eProp.geteBase().getProps().remove(fieldPropElm);
-                    eProp.geteBase().getProps().add(EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), Constraint.of(ConstraintOp.inSet, fieldNames.toJavaList())));
+                    if(fieldPropElm.getCon().getExpr().toString().equals("nicknames")) {
+                        eProp.geteBase().getProps().remove(fieldPropElm);
+                        eProp.geteBase().getProps().add(EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), Constraint.of(ConstraintOp.inSet, fieldNames.toJavaList())));
+                    }
                 }
             }
         }

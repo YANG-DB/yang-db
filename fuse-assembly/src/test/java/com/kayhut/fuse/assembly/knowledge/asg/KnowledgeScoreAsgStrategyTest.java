@@ -100,7 +100,9 @@ public class KnowledgeScoreAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
         //verify original field filter was added with ranking eProp groups
         Assert.assertEquals(actual.getProps().size(), 2);
-        Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
+        Assert.assertEquals(actual.getProps().get(1).getpType(), "fieldId");
+        Assert.assertTrue(((List)actual.getProps().get(1).getCon().getExpr()).contains("title"));
+        Assert.assertTrue(((List)actual.getProps().get(1).getCon().getExpr()).contains("nicknames"));
         Assert.assertEquals(actual.getQuantType(),all);
 
         //1 root group for with 'some' operator {title/nickname}
@@ -231,7 +233,9 @@ public class KnowledgeScoreAsgStrategyTest {
         //verify original field filter was added with ranking eProp groups
         Assert.assertEquals(actual.getQuantType(),all);
         Assert.assertEquals(actual.getProps().size(), 2);
-        Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
+        Assert.assertEquals(actual.getProps().get(1).getpType(), "fieldId");
+        Assert.assertTrue(((List)actual.getProps().get(1).getCon().getExpr()).contains("title"));
+        Assert.assertTrue(((List)actual.getProps().get(1).getCon().getExpr()).contains("nicknames"));
         //1 root group for with 'some' operator
         Assert.assertEquals(actual.getGroups().size(), 1);
         Assert.assertEquals(actual.getGroups().get(0).getQuantType(), some);
@@ -363,7 +367,9 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(actual.getQuantType(),all);
         //verify original field filter was added with ranking eProp groups
         Assert.assertEquals(actual.getProps().size(), 2);
-        Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
+        Assert.assertEquals(actual.getProps().get(1).getpType(), "fieldId");
+        Assert.assertTrue(((List)actual.getProps().get(1).getCon().getExpr()).contains("title"));
+        Assert.assertTrue(((List)actual.getProps().get(1).getCon().getExpr()).contains("nicknames"));
         //1 root group for with 'some' operator
         Assert.assertEquals(actual.getGroups().size(), 1);
         Assert.assertEquals(actual.getGroups().get(0).getQuantType(), some);
@@ -490,7 +496,9 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(actual.getQuantType(),all);
         //verify original field filter was added with ranking eProp groups
         Assert.assertEquals(actual.getProps().size(), 2);
-        Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
+        Assert.assertEquals(actual.getProps().get(1).getpType(), "fieldId");
+        Assert.assertTrue(((List)actual.getProps().get(1).getCon().getExpr()).contains("title"));
+        Assert.assertTrue(((List)actual.getProps().get(1).getCon().getExpr()).contains("nicknames"));
         //1 root group for with 'some' operator
         Assert.assertEquals(actual.getGroups().size(), 1);
         Assert.assertEquals(actual.getGroups().get(0).getQuantType(), some);
@@ -607,7 +615,9 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(actual.getQuantType(),all);
         //verify original field filter was added with ranking eProp groups
         Assert.assertEquals(actual.getProps().size(), 2);
-        Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
+        Assert.assertEquals(actual.getProps().get(1).getpType(), "fieldId");
+        Assert.assertTrue(((List)actual.getProps().get(1).getCon().getExpr()).contains("title"));
+        Assert.assertTrue(((List)actual.getProps().get(1).getCon().getExpr()).contains("nicknames"));
         //1 root group for with 'some' operator
         Assert.assertEquals(actual.getGroups().size(), 1);
         Assert.assertEquals(actual.getGroups().get(0).getQuantType(), some);
