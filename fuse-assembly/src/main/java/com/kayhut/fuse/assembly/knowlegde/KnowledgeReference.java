@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Created by user pc on 5/11/2018.
  */
 public class KnowledgeReference {
-    private Reference _ref;
+    private Reference _ref = new Reference();
     private String _id;
 
     public String getId() {
