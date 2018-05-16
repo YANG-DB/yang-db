@@ -181,6 +181,18 @@ public class KnowledgeOntologySimpleE2ETest {
         }
     }
 
+    private void CheckAssignmentQueryResults(int total, int relationsCount, int entitiesCount, AssignmentsQueryResult data) {
+        int resultsSize = data.getSize();
+        Assert.assertEquals(resultsSize,total);
+        String rtype = data.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int tmpEntitiesCount = data.getAssignments().get(i).getEntities().size();
+            int tmpRelationsCount = data.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(tmpEntitiesCount,entitiesCount);
+            Assert.assertEquals(tmpRelationsCount,relationsCount);
+        }
+    }
+
     @Test
     public void SimpleQueryTest() throws IOException, InterruptedException {
         //FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
@@ -213,15 +225,7 @@ public class KnowledgeOntologySimpleE2ETest {
         )).build();
 
         AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
-        int resultsSize = pageData.getSize();
-        Assert.assertEquals(resultsSize,1);
-        String rtype = pageData.getResultType();
-        for(int i=0;i<resultsSize; i++) {
-            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
-            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,2);
-            Assert.assertEquals(relationsCount,1);
-        }
+        CheckAssignmentQueryResults(1,2,1, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -236,9 +240,9 @@ public class KnowledgeOntologySimpleE2ETest {
         )).build();
 
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
-        resultsSize = pageData.getSize();
+        int resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize,1);
-        rtype = pageData.getResultType();
+        String rtype = pageData.getResultType();
         for(int i=0;i<resultsSize; i++) {
             int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
             int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
@@ -342,6 +346,34 @@ public class KnowledgeOntologySimpleE2ETest {
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 1);
         resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize,4);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,3);
+            Assert.assertEquals(relationsCount,2);
+        }
+
+        query = Query.Builder.instance().withName("SimpleQuery6").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 4,5,6,7), 0),
+                new EProp(4, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(5, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
+                new EProp(6, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Hassan")),
+                new Rel(7, $ont.rType$("hasRelation"), R, null, 8, 0),
+                new ETyped(8, "B", $ont.eType$("Relation"), 9, 0),
+                new Quant1(9, QuantType.all, Arrays.asList(  12, 13), 0),
+                new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Shani")),
+                new Rel(13, $ont.rType$("hasRvalue"), R, null, 14, 0),
+                new ETyped(14, "C", $ont.eType$("Rvalue"), 15, 0),
+                new Quant1(15, QuantType.all, Arrays.asList(  16), 0),
+                new EProp(16, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "sum"))
+        )).build();
+
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
         rtype = pageData.getResultType();
         for(int i=0;i<resultsSize; i++) {
             int entitiesCount = pageData.getAssignments().get(i).getEntities().size();

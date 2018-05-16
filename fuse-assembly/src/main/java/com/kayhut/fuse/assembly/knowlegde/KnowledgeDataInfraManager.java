@@ -84,7 +84,7 @@ public class KnowledgeDataInfraManager  {
     }
 
     public long init() throws IOException {
-        String workingDir = System.getProperty("user.dir");
+        String workingDir = /*"c:\\Users\\rani\\Documents\\Fuse\\fuse-assembly";*/ System.getProperty("user.dir");
         File templates = Paths.get(workingDir, "indexTemplates").toFile();
         File[] templateFiles = templates.listFiles();
         if (templateFiles != null) {
@@ -473,10 +473,8 @@ public class KnowledgeDataInfraManager  {
     private List<String> _insights, _insightsEntities;
 
     private void PrepareInsights() throws JsonProcessingException {
-
         _insights = new ArrayList<String>();
         _insightsEntities = new ArrayList<String>();
-
         int id = 1;
         String insightId = "i" + String.format(schema.getIdFormat("insight"), id);
 
