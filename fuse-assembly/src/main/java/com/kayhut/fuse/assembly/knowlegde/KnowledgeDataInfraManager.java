@@ -46,11 +46,18 @@ import java.util.*;
  */
 public class KnowledgeDataInfraManager  {
     private static final Logger logger = LoggerFactory.getLogger(KnowledgeDataInfraManager.class);
-
     private TransportClient client;
     private SimpleDateFormat sdf;
     private Config conf;
     private RawSchema schema;
+    private ObjectMapper _mapper;
+    private List<String> _entities, _inRelations, _outRelations, _relationValues, _entitiesValues, _insights, _insightsEntities, _relations, _references;
+    private final String cEntityValue = "e.value";
+    private final String cInsight = "insight";
+    private final String cReference = "reference";
+    private final String cIndexType = "pge";
+    private final String cRelation = "relation";
+    private final String cEntity = "entity";
 
     public KnowledgeDataInfraManager(String confPath) throws UnknownHostException {
         try {
@@ -83,7 +90,7 @@ public class KnowledgeDataInfraManager  {
     }
 
     public long init() throws IOException {
-        String workingDir = "c:\\Users\\rani\\Documents\\Fuse\\fuse-assembly"; //System.getProperty("user.dir");
+        String workingDir = /*"c:\\Users\\rani\\Documents\\Fuse\\fuse-assembly";*/ System.getProperty("user.dir");
         File templates = Paths.get(workingDir, "indexTemplates").toFile();
         File[] templateFiles = templates.listFiles();
         if (templateFiles != null) {
@@ -115,50 +122,48 @@ public class KnowledgeDataInfraManager  {
         return Stream.ofAll(indices).count(s -> !s.isEmpty());
     }
 
-    List<String> _references;
-    ObjectMapper _mapper;
-
     private void PrepareReferenceValues() throws JsonProcessingException {
         _references = new ArrayList<String>();
 
-        List<String> auth = Arrays.asList("source1.procedure1", "source1.procedure1");
-        KnowledgeReference ref = new KnowledgeReference();
-        ref.setAuthorization(auth);
-        ref.setSystem("system7");
-        ref.setCreationUser("Arla Nava");
-        ref.setAuthorizationCount(1);
-        ref.setLastUpdateUser("Lucia Mark");
-        ref.setType("reference");
-        ref.setUrl("http://1.1.1.1:6200/clown");
-        ref.setTitle("Sample Title 1");
-        ref.setCreationTime("2018-04-26 14:02:40.533");
-        ref.setLastUpdateTime("2018-04-29 13:02:40.133");
+        //List<String> auth = Arrays.asList("source1.procedure1", "source1.procedure1");
+        ObjectNode on  = _mapper.createObjectNode();
+        on.put("system", "system7");
+        on.put("type", "reference");
+        on.put("creationUser", "Arla Nava");
+        on.put("lastUpdateUser", "Lucia Mark");
+        on.put("url", "http://1.1.1.1:6200/clown");
+        on.put("title", "Sample Title 1");
+        on.put("creationTime","2018-04-26 14:02:40.533");
+        on.put("lastUpdateTime","2018-04-29 13:02:40.133");
 
-        _references.add(_mapper.writeValueAsString(ref));
+        ArrayNode auth = _mapper.createArrayNode();
+        auth.add("source1.procedure1");
+        auth.add("source1.procedure1");
 
-        ref = new KnowledgeReference();
-        ref.setAuthorization(auth);
-        ref.setSystem("system7");
-        ref.setCreationUser("Haim Moshe");
-        ref.setAuthorizationCount(1);
-        ref.setLastUpdateUser("Mark Rucinovitch");
-        ref.setType("reference");
-        ref.setUrl("http://1.1.1.1:6200/circus");
-        ref.setTitle("Sample Title 2");
-        ref.setCreationTime("2018-04-24 14:02:40.533");
-        ref.setLastUpdateTime("2018-04-27 13:02:40.133");
+        on.put("authorization", auth);
 
-        _references.add(_mapper.writeValueAsString(ref));
+        _references.add(_mapper.writeValueAsString(on));
+
+        on  = _mapper.createObjectNode();
+        on.put("system", "system7");
+        on.put("type", "reference");
+        on.put("creationUser", "Haim Moshe");
+        on.put("lastUpdateUser", "Mark Rucinovitch");
+        on.put("url", "http://1.1.1.1:6200/circus");
+        on.put("title", "Sample Title 2");
+        on.put("creationTime","2018-04-24 14:02:40.533");
+        on.put("lastUpdateTime","2018-04-27 13:02:40.133");
+
+        on.put("authorization", auth);
+
+        _references.add(_mapper.writeValueAsString(on));
     }
-
-    private final String cEntity = "entity";
-    private List<String> _entities;
 
     private void PrepareEntityValues() throws JsonProcessingException {
         _entities = new ArrayList<String>();
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cEntity);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat("entity"), 1));
+        on.put("logicalId", "e" + String.format(schema.getIdFormat(cEntity), 1));
         on.put("context", "context1");
         on.put("category", "person");
         on.put("authorizationCount", 1);
@@ -180,7 +185,7 @@ public class KnowledgeDataInfraManager  {
 
         on = _mapper.createObjectNode();
         on.put("type", cEntity);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat("entity"), 2));
+        on.put("logicalId", "e" + String.format(schema.getIdFormat(cEntity), 2));
         on.put("context", "context1");
         on.put("category", "person");
         on.put("authorizationCount", 1);
@@ -190,7 +195,7 @@ public class KnowledgeDataInfraManager  {
         on.put("creationTime", "2018-03-27 11:12:40.133");
 
         refsNode = _mapper.createArrayNode();
-        refsNode.add("ref" + String.format(schema.getIdFormat("reference"), 2));
+        refsNode.add("ref" + String.format(schema.getIdFormat(cReference), 2));
         authNode = _mapper.createArrayNode();
         authNode.add("source1.procedure1");
         authNode.add("source2.procedure2");
@@ -199,22 +204,7 @@ public class KnowledgeDataInfraManager  {
         on.put("refs", refsNode);
 
         _entities.add(_mapper.writeValueAsString(on));
-        /*
-        put("type", "entity")
-                        .put("logicalId", mylogicalId)
-                        .put("context", "context1")
-                        .put("category", category)
-                        .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                        .put("authorizationCount", 1)
-                        .put("refs", "[\"" + "ref" + String.format(schema.getIdFormat("reference"), 1) + "\"]")
-                        .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                        .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                        .put("creationUser", users.get(random.nextInt(users.size())))
-                        .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get())
-         */
     }
-
-    private List<String> _inRelations, _outRelations, _relationValues;
 
     private void PrepareRelationsAndValues() throws JsonProcessingException {
         _relations = new ArrayList<String>();
@@ -222,8 +212,8 @@ public class KnowledgeDataInfraManager  {
         _outRelations = new ArrayList<>();
         _relationValues = new ArrayList<>();
 
-        String p1Identity = "e" + String.format(schema.getIdFormat("entity"), 1) + ".context1";
-        String p2Identity = "e" + String.format(schema.getIdFormat("entity"), 2) + ".context1";
+        String p1Identity = "e" + String.format(schema.getIdFormat(cEntity), 1) + ".context1";
+        String p2Identity = "e" + String.format(schema.getIdFormat(cEntity), 2) + ".context1";
 
         // Relation 1
         ObjectNode on = _mapper.createObjectNode();
@@ -392,9 +382,6 @@ public class KnowledgeDataInfraManager  {
         _relationValues.add(_mapper.writeValueAsString(on));
     }
 
-    private final String cEntityValue = "e.value";
-    private List<String> _entitiesValues;
-
     private void PrepareEntityValuesValues() throws JsonProcessingException {
         _entitiesValues = new ArrayList<String>();
 
@@ -465,9 +452,6 @@ public class KnowledgeDataInfraManager  {
         on.put("authorization", authNode);
         _entitiesValues.add(_mapper.writeValueAsString(on));
     }
-
-    private final String cInsight = "insight";
-    private List<String> _insights, _insightsEntities;
 
     private void PrepareInsights() throws JsonProcessingException {
         _insights = new ArrayList<String>();
@@ -549,9 +533,6 @@ public class KnowledgeDataInfraManager  {
         _insightsEntities.add(_mapper.writeValueAsString(on));
     }
 
-    private final String cReference = "reference";
-    private final String cIndexType = "pge";
-
     private void BulkLoadInsights() {
         BulkRequestBuilder bulk = client.prepareBulk();
         // Adding insight index
@@ -616,9 +597,6 @@ public class KnowledgeDataInfraManager  {
         }
         bulk.execute();
     }
-
-    private List<String> _relations;
-    private final String cRelation = "relation";
 
     private void BulkLoadRelationsAndValues() {
         BulkRequestBuilder bulk = client.prepareBulk();
@@ -785,436 +763,7 @@ public class KnowledgeDataInfraManager  {
 
         PrepareEntityValues();
         PrepareEntityValuesValues();
-
         BulkLoadEntitiesAndEntityValues();
-
-        /*BulkRequestBuilder bulk = client.prepareBulk();
-
-        String logicalId = "e" + String.format(schema.getIdFormat("entity"), currentEntityLogicalId);
-        String index = Stream.ofAll(schema.getPartitions("entity")).map(partition -> (IndexPartitions.Partition.Range) partition)
-                .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-        String category = "person";
-
-        String mylogicalId = "e" + String.format(schema.getIdFormat("entity"), 1);
-
-        // Insert person1
-        bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(mylogicalId + "." + "context1")
-                .setOpType(IndexRequest.OpType.INDEX).setRouting(mylogicalId)
-                .setSource(new MapBuilder<String, Object>()
-                        .put("type", "entity")
-                        .put("logicalId", mylogicalId)
-                        .put("context", "context1")
-                        .put("category", category)
-                        .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                        .put("authorizationCount", 1)
-                        .put("refs", "[\"" + "ref" + String.format(schema.getIdFormat("reference"), 1) + "\"]")
-                        .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                        .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                        .put("creationUser", users.get(random.nextInt(users.size())))
-                        .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
-
-        mylogicalId = "e" + String.format(schema.getIdFormat("entity"), 2);
-        // Insert person2
-        bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(mylogicalId + "." + "context1")
-                .setOpType(IndexRequest.OpType.INDEX).setRouting(mylogicalId)
-                .setSource(new MapBuilder<String, Object>()
-                        .put("type", "entity")
-                        .put("logicalId", mylogicalId)
-                        .put("context", "context1")
-                        .put("category", category)
-                        .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                        .put("authorizationCount", 1)
-                        .put("refs", "[\"" + "ref" + String.format(schema.getIdFormat("reference"), 2) + "\"]")
-                        .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                        .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                        .put("creationUser", users.get(random.nextInt(users.size())))
-                        .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
-
-        mylogicalId = "e" + String.format(schema.getIdFormat("entity"), 1);
-        // Insert EntityValue1
-        bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + 1)
-                .setOpType(IndexRequest.OpType.INDEX).setRouting(mylogicalId)
-                .setSource(new MapBuilder<String, Object>()
-                        .put("type", "e.value")
-                        .put("logicalId", mylogicalId)
-                        .put("entityId", mylogicalId + "." + "context1")
-                        .put("context", "context1")
-                        .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                        .put("authorizationCount", 1)
-                        .put("fieldId", "nicknames")
-                        .put("bdt", "nicknames")
-                        .put("stringValue", "Nick1")
-                        .put("refs", "[\"\"]")
-                        .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                        .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                        .put("creationUser", users.get(random.nextInt(users.size())))
-                        .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                        .get()));
-
-        mylogicalId = "e" + String.format(schema.getIdFormat("entity"), 2);
-        // Insert EntityValue2
-        bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + 2)
-                .setOpType(IndexRequest.OpType.INDEX).setRouting(mylogicalId)
-                .setSource(new MapBuilder<String, Object>()
-                        .put("type", "e.value")
-                        .put("logicalId", mylogicalId)
-                        .put("entityId", mylogicalId + "." + "context1")
-                        .put("context", "context1")
-                        .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                        .put("authorizationCount", 1)
-                        .put("fieldId", "nicknames")
-                        .put("bdt", "nicknames")
-                        .put("stringValue", "Nick2")
-                        .put("refs", "[\"\"]")
-                        .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                        .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                        .put("creationUser", users.get(random.nextInt(users.size())))
-                        .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                        .get()));
-        bulk.execute();*/
-
-        /*while (currentEntityLogicalId < 100) {
-            for (String context : contexts) {
-                String logicalId = "e" + String.format(schema.getIdFormat("entity"), currentEntityLogicalId);
-                String index = Stream.ofAll(schema.getPartitions("entity")).map(partition -> (IndexPartitions.Partition.Range) partition)
-                        .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-                String category = "person";
-                String description = descriptions.get(random.nextInt(descriptions.size()));
-                List<String> personNicknames = Stream.ofAll(Arrays.asList(nicknames.get(random.nextInt(nicknames.size())),
-                        nicknames.get(random.nextInt(nicknames.size())),
-                        nicknames.get(random.nextInt(nicknames.size())),
-                        nicknames.get(random.nextInt(nicknames.size())),
-                        nicknames.get(random.nextInt(nicknames.size())),
-                        nicknames.get(random.nextInt(nicknames.size()))))
-                        .distinct().take(random.nextInt(2) + 1).toJavaList();
-
-                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(logicalId + "." + context)
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("type", "entity")
-                                .put("logicalId", logicalId)
-                                .put("context", context)
-                                .put("category", category)
-                                .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                .put("authorizationCount", 1)
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                        .toJavaList())
-                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", users.get(random.nextInt(users.size())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
-
-                if (context.equals("global")) {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
-                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                            .setSource(new MapBuilder<String, Object>()
-                                    .put("type", "e.value")
-                                    .put("logicalId", logicalId)
-                                    .put("entityId", logicalId + "." + context)
-                                    .put("context", context)
-                                    .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                    .put("authorizationCount", 1)
-                                    .put("fieldId", "title")
-                                    .put("bdt", "title")
-                                    .put("stringValue", users.get(currentEntityLogicalId))
-                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                            .toJavaList())
-                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", users.get(random.nextInt(users.size())))
-                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .get()));
-
-                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
-                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                            .setSource(new MapBuilder<String, Object>()
-                                    .put("type", "e.value")
-                                    .put("logicalId", logicalId)
-                                    .put("entityId", logicalId + "." + context)
-                                    .put("context", context)
-                                    .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                    .put("authorizationCount", 1)
-                                    .put("fieldId", "description")
-                                    .put("bdt", "description")
-                                    .put("stringValue", description)
-                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                            .toJavaList())
-                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", users.get(random.nextInt(users.size())))
-                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .get()));
-
-                    for (String personNickname : personNicknames) {
-                        bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
-                                .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                                .setSource(new MapBuilder<String, Object>()
-                                        .put("type", "e.value")
-                                        .put("logicalId", logicalId)
-                                        .put("entityId", logicalId + "." + context)
-                                        .put("context", context)
-                                        .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                        .put("authorizationCount", 1)
-                                        .put("fieldId", "nicknames")
-                                        .put("bdt", "nicknames")
-                                        .put("stringValue", personNickname)
-                                        .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                                .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                                .toJavaList())
-                                        .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                        .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                        .put("creationUser", users.get(random.nextInt(users.size())))
-                                        .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                        .get()));
-                    }
-                } else if (context.equals("context3")) {
-
-                } else {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
-                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                            .setSource(new MapBuilder<String, Object>()
-                                    .put("type", "e.value")
-                                    .put("logicalId", logicalId)
-                                    .put("entityId", logicalId + "." + context)
-                                    .put("context", context)
-                                    .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                    .put("authorizationCount", 1)
-                                    .put("fieldId", "name")
-                                    .put("bdt", "name")
-                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                            .toJavaList())
-                                    .put("stringValue", users.get(currentEntityLogicalId))
-                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", users.get(random.nextInt(users.size())))
-                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .get()));
-
-                    int age = random.nextInt(120);
-                    int anotherAge = age + (random.nextInt(8) - 4);
-
-                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
-                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                            .setSource(new MapBuilder<String, Object>()
-                                    .put("type", "e.value")
-                                    .put("logicalId", logicalId)
-                                    .put("entityId", logicalId + "." + context)
-                                    .put("context", context)
-                                    .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                    .put("authorizationCount", 1)
-                                    .put("fieldId", "age")
-                                    .put("bdt", "age")
-                                    .put("intValue", age)
-                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                            .toJavaList())
-                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", users.get(random.nextInt(users.size())))
-                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .get()));
-
-                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
-                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                            .setSource(new MapBuilder<String, Object>()
-                                    .put("type", "e.value")
-                                    .put("logicalId", logicalId)
-                                    .put("entityId", logicalId + "." + context)
-                                    .put("context", context)
-                                    .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                    .put("authorizationCount", 1)
-                                    .put("fieldId", "age")
-                                    .put("bdt", "age")
-                                    .put("intValue", anotherAge)
-                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                            .toJavaList())
-                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", users.get(random.nextInt(users.size())))
-                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .get()));
-
-                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
-                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                            .setSource(new MapBuilder<String, Object>()
-                                    .put("type", "e.value")
-                                    .put("logicalId", logicalId)
-                                    .put("entityId", logicalId + "." + context)
-                                    .put("context", context)
-                                    .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                    .put("authorizationCount", 1)
-                                    .put("fieldId", "age")
-                                    .put("bdt", "age")
-                                    .put("intValue", anotherAge)
-                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                            .toJavaList())
-                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", users.get(random.nextInt(users.size())))
-                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("deleteUser", users.get(random.nextInt(users.size())))
-                                    .put("deleteTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .get()));
-                }
-            }
-
-            currentEntityLogicalId++;
-        }
-        count += bulk.execute().actionGet().getItems().length;*/
-
-        /*bulk = client.prepareBulk();
-        List<String> colors = Arrays.asList("red", "blue", "green", "white", "black", "brown", "orange", "purple", "pink", "yellow");
-        for (int i = 0; i < 20; i++, currentEntityLogicalId++) {
-            for (String context : contexts) {
-                String logicalId = "e" + String.format(schema.getIdFormat("entity"), currentEntityLogicalId);
-                String index = Stream.ofAll(schema.getPartitions("entity")).map(partition -> (IndexPartitions.Partition.Range) partition)
-                        .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-                String category = ((i / 5) % 2) == 0 ? "car" : "boat";
-                String color = colors.get(random.nextInt(colors.size()));
-                String title = color + " " + category;
-                String description = title;
-
-                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(logicalId + "." + context)
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("type", "entity")
-                                .put("logicalId", logicalId)
-                                .put("context", context)
-                                .put("category", category)
-                                .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                .put("authorizationCount", 1)
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                        .toJavaList())
-                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", users.get(random.nextInt(users.size())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
-
-                if (context.equals("global")) {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
-                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                            .setSource(new MapBuilder<String, Object>()
-                                    .put("type", "e.value")
-                                    .put("logicalId", logicalId)
-                                    .put("entityId", logicalId + "." + context)
-                                    .put("context", context)
-                                    .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                    .put("authorizationCount", 1)
-                                    .put("fieldId", "title")
-                                    .put("bdt", "title")
-                                    .put("stringValue", title)
-                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                            .toJavaList())
-                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", users.get(random.nextInt(users.size())))
-                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .get()));
-
-                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
-                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                            .setSource(new MapBuilder<String, Object>()
-                                    .put("type", "e.value")
-                                    .put("logicalId", logicalId)
-                                    .put("entityId", logicalId + "." + context)
-                                    .put("context", context)
-                                    .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                    .put("authorizationCount", 1)
-                                    .put("fieldId", "description")
-                                    .put("bdt", "description")
-                                    .put("stringValue", description)
-                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                            .toJavaList())
-                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", users.get(random.nextInt(users.size())))
-                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .get()));
-                } else {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
-                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                            .setSource(new MapBuilder<String, Object>()
-                                    .put("type", "e.value")
-                                    .put("logicalId", logicalId)
-                                    .put("entityId", logicalId + "." + context)
-                                    .put("context", context)
-                                    .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                    .put("authorizationCount", 1)
-                                    .put("fieldId", "color")
-                                    .put("bdt", "color")
-                                    .put("stringValue", color)
-                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                            .toJavaList())
-                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", users.get(random.nextInt(users.size())))
-                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .get()));
-
-                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
-                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                            .setSource(new MapBuilder<String, Object>()
-                                    .put("type", "e.value")
-                                    .put("logicalId", logicalId)
-                                    .put("entityId", logicalId + "." + context)
-                                    .put("context", context)
-                                    .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                                    .put("authorizationCount", 1)
-                                    .put("fieldId", "licenseNumber")
-                                    .put("bdt", "licenseNumber")
-                                    .put("stringValue", UUID.randomUUID().toString().substring(0, 8))
-                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                            .toJavaList())
-                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", users.get(random.nextInt(users.size())))
-                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .get()));
-                }
-            }
-        }
-        count += bulk.execute().actionGet().getItems().length;*/
-
-        /*BulkRequestBuilder bulk = client.prepareBulk();
-        // Inserting single relation
-        String relationIdString = "r" + String.format(schema.getIdFormat("relation"), 0);
-        String index = Stream.ofAll(schema.getPartitions("relation")).map(partition -> (IndexPartitions.Partition.Range) partition)
-                .filter(partition -> partition.isWithin(relationIdString)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-        String category = "own";
-
-        bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(relationIdString)
-                .setOpType(IndexRequest.OpType.INDEX)
-                .setSource(new MapBuilder<String, Object>()
-                        .put("type", "relation")
-                        .put("entityAId", "e" + String.format(schema.getIdFormat("entity"), 1) + ".context1")
-                        .put("entityACategory", "person")
-                        .put("entityALogicalId", "e" + String.format(schema.getIdFormat("entity"), 1))
-                        .put("entityBId", "e" + String.format(schema.getIdFormat("entity"), 2) + ".context2")
-                        .put("entityBCategory", "person")
-                        .put("entityBLogicalId", "e" + String.format(schema.getIdFormat("entity"), 1))
-                        .put("context", "context1")
-                        .put("category", category)
-                        .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
-                        .put("authorizationCount", 1)
-                        .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(schema.getIdFormat("reference"), refId))
-                                .toJavaList())
-                        .put("lastUpdateUser", "User")
-                        .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                        .put("creationUser", "User1")
-                        .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
-        bulk.execute();*/
 
         PrepareRelationsAndValues();
         BulkLoadRelationsAndValues();
