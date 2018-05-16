@@ -25,10 +25,7 @@ import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import org.jooby.Jooby;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +38,7 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 /**
  * Created by rani on 5/2/2018.
  */
+@Ignore
 public class KnowledgeOntologySimpleE2ETest {
     static KnowledgeDataInfraManager manager;
     static FuseClient fuseClient;
