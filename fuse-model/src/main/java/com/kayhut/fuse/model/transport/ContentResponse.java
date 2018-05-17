@@ -1,7 +1,9 @@
 package com.kayhut.fuse.model.transport;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.kayhut.fuse.model.results.TextContent;
 import org.jooby.Status;
 
@@ -12,6 +14,7 @@ import java.util.function.Predicate;
  * Created by lior on 19/02/2017.
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@JsonPropertyOrder( {"requestId", "elapsed", "renderElapsed", "totalElapsed" } )
 public class ContentResponse<T> implements Response, TextContent {
     public static <T> ContentResponse<T> notFound() {
         return Builder.<T>builder(Status.NOT_FOUND, Status.NOT_FOUND)
@@ -36,13 +39,24 @@ public class ContentResponse<T> implements Response, TextContent {
         return this.requestId;
     }
 
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    public String getElapsed() {
+        return String.format("%08d", this.elapsed);
+    }
+
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    public String getRenderElapsed() {
+        return String.format("%08d", this.renderElapsed);
+    }
+
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    public String getTotalElapsed() {
+        return String.format("%08d", this.totalElapsed);
+    }
+
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public ExternalMetadata getExternal() {
         return this.external;
-    }
-
-    public long getElapsed() {
-        return this.elapsed;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -82,8 +96,10 @@ public class ContentResponse<T> implements Response, TextContent {
     //region Fields
     private Status status = Status.NOT_FOUND;
     private String requestId;
-    private ExternalMetadata external;
     private long elapsed;
+    private long renderElapsed;
+    private long totalElapsed;
+    private ExternalMetadata external;
     private T data;
     private Exception error;
     //endregion
@@ -129,6 +145,16 @@ public class ContentResponse<T> implements Response, TextContent {
 
         public Builder<T> elapsed(long elapsed) {
             this.response.elapsed = elapsed;
+            return this;
+        }
+
+        public Builder<T> renderElapsed(long renderElapsed) {
+            this.response.renderElapsed = renderElapsed;
+            return this;
+        }
+
+        public Builder<T> totalElapsed(long totalElapsed) {
+            this.response.totalElapsed = totalElapsed;
             return this;
         }
 

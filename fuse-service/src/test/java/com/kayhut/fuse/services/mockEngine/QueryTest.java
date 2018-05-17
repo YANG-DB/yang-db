@@ -16,6 +16,7 @@ import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
 import io.restassured.http.Header;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -319,7 +320,7 @@ public class QueryTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
-                        Query data = FuseClient.unwrapDouble(o.toString());
+                        Query data = FuseClient.unwrap(o.toString(), Query.class);
                         QueryAssert.assertEquals(data, request.getQuery());
                         return data != null;
                     } catch (Exception e) {
@@ -400,7 +401,7 @@ public class QueryTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
-                        asgQuery[0] = FuseClient.unwrapDouble(o.toString());
+                        asgQuery[0] = FuseClient.unwrap(o.toString(), AsgQuery.class);
                         assertTrue(asgQuery[0].getName() != null);
                         assertTrue(asgQuery[0].getOnt() != null);
                         assertTrue(AsgQueryUtil.elements(asgQuery[0]).size() >= request.getQuery().getElements().size());
@@ -423,8 +424,8 @@ public class QueryTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
-                        String data = FuseClient.unwrapDouble(o.toString());
-                        assertEquals(data, AsgQueryDescriptor.print(asgQuery[0]));
+                        String data = StringUtils.strip(FuseClient.unwrap(o.toString()), "\"");
+                        assertEquals(AsgQueryDescriptor.print(asgQuery[0]).replace("\n", "\\n"), data);
                         return data != null;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -524,8 +525,8 @@ public class QueryTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
-                        assertEquals(FuseClient.unwrapDouble(o.toString()).toString(), QueryDescriptor.print(query));
-                        return FuseClient.unwrapDouble(o.toString()) != null;
+                        assertEquals(QueryDescriptor.print(query).replace("\n", "\\n"), StringUtils.strip(FuseClient.unwrap(o.toString()), "\""));
+                        return FuseClient.unwrap(o.toString()) != null;
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;

@@ -9,6 +9,7 @@ import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
 import com.kayhut.fuse.logging.RequestExternalMetadata;
 import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
@@ -26,9 +27,7 @@ import org.slf4j.Logger;
 import java.util.concurrent.TimeUnit;
 
 import static com.codahale.metrics.MetricRegistry.name;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.info;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
 import static com.kayhut.fuse.dispatcher.logging.LogType.*;
 
 /**
@@ -37,17 +36,20 @@ import static com.kayhut.fuse.dispatcher.logging.LogType.*;
 public class LoggingQueryController implements QueryController {
     public static final String controllerParameter = "LoggingQueryController.@controller";
     public static final String loggerParameter = "LoggingQueryController.@logger";
+    public static final String queryDescriptorParameter = "LoggingQueryController.@queryDescriptor";
 
     //region Constructors
     @Inject
     public LoggingQueryController(
             @Named(controllerParameter) QueryController controller,
             @Named(loggerParameter) Logger logger,
+            @Named(queryDescriptorParameter) Descriptor<Query> queryDescriptor,
             RequestIdSupplier requestIdSupplier,
             RequestExternalMetadataSupplier requestExternalMetadataSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
+        this.queryDescriptor = queryDescriptor;
         this.requestIdSupplier = requestIdSupplier;
         this.requestExternalMetadataSupplier = requestExternalMetadataSupplier;
         this.metricRegistry = metricRegistry;
@@ -69,6 +71,10 @@ public class LoggingQueryController implements QueryController {
         try {
             this.metricRegistry.counter(name(this.logger.getName(), "count")).inc();
             new LogMessage.Impl(this.logger, trace, "start create", LogType.of(start), create).log();
+            if (request.getQuery() != null) {
+                new LogMessage.Impl(this.logger, debug, "query: {}", LogType.of(log), create)
+                        .with(this.queryDescriptor.describe(request.getQuery())).log();
+            }
             response = this.controller.create(request);
             new LogMessage.Impl(this.logger, info, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
             new LogMessage.Impl(this.logger, trace, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
@@ -315,6 +321,8 @@ public class LoggingQueryController implements QueryController {
     private QueryController controller;
     private RequestIdSupplier requestIdSupplier;
     private RequestExternalMetadataSupplier requestExternalMetadataSupplier;
+
+    private Descriptor<Query> queryDescriptor;
 
     private Logger logger;
     private MetricRegistry metricRegistry;

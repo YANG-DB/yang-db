@@ -84,7 +84,9 @@ public interface LogMessage {
             //region MDCWriter Implementation
             @Override
             public void write() {
-                Stream.ofAll(this.writers).forEach(MDCWriter::write);
+                for(MDCWriter writer : this.writers) {
+                    writer.write();
+                }
             }
             //endregion
 

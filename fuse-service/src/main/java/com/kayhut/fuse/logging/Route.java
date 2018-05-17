@@ -4,18 +4,13 @@ import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
 
-import java.util.function.Supplier;
-
-/**
- * Created by roman.margolis on 07/01/2018.
- */
-public class RequestId {
-    public static LogMessage.MDCWriter of(String requestId) {
-        return new LogMessage.MDCWriter.KeyValue(Converter.key, requestId);
+public class Route {
+    public static LogMessage.MDCWriter of(String route) {
+        return new LogMessage.MDCWriter.KeyValue(Converter.key, route);
     }
 
     public static class Converter extends ClassicConverter {
-        public static final String key = "requestId";
+        public static final String key = "route";
 
         //region ClassicConverter Implementation
         @Override

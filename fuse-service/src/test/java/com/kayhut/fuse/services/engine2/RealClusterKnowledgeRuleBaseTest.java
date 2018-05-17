@@ -1468,7 +1468,7 @@ public class RealClusterKnowledgeRuleBaseTest {
                 new ETyped(1, "A", $ont.eType$("Evalue"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5, 6), 0),
                 new EProp(3, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames"))),
-                new EProp(4, "stringValue", Constraint.of(ConstraintOp.likeAny, Arrays.asList("*sherle*", "*Windso*"))),
+                new EProp(4, "stringValue", Constraint.of(ConstraintOp.likeAny, Arrays.asList("*sherle *", "*Windsor*"))),
                 new EProp(5, "context", Constraint.of(ConstraintOp.eq, "global")),
                 new Rel(6, $ont.rType$("hasEvalue"), L, null, 7, 0),
                 new ETyped(7, "B", $ont.eType$("Entity"), 8, 0),

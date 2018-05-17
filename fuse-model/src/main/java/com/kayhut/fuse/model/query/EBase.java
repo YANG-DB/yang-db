@@ -11,7 +11,9 @@ import com.kayhut.fuse.model.query.combiner.RComb;
 import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.HQuant;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
@@ -28,6 +30,7 @@ import com.kayhut.fuse.model.query.quant.Quant2;
         @JsonSubTypes.Type(name = "EComb", value = EComb.class),
         @JsonSubTypes.Type(name = "ELog", value = ELog.class),
         @JsonSubTypes.Type(name = "EProp", value = EProp.class),
+        @JsonSubTypes.Type(name = "EPropGroup", value = EPropGroup.class),
         @JsonSubTypes.Type(name = "ETyped", value = ETyped.class),
         @JsonSubTypes.Type(name = "EUntyped", value = EUntyped.class),
         @JsonSubTypes.Type(name = "HQuant", value = HQuant.class),
@@ -36,6 +39,7 @@ import com.kayhut.fuse.model.query.quant.Quant2;
         @JsonSubTypes.Type(name = "RComb", value = RComb.class),
         @JsonSubTypes.Type(name = "Rel", value = Rel.class),
         @JsonSubTypes.Type(name = "RelProp", value = RelProp.class),
+        @JsonSubTypes.Type(name = "RelPropGroup", value = RelPropGroup.class),
         @JsonSubTypes.Type(name = "AggL1", value = AggL1.class),
         @JsonSubTypes.Type(name = "AggL2", value = AggL2.class),
         @JsonSubTypes.Type(name = "AggL3", value = AggL3.class),
