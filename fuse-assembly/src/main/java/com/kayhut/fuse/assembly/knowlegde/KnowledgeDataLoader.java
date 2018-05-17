@@ -2,6 +2,7 @@ package com.kayhut.fuse.assembly.knowlegde;
 
 import com.sun.jna.StringArray;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -36,7 +37,32 @@ public class KnowledgeDataLoader {
         e.setAuthorizationCount(cAuthCount);
     }
 
+    // Creation & Deleting rellevant indices
+    private void startIndices() {
+
+    }
+
+    private List<KnowledgeReference> _knowledgeReferenceList;
+    private List<KnowledgeEntity> _knowledgeEntitiesList;
+
+    private void initLists() {
+        _knowledgeReferenceList = new ArrayList<KnowledgeReference>();
+        _knowledgeEntitiesList = new ArrayList<KnowledgeEntity>();
+    }
+
+    // Population of indices
+    private void populateIndices() {
+
+    }
+
+    // Cleaning relevant indices
+    private void removeIndices() {
+
+    }
+
     public void setFixedScenario_1() {
+        initLists();
+
         // Setting of the fixed scenario
 
         // [1.1] Defining Entities
@@ -166,7 +192,22 @@ public class KnowledgeDataLoader {
         insight3.addRef(ref6);
 
         // [2.6] Filling Relations
+        relation1.setId("1");
+        relation1.setEntity(markPerson, true);
+        relation1.setEntity(skodaCar, false);
+        Relation rrelation1 = relation1.getRelation();
+        rrelation1.setCategory("owns");
+        rrelation1.setContext("context1");
+        rrelation1.setAuthorizationCount(cAuthCount);
+        rrelation1.setAuthorization(cAuthsList);
+        rrelation1.setCreationUser("Dina");
+        rrelation1.setLastUpdateUser("Dina");
 
         // [2.7] Filling Relation-Values
+        rel1MethodProperty.setId("1");
+        rel1MethodProperty.setRelation(relation1);
+        RelationValue rel1MethodPropertyValue = rel1MethodProperty.getRelationValue();
+        rel1MethodPropertyValue.setFieldId("method");
+        rel1MethodPropertyValue.setStringValue("Bank-Transfer");
     }
 }

@@ -224,7 +224,7 @@ public class KnowledgeOntologySimpleE2ETest {
         )).build();
 
         AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
-        CheckAssignmentQueryResults(1,2,1, pageData);
+        CheckAssignmentQueryResults(1,1,2, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -239,15 +239,7 @@ public class KnowledgeOntologySimpleE2ETest {
         )).build();
 
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
-        int resultsSize = pageData.getSize();
-        Assert.assertEquals(resultsSize,1);
-        String rtype = pageData.getResultType();
-        for(int i=0;i<resultsSize; i++) {
-            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
-            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,4);
-            Assert.assertEquals(relationsCount,2);
-        }
+        CheckAssignmentQueryResults(1,2,4, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -262,15 +254,7 @@ public class KnowledgeOntologySimpleE2ETest {
         )).build();
 
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
-        resultsSize = pageData.getSize();
-        Assert.assertEquals(resultsSize,1);
-        rtype = pageData.getResultType();
-        for(int i=0;i<resultsSize; i++) {
-            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
-            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,2);
-            Assert.assertEquals(relationsCount,1);
-        }
+        CheckAssignmentQueryResults(1,1,2, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery3").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -284,15 +268,7 @@ public class KnowledgeOntologySimpleE2ETest {
         )).build();
 
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
-        resultsSize = pageData.getSize();
-        Assert.assertEquals(resultsSize,1);
-        rtype = pageData.getResultType();
-        for(int i=0;i<resultsSize; i++) {
-            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
-            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,3);
-            Assert.assertEquals(relationsCount,2);
-        }
+        CheckAssignmentQueryResults(1,2,3, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery4").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -306,15 +282,7 @@ public class KnowledgeOntologySimpleE2ETest {
         )).build();
 
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
-        resultsSize = pageData.getSize();
-        Assert.assertEquals(resultsSize,1);
-        rtype = pageData.getResultType();
-        for(int i=0;i<resultsSize; i++) {
-            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
-            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,3);
-            Assert.assertEquals(relationsCount,2);
-        }
+        CheckAssignmentQueryResults(1,2,3, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery5").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -332,26 +300,7 @@ public class KnowledgeOntologySimpleE2ETest {
         )).build();
 
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
-        resultsSize = pageData.getSize();
-        Assert.assertEquals(resultsSize,1);
-        rtype = pageData.getResultType();
-        for(int i=0;i<resultsSize; i++) {
-            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
-            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,4);
-            Assert.assertEquals(relationsCount,3);
-        }
-
-        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 1);
-        resultsSize = pageData.getSize();
-        Assert.assertEquals(resultsSize,4);
-        rtype = pageData.getResultType();
-        for(int i=0;i<resultsSize; i++) {
-            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
-            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,3);
-            Assert.assertEquals(relationsCount,2);
-        }
+        CheckAssignmentQueryResults(1,3,4, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery6").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -371,15 +320,7 @@ public class KnowledgeOntologySimpleE2ETest {
         )).build();
 
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
-        resultsSize = pageData.getSize();
-        Assert.assertEquals(resultsSize,1);
-        rtype = pageData.getResultType();
-        for(int i=0;i<resultsSize; i++) {
-            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
-            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,3);
-            Assert.assertEquals(relationsCount,2);
-        }
+        CheckAssignmentQueryResults(1,2,3, pageData);
     }
 
     @AfterClass

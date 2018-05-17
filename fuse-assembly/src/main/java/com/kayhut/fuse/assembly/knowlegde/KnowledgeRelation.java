@@ -5,7 +5,7 @@ package com.kayhut.fuse.assembly.knowlegde;
  */
 public class KnowledgeRelation {
     private String _id;
-    private Entity _aEntity, _bEntity;
+    private KnowledgeEntity _aEntity, _bEntity;
     private Relation _rel;
 
     public void setId(String value) {
@@ -16,7 +16,7 @@ public class KnowledgeRelation {
         return _id;
     }
 
-    public void setEntity(Entity entity, boolean isA) {
+    public void setEntity(KnowledgeEntity entity, boolean isA) {
         if (isA) {
             _aEntity = entity;
         } else {

@@ -7,6 +7,7 @@ import com.kayhut.fuse.executor.ontology.schema.RawSchema;
  */
 public class KnowledgeRawSchemaSingleton {
 
+    public static final String cIndexType = "pge";
     private static KnowledgeRawSchemaSingleton myObj;
     private KnowledgeRawSchemaShort _schema;
     /**
