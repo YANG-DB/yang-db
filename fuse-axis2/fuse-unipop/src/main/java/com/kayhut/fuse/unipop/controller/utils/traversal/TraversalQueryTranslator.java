@@ -3,12 +3,17 @@ package com.kayhut.fuse.unipop.controller.utils.traversal;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.translation.M1QueryTranslator;
 import com.kayhut.fuse.unipop.controller.search.translation.PredicateQueryTranslator;
+import com.kayhut.fuse.unipop.step.BoostingStepWrapper;
+import javaslang.Tuple2;
+import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.*;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.PropertiesStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.unipop.process.predicate.ExistsP;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -47,20 +52,50 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
     @Override
     protected Boolean visitOrStep(OrStep<?> orStep) {
         int nextSequenceNumber = sequenceSupplier.get();
-        String currentLabel = "should_" + nextSequenceNumber;
-        queryBuilder.bool().should(currentLabel);
+        String currentBoolLabel = "bool_" + nextSequenceNumber;
+        String currentFilterLabel = "filter_" + nextSequenceNumber;
+        String currentShouldLabel = "should_" + nextSequenceNumber;
+        queryBuilder.bool(currentBoolLabel);
 
-        super.visitOrStep(orStep);
+        List<? extends Traversal.Admin<?, ?>> localChildren = orStep.getLocalChildren();
+        BoostingTraversalVisitor boostingTraversalVisitor = new BoostingTraversalVisitor();
+        Stream<Tuple2<Traversal, Boolean>> isBoostingTraversal = Stream.ofAll(localChildren).map(t -> new Tuple2(t, boostingTraversalVisitor.visit(t)));
+        Stream<Traversal> filters = isBoostingTraversal.filter(t -> !t._2).map(t -> t._1);
+        Stream<Traversal> shouldFilters = isBoostingTraversal.filter(t -> t._2).map(t -> t._1);
+
+        if(filters.size() > 0) {
+            queryBuilder.filter(currentFilterLabel).bool().should();
+            filters.forEach(f -> super.visitRecursive(f));
+            queryBuilder.seek(currentBoolLabel);
+        }
+        queryBuilder.should(currentShouldLabel);
+        shouldFilters.forEach(f -> super.visitRecursive(f));
+
         return Boolean.TRUE;
     }
 
     @Override
     protected Boolean visitAndStep(AndStep<?> andStep) {
         int nextSequenceNumber = sequenceSupplier.get();
-        String currentLabel = "must_" + nextSequenceNumber;
-        queryBuilder.bool().must(currentLabel);
+        String currentBoolLabel = "bool_" + nextSequenceNumber;
+        String currentFilterLabel = "filter_" + nextSequenceNumber;
+        String currentMustLabel = "must_" + nextSequenceNumber;
 
-        super.visitAndStep(andStep);
+        queryBuilder.bool(currentBoolLabel);
+        List<? extends Traversal.Admin<?, ?>> localChildren = andStep.getLocalChildren();
+        BoostingTraversalVisitor boostingTraversalVisitor = new BoostingTraversalVisitor();
+        Stream<Tuple2<Traversal, Boolean>> isBoostingTraversal = Stream.ofAll(localChildren).map(t -> new Tuple2(t, boostingTraversalVisitor.visit(t)));
+        Stream<Traversal> filters = isBoostingTraversal.filter(t -> !t._2).map(t -> t._1);
+        Stream<Traversal> mustFilters = isBoostingTraversal.filter(t -> t._2).map(t -> t._1);
+
+        if(filters.size() > 0) {
+            queryBuilder.filter(currentFilterLabel).bool().must();
+            filters.forEach(f -> super.visitRecursive(f));
+            queryBuilder.seek(currentBoolLabel);
+        }
+        queryBuilder.must(currentMustLabel);
+        mustFilters.forEach(f -> super.visitRecursive(f));
+
         return Boolean.TRUE;
     }
 
@@ -111,6 +146,14 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
 
         return Boolean.TRUE;
     }
+
+    @Override
+    protected Boolean visitBoostingStep(BoostingStepWrapper o) {
+        queryBuilder.boost(o.getBoosting());
+        super.visitBoostingStep(o);
+        return Boolean.TRUE;
+    }
+
     //endregion
 
     //region Fields

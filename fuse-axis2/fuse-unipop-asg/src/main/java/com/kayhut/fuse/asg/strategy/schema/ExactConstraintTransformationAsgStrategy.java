@@ -9,12 +9,10 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.SchematicEProp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
@@ -62,43 +60,58 @@ public class ExactConstraintTransformationAsgStrategy implements AsgStrategy {
                 return;
             }
 
-            for (EProp eProp : new ArrayList<>(ePropGroupAsgEBase.geteBase().getProps())) {
-                if (!this.includedOps.contains(eProp.getCon().getOp())) {
-                    continue;
-                }
+            transformEPropGroup(ont, schemaProvider, ePropGroupAsgEBase.geteBase(), eTypedAsgEBase.get());
+        });
+    }
 
-                Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(eTypedAsgEBase.get().geteBase().geteType());
-                if (Stream.ofAll(vertexSchemas).isEmpty()) {
-                    continue;
-                }
+    private void transformEPropGroup(Ontology.Accessor ont, GraphElementSchemaProvider schemaProvider, EPropGroup ePropGroup, AsgEBase<ETyped> eTypedAsgEBase) {
+        for (EProp eProp : new ArrayList<>(ePropGroup.getProps())) {
+            if (!this.includedOps.contains(eProp.getCon().getOp())) {
+                continue;
+            }
 
-                // currently supporting a single vertex schema
-                GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
+            Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(eTypedAsgEBase.geteBase().geteType());
+            if (Stream.ofAll(vertexSchemas).isEmpty()) {
+                continue;
+            }
 
-                Optional<Property> property = ont.$property(eProp.getpType());
-                if (!property.isPresent()) {
-                    continue;
-                }
+            // currently supporting a single vertex schema
+            GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
 
-                Optional<GraphElementPropertySchema> propertySchema = vertexSchema.getProperty(property.get().getName());
-                if (!propertySchema.isPresent()) {
-                    continue;
-                }
+            Optional<Property> property = ont.$property(eProp.getpType());
+            if (!property.isPresent()) {
+                continue;
+            }
 
-                Optional<GraphElementPropertySchema.ExactIndexingSchema> exactIndexingSchema = propertySchema.get().getIndexingSchema(exact);
-                if (!exactIndexingSchema.isPresent()) {
-                    // should throw an error?
-                    throw new IllegalStateException("should have exact schema index");
-                }
+            Optional<GraphElementPropertySchema> propertySchema = vertexSchema.getProperty(property.get().getName());
+            if (!propertySchema.isPresent()) {
+                continue;
+            }
 
-                ePropGroupAsgEBase.geteBase().getProps().remove(eProp);
-                ePropGroupAsgEBase.geteBase().getProps().add(new SchematicEProp(
+            Optional<GraphElementPropertySchema.ExactIndexingSchema> exactIndexingSchema = propertySchema.get().getIndexingSchema(exact);
+            if (!exactIndexingSchema.isPresent()) {
+                // should throw an error?
+                throw new IllegalStateException("should have exact schema index");
+            }
+
+            ePropGroup.getProps().remove(eProp);
+            if(eProp instanceof RankingProp){
+                ePropGroup.getProps().add(new SchematicRankedEProp(
+                        0,
+                        eProp.getpType(),
+                        exactIndexingSchema.get().getName(),
+                        eProp.getCon(),
+                        ((RankingProp) eProp).getBoost()));
+            }else {
+                ePropGroup.getProps().add(new SchematicEProp(
                         0,
                         eProp.getpType(),
                         exactIndexingSchema.get().getName(),
                         eProp.getCon()));
             }
-        });
+        }
+
+        ePropGroup.getGroups().forEach(group -> transformEPropGroup(ont, schemaProvider, group, eTypedAsgEBase));
     }
     //endregion
 

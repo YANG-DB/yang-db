@@ -56,6 +56,7 @@ import static com.kayhut.test.data.DragonsOntology.*;
 import static com.kayhut.test.data.DragonsOntology.COLOR;
 import static com.kayhut.test.data.DragonsOntology.FIRE;
 import static com.kayhut.test.data.DragonsOntology.NAME;
+import static com.kayhut.test.data.DragonsOntology.POWER;
 import static com.kayhut.test.data.DragonsOntology.TEMPERATURE;
 import static com.kayhut.test.data.DragonsOntology.TIMESTAMP;
 import static java.util.Collections.singleton;

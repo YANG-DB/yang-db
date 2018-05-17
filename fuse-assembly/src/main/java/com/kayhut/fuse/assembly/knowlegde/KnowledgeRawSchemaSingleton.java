@@ -1,5 +1,6 @@
 package com.kayhut.fuse.assembly.knowlegde;
 
+import com.kayhut.fuse.assembly.knowledge.KnowledgeRawSchemaShort;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 
 /**

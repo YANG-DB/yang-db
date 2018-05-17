@@ -2,7 +2,6 @@ package com.kayhut.fuse.executor;
 
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
-import com.google.inject.Provider;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
@@ -22,6 +21,8 @@ import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFacto
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.executor.ontology.schema.*;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
@@ -33,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.unipop.configuration.UniGraphConfiguration;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static com.google.inject.name.Names.named;
@@ -56,6 +56,7 @@ public class ExecutorModule extends ModuleBase {
         binder.bind(QueryDriver.class).to(StandardQueryDriver.class).in(RequestScoped.class);
         binder.bind(CursorDriver.class).to(StandardCursorDriver.class).in(RequestScoped.class);
         binder.bind(PageDriver.class).to(StandardPageDriver.class).in(RequestScoped.class);
+        binder.bind(SearchOrderProviderFactory.class).to(getSearchOrderProvider(conf));
     }
 
     //endregion
@@ -214,8 +215,12 @@ public class ExecutorModule extends ModuleBase {
         return (Class<? extends RawSchema>) Class.forName(conf.getString(conf.getString("assembly")+".physical_raw_schema"));
     }
 
-    private Class<? extends InitialGraphDataLoader> getInitialDataLoader(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    private Class<? extends InitialGraphDataLoader> getInitialDataLoader(Config conf) throws ClassNotFoundException {
         return (Class<? extends InitialGraphDataLoader>) (Class.forName(conf.getString(conf.getString("assembly")+".physical_schema_data_loader")));
+    }
+
+    private Class<? extends SearchOrderProviderFactory> getSearchOrderProvider(Config conf) throws ClassNotFoundException {
+        return (Class<? extends SearchOrderProviderFactory>) (Class.forName(conf.getString(conf.getString("assembly")+".search_order_provider")));
     }
 
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {

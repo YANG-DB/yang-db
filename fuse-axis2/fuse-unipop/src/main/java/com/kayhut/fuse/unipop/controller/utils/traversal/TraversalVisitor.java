@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop.controller.utils.traversal;
 
+import com.kayhut.fuse.unipop.step.BoostingStepWrapper;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -32,11 +33,18 @@ public class TraversalVisitor<TReturn> {
             visitHasStep((HasStep) o);
         } else if (o.getClass() == TraversalFilterStep.class) {
             visitTraversalFilterStep((TraversalFilterStep) o);
+        } else if(o.getClass() == BoostingStepWrapper.class){
+          visitBoostingStep((BoostingStepWrapper) o);
         } else {
-            //TODO: allow configurable behvaior for unsupported or unepxected elements
+            //TODO: allow configurable behavior for unsupported or unexpected elements
             throw new UnsupportedOperationException(o.getClass() + " is not supported in promise conditions");
         }
 
+        return null;
+    }
+
+    protected TReturn visitBoostingStep(BoostingStepWrapper o) {
+        visitRecursive(o.getInnerStep());
         return null;
     }
 

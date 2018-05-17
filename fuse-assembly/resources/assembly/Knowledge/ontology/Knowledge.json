@@ -19,7 +19,8 @@
         "creationTime",
         "creationUser",
         "deleteTime",
-        "deleteUser"
+        "deleteUser",
+        "score"
       ]
     },
     {
@@ -40,7 +41,8 @@
         "bdt",
         "stringValue",
         "dateValue",
-        "intValue"
+        "intValue",
+        "score"
       ]
     },
     {
@@ -59,7 +61,8 @@
         "creationTime",
         "creationUser",
         "deleteTime",
-        "deleteUser"
+        "deleteUser",
+        "score"
       ]
     },
     {
@@ -79,7 +82,8 @@
         "bdt",
         "stringValue",
         "dateValue",
-        "intValue"
+        "intValue",
+        "score"
       ]
     },
     {
@@ -96,7 +100,8 @@
         "creationTime",
         "creationUser",
         "deleteTime",
-        "deleteUser"
+        "deleteUser",
+        "score"
       ]
     },
     {
@@ -112,7 +117,8 @@
         "creationTime",
         "creationUser",
         "deleteTime",
-        "deleteUser"
+        "deleteUser",
+        "score"
       ]
     }
   ],
@@ -400,6 +406,11 @@
       "pType": "type",
       "name": "type",
       "type": "string"
+    },
+    {
+      "pType":"score",
+      "name":"score",
+      "type":"float"
     }
   ]
 }

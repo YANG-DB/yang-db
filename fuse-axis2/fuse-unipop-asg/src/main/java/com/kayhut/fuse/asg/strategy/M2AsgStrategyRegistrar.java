@@ -43,6 +43,7 @@ public class M2AsgStrategyRegistrar  implements AsgStrategyRegistrar {
                 new ConstraintIterableTransformationAsgStrategy(),
                 new RedundantLikeConstraintAsgStrategy(),
                 new RedundantLikeAnyConstraintAsgStrategy(),
+                new LikeToEqTransformationAsgStrategy(),
                 new ExactConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 new LikeConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 new LikeAnyConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
