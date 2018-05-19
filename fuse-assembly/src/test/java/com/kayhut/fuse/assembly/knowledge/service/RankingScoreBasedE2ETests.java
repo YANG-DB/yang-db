@@ -189,11 +189,10 @@ public class RankingScoreBasedE2ETests {
         AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
-        Assert.assertEquals(4, globalEntitiesSorted.size());
+        Assert.assertEquals(3, globalEntitiesSorted.size());
         Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
         Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
-        Assert.assertEquals("e00000003.global", globalEntitiesSorted.get(2).geteID());
-        Assert.assertEquals("e00000004.global", globalEntitiesSorted.get(3).geteID());
+        Assert.assertEquals("e00000004.global", globalEntitiesSorted.get(2).geteID());
     }
 
 
@@ -214,9 +213,8 @@ public class RankingScoreBasedE2ETests {
         AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
-        Assert.assertEquals(2, globalEntitiesSorted.size());
+        Assert.assertEquals(1, globalEntitiesSorted.size());
         Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(0).geteID());
-        Assert.assertEquals("e00000003.global", globalEntitiesSorted.get(1).geteID());
     }
 
 
