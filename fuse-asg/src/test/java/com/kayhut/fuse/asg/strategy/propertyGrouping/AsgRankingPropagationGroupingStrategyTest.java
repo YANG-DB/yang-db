@@ -165,7 +165,7 @@ public class AsgRankingPropagationGroupingStrategyTest {
         innerGroup = new EPropGroup(9);//change
         innerGroup.setQuantType(QuantType.all);
         innerGroup.getProps().add(new EProp(9, "stringValue", Constraint.of(ConstraintOp.likeAny, "*abc")));
-        innerGroup.getProps().add(new ScoreEProp(9, "stringValue", Constraint.of(ConstraintOp.likeAny, "*abc"),10));
+        innerGroup.getProps().add(new EProp(9, "stringValue", Constraint.of(ConstraintOp.likeAny, "*abc")));
         group.getGroups().get(0).getGroups().get(0).getGroups().add(innerGroup);
 
         AsgEBase<Start> asgStart =
@@ -239,11 +239,13 @@ public class AsgRankingPropagationGroupingStrategyTest {
         innerGroup = innerGroup.getGroups().get(0);
         assertTrue(innerGroup instanceof ScoreEPropGroup);
 
-        //group 9
-        assertFalse(innerGroup.getGroups().get(0) instanceof ScoreEPropGroup);
-
         //group 8
-        assertTrue(innerGroup.getGroups().get(1) instanceof ScoreEPropGroup);
+        assertEquals(8, innerGroup.getGroups().get(0).geteNum());
+        assertTrue(innerGroup.getGroups().get(0) instanceof ScoreEPropGroup);
+
+        //group 9
+        assertEquals(9, innerGroup.getGroups().get(1).geteNum());
+        assertFalse(innerGroup.getGroups().get(1) instanceof ScoreEPropGroup);
 
         //group 2
         innerGroup = group.getGroups().get(1);

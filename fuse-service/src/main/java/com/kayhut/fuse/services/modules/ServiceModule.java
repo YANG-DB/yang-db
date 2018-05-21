@@ -6,6 +6,10 @@ import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
+import com.kayhut.fuse.model.descriptors.Descriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.JacksonQueryDescriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecutionScope;
@@ -126,6 +130,10 @@ public class ServiceModule extends ModuleBase {
                 this.bind(Logger.class)
                         .annotatedWith(named(LoggingQueryController.loggerParameter))
                         .toInstance(LoggerFactory.getLogger(StandardQueryController.class));
+
+                this.bind(new TypeLiteral<Descriptor<Query>>(){})
+                        .annotatedWith(named(LoggingQueryController.queryDescriptorParameter))
+                        .to(JacksonQueryDescriptor.class).asEagerSingleton();
 
                 this.bind(QueryController.class)
                         .to(LoggingQueryController.class);

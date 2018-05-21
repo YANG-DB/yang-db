@@ -1,6 +1,7 @@
 package com.kayhut.fuse.services.appRegistrars;
 
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.kayhut.fuse.logging.Route;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ExecutionScope;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
@@ -21,6 +22,8 @@ public class CursorControllerRegistrar extends AppControllerRegistrarBase<Cursor
         /** get the query cursor store info */
         app.use(appUrlSupplier.cursorStoreUrl(":queryId"))
                 .get(req -> {
+                    Route.of("getCursorStore").write();
+
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value());
                     return Results.with(response, response.status());
                 });
@@ -28,6 +31,8 @@ public class CursorControllerRegistrar extends AppControllerRegistrarBase<Cursor
         /** create a query cursor */
         app.use(appUrlSupplier.cursorStoreUrl(":queryId"))
                 .post(req -> {
+                    Route.of("postCursor").write();
+
                     CreateCursorRequest cursorRequest = req.body(CreateCursorRequest.class);
                     req.set(ExecutionScope.class,new ExecutionScope(cursorRequest.getTimeout()));
                     ContentResponse response = this.getController(app).create(req.param("queryId").value(), cursorRequest);
@@ -37,12 +42,16 @@ public class CursorControllerRegistrar extends AppControllerRegistrarBase<Cursor
         /** get the cursor resource info */
         app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId"))
                 .get(req -> {
+                    Route.of("getCursor").write();
+
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value(), req.param("cursorId").value());
                     return Results.with(response, response.status());
                 });
 
         app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId"))
                 .delete(req -> {
+                    Route.of("deleteCursor").write();
+
                     ContentResponse response = this.getController(app).delete(req.param("queryId").value(), req.param("cursorId").value());
                     return Results.with(response, response.status());
                 });

@@ -151,6 +151,10 @@ public class FuseClient {
         return mapper.writeValueAsString(responseMap.get("data"));
     }
 
+    public static <T> T unwrap(String response, Class<T> klass) throws IOException {
+        return new ObjectMapper().readValue(unwrap(response), klass);
+    }
+
     public  static <T> T unwrapDouble(String response) throws IOException {
         return ((ContentResponse<T>)JsonReader.jsonToJava((String)JsonReader.jsonToJava(response))).getData();
     }

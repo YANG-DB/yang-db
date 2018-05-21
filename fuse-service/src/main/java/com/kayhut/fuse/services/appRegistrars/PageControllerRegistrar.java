@@ -1,6 +1,7 @@
 package com.kayhut.fuse.services.appRegistrars;
 
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.kayhut.fuse.logging.Route;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
@@ -21,6 +22,8 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
         /** get the cursor page store info*/
         app.use(appUrlSupplier.pageStoreUrl(":queryId", ":cursorId"))
                 .get(req -> {
+                    Route.of("getPageStore").write();
+
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value(), req.param("cursorId").value());
                     return Results.with(response, response.status());
                 });
@@ -28,6 +31,8 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
         /** create the next page */
         app.use(appUrlSupplier.pageStoreUrl(":queryId", ":cursorId"))
                 .post(req -> {
+                    Route.of("postPage").write();
+
                     CreatePageRequest createPageRequest = req.body(CreatePageRequest.class);
                     req.set(CreatePageRequest.class,createPageRequest);
                     ContentResponse<PageResourceInfo> entity = createPageRequest.isFetch() ?
@@ -39,6 +44,8 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
         /** get page info by id */
         app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))
                 .get(req -> {
+                    Route.of("getPage").write();
+
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
                     return Results.with(response, response.status());
                 });
@@ -46,7 +53,18 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
         /** get page data by id */
         app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/data")
                 .get(req -> {
+                    Route.of("getPageData").write();
+
                     ContentResponse response = this.getController(app).getData(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
+                    return Results.with(response, response.status());
+                });
+
+        /** get page data by id */
+        app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))
+                .delete(req -> {
+                    Route.of("deletePage").write();
+
+                    ContentResponse response = this.getController(app).delete(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
                     return Results.with(response, response.status());
                 });
     }

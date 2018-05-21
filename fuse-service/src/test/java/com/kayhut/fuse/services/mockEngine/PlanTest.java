@@ -90,7 +90,7 @@ public class PlanTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
-                        String data = FuseClient.unwrapDouble(o.toString());
+                        String data = FuseClient.unwrap(o.toString());
                         return data!=null;
                     } catch (Exception e) {
                         e.printStackTrace();

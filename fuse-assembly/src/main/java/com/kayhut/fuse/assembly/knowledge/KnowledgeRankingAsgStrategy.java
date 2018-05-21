@@ -104,10 +104,36 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
                         eProp.geteBase().getProps().remove(fieldPropElm);
                         eProp.geteBase().getProps().add(EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), Constraint.of(ConstraintOp.inSet, fieldNames.toJavaList())));
                     }
+                    Iterable<EProp> newEprops = applyLikeAndEqRules(stringValue.get(), eProp, query);
+                    eProp.geteBase().getProps().remove(stringValue.get());
+                    newEprops.forEach(e -> eProp.geteBase().getProps().add(e));
                 }
+
             }
         }
         //eProp.geteBase().getGroups().forEach(g -> translateGroup(new AsgEBase<>(g)));
+    }
+
+    private Iterable<EProp> applyLikeAndEqRules(EProp eProp, AsgEBase<EPropGroup> parentGroup, AsgQuery query) {
+        Ontology.Accessor ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt()).get());
+        GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(ont.get());
+        if(eProp.getCon().getOp() == ConstraintOp.eq){
+            String equalsField = equalsField(parentGroup, schemaProvider, ont, eProp.getpType());
+            if(equalsField != null){
+               return Collections.singleton(new SchematicEProp(eProp.geteNum(), eProp.getpType(), equalsField, eProp.getCon()));
+            }else{
+                return Collections.singleton(eProp);
+            }
+        }else {
+            Optional<AsgEBase<ETyped>> eTypedAsgEBase = AsgQueryUtil.ancestor(parentGroup, EEntityBase.class);
+            Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(eTypedAsgEBase.get().geteBase().geteType());
+            // currently supports a single vertex schema
+            GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
+            Optional<Property> property = ont.$property(eProp.getpType());
+            Optional<GraphElementPropertySchema> propertySchema = vertexSchema.getProperty(property.get().getName());
+
+            return LikeUtil.applyWildcardRules(eProp, propertySchema.get());
+        }
     }
 
     private void appendRanking(AsgQuery query, AsgEBase<EPropGroup> parentGroup, AsgEBase<EPropGroup> eProp, EProp fieldProp, EProp stringValue) {

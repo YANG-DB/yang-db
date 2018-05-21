@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.results.TextContent;
 import com.kayhut.fuse.model.transport.ExternalMetadata;
 import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import org.jooby.*;
+import org.slf4j.MDC;
 
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ public class BeforeAfterAppRegistrar implements AppRegistrar {
     //region Private Methods
     private void registerBeforeHandlers(Jooby app) {
         app.before((req, resp) -> bindExternalMetadataSupplier(req));
+        app.before((req, resp) -> MDC.clear());
     }
 
     private void registerAfterHandlers(Jooby app) {

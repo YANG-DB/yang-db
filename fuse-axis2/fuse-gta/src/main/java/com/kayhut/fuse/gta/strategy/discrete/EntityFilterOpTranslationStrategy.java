@@ -196,19 +196,21 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
         Stream<Traversal> traversalStream = Stream.ofAll(epropTraversals).appendAll(childGroupTraversals);
 
         Traversal[] traversals = traversalStream.toJavaArray(Traversal.class);
-
         Traversal ret;
-        switch (ePropGroup.getQuantType()) {
-            case all:
-                if (traversals.length == 1) {
-                    ret = traversals[0];
-                }else {
+        if (traversals.length == 1) {
+            ret = traversals[0];
+        }
+        else {
+            switch (ePropGroup.getQuantType()) {
+                case all:
                     ret = __.and(traversals);
-                }
-                break;
-            case some: ret = __.or(traversals);
-            break;
-            default: ret =__.and(traversals);
+                    break;
+                case some:
+                    ret = __.or(traversals);
+                    break;
+                default:
+                    ret = __.and(traversals);
+            }
         }
 
         if(ePropGroup instanceof RankingProp){

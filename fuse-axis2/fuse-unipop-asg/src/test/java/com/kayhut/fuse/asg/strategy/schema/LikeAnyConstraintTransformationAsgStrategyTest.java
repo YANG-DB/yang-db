@@ -84,7 +84,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
     //region Tests
     @Test
-    public void testLikeWithoutWildcards() {
+    public void testLikeAnyWithoutWildcards() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -110,7 +110,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
     }
 
     @Test
-    public void testLikeWith1Wildcard_Beginning() {
+    public void testLikeAnyWith1Wildcard_Beginning() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -136,7 +136,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
     }
 
     @Test
-    public void testLikeWith1Wildcard_Middle() {
+    public void testLikeAnyWith1Wildcard_Middle() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -164,7 +164,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
     }
 
     @Test
-    public void testLikeWith1Wildcard_Ending() {
+    public void testLikeAnyWith1Wildcard_Ending() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -191,7 +191,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
     }
 
     @Test
-    public void testLikeWith2Wildcards_BeginningMiddle() {
+    public void testLikeAnyWith2Wildcards_BeginningMiddle() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -219,7 +219,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
     }
 
     @Test
-    public void testLikeWith2Wildcards_BeginningEnding() {
+    public void testLikeAnyWith2Wildcards_BeginningEnding() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -245,7 +245,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
     }
 
     @Test
-    public void testLikeWith2Wildcards_MiddleEnding() {
+    public void testLikeAnyWith2Wildcards_MiddleEnding() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -273,7 +273,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
     }
 
     @Test
-    public void testLikeWith2ConsecutiveWildcards_Beginning() {
+    public void testLikeAnyWith2ConsecutiveWildcards_Beginning() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -300,7 +300,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
     }
 
     @Test
-    public void testLikeWith2ConsecutiveWildcards_Middle() {
+    public void testLikeAnyWith2ConsecutiveWildcards_Middle() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -328,7 +328,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
     }
 
     @Test
-    public void testLikeWith2ConsecutiveWildcards_Ending() {
+    public void testLikeAnyWith2ConsecutiveWildcards_Ending() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -355,7 +355,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
     }
 
     @Test
-    public void testLikeWith2ConsecutiveWildcardsOnly() {
+    public void testLikeAnyWith2ConsecutiveWildcardsOnly() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -369,7 +369,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
     }
 
     @Test
-    public void testLikeWith3Wildcards_BeginningMiddleEnding() {
+    public void testLikeAnyWith3Wildcards_BeginningMiddleEnding() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
@@ -391,6 +391,78 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
                                         new EPropGroup(3,
                                                 new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "She")),
                                                 new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.eq, "rley")))))));
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testLikeAnyWith2Terms_PrefixAndContains() {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, Arrays.asList("Sherley*", "*Windsor*")))))
+                .build();
+
+        asgStrategy.apply(asgQuery, context);
+
+        EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
+
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.singletonList(new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Windsor")))),
+                                Collections.singletonList(new EPropGroup(3, new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "Sherley*")))))));
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testLikeAnyWith2Terms_ContainsWithSpaceAndContains() {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, Arrays.asList("*Sherley *", "*Windsor*")))))
+                .build();
+
+        asgStrategy.apply(asgQuery, context);
+
+        EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
+
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.singletonList(new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Windsor")))),
+                                Collections.singletonList(new EPropGroup(3, new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.like, "*Sherley *")))))));
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testLikeAnyWith2Terms_ContainsAndContains() {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, Arrays.asList("*Sherley*", "*Windsor*")))))
+                .build();
+
+        asgStrategy.apply(asgQuery, context);
+
+        EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
+
+        EPropGroup expected = new EPropGroup(3,
+                QuantType.all,
+                Collections.emptyList(),
+                Collections.singletonList(
+                        new EPropGroup(3,
+                                QuantType.some,
+                                Collections.singletonList(new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Arrays.asList("Sherley", "Windsor")))),
+                                Collections.emptyList())));
 
         Assert.assertEquals(expected, actual);
     }

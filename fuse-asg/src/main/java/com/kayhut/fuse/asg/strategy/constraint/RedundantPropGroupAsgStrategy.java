@@ -32,18 +32,22 @@ public class RedundantPropGroupAsgStrategy extends ConstraintTransformationAsgSt
     private <S extends BaseProp, T extends BasePropGroup<S, T>> void simplifyPropGroup(BasePropGroup<S, T> propGroup) {
         Stream.ofAll(propGroup.getGroups()).forEach(this::simplifyPropGroup);
 
-        if (propGroup.getGroups().size() + propGroup.getProps().size() <= 1) {
+        if (isSimplePropGroup(propGroup)) {
             propGroup.setQuantType(QuantType.all);
 
             if (!propGroup.getGroups().isEmpty()) {
                 T childGroup = propGroup.getGroups().get(0);
-                if (childGroup.getGroups().size() + propGroup.getProps().size() <= 1) {
+                if (isSimplePropGroup(childGroup)) {
                     propGroup.getGroups().remove(childGroup);
                     propGroup.getGroups().addAll(childGroup.getGroups());
                     propGroup.getProps().addAll(childGroup.getProps());
                 }
             }
         }
+    }
+
+    private <S extends BaseProp, T extends BasePropGroup<S, T>> boolean isSimplePropGroup(BasePropGroup<S, T> propGroup) {
+        return propGroup.getGroups().size() + propGroup.getProps().size() <= 1;
     }
     //endregion
 }
