@@ -240,6 +240,23 @@ public class RankingScoreBasedE2ETests {
         Assert.assertTrue(namesSet.contains("e00000009.global"));
     }
 
+    @Test
+    public void testAAA() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*aaa*bbb*ccc*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(3, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000010.global", globalEntitiesSorted.get(0).geteID());
+        Set<String> ids = new HashSet<>();
+        ids.add(globalEntitiesSorted.get(1).geteID());
+        ids.add(globalEntitiesSorted.get(2).geteID());
+
+        Assert.assertTrue(ids.contains("e00000011.global"));
+        Assert.assertTrue(ids.contains("e00000012.global"));
+
+    }
+
 
     private List<Entity> getGlobalEntitesSorted(AssignmentsQueryResult assignmentsQueryResult) {
         return assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).sorted((o1, o2) -> -1*Double.compare((double) o1.getProperties().stream().filter(p -> p.getpType().equals("score")).findFirst().get().getValue(),
