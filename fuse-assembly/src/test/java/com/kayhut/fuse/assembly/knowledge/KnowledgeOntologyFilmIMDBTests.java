@@ -110,7 +110,7 @@ public class KnowledgeOntologyFilmIMDBTests {
     @Test
     public void IMDBSomeQueries() throws IOException, InterruptedException {
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf(new File(Paths.get("src", "test", "conf", "application.test.engine3.m1.dfs.knowledge.public.conf").toString()), "activeProfile"); //, "m1.dfs.non_redundant");
+                .conf(new File(Paths.get("src", "test", "resources", "application.test.engine3.m1.dfs.knowledge.public.conf").toString()), "activeProfile"); //, "m1.dfs.non_redundant");
 
         app.start("server.join=false");
 
@@ -124,12 +124,12 @@ public class KnowledgeOntologyFilmIMDBTests {
                 new Quant1(2, QuantType.all, Arrays.asList( 6,7,8), 0),
                 new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasInsight"), R, null, 9, 0),
-                new Rel(8, $ont.rType$("hasEntityValue"), R, null, 13, 0),
+                new Rel(8, $ont.rType$("hasEvalue"), R, null, 13, 0),
                 new ETyped(9, "B", $ont.eType$("Insight"), 10, 0),
                 new Quant1(10, QuantType.all, Arrays.asList(11, 12), 0),
                 new EProp(11, $ont.pType$("content"), Constraint.of(ConstraintOp.like, "*academic*")),
                 new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new ETyped(13, "C", $ont.eType$("EntityValue"), 14, 0),
+                new ETyped(13, "C", $ont.eType$("Evalue"), 14, 0),
                 new Quant1(14, QuantType.all, Arrays.asList(15), 0),
                 new EProp(15, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title"))
                 )
