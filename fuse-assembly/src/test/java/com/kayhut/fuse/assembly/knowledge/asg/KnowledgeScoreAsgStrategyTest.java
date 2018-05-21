@@ -232,7 +232,7 @@ public class KnowledgeScoreAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
         //verify original field filter was added with ranking eProp groups
         Assert.assertEquals(actual.getQuantType(),all);
-        Assert.assertEquals(actual.getProps().size(), 3);
+        Assert.assertEquals(actual.getProps().size(), 2);
         Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
         Assert.assertTrue(((List)actual.getProps().get(0).getCon().getExpr()).contains("title"));
         Assert.assertTrue(((List)actual.getProps().get(0).getCon().getExpr()).contains("nicknames"));
@@ -366,7 +366,7 @@ public class KnowledgeScoreAsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
         Assert.assertEquals(actual.getQuantType(),all);
         //verify original field filter was added with ranking eProp groups
-        Assert.assertEquals(actual.getProps().size(), 3);
+        Assert.assertEquals(actual.getProps().size(), 2);
         Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
         Assert.assertTrue(((List)actual.getProps().get(0).getCon().getExpr()).contains("title"));
         Assert.assertTrue(((List)actual.getProps().get(0).getCon().getExpr()).contains("nicknames"));

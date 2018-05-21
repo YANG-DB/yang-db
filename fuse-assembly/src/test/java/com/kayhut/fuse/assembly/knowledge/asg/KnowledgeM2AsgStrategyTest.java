@@ -158,7 +158,7 @@ public class KnowledgeM2AsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
         //verify original field filter was added with ranking eProp groups
         Assert.assertEquals(actual.getQuantType(),all);
-        Assert.assertEquals(actual.getProps().size(), 4);
+        Assert.assertEquals(actual.getProps().size(), 3);
         Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
         Assert.assertEquals(actual.getProps().get(0).getCon().getOp(), inSet);
         Assert.assertEquals(actual.getProps().get(0).getCon().getExpr(), Arrays.asList("nicknames", "title"));
@@ -304,7 +304,7 @@ public class KnowledgeM2AsgStrategyTest {
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
         Assert.assertEquals(actual.getQuantType(),all);
         //verify original field filter was added with ranking eProp groups
-        Assert.assertEquals(actual.getProps().size(), 4);
+        Assert.assertEquals(actual.getProps().size(), 3);
         Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
         //1 root group for with 'some' operator
         Assert.assertEquals(actual.getGroups().size(), 1);

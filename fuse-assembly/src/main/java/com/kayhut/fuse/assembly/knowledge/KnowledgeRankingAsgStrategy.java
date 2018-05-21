@@ -100,10 +100,12 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
                                     EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), new Constraint(ConstraintOp.eq, field)),
                                     stringValue.get()));
                     eProp.geteBase().getGroups().add(wrapperGroup);
-                    if(fieldPropElm.getCon().getExpr().toString().equals("nicknames")) {
+                    if (fieldPropElm.getCon().getExpr().toString().equals("nicknames")) {
                         eProp.geteBase().getProps().remove(fieldPropElm);
                         eProp.geteBase().getProps().add(EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), Constraint.of(ConstraintOp.inSet, fieldNames.toJavaList())));
                     }
+
+                    //up-most filter
                     Iterable<EProp> newEprops = applyLikeAndEqRules(stringValue.get(), eProp, query);
                     eProp.geteBase().getProps().remove(stringValue.get());
                     newEprops.forEach(e -> eProp.geteBase().getProps().add(e));
@@ -117,14 +119,14 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
     private Iterable<EProp> applyLikeAndEqRules(EProp eProp, AsgEBase<EPropGroup> parentGroup, AsgQuery query) {
         Ontology.Accessor ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt()).get());
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(ont.get());
-        if(eProp.getCon().getOp() == ConstraintOp.eq){
+        if (eProp.getCon().getOp() == ConstraintOp.eq) {
             String equalsField = equalsField(parentGroup, schemaProvider, ont, eProp.getpType());
-            if(equalsField != null){
-               return Collections.singleton(new SchematicEProp(eProp.geteNum(), eProp.getpType(), equalsField, eProp.getCon()));
-            }else{
+            if (equalsField != null) {
+                return Collections.singleton(new SchematicEProp(eProp.geteNum(), eProp.getpType(), equalsField, eProp.getCon()));
+            } else {
                 return Collections.singleton(eProp);
             }
-        }else {
+        } else {
             Optional<AsgEBase<ETyped>> eTypedAsgEBase = AsgQueryUtil.ancestor(parentGroup, EEntityBase.class);
             Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(eTypedAsgEBase.get().geteBase().geteType());
             // currently supports a single vertex schema
@@ -132,7 +134,27 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
             Optional<Property> property = ont.$property(eProp.getpType());
             Optional<GraphElementPropertySchema> propertySchema = vertexSchema.getProperty(property.get().getName());
 
-            return LikeUtil.applyWildcardRules(eProp, propertySchema.get());
+            //
+            Optional<GraphElementPropertySchema.ExactIndexingSchema> exactIndexingSchema = propertySchema.get().getIndexingSchema(exact);
+
+            String expr = (String) eProp.getCon().getExpr();
+            if (expr == null || expr.equals("")) {
+                return Collections.singletonList(new SchematicEProp(
+                        0,
+                        eProp.getpType(),
+                        exactIndexingSchema.get().getName(),
+                        Constraint.of(ConstraintOp.eq, eProp.getCon().getExpr())));
+            } else {
+                return Collections.singletonList(new SchematicEProp(
+                        0,
+                        eProp.getpType(),
+                        exactIndexingSchema.get().getName(),
+                        Constraint.of(ConstraintOp.like,
+                                (expr.startsWith("*") ? "" : "*")
+                                        + expr +
+                                        (expr.endsWith("*") ? "" : "*"))));
+
+            }
         }
     }
 
@@ -153,7 +175,7 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
         eProp.geteBase().getGroups().add(group);
     }
 
-    private EPropGroup translateLike(AsgQuery query, AsgEBase<EPropGroup> parentGroup ,EProp stringValue, EProp fieldProp) {
+    private EPropGroup translateLike(AsgQuery query, AsgEBase<EPropGroup> parentGroup, EProp stringValue, EProp fieldProp) {
 
         EPropGroup totalGroups = new EPropGroup(stringValue.geteNum());
         totalGroups.setQuantType(QuantType.some);
@@ -190,7 +212,7 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
         StringJoiner joiner = new StringJoiner("*", "*", "*");
         String[] words = stringValue.getCon().getExpr().toString().split("\\*");
         for (String word : words) {
-            if(!word.equals("")) {
+            if (!word.equals("")) {
                 joiner.add(word);
             }
         }
@@ -200,7 +222,7 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
         EProp completeLikeFieldProp = EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, joiner.toString()));
 
         String equalsField = equalsField(parentGroup, schemaProvider, ont, stringValue.getpType());
-        if(equalsField != null){
+        if (equalsField != null) {
             completeLikeFieldProp = new SchematicEProp(completeLikeFieldProp.geteNum(), completeLikeFieldProp.getpType(), equalsField, completeLikeFieldProp.getCon());
         }
 
@@ -263,17 +285,17 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
 
         EProp adjustedStringValue = new ScoreEProp(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.eq, stringValue.getCon().getExpr().toString().replace("*", " ").trim()), boostProvider.getBoost(fieldProp, 1));
         String schematicName = equalsField(parentGroup, schemaProvider, ont, stringValue.getpType());
-        if(schematicName != null){
+        if (schematicName != null) {
             adjustedStringValue = new SchematicRankedEProp(adjustedStringValue.geteNum(), adjustedStringValue.getpType(), schematicName, adjustedStringValue.getCon(), boostProvider.getBoost(fieldProp, 1));
         }
         //EPropGroup group = new EPropGroup(stringValue.geteNum());
-        EPropGroup group = new ScoreEPropGroup( stringValue.geteNum(),boostProvider.getBoost(fieldProp, 1));
+        EPropGroup group = new ScoreEPropGroup(stringValue.geteNum(), boostProvider.getBoost(fieldProp, 1));
         group.setQuantType(QuantType.all);
         group.getProps().add(adjustedStringValue);
         return group;
     }
 
-    private String equalsField(AsgEBase<EPropGroup> parentGroup, GraphElementSchemaProvider schemaProvider, Ontology.Accessor ont, String pType){
+    private String equalsField(AsgEBase<EPropGroup> parentGroup, GraphElementSchemaProvider schemaProvider, Ontology.Accessor ont, String pType) {
         Optional<AsgEBase<ETyped>> eTypedAsgEBase = AsgQueryUtil.ancestor(parentGroup, EEntityBase.class);
 
         Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(eTypedAsgEBase.get().geteBase().geteType());

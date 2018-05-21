@@ -246,7 +246,8 @@ public class RankingKnowledgeDataInfraManager {
                 Arrays.asList("roman"),
                 Arrays.asList("tonette kwon"),
                 Arrays.asList("veorgiana vanasse"),
-                Arrays.asList("veorgiana vanasse suzette")
+                Arrays.asList("veorgiana vanasse suzette"),
+                Arrays.asList("suzette veorgiana vanasse")
 
         );
         List<List<String>> titles = Arrays.asList(
@@ -257,7 +258,9 @@ public class RankingKnowledgeDataInfraManager {
                 Arrays.asList("roman"),
                 Arrays.asList("tonette kwon"),
                 Arrays.asList("veorgiana vanasse"),
-                Arrays.asList("veorgiana vanasse suzette")
+                Arrays.asList("veorgiana vanasse suzette"),
+                Arrays.asList("suzette veorgiana vanasse")
+
         );
         for (int i = 1 ; i <= nicks.size(); i++) {
 

@@ -217,6 +217,29 @@ public class RankingScoreBasedE2ETests {
         Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(0).geteID());
     }
 
+    @Test
+    public void testVeorgianaSuzetteNickLike() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*veorgiana*suzette*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(1, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000008.global", globalEntitiesSorted.get(0).geteID());
+    }
+
+    @Test
+    public void testVeorgianaNickLike() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*veorgiana*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(3, globalEntitiesSorted.size());
+        Set<String> namesSet = globalEntitiesSorted.stream().map(e -> e.geteID()).collect(Collectors.toSet());
+        Assert.assertTrue(namesSet.contains("e00000007.global"));
+        Assert.assertTrue(namesSet.contains("e00000008.global"));
+        Assert.assertTrue(namesSet.contains("e00000009.global"));
+    }
+
 
     private List<Entity> getGlobalEntitesSorted(AssignmentsQueryResult assignmentsQueryResult) {
         return assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).sorted((o1, o2) -> -1*Double.compare((double) o1.getProperties().stream().filter(p -> p.getpType().equals("score")).findFirst().get().getValue(),
