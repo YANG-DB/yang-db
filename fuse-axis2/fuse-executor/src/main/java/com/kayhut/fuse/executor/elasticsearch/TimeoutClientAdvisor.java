@@ -363,8 +363,9 @@ public class TimeoutClientAdvisor implements Client {
     //endregion
 
     private void checkTime() {
-        if ((System.currentTimeMillis() - creationTime) > executionScope.getTimeout())
+        if ((System.currentTimeMillis() - creationTime) > executionScope.getTimeout()) {
             throw new RuntimeException(new TimeoutException("Execution took longer than timeout allowed"));
+        }
     }
 
     private long creationTime;
