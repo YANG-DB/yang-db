@@ -146,12 +146,12 @@ public class KnowledgeScoreAsgStrategyTest {
         // 1) * Sherley mustafa
         // 2) Sherley mustafa *
         // 2) * Sherley mustafa *
-        Assert.assertEquals(rule2Group.getGroups().get(0).getGroups().size(), 1);
-        Assert.assertEquals(rule2Group.getGroups().get(0).getQuantType(), all);
-        Assert.assertTrue(rule2Group.getGroups().get(0).getGroups().get(0).getProps().get(0).getCon().getExpr().toString().startsWith("* "));
-        Assert.assertTrue(rule2Group.getGroups().get(0).getGroups().get(0).getProps().get(1).getCon().getExpr().toString().endsWith(" *"));
-        Assert.assertTrue(rule2Group.getGroups().get(0).getGroups().get(0).getProps().get(2).getCon().getExpr().toString().startsWith("* "));
-        Assert.assertTrue(rule2Group.getGroups().get(0).getGroups().get(0).getProps().get(2).getCon().getExpr().toString().endsWith(" *"));
+        Assert.assertEquals(rule2Group.getGroups().get(0).getProps().size(), 3);
+        Assert.assertEquals(rule2Group.getGroups().get(0).getQuantType(), some);
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().startsWith("* "));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(1).getCon().getExpr().toString().endsWith(" *"));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(2).getCon().getExpr().toString().startsWith("* "));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(2).getCon().getExpr().toString().endsWith(" *"));
         //expecting boosting group with terms
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().size(), 1);
         //terms Sherley, mustafa
@@ -274,17 +274,17 @@ public class KnowledgeScoreAsgStrategyTest {
         // 1) *  mustafa
         // 2) mustafa *
         // 2) * mustafa *
-        Assert.assertEquals(rule2Group.getGroups().get(0).getGroups().size(), 2);
+        Assert.assertEquals(rule2Group.getGroups().get(0).getProps().size(), 3);
         Assert.assertTrue(rule2Group.getGroups().get(1) instanceof ScoreEPropGroup);
         Assert.assertEquals(((ScoreEPropGroup) rule2Group.getGroups().get(1)).getBoost(), 10000);
-        rule2Group.getGroups().get(0).getGroups().forEach(group ->{
 
-            Assert.assertTrue(group.getProps().get(0).getCon().getExpr().toString().startsWith("* "));
-            Assert.assertTrue(group.getProps().get(1).getCon().getExpr().toString().endsWith(" *"));
-            Assert.assertTrue(group.getProps().get(2).getCon().getExpr().toString().startsWith("* "));
-            Assert.assertTrue(group.getProps().get(2).getCon().getExpr().toString().endsWith(" *"));
-            Assert.assertEquals(some, group.getQuantType());
-        });
+
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().startsWith("* "));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(1).getCon().getExpr().toString().endsWith(" *"));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(2).getCon().getExpr().toString().startsWith("* "));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(2).getCon().getExpr().toString().endsWith(" *"));
+        Assert.assertEquals(some, rule2Group.getGroups().get(0).getQuantType());
+
         //expecting boosting group with terms
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().size(), 1);
         //terms Sherley, mustafa
@@ -409,15 +409,15 @@ public class KnowledgeScoreAsgStrategyTest {
         // 1) *  mustafa
         // 2) mustafa *
         // 2) * mustafa *
-        Assert.assertEquals(rule2Group.getGroups().get(0).getGroups().size(), 2);
-        rule2Group.getGroups().get(0).getGroups().forEach(group -> {
-            Assert.assertTrue(group.getProps().get(0).getCon().getExpr().toString().startsWith("* "));
-            Assert.assertTrue(group.getProps().get(1).getCon().getExpr().toString().endsWith(" *"));
-            Assert.assertTrue(group.getProps().get(2).getCon().getExpr().toString().startsWith("* "));
-            Assert.assertTrue(group.getProps().get(2).getCon().getExpr().toString().endsWith(" *"));
-            Assert.assertEquals(some, group.getQuantType());
+        Assert.assertEquals(rule2Group.getGroups().get(0).getProps().size(), 3);
 
-        });
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().startsWith("* "));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(1).getCon().getExpr().toString().endsWith(" *"));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(2).getCon().getExpr().toString().startsWith("* "));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(2).getCon().getExpr().toString().endsWith(" *"));
+        Assert.assertEquals(some, rule2Group.getGroups().get(0).getQuantType());
+
+
         //expecting boosting group with terms
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().size(), 1);
         //terms Sherley, mustafa
@@ -537,15 +537,15 @@ public class KnowledgeScoreAsgStrategyTest {
         // 1) * Sherley mustafa
         // 2) Sherley mustafa *
         // 2) * Sherley mustafa *
-        Assert.assertEquals(rule2Group.getGroups().get(0).getGroups().size(), 1);
-        rule2Group.getGroups().get(0).getGroups().forEach(group -> {
-            Assert.assertTrue(group.getProps().get(0).getCon().getExpr().toString().startsWith("* "));
-            Assert.assertTrue(group.getProps().get(1).getCon().getExpr().toString().endsWith(" *"));
-            Assert.assertTrue(group.getProps().get(2).getCon().getExpr().toString().startsWith("* "));
-            Assert.assertTrue(group.getProps().get(2).getCon().getExpr().toString().endsWith(" *"));
-            Assert.assertEquals(some, group.getQuantType());
+        Assert.assertEquals(rule2Group.getGroups().get(0).getProps().size(), 3);
 
-        });
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().startsWith("* "));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(1).getCon().getExpr().toString().endsWith(" *"));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(2).getCon().getExpr().toString().startsWith("* "));
+        Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(2).getCon().getExpr().toString().endsWith(" *"));
+        Assert.assertEquals(some, rule2Group.getGroups().get(0).getQuantType());
+
+
         //expecting boosting group with terms
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().size(), 1);
         //terms Sherley, mustafa

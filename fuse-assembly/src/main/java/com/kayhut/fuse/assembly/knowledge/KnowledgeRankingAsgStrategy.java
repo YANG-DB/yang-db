@@ -183,11 +183,11 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
         EPropGroup r1Group = translateEquals(query, EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.eq, stringValue.getCon().getExpr())), fieldProp, parentGroup);
 
         // Rule 2
-        EPropGroup r2Group = translateRule(query, parentGroup, stringValue, fieldProp, " ", 2);
+        EPropGroup r2Group = translateRule2(query, parentGroup, stringValue, fieldProp, " ", 2);
 
         // Rule 3
         String newExpression = stringValue.getCon().getExpr().toString().trim().replace(" ", "*");
-        EPropGroup r3Group = translateRule(query, parentGroup, EProp.of(stringValue.geteNum(), stringValue.getpType(), new Constraint(ConstraintOp.eq, newExpression)), fieldProp, " ", 3);
+        EPropGroup r3Group = translateRule3(query, parentGroup, EProp.of(stringValue.geteNum(), stringValue.getpType(), new Constraint(ConstraintOp.eq, newExpression)), fieldProp, " ", 3);
 
         // Rule 4
         newExpression = stringValue.getCon().getExpr().toString().trim().replace(" ", "*");
@@ -237,7 +237,7 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
         return group;
     }
 
-    private EPropGroup translateRule(AsgQuery query, AsgEBase<EPropGroup> parentGroup, EProp stringValue, EProp fieldProp, String wildcard, int ruleIndex) {
+    private EPropGroup translateRule3(AsgQuery query, AsgEBase<EPropGroup> parentGroup, EProp stringValue, EProp fieldProp, String wildcard, int ruleIndex) {
         EPropGroup ruleGroup = new EPropGroup(stringValue.geteNum());
         ruleGroup.setQuantType(QuantType.all);
 
@@ -276,6 +276,58 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
             });
             enclosingWordsGroup.getGroups().add(ePropGroup);
         }
+
+        ruleGroup.getGroups().add(enclosingWordsGroup);
+
+        EPropGroup groupRule2Score = new ScoreEPropGroup(stringValue.geteNum(), boostProvider.getBoost(fieldProp, ruleIndex));
+        groupRule2Score.setQuantType(QuantType.all);
+        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0).toJavaList();
+        groupRule2Score.getProps().add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.inSet, terms)));
+        ruleGroup.getGroups().add(groupRule2Score);
+        return ruleGroup;
+    }
+
+    private EPropGroup translateRule2(AsgQuery query, AsgEBase<EPropGroup> parentGroup, EProp stringValue, EProp fieldProp, String seperator, int ruleIndex) {
+        EPropGroup ruleGroup = new EPropGroup(stringValue.geteNum());
+        ruleGroup.setQuantType(QuantType.all);
+
+        Ontology.Accessor ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt()).get());
+        GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(ont.get());
+        Optional<AsgEBase<ETyped>> eTypedAsgEBase = AsgQueryUtil.ancestor(parentGroup, EEntityBase.class);
+
+        Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(eTypedAsgEBase.get().geteBase().geteType());
+
+        // currently supports a single vertex schema
+        GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
+        Optional<Property> property = ont.$property(stringValue.getpType());
+        Optional<GraphElementPropertySchema> propertySchema = vertexSchema.getProperty(property.get().getName());
+
+        //inner group
+        EPropGroup enclosingWordsGroup = new EPropGroup(stringValue.geteNum());
+        enclosingWordsGroup.setQuantType(QuantType.some);
+
+        String[] words = stringValue.getCon().getExpr().toString().split("\\*");
+        StringJoiner joiner = new StringJoiner(seperator);
+
+        for (String word : words){
+            if(word.length() == 0){
+                continue;
+            }
+            joiner.add(word);
+        }
+
+        String word = joiner.toString();
+
+        List<EProp> newEprops = new ArrayList<>();
+
+        newEprops.add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, "*" + seperator + word)));
+        newEprops.add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, word + seperator + "*")));
+        newEprops.add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, "*" + seperator + word + seperator + "*")));
+
+
+        newEprops.forEach(eProp -> {
+            LikeUtil.applyWildcardRules(eProp, propertySchema.get()).forEach(eProp1 -> enclosingWordsGroup.getProps().add(eProp1));
+        });
 
         ruleGroup.getGroups().add(enclosingWordsGroup);
 
