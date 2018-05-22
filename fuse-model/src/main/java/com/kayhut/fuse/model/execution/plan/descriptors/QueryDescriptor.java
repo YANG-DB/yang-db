@@ -90,19 +90,21 @@ public class QueryDescriptor implements Descriptor<Query> {
 
     static String printProps(EPropGroup propGroup) {
         String[] pStrings = Stream.ofAll(propGroup.getProps())
-                .map(p -> {
-                    if (p instanceof RankingProp) {
-                        return "boost:"+((RankingProp) p).getBoost() +"  " + p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
-                    } else if (p.getCon() != null) {
-                        return p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
-                    } else if (p.getProj() != null) {
-                        return p.getpType() + "<" + p.getProj().getClass().getSimpleName() + ">";
-                    } else {
-                        return p.getpType();
-                    }
-                }).toJavaArray(String.class);
+                .map(QueryDescriptor::printProp).toJavaArray(String.class);
 
         return ":" + Arrays.toString(pStrings);
+    }
+
+    static String printProp(EProp p) {
+        if (p instanceof RankingProp) {
+            return "boost:"+((RankingProp) p).getBoost() +"  " + p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
+        } else if (p.getCon() != null) {
+            return p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
+        } else if (p.getProj() != null) {
+            return p.getpType() + "<" + p.getProj().getClass().getSimpleName() + ">";
+        } else {
+            return p.getpType();
+        }
     }
     //endregion
 
