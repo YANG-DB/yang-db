@@ -32,9 +32,9 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.threadpool.ThreadPool;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
@@ -55,6 +55,7 @@ public class LoggingClient implements Client {
             MetricRegistry metricRegistry) {
         this.client = client;
         this.logger = logger;
+        this.verboseLogger = LoggerFactory.getLogger(logger.getName() + ".Verbose");
         this.metricRegistry = metricRegistry;
 
         this.operationId = 0;
@@ -191,6 +192,9 @@ public class LoggingClient implements Client {
         try {
             new LogMessage.Impl(this.logger, trace, "#{} start search", LogType.of(start), search, ElapsedFrom.now(), ElasticElapsedTotal.start())
                     .with(operationId).log();
+            new LogMessage.Impl(this.verboseLogger, trace, "#{} {}", LogType.of(log), search, ElapsedFrom.now())
+                    .with(operationId, searchRequest.toString()).log();
+
             ActionFuture<SearchResponse> future = client.search(searchRequest);
             LoggingActionFuture loggingActionFuture =
                     new LoggingActionFuture<>(future,
@@ -218,6 +222,9 @@ public class LoggingClient implements Client {
         try {
             new LogMessage.Impl(this.logger, trace, "#{} start search", LogType.of(start), search, ElapsedFrom.now(), ElasticElapsedTotal.start())
                     .with(operationId).log();
+            new LogMessage.Impl(this.verboseLogger, trace, "#{} {}", LogType.of(log), search, ElapsedFrom.now())
+                    .with(operationId, searchRequest.toString()).log();
+
             this.client.search(
                     searchRequest,
                     new LoggingActionListener<>(
@@ -245,6 +252,7 @@ public class LoggingClient implements Client {
                 this,
                 SearchAction.INSTANCE,
                 new LogMessage.Impl(this.logger, trace, "#{} start search", LogType.of(start), search, ElapsedFrom.deferredNow(), ElasticElapsedTotal.startDeffered()).with(operationId),
+                new LogMessage.Impl(this.verboseLogger, trace, "#{} {}", LogType.of(log), search, ElapsedFrom.deferredNow()).with(operationId),
                 new LogMessage.Impl(this.logger, trace, "#{} finish search", LogType.of(success), search, ElapsedFrom.deferredNow(), ElasticElapsedTotal.stop()).with(operationId),
                 new LogMessage.Impl(this.logger, error, "#{} failed search", LogType.of(failure), search, ElapsedFrom.deferredNow(), ElasticElapsedTotal.stop()).with(operationId),
                 this.metricRegistry.timer(name(this.logger.getName(), search.toString())),
@@ -262,6 +270,9 @@ public class LoggingClient implements Client {
         try {
             new LogMessage.Impl(this.logger, trace, "#{} start searchScroll", LogType.of(start), searchScroll, ElapsedFrom.now(), ElasticElapsedTotal.start())
                     .with(operationId).log();
+            new LogMessage.Impl(this.verboseLogger, trace, "#{} {}", LogType.of(log), searchScroll, ElapsedFrom.now())
+                    .with(operationId, searchScrollRequest.toString()).log();
+
             ActionFuture<SearchResponse> future = client.searchScroll(searchScrollRequest);
             return new LoggingActionFuture<>(future,
                     new LogMessage.Impl(this.logger, trace, "#{} finish searchScroll", LogType.of(success), searchScroll, ElapsedFrom.deferredNow(), ElasticElapsedTotal.stop()).with(operationId),
@@ -286,6 +297,9 @@ public class LoggingClient implements Client {
 
         try {
             new LogMessage.Impl(this.logger, trace, "#{} start searchScroll", LogType.of(start), searchScroll, ElapsedFrom.now(), ElasticElapsedTotal.start()).with(operationId).log();
+            new LogMessage.Impl(this.verboseLogger, trace, "#{} {}", LogType.of(log), searchScroll, ElapsedFrom.now())
+                    .with(operationId, searchScrollRequest.toString()).log();
+
             client.searchScroll(
                     searchScrollRequest,
                     new LoggingActionListener<>(
@@ -314,6 +328,7 @@ public class LoggingClient implements Client {
                 SearchScrollAction.INSTANCE,
                 scrollId,
                 new LogMessage.Impl(this.logger, trace, "#{} start searchScroll", LogType.of(start), searchScroll, ElapsedFrom.deferredNow(), ElasticElapsedTotal.startDeffered()).with(operationId),
+                new LogMessage.Impl(this.verboseLogger, trace, "#{} {}", LogType.of(log), searchScroll, ElapsedFrom.deferredNow()).with(operationId),
                 new LogMessage.Impl(this.logger, trace, "#{} finish searchScroll", LogType.of(success), searchScroll, ElapsedFrom.deferredNow(), ElasticElapsedTotal.stop()).with(operationId),
                 new LogMessage.Impl(this.logger, error, "#{} failed searchScroll", LogType.of(failure), searchScroll, ElapsedFrom.deferredNow(), ElasticElapsedTotal.stop()).with(operationId),
                 this.metricRegistry.timer(name(this.logger.getName(), searchScroll.toString())),
@@ -478,6 +493,8 @@ public class LoggingClient implements Client {
 
     //region Fields
     private Logger logger;
+    private Logger verboseLogger;
+
     private MetricRegistry metricRegistry;
     private Client client;
 

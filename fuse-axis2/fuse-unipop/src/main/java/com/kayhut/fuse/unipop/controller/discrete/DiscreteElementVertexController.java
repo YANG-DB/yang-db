@@ -41,7 +41,8 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
             Client client,
             ElasticGraphConfiguration configuration,
             UniGraph graph,
-            GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
+            GraphElementSchemaProvider schemaProvider,
+            SearchOrderProviderFactory orderProviderFactory) {
 
         this.client = client;
         this.configuration = configuration;
