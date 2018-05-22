@@ -257,6 +257,21 @@ public class RankingScoreBasedE2ETests {
 
     }
 
+    @Test
+    public void testTitleLikeAny() throws IOException, InterruptedException {
+        Query query = getByTitleLikeAny(Arrays.asList("*moti*", "*cohen*"));
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+
+        List<Entity> globalEntities
+                = assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).collect(Collectors.toList());
+        Assert.assertEquals(3, globalEntities.size());
+        Set<String> namesSet = globalEntities.stream().map(e -> e.geteID()).collect(Collectors.toSet());
+        Assert.assertTrue(namesSet.contains("e00000001.global"));
+        Assert.assertTrue(namesSet.contains("e00000002.global"));
+        Assert.assertTrue(namesSet.contains("e00000004.global"));
+    }
+
 
     private List<Entity> getGlobalEntitesSorted(AssignmentsQueryResult assignmentsQueryResult) {
         return assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).sorted((o1, o2) -> -1*Double.compare((double) o1.getProperties().stream().filter(p -> p.getpType().equals("score")).findFirst().get().getValue(),
@@ -285,6 +300,18 @@ public class RankingScoreBasedE2ETests {
                 new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
                 new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
                 new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, nick))
+        )).build();
+    }
+
+    private Query getByTitleLikeAny(List<String> names) {
+        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
+                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
+                new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
+                new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
+                new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
+                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.likeAny, names))
         )).build();
     }
 

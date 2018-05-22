@@ -7,6 +7,7 @@ import com.kayhut.fuse.assembly.knowledge.KnowledgeRuleBoostProvider;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -29,6 +30,7 @@ import java.util.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.like;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static com.kayhut.fuse.model.query.quant.QuantType.some;
 //@Ignore("todo: fix tests")
@@ -648,6 +650,70 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertEquals(nickNamesRule.getGroups().get(0).getProps().get(0).getpType(), "stringValue");
         Assert.assertEquals(nickNamesRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley mustafa");
 
+
+    }
+
+    @Test
+    public void testLikeNoField(){
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3,
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley*mustafa*"))))
+                .build();
+
+        AsgQuery transformedQuery = asgStrategy.transform(asgQuery);
+        EPropGroup ePropGroup = AsgQueryUtil.element$(transformedQuery, EPropGroup.class).geteBase();
+
+        Assert.assertEquals(3, ePropGroup.getProps().size());
+        Assert.assertEquals("stringValue", ePropGroup.getProps().get(0).getpType());
+        Assert.assertEquals(Constraint.of(like, "*Sherley*"), ePropGroup.getProps().get(0).getCon());
+        Assert.assertEquals("stringValue", ePropGroup.getProps().get(1).getpType());
+        Assert.assertEquals(Constraint.of(like, "*mustafa*"), ePropGroup.getProps().get(1).getCon());
+
+    }
+
+    @Test
+    public void testLikeNotNickOrTitle(){
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3,
+                        EProp.of(31, "fieldId", Constraint.of(eq, "blabla")),
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley*mustafa*"))))
+                .build();
+
+        AsgQuery transformedQuery = asgStrategy.transform(asgQuery);
+        EPropGroup ePropGroup = AsgQueryUtil.element$(transformedQuery, EPropGroup.class).geteBase();
+
+        Assert.assertEquals(4, ePropGroup.getProps().size());
+        Assert.assertEquals("fieldId", ePropGroup.getProps().get(0).getpType());
+        Assert.assertEquals("stringValue", ePropGroup.getProps().get(1).getpType());
+        Assert.assertEquals(Constraint.of(like, "*Sherley*"), ePropGroup.getProps().get(1).getCon());
+        Assert.assertEquals("stringValue", ePropGroup.getProps().get(2).getpType());
+        Assert.assertEquals(Constraint.of(like, "*mustafa*"), ePropGroup.getProps().get(2).getCon());
+
+    }
+
+    @Test
+    public void testLikeAny(){
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3,
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.likeAny, Arrays.asList("*moti", "cohen")))))
+                .build();
+
+        AsgQuery transformedQuery = asgStrategy.transform(asgQuery);
+        EPropGroup ePropGroup = AsgQueryUtil.element$(transformedQuery, EPropGroup.class).geteBase();
+
+        Assert.assertEquals(1, ePropGroup.getGroups().size());
+        Assert.assertEquals(1, ePropGroup.getGroups().get(0).getProps().size());
+        Assert.assertEquals(Constraint.of(eq, "cohen"), ePropGroup.getGroups().get(0).getProps().get(0).getCon());
+        Assert.assertEquals(1, ePropGroup.getGroups().get(0).getGroups().size());
+        Assert.assertEquals(Constraint.of(like, "*moti"), ePropGroup.getGroups().get(0).getGroups().get(0).getProps().get(0).getCon());
+
+        int a= 5;
 
     }
     //endregion
