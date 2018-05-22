@@ -24,10 +24,7 @@ import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import org.jooby.Jooby;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,6 +38,7 @@ import static com.kayhut.fuse.model.query.Rel.Direction.R;
 /**
  * Created by user pc on 5/18/2018.
  */
+@Ignore
 public class KnowledgeOntologyFilmIMDBTests {
     static KnowledgeDatasetLoader loader;
     private static Jooby app;
