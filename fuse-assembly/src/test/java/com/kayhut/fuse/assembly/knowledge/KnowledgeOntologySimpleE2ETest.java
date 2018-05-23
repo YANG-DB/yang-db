@@ -59,7 +59,7 @@ public class KnowledgeOntologySimpleE2ETest {
         //elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf(new File(Paths.get("src", "test", "conf", "application.test.engine3.m1.dfs.knowledge.public.conf").toString()), "activeProfile"); //, "m1.dfs.non_redundant");
+                .conf(new File(Paths.get("src", "test", "resources", "application.test.engine3.m1.dfs.knowledge.public.conf").toString()), "activeProfile"); //, "m1.dfs.non_redundant");
 
         app.start("server.join=false");
 
