@@ -2,6 +2,7 @@ package com.kayhut.fuse.assembly.knowledge.service;
 
 import com.kayhut.fuse.assembly.knowledge.RankingKnowledgeDataInfraManager;
 import com.kayhut.fuse.assembly.knowlegde.KnowledgeDataInfraManager;
+import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -23,24 +24,35 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
+import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
+import org.jooby.Jooby;
 import org.junit.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.assembly.knowledge.service.KnowledgeE2ETestSuite.CONFIG_PATH;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 
 public class RankingScoreBasedE2ETests {
+    private static Jooby app;
+
     @BeforeClass
     public static void setup() throws Exception {
+        app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                .conf(new File(CONFIG_PATH));
+
+        app.start("server.join=false");
+
         fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
-        manager = new RankingKnowledgeDataInfraManager(KnowledgeE2ETestSuite.CONFIG_PATH);
+        manager = new RankingKnowledgeDataInfraManager(CONFIG_PATH);
         manager.client_connect();
         manager.init();
         manager.load();

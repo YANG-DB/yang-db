@@ -233,8 +233,7 @@ public class KnowledgeDatasetLoader {
                 on.put("stringValue", value);
                 break;
         }
-        on.put("stringValue", "Nick1");
-        on.put("refs", "[\"\"]");
+        on.put("refs", "[]");
         on.put("lastUpdateUser", "imdb");
         on.put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())));
         on.put("creationUser", "imdb");

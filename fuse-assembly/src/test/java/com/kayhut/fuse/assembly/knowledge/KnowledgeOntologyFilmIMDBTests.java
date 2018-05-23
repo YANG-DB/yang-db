@@ -116,24 +116,57 @@ public class KnowledgeOntologyFilmIMDBTests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
+        /*
         Query query = Query.Builder.instance().withName("IMDBQuery1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
-                new Quant1(2, QuantType.all, Arrays.asList( 6,/*7,*/8), 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,7,8), 0),
                 new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                //new Rel(7, $ont.rType$("hasInsight"), R, null, 9, 0),
+                new Rel(7, $ont.rType$("hasInsight"), R, null, 9, 0),
                 new Rel(8, $ont.rType$("hasEvalue"), R, null, 13, 0),
-                //new ETyped(9, "B", $ont.eType$("Insight"), 10, 0),
-                //new Quant1(10, QuantType.all, Arrays.asList(11, 12), 0),
-                //new EProp(11, $ont.pType$("content"), Constraint.of(ConstraintOp.like, "*academic*")),
-                //new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))//,
+                new ETyped(9, "B", $ont.eType$("Insight"), 10, 0),
+                new Quant1(10, QuantType.all, Arrays.asList(11, 12), 0),
+                new EProp(11, $ont.pType$("content"), Constraint.of(ConstraintOp.eq, "4 wins & 1 nomination." // "*wins*")),
+        new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new ETyped(13, "C", $ont.eType$("Evalue"), 14, 0),
+                new Quant1(14, QuantType.all, Arrays.asList(15,16), 0),
+                new EProp(15, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
+                new EProp(15, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, "Electric Shadows"))
+                )
+        ).build();
+         */
+
+        Query query = Query.Builder.instance().withName("IMDBQuery1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,8), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(8, $ont.rType$("hasEvalue"), R, null, 13, 0),
+                new ETyped(13, "C", $ont.eType$("Evalue"), 14, 0),
+                new Quant1(14, QuantType.all, Arrays.asList(15,16), 0),
+                new EProp(15, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
+                new EProp(16, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, "Electric Shadows"))
+                )
+        ).build();
+
+       /*Query query = Query.Builder.instance().withName("IMDBQuery1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,7), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasInsight"), R, null, 9, 0),
+                //new Rel(8, $ont.rType$("hasEvalue"), R, null, 13, 0),
+                new ETyped(9, "B", $ont.eType$("Insight"), 10, 0),
+                new Quant1(10, QuantType.all, Arrays.asList(11, 12), 0),
+                new EProp(11, $ont.pType$("title"), Constraint.of(ConstraintOp.like, "Title")),
+                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
                 new ETyped(13, "C", $ont.eType$("Evalue"), 14, 0),
                 new Quant1(14, QuantType.all, Arrays.asList(15), 0),
                 new EProp(15, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title"))
                 )
-        ).build();
+        ).build();*/
 
-        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10,0);
+        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 50000, 10,0);
         int resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize,1);
         String rtype = pageData.getResultType();
