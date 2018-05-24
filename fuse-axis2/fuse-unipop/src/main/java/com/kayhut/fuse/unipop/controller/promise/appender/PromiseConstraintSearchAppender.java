@@ -71,7 +71,7 @@ public class PromiseConstraintSearchAppender implements SearchAppender<Composite
             newConstraint = __.and(newConstraint);
         }
 
-        QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().filtered().filter();
+        QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().bool().filter().bool().must();
         TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder, false);
         traversalQueryTranslator.visit(newConstraint);
         return true;

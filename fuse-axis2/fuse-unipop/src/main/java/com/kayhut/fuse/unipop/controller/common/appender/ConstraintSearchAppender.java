@@ -72,7 +72,7 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
             newConstraint = __.and(newConstraint);
         }
 
-        QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().filtered().filter();
+        QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query();//.filtered().filter();
         TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder, false);
         traversalQueryTranslator.visit(newConstraint);
         return true;

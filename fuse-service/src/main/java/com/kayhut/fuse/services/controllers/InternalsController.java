@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.transport.ContentResponse;
  */
 public interface InternalsController {
 
+    ContentResponse<String> getVersion();
     ContentResponse<String> getStatisticsProviderName();
     ContentResponse<String> getStatisticsProviderSetup();
     ContentResponse<String> refreshStatisticsProviderSetup();

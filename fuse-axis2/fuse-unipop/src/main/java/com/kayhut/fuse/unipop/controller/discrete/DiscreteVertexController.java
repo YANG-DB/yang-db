@@ -11,6 +11,7 @@ import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteEdgeConverte
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
@@ -27,7 +28,6 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.search.SearchHit;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
@@ -40,7 +40,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
  */
 public class DiscreteVertexController extends VertexControllerBase {
     //region Constructors
-    public DiscreteVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+    public DiscreteVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
         super(labels -> Stream.ofAll(labels).isEmpty() ||
                 Stream.ofAll(schemaProvider.getEdgeLabels()).toJavaSet().containsAll(Stream.ofAll(labels).toJavaSet()),
                 Stream.ofAll(schemaProvider.getEdgeLabels()).toJavaSet());
@@ -49,6 +49,7 @@ public class DiscreteVertexController extends VertexControllerBase {
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
+        this.orderProviderFactory = orderProviderFactory;
     }
     //endregion
 
@@ -127,9 +128,9 @@ public class DiscreteVertexController extends VertexControllerBase {
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
                 searchRequest,
+                orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
-                searchBuilder.getScrollSize(),
-                searchBuilder.getScrollTime());
+                searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
 
         ElementConverter<DataItem, Edge> elementConverter = new CompositeElementConverter<>(
                 new DiscreteEdgeConverter<>(context));
@@ -190,5 +191,6 @@ public class DiscreteVertexController extends VertexControllerBase {
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
+    private SearchOrderProviderFactory orderProviderFactory;
     //endregion
 }

@@ -6,6 +6,8 @@ import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import org.elasticsearch.action.ActionListener;
 import org.slf4j.Logger;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -16,7 +18,7 @@ public class LoggingActionListener<TResponse> implements ActionListener<TRespons
     public LoggingActionListener(
             LogMessage successMessage,
             LogMessage failureMessage,
-            Timer.Context timerContext,
+            Closeable timerContext,
             Meter successMeter,
             Meter failureMeter) {
         this.successMessage = successMessage;
@@ -33,7 +35,7 @@ public class LoggingActionListener<TResponse> implements ActionListener<TRespons
             LogMessage successMessage,
             LogMessage failureMessage,
             LogMessage innerFailureMessage,
-            Timer.Context timerContext,
+            Closeable timerContext,
             Meter successMeter,
             Meter failureMeter) {
         this(successMessage, failureMessage, timerContext, successMeter, failureMeter);
@@ -45,7 +47,11 @@ public class LoggingActionListener<TResponse> implements ActionListener<TRespons
     //region ActionListsner Implementation
     @Override
     public void onResponse(TResponse tResponse) {
-        timerContext.stop();
+        try {
+            this.timerContext.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 
         try {
             innerActionListener.ifPresent(tResponseActionListener -> tResponseActionListener.onResponse(tResponse));
@@ -59,7 +65,11 @@ public class LoggingActionListener<TResponse> implements ActionListener<TRespons
 
     @Override
     public void onFailure(Exception e) {
-        timerContext.stop();
+        try {
+            this.timerContext.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 
         try {
             innerActionListener.ifPresent(tResponseActionListener -> tResponseActionListener.onFailure(e));
@@ -75,7 +85,7 @@ public class LoggingActionListener<TResponse> implements ActionListener<TRespons
     //region Fields
     private LogMessage successMessage;
     private LogMessage failureMessage;
-    private Timer.Context timerContext;
+    private Closeable timerContext;
     private Meter successMeter;
     private Meter failureMeter;
     private Optional<ActionListener<TResponse>> innerActionListener;

@@ -110,6 +110,18 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
         return this.eBase;
     }
 
+    public void seteBase(T eBase) {
+        this.eBase = eBase;
+    }
+
+    public void setB(List<AsgEBase<? extends EBase>> b) {
+        this.b = b;
+    }
+
+    public void setParent(List<AsgEBase<? extends EBase>> parent) {
+        this.parent = parent;
+    }
+
     @JsonIgnore
     @JsonIgnoreProperties
     public List<AsgEBase<? extends EBase>> getParents() {

@@ -16,11 +16,10 @@ import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -36,10 +35,12 @@ import com.kayhut.fuse.services.engine2.CsvCursorTestSuite;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
+import com.kayhut.test.data.DragonsOntology;
 import com.kayhut.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import javaslang.collection.Stream;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -53,7 +54,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.kayhut.fuse.model.OntologyTestUtils.*;
+import static com.kayhut.fuse.model.OntologyTestUtils.ORIGINATED_IN;
+import static com.kayhut.test.data.DragonsOntology.*;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
@@ -395,7 +397,7 @@ public class CsvCursorTests {
         CreateCsvCursorRequest request = CreateCsvCursorRequest.Builder.instance().withElement(new CreateCsvCursorRequest.CsvElement("A", "id", CreateCsvCursorRequest.ElementType.Entity))
                 .withElement(new CreateCsvCursorRequest.CsvElement("B", "id", CreateCsvCursorRequest.ElementType.Entity))
                 .withElement(new CreateCsvCursorRequest.CsvElement("C", "id", CreateCsvCursorRequest.ElementType.Entity)).request();
-        runQueryAndValidate(query,dragonOriginKingdomX2Results(),  dragonOriginKingdomX2Plan(query),request);
+        runQueryAndValidate(query,dragonOriginKingdomX2Results(), request);
     }
 
     @Test
@@ -405,7 +407,7 @@ public class CsvCursorTests {
         CreateCsvCursorRequest request = CreateCsvCursorRequest.Builder.instance().withElement(new CreateCsvCursorRequest.CsvElement("A", "id", CreateCsvCursorRequest.ElementType.Entity))
                 .withElement(new CreateCsvCursorRequest.CsvElement("B", "id", CreateCsvCursorRequest.ElementType.Entity))
                 .withElement(new CreateCsvCursorRequest.CsvElement("C", "id", CreateCsvCursorRequest.ElementType.Entity)).request();
-        runQueryPlain(query,dragonOriginKingdomX2Results(),  dragonOriginKingdomX2Plan(query),request);
+        runQueryPlain(query,dragonOriginKingdomX2Results(), request);
     }
 
     @Test
@@ -419,40 +421,7 @@ public class CsvCursorTests {
                 .withElement(new CreateCsvCursorRequest.CsvElement("C", "id", CreateCsvCursorRequest.ElementType.Entity))
                 .withElement(new CreateCsvCursorRequest.CsvElement("D", "id", CreateCsvCursorRequest.ElementType.Entity))
                 .withElement(new CreateCsvCursorRequest.CsvElement("G", "id", CreateCsvCursorRequest.ElementType.Entity)).request();
-        runQueryAndValidate(query, dragonOriginKingdomX3Results(),dragonOriginKingdomX3Plan(query), request);
-    }
-
-    private Plan dragonOriginKingdomX3Plan(Query query) {
-
-
-        Plan leftBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
-                new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
-                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
-        );
-        Rel rel = (Rel) query.getElements().get(5).clone();
-        rel.setDir(Rel.Direction.R);
-        Plan rightBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
-                new RelationOp(new AsgEBase<>( rel)),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
-                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
-        );
-
-        Plan innerJoin = new Plan(new EntityJoinOp(leftBranch, rightBranch));
-        Rel rel2 = (Rel) query.getElements().get(8).clone();
-        rel2.setDir(Rel.Direction.R);
-        Plan rightBranch2 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(9))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
-                new RelationOp(new AsgEBase<>( rel2)),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
-                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
-        );
-        return new Plan(new EntityJoinOp(innerJoin, rightBranch2));
+        runQueryAndValidate(query, dragonOriginKingdomX3Results(), request);
     }
 
     private CsvQueryResult dragonOriginKingdomX3Results() throws ParseException {
@@ -466,27 +435,6 @@ public class CsvCursorTests {
 
     }
 
-    private Plan dragonOriginKingdomX2Plan(Query query) {
-        Plan leftBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
-                                    new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
-                                    new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
-                                    new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
-                                    new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                                    new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
-                                );
-        Rel rel = (Rel) query.getElements().get(4).clone();
-        rel.setDir(Rel.Direction.R);
-        Plan rightBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(5))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
-                new RelationOp(new AsgEBase<>( rel)),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
-                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
-        );
-
-        return new Plan(new EntityJoinOp(leftBranch, rightBranch));
-    }
-
     private CsvQueryResult dragonOriginKingdomX2Results() throws ParseException {
         CsvQueryResult.Builder builder = CsvQueryResult.Builder.instance();
         builder.withLine("\"Dragon_1\",\"Kingdom_1\",\"Dragon_3\"");
@@ -496,7 +444,7 @@ public class CsvCursorTests {
     }
 
 
-    private void runQueryAndValidate(Query query, CsvQueryResult expectedQueryResult, Plan expectedPlan, CreateCsvCursorRequest csvCursorRequest) throws IOException, InterruptedException {
+    private void runQueryAndValidate(Query query, CsvQueryResult expectedQueryResult, CreateCsvCursorRequest csvCursorRequest) throws IOException, InterruptedException {
         csvCursorRequest.setCreatePageRequest(new CreatePageRequest(1000, true));
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(
@@ -511,13 +459,10 @@ public class CsvCursorTests {
         Object pageData = queryResourceInfo.getCursorResourceInfos().iterator().next().getPageResourceInfos().iterator().next().getData();
         CsvQueryResult actualCsvQueryResult = new ObjectMapper().convertValue(pageData, CsvQueryResult.class);
 
-        PlanAssert.assertEquals(expectedPlan, actualPlan);
-
-
         QueryResultAssert.assertEquals(expectedQueryResult, actualCsvQueryResult);
     }
 
-    private void runQueryPlain(Query query, CsvQueryResult expectedQueryResult, Plan expectedPlan, CreateCsvCursorRequest csvCursorRequest) throws IOException, InterruptedException {
+    private void runQueryPlain(Query query, CsvQueryResult expectedQueryResult, CreateCsvCursorRequest csvCursorRequest) throws IOException, InterruptedException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
@@ -532,10 +477,7 @@ public class CsvCursorTests {
         }
 
         String res = fuseClient.getPageDataPlain(pageResourceInfo.getDataUrl());
-        PlanAssert.assertEquals(expectedPlan, actualPlan);
         Assert.assertEquals(expectedQueryResult.content(), res);
-
-
     }
 
     private Query getDragonOriginKingdomX2Query() {

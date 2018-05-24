@@ -2,8 +2,10 @@ package com.kayhut.fuse.model.execution.plan;
 
 import com.kayhut.fuse.model.execution.plan.composite.CompositeAsgEBasePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.QueryAssert;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -61,6 +63,10 @@ public class PlanAssert {
                 assertEquals((CompositeAsgEBasePlanOp)expectedPlanOp, (CompositeAsgEBasePlanOp)actualPlanOp);
             } else if (CompositePlanOp.class.isAssignableFrom(expectedPlanOp.getClass())) {
                 assertEquals((CompositePlanOp)expectedPlanOp, (CompositePlanOp)actualPlanOp);
+            } else if (EntityFilterOp.class.isAssignableFrom(expectedPlanOp.getClass())) {
+                assertEquals((EntityFilterOp)expectedPlanOp, (EntityFilterOp)actualPlanOp);
+            } else if (RelationFilterOp.class.isAssignableFrom(expectedPlanOp.getClass())) {
+                assertEquals((RelationFilterOp)expectedPlanOp, (RelationFilterOp)actualPlanOp);
             }
         }
     }
@@ -94,6 +100,18 @@ public class PlanAssert {
         }
     }
 
+    public static void assertEquals(EntityFilterOp expectedEntityFilterOp, EntityFilterOp actualEntityFilterOp) {
+        if (expectedEntityFilterOp == null) {
+            Assert.assertTrue(actualEntityFilterOp == null);
+        }
+
+        Assert.assertTrue(expectedEntityFilterOp != null && actualEntityFilterOp != null);
+        Assert.assertTrue(expectedEntityFilterOp.getAsgEbase().geteNum() == actualEntityFilterOp.getAsgEbase().geteNum());
+
+        Assert.assertTrue(expectedEntityFilterOp.getAsgEbase().geteBase().getClass().equals(actualEntityFilterOp.getAsgEbase().geteBase().getClass()));
+        Assert.assertEquals(expectedEntityFilterOp.getAsgEbase().geteBase(), actualEntityFilterOp.getAsgEbase().geteBase());
+    }
+
     public static void assertEquals(RelationOp expectedRelationOp, RelationOp actualRelationOp) {
         if (expectedRelationOp == null) {
             Assert.assertTrue(actualRelationOp == null);
@@ -104,5 +122,17 @@ public class PlanAssert {
         Assert.assertTrue(expectedRelationOp.getAsgEbase().geteNum() == actualRelationOp.getAsgEbase().geteNum());
 
         QueryAssert.assertEquals(expectedRelationOp.getAsgEbase().geteBase(), actualRelationOp.getAsgEbase().geteBase());
+    }
+
+    public static void assertEquals(RelationFilterOp expectedRelationFilterOp, RelationFilterOp actualRelationFilterOp) {
+        if (expectedRelationFilterOp == null) {
+            Assert.assertTrue(actualRelationFilterOp == null);
+        }
+
+        Assert.assertTrue(expectedRelationFilterOp != null && actualRelationFilterOp != null);
+        Assert.assertTrue(expectedRelationFilterOp.getAsgEbase().geteNum() == actualRelationFilterOp.getAsgEbase().geteNum());
+
+        Assert.assertTrue(expectedRelationFilterOp.getAsgEbase().geteBase().getClass().equals(actualRelationFilterOp.getAsgEbase().geteBase().getClass()));
+        Assert.assertEquals(expectedRelationFilterOp.getAsgEbase().geteBase(), actualRelationFilterOp.getAsgEbase().geteBase());
     }
 }

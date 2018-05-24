@@ -17,13 +17,22 @@ import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.epb.utils.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Value;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RedundantRelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
@@ -273,7 +282,23 @@ public class SmartEpbRedundancyTests {
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         Assert.assertNotNull(plan);
-        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(6).entityFilter(7).rel(4, Rel.Direction.L).relFilter(5).entity(1).entityFilter(3).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
+
+        Plan expected = new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 6)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 7)),
+                new RelationOp(AsgQueryUtil.reverse(AsgQueryUtil.element$(query, 4))),
+                new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(
+                        new RelPropGroup(5,
+                                new RedundantRelProp(0, NAME.type, "entityA.name", "entityA.name", Constraint.of(ConstraintOp.le, "abc"))))
+                        .build()),
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(new EPropGroup(3)).build()),
+                new RelationOp(AsgQueryUtil.element$(query, 8)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 9)),
+                new EntityOp(AsgQueryUtil.element$(query, 10)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 11))
+        );
+
         PlanAssert.assertEquals(expected, plan.getPlan());
     }
 

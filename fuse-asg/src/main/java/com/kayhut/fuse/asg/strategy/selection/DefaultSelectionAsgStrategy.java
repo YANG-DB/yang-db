@@ -21,6 +21,9 @@ import java.util.Set;
 
 /**
  * Created by Roman on 13/06/2017.
+ *
+ * Go over all EPropGroups - if no projection was requested - go over all existing entity's props and add them as default
+ * - similar to "select * from entity type"
  */
 public class DefaultSelectionAsgStrategy implements AsgStrategy {
     //region Constructors
@@ -45,7 +48,7 @@ public class DefaultSelectionAsgStrategy implements AsgStrategy {
                             Stream.ofAll(ont.$entity$(eTypedAsgEBase.get().geteBase().geteType()).getProperties())
                                     .filter(pType -> !this.nonSelectablePTypes.contains(pType))
                                     .forEach(pType -> ePropGroupAsgEBase.geteBase().getProps().add(
-                                            new EProp(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get(), pType, new IdentityProjection())));
+                                            new EProp(0, pType, new IdentityProjection())));
                         } else {
                             Optional<AsgEBase<EUntyped>> eUntypedAsgEBase = AsgQueryUtil.ancestor(ePropGroupAsgEBase, EUntyped.class);
                             eUntypedAsgEBase.ifPresent(eUntypedAsgEBase1 ->
@@ -53,7 +56,7 @@ public class DefaultSelectionAsgStrategy implements AsgStrategy {
                                             .flatMap(EntityType::getProperties)
                                             .filter(pType -> !this.nonSelectablePTypes.contains(pType))
                                             .forEach(pType -> ePropGroupAsgEBase.geteBase().getProps().add(
-                                                    new EProp(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get(), pType, new IdentityProjection()))));
+                                                    new EProp(0, pType, new IdentityProjection()))));
                         }
                     }
                 }

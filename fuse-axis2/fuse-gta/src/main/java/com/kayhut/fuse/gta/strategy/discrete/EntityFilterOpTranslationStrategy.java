@@ -18,11 +18,10 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.SchematicEProp;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
+import com.kayhut.fuse.unipop.step.BoostingStepWrapper;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
@@ -115,14 +114,14 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
                 constraintTraversal = __.has(T.label, P.within(eTypeNames));
             }
 
-            List<Traversal> epropTraversals =
-                    Stream.ofAll(ePropGroup.getProps())
-                            .filter(eProp -> eProp.getCon() != null)
-                            .map(eProp -> convertEPropToTraversal(eProp, ont)).toJavaList();
+            List<Traversal> epropGroupTraversals = Collections.emptyList();
+            if (!ePropGroup.getProps().isEmpty() || !ePropGroup.getGroups().isEmpty()) {
+                epropGroupTraversals = Collections.singletonList(convertEPropGroupToTraversal(ePropGroup, ont));
+            }
 
-            if (!epropTraversals.isEmpty()) {
-                epropTraversals.add(0, constraintTraversal);
-                constraintTraversal = __.and(Stream.ofAll(epropTraversals).toJavaArray(Traversal.class));
+            if (!epropGroupTraversals.isEmpty()) {
+                List<Traversal> traversals = Stream.of(constraintTraversal).appendAll(epropGroupTraversals).toJavaList();
+                constraintTraversal = __.and(Stream.ofAll(traversals).toJavaArray(Traversal.class));
             }
 
             traversal.has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal));
@@ -142,12 +141,12 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
             entityTraversals = Collections.singletonList(getEntityFilterTraversal(entity, ont));
         }
 
-        List<Traversal> epropTraversals =
-                Stream.ofAll(ePropGroup.getProps())
-                        .filter(eProp -> eProp.getCon() != null)
-                        .map(eProp -> convertEPropToTraversal(eProp, ont)).toJavaList();
+        List<Traversal> epropGroupTraversals = Collections.emptyList();
+        if (!ePropGroup.getProps().isEmpty() || !ePropGroup.getGroups().isEmpty()) {
+            epropGroupTraversals = Collections.singletonList(convertEPropGroupToTraversal(ePropGroup, ont));
+        }
 
-        List<Traversal> traversals = Stream.ofAll(entityTraversals).appendAll(epropTraversals).toJavaList();
+        List<Traversal> traversals = Stream.ofAll(entityTraversals).appendAll(epropGroupTraversals).toJavaList();
         if (traversals.isEmpty()) {
             return traversal;
         }
@@ -183,6 +182,44 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
         return null;
     }
 
+    private Traversal convertEPropGroupToTraversal(EPropGroup ePropGroup, Ontology.Accessor ont) {
+        List<Traversal> childGroupTraversals = Stream.ofAll(ePropGroup.getGroups())
+                .map(childGroup -> convertEPropGroupToTraversal(childGroup, ont))
+                .toJavaList();
+
+        List<Traversal> epropTraversals = Stream.ofAll(ePropGroup.getProps())
+                .filter(eProp -> eProp.getCon() != null)
+                .map(eprop -> convertEPropToTraversal(eprop, ont))
+                .toJavaList();
+
+
+        Stream<Traversal> traversalStream = Stream.ofAll(epropTraversals).appendAll(childGroupTraversals);
+
+        Traversal[] traversals = traversalStream.toJavaArray(Traversal.class);
+        Traversal ret;
+        if (traversals.length == 1) {
+            ret = traversals[0];
+        }
+        else {
+            switch (ePropGroup.getQuantType()) {
+                case all:
+                    ret = __.and(traversals);
+                    break;
+                case some:
+                    ret = __.or(traversals);
+                    break;
+                default:
+                    ret = __.and(traversals);
+            }
+        }
+
+        if(ePropGroup instanceof RankingProp){
+            GraphTraversal.Admin admin = __.start().asAdmin();
+            ret = admin.addStep(new BoostingStepWrapper(ret.asAdmin().getEndStep(), ((RankingProp) ePropGroup).getBoost()));
+        }
+        return ret;
+    }
+
     private Traversal convertEPropToTraversal(EProp eProp, Ontology.Accessor ont) {
         Optional<Property> property = ont.$property(eProp.getpType());
         if (!property.isPresent()) {
@@ -192,7 +229,13 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
         String actualPropertyName = SchematicEProp.class.isAssignableFrom(eProp.getClass()) ?
                 ((SchematicEProp)eProp).getSchematicName() : property.get().getName();
 
-        return __.has(actualPropertyName, ConversionUtil.convertConstraint(eProp.getCon()));
+        GraphTraversal<Object, Object> traversal = __.has(actualPropertyName, ConversionUtil.convertConstraint(eProp.getCon()));
+        if(eProp instanceof RankingProp){
+            GraphTraversal.Admin admin = __.start().asAdmin();
+            traversal = admin.addStep(new BoostingStepWrapper<>(traversal.asAdmin().getEndStep(), ((RankingProp) eProp).getBoost()));
+        }
+        return traversal;
+
     }
 
     private boolean isFilterVertexStep(VertexStep vertexStep) {

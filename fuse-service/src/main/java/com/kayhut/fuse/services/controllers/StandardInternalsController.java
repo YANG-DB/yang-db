@@ -5,6 +5,8 @@ import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 
+import java.util.Optional;
+
 import static java.util.UUID.randomUUID;
 import static org.jooby.Status.ACCEPTED;
 import static org.jooby.Status.NOT_FOUND;
@@ -12,7 +14,7 @@ import static org.jooby.Status.NOT_FOUND;
 /**
  * Created by lior on 19/02/2017.
  */
-public class StandardInternalsController implements InternalsController{
+public class StandardInternalsController implements InternalsController {
     //region Constructors
     @Inject
     public StandardInternalsController(InternalsDriver driver) {
@@ -22,6 +24,13 @@ public class StandardInternalsController implements InternalsController{
 
     //region Fields
     private InternalsDriver driver;
+
+    @Override
+    public ContentResponse<String> getVersion() {
+        return Builder.<String>builder(ACCEPTED, NOT_FOUND)
+                .data(Optional.of(this.getClass().getPackage().getImplementationVersion()))
+                .compose();
+    }
 
     @Override
     public ContentResponse<String> getStatisticsProviderName() {

@@ -5,6 +5,8 @@ import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.promise.*;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
@@ -14,6 +16,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,7 +50,9 @@ public class ElementControllerTest {
     @Test
     public void testSingleIdPromiseVertexWithoutConstraint() {
         UniGraph graph = mock(UniGraph.class);
-
+        SearchOrderProviderFactory orderProvider = context -> {
+            return SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
+        };
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("promise", P.eq(Promise.as("A")))));
 
@@ -55,7 +60,7 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),orderProvider);
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
@@ -75,6 +80,7 @@ public class ElementControllerTest {
     @Test
     public void testSingleTraversalPromiseVertexWithoutConstraint() {
         UniGraph graph = mock(UniGraph.class);
+        SearchOrderProviderFactory orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         Traversal dragonTraversal = __.has("label", P.eq("dragon"));
@@ -84,7 +90,7 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),orderProvider);
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
@@ -110,6 +116,7 @@ public class ElementControllerTest {
     public void testMultipleIdPromiseVertexWithoutConstraint() {
         UniGraph graph = mock(UniGraph.class);
 
+        SearchOrderProviderFactory orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("promise", P.within(Promise.as("A"), Promise.as("B"), Promise.as("C")))));
 
@@ -117,7 +124,7 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),orderProvider);
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
@@ -141,6 +148,8 @@ public class ElementControllerTest {
     @Test
     public void testMultipleTraversalPromiseVertexWithoutConstraint() {
         UniGraph graph = mock(UniGraph.class);
+        SearchOrderProviderFactory orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
+
 
         Traversal dragonTraversal = __.has("label", P.eq("dragon"));
         Traversal guildTraversal = __.has("label", P.eq("guild"));
@@ -156,7 +165,7 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),orderProvider);
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
@@ -183,6 +192,7 @@ public class ElementControllerTest {
     @Test
     public void testSingleIdPromiseVertexWithConstraint() {
         UniGraph graph = mock(UniGraph.class);
+        SearchOrderProviderFactory orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
 
         Traversal dragonTraversal = __.has("label", P.eq("dragon"));
 
@@ -195,7 +205,7 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),orderProvider);
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
@@ -217,6 +227,7 @@ public class ElementControllerTest {
     @Test
     public void testSingleTraversalPromiseVertexWithConstraint() {
         UniGraph graph = mock(UniGraph.class);
+        SearchOrderProviderFactory orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         Traversal dragonTraversal = __.has("label", P.eq("dragon"));
@@ -228,7 +239,7 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),orderProvider);
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
@@ -254,6 +265,7 @@ public class ElementControllerTest {
     @Test
     public void testMultipleIdPromiseVertexWithConstraint() {
         UniGraph graph = mock(UniGraph.class);
+        SearchOrderProviderFactory orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
 
         Traversal dragonTraversal = __.has("label", P.eq("dragon"));
 
@@ -266,7 +278,7 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),orderProvider);
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
@@ -291,6 +303,7 @@ public class ElementControllerTest {
     @Test
     public void testMultipleTraversalPromiseVertexWithConstraint() {
         UniGraph graph = mock(UniGraph.class);
+        SearchOrderProviderFactory orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
 
         Traversal dragonTraversal = __.has("label", P.eq("dragon"));
         Traversal guildTraversal = __.has("label", P.eq("guild"));
@@ -308,7 +321,7 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),orderProvider);
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 

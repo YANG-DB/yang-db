@@ -3,12 +3,17 @@ package com.kayhut.fuse.executor.elasticsearch.logging;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
+import com.kayhut.fuse.dispatcher.logging.LoggingTimerContext;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.ElasticsearchClient;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  * Created by roman.margolis on 14/12/2017.
@@ -38,7 +43,7 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
     //region Override Methods
     @Override
     public ListenableActionFuture<SearchResponse> execute() {
-        Timer.Context timerContext = this.timer.time();
+        Closeable timerContext = this.timer.time();
 
         try {
             this.startMessage.log();
@@ -52,7 +57,13 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
         } catch (Exception ex) {
             this.failureMessage.with(ex).log();
             this.failureMeter.mark();
-            timerContext.stop();
+
+            try {
+                timerContext.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             throw ex;
         }
     }

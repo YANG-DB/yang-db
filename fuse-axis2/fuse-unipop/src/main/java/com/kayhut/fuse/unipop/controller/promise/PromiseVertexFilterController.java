@@ -14,6 +14,8 @@ import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.converter.SearchHitPromiseFilterEdgeConverter;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -44,7 +46,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class PromiseVertexFilterController extends VertexControllerBase {
 
     //region Constructors
-    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
         super(labels -> Stream.ofAll(labels).size() == 1 &&
                 Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE_FILTER));
 
@@ -52,6 +54,7 @@ public class PromiseVertexFilterController extends VertexControllerBase {
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
+        this.orderProviderFactory = orderProviderFactory;
     }
 
     //endregion
@@ -117,9 +120,9 @@ public class PromiseVertexFilterController extends VertexControllerBase {
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
                 searchRequest,
+                orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
-                searchBuilder.getScrollSize(),
-                searchBuilder.getScrollTime());
+                searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
 
         ElementConverter<SearchHit, Edge> converter = new SearchHitPromiseFilterEdgeConverter(graph);
         return Stream.ofAll(searchHits)
@@ -131,6 +134,7 @@ public class PromiseVertexFilterController extends VertexControllerBase {
     //region Fields
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
+    private SearchOrderProviderFactory orderProviderFactory;
     private Client client;
     private ElasticGraphConfiguration configuration;
     //endregion

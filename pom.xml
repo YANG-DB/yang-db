@@ -5,7 +5,7 @@
     <groupId>org.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3.1-SNAPSHOT</version>
 
     <modules>
         <module>data-gen</module>
@@ -494,6 +494,13 @@
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-unipop</artifactId>
+                <version>${fuse.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-service</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>

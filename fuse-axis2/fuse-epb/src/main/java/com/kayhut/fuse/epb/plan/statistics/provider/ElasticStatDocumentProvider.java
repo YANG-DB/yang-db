@@ -5,8 +5,10 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import javaslang.collection.Stream;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 
@@ -48,10 +50,9 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
 
         SearchHitScrollIterable hits = new SearchHitScrollIterable(
                 this.client.get(),
-                searchBuilder.build(this.client.get(), false),
+                searchBuilder.build(this.client.get(), false), SearchOrderProvider.of(SearchOrderProvider.EMPTY,SearchType.DEFAULT) ,
                 searchBuilder.getLimit(),
-                searchBuilder.getScrollSize(),
-                searchBuilder.getScrollTime());
+                searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
 
         return Stream.ofAll(hits)
                 .map(SearchHit::sourceAsMap)

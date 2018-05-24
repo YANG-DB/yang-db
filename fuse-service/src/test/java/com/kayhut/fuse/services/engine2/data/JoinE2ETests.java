@@ -16,6 +16,7 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -29,6 +30,7 @@ import com.kayhut.fuse.services.engine2.JoinE2ETestSuite;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
+import com.kayhut.test.data.DragonsOntology;
 import com.kayhut.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.index.Mappings;
@@ -45,8 +47,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
+import static com.kayhut.fuse.model.OntologyTestUtils.BIRTH_DATE;
+import static com.kayhut.fuse.model.OntologyTestUtils.GENDER;
+import static com.kayhut.test.data.DragonsOntology.*;
+import static com.kayhut.test.data.DragonsOntology.COLOR;
+import static com.kayhut.test.data.DragonsOntology.FIRE;
+import static com.kayhut.test.data.DragonsOntology.NAME;
+import static com.kayhut.test.data.DragonsOntology.POWER;
+import static com.kayhut.test.data.DragonsOntology.TEMPERATURE;
+import static com.kayhut.test.data.DragonsOntology.TIMESTAMP;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
@@ -69,11 +81,11 @@ public class JoinE2ETests {
 
         String idField = "id";
 
-        new MappingElasticConfigurer(PERSON.name.toLowerCase(), new Mappings().addMapping("pge", getPersonMapping()))
+        new MappingElasticConfigurer(DragonsOntology.PERSON.name.toLowerCase(), new Mappings().addMapping("pge", getPersonMapping()))
                 .configure(client);
-        new MappingElasticConfigurer(DRAGON.name.toLowerCase(), new Mappings().addMapping("pge", getDragonMapping()))
+        new MappingElasticConfigurer(DragonsOntology.DRAGON.name.toLowerCase(), new Mappings().addMapping("pge", getDragonMapping()))
                 .configure(client);
-        new MappingElasticConfigurer(KINGDOM.name.toLowerCase(), new Mappings().addMapping("pge", getKingdomMapping()))
+        new MappingElasticConfigurer(DragonsOntology.KINGDOM.name.toLowerCase(), new Mappings().addMapping("pge", getKingdomMapping()))
                 .configure(client);
         new MappingElasticConfigurer(Arrays.asList(
                 FIRE.getName().toLowerCase() + "20170511",
@@ -96,21 +108,21 @@ public class JoinE2ETests {
 
         new ElasticDataPopulator(
                 client,
-                PERSON.name.toLowerCase(),
+                DragonsOntology.PERSON.name.toLowerCase(),
                 "pge",
                 idField,
                 () -> createPeople(numPersons)).populate();
 
         new ElasticDataPopulator(
                 client,
-                DRAGON.name.toLowerCase(),
+                DragonsOntology.DRAGON.name.toLowerCase(),
                 "pge",
                 idField,
                 () -> createDragons(numDragons, birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L)))
                 .populate(); // date interval is ~ 1 month
 
         new ElasticDataPopulator(client,
-                KINGDOM.name.toLowerCase(),
+                DragonsOntology.KINGDOM.name.toLowerCase(),
                 "pge",
                 idField,
                 ()-> createKingdoms(numKingdoms))
@@ -158,12 +170,12 @@ public class JoinE2ETests {
 
 
         client.admin().indices().refresh(new RefreshRequest(
-                PERSON.name.toLowerCase(),
-                DRAGON.name.toLowerCase(),
+                DragonsOntology.PERSON.name.toLowerCase(),
+                DragonsOntology.DRAGON.name.toLowerCase(),
                 FIRE.getName().toLowerCase() + "20170511",
                 FIRE.getName().toLowerCase() + "20170512",
                 FIRE.getName().toLowerCase() + "20170513",
-                KINGDOM.name.toLowerCase(),
+                DragonsOntology.KINGDOM.name.toLowerCase(),
                 "originated_in"
         )).actionGet();
 
@@ -185,12 +197,12 @@ public class JoinE2ETests {
     public static void cleanup(TransportClient client, boolean statsUsed) throws Exception {
         client.admin().indices()
                 .delete(new DeleteIndexRequest(
-                        PERSON.name.toLowerCase(),
-                        DRAGON.name.toLowerCase(),
+                        DragonsOntology.PERSON.name.toLowerCase(),
+                        DragonsOntology.DRAGON.name.toLowerCase(),
                         FIRE.getName().toLowerCase() + "20170511",
                         FIRE.getName().toLowerCase() + "20170512",
                         FIRE.getName().toLowerCase() + "20170513",
-                        KINGDOM.name.toLowerCase(),
+                        DragonsOntology.KINGDOM.name.toLowerCase(),
                         "originated_in"))
                 .actionGet();
 
@@ -255,7 +267,7 @@ public class JoinE2ETests {
         for(int i = 0 ; i < numDragons ; i++) {
             Map<String, Object> dragon = new HashMap<>();
             dragon.put("id", "Dragon_" + i);
-            dragon.put("type", DRAGON.name);
+            dragon.put("type", DragonsOntology.DRAGON.name);
             int nameChar = i%58 + 65;
             dragon.put(NAME.name, (char)nameChar);
             dragon.put(BIRTH_DATE.name, sdf.format(new Date(birthDateValueFunction.apply(i))));
@@ -298,16 +310,16 @@ public class JoinE2ETests {
 
                 Map<String, Object> entityAI = new HashMap<>();
                 entityAI.put("id", "Dragon_" + i);
-                entityAI.put("type", DRAGON.name);
+                entityAI.put("type", DragonsOntology.DRAGON.name);
                 Map<String, Object> entityAJ = new HashMap<>();
                 entityAJ.put("id", "Dragon_" + j);
-                entityAJ.put("type", DRAGON.name);
+                entityAJ.put("type", DragonsOntology.DRAGON.name);
                 Map<String, Object> entityBI = new HashMap<>();
                 entityBI.put("id", "Dragon_" + i);
-                entityBI.put("type", DRAGON.name);
+                entityBI.put("type", DragonsOntology.DRAGON.name);
                 Map<String, Object> entityBJ = new HashMap<>();
                 entityBJ.put("id", "Dragon_" + j);
-                entityBJ.put("type", DRAGON.name);
+                entityBJ.put("type", DragonsOntology.DRAGON.name);
 
                 fireEdge.put("entityA", entityAI);
                 fireEdge.put("entityB", entityBJ);
@@ -378,11 +390,11 @@ public class JoinE2ETests {
 
             Map<String, Object> dragonEntity = new HashMap<>();
             dragonEntity.put("id", "Dragon_" + i);
-            dragonEntity.put("type", DRAGON.name);
+            dragonEntity.put("type", DragonsOntology.DRAGON.name);
 
             Map<String, Object> kingdomEntity = new HashMap<>();
             kingdomEntity.put("id", "Kingdom_" + i % numKingdoms);
-            kingdomEntity.put("type", KINGDOM.name);
+            kingdomEntity.put("type", DragonsOntology.KINGDOM.name);
 
             originEdgeOut.put("entityA", dragonEntity);
             originEdgeOut.put("entityB", kingdomEntity);
@@ -418,31 +430,64 @@ public class JoinE2ETests {
 
 
         Plan leftBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(101,
+                        new EProp(0, NAME.type, new IdentityProjection()),
+                        new EProp(0, BIRTH_DATE.type, new IdentityProjection()),
+                        new EProp(0, POWER.type, new IdentityProjection()),
+                        new EProp(0, GENDER.type, new IdentityProjection()),
+                        new EProp(0, COLOR.type, new IdentityProjection())))),
                 new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(201,
+                        new RedundantRelProp(0, "type", "entityB.type", "entityB.type", Constraint.of(ConstraintOp.inSet, Collections.singletonList(DragonsOntology.KINGDOM.name)))))),
                 new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(102,
+                        new EProp(0, NAME.type, new IdentityProjection()),
+                        new EProp(0, KING.type, new IdentityProjection()),
+                        new EProp(0, QUEEN.type, new IdentityProjection()),
+                        new EProp(0, INDEPENDENCE_DAY.type, new IdentityProjection()),
+                        new EProp(0, FUNDS.type, new IdentityProjection()))))
         );
         Rel rel = (Rel) query.getElements().get(5).clone();
         rel.setDir(Rel.Direction.R);
         Plan rightBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(7,
+                        new SchematicEProp(0,NAME.type, NAME.name, Constraint.of(ConstraintOp.eq, "D")),
+                        new EProp(0, NAME.type, new IdentityProjection()),
+                        new EProp(0, BIRTH_DATE.type, new IdentityProjection()),
+                        new EProp(0, POWER.type, new IdentityProjection()),
+                        new EProp(0, GENDER.type, new IdentityProjection()),
+                        new EProp(0, COLOR.type, new IdentityProjection())))),
                 new RelationOp(new AsgEBase<>( rel)),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(501))),
                 new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(102,
+                        new EProp(0, NAME.type, new IdentityProjection()),
+                        new EProp(0, KING.type, new IdentityProjection()),
+                        new EProp(0, QUEEN.type, new IdentityProjection()),
+                        new EProp(0, INDEPENDENCE_DAY.type, new IdentityProjection()),
+                        new EProp(0, FUNDS.type, new IdentityProjection()))))
         );
 
         Plan innerJoin = new Plan(new EntityJoinOp(leftBranch, rightBranch));
         Rel rel2 = (Rel) query.getElements().get(8).clone();
         rel2.setDir(Rel.Direction.R);
         Plan rightBranch2 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(9))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(10,
+                        new SchematicEProp(0,NAME.type, NAME.name, Constraint.of(ConstraintOp.eq, "F")),
+                        new EProp(0, NAME.type, new IdentityProjection()),
+                        new EProp(0, BIRTH_DATE.type, new IdentityProjection()),
+                        new EProp(0, POWER.type, new IdentityProjection()),
+                        new EProp(0, GENDER.type, new IdentityProjection()),
+                        new EProp(0, COLOR.type, new IdentityProjection())))),
                 new RelationOp(new AsgEBase<>( rel2)),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(801))),
                 new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(102,
+                        new EProp(0, NAME.type, new IdentityProjection()),
+                        new EProp(0, KING.type, new IdentityProjection()),
+                        new EProp(0, QUEEN.type, new IdentityProjection()),
+                        new EProp(0, INDEPENDENCE_DAY.type, new IdentityProjection()),
+                        new EProp(0, FUNDS.type, new IdentityProjection()))))
         );
         return new Plan(new EntityJoinOp(innerJoin, rightBranch2));
     }
@@ -455,7 +500,7 @@ public class JoinE2ETests {
         Entity entityA = Entity.Builder.instance()
                 .withEID("Dragon_1" )
                 .withETag(singleton("A"))
-                .withEType($ont.eType$(DRAGON.name))
+                .withEType($ont.eType$(DragonsOntology.DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "B"),
                         new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(1))))))
@@ -463,7 +508,7 @@ public class JoinE2ETests {
         Entity entityB = Entity.Builder.instance()
                 .withEID("Kingdom_1" )
                 .withETag(singleton("B"))
-                .withEType($ont.eType$(KINGDOM.name))
+                .withEType($ont.eType$(DragonsOntology.KINGDOM.name))
                 .withProperties(singletonList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "kingdom1")))
                 .build();
@@ -472,7 +517,7 @@ public class JoinE2ETests {
         entitiesC.add(Entity.Builder.instance()
                 .withEID("Dragon_3" )
                 .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
+                .withEType($ont.eType$(DragonsOntology.DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
                         new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(3))))))
@@ -481,7 +526,7 @@ public class JoinE2ETests {
         entitiesC.add(Entity.Builder.instance()
                 .withEID("Dragon_61" )
                 .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
+                .withEType($ont.eType$(DragonsOntology.DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
                         new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(61))))))
@@ -491,7 +536,7 @@ public class JoinE2ETests {
         entitiesD.add(Entity.Builder.instance()
                 .withEID("Dragon_5" )
                 .withETag(singleton("D"))
-                .withEType($ont.eType$(DRAGON.name))
+                .withEType($ont.eType$(DragonsOntology.DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "F"),
                         new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(5))))))
@@ -499,7 +544,7 @@ public class JoinE2ETests {
         entitiesD.add(Entity.Builder.instance()
                 .withEID("Dragon_63" )
                 .withETag(singleton("D"))
-                .withEType($ont.eType$(DRAGON.name))
+                .withEType($ont.eType$(DragonsOntology.DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "F"),
                         new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(63))))))
@@ -550,20 +595,42 @@ public class JoinE2ETests {
 
     private Plan dragonOriginKingdomX2Plan(Query query) {
         Plan leftBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
-                                    new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                                    new EntityFilterOp(new AsgEBase<>(new EPropGroup(101,
+                                            new EProp(0, NAME.type, new IdentityProjection()),
+                                            new EProp(0, BIRTH_DATE.type, new IdentityProjection()),
+                                            new EProp(0, POWER.type, new IdentityProjection()),
+                                            new EProp(0, GENDER.type, new IdentityProjection()),
+                                            new EProp(0, COLOR.type, new IdentityProjection())))),
                                     new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
-                                    new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
+                                    new RelationFilterOp(new AsgEBase<>(new RelPropGroup(201,
+                                            new RedundantRelProp(0, "type", "entityB.type", "entityB.type", Constraint.of(ConstraintOp.inSet, Collections.singletonList(DragonsOntology.KINGDOM.name)))))),
                                     new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                                    new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+                                    new EntityFilterOp(new AsgEBase<>(new EPropGroup(301,
+                                            new EProp(0, NAME.type, new IdentityProjection()),
+                                            new EProp(0, KING.type, new IdentityProjection()),
+                                            new EProp(0, QUEEN.type, new IdentityProjection()),
+                                            new EProp(0, INDEPENDENCE_DAY.type, new IdentityProjection()),
+                                            new EProp(0, FUNDS.type, new IdentityProjection()))))
                                 );
         Rel rel = (Rel) query.getElements().get(4).clone();
         rel.setDir(Rel.Direction.R);
         Plan rightBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(5))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(6,
+                        new SchematicEProp(0, NAME.type, NAME.name, Constraint.of(ConstraintOp.eq, "D")),
+                        new EProp(0, NAME.type, new IdentityProjection()),
+                        new EProp(0, BIRTH_DATE.type, new IdentityProjection()),
+                        new EProp(0, POWER.type, new IdentityProjection()),
+                        new EProp(0, GENDER.type, new IdentityProjection()),
+                        new EProp(0, COLOR.type, new IdentityProjection())))),
                 new RelationOp(new AsgEBase<>( rel)),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(401))),
                 new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(301,
+                        new EProp(0, NAME.type, new IdentityProjection()),
+                        new EProp(0, KING.type, new IdentityProjection()),
+                        new EProp(0, QUEEN.type, new IdentityProjection()),
+                        new EProp(0, INDEPENDENCE_DAY.type, new IdentityProjection()),
+                        new EProp(0, FUNDS.type, new IdentityProjection()))))
         );
 
         return new Plan(new EntityJoinOp(leftBranch, rightBranch));
@@ -577,7 +644,7 @@ public class JoinE2ETests {
         Entity entityA = Entity.Builder.instance()
                 .withEID("Dragon_1" )
                 .withETag(singleton("A"))
-                .withEType($ont.eType$(DRAGON.name))
+                .withEType($ont.eType$(DragonsOntology.DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "B"),
                         new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(1))))))
@@ -585,7 +652,7 @@ public class JoinE2ETests {
         Entity entityB = Entity.Builder.instance()
                 .withEID("Kingdom_1" )
                 .withETag(singleton("B"))
-                .withEType($ont.eType$(KINGDOM.name))
+                .withEType($ont.eType$(DragonsOntology.KINGDOM.name))
                 .withProperties(singletonList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "kingdom1")))
                 .build();
@@ -594,7 +661,7 @@ public class JoinE2ETests {
         entitiesC.add(Entity.Builder.instance()
                 .withEID("Dragon_3" )
                 .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
+                .withEType($ont.eType$(DragonsOntology.DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
                         new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(3))))))
@@ -603,7 +670,7 @@ public class JoinE2ETests {
         entitiesC.add(Entity.Builder.instance()
                 .withEID("Dragon_61" )
                 .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
+                .withEType($ont.eType$(DragonsOntology.DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
                         new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(61))))))
@@ -665,11 +732,11 @@ public class JoinE2ETests {
     private Query getDragonOriginKingdomX2Query() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_1", "D0", 2, 0),
+                new EConcrete(1, "A", $ont.eType$(DragonsOntology.DRAGON.name), "Dragon_1", "D0", 2, 0),
                 new Rel(2, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(KINGDOM.name), 4, 0),
+                new ETyped(3, "B", $ont.eType$(DragonsOntology.KINGDOM.name), 4, 0),
                 new Rel(4, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 5, 0),
-                new ETyped(5, "C", $ont.eType$(DRAGON.name), 6, 0),
+                new ETyped(5, "C", $ont.eType$(DragonsOntology.DRAGON.name), 6, 0),
                 new EProp(6, NAME.type, Constraint.of(ConstraintOp.eq, "D"))
         )).build();
     }
@@ -677,15 +744,15 @@ public class JoinE2ETests {
     private Query getDragonOriginKingdomX3Query() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_1", "D0", 2, 0),
+                new EConcrete(1, "A", $ont.eType$(DragonsOntology.DRAGON.name), "Dragon_1", "D0", 2, 0),
                 new Rel(2, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(KINGDOM.name), 4, 0),
+                new ETyped(3, "B", $ont.eType$(DragonsOntology.KINGDOM.name), 4, 0),
                 new Quant1(4, QuantType.all, Arrays.asList(5,8),0),
                 new Rel(5, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 6, 0),
-                new ETyped(6, "C", $ont.eType$(DRAGON.name), 7, 0),
+                new ETyped(6, "C", $ont.eType$(DragonsOntology.DRAGON.name), 7, 0),
                 new EProp(7, NAME.type, Constraint.of(ConstraintOp.eq, "D")),
                 new Rel(8, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 9, 0),
-                new ETyped(9, "D", $ont.eType$(DRAGON.name), 10, 0),
+                new ETyped(9, "D", $ont.eType$(DragonsOntology.DRAGON.name), 10, 0),
                 new EProp(10, NAME.type, Constraint.of(ConstraintOp.eq, "F"))
         )).build();
     }

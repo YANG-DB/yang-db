@@ -16,8 +16,7 @@ public class ElementConstraintSearchAppender extends SearchQueryAppenderBase<Ele
         if (!context.getConstraint().isPresent()) {
             return false;
         }
-
-        new TraversalQueryTranslator(queryBuilder.seekRoot().query().filtered().filter().bool().must(), false)
+        new TraversalQueryTranslator(queryBuilder.seekRoot().query().bool().filter().bool().must(), false)
                 .visit(context.getConstraint().get().getTraversal());
 
         return true;

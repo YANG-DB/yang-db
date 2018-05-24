@@ -19,7 +19,7 @@ public class RequestExternalMetadata {
         //region ClassicConverter Implementation
         @Override
         public String convert(ILoggingEvent iLoggingEvent) {
-            return iLoggingEvent.getMDCPropertyMap().get(key);
+            return iLoggingEvent.getMDCPropertyMap().getOrDefault(key, "");
         }
         //endregion
     }
@@ -30,7 +30,7 @@ public class RequestExternalMetadata {
         //region ClassicConverter Implementation
         @Override
         public String convert(ILoggingEvent iLoggingEvent) {
-            return iLoggingEvent.getMDCPropertyMap().get(key);
+            return iLoggingEvent.getMDCPropertyMap().getOrDefault(key, "");
         }
         //endregion
     }
