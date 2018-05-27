@@ -184,8 +184,33 @@ public class RankingScoreBasedE2ETests {
     }
 
     @Test
+    public void testMotiNickLikeSingleWildcard() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("moti*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(4, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+        Assert.assertEquals("e00000003.global", globalEntitiesSorted.get(2).geteID());
+        Assert.assertEquals("e00000004.global", globalEntitiesSorted.get(3).geteID());
+    }
+
+    @Test
     public void testMotiTitleLike() throws IOException, InterruptedException {
         Query query = getByTitleLike("*moti*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(3, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+        Assert.assertEquals("e00000004.global", globalEntitiesSorted.get(2).geteID());
+    }
+
+    @Test
+    public void testMotiTitleLikeSingleWildcard() throws IOException, InterruptedException {
+        Query query = getByTitleLike("moti*");
         AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
