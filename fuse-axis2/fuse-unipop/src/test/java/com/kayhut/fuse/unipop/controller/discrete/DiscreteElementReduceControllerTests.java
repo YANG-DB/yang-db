@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.search.DefaultSearchOrderProvider;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
@@ -76,14 +77,16 @@ public class DiscreteElementReduceControllerTests {
                                                 elasticEmbeddedNode.getClient(),
                                                 elasticGraphConfiguration,
                                                 uniGraph,
-                                                schemaProvider),
+                                                schemaProvider,
+                                                new DefaultSearchOrderProvider()),
                                         null
                                 ),
                                 new DiscreteVertexController(
                                         elasticEmbeddedNode.getClient(),
                                         elasticGraphConfiguration,
                                         uniGraph,
-                                        schemaProvider),
+                                        schemaProvider,
+                                        new DefaultSearchOrderProvider()),
                                 new DiscreteElementReduceController(
                                         elasticEmbeddedNode.getClient(),
                                         elasticGraphConfiguration,
