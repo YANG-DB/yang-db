@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.Quant1;
@@ -33,6 +34,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.Arrays;
 
+import static com.kayhut.fuse.model.query.Rel.Direction.L;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
 /**
@@ -95,7 +97,7 @@ public class KnowledgeOntologyFilmIMDBTests {
     public void IMDBLoad() throws FileNotFoundException, IOException, ParseException {
         loader.client_connect();
         loader.init();
-        loader.loadFromIMDBJson();
+        loader.loadFromIMDBJson(20);
         loader.indexImdbJsons();
         loader.client_close();
     }
@@ -116,8 +118,67 @@ public class KnowledgeOntologyFilmIMDBTests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
-        /*
-        Query query = Query.Builder.instance().withName("IMDBQuery1").withOnt($ont.name()).withElements(Arrays.asList(
+        Query query = Query.Builder.instance().withName("IMDBRelationQuery1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 7,8), 0),
+                //new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasRelation"), R, null, 13, 0),
+                new Rel(8, $ont.rType$("hasEvalue"), R, null, 12, 0),
+                new ETyped(12, "B", $ont.eType$("Evalue"), 14, 0),
+                new ETyped(13, "C", $ont.eType$("Relation"), 17, 0),
+                new Quant1(14, QuantType.all, Arrays.asList(15,16), 0),
+                new EProp(15, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "language")),
+                new EProp(16, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, "Mandarin")),
+                new Quant1(17, QuantType.all, Arrays.asList(18), 0),
+                new Rel(18, $ont.rType$("hasRelation"), L, null, 19, 0),
+                new ETyped(19, "E", $ont.eType$("Entity"), 20, 0),
+                new Quant1(20, QuantType.all, Arrays.asList( 22), 0),
+                new Rel(22, $ont.rType$("hasEvalue"), R, null, 23, 0),
+                new ETyped(23, "D", $ont.eType$("Evalue"), 24, 0),
+                new Quant1(24, QuantType.all, Arrays.asList(25,26), 0),
+                new EProp(25, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "director")),
+                new EProp(26, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, "Jiang Xiao"))
+                )
+        ).build();
+
+        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 50000, 10,0);
+        int resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
+        String rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,5);
+            Assert.assertEquals(relationsCount,4);
+        }
+
+        query = Query.Builder.instance().withName("IMDBDirectorQuery").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,8), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(8, $ont.rType$("hasEvalue"), R, null, 13, 0),
+                new ETyped(13, "C", $ont.eType$("Evalue"), 14, 0),
+                new Quant1(14, QuantType.all, Arrays.asList(15,16), 0),
+                new EProp(15, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "director")),
+                new EProp(16, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, "Francis Searle"))
+                )
+        ).build();
+
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 50000, 10,0);
+        resultsSize = pageData.getSize();
+        Assert.assertEquals(resultsSize,1);
+        rtype = pageData.getResultType();
+        for(int i=0;i<resultsSize; i++) {
+            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
+            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
+            Assert.assertEquals(entitiesCount,2);
+            Assert.assertEquals(relationsCount,1);
+        }
+
+        /*Query
+                query = Query.Builder.instance().withName("IMDBQuery1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList( 6,7,8), 0),
@@ -136,18 +197,69 @@ public class KnowledgeOntologyFilmIMDBTests {
         ).build();
          */
 
-        Query query = Query.Builder.instance().withName("IMDBQuery1").withOnt($ont.name()).withElements(Arrays.asList(
+        /*Query query = Query.Builder.instance().withName("IMDBQuery1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList( 6,8), 0),
                 new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(8, $ont.rType$("hasEvalue"), R, null, 13, 0),
                 new ETyped(13, "C", $ont.eType$("Evalue"), 14, 0),
-                new Quant1(14, QuantType.all, Arrays.asList(15,16), 0),
-                new EProp(15, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
-                new EProp(16, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, "Electric Shadows"))
+                new Quant1(14, QuantType.some, Arrays.asList(15,16), 0),
+                //new EProp(15, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
+                //new EProp(16, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, "Electric Shadows"))
+                new Quant1(15, QuantType.all, Arrays.asList(17,18), 0),
+                new Quant1(16, QuantType.all, Arrays.asList(19,20), 0),
+                new EProp(17, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "runtime")),
+                new EProp(18, $ont.pType$("intValue"), Constraint.of(ConstraintOp.eq, 93)),
+                new EProp(19, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "year")),
+                new EProp(20, $ont.pType$("intValue"), Constraint.of(ConstraintOp.eq, 2004))
                 )
-        ).build();
+        ).build();*/
+
+        /*Query query = Query.Builder.instance().withName("IMDBQueryWithEPropGroup").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 6,8), 0),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(8, $ont.rType$("hasEvalue"), R, null, 13, 0),
+                new ETyped(13, "C", $ont.eType$("Evalue"), 14, 0),
+                new Quant1(14, QuantType.all, Arrays.asList(15), 0),
+                new EPropGroup(15,QuantType.some, Arrays.asList(), Arrays.asList(
+                        new EPropGroup(16, QuantType.all, Arrays.asList(
+                                new EProp(17, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "runtime")),
+                                new EProp(18, $ont.pType$("intValue"), Constraint.of(ConstraintOp.eq, 93)))),
+                        new EPropGroup(22,QuantType.all, Arrays.asList(
+                                new EProp(19, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "year")),
+                                new EProp(20, $ont.pType$("intValue"), Constraint.of(ConstraintOp.eq, 2004))))))
+                )
+        ).build();*/
+
+        /*Query query = Query.Builder.instance().withName("IMDBQuery1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList( 7,8), 0),
+                //new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasEvalue"), R, null, 13, 0),
+                new Rel(8, $ont.rType$("hasEvalue"), R, null, 12, 0),
+                new ETyped(12, "B", $ont.eType$("Evalue"), 14, 0),
+                new ETyped(13, "C", $ont.eType$("Evalue"), 17, 0),
+                new Quant1(14, QuantType.all, Arrays.asList(15,16), 0),
+                //new EProp(15, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
+                //new EProp(16, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, "Electric Shadows"))
+                //new Quant1(15, QuantType.all, Arrays.asList(17,18), 0),
+                //new Quant1(16, QuantType.all, Arrays.asList(19,20), 0),
+                //new EProp(17, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "runtime")),
+                //new EProp(18, $ont.pType$("intValue"), Constraint.of(ConstraintOp.eq, 93)),
+                new EProp(15, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "language")),
+                new EProp(16, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, "Mandarin")),
+                new Quant1(17, QuantType.all, Arrays.asList(18,19), 0),
+                new EProp(18, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "year")),
+                new EProp(19, $ont.pType$("intValue"), Constraint.of(ConstraintOp.eq, 2004))
+                )
+        ).build();*/
+
+
+
 
        /*Query query = Query.Builder.instance().withName("IMDBQuery1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -165,17 +277,6 @@ public class KnowledgeOntologyFilmIMDBTests {
                 new EProp(15, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title"))
                 )
         ).build();*/
-
-        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 50000, 10,0);
-        int resultsSize = pageData.getSize();
-        Assert.assertEquals(resultsSize,1);
-        String rtype = pageData.getResultType();
-        for(int i=0;i<resultsSize; i++) {
-            int entitiesCount = pageData.getAssignments().get(i).getEntities().size();
-            int relationsCount = pageData.getAssignments().get(i).getRelationships().size();
-            Assert.assertEquals(entitiesCount,2);
-            Assert.assertEquals(relationsCount,1);
-        }
     }
 
     @AfterClass

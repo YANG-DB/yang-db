@@ -181,7 +181,7 @@ public class KnowledgeDatasetLoader {
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cEntityValue);
         on.put("logicalId", "e" + String.format(schema.getIdFormat("entity"), entityID));
-        on.put("entityId", "e" + String.format(schema.getIdFormat("entity"), entityID) + cContext);
+        on.put("entityId", "e" + String.format(schema.getIdFormat("entity"), entityID) + "." + cContext);
         on.put("context", cContext);
         on.put("authorizationCount", cAuthCount);
         on.put("fieldId", valueName);
@@ -499,7 +499,7 @@ public class KnowledgeDatasetLoader {
         _entityId++;
     }
 
-    public void loadFromIMDBJson() throws FileNotFoundException, IOException, ParseException {
+    public void loadFromIMDBJson(int rows_count) throws FileNotFoundException, IOException, ParseException {
         String currJsonLine = null;
         _entitiesMap = new LinkedHashMap<String, Integer>();
         _elements = new LinkedHashMap<Integer, ObjectNode>();
@@ -552,6 +552,10 @@ public class KnowledgeDatasetLoader {
             addMovieReferences(read.get("Plot"), read.get("Poster"), title);
             addMovieInsight(read.get("Awards"), title);
             line_counter++;
+            if (rows_count > 0) {
+                if (line_counter == rows_count)
+                    break;
+            }
             if (line_counter % 3000 == 0) {
                 System.out.println("Indexing after " + line_counter + " elements.");
                 indexImdbJsons();
