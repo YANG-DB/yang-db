@@ -27,22 +27,26 @@ import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
+import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import org.jooby.Jooby;
 import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.assembly.knowledge.service.KnowledgeE2ETestSuite.CONFIG_PATH;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 
 public class RankingScoreBasedE2ETests {
     private static Jooby app;
+    public static String CONFIG_PATH = Paths.get("src","test","resources",  "application.test.engine3.m1.dfs.knowledge-test.public.conf").toString();
 
     @BeforeClass
     public static void setup() throws Exception {
+        ElasticEmbeddedNode instance = GlobalElasticEmbeddedNode.getInstance();
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(CONFIG_PATH));
 
@@ -64,7 +68,9 @@ public class RankingScoreBasedE2ETests {
         if(manager != null) {
             manager.drop();
         }
-
+        if(app != null){
+            app.stop();
+        }
     }
 
 
