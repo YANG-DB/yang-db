@@ -215,6 +215,17 @@ public class RankingScoreBasedE2ETests {
     }
 
     @Test
+    public void testMotiNickLikeSingleWildcard2() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*moti");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(4, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+    }
+
+    @Test
     public void testMotiTitleLike() throws IOException, InterruptedException {
         Query query = getByTitleLike("*moti*");
         AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
@@ -297,6 +308,22 @@ public class RankingScoreBasedE2ETests {
 
         Assert.assertTrue(ids.contains("e00000011.global"));
         Assert.assertTrue(ids.contains("e00000012.global"));
+
+    }
+
+    @Test
+    public void testAAACCC() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*aaa*ccc*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(6, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000013.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000014.global", globalEntitiesSorted.get(1).geteID());
+        Assert.assertEquals("e00000010.global", globalEntitiesSorted.get(2).geteID());
+        Assert.assertEquals("e00000015.global", globalEntitiesSorted.get(3).geteID());
+        Assert.assertEquals("e00000012.global", globalEntitiesSorted.get(4).geteID());
+        Assert.assertEquals("e00000011.global", globalEntitiesSorted.get(5).geteID());
 
     }
 
