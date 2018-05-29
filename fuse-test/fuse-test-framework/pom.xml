@@ -12,6 +12,10 @@
     <dependencies>
         <!-- runtime -->
         <dependency>
+            <groupId>com.kayhut</groupId>
+            <artifactId>es-plugins</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
         </dependency>

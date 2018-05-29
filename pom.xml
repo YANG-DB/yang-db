@@ -339,6 +339,13 @@
             </dependency>
             <!-- elasticsearch -->
 
+            <!-- elasticsearch-plugins -->
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>es-plugins</artifactId>
+                <version>1.1</version>
+            </dependency>
+
             <!-- lucene -->
             <dependency>
                 <groupId>org.apache.lucene</groupId>
