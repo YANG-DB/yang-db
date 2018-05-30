@@ -231,7 +231,8 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
 
         EPropGroup groupRule2Score = new ScoreEPropGroup(stringValue.geteNum(), boostProvider.getBoost(fieldProp, 4));
         groupRule2Score.setQuantType(QuantType.some);
-        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0).toJavaList();
+        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0)
+                .map(w -> w.length() > 10 ? w.substring(0,10): w).toJavaList();
         groupRule2Score.getProps().add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.inSet, terms)));
         group.getGroups().add(groupRule2Score);
         return group;
@@ -281,7 +282,8 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
 
         EPropGroup groupRule2Score = new ScoreEPropGroup(stringValue.geteNum(), boostProvider.getBoost(fieldProp, ruleIndex));
         groupRule2Score.setQuantType(QuantType.all);
-        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0).toJavaList();
+        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0)
+                .map(w -> w.length() > 10 ? w.substring(0,10): w).toJavaList();
         groupRule2Score.getProps().add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.inSet, terms)));
         ruleGroup.getGroups().add(groupRule2Score);
         return ruleGroup;
@@ -333,7 +335,8 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
 
         EPropGroup groupRule2Score = new ScoreEPropGroup(stringValue.geteNum(), boostProvider.getBoost(fieldProp, ruleIndex));
         groupRule2Score.setQuantType(QuantType.all);
-        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0).toJavaList();
+        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0)
+                .map(w -> w.length() > 10 ? w.substring(0,10): w).toJavaList();
         groupRule2Score.getProps().add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.inSet, terms)));
         ruleGroup.getGroups().add(groupRule2Score);
         return ruleGroup;
@@ -346,7 +349,17 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
         Ontology.Accessor ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt()).get());
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(ont.get());
 
-        EProp adjustedStringValue = new ScoreEProp(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.eq, stringValue.getCon().getExpr().toString().replace("*", " ").trim()), boostProvider.getBoost(fieldProp, 1));
+        String[] stringValueParts = stringValue.getCon().getExpr().toString().split("\\*");
+        StringJoiner joiner = new StringJoiner(" ");
+        for (String stringValuePart : stringValueParts) {
+            if(stringValuePart.length() > 0) {
+                joiner.add(stringValuePart);
+            }
+        }
+
+        String stringValueEquals = joiner.toString();
+
+        EProp adjustedStringValue = new ScoreEProp(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.eq, stringValueEquals), boostProvider.getBoost(fieldProp, 1));
         String schematicName = equalsField(parentGroup, schemaProvider, ont, stringValue.getpType());
         if (schematicName != null) {
             adjustedStringValue = new SchematicRankedEProp(adjustedStringValue.geteNum(), adjustedStringValue.getpType(), schematicName, adjustedStringValue.getCon(), boostProvider.getBoost(fieldProp, 1));

@@ -253,7 +253,13 @@ public class RankingKnowledgeDataInfraManager {
                 Arrays.asList("laaa bbb cccd"),
                 Arrays.asList("aaa ccc"),
                 Arrays.asList("aaa ccc bbb"),
-                Arrays.asList("laaa cccd")
+                Arrays.asList("laaa cccd"),
+                Arrays.asList("abcdefghijklmnop"),
+                Arrays.asList("abcdefghijklmnopccc"),
+                Arrays.asList("abcdef???ghijklm"),
+                Arrays.asList("aaa? ccc? bbb?"),
+                Arrays.asList("?tonette? ?kwon"),
+                Arrays.asList("  OMG  ")
 
         );
         List<List<String>> titles = Arrays.asList(
@@ -271,7 +277,13 @@ public class RankingKnowledgeDataInfraManager {
                 Arrays.asList("laaa bbb cccd"),
                 Arrays.asList("aaa ccc"),
                 Arrays.asList("aaa ccc bbb"),
-                Arrays.asList("laaa cccd")
+                Arrays.asList("laaa cccd"),
+                Arrays.asList("babababababababaab"),
+                Arrays.asList("babababababababaabccc"),
+                Arrays.asList("abcdef???ghijklm"),
+                Arrays.asList("aaa? ccc? bbb?"),
+                Arrays.asList("?tonette? ?kwon"),
+                Arrays.asList("  OMG  ")
 
 
         );
