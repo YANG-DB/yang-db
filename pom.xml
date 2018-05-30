@@ -72,6 +72,9 @@
         <elasticsearch.version>5.3.2</elasticsearch.version>
         <elasticsearch.client.version>5.3.2</elasticsearch.client.version>
 
+        <!-- es-plugins -->
+        <es-plugins.version>1.1</es-plugins.version>
+
         <!-- lucene -->
         <lucene.version>6.4.2</lucene.version>
 
@@ -344,7 +347,7 @@
             <dependency>
                 <groupId>com.kayhut</groupId>
                 <artifactId>es-plugins</artifactId>
-                <version>1.1</version>
+                <version>${es-plugins.version}</version>
             </dependency>
 
             <!-- lucene -->

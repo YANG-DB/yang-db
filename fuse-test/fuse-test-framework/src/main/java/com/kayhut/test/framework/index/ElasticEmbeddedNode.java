@@ -126,8 +126,10 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("transport.tcp.port", httpTransportPort)
                 .build();
 
-        this.node = new PluginConfigurableNode(settings,
-                Arrays.asList(Netty4Plugin.class,CommonScriptPlugin.class));
+        this.node = new PluginConfigurableNode(settings, Arrays.asList(
+                Netty4Plugin.class,
+                CommonScriptPlugin.class));
+
         this.node = this.node.start();
     }
     //endregion
