@@ -6,7 +6,7 @@
     <groupId>org.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>0.3.1</version>
+    <version>0.4-SNAPSHOT</version>
 
     <modules>
         <module>data-gen</module>
@@ -40,6 +40,7 @@
         <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
         <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
         <maven-checkstyle-plugin.version>2.12.1</maven-checkstyle-plugin.version>
+        <snapshot-replace-maven-plugin.version>1.0</snapshot-replace-maven-plugin.version>
 
         <!-- fuse -->
         <fuse.version>${project.version}</fuse.version>

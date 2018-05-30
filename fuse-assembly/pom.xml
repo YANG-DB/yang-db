@@ -5,7 +5,7 @@
     <parent>
         <artifactId>fuse</artifactId>
         <groupId>org.kayhut</groupId>
-        <version>0.3.1</version>
+        <version>0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -127,6 +127,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
+                    <finalName>fuse-assembly</finalName>
                     <archive>
                         <manifest>
                             <mainClass>...</mainClass>
@@ -144,6 +145,28 @@
                 <executions>
                     <execution>
                         <id>fuse-service-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.kayhut</groupId>
+                <artifactId>snapshot-replace-maven-plugin</artifactId>
+                <version>${snapshot-replace-maven-plugin.version}</version>
+                <configuration>
+                    <directories>
+                        <param>fuse-assembly/target/fuse-assembly-packages/fuse-test-service-engine2-knowledge/lib</param>
+                    </directories>
+                    <filterRegex>fuse.*|geojson.*|dragons.*</filterRegex>
+                    <timestampFormat>yyyyMMdd-HHmmss</timestampFormat>
+                    <timestampTimeZone>Asia/Jerusalem</timestampTimeZone>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>fuse-assembly-snapshot-restore</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
