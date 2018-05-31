@@ -7,32 +7,18 @@
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
 
-    <moduleSets>
-        <moduleSet>
-            <useAllReactorProjects>true</useAllReactorProjects>
-            <sources>
-                <includeModuleDirectory>false</includeModuleDirectory>
-                <fileSets>
-                    <fileSet>
-                        <outputDirectory>Fuse/${module.artifactId}</outputDirectory>
-                        <excludes>
-                            <exclude>**/target/**</exclude>
-                            <exclude>**/*.iml</exclude>
-                            <exclude>**/film.imdb.json</exclude>
-                        </excludes>
-                    </fileSet>
-                </fileSets>
-            </sources>
-        </moduleSet>
-    </moduleSets>
-    <files>
-        <file>
-            <source>${project.basedir}/../pom.xml</source>
-            <outputDirectory>Fuse</outputDirectory>
-        </file>
-        <file>
-            <source>${project.basedir}/../maven_settings.xml</source>
-            <outputDirectory>Fuse</outputDirectory>
-        </file>
-    </files>
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/../</directory>
+            <outputDirectory>Fuse/</outputDirectory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <excludes>
+                <exclude>**/.git/**</exclude>
+                <exclude>**/.idea/**</exclude>
+                <exclude>**/*.log</exclude>
+                <exclude>**/${project.build.directory}/**</exclude>
+                <exclude>**/film.imdb.json</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
 </assembly>
