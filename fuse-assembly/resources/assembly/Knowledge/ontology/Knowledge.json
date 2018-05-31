@@ -413,6 +413,11 @@
       "type": "string"
     },
     {
+      "pType":"refs",
+      "name":"refs",
+      "type":"string"
+    },
+    {
       "pType":"score",
       "name":"score",
       "type":"float"
