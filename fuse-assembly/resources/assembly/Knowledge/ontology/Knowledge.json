@@ -20,6 +20,7 @@
         "creationUser",
         "deleteTime",
         "deleteUser",
+        "refs",
         "score"
       ]
     },
@@ -42,6 +43,7 @@
         "stringValue",
         "dateValue",
         "intValue",
+        "refs",
         "score"
       ]
     },
@@ -62,6 +64,7 @@
         "creationUser",
         "deleteTime",
         "deleteUser",
+        "refs",
         "score"
       ]
     },
@@ -83,6 +86,7 @@
         "stringValue",
         "dateValue",
         "intValue",
+        "refs",
         "score"
       ]
     },
@@ -118,6 +122,7 @@
         "creationUser",
         "deleteTime",
         "deleteUser",
+        "refs",
         "score"
       ]
     }
