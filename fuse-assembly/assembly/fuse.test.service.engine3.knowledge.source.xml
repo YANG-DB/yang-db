@@ -1,11 +1,12 @@
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
-    <id>src</id>
+    <id>fuse-source</id>
     <formats>
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
+
     <moduleSets>
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
@@ -13,14 +14,25 @@
                 <includeModuleDirectory>false</includeModuleDirectory>
                 <fileSets>
                     <fileSet>
-                        <outputDirectory>sources/${module.artifactId}</outputDirectory>
+                        <outputDirectory>Fuse/${module.artifactId}</outputDirectory>
                         <excludes>
                             <exclude>**/target/**</exclude>
                             <exclude>**/*.iml</exclude>
+                            <exclude>**/film.imdb.json</exclude>
                         </excludes>
                     </fileSet>
                 </fileSets>
             </sources>
         </moduleSet>
     </moduleSets>
+    <files>
+        <file>
+            <source>${project.basedir}/../pom.xml</source>
+            <outputDirectory>Fuse</outputDirectory>
+        </file>
+        <file>
+            <source>${project.basedir}/../maven_settings.xml</source>
+            <outputDirectory>Fuse</outputDirectory>
+        </file>
+    </files>
 </assembly>
