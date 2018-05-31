@@ -12,6 +12,8 @@ import com.kayhut.fuse.services.controllers.DataLoaderController;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import org.slf4j.Logger;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
 import static com.kayhut.fuse.dispatcher.logging.LogType.*;
@@ -41,79 +43,82 @@ public class LoggingDataLoaderController implements DataLoaderController {
     @Override
     public ContentResponse<String> load(String ontology ) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), load.toString())).time();
-        boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
 
+        ContentResponse<String> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start load", LogType.of(start), load).log();
-            return controller.load(ontology);
+            response = this.controller.load(ontology);
+            new LogMessage.Impl(this.logger, info, "finish load", LogType.of(success), load, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish load", LogType.of(success), load, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), load.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed load", LogType.of(failure), load, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), load.toString(), "failure")).mark();
-            return null;
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish load", LogType.of(success), load, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish load", LogType.of(success), load, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), load.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
     }
     //region CatalogController Implementation
     @Override
     public ContentResponse<String> init(String ontology ) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), init.toString())).time();
-        boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
 
+        ContentResponse<String> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start init", LogType.of(start), init).log();
-            return controller.init(ontology);
+            response = this.controller.init(ontology);
+            new LogMessage.Impl(this.logger, info, "finish init", LogType.of(success), init, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish init", LogType.of(success), init, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), init.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed init", LogType.of(failure), init, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), init.toString(), "failure")).mark();
-            return null;
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish init", LogType.of(success), init, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish init", LogType.of(success), init, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), init.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
     }
     //region CatalogController Implementation
     @Override
     public ContentResponse<String> drop(String ontology ) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), drop.toString())).time();
-        boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
 
+        ContentResponse<String> response = null;
+
         try {
             new LogMessage.Impl(this.logger, trace, "start drop", LogType.of(start), drop).log();
-            return controller.drop(ontology);
+            response = this.controller.drop(ontology);
+            new LogMessage.Impl(this.logger, info, "finish drop", LogType.of(success), drop, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish drop", LogType.of(success), drop, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), drop.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed drop", LogType.of(failure), drop, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), drop.toString(), "failure")).mark();
-            throw new RuntimeException(ex);
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish drop", LogType.of(success), drop, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish drop", LogType.of(success), drop, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), drop.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
     }
     //endregion
 

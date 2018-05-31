@@ -9,7 +9,7 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.*;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
@@ -65,23 +65,22 @@ public class FuseClient {
         return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
     }
 
-    public QueryCursorPageResourceInfo postQueryAndFetch(
+    public QueryResourceInfo postQuery(
             String queryStoreUrl,
             Query query,
             String id,
             String name,
-            CreateCursorRequest cursorRequest,
-            int pageSize) throws IOException {
+            CreateCursorRequest cursorRequest) throws IOException {
 
-        CreateQueryAndFetchRequest request = new CreateQueryAndFetchRequest(
+        CreateQueryRequest request = new CreateQueryRequest(
                 id,
                 name,
                 query,
-                cursorRequest,
-                new CreatePageRequest(pageSize)
+                PlanTraceOptions.of(PlanTraceOptions.Level.none),
+                cursorRequest
         );
 
-        return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl + "?fetch=true", request)), QueryCursorPageResourceInfo.class);
+        return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl + "?fetch=true", request)), QueryResourceInfo.class);
     }
 
     public CursorResourceInfo postCursor(String cursorStoreUrl) throws IOException {
@@ -107,8 +106,8 @@ public class FuseClient {
         return new ObjectMapper().readValue(unwrap(getRequest(ontologyUrl)), Ontology.class);
     }
 
-    public QueryResult getPageData(String pageDataUrl) throws IOException {
-        return new ObjectMapper().readValue(unwrap(getRequest(pageDataUrl)), QueryResult.class);
+    public AssignmentsQueryResult getPageData(String pageDataUrl) throws IOException {
+        return new ObjectMapper().readValue(unwrap(getRequest(pageDataUrl)), AssignmentsQueryResult.class);
     }
 
     public String getPlan(String planUrl) throws IOException {

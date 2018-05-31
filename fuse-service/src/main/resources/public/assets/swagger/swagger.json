@@ -1,0 +1,258 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "1.0",
+    "title" : "Fuse API"
+  },
+  "basePath" : "/fuse",
+  "tags" : [ {
+    "name" : "fuse",
+    "description" : "\nEverything about awsom Fuse Graph DB Engine."
+  } ],
+  "schemes" : [ "http" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/query" : {
+      "get" : {
+        "tags" : [ "query" ],
+        "summary" : "Basic general query Info",
+        "description" : "Basic query Info",
+        "parameters" : [],
+        "responses" : {
+          "200" : {
+            "description" : "Basic query Info"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "query" ],
+        "summary" : "submit a query",
+        "description" : "submit a query to the engine",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "<body>",
+          "description" : "V1 Query json object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/QueryRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns a Query summery (HATEOAS Rest Specification).",
+            "schema" : {
+              "$ref" : "#/definitions/QueryRequest"
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}" : {
+      "get" : {
+        "tags" : [ "query" ],
+        "summary" : "Fetch query info by ID",
+        "description" : "Fetch query info by ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema" : {
+              "$ref" : "#/definitions/QueryInfo"
+            }
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "query" ],
+        "summary" : "Deletes a query by ID",
+        "description" : "Deletes a query by ID.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "A <code>204</code>",
+            "schema" : {
+              "$ref" : "#/definitions/void"
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/plan" : {
+      "get" : {
+        "tags" : [ "plan" ],
+        "summary" : "Fetch query plan by query ID",
+        "description" : "Fetch query plan by query ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema" : {
+              "$ref" : "#/definitions/QueryInfo"
+            }
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "query" ],
+        "summary" : "Deletes a query by ID",
+        "description" : "Deletes a query by ID.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "A <code>204</code>",
+            "schema" : {
+              "$ref" : "#/definitions/void"
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor" : {
+      "get" : {
+        "tags" : [ "query" ],
+        "summary" : "Fetch query info by ID",
+        "description" : "Fetch query info by ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema" : {
+              "$ref" : "#/definitions/QueryInfo"
+            }
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "query" ],
+        "summary" : "Deletes a query by ID",
+        "description" : "Deletes a query by ID.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "A <code>204</code>",
+            "schema" : {
+              "$ref" : "#/definitions/void"
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}/page" : {
+      "get" : {
+        "tags" : [ "query" ],
+        "summary" : "Fetch query info by ID",
+        "description" : "Fetch query info by ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema" : {
+              "$ref" : "#/definitions/QueryInfo"
+            }
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "query" ],
+        "summary" : "Deletes a query by ID",
+        "description" : "Deletes a query by ID.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "query ID.",
+          "required" : true,
+          "type" : "text"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "A <code>204</code>",
+            "schema" : {
+              "$ref" : "#/definitions/void"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "QueryRequest" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      }
+    },
+    "QueryInfo" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}

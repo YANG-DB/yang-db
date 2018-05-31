@@ -2,11 +2,10 @@ package com.kayhut.fuse.executor;
 
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
-import com.google.inject.TypeLiteral;
+import com.google.inject.Provider;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
-import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
@@ -14,6 +13,7 @@ import com.kayhut.fuse.executor.driver.StandardCursorDriver;
 import com.kayhut.fuse.executor.driver.StandardPageDriver;
 import com.kayhut.fuse.executor.driver.StandardQueryDriver;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
+import com.kayhut.fuse.executor.elasticsearch.TimeoutClientAdvisor;
 import com.kayhut.fuse.executor.elasticsearch.logging.LoggingClient;
 import com.kayhut.fuse.executor.logging.LoggingCursorFactory;
 import com.kayhut.fuse.executor.logging.LoggingGraphElementSchemaProviderFactory;
@@ -62,14 +62,13 @@ public class ExecutorModule extends ModuleBase {
 
     //region Private Methods
 
-    private void bindInitialDataLoader(Env env, Config conf, Binder binder) {
+    protected void bindInitialDataLoader(Env env, Config conf, Binder binder) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
                 try {
                     this.bind(InitialGraphDataLoader.class)
-                            .to(getInitialDataLoader(conf))
-                            .asEagerSingleton();
+                            .to(getInitialDataLoader(conf));
                     this.expose(InitialGraphDataLoader.class);
 
                 } catch (Exception e) {
@@ -79,7 +78,7 @@ public class ExecutorModule extends ModuleBase {
         });
     }
 
-    private void bindRawSchema(Env env, Config conf, Binder binder) {
+    protected void bindRawSchema(Env env, Config conf, Binder binder) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
@@ -100,10 +99,9 @@ public class ExecutorModule extends ModuleBase {
 
                     this.bind(RawSchema.class)
                             .annotatedWith(named(CachedRawSchema.rawSchemaParameter))
-                            .to(PartitionFilteredRawSchema.class)
-                            .asEagerSingleton();
+                            .to(PartitionFilteredRawSchema.class);
 
-                    this.bind(RawSchema.class).to(CachedRawSchema.class).asEagerSingleton();
+                    this.bind(RawSchema.class).to(CachedRawSchema.class);
 
                     this.expose(RawSchema.class);
                 } catch (ClassNotFoundException e) {
@@ -113,7 +111,7 @@ public class ExecutorModule extends ModuleBase {
         });
     }
 
-    private void bindCursorFactory(Env env, Config conf, Binder binder) {
+    protected void bindCursorFactory(Env env, Config conf, Binder binder) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
@@ -140,14 +138,16 @@ public class ExecutorModule extends ModuleBase {
         });
     }
 
-    private void bindElasticClient(Env env, Config conf, Binder binder) {
+    protected void bindElasticClient(Env env, Config conf, Binder binder) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
                 boolean createMock = conf.hasPath("fuse.elasticsearch.mock") && conf.getBoolean("fuse.elasticsearch.mock");
                 this.bind(ElasticGraphConfiguration.class).toInstance(createElasticGraphConfiguration(conf));
 
-                this.bindConstant().annotatedWith(named(ClientProvider.createMockParameter)).to(createMock);
+                this.bindConstant()
+                        .annotatedWith(named(ClientProvider.createMockParameter))
+                        .to(createMock);
                 this.bind(Client.class)
                         .annotatedWith(named(LoggingClient.clientParameter))
                         .toProvider(ClientProvider.class).asEagerSingleton();
@@ -155,8 +155,8 @@ public class ExecutorModule extends ModuleBase {
                         .annotatedWith(named(LoggingClient.loggerParameter))
                         .toInstance(LoggerFactory.getLogger(LoggingClient.class));
                 this.bind(Client.class)
-                        .to(LoggingClient.class)
-                        .asEagerSingleton();
+                        .to(TimeoutClientAdvisor.class)
+                        .in(RequestScoped.class);
 
                 this.expose(Client.class);
                 this.expose(ElasticGraphConfiguration.class);
@@ -164,19 +164,17 @@ public class ExecutorModule extends ModuleBase {
         });
     }
 
-    private void bindSchemaProviderFactory(Env env, Config conf, Binder binder) {
+    protected void bindSchemaProviderFactory(Env env, Config conf, Binder binder) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
                 try {
                     this.bind(GraphElementSchemaProviderFactory.class)
                             .annotatedWith(named(OntologyGraphElementSchemaProviderFactory.schemaProviderFactoryParameter))
-                            .to(getSchemaProviderFactoryClass(conf))
-                            .asEagerSingleton();
+                            .to(getSchemaProviderFactoryClass(conf));
                     this.bind(GraphElementSchemaProviderFactory.class)
                             .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.schemaProviderFactoryParameter))
-                            .to(OntologyGraphElementSchemaProviderFactory.class)
-                            .asEagerSingleton();
+                            .to(OntologyGraphElementSchemaProviderFactory.class);
                     this.bind(Logger.class)
                             .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.warnLoggerParameter))
                             .toInstance(LoggerFactory.getLogger(GraphElementSchemaProvider.class));
@@ -184,8 +182,7 @@ public class ExecutorModule extends ModuleBase {
                             .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.verboseLoggerParameter))
                             .toInstance(LoggerFactory.getLogger(GraphElementSchemaProvider.class.getName() + ".Verbose"));
                     this.bind(GraphElementSchemaProviderFactory.class)
-                            .to(LoggingGraphElementSchemaProviderFactory.class)
-                            .asEagerSingleton();
+                            .to(LoggingGraphElementSchemaProviderFactory.class);
 
                     this.expose(GraphElementSchemaProviderFactory.class);
                 } catch (ClassNotFoundException e) {
@@ -195,7 +192,7 @@ public class ExecutorModule extends ModuleBase {
         });
     }
 
-    private void bindUniGraphProvider(Env env, Config conf, Binder binder) {
+    protected void bindUniGraphProvider(Env env, Config conf, Binder binder) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {

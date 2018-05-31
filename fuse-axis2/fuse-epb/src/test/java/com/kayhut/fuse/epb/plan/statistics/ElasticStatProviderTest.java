@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.inject.Provider;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatProvider;
@@ -20,6 +21,7 @@ import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -97,7 +99,7 @@ public class ElasticStatProviderTest {
     @Test
     public void getGenderFieldStatisticsTest() throws Exception {
         ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig,
-                new ElasticStatDocumentProvider(new MetricRegistry(), statClient, statConfig));
+                new ElasticStatDocumentProvider(new MetricRegistry(), () -> (Client) statClient, statConfig));
 
         List<Statistics.BucketInfo> genderStatistics = elasticStatProvider.getFieldStatistics(
                 Collections.singletonList(DATA_INDEX_NAME),
@@ -119,7 +121,7 @@ public class ElasticStatProviderTest {
     @Test
     public void getAgeFieldStatisticsTest() throws Exception {
         ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig,
-                new ElasticStatDocumentProvider(new MetricRegistry(),statClient, statConfig));
+                new ElasticStatDocumentProvider(new MetricRegistry(), () -> (Client) statClient,  statConfig));
 
         List<Statistics.BucketInfo> ageStatistics = elasticStatProvider.getFieldStatistics(
                 Collections.singletonList(DATA_INDEX_NAME),

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.asgQuery;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kayhut.fuse.model.Next;
 import com.kayhut.fuse.model.query.EBase;
@@ -109,6 +110,8 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
         return this.eBase;
     }
 
+    @JsonIgnore
+    @JsonIgnoreProperties
     public List<AsgEBase<? extends EBase>> getParents() {
         return Collections.unmodifiableList(this.parent);
     }
@@ -205,6 +208,9 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
     private T eBase;
     private List<AsgEBase<? extends EBase>> next;
     private List<AsgEBase<? extends EBase>> b;
+
+    @JsonIgnore
+    @JsonIgnoreProperties
     private List<AsgEBase<? extends EBase>> parent;
     //endregion
 }

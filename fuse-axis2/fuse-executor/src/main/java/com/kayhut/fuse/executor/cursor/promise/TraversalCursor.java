@@ -31,7 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
+import static com.kayhut.fuse.model.results.AssignmentsQueryResult.Builder.instance;
 
 /**
  * Created by liorp on 3/20/2017.
@@ -49,7 +49,7 @@ public class TraversalCursor implements Cursor {
 
     //region Cursor Implementation
     @Override
-    public QueryResult getNextResults(int numResults) {
+    public AssignmentsQueryResult getNextResults(int numResults) {
         return toQuery(numResults);
     }
     //endregion
@@ -61,8 +61,8 @@ public class TraversalCursor implements Cursor {
     //endregion
 
     //region Private Methods
-    private QueryResult toQuery(int numResults) {
-        QueryResult.Builder builder = instance();
+    private AssignmentsQueryResult toQuery(int numResults) {
+        AssignmentsQueryResult.Builder builder = instance();
         builder.withPattern(context.getQueryResource().getQuery());
         //build assignments
         (context.getTraversal().next(numResults)).forEach(path -> {

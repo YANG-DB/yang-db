@@ -12,8 +12,7 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.framework.index.MappingElasticConfigurer;
@@ -131,7 +130,7 @@ public class EntityRelationEntityTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -158,7 +157,7 @@ public class EntityRelationEntityTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -185,7 +184,7 @@ public class EntityRelationEntityTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
     //endregion

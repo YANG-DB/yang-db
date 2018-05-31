@@ -12,10 +12,8 @@ import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.*;
-import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
-import com.kayhut.fuse.model.transport.CreateQueryAndFetchRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
@@ -67,36 +65,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        int x = 5;
-    }
-
-    @Test
-    @Ignore
-    public void test1WithQueryAndFetch() throws IOException, InterruptedException {
-        Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
-                new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), 2, 0),
-                new Rel(2, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), 0, 0)
-        )).build();
-
-        CreateQueryAndFetchRequest r = new CreateQueryAndFetchRequest("1", "query1", query, new CreatePathsCursorRequest(), new CreatePageRequest(100));
-        String a = new ObjectMapper().writeValueAsString(r);
-
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        QueryCursorPageResourceInfo resourceInfo =
-                fuseClient.postQueryAndFetch(fuseResourceInfo.getQueryStoreUrl(), query, "1", "query1", new CreatePathsCursorRequest(), 1000);
-        PageResourceInfo pageResourceInfo = resourceInfo.getPageResourceInfo();
-
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
-
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -125,7 +94,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -152,7 +121,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -180,7 +149,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -214,7 +183,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -264,7 +233,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         System.out.println(elapsed);
     }
@@ -305,7 +274,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println(elapsed);
@@ -349,7 +318,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println(elapsed);
@@ -381,7 +350,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -426,7 +395,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println(elapsed);
@@ -459,7 +428,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println(elapsed);
@@ -495,7 +464,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println(elapsed);
@@ -531,7 +500,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println(elapsed);
@@ -559,7 +528,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -586,7 +555,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -611,7 +580,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         String plan = fuseClient.getPlan(queryResourceInfo.getExplainPlanUrl());
         int x = 5;
 
@@ -752,7 +721,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -800,7 +769,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -829,7 +798,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -858,7 +827,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -886,7 +855,7 @@ public class RealClusterTest {
             }
         }
 
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 

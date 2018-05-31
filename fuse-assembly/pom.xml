@@ -5,7 +5,7 @@
     <parent>
         <artifactId>fuse</artifactId>
         <groupId>org.kayhut</groupId>
-        <version>0.2.1</version>
+        <version>0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -94,6 +94,15 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>...</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Build>${version}</Implementation-Build>
+                        </manifestEntries>
+                    </archive>
                     <descriptors>
                         <!--<descriptor>assembly/fuse.test.service.engine1.xml</descriptor>-->
                         <!--<descriptor>assembly/fuse.test.service.engine2.xml</descriptor>-->

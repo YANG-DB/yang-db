@@ -4,33 +4,25 @@ import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.executor.utils.ConversionUtil;
-import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
-import com.kayhut.fuse.model.ontology.*;
-import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.results.*;
-import com.kayhut.fuse.model.results.Property;
-import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
-import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
-import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.*;
 
-import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
+import static com.kayhut.fuse.model.results.AssignmentsQueryResult.Builder.instance;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -41,30 +33,39 @@ public class PathsTraversalCursor implements Cursor {
         this.context = context;
         this.ont = new Ontology.Accessor(context.getOntology());
 
+        this.includeEntities = context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.all) ||
+                context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.entities);
+        this.includeRelationships = context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.all) ||
+                context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.relationships);
+
         Plan flatPlan = PlanUtil.flat(context.getQueryResource().getExecutionPlan().getPlan());
-        this.eEntityBases = Stream.ofAll(flatPlan.getOps())
-                .filter(planOp -> planOp instanceof EntityOp)
-                .map(planOp -> (EntityOp)planOp)
-                .toJavaMap(planOp -> new Tuple2<>(planOp.getAsgEbase().geteBase().geteTag(), planOp.getAsgEbase().geteBase()));
+        if (this.includeEntities) {
+            this.eEntityBases = Stream.ofAll(flatPlan.getOps())
+                    .filter(planOp -> planOp instanceof EntityOp)
+                    .map(planOp -> (EntityOp) planOp)
+                    .toJavaMap(planOp -> new Tuple2<>(planOp.getAsgEbase().geteBase().geteTag(), planOp.getAsgEbase().geteBase()));
+        }
 
-        this.eRels = Stream.ofAll(flatPlan.getOps())
-                .filter(planOp -> planOp instanceof RelationOp)
-                .toJavaMap(planOp -> {
-                    RelationOp relationOp = (RelationOp)planOp;
-                    Optional<EntityOp> prevEntityOp =
-                            PlanUtil.prev(flatPlan, planOp, EntityOp.class);
-                    Optional<EntityOp> nextEntityOp =
-                            PlanUtil.next(flatPlan, planOp, EntityOp.class);
+        if (this.includeRelationships) {
+            this.eRels = Stream.ofAll(flatPlan.getOps())
+                    .filter(planOp -> planOp instanceof RelationOp)
+                    .toJavaMap(planOp -> {
+                        RelationOp relationOp = (RelationOp) planOp;
+                        Optional<EntityOp> prevEntityOp =
+                                PlanUtil.prev(flatPlan, planOp, EntityOp.class);
+                        Optional<EntityOp> nextEntityOp =
+                                PlanUtil.next(flatPlan, planOp, EntityOp.class);
 
-                    String relationLabel = prevEntityOp.get().getAsgEbase().geteBase().geteTag() +
-                            ConversionUtil.convertDirectionGraphic(relationOp.getAsgEbase().geteBase().getDir()) +
-                            nextEntityOp.get().getAsgEbase().geteBase().geteTag();
+                        String relationLabel = prevEntityOp.get().getAsgEbase().geteBase().geteTag() +
+                                ConversionUtil.convertDirectionGraphic(relationOp.getAsgEbase().geteBase().getDir()) +
+                                nextEntityOp.get().getAsgEbase().geteBase().geteTag();
 
-                    return new Tuple2<>(relationLabel,
-                            new Tuple3<>(prevEntityOp.get().getAsgEbase().geteBase(),
-                                    relationOp.getAsgEbase().geteBase(),
-                                    nextEntityOp.get().getAsgEbase().geteBase()));
-                });
+                        return new Tuple2<>(relationLabel,
+                                new Tuple3<>(prevEntityOp.get().getAsgEbase().geteBase(),
+                                        relationOp.getAsgEbase().geteBase(),
+                                        nextEntityOp.get().getAsgEbase().geteBase()));
+                    });
+        }
 
         this.typeProperty = this.ont.property$("type");
     }
@@ -72,7 +73,7 @@ public class PathsTraversalCursor implements Cursor {
 
     //region Cursor Implementation
     @Override
-    public QueryResult getNextResults(int numResults) {
+    public AssignmentsQueryResult getNextResults(int numResults) {
         return toQuery(numResults);
     }
     //endregion
@@ -84,8 +85,8 @@ public class PathsTraversalCursor implements Cursor {
     //endregion
 
     //region Private Methods
-    private QueryResult toQuery(int numResults) {
-        QueryResult.Builder builder = instance();
+    private AssignmentsQueryResult toQuery(int numResults) {
+        AssignmentsQueryResult.Builder builder = instance();
         builder.withPattern(context.getQueryResource().getQuery());
         //build assignments
         (context.getTraversal().next(numResults)).forEach(path -> {
@@ -103,9 +104,9 @@ public class PathsTraversalCursor implements Cursor {
             Object pathObject = pathObjects.get(objectIndex);
             String pathLabel = pathlabels.get(objectIndex).iterator().next();
 
-            if (Vertex.class.isAssignableFrom(pathObject.getClass())) {
+            if (Vertex.class.isAssignableFrom(pathObject.getClass()) && this.includeEntities) {
                 builder.withEntity(toEntity((Vertex)pathObject, this.eEntityBases.get(pathLabel)));
-            } else if (Edge.class.isAssignableFrom(pathObject.getClass())) {
+            } else if (Edge.class.isAssignableFrom(pathObject.getClass()) && this.includeRelationships) {
                 Tuple3<EEntityBase, Rel, EEntityBase> relTuple = this.eRels.get(pathLabel);
                 builder.withRelationship(toRelationship(
                         (Edge)pathObject,
@@ -174,5 +175,8 @@ public class PathsTraversalCursor implements Cursor {
     private Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
 
     private com.kayhut.fuse.model.ontology.Property typeProperty;
+
+    boolean includeEntities;
+    boolean includeRelationships;
     //endregion
 }

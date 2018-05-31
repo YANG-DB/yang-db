@@ -5,7 +5,7 @@
     <groupId>org.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.1</version>
+    <version>0.3</version>
 
     <modules>
         <module>data-gen</module>
@@ -311,6 +311,11 @@
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-metrics</artifactId>
+                <version>${jooby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jooby</groupId>
+                <artifactId>jooby-swagger</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
             <!-- jooby -->

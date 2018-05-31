@@ -16,10 +16,7 @@ import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -270,10 +267,28 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return new AsgEBase<>(rel);
         }
 
+        public static AsgEBase<EPropGroup> eProp(int eNum) {
+            return new AsgEBase<>(new EPropGroup(eNum));
+        }
+
         public static AsgEBase<EPropGroup> eProp(int eNum, EProp... props) {
-            EPropGroup group = new EPropGroup(Arrays.asList(props));
-            group.seteNum(eNum);
-            return new AsgEBase<>(group);
+            return new AsgEBase<>(new EPropGroup(eNum, Arrays.asList(props)));
+        }
+
+        public static AsgEBase<EPropGroup> eProp(int eNum, EPropGroup... groups) {
+            return new AsgEBase<>(new EPropGroup(eNum, QuantType.all, Collections.emptyList(), Arrays.asList(groups)));
+        }
+
+        public static AsgEBase<EPropGroup> eProp(int eNum, QuantType quantType, EProp... props) {
+            return new AsgEBase<>(new EPropGroup(eNum, quantType, Arrays.asList(props)));
+        }
+
+        public static AsgEBase<EPropGroup> eProp(int eNum, QuantType quantType, EPropGroup... groups) {
+            return new AsgEBase<>(new EPropGroup(eNum, quantType, Collections.emptyList(), Arrays.asList(groups)));
+        }
+
+        public static AsgEBase<EPropGroup> eProp(int eNum, QuantType quantType, Iterable<EProp> props, Iterable<EPropGroup> groups) {
+            return new AsgEBase<>(new EPropGroup(eNum, quantType, props, groups));
         }
 
         public static AsgEBase<EPropGroup> ePropGroup(int eNum, EProp... props) {

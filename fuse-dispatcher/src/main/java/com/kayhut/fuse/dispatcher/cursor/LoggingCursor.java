@@ -1,12 +1,11 @@
 package com.kayhut.fuse.dispatcher.cursor;
 
-import com.kayhut.fuse.dispatcher.gta.LoggingPlanTraversalTranslator;
 import com.kayhut.fuse.dispatcher.logging.ElapsedFrom;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import com.kayhut.fuse.dispatcher.logging.LogType;
 import com.kayhut.fuse.dispatcher.logging.MethodName;
-import com.kayhut.fuse.dispatcher.resource.CursorResource;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.model.results.QueryResultBase;
 import org.slf4j.Logger;
 
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
@@ -26,7 +25,7 @@ public class LoggingCursor implements Cursor {
 
     //region Cursor Implementation
     @Override
-    public QueryResult getNextResults(int numResults) {
+    public QueryResultBase getNextResults(int numResults) {
         boolean thrownException = false;
 
         try {

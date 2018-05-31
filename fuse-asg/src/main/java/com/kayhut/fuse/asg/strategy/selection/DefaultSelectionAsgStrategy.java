@@ -45,7 +45,7 @@ public class DefaultSelectionAsgStrategy implements AsgStrategy {
                             Stream.ofAll(ont.$entity$(eTypedAsgEBase.get().geteBase().geteType()).getProperties())
                                     .filter(pType -> !this.nonSelectablePTypes.contains(pType))
                                     .forEach(pType -> ePropGroupAsgEBase.geteBase().getProps().add(
-                                            new EProp(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get(), pType, new IdentityProjection())));
+                                            new EProp(0, pType, new IdentityProjection())));
                         } else {
                             Optional<AsgEBase<EUntyped>> eUntypedAsgEBase = AsgQueryUtil.ancestor(ePropGroupAsgEBase, EUntyped.class);
                             eUntypedAsgEBase.ifPresent(eUntypedAsgEBase1 ->
@@ -53,7 +53,7 @@ public class DefaultSelectionAsgStrategy implements AsgStrategy {
                                             .flatMap(EntityType::getProperties)
                                             .filter(pType -> !this.nonSelectablePTypes.contains(pType))
                                             .forEach(pType -> ePropGroupAsgEBase.geteBase().getProps().add(
-                                                    new EProp(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get(), pType, new IdentityProjection()))));
+                                                    new EProp(0, pType, new IdentityProjection()))));
                         }
                     }
                 }

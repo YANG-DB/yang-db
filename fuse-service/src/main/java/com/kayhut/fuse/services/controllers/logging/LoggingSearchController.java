@@ -6,13 +6,16 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
+import com.kayhut.fuse.logging.RequestExternalMetadata;
 import com.kayhut.fuse.logging.RequestId;
+import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.controllers.SearchController;
 import org.slf4j.Logger;
-import org.slf4j.MDC;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
@@ -33,10 +36,12 @@ public class LoggingSearchController implements SearchController{
             @Named(controllerParameter) SearchController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
+            RequestExternalMetadataSupplier requestExternalMetadataSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
         this.requestIdSupplier = requestIdSupplier;
+        this.requestExternalMetadataSupplier = requestExternalMetadataSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -45,34 +50,39 @@ public class LoggingSearchController implements SearchController{
     @Override
     public ContentResponse search(CreateQueryRequest request) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), search.toString())).time();
-        boolean thrownException = false;
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
-                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(request.getId())).write();
+                RequestId.of(this.requestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
+                RequestIdByScope.of(request.getId())).write();
+
+        ContentResponse response = null;
 
         try {
             new LogMessage.Impl(this.logger, trace, "start search", LogType.of(start), search).log();
-            return controller.search(request);
+            response = this.controller.search(request);
+            new LogMessage.Impl(this.logger, info, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "success")).mark();
         } catch (Exception ex) {
-            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed search", LogType.of(failure), search, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "failure")).mark();
-            throw new RuntimeException(ex);
-        } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
-                new LogMessage.Impl(this.logger, trace, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
-                this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "success")).mark();
-            }
-            timerContext.stop();
+            response = ContentResponse.internalError(ex);
         }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
     }
     //endregion
 
     //region Fields
     private Logger logger;
     private RequestIdSupplier requestIdSupplier;
+    private RequestExternalMetadataSupplier requestExternalMetadataSupplier;
     private MetricRegistry metricRegistry;
     private SearchController controller;
 

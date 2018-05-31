@@ -17,7 +17,7 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
@@ -89,7 +89,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -130,7 +130,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -173,7 +173,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -211,7 +211,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -249,7 +249,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -284,7 +284,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -315,7 +315,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -345,7 +345,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -375,7 +375,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -408,7 +408,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -440,7 +440,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -473,7 +473,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -505,7 +505,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -537,7 +537,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -573,7 +573,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -632,7 +632,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -705,7 +705,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -820,7 +820,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         System.out.println("finished " + i);
         int x = 5;
     }
@@ -857,7 +857,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         System.out.println("finished " + i);
         int x = 5;
@@ -922,7 +922,51 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void testRelationWithEntity() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        String logicalId = "e00000000";
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "SRelation", "Relation", 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
+                new EProp(3, "id", Constraint.of(ConstraintOp.eq, "r00000000")),
+                new Rel(4, "hasRelation", Rel.Direction.L, null, 5, 0),
+                new ETyped(5, "RelationEntity", "Entity", 6, 0),
+                new Quant1(6, QuantType.all, Arrays.asList(7), 0),
+                new Rel(7, "hasEntity", Rel.Direction.L, null, 8, 0),
+                new ETyped(8, "RelationLogicalEntity", "LogicalEntity", 9, 0),
+                new Rel(9, "hasEntity", Rel.Direction.R, null, 10, 0),
+                new ETyped(10, "RelationGlobalEntity", "Entity", 11, 0),
+                new Quant1(11, QuantType.all, Arrays.asList(12, 13), 0),
+                new EProp(12, "context", Constraint.of(ConstraintOp.eq, "global")),
+                new Rel(13, "hasEvalue", Rel.Direction.R, null, 14, 0),
+                new ETyped(14, "GlobalEvalue", "Evalue", 15, 0),
+                new EProp(15, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames")))
+        )).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult)fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -958,7 +1002,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -994,7 +1038,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -1032,7 +1076,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -1071,7 +1115,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -1116,7 +1160,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
 
@@ -1158,7 +1202,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1209,7 +1253,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1249,7 +1293,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1282,7 +1326,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1318,7 +1362,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1359,7 +1403,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1394,7 +1438,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1450,7 +1494,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1490,7 +1534,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1529,7 +1573,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1576,7 +1620,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
@@ -1609,7 +1653,7 @@ public class RealKnowledgeRuleBaseClusterTest {
             }
         }
 
-        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }

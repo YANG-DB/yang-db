@@ -3,6 +3,9 @@ package com.kayhut.fuse.unipop.structure.discrete;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
+import org.unipop.query.StepDescriptor;
+import org.unipop.query.mutation.PropertyQuery;
 import org.unipop.structure.UniGraph;
 import org.unipop.structure.UniVertex;
 import org.unipop.structure.UniVertexProperty;
@@ -28,6 +31,11 @@ public class DiscreteVertex extends UniVertex {
     //endregion
 
     //region Override Methods
+    public <V> VertexProperty<V> property(String key, V value) {
+        UniVertexProperty vertexProperty = (UniVertexProperty)this.addPropertyLocal(key, value);
+        return vertexProperty;
+    }
+
     @Override
     public <V> Iterator<VertexProperty<V>> properties(final String... propertyKeys) {
         List<VertexProperty<V>> propertyList = new ArrayList<>(this.properties.size());
@@ -47,6 +55,12 @@ public class DiscreteVertex extends UniVertex {
         }
 
         return propertyList.iterator();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return super.equals(object) &&
+                this.properties.keySet().equals(((DiscreteVertex)object).properties.keySet());
     }
     //endregion
 }

@@ -11,6 +11,8 @@ import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.common.unit.TimeValue;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +31,7 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
             ActionFuture<T> actionFuture,
             LogMessage successMessage,
             LogMessage failureMessage,
-            Timer.Context timerContext,
+            Closeable timerContext,
             Meter successMeter,
             Meter failureMeter) {
         this.actionFuture = actionFuture;
@@ -63,7 +65,12 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
                 this.successMessage.log();
                 this.successMeter.mark();
             }
-            this.timerContext.stop();
+
+            try {
+                this.timerContext.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -86,7 +93,12 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
                 this.successMessage.log();
                 this.successMeter.mark();
             }
-            this.timerContext.stop();
+
+            try {
+                this.timerContext.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -109,7 +121,12 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
                 this.successMessage.log();
                 this.successMeter.mark();
             }
-            this.timerContext.stop();
+
+            try {
+                this.timerContext.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -132,7 +149,12 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
                 this.successMessage.log();
                 this.successMeter.mark();
             }
-            this.timerContext.stop();
+
+            try {
+                this.timerContext.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -155,7 +177,12 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
                 this.successMessage.log();
                 this.successMeter.mark();
             }
-            this.timerContext.stop();
+
+            try {
+                this.timerContext.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -193,7 +220,12 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
                 this.successMessage.log();
                 this.successMeter.mark();
             }
-            this.timerContext.stop();
+
+            try {
+                this.timerContext.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -216,7 +248,12 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
                 this.successMessage.log();
                 this.successMeter.mark();
             }
-            this.timerContext.stop();
+
+            try {
+                this.timerContext.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -248,9 +285,11 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
     private ActionFuture<T> actionFuture;
     private LogMessage successMessage;
     private LogMessage failureMessage;
-    private Timer.Context timerContext;
+    private Closeable timerContext;
     private Meter successMeter;
     private Meter failureMeter;
+
+    private Iterable<LogMessage.MDCWriter> finalWriters;
 
     private List<ActionListener<T>> listeners;
     //endregion

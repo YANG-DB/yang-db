@@ -30,7 +30,7 @@ public class QueryControllerProvider implements Provider<QueryController> {
     //region Provider Implementation
     @Override
     public QueryController get() {
-        return null;
+        return queryController;
     }
     //endregion
 

@@ -93,7 +93,7 @@ public class ExactConstraintTransformationAsgStrategy implements AsgStrategy {
 
                 ePropGroupAsgEBase.geteBase().getProps().remove(eProp);
                 ePropGroupAsgEBase.geteBase().getProps().add(new SchematicEProp(
-                        eProp.geteNum(),
+                        0,
                         eProp.getpType(),
                         exactIndexingSchema.get().getName(),
                         eProp.getCon()));

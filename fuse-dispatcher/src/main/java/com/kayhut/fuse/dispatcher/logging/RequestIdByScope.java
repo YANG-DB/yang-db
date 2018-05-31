@@ -28,7 +28,7 @@ public class RequestIdByScope {
         //region ClassicConverter Implementation
         @Override
         public String convert(ILoggingEvent iLoggingEvent) {
-            return iLoggingEvent.getMDCPropertyMap().get(key);
+            return iLoggingEvent.getMDCPropertyMap().getOrDefault(key, "");
         }
         //endregion
     }

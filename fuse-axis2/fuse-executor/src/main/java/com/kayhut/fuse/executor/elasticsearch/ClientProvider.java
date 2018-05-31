@@ -5,7 +5,6 @@ import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
@@ -15,7 +14,6 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
 
 /**
  * Created by roman.margolis on 04/01/2018.

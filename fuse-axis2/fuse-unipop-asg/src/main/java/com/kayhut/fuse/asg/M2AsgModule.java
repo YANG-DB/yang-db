@@ -20,16 +20,14 @@ public class M2AsgModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(AsgStrategyRegistrar.class)
-                .to(M2AsgStrategyRegistrar.class)
-                .asEagerSingleton();
+                .to(M2AsgStrategyRegistrar.class);
 
         binder.bind(new TypeLiteral<QueryTransformer<Query, AsgQuery>>(){})
                 .to(QueryToAsgTransformer.class)
                 .asEagerSingleton();
 
         binder.bind(new TypeLiteral<QueryTransformer<AsgQuery, AsgQuery>>(){})
-                .to(AsgQueryTransformer.class)
-                .asEagerSingleton();
+                .to(AsgQueryTransformer.class);
     }
     //endregion
 }

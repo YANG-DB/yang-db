@@ -13,4 +13,5 @@ public interface PageDriver {
     Optional<StoreResourceInfo> getInfo(String queryId, String cursorId);
     Optional<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId);
     Optional<Object> getData(String queryId, String cursorId, String pageId);
+    Optional<Boolean> delete(String queryId, String cursorId, String pageId);
 }

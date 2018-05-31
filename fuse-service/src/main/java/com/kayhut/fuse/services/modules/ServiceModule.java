@@ -3,16 +3,24 @@ package com.kayhut.fuse.services.modules;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
-import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
-import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
-import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
+import com.kayhut.fuse.model.descriptors.Descriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.JacksonQueryDescriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.ExecutionScope;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
+import com.kayhut.fuse.model.transport.cursor.*;
 import com.kayhut.fuse.services.controllers.*;
 import com.kayhut.fuse.services.controllers.logging.*;
+import com.kayhut.fuse.services.suppliers.CachedRequestIdSupplier;
+import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
+import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
+import com.kayhut.fuse.services.suppliers.SnowflakeRequestIdSupplier;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
@@ -31,7 +39,17 @@ public class ServiceModule extends ModuleBase {
     @Override
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
         // bind common components
-        binder.bind(RequestIdSupplier.class).to(RequestIdSupplier.Impl.class).asEagerSingleton();
+        long defaultTimeout = config.hasPath("fuse.cursor.timeout") ? config.getLong("fuse.cursor.timeout") : 60*1000*3;
+        binder.bindConstant()
+                .annotatedWith(named(CreateCursorRequest.defaultTimeout))
+                .to(defaultTimeout);
+        binder.bind(RequestIdSupplier.class)
+                .annotatedWith(named(CachedRequestIdSupplier.RequestIdSupplierParameter))
+                .to(SnowflakeRequestIdSupplier.class)
+                .asEagerSingleton();
+        binder.bind(RequestIdSupplier.class).to(CachedRequestIdSupplier.class).in(RequestScoped.class);
+
+        binder.bind(RequestExternalMetadataSupplier.class).to(RequestExternalMetadataSupplier.Impl.class).in(RequestScoped.class);
 
         // bind service controller
         bindApiDescriptionController(env, config, binder);
@@ -45,10 +63,16 @@ public class ServiceModule extends ModuleBase {
         bindIdGeneratorController(env, config, binder);
 
         // bind requests
-        binder.bind(InternalsDriver.class).to(StandardInternalsDriver.class);
+        binder.bind(InternalsDriver.class).to(StandardInternalsDriver.class).in(RequestScoped.class);
         binder.bind(CreateQueryRequest.class).in(RequestScoped.class);
-        //binder.bind(CreateCursorRequest.class).in(RequestScoped.class);
         binder.bind(CreatePageRequest.class).in(RequestScoped.class);
+        //cursors type
+        binder.bind(CreateCsvCursorRequest.class).in(RequestScoped.class);
+        binder.bind(CreateGraphHierarchyCursorRequest.class).in(RequestScoped.class);
+        binder.bind(CreateGraphCursorRequest.class).in(RequestScoped.class);
+        binder.bind(CreatePathsCursorRequest.class).in(RequestScoped.class);
+        //execution scope
+        binder.bind(ExecutionScope.class).in(RequestScoped.class);
 
         //bind request parameters
         binder.bind(PlanTraceOptions.class).in(RequestScoped.class);
@@ -91,6 +115,14 @@ public class ServiceModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
+                this.bind(CursorController.class)
+                        .annotatedWith(named(StandardQueryController.cursorControllerParameter))
+                        .to(StandardCursorController.class);
+
+                this.bind(PageController.class)
+                        .annotatedWith(named(StandardQueryController.pageControllerParameter))
+                        .to(StandardPageController.class);
+
                 this.bind(QueryController.class)
                         .annotatedWith(named(LoggingQueryController.controllerParameter))
                         .to(StandardQueryController.class);
@@ -98,6 +130,10 @@ public class ServiceModule extends ModuleBase {
                 this.bind(Logger.class)
                         .annotatedWith(named(LoggingQueryController.loggerParameter))
                         .toInstance(LoggerFactory.getLogger(StandardQueryController.class));
+
+                this.bind(new TypeLiteral<Descriptor<Query>>(){})
+                        .annotatedWith(named(LoggingQueryController.queryDescriptorParameter))
+                        .to(JacksonQueryDescriptor.class).asEagerSingleton();
 
                 this.bind(QueryController.class)
                         .to(LoggingQueryController.class);
@@ -212,7 +248,8 @@ public class ServiceModule extends ModuleBase {
             @Override
             protected void configure() {
                 this.bind(new TypeLiteral<IdGeneratorController<Object>>(){})
-                        .to(new TypeLiteral<StandardIdGeneratorController<Object>>(){}).asEagerSingleton();
+                        .to(new TypeLiteral<StandardIdGeneratorController<Object>>(){})
+                        .in(RequestScoped.class);
 
                 this.expose(new TypeLiteral<IdGeneratorController<Object>>(){});
             }

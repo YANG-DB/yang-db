@@ -12,9 +12,6 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
-import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
-import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
-import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.Stream;
@@ -36,12 +33,20 @@ public class NewGraphHierarchyTraversalCursor implements Cursor {
         this.ont = new Ontology.Accessor(context.getOntology());
         this.typeProperty = this.ont.property$("type");
 
+        this.includeEntities = context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.all) ||
+                context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.entities);
+        this.includeRelationships = context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.all) ||
+                context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.relationships);
+
         Plan flatPlan = PlanUtil.flat(context.getQueryResource().getExecutionPlan().getPlan());
+        if (this.includeEntities) {
             this.eEntityBases = Stream.ofAll(flatPlan.getOps())
                     .filter(planOp -> planOp instanceof EntityOp)
                     .map(planOp -> (EntityOp) planOp)
                     .toJavaMap(planOp -> new Tuple2<>(planOp.getAsgEbase().geteBase().geteTag(), planOp.getAsgEbase().geteBase()));
+        }
 
+        if (this.includeRelationships) {
             this.eRels = Stream.ofAll(flatPlan.getOps())
                     .filter(planOp -> planOp instanceof RelationOp)
                     .toJavaMap(planOp -> {
@@ -60,12 +65,13 @@ public class NewGraphHierarchyTraversalCursor implements Cursor {
                                         relationOp.getAsgEbase().geteBase(),
                                         nextEntityOp.get().getAsgEbase().geteBase()));
                     });
+        }
     }
     //endregion
 
     //region Cursor Implementation
     @Override
-    public QueryResult getNextResults(int numResults) {
+    public QueryResultBase getNextResults(int numResults) {
         Map<String, Map<Vertex, Set<String>>> idVertexEtagsMap = new HashMap<>();
         Map<String, Tuple2<Edge, String>> idEdgeEtagMap = new HashMap<>();
 
@@ -82,10 +88,10 @@ public class NewGraphHierarchyTraversalCursor implements Cursor {
                         this.distinctIds.add(element.id().toString());
                     }
 
-                    if (Vertex.class.isAssignableFrom(element.getClass())) {
+                    if (Vertex.class.isAssignableFrom(element.getClass()) && this.includeEntities) {
                         Map<Vertex, Set<String>> vertexEtagsMap = idVertexEtagsMap.computeIfAbsent(element.id().toString(), id -> new HashMap<>());
                         vertexEtagsMap.computeIfAbsent((Vertex)element, vertex -> new HashSet<>()).add(pathLabel);
-                    } else if (Edge.class.isAssignableFrom(element.getClass())) {
+                    } else if (Edge.class.isAssignableFrom(element.getClass()) && this.includeRelationships) {
                         idEdgeEtagMap.computeIfAbsent(element.id().toString(), id -> new Tuple2<>((Edge)element, pathLabel));
                     }
                 }
@@ -111,7 +117,7 @@ public class NewGraphHierarchyTraversalCursor implements Cursor {
                     relTuple._3()));
         }
 
-        return QueryResult.Builder.instance().withAssignment(builder.build()).build();
+        return AssignmentsQueryResult.Builder.instance().withAssignment(builder.build()).build();
     }
     //endregion
 
@@ -196,5 +202,8 @@ public class NewGraphHierarchyTraversalCursor implements Cursor {
 
     private Map<String, EEntityBase> eEntityBases;
     private Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
+
+    boolean includeEntities;
+    boolean includeRelationships;
     //endregion
 }

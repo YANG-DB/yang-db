@@ -1,14 +1,13 @@
 package com.kayhut.fuse.executor.ontology.schema;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.client.Client;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -21,7 +20,7 @@ public class PartitionFilteredRawSchema implements RawSchema {
     @Inject
     public PartitionFilteredRawSchema(
             @Named(rawSchemaParameter) RawSchema rawSchema,
-            Client client) {
+            Provider<Client> client) {
         this.rawSchema = rawSchema;
         this.client = client;
     }
@@ -76,13 +75,13 @@ public class PartitionFilteredRawSchema implements RawSchema {
 
     private Iterable<String> filterIndices(Iterable<String> indices) {
         return Stream.ofAll(indices)
-                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
+                .filter(index -> client.get().admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .toJavaList();
     }
     //endregion
 
     //region Fields
     private RawSchema rawSchema;
-    private Client client;
+    private Provider<Client> client;
     //endregion
 }

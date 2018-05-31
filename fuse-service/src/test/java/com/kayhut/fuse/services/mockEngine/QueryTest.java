@@ -15,6 +15,8 @@ import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
+import io.restassured.http.Header;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -22,6 +24,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
@@ -47,6 +50,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -80,6 +84,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -104,25 +109,25 @@ public class QueryTest {
     }
 
     @Test
-    @Ignore
     public void createQueryAndFetch() throws IOException {
-        CreateCursorRequest createCursorRequest = new CreatePathsCursorRequest();
-
         CreatePageRequest createPageRequest = new CreatePageRequest();
         createPageRequest.setPageSize(10);
 
-        CreateQueryAndFetchRequest request = new CreateQueryAndFetchRequest();
+        CreateCursorRequest createCursorRequest = new CreatePathsCursorRequest();
+        createCursorRequest.setCreatePageRequest(createPageRequest);
+
+        CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
         request.setQuery(TestUtils.loadQuery("Q001.json"));
         request.setCreateCursorRequest(createCursorRequest);
-        request.setCreatePageRequest(createPageRequest);
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
-                .post("/fuse/query?fetch=true")
+                .post("/fuse/query")
                 .then()
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
@@ -132,10 +137,11 @@ public class QueryTest {
                         assertTrue(data.get("resourceUrl").toString().endsWith("/fuse/query/1"));
                         assertTrue(data.get("cursorStoreUrl").toString().endsWith("/fuse/query/1/cursor"));
                         assertTrue(data.get("v1QueryUrl").toString().endsWith("/fuse/query/1/v1"));
-                        assertTrue(((Map) data.get("cursorResourceInfo")).containsKey("cursorType"));
-                        assertTrue(((Map) data.get("cursorResourceInfo")).containsKey("pageStoreUrl"));
-                        assertTrue(((Map) data.get("pageResourceInfo")).containsKey("dataUrl"));
-                        assertTrue(((Map) data.get("pageResourceInfo")).containsKey("actualPageSize"));
+                        assertTrue(((Map)(((List) data.get("cursorResourceInfos")).get(0))).containsKey("cursorRequest"));
+                        assertTrue(((Map)(((List) data.get("cursorResourceInfos")).get(0))).containsKey("pageStoreUrl"));
+                        assertTrue(((Map)(((List) data.get("cursorResourceInfos")).get(0))).containsKey("pageResourceInfos"));
+                        assertTrue(((Map)((List)((Map)(((List) data.get("cursorResourceInfos")).get(0))).get("pageResourceInfos")).get(0)).containsKey("dataUrl"));
+                        assertTrue(((Map)((List)((Map)(((List) data.get("cursorResourceInfos")).get(0))).get("pageResourceInfos")).get(0)).containsKey("actualPageSize"));
                         return contentResponse.getData() != null;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -165,6 +171,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -200,6 +207,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -224,6 +232,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1")
                 .then()
@@ -247,6 +256,7 @@ public class QueryTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor")
                 .then()
@@ -278,6 +288,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -302,13 +313,14 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/v1")
                 .then()
                 .assertThat()
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
-                        Query data = FuseClient.unwrapDouble(o.toString());
+                        Query data = FuseClient.unwrap(o.toString(), Query.class);
                         QueryAssert.assertEquals(data, request.getQuery());
                         return data != null;
                     } catch (Exception e) {
@@ -322,6 +334,7 @@ public class QueryTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor")
                 .then()
@@ -354,6 +367,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -380,13 +394,14 @@ public class QueryTest {
         final AsgQuery[] asgQuery = {null};
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/asg")
                 .then()
                 .assertThat()
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
-                        asgQuery[0] = FuseClient.unwrapDouble(o.toString());
+                        asgQuery[0] = FuseClient.unwrap(o.toString(), AsgQuery.class);
                         assertTrue(asgQuery[0].getName() != null);
                         assertTrue(asgQuery[0].getOnt() != null);
                         assertTrue(AsgQueryUtil.elements(asgQuery[0]).size() >= request.getQuery().getElements().size());
@@ -402,14 +417,15 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/asg/print")
                 .then()
                 .assertThat()
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
-                        String data = FuseClient.unwrapDouble(o.toString());
-                        assertEquals(data, AsgQueryDescriptor.print(asgQuery[0]));
+                        String data = StringUtils.strip(FuseClient.unwrap(o.toString()), "\"");
+                        assertEquals(AsgQueryDescriptor.print(asgQuery[0]).replace("\n", "\\n"), data);
                         return data != null;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -422,6 +438,7 @@ public class QueryTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/cursor")
                 .then()
@@ -454,6 +471,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
@@ -477,6 +495,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1")
                 .then()
@@ -499,14 +518,15 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1/v1/print")
                 .then()
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
-                        assertEquals(FuseClient.unwrapDouble(o.toString()).toString(), QueryDescriptor.print(query));
-                        return FuseClient.unwrapDouble(o.toString()) != null;
+                        assertEquals(QueryDescriptor.print(query).replace("\n", "\\n"), StringUtils.strip(FuseClient.unwrap(o.toString()), "\""));
+                        return FuseClient.unwrap(o.toString()) != null;
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;
@@ -518,6 +538,7 @@ public class QueryTest {
         //delete query
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .delete("/fuse/query/1")
                 .then()
@@ -528,6 +549,7 @@ public class QueryTest {
         //validate resource deleted
         given()
                 .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
                 .get("/fuse/query/1")
                 .then()
