@@ -403,6 +403,16 @@
       "type": "string"
     },
     {
+      "pType":"score",
+      "name":"score",
+      "type":"float"
+    },
+    {
+      "pType": "refs",
+      "name": "refs",
+      "type": "string"
+    },
+    {
       "pType": "id",
       "name": "id",
       "type": "string"
@@ -411,11 +421,6 @@
       "pType": "type",
       "name": "type",
       "type": "string"
-    },
-    {
-      "pType":"score",
-      "name":"score",
-      "type":"float"
     }
   ]
 }
