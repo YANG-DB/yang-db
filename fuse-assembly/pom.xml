@@ -124,10 +124,9 @@
         <finalName>assembly</finalName>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.0.0</version>
                 <configuration>
-                    <finalName>fuse-assembly</finalName>
                     <archive>
                         <manifest>
                             <mainClass>...</mainClass>
