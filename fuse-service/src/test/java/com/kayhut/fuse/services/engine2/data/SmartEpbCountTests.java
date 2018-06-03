@@ -413,7 +413,6 @@ public class SmartEpbCountTests {
     }
 
     @Test
-    @Ignore
     public void testDragonOriginKingdomX3Path() throws IOException, InterruptedException, ParseException {
         Query query = getDragonOriginKingdomX3Query();
 
@@ -663,7 +662,6 @@ public class SmartEpbCountTests {
 
         AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
         PlanAssert.assertEquals(expectedPlan, actualPlan);
-
 
         QueryResultAssert.assertEquals(expectedAssignmentsQueryResult, actualAssignmentsQueryResult, shouldIgnoreRelId());
     }
