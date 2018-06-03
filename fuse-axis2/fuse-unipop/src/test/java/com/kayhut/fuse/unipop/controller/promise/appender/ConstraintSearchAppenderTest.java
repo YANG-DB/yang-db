@@ -444,11 +444,16 @@ public class ConstraintSearchAppenderTest {
                 "                \"bool\" : {\n" +
                 "                  \"must\" : [\n" +
                 "                    {\n" +
-                "                      \"wildcard\" : {\n" +
-                "                        \"qwerty\" : {\n" +
-                "                          \"wildcard\" : \"*bla*\",\n" +
-                "                          \"boost\" : 1.0\n" +
-                "                        }\n" +
+                "                      \"script\" : {\n" +
+                "                        \"script\" : {\n" +
+                "                          \"inline\" : \"wildcard\",\n" +
+                "                          \"lang\" : \"native\",\n" +
+                "                          \"params\" : {\n" +
+                "                            \"expression\" : \"*bla*\",\n" +
+                "                            \"field\" : \"qwerty\"\n" +
+                "                          }\n" +
+                "                        },\n" +
+                "                        \"boost\" : 1.0\n" +
                 "                      }\n" +
                 "                    }\n" +
                 "                  ],\n" +
@@ -531,11 +536,16 @@ public class ConstraintSearchAppenderTest {
                 "                \"bool\" : {\n" +
                 "                  \"should\" : [\n" +
                 "                    {\n" +
-                "                      \"wildcard\" : {\n" +
-                "                        \"qwerty\" : {\n" +
-                "                          \"wildcard\" : \"*bla*\",\n" +
-                "                          \"boost\" : 1.0\n" +
-                "                        }\n" +
+                "                      \"script\" : {\n" +
+                "                        \"script\" : {\n" +
+                "                          \"inline\" : \"wildcard\",\n" +
+                "                          \"lang\" : \"native\",\n" +
+                "                          \"params\" : {\n" +
+                "                            \"expression\" : \"*bla*\",\n" +
+                "                            \"field\" : \"qwerty\"\n" +
+                "                          }\n" +
+                "                        },\n" +
+                "                        \"boost\" : 1.0\n" +
                 "                      }\n" +
                 "                    }\n" +
                 "                  ],\n" +

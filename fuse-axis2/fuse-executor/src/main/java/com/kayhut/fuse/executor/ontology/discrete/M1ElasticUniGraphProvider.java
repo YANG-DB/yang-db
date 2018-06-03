@@ -8,6 +8,7 @@ import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.common.logging.LoggingReduceController;
 import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchController;
 import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchVertexController;
 import com.kayhut.fuse.unipop.controller.discrete.DiscreteElementReduceController;
@@ -72,17 +73,19 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
                 return ImmutableSet.of(
                         new ElementController(
                                 new LoggingSearchController(
-                                        new DiscreteElementVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider,orderProvider),
+                                        new DiscreteElementVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider, orderProvider),
                                         metricRegistry),
                                 null
                         ),
                         new LoggingSearchVertexController(
-                                new DiscreteVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider,orderProvider),
+                                new DiscreteVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider, orderProvider),
                                 metricRegistry),
                         new LoggingSearchVertexController(
-                                new DiscreteVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider,orderProvider),
+                                new DiscreteVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider, orderProvider),
                                 metricRegistry),
-                        new DiscreteElementReduceController(client, elasticGraphConfiguration, uniGraph, schemaProvider)
+                        new LoggingReduceController(
+                                new DiscreteElementReduceController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
+                                metricRegistry)
                 );
             }
 

@@ -246,7 +246,14 @@ public class RankingKnowledgeDataInfraManager {
                 Arrays.asList("roman"),
                 Arrays.asList("tonette kwon"),
                 Arrays.asList("veorgiana vanasse"),
-                Arrays.asList("veorgiana vanasse suzette")
+                Arrays.asList("veorgiana vanasse suzette"),
+                Arrays.asList("suzette veorgiana vanasse"),
+                Arrays.asList("aaa bbb eee ccc"),
+                Arrays.asList("aaa bbb cccd"),
+                Arrays.asList("laaa bbb cccd"),
+                Arrays.asList("aaa ccc"),
+                Arrays.asList("aaa ccc bbb"),
+                Arrays.asList("laaa cccd")
 
         );
         List<List<String>> titles = Arrays.asList(
@@ -257,7 +264,16 @@ public class RankingKnowledgeDataInfraManager {
                 Arrays.asList("roman"),
                 Arrays.asList("tonette kwon"),
                 Arrays.asList("veorgiana vanasse"),
-                Arrays.asList("veorgiana vanasse suzette")
+                Arrays.asList("veorgiana vanasse suzette"),
+                Arrays.asList("suzette veorgiana vanasse"),
+                Arrays.asList("aaa bbb eee ccc"),
+                Arrays.asList("aaa bbb cccd"),
+                Arrays.asList("laaa bbb cccd"),
+                Arrays.asList("aaa ccc"),
+                Arrays.asList("aaa ccc bbb"),
+                Arrays.asList("laaa cccd")
+
+
         );
         for (int i = 1 ; i <= nicks.size(); i++) {
 

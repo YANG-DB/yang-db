@@ -58,10 +58,11 @@ public class TextQueryTranslator implements PredicateQueryTranslator {
             case LIKE:
                 if (Iterable.class.isAssignableFrom(predicate.getValue().getClass())) {
                     queryBuilder.push().bool().should();
-                    ((Iterable)predicate.getValue()).forEach(likeValue -> queryBuilder.push().wildcard(key, likeValue.toString()).pop());
+                    //chane default wildcard to wildcard script
+                    ((Iterable)predicate.getValue()).forEach(likeValue -> queryBuilder.push().wildcardScript(key, likeValue.toString()).pop());
                     queryBuilder.pop();
                 } else {
-                    queryBuilder.push().wildcard(key, predicate.getValue().toString()).pop();
+                    queryBuilder.push().wildcardScript(key, predicate.getValue().toString()).pop();
                 }
                 break;
         }

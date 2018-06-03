@@ -3,8 +3,6 @@ package com.kayhut.fuse.executor.elasticsearch.logging;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
-import com.kayhut.fuse.dispatcher.logging.LoggingTimerContext;
-import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -13,7 +11,6 @@ import org.elasticsearch.client.ElasticsearchClient;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.function.Consumer;
 
 /**
  * Created by roman.margolis on 14/12/2017.
@@ -24,6 +21,7 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
             ElasticsearchClient client,
             SearchAction action,
             LogMessage startMessage,
+            LogMessage verboseMessage,
             LogMessage successMessage,
             LogMessage failureMessage,
             Timer timer,
@@ -32,6 +30,7 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
         super(client, action);
 
         this.startMessage = startMessage;
+        this.verboseMessage = verboseMessage;
         this.successMessage = successMessage;
         this.failureMessage = failureMessage;
         this.timer = timer;
@@ -47,6 +46,7 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
 
         try {
             this.startMessage.log();
+            this.verboseMessage.with(this.toString()).log();
             return new LoggingActionFuture<>(
                     super.execute(),
                     this.successMessage,
@@ -73,6 +73,7 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
 
     //region Fields
     private LogMessage startMessage;
+    private LogMessage verboseMessage;
     private LogMessage successMessage;
     private LogMessage failureMessage;
     private Timer timer;

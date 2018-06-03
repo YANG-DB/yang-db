@@ -130,7 +130,7 @@
   <logger name="io.netty" additivity="false"/>
   <logger name="org.unipop" additivity="false"/>
   <logger name="com.kayhut.fuse.dispatcher.resource" additivity="false"/>
-  <logger name="com.kayhut.fuse.unipop.converter.SearchHitScrollIterable" additivity="false"/>
+  <logger name="com.kayhut.fuse.executor.elasticsearch.logging.LoggingClient.Verbose" additivity="false"/>
   <logger name="com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider.Verbose" additivity="false"/>
   <!-- Ignore loggers -->
 

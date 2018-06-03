@@ -27,22 +27,26 @@ import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
+import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import org.jooby.Jooby;
 import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.assembly.knowledge.service.KnowledgeE2ETestSuite.CONFIG_PATH;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 
 public class RankingScoreBasedE2ETests {
     private static Jooby app;
+    public static String CONFIG_PATH = Paths.get("src","test","resources",  "application.test.engine3.m1.dfs.knowledge-test.public.conf").toString();
 
     @BeforeClass
     public static void setup() throws Exception {
+        ElasticEmbeddedNode instance = GlobalElasticEmbeddedNode.getInstance();
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(CONFIG_PATH));
 
@@ -64,7 +68,9 @@ public class RankingScoreBasedE2ETests {
         if(manager != null) {
             manager.drop();
         }
-
+        if(app != null){
+            app.stop();
+        }
     }
 
 
@@ -196,8 +202,44 @@ public class RankingScoreBasedE2ETests {
     }
 
     @Test
+    public void testMotiNickLikeSingleWildcard() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("moti*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(4, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+        Assert.assertEquals("e00000003.global", globalEntitiesSorted.get(2).geteID());
+        Assert.assertEquals("e00000004.global", globalEntitiesSorted.get(3).geteID());
+    }
+
+    @Test
+    public void testMotiNickLikeSingleWildcard2() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*moti");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(4, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+    }
+
+    @Test
     public void testMotiTitleLike() throws IOException, InterruptedException {
         Query query = getByTitleLike("*moti*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(3, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+        Assert.assertEquals("e00000004.global", globalEntitiesSorted.get(2).geteID());
+    }
+
+    @Test
+    public void testMotiTitleLikeSingleWildcard() throws IOException, InterruptedException {
+        Query query = getByTitleLike("moti*");
         AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
@@ -229,6 +271,77 @@ public class RankingScoreBasedE2ETests {
         Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(0).geteID());
     }
 
+    @Test
+    public void testVeorgianaSuzetteNickLike() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*veorgiana*suzette*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(1, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000008.global", globalEntitiesSorted.get(0).geteID());
+    }
+
+    @Test
+    public void testVeorgianaNickLike() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*veorgiana*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(3, globalEntitiesSorted.size());
+        Set<String> namesSet = globalEntitiesSorted.stream().map(e -> e.geteID()).collect(Collectors.toSet());
+        Assert.assertTrue(namesSet.contains("e00000007.global"));
+        Assert.assertTrue(namesSet.contains("e00000008.global"));
+        Assert.assertTrue(namesSet.contains("e00000009.global"));
+    }
+
+    @Test
+    public void testAAA() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*aaa*bbb*ccc*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(3, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000010.global", globalEntitiesSorted.get(0).geteID());
+        Set<String> ids = new HashSet<>();
+        ids.add(globalEntitiesSorted.get(1).geteID());
+        ids.add(globalEntitiesSorted.get(2).geteID());
+
+        Assert.assertTrue(ids.contains("e00000011.global"));
+        Assert.assertTrue(ids.contains("e00000012.global"));
+
+    }
+
+    @Test
+    public void testAAACCC() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*aaa*ccc*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(6, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000013.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000014.global", globalEntitiesSorted.get(1).geteID());
+        Assert.assertEquals("e00000010.global", globalEntitiesSorted.get(2).geteID());
+        Assert.assertEquals("e00000015.global", globalEntitiesSorted.get(3).geteID());
+        Assert.assertEquals("e00000012.global", globalEntitiesSorted.get(4).geteID());
+        Assert.assertEquals("e00000011.global", globalEntitiesSorted.get(5).geteID());
+
+    }
+
+    @Test
+    public void testTitleLikeAny() throws IOException, InterruptedException {
+        Query query = getByTitleLikeAny(Arrays.asList("*moti*", "*cohen*"));
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+
+        List<Entity> globalEntities
+                = assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).collect(Collectors.toList());
+        Assert.assertEquals(3, globalEntities.size());
+        Set<String> namesSet = globalEntities.stream().map(e -> e.geteID()).collect(Collectors.toSet());
+        Assert.assertTrue(namesSet.contains("e00000001.global"));
+        Assert.assertTrue(namesSet.contains("e00000002.global"));
+        Assert.assertTrue(namesSet.contains("e00000004.global"));
+    }
+
 
     private List<Entity> getGlobalEntitesSorted(AssignmentsQueryResult assignmentsQueryResult) {
         return assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).sorted((o1, o2) -> -1*Double.compare((double) o1.getProperties().stream().filter(p -> p.getpType().equals("score")).findFirst().get().getValue(),
@@ -257,6 +370,18 @@ public class RankingScoreBasedE2ETests {
                 new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
                 new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
                 new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, nick))
+        )).build();
+    }
+
+    private Query getByTitleLikeAny(List<String> names) {
+        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
+                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
+                new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
+                new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
+                new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
+                new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.likeAny, names))
         )).build();
     }
 
