@@ -589,14 +589,14 @@ public class SmartEpbCountTests {
                 .withEType($ont.eType$(DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date( birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L).apply(3))))))
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date( birthDateValueFunction.apply(3))))))
                 .build(),Entity.Builder.instance()
                 .withEID("Dragon_61" )
                 .withETag(singleton("A"))
                 .withEType($ont.eType$(DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date( birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L).apply(61))))))
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date( birthDateValueFunction.apply(61))))))
                 .build());
 
         List<Entity> entitiesC = Arrays.asList(Entity.Builder.instance()
@@ -605,18 +605,15 @@ public class SmartEpbCountTests {
                 .withEType($ont.eType$(DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date( birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L).apply(3))))))
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(3))))))
                 .build(),Entity.Builder.instance()
                 .withEID("Dragon_61" )
                 .withETag(singleton("C"))
                 .withEType($ont.eType$(DRAGON.name))
                 .withProperties(Arrays.asList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date( birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L).apply(61))))))
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date( birthDateValueFunction.apply(61))))))
                 .build());
-
-
-
 
         Entity entityB = Entity.Builder.instance()
                 .withEID("Kingdom_1" )
@@ -699,8 +696,6 @@ public class SmartEpbCountTests {
                 assertPlanEquals(new Plan(((CompositePlanOp) expectedOp).getOps()), new Plan(((CompositePlanOp)actualOp).getOps()));
             }
         }
-
-
     }
 
     private Query getDragonOriginKingdomX2Query() {
