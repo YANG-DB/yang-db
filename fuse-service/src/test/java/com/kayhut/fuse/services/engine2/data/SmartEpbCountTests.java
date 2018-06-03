@@ -1,7 +1,10 @@
 package com.kayhut.fuse.services.engine2.data;
 
+import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
@@ -413,6 +416,7 @@ public class SmartEpbCountTests {
     }
 
     @Test
+    @Ignore
     public void testDragonOriginKingdomX3Path() throws IOException, InterruptedException, ParseException {
         Query query = getDragonOriginKingdomX3Query();
 
@@ -555,20 +559,20 @@ public class SmartEpbCountTests {
 
     private Plan dragonOriginKingdomX2Plan(Query query) {
         Plan leftBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
-                                    new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
-                                    new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
-                                    new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
-                                    new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                                    new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+                                    new EntityFilterOp(new AsgEBase<>(new EPropGroup(query.getElements().get(3).geteNum(), (EProp) query.getElements().get(3)))),
+                                    new RelationOp(new AsgEBase<>((Rel)query.getElements().get(4) )),
+                                    new RelationFilterOp(new AsgEBase<>(new RelPropGroup(201))),
+                                    new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(5))),
+                                    new EntityFilterOp(new AsgEBase<>(new EPropGroup(301)))
                                 );
-        Rel rel = (Rel) query.getElements().get(4).clone();
+        Rel rel = (Rel) query.getElements().get(6).clone();
         rel.setDir(Rel.Direction.R);
-        Plan rightBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(5))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan rightBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(7))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(query.getElements().get(8).geteNum(),(EProp) query.getElements().get(8)))),
                 new RelationOp(new AsgEBase<>( rel)),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
-                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(401))),
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(5))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(301)))
         );
 
         return new Plan(new EntityJoinOp(leftBranch, rightBranch));
@@ -579,14 +583,41 @@ public class SmartEpbCountTests {
                 birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
 
         AssignmentsQueryResult.Builder builder = AssignmentsQueryResult.Builder.instance();
-        Entity entityA = Entity.Builder.instance()
-                .withEID("Dragon_1" )
+        List<Entity> entitiesA = Arrays.asList(Entity.Builder.instance()
+                .withEID("Dragon_3" )
                 .withETag(singleton("A"))
                 .withEType($ont.eType$(DRAGON.name))
                 .withProperties(Arrays.asList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "B"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(1))))))
-                .build();
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date( birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L).apply(3))))))
+                .build(),Entity.Builder.instance()
+                .withEID("Dragon_61" )
+                .withETag(singleton("A"))
+                .withEType($ont.eType$(DRAGON.name))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date( birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L).apply(61))))))
+                .build());
+
+        List<Entity> entitiesC = Arrays.asList(Entity.Builder.instance()
+                .withEID("Dragon_3" )
+                .withETag(singleton("C"))
+                .withEType($ont.eType$(DRAGON.name))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date( birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L).apply(3))))))
+                .build(),Entity.Builder.instance()
+                .withEID("Dragon_61" )
+                .withETag(singleton("C"))
+                .withEType($ont.eType$(DRAGON.name))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date( birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L).apply(61))))))
+                .build());
+
+
+
+
         Entity entityB = Entity.Builder.instance()
                 .withEID("Kingdom_1" )
                 .withETag(singleton("B"))
@@ -595,50 +626,33 @@ public class SmartEpbCountTests {
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "kingdom1")))
                 .build();
 
-        List<Entity> entitiesC = new ArrayList<>();
-        entitiesC.add(Entity.Builder.instance()
-                .withEID("Dragon_3" )
-                .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(Arrays.asList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(3))))))
-                .build());
-
-        entitiesC.add(Entity.Builder.instance()
-                .withEID("Dragon_61" )
-                .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(Arrays.asList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
-                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(61))))))
-                .build());
-
-        for(Entity entityC : entitiesC) {
-            Relationship relationship1 = Relationship.Builder.instance()
-                    .withRID("123")
-                    .withDirectional(false)
-                    .withEID1(entityA.geteID())
-                    .withEID2(entityB.geteID())
-                    .withETag1("A")
-                    .withETag2("B")
-                    .withRType($ont.rType$(ORIGINATED_IN.getName()))
-                    .build();
+        for (Entity entityA : entitiesA) {
+            for (Entity entityC : entitiesC) {
+                Relationship relationship1 = Relationship.Builder.instance()
+                        .withRID("123")
+                        .withDirectional(false)
+                        .withEID1(entityA.geteID())
+                        .withEID2(entityB.geteID())
+                        .withETag1("A")
+                        .withETag2("B")
+                        .withRType($ont.rType$(ORIGINATED_IN.getName()))
+                        .build();
 
 
-            Relationship relationship2 = Relationship.Builder.instance()
-                    .withRID("123")
-                    .withDirectional(false)
-                    .withEID1(entityC.geteID())
-                    .withEID2(entityB.geteID())
-                    .withETag1("C")
-                    .withETag2("B")
-                    .withRType($ont.rType$(ORIGINATED_IN.getName()))
-                    .build();
+                Relationship relationship2 = Relationship.Builder.instance()
+                        .withRID("123")
+                        .withDirectional(false)
+                        .withEID1(entityC.geteID())
+                        .withEID2(entityB.geteID())
+                        .withETag1("C")
+                        .withETag2("B")
+                        .withRType($ont.rType$(ORIGINATED_IN.getName()))
+                        .build();
 
-            Assignment assignment = Assignment.Builder.instance().withEntity(entityA).withEntity(entityB).withEntity(entityC)
-                    .withRelationship(relationship1).withRelationship(relationship2).build();
-            builder.withAssignment(assignment);
+                Assignment assignment = Assignment.Builder.instance().withEntity(entityA).withEntity(entityB).withEntity(entityC)
+                        .withRelationship(relationship1).withRelationship(relationship2).build();
+                builder.withAssignment(assignment);
+            }
         }
 
         return builder.build();
@@ -661,15 +675,40 @@ public class SmartEpbCountTests {
         }
 
         AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        PlanAssert.assertEquals(expectedPlan, actualPlan);
+        assertPlanEquals(expectedPlan, actualPlan);
 
         QueryResultAssert.assertEquals(expectedAssignmentsQueryResult, actualAssignmentsQueryResult, shouldIgnoreRelId());
+    }
+
+    private void assertPlanEquals(Plan expectedPlan, Plan actualPlan) {
+        Assert.assertEquals(expectedPlan.getOps().size(), actualPlan.getOps().size());
+        for (int i = 0; i < expectedPlan.getOps().size(); i++) {
+            PlanOp expectedOp = expectedPlan.getOps().get(i);
+            PlanOp actualOp = actualPlan.getOps().get(i);
+
+            Assert.assertEquals(expectedOp.getClass(), actualOp.getClass());
+            Assert.assertEquals(expectedOp.toString(), actualOp.toString());
+
+            if(expectedOp instanceof EntityJoinOp){
+                EntityJoinOp actualJoinOp = (EntityJoinOp) actualOp;
+                assertPlanEquals(((EntityJoinOp) expectedOp).getLeftBranch(), actualJoinOp.getLeftBranch());
+                assertPlanEquals(((EntityJoinOp) expectedOp).getRightBranch(), actualJoinOp.getRightBranch());
+            }
+
+            if(expectedOp instanceof CompositePlanOp) {
+                assertPlanEquals(new Plan(((CompositePlanOp) expectedOp).getOps()), new Plan(((CompositePlanOp)actualOp).getOps()));
+            }
+        }
+
+
     }
 
     private Query getDragonOriginKingdomX2Query() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_1", "D0", 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name),  10, 0),
+                new Quant1(10, QuantType.all, Arrays.asList(2,11),0),
+                new EProp(11, NAME.type, Constraint.of(ConstraintOp.eq, "D")),
                 new Rel(2, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
                 new ETyped(3, "B", $ont.eType$(KINGDOM.name), 4, 0),
                 new Rel(4, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 5, 0),

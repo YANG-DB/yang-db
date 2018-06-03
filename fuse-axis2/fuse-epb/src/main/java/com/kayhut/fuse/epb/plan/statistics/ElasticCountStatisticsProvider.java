@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan.statistics;
 import com.google.inject.Provider;
 import com.kayhut.fuse.dispatcher.gta.PlanTraversalTranslator;
 import com.kayhut.fuse.dispatcher.gta.TranslationContext;
+import com.kayhut.fuse.epb.plan.statistics.configuration.ElasticCountStatisticsConfig;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.Direction;
@@ -19,6 +20,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RedundantRelProp;
@@ -31,10 +33,11 @@ import java.util.stream.Collectors;
 
 public class ElasticCountStatisticsProvider implements StatisticsProvider  {
 
-    public ElasticCountStatisticsProvider(PlanTraversalTranslator planTraversalTranslator, Ontology ontology, Provider<UniGraphProvider> uniGraphProvider) {
+    public ElasticCountStatisticsProvider(PlanTraversalTranslator planTraversalTranslator, Ontology ontology, Provider<UniGraphProvider> uniGraphProvider, ElasticCountStatisticsConfig elasticCountStatisticsConfig) {
         this.planTraversalTranslator = planTraversalTranslator;
         this.ontology = ontology;
         this.uniGraphProvider = uniGraphProvider;
+        this.elasticCountStatisticsConfig = elasticCountStatisticsConfig;
     }
 
     @Override
@@ -86,12 +89,17 @@ public class ElasticCountStatisticsProvider implements StatisticsProvider  {
 
     @Override
     public long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Direction direction) {
-        return 100;
+        if(entity instanceof ETyped) {
+            ETyped eTyped = (ETyped) entity;
+            return elasticCountStatisticsConfig.getRelationSelectivity(rel.getrType(), eTyped.geteType(), direction);
+        }
+        return elasticCountStatisticsConfig.getRelationSelectivity(rel.getrType(), "",direction);
     }
 
     private PlanTraversalTranslator planTraversalTranslator;
     private Ontology ontology;
     private Provider<UniGraphProvider> uniGraphProvider;
+    private ElasticCountStatisticsConfig elasticCountStatisticsConfig;
 
 
 }
