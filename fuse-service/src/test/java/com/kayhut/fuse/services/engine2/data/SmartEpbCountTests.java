@@ -416,7 +416,6 @@ public class SmartEpbCountTests {
     }
 
     @Test
-    @Ignore
     public void testDragonOriginKingdomX3Path() throws IOException, InterruptedException, ParseException {
         Query query = getDragonOriginKingdomX3Query();
 
@@ -425,35 +424,35 @@ public class SmartEpbCountTests {
 
     private Plan dragonOriginKingdomX3Plan(Query query) {
 
-
-        Plan leftBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
-                new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
-                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
-        );
-        Rel rel = (Rel) query.getElements().get(5).clone();
-        rel.setDir(Rel.Direction.R);
-        Plan rightBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
-                new RelationOp(new AsgEBase<>( rel)),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
-                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
-        );
-
-        Plan innerJoin = new Plan(new EntityJoinOp(leftBranch, rightBranch));
         Rel rel2 = (Rel) query.getElements().get(8).clone();
         rel2.setDir(Rel.Direction.R);
-        Plan rightBranch2 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(9))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+
+        Plan rightBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(9))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(10, (EProp) query.getElements().get(10)))),
                 new RelationOp(new AsgEBase<>( rel2)),
-                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(801))),
                 new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(102)))
         );
-        return new Plan(new EntityJoinOp(innerJoin, rightBranch2));
+
+        Rel rel = (Rel) query.getElements().get(5).clone();
+        rel.setDir(Rel.Direction.R);
+        Plan leftBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(7, (EProp) query.getElements().get(7)))),
+                new RelationOp(new AsgEBase<>( rel)),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(501))),
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(102)))
+        );
+
+        EntityJoinOp innerJoin = new EntityJoinOp(leftBranch, rightBranch);
+
+        return new Plan(innerJoin,
+                new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(201))),
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(101)))
+                );
     }
 
     private AssignmentsQueryResult dragonOriginKingdomX3Results() throws ParseException {
