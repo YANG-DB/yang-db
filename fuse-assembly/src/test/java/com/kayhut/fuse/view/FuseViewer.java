@@ -66,10 +66,9 @@ import org.graphstream.ui.view.ViewerPipe;
 import org.junit.Assert;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static java.lang.Thread.sleep;
@@ -139,6 +138,11 @@ public class FuseViewer implements ViewerListener {
         }
     }
 
+    public static List<Node> filter(Graph g, Predicate<Node> predicate) {
+        return g.nodes().filter(predicate).collect(Collectors.toList());
+    }
+
+
     public void run() throws Exception {
         viewer = graph.display(true);
 
@@ -150,6 +154,7 @@ public class FuseViewer implements ViewerListener {
         ViewerPipe pipeIn = viewer.newViewerPipe();
         view = (FxDefaultView) viewer.addView("view1", new FxGraphRenderer());
         view.getCamera().setViewPercent(0.75);
+        view.setShortcutManager(new KeysManager(graph));
 
         DefaultApplication.init(view, graph);
         pipeIn.addAttributeSink(graph);
