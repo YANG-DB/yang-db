@@ -32,7 +32,6 @@
 package com.kayhut.fuse.view;
 
 
-import com.google.common.collect.Streams;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Query;
@@ -53,21 +52,12 @@ import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
-import javafx.application.Platform;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.stream.thread.ThreadProxyPipe;
 import org.graphstream.ui.fx_viewer.FxDefaultView;
-import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.fx_viewer.util.DefaultApplication;
 import org.graphstream.ui.javafx.FxGraphRenderer;
 import org.graphstream.ui.view.Viewer;
@@ -76,14 +66,15 @@ import org.graphstream.ui.view.ViewerPipe;
 import org.junit.Assert;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static java.lang.Thread.sleep;
-import static org.graphstream.algorithm.Toolkit.*;
 import static javafx.scene.paint.Color.*;
+import static org.graphstream.algorithm.Toolkit.nodePosition;
 
 
 public class FuseViewer implements ViewerListener {
@@ -109,19 +100,6 @@ public class FuseViewer implements ViewerListener {
 
     public void buttonPushed(String id) {
         try {
-            int[] count = new int[]{0};
-            final List<Node> collect = graph.nodes().collect(Collectors.toList());
-            for (Node node : collect) {
-                if (count[0] > 1) {
-                    resetView();
-                    return;
-                }
-                if (node.getAttribute("ui.selected") != null &&
-                        node.getAttribute("ui.selected").toString().equals("true"))
-                    count[0]++;
-            }
-
-            if (count[0] > 1) return;
             //continue graph exploration
             final Node node = graph.getNode(id);
             if (node.getAttribute("ui.selected") != null &&
@@ -207,45 +185,6 @@ public class FuseViewer implements ViewerListener {
 
     }
 
-    public void start(Stage primaryStage) throws Exception {
-        MultiGraph graph = new MultiGraph("g1");
-
-        ThreadProxyPipe pipe1 = new ThreadProxyPipe();
-        pipe1.init(graph);
-
-        Viewer viewer1 = new FxViewer(pipe1);
-
-        graph.setAttribute("ui.quality");
-        graph.setAttribute("ui.antialias");
-        graph.setAttribute("ui.stylesheet", styleSheet);
-
-        FxDefaultView view1 = new FxDefaultView(viewer1, "view1", new FxGraphRenderer());
-        viewer1.addView(view1);
-        viewer1.enableAutoLayout();
-        view1.getCamera().setViewPercent(0.75);
-
-
-/*
-        GridPane pane = new GridPane();
-        pane.add(view1, 0, 0);
-*/
-        StackPane pane = new StackPane();
-        pane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        pane.setAlignment(Pos.BOTTOM_LEFT);
-        pane.getChildren().addAll(view1);
-
-        Scene scene = new Scene(pane, 1024, 800, true, SceneAntialiasing.BALANCED);
-        primaryStage.setScene(scene);
-        populateGraph(graph);
-
-        primaryStage.setOnCloseRequest(t -> {
-            Platform.exit();
-            System.exit(0);
-        });
-
-        primaryStage.show();
-    }
-
 
     protected String styleSheet =
             "graph {"
@@ -289,7 +228,7 @@ public class FuseViewer implements ViewerListener {
                     "}" +
                     "node:selected {" +
                     "   stroke-mode: plain;" +
-                    "   stroke-width: 4px;" +
+                    "   stroke-width: 6px;" +
                     "   stroke-color: blue;" +
                     "}" +
                     "edge {" +
