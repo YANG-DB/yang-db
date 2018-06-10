@@ -108,26 +108,14 @@ public class FuseViewer implements ViewerListener {
                 view.getCamera().setViewPercent(view.getCamera().getViewPercent() / 0.8);
             } else {
                 populateGraph(graph, id.split("\\.")[0]);
-                setViewZoom(nodePosition(node));
+                final double[] pos = nodePosition(node);
+                view.getCamera().setViewCenter(pos[0], pos[1], pos[2]);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    private void setViewCenter(double[] pos) {
-        view.getCamera().setViewCenter(pos[0], pos[1], pos[2]);
-    }
-
-    private void setViewZoom(double[] pos) {
-        view.getCamera().setViewCenter(pos[0], pos[1], pos[2]);
-        view.getCamera().setViewPercent(view.getCamera().getViewPercent() * 0.8);
-    }
-
-    private void resetView() {
-        view.getCamera().resetView();
     }
 
     public void buttonReleased(String id) {
