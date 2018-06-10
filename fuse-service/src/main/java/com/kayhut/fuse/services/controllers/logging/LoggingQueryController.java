@@ -138,7 +138,6 @@ public class LoggingQueryController implements QueryController {
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getInfo", LogType.of(start), getInfo).log();
-            this.logger.trace("start getInfo");
             response = this.controller.getInfo();
             new LogMessage.Impl(this.logger, info, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
             new LogMessage.Impl(this.logger, trace, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
