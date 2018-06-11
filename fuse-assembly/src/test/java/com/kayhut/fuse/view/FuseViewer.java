@@ -73,7 +73,6 @@ import java.util.stream.Collectors;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static java.lang.Thread.sleep;
 import static javafx.scene.paint.Color.*;
-import static org.graphstream.algorithm.Toolkit.nodePosition;
 
 
 public class FuseViewer implements ViewerListener {
@@ -103,12 +102,14 @@ public class FuseViewer implements ViewerListener {
             final Node node = graph.getNode(id);
             if (node.getAttribute("ui.selected") != null &&
                     node.getAttribute("ui.selected").toString().equals("true")) {
-                //zoom out
-                view.getCamera().setViewPercent(view.getCamera().getViewPercent() / 0.8);
+                //show label
+                showId(node, true);
             } else {
-                populateGraph(graph, id.split("\\.")[0]);
-                final double[] pos = nodePosition(node);
-                view.getCamera().setViewCenter(pos[0], pos[1], pos[2]);
+                if (node.getAttribute("ui.expanded") == null) {
+                    populateGraph(graph, id.split("\\.")[0]);
+                    node.setAttribute("ui.expanded", "true");
+                }
+                showId(node, false);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,25 +118,22 @@ public class FuseViewer implements ViewerListener {
         }
     }
 
+    private void showId(Node node, boolean show) {
+        if (show) {
+            node.setAttribute("label", node.getId());
+        } else {
+            node.setAttribute("label", node.getAttribute("ui.label").toString());
+        }
+
+    }
+
     public void buttonReleased(String id) {
     }
 
     public void mouseOver(String id) {
-        final Node node = graph.getNode(id);
-        if (node.getAttribute("ui.value") != null) {
-            final String label = node.getAttribute("ui.label").toString();
-            node.setAttribute("ui.label", node.getAttribute("ui.value"));
-            node.setAttribute("ui.value", label);
-        }
     }
 
     public void mouseLeft(String id) {
-        final Node node = graph.getNode(id);
-        if (node.getAttribute("ui.value") != null) {
-            final String value = node.getAttribute("ui.value").toString();
-            node.setAttribute("ui.value", node.getAttribute("ui.label"));
-            node.setAttribute("ui.label", value);
-        }
     }
 
     public static List<Node> filter(Graph g, Predicate<Node> predicate) {
@@ -155,6 +153,7 @@ public class FuseViewer implements ViewerListener {
         view = (FxDefaultView) viewer.addView("view1", new FxGraphRenderer());
         view.getCamera().setViewPercent(0.75);
         view.setShortcutManager(new KeysManager(graph));
+        view.setMouseManager(new MouseManager());
 
         DefaultApplication.init(view, graph);
         pipeIn.addAttributeSink(graph);
@@ -204,7 +203,7 @@ public class FuseViewer implements ViewerListener {
                     "	text-background-color: #D2B48C;" +
                     "} " +
                     "node.Reference { " +
-                    "	shape: diamond;" +
+                    "	shape: circle;" +
                     "	text-background-mode: rounded-box;" +
                     "	text-background-color: #D6B48C;" +
                     "	text-alignment: above;" +
@@ -225,7 +224,22 @@ public class FuseViewer implements ViewerListener {
                     "   stroke-color: blue;" +
                     "}" +
                     "edge {" +
+                    "    fill-mode: dyn-plain; " +
+                    "	 size-mode: dyn-size;" +
+                    "}" +
+                    "edge.Insight {" +
                     "    shape: cubic-curve;" +
+                    "    fill-mode: dyn-plain; " +
+                    "	 size-mode: dyn-size;" +
+                    "}" +
+                    "edge.Reference {" +
+                    "    shape: cubic-curve;" +
+                    "    fill-mode: dyn-plain; " +
+                    "	 size-mode: dyn-size;" +
+                    "}" +
+                    "edge.Relation {" +
+                    "    shape: cubic-curve;" +
+                    "    size: 3;" +
                     "    fill-mode: dyn-plain; " +
                     "	 size-mode: dyn-size;" +
                     "}";
@@ -242,6 +256,7 @@ public class FuseViewer implements ViewerListener {
                             final Node node = g.addNode(context[0]);
                             node.setAttribute("ui.size", 50f);
                             node.setAttribute("label", context[0]);
+                            node.setAttribute("ui.label", context[0]);
                             node.setAttribute("ui.color", BEIGE);
                         }
                     }
@@ -253,9 +268,12 @@ public class FuseViewer implements ViewerListener {
                                     .findAny().get().getValue().toString();
                             node = g.addNode(n.geteID());
                             node.setAttribute("label", category);
+                            node.setAttribute("ui.label", category);
                             node.setAttribute("ui.color", NamedColors.get(n.geteType() + category));
                             node.setAttribute("ui.size", 20f);
                             node.setAttribute("ui.class", "Entity");
+                            node.setAttribute("ui.properties", n.getProperties());
+
                             if (context[0] != null) {
 /*
                         final Edge edge = g.addEdge(context[0] + "->" + n.geteID(), context[0], n.geteID());
@@ -267,39 +285,49 @@ public class FuseViewer implements ViewerListener {
                         case "Evalue":
                             String fieldId = n.getProperties().stream().filter(v -> v.getpType().equals("fieldId"))
                                     .findAny().get().getValue().toString();
-                            fieldId = fieldId.substring(0, Math.min(fieldId.length(), 10));
                             String value = n.getProperties().stream().filter(v ->
                                     v.getpType().equals("stringValue") ||
                                             v.getpType().equals("intValue") ||
                                             v.getpType().equals("dateValue"))
                                     .findAny().get().getValue().toString();
-                            value = value.substring(0, Math.min(value.length(), 10));
+
+                            value = value.length() > 10 ? value.substring(0, Math.min(value.length(), 10)) + "..." : value;
 
 
                             node = g.addNode(n.geteID());
                             node.setAttribute("ui.color", NamedColors.get(n.geteType()));
                             node.setAttribute("label", fieldId + ":" + value);
-                            node.setAttribute("content", value);
+                            node.setAttribute("ui.label", fieldId + ":" + value);
+                            node.setAttribute("ui.value", fieldId + ":" + value);
                             node.setAttribute("ui.class", "Value");
+                            node.setAttribute("ui.properties", n.getProperties());
+
                             break;
                         case "Insight":
                             String content = n.getProperties().stream().filter(v -> v.getpType().equals("content"))
                                     .findAny().get().getValue().toString();
-                            String shortContent = content.substring(0, Math.min(content.length(), 10));
+                            String shortContent = content.length() > 10 ? content.substring(0, Math.min(content.length(), 10)) + "..." : content;
 
                             node = g.addNode(n.geteID());
                             node.setAttribute("ui.color", NamedColors.get(n.geteType()));
                             node.setAttribute("label", shortContent);
-                            node.setAttribute("value", content);
+                            node.setAttribute("ui.label", shortContent);
+                            node.setAttribute("ui.value", content);
                             node.setAttribute("ui.class", "Insight");
+                            node.setAttribute("ui.properties", n.getProperties());
                             break;
                         case "Reference":
-/*
-                    node = g.addNode(n.geteID());
-                    node.setAttribute("ui.color", NamedColors.get(n.geteType()));
-                    node.setAttribute("label", "url");
-                    node.setAttribute("ui.class", "Reference");
-*/
+                            String title = n.getProperties().stream().filter(v -> v.getpType().equals("title"))
+                                    .findAny().get().getValue().toString();
+                            String shortTitle = title.length() > 10 ? title.substring(0, Math.min(title.length(), 10)) + "..." : title;
+                            System.out.println("add ref "+n.geteID());
+                            node = g.addNode(n.geteID());
+                            node.setAttribute("ui.color", NamedColors.get(n.geteType()));
+                            node.setAttribute("label", shortTitle);
+                            node.setAttribute("ui.label", shortTitle);
+                            node.setAttribute("ui.value", title);
+                            node.setAttribute("ui.class", "Reference");
+                            node.setAttribute("ui.properties", n.getProperties());
                             break;
                         case "Rvalue":
                             break;
@@ -317,15 +345,17 @@ public class FuseViewer implements ViewerListener {
                                         .findAny().get().getValue().toString();
                                 Node nodeSideB = g.addNode(sideB);
                                 nodeSideB.setAttribute("label", sideBCategory);
+                                nodeSideB.setAttribute("ui.label", sideBCategory);
                                 nodeSideB.setAttribute("ui.color", NamedColors.get(n.geteType() + sideBCategory));
                                 nodeSideB.setAttribute("ui.size", 20f);
                                 nodeSideB.setAttribute("ui.class", "Entity");
                             }
                             if (g.getEdge(n.geteID()) == null) {
                                 Edge in = g.addEdge(n.geteID(), sideA, sideB, false);
-                                in.setAttribute("ui.size", 2f);
                                 in.setAttribute("ui.color", BLUE);
                                 in.setAttribute("ui.label", edgeCategory);
+                                in.setAttribute("ui.class", "Relation");
+                                in.setAttribute("ui.properties", n.getProperties());
                             }
                             break;
                     }
@@ -344,12 +374,13 @@ public class FuseViewer implements ViewerListener {
                         case "hasInsight":
                             final Edge insight = g.addEdge(r.getrID(), r.geteID1(), r.geteID2(), false);
                             insight.setAttribute("ui.color", BLUEVIOLET);
+                            insight.setAttribute("ui.class", "Insight");
                             break;
                         case "hasEntityReference":
-/*
-                        final Edge ref = g.addEdge(r.getrID(), r.geteID1(), r.geteID2(), false);
-                    ref.setAttribute("ui.color", PURPLE);
-*/
+                            System.out.println("add edge "+r.geteID1() +"->" + r.geteID2());
+                            final Edge reference = g.addEdge(r.getrID(), r.geteID1(), r.geteID2(), false);
+                            reference.setAttribute("ui.color", GREEN);
+                            reference.setAttribute("ui.class", "Reference");
                             break;
                         case "hasRelationReference":
                             break;
