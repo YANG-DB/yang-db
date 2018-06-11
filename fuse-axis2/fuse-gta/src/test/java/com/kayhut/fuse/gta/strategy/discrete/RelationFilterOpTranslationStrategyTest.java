@@ -12,7 +12,6 @@ import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
@@ -58,11 +57,18 @@ public class RelationFilterOpTranslationStrategyTest {
                 .build();
     }
 
-    static AsgQuery simpleQuery(String queryName, String ontologyName) {
+    static AsgQuery simpleQueryOr(String queryName, String ontologyName) {
 
         return AsgQuery.Builder.start(queryName, ontologyName)
                 .next(typed(1, "1"))
                 .next(rel(2, "1", R).below(relPropGroup(3, some, RelProp.of(4, "4", of(gt, 10)), RelProp.of(5, "5", of(gt, 10)))))
+                .build();
+    }
+
+    static AsgQuery simpleQueryAnd(String queryName, String ontologyName) {
+        return AsgQuery.Builder.start(queryName, ontologyName)
+                .next(typed(1, "1"))
+                .next(rel(2, "1", R).below(relPropGroup(3, all, RelProp.of(4, "4", of(gt, 10)), RelProp.of(5, "5", of(gt, 10)))))
                 .build();
     }
 
@@ -112,9 +118,31 @@ public class RelationFilterOpTranslationStrategyTest {
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
 
+
     @Test
-    public void test_rel_or() {
-        AsgQuery query = simpleQuery("name", "ontName");
+    public void test_rel_or(){
+        GraphTraversal expectedTraversal = __.start()
+                .has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.and(
+                                __.has(T.label, "Fire"),
+                                __.or(__.has("timestamp", P.gt(10)), __.has("hour", P.gt(10)))
+                        )));
+        test_rel_group_inner(simpleQueryOr("name", "ontName"), expectedTraversal);
+    }
+
+    @Test
+    public void test_rel_and(){
+        GraphTraversal expectedTraversal = __.start()
+                .has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.and(
+                                __.has(T.label, "Fire"),
+                                __.and(__.has("timestamp", P.gt(10)), __.has("hour", P.gt(10)))
+                        )));
+        test_rel_group_inner(simpleQueryAnd("name", "ontName"), expectedTraversal);
+    }
+
+    private void test_rel_group_inner(AsgQuery query, GraphTraversal expectedTraversal) {
+
         Plan plan = new Plan(
                 new RelationOp(AsgQueryUtil.<Rel>element(query, 2).get()),
                 new RelationFilterOp(AsgQueryUtil.<RelPropGroup>element(query, 3).get())
@@ -157,12 +185,7 @@ public class RelationFilterOpTranslationStrategyTest {
                 plan.getOps().get(1),
                 context);
 
-        GraphTraversal expectedTraversal = __.start()
-                .has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.and(
-                                __.has(T.label, "Fire"),
-                                __.or(__.has("timestamp", P.gt(10)), __.has("hour", P.gt(10)))
-                                )));
+
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
