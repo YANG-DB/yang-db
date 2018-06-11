@@ -354,6 +354,17 @@ public class RankingScoreBasedE2ETests {
         Assert.assertTrue(namesSet.contains("e00000018.global"));
         Assert.assertTrue(namesSet.contains("e00000019.global"));
         Assert.assertTrue(namesSet.contains("e00000020.global"));
+    }
+
+    @Test
+    public void testWhitespace() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("* *");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntities
+                = assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).collect(Collectors.toList());
+        Assert.assertEquals(15, globalEntities.size());
+        Set<String> namesSet = globalEntities.stream().map(e -> e.geteID()).collect(Collectors.toSet());
 
     }
 
