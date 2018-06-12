@@ -2,8 +2,8 @@ package com.kayhut.fuse.executor.elasticsearch.logging;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
+import com.kayhut.fuse.dispatcher.logging.ElasticQuery;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
-import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollAction;
@@ -49,8 +49,6 @@ public class LoggingSearchScrollRequestBuilder extends SearchScrollRequestBuilde
 
         try {
             this.startMessage.log();
-            ElasticQuery.logQuery(this.toString()).write();
-            this.verboseMessage.with(this.toString()).log();
             return new LoggingActionFuture<>(
                     super.execute(),
                     this.successMessage,

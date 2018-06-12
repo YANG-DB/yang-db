@@ -2,16 +2,13 @@ package com.kayhut.fuse.executor.elasticsearch.logging;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
+import com.kayhut.fuse.dispatcher.logging.ElasticQuery;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
-import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
-import com.kayhut.fuse.dispatcher.logging.RequestIdByScope;
-import com.kayhut.fuse.model.query.Query;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.ElasticsearchClient;
-import org.slf4j.MDC;
 
 import java.io.Closeable;
 import java.io.IOException;

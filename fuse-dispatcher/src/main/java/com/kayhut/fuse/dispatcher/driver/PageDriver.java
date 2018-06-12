@@ -1,5 +1,6 @@
 package com.kayhut.fuse.dispatcher.driver;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 
@@ -14,4 +15,6 @@ public interface PageDriver {
     Optional<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId);
     Optional<Object> getData(String queryId, String cursorId, String pageId);
     Optional<Boolean> delete(String queryId, String cursorId, String pageId);
+    Optional<JsonNode> getElasticQueries(String queryId, String cursorId, String pageId);
+
 }

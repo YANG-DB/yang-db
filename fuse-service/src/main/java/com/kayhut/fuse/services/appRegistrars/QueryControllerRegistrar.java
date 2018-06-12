@@ -1,6 +1,7 @@
 package com.kayhut.fuse.services.appRegistrars;
 
 import com.cedarsoftware.util.io.JsonWriter;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.graph.Graph;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
@@ -134,9 +135,14 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /** get the elastic queries */
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/elastic")
                 .get(req -> {
-                    ContentResponse<String[]> response = this.getController(app).getElasticQueries(req.param("queryId").value());
+                    ContentResponse<JsonNode> response = this.getController(app).getElasticQueries(req.param("queryId").value());
                     return Results.json(response);
                 });
+
+        /** view the elastic query with d3 html*/
+        app.use(appUrlSupplier.resourceUrl(":queryId") + "/elastic/view")
+                .get(req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
+                        appUrlSupplier.queryStoreUrl() +"/"+ req.param("queryId").value()+ "/elastic"));
 
         /** get the asg query */
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg/json")

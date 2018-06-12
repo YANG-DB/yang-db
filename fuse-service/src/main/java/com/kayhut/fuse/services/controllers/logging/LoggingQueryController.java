@@ -2,6 +2,7 @@ package com.kayhut.fuse.services.controllers.logging;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
@@ -250,7 +251,7 @@ public class LoggingQueryController implements QueryController {
     }
 
     @Override
-    public ContentResponse<String[]> getElasticQueries(String queryId) {
+    public ContentResponse<JsonNode> getElasticQueries(String queryId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getElasticQueryByQueryId.toString())).time();
 
         Composite.of(Elapsed.now(), ElapsedFrom.now(),
@@ -258,7 +259,7 @@ public class LoggingQueryController implements QueryController {
                 RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
                 RequestIdByScope.of(queryId)).write();
 
-        ContentResponse<String[]> response = null;
+        ContentResponse<JsonNode> response = null;
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getElasticQueryByQueryId", LogType.of(start), getElasticQueryByQueryId).log();

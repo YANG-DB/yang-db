@@ -1,17 +1,16 @@
 package com.kayhut.fuse.dispatcher.resource;
 
-import com.kayhut.fuse.dispatcher.logging.LogMessage;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.kayhut.fuse.dispatcher.logging.ElasticQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
-import org.slf4j.MDC;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -21,7 +20,19 @@ import java.util.Optional;
 public class QueryResource {
     //region Constructors
 
-    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan, Optional<PlanNode<Plan>> planNode, String... elasticQueries) {
+    //region Fields
+    private Query query;
+    private QueryMetadata queryMetadata;
+    private PlanWithCost<Plan, PlanDetailedCost> executionPlan;
+    //endregion
+    private Optional<PlanNode<Plan>> planNode;
+    private AsgQuery asgQuery;
+    private JsonNode elasticQueries;
+    private Map<String, CursorResource> cursorResources;
+    private int cursorSequence;
+    //endregion
+
+    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan, Optional<PlanNode<Plan>> planNode, JsonNode elasticQueries) {
         this.query = query;
         this.asgQuery = asgQuery;
         this.queryMetadata = queryMetadata;
@@ -32,14 +43,13 @@ public class QueryResource {
     }
 
     public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan, Optional<PlanNode<Plan>> planNode) {
-        this(query, asgQuery, queryMetadata, executionPlan, planNode,
-                (MDC.get("requestScope" + "." + "elasticQuery") != null ? MDC.get("requestScope" + "." + "elasticQuery").split("\n") : new String[0]));
+        this(query, asgQuery, queryMetadata, executionPlan, planNode, ElasticQuery.fetchQuery());
+
     }
 
     public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan) {
         this(query, asgQuery, queryMetadata, executionPlan, Optional.empty());
     }
-    //endregion
 
     //region Public Methods
     public void addCursorResource(String cursorId, CursorResource cursorResource) {
@@ -54,6 +64,8 @@ public class QueryResource {
         return Optional.ofNullable(this.cursorResources.get(cursorId));
     }
 
+    //endregion
+
     public void deleteCursorResource(String cursorId) {
         this.cursorResources.remove(cursorId);
     }
@@ -61,7 +73,6 @@ public class QueryResource {
     public String getNextCursorId() {
         return String.valueOf(this.cursorSequence++);
     }
-    //endregion
 
     //region Properties
     public Query getQuery() {
@@ -76,7 +87,7 @@ public class QueryResource {
         return queryMetadata;
     }
 
-    public String[] getElasticQueries() {
+    public JsonNode getElasticQueries() {
         return elasticQueries;
     }
 
@@ -87,18 +98,5 @@ public class QueryResource {
     public Optional<PlanNode<Plan>> getPlanNode() {
         return planNode;
     }
-
-    //endregion
-
-    //region Fields
-    private Query query;
-    private QueryMetadata queryMetadata;
-    private PlanWithCost<Plan, PlanDetailedCost> executionPlan;
-    private Optional<PlanNode<Plan>> planNode;
-    private AsgQuery asgQuery;
-    private String[] elasticQueries;
-    private Map<String, CursorResource> cursorResources;
-
-    private int cursorSequence;
     //endregion
 }

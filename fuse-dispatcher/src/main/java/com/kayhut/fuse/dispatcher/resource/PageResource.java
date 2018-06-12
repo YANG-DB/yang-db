@@ -1,5 +1,9 @@
 package com.kayhut.fuse.dispatcher.resource;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.kayhut.fuse.dispatcher.logging.ElasticQuery;
+
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -8,13 +12,18 @@ import java.util.Date;
 public class PageResource<T> {
 
     //region Constructors
-    public PageResource(String pageId, T data, int requestedSize, long executionTime) {
+    public PageResource(String pageId, T data, int requestedSize, long executionTime,JsonNode elasticQueries) {
         this.pageId = pageId;
+        this.elasticQueries = elasticQueries;
         this.timeCreated = new Date(System.currentTimeMillis());
         this.executionTime = executionTime;
         this.data = data;
         this.requestedSize = requestedSize;
         this.isAvailable = false;
+    }
+
+    public PageResource(String pageId, T data, int requestedSize, long executionTime) {
+        this(pageId,data,requestedSize,executionTime,ElasticQuery.fetchQuery());
     }
     //endregion
 
@@ -60,6 +69,10 @@ public class PageResource<T> {
     public boolean isAvailable() {
         return this.isAvailable;
     }
+
+    public JsonNode getElasticQueries() {
+        return elasticQueries;
+    }
     //endregion
 
     //region Private Methods
@@ -79,6 +92,7 @@ public class PageResource<T> {
     private long executionTime;
     private int requestedSize;
     private int actualSize;
+    private JsonNode elasticQueries;
     private boolean isAvailable;
     //endregion
 }

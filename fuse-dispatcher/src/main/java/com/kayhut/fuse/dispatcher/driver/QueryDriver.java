@@ -1,5 +1,6 @@
 package com.kayhut.fuse.dispatcher.driver;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -26,7 +27,7 @@ public interface QueryDriver {
 
     Optional<AsgQuery> getAsg(String queryId);
 
-    Optional<String[]> getElasticQueries(String queryId);
+    Optional<JsonNode> getElasticQueries(String queryId);
 
     Optional<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId);
 
