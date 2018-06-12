@@ -15,9 +15,10 @@ public class ElasticQuery {
         return new ElasticQueryWriter(query);
     }
 
-    public static JsonNode fetchQuery()  {
+    public static JsonNode fetchQuery() {
         try {
-            return mapper.readTree(MDC.get(RequestIdByScope.Converter.key + "." + ElasticQueryWriter.key));
+            return mapper.readTree(MDC.get(RequestIdByScope.Converter.key + "." + ElasticQueryWriter.key) != null
+                    ? MDC.get(RequestIdByScope.Converter.key + "." + ElasticQueryWriter.key) : "[]");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
