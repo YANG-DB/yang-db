@@ -395,7 +395,7 @@ public class FuseViewer implements ViewerListener {
     private Assignment fetchAssignment(String... values) throws IOException, InterruptedException {
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query($ont, values));
         CreateGraphCursorRequest cursorRequest = new CreateGraphCursorRequest();
-        cursorRequest.setTimeout(1500);
+        cursorRequest.setTimeout(50000);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 3000);
 

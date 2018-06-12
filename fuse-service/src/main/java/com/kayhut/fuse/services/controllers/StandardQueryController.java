@@ -165,6 +165,13 @@ public class StandardQueryController implements QueryController {
     }
 
     @Override
+    public ContentResponse<String[]> getElasticQueries(String queryId) {
+        return Builder.<String[]>builder(OK, NOT_FOUND)
+                .data(this.driver.getElasticQueries(queryId))
+                .compose();
+    }
+
+    @Override
     public ContentResponse<PlanNode<Plan>> planVerbose(String queryId) {
         return Builder.<PlanNode<Plan>>builder(OK, NOT_FOUND)
                 .data(this.driver.planVerbose(queryId))

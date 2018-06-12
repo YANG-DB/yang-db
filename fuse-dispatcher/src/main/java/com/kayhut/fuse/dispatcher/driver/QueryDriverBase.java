@@ -93,6 +93,16 @@ public abstract class QueryDriverBase  implements QueryDriver {
     }
 
     @Override
+    public Optional<String[]> getElasticQueries(String queryId) {
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
+        if (!queryResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(queryResource.get().getElasticQueries());
+    }
+
+    @Override
     public Optional<Query> getV1(String queryId) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
         if (!queryResource.isPresent()) {

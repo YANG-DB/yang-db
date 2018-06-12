@@ -17,11 +17,20 @@ import java.util.Optional;
  */
 public interface QueryDriver {
     Optional<QueryResourceInfo> create(QueryMetadata metadata, Query input);
+
     Optional<StoreResourceInfo> getInfo();
+
     Optional<QueryResourceInfo> getInfo(String queryId);
+
     Optional<Query> getV1(String queryId);
+
     Optional<AsgQuery> getAsg(String queryId);
+
+    Optional<String[]> getElasticQueries(String queryId);
+
     Optional<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId);
+
     Optional<PlanNode<Plan>> planVerbose(String queryId);
+
     Optional<Boolean> delete(String queryId);
 }

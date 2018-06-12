@@ -3,11 +3,15 @@ package com.kayhut.fuse.executor.elasticsearch.logging;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
+import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
+import com.kayhut.fuse.dispatcher.logging.RequestIdByScope;
+import com.kayhut.fuse.model.query.Query;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.ElasticsearchClient;
+import org.slf4j.MDC;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -15,7 +19,7 @@ import java.io.IOException;
 /**
  * Created by roman.margolis on 14/12/2017.
  */
-public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
+public class LoggingSearchRequestBuilder extends SearchRequestBuilder {
     //region Constructors
     public LoggingSearchRequestBuilder(
             ElasticsearchClient client,
@@ -46,6 +50,7 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
 
         try {
             this.startMessage.log();
+            ElasticQuery.logQuery(this.toString()).write();
             this.verboseMessage.with(this.toString()).log();
             return new LoggingActionFuture<>(
                     super.execute(),

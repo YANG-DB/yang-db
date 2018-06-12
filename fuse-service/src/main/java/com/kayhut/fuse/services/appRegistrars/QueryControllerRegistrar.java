@@ -121,7 +121,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** view the asg query with d3 html*/
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg/view")
-                .get(req -> Results.redirect("/public/assets/AsgTreeViewer.html?q="+req.param("queryId").value()));
+                .get(req -> Results.redirect("/public/assets/AsgTreeViewer.html?q=" + req.param("queryId").value()));
 
 
         /** get the asg query */
@@ -129,6 +129,13 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                 .get(req -> {
                     ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param("queryId").value());
                     return Results.with(response, response.status());
+                });
+
+        /** get the elastic queries */
+        app.use(appUrlSupplier.resourceUrl(":queryId") + "/elastic")
+                .get(req -> {
+                    ContentResponse<String[]> response = this.getController(app).getElasticQueries(req.param("queryId").value());
+                    return Results.json(response);
                 });
 
         /** get the asg query */
@@ -169,18 +176,18 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                 .get(req -> {
                     ContentResponse response = this.getController(app).explain(req.param("queryId").value());
                     Boolean cycle = Boolean.valueOf(req.param("cycle").toOptional().orElse("true"));
-                    Graph<PlanWithCostDescriptor.GraphElement> graph = PlanWithCostDescriptor.graph((PlanWithCost<Plan, PlanDetailedCost>) response.getData(),cycle);
+                    Graph<PlanWithCostDescriptor.GraphElement> graph = PlanWithCostDescriptor.graph((PlanWithCost<Plan, PlanDetailedCost>) response.getData(), cycle);
                     Map<String, Set> map = new HashMap<>();
-                    map.put("nodes",graph.nodes());
-                    map.put("edges",graph.edges().stream().map(v->new Object[] {v.nodeU(),v.nodeV()}).collect(Collectors.toSet()));
+                    map.put("nodes", graph.nodes());
+                    map.put("edges", graph.edges().stream().map(v -> new Object[]{v.nodeU(), v.nodeV()}).collect(Collectors.toSet()));
                     return Results.json(map);
                 });
 
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/view")
-                .get(req -> Results.redirect("/public/assets/PlanTreeViewer.html?q="+req.param("queryId").value()));
+                .get(req -> Results.redirect("/public/assets/PlanTreeViewer.html?q=" + req.param("queryId").value()));
 
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/sankey")
-                .get(req -> Results.redirect("/public/assets/PlanSankeyViewer.html?q="+req.param("queryId").value()));
+                .get(req -> Results.redirect("/public/assets/PlanSankeyViewer.html?q=" + req.param("queryId").value()));
     }
     //endregion
 }

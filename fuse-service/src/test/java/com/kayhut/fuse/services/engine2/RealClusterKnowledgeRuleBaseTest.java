@@ -30,6 +30,7 @@ import com.kayhut.fuse.utils.ConcurrentTest;
 import com.kayhut.fuse.utils.ConcurrentTestsRule;
 import com.kayhut.fuse.utils.Repeat;
 import com.kayhut.fuse.utils.RepeatRule;
+import javafx.application.Application;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -46,10 +47,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -522,7 +520,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test8() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -571,7 +569,7 @@ public class RealClusterKnowledgeRuleBaseTest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4, 9, 14, 28), 0),
-                new EProp(3, "context", Constraint.of(ConstraintOp.eq, "globAL")),
+                new EProp(3, "context", Constraint.of(ConstraintOp.eq, "global")),
                 new Rel(4, $ont.rType$("hasEvalue"), R, null, 5, 0),
                 new ETyped(5, "B", $ont.eType$("Evalue"), 6, 0),
                 new Quant1(6, QuantType.all, Arrays.asList(7, 8, 29), 0),
