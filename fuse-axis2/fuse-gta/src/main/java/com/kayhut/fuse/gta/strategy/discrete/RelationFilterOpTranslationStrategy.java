@@ -108,7 +108,7 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
                 }
 
                 return __.and(traversals);
-            case some: __.or(traversals);
+            case some: return __.or(traversals);
 
             default: return __.and(traversals);
         }

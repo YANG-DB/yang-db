@@ -51,6 +51,7 @@ public class RelPropGroup extends BasePropGroup<RelProp, RelPropGroup> {
         RelPropGroup propGroup = new RelPropGroup();
         propGroup.seteNum(geteNum());
         propGroup.props = new ArrayList<>(getProps());
+        propGroup.groups = new ArrayList<>(getGroups());
         return propGroup;
 
     }
