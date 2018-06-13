@@ -92,7 +92,7 @@ public class KnowledgeScoreAsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq,  "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "Sherley mustafa"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "Sherley windzor"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -122,7 +122,7 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().size(), 4);
         Assert.assertEquals(actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getQuantType(), some);
 
-        //first condition (eq exact match = "Sherley mustafa")
+        //first condition (eq exact match = "Sherley windzor")
         EPropGroup rule1Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(0);
         Assert.assertEquals(rule1Group.getQuantType(), all);
         Assert.assertEquals(rule1Group.getProps().size(), 1);
@@ -143,9 +143,9 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertTrue(rule2Group.getGroups().get(1) instanceof RankingProp);
         Assert.assertEquals(((RankingProp) rule2Group.getGroups().get(1)).getBoost(), 10000);
         // expecting 3 stringValue filters on expression:
-        // 1) * Sherley mustafa
-        // 2) Sherley mustafa *
-        // 2) * Sherley mustafa *
+        // 1) * Sherley windzor
+        // 2) Sherley windzor *
+        // 2) * Sherley windzor *
         Assert.assertEquals(rule2Group.getGroups().get(0).getProps().size(), 3);
         Assert.assertEquals(rule2Group.getGroups().get(0).getQuantType(), some);
         Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().startsWith("* "));
@@ -154,10 +154,10 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(2).getCon().getExpr().toString().endsWith(" *"));
         //expecting boosting group with terms
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule3Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(2);
@@ -180,15 +180,15 @@ public class KnowledgeScoreAsgStrategyTest {
             Assert.assertTrue(group.getProps().get(2).getCon().getExpr().toString().endsWith("*"));
             Assert.assertEquals(some, group.getQuantType());
         });
-        // 1) *mustafa
-        // 2) mustafa*
-        // 2) *mustafa*
+        // 1) *windzor
+        // 2) windzor*
+        // 2) *windzor*
         //expecting boosting group with terms
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule4Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(3);
@@ -205,15 +205,15 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertTrue(rule4Group.getGroups().get(1) instanceof ScoreEPropGroup);
         Assert.assertEquals(((ScoreEPropGroup) rule4Group.getGroups().get(1)).getBoost(), 1);
 
-        Assert.assertEquals("*Sherley*mustafa*", rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString());
+        Assert.assertEquals("*Sherley*windzor*", rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString());
 
         //expecting boosting group with terms
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
-        System.out.println("testLikeWithoutAsterisks:"+"LIKE["+"Sherley mustafa"+"]");
+        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
+        System.out.println("testLikeWithoutAsterisks:"+"LIKE["+"Sherley windzor"+"]");
         System.out.println(AsgQueryDescriptor.print(asgQuery));
     }
 
@@ -224,7 +224,7 @@ public class KnowledgeScoreAsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "Sherley* mustafa"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "Sherley* windzor"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -252,7 +252,7 @@ public class KnowledgeScoreAsgStrategyTest {
         //4 groups - one per ranking condition
         Assert.assertEquals(actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().size(), 4);
 
-        //first condition (eq exact match = "Sherley mustafa")
+        //first condition (eq exact match = "Sherley windzor")
         EPropGroup rule1Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(0);
         Assert.assertEquals(rule1Group.getQuantType(), all);
         Assert.assertEquals(rule1Group.getProps().size(), 1);
@@ -273,9 +273,9 @@ public class KnowledgeScoreAsgStrategyTest {
         // 1) * Sherley
         // 2) Sherley *
         // 2) * Sherley *
-        // 1) *  mustafa
-        // 2) mustafa *
-        // 2) * mustafa *
+        // 1) *  windzor
+        // 2) windzor *
+        // 2) * windzor *
         Assert.assertEquals(rule2Group.getGroups().get(0).getProps().size(), 3);
         Assert.assertTrue(rule2Group.getGroups().get(1) instanceof ScoreEPropGroup);
         Assert.assertEquals(((ScoreEPropGroup) rule2Group.getGroups().get(1)).getBoost(), 10000);
@@ -289,10 +289,10 @@ public class KnowledgeScoreAsgStrategyTest {
 
         //expecting boosting group with terms
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule3Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(2);
@@ -305,9 +305,9 @@ public class KnowledgeScoreAsgStrategyTest {
         // 1) *Sherley
         // 2) Sherley*
         // 3) *Sherley*
-        // 4) *mustafa
-        // 5) mustafa*
-        // 6) *mustafa*
+        // 4) *windzor
+        // 5) windzor*
+        // 6) *windzor*
         Assert.assertEquals(rule3Group.getGroups().get(0).getGroups().size(), 2);
         Assert.assertTrue(rule3Group.getGroups().get(1) instanceof ScoreEPropGroup);
         Assert.assertEquals(((ScoreEPropGroup) rule3Group.getGroups().get(1)).getBoost(),100);
@@ -322,10 +322,10 @@ public class KnowledgeScoreAsgStrategyTest {
         });
         //expecting boosting group with terms
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule4Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(3);
@@ -340,15 +340,15 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(rule4Group.getGroups().get(0).getProps().size(), 1);
         Assert.assertTrue(rule4Group.getGroups().get(1) instanceof ScoreEPropGroup);
         Assert.assertEquals(((ScoreEPropGroup) rule4Group.getGroups().get(1)).getBoost(),1);
-        Assert.assertEquals("*Sherley*mustafa*", rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString());
+        Assert.assertEquals("*Sherley*windzor*", rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString());
 
         //expecting boosting group with terms
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
-        System.out.println("testLikeWithAsterisksInMiddle:"+"LIKE["+"Sherley* mustafa"+"]");
+        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
+        System.out.println("testLikeWithAsterisksInMiddle:"+"LIKE["+"Sherley* windzor"+"]");
         System.out.println(AsgQueryDescriptor.print(asgQuery));
     }
 
@@ -359,7 +359,7 @@ public class KnowledgeScoreAsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq,  "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley*mustafa*"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley*windzor*"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -387,7 +387,7 @@ public class KnowledgeScoreAsgStrategyTest {
         //4 groups - one per ranking condition
         Assert.assertEquals(actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().size(), 4);
 
-        //first condition (eq exact match = "Sherley mustafa")
+        //first condition (eq exact match = "Sherley windzor")
         EPropGroup rule1Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(0);
         Assert.assertEquals(rule1Group.getQuantType(), all);
         Assert.assertEquals(rule1Group.getProps().size(), 1);
@@ -410,9 +410,9 @@ public class KnowledgeScoreAsgStrategyTest {
         // 1) * Sherley
         // 2) Sherley *
         // 2) * Sherley *
-        // 1) *  mustafa
-        // 2) mustafa *
-        // 2) * mustafa *
+        // 1) *  windzor
+        // 2) windzor *
+        // 2) * windzor *
         Assert.assertEquals(rule2Group.getGroups().get(0).getProps().size(), 3);
 
         Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().startsWith("* "));
@@ -424,10 +424,10 @@ public class KnowledgeScoreAsgStrategyTest {
 
         //expecting boosting group with terms
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule3Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(2);
@@ -440,9 +440,9 @@ public class KnowledgeScoreAsgStrategyTest {
         // 1) *Sherley
         // 2) Sherley*
         // 3) *Sherley*
-        // 4) *mustafa
-        // 5) mustafa*
-        // 6) *mustafa*
+        // 4) *windzor
+        // 5) windzor*
+        // 6) *windzor*
         Assert.assertEquals(rule3Group.getGroups().get(0).getGroups().size(), 2);
 
         rule3Group.getGroups().get(0).getGroups().forEach(group -> {
@@ -455,10 +455,10 @@ public class KnowledgeScoreAsgStrategyTest {
         });
         //expecting boosting group with terms
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule4Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(3);
@@ -472,15 +472,15 @@ public class KnowledgeScoreAsgStrategyTest {
         // 2) Sherley*
         // 2) *Sherley*
         Assert.assertEquals(rule4Group.getGroups().get(0).getProps().size(), 1);
-        Assert.assertEquals("*Sherley*mustafa*", rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString());
+        Assert.assertEquals("*Sherley*windzor*", rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString());
 
         //expecting boosting group with terms
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
-        System.out.println("testLikeWithAsterisksAllAround:" +"LIKE["+"*Sherley*mustafa*"+"]" );
+        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
+        System.out.println("testLikeWithAsterisksAllAround:" +"LIKE["+"*Sherley*windzor*"+"]" );
         System.out.println(AsgQueryDescriptor.print(asgQuery));
     }
 
@@ -491,7 +491,7 @@ public class KnowledgeScoreAsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq,  "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley mustafa*"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley windzor*"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -519,7 +519,7 @@ public class KnowledgeScoreAsgStrategyTest {
         //4 groups - one per ranking condition
         Assert.assertEquals(actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().size(), 4);
 
-        //first condition (eq exact match = "Sherley mustafa")
+        //first condition (eq exact match = "Sherley windzor")
         EPropGroup rule1Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(0);
         Assert.assertEquals(rule1Group.getQuantType(), all);
         Assert.assertEquals(rule1Group.getProps().size(), 1);
@@ -540,9 +540,9 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(((RankingProp) rule2Group.getGroups().get(1)).getBoost(), 10000);
 
         // expecting 3 stringValue filters on expression:
-        // 1) * Sherley mustafa
-        // 2) Sherley mustafa *
-        // 2) * Sherley mustafa *
+        // 1) * Sherley windzor
+        // 2) Sherley windzor *
+        // 2) * Sherley windzor *
         Assert.assertEquals(rule2Group.getGroups().get(0).getProps().size(), 3);
 
         Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().startsWith("* "));
@@ -554,10 +554,10 @@ public class KnowledgeScoreAsgStrategyTest {
 
         //expecting boosting group with terms
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule3Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(2);
@@ -581,10 +581,10 @@ public class KnowledgeScoreAsgStrategyTest {
 
         //expecting boosting group with terms
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule4Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(3);
@@ -596,14 +596,14 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(((ScoreEPropGroup) rule4Group.getGroups().get(1)).getBoost(), 1);
 
         Assert.assertEquals(rule4Group.getGroups().get(0).getProps().size(), 1);
-        Assert.assertEquals("*Sherley*mustafa*", rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString());
+        Assert.assertEquals("*Sherley*windzor*", rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString());
 
         //expecting boosting group with terms
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
     }
 
     @Test
@@ -613,7 +613,7 @@ public class KnowledgeScoreAsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq,  "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley mustafa"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley windzor"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -641,7 +641,7 @@ public class KnowledgeScoreAsgStrategyTest {
         //4 groups - one per ranking condition
         Assert.assertEquals(actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().size(), 4);
 
-        //first condition (eq exact match = "Sherley mustafa")
+        //first condition (eq exact match = "Sherley windzor")
         EPropGroup rule1Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(0);
         Assert.assertEquals(rule1Group.getQuantType(), all);
         Assert.assertEquals(rule1Group.getProps().size(), 1);
@@ -662,9 +662,9 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(((RankingProp) rule2Group.getGroups().get(1)).getBoost(), 10000);
 
         // expecting 3 stringValue filters on expression:
-        // 1) * Sherley mustafa
-        // 2) Sherley mustafa *
-        // 2) * Sherley mustafa *
+        // 1) * Sherley windzor
+        // 2) Sherley windzor *
+        // 2) * Sherley windzor *
         Assert.assertEquals(rule2Group.getGroups().get(0).getProps().size(), 3);
 
         Assert.assertTrue(rule2Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().startsWith("* "));
@@ -676,10 +676,10 @@ public class KnowledgeScoreAsgStrategyTest {
 
         //expecting boosting group with terms
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule3Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(2);
@@ -703,10 +703,10 @@ public class KnowledgeScoreAsgStrategyTest {
 
         //expecting boosting group with terms
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule4Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(3);
@@ -718,14 +718,14 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(((ScoreEPropGroup) rule4Group.getGroups().get(1)).getBoost(), 1);
 
         Assert.assertEquals(rule4Group.getGroups().get(0).getProps().size(), 1);
-        Assert.assertEquals("*Sherley*mustafa*", rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString());
+        Assert.assertEquals("*Sherley*windzor*", rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString());
 
         //expecting boosting group with terms
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().size(), 1);
-        //terms Sherley, mustafa
+        //terms Sherley, windzor
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("mustafa"));
+        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
     }
 
     @Test
@@ -735,7 +735,7 @@ public class KnowledgeScoreAsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq,  "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.eq, "Sherley mustafa"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.eq, "Sherley windzor"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -767,7 +767,7 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertTrue(nicknameRule.getGroups().get(0).getProps().get(0) instanceof RankingProp);
         Assert.assertEquals(((RankingProp) nicknameRule.getGroups().get(0).getProps().get(0)).getBoost(), 1000000);
         Assert.assertEquals(nicknameRule.getGroups().get(0).getProps().get(0).getpType(), "stringValue");
-        Assert.assertEquals(nicknameRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley mustafa");
+        Assert.assertEquals(nicknameRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley windzor");
 
         // second field id: title
         EPropGroup titleRule = actual.getGroups().get(0).getGroups().get(1);
@@ -782,8 +782,8 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertTrue(titleRule.getGroups().get(0).getProps().get(0) instanceof RankingProp);
         Assert.assertEquals(((RankingProp) titleRule.getGroups().get(0).getProps().get(0)).getBoost(), 2000000);
         Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getpType(), "stringValue");
-        Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley mustafa");
-        System.out.println("testEqual:" +"EQ["+"Sherley mustafa"+"]" );
+        Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley windzor");
+        System.out.println("testEqual:" +"EQ["+"Sherley windzor"+"]" );
         System.out.println(AsgQueryDescriptor.print(asgQuery));
 
 
@@ -797,7 +797,7 @@ public class KnowledgeScoreAsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, new String[]{ "nicknames"})),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.eq, "Sherley* mustafa"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.eq, "Sherley* windzor"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -826,7 +826,7 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertTrue(titleRule.getGroups().get(0).getProps().get(0) instanceof ScoreEProp);
         Assert.assertEquals(((ScoreEProp) titleRule.getGroups().get(0).getProps().get(0)).getBoost(), 100);
         Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getpType(), "stringValue");
-        Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley mustafa");
+        Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley windzor");
 
         // second field id: nicknames
         EPropGroup nickNamesRule = actual.getGroups().get(0).getGroups().get(1);
@@ -841,7 +841,7 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertTrue(nickNamesRule.getGroups().get(0).getProps().get(0) instanceof ScoreEProp);
         Assert.assertEquals(((ScoreEProp) nickNamesRule.getGroups().get(0).getProps().get(0)).getBoost(), 100);
         Assert.assertEquals(nickNamesRule.getGroups().get(0).getProps().get(0).getpType(), "stringValue");
-        Assert.assertEquals(nickNamesRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley mustafa");
+        Assert.assertEquals(nickNamesRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley windzor");
 
 
     }
