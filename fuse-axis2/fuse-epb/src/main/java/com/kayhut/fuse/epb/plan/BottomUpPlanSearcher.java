@@ -11,6 +11,7 @@ import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +42,31 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
         this.costEstimator = costEstimator;
     }
 
+    //region Methods
+    @Override
+    public PlanWithCost<P, C> search(Q query) {
+        Iterable<PlanWithCost<P, C>> selectedPlans = Collections.emptyList();
+        List<PlanWithCost<P, C>> currentPlans = Collections.singletonList(null);
+
+        while (currentPlans.size() > 0) {
+            List<PlanWithCost<P, C>> newPlans = new ArrayList<>();
+            for (PlanWithCost<P, C> partialPlan : currentPlans) {
+                final IncrementalEstimationContext<P, C, Q> context = new IncrementalEstimationContext<>(Optional.ofNullable(partialPlan), query);
+                Stream.ofAll(this.localPruneStrategy.prunePlans(
+                    Stream.ofAll(this.extensionStrategy.extendPlan(context.getPreviousCost().map(PlanWithCost::getPlan), query))
+                            .filter(extendedPlan -> this.planValidator.isPlanValid(extendedPlan, query).valid())
+                            .map(validExtendedPlan -> this.costEstimator.estimate(validExtendedPlan, context))))
+                        .forEach(newPlans::add);
+            }
+
+            currentPlans = Stream.ofAll(this.globalPruneStrategy.prunePlans(newPlans)).toJavaList();
+            selectedPlans = Stream.ofAll(selectedPlans).appendAll(this.localPlanSelector.select(query, currentPlans)).toJavaList();
+        }
+
+        selectedPlans = this.globalPlanSelector.select(query, selectedPlans);
+        return Stream.ofAll(selectedPlans).isEmpty() ? null : Stream.ofAll(selectedPlans).get(0);
+    }
+    //endregion
 
     //region Fields
     private PlanExtensionStrategy<P, Q> extensionStrategy;
@@ -50,45 +76,5 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
     private PlanSelector<PlanWithCost<P, C>, Q> localPlanSelector;
     private PlanValidator<P, Q> planValidator;
     private CostEstimator<P, C, IncrementalEstimationContext<P, C, Q>> costEstimator;
-    //endregion
-
-    //region Methods
-    @Override
-    public PlanWithCost<P, C> search(Q query) {
-        Iterable<PlanWithCost<P, C>> selectedPlans;
-
-        // Generate seed plans (plan is null)
-        final IncrementalEstimationContext<P, C, Q> estimationContext = new IncrementalEstimationContext<>(Optional.empty(), query);
-        //filter initial plans
-        Stream<P> filteredPlans = Stream.ofAll(this.extensionStrategy.extendPlan(Optional.empty(), query)).filter(seedPlan -> this.planValidator.isPlanValid(seedPlan, query).valid());
-
-        //local prune initial valid plans + cost estimation
-        List<PlanWithCost<P, C>> currentPlans = Stream.ofAll(this.localPruneStrategy.prunePlans(filteredPlans.map(validSeedPlan -> this.costEstimator.estimate(validSeedPlan, estimationContext)))).toJavaList();
-        //select plans
-        selectedPlans = localPlanSelector.select(query, currentPlans);
-
-        // As long as we have search options, branch the search tree
-        while (currentPlans.size() > 0) {
-            List<PlanWithCost<P, C>> newPlans = new ArrayList<>();
-            for (PlanWithCost<P, C> partialPlan : currentPlans) {
-                final IncrementalEstimationContext<P, C, Q> partialEstimationContext = new IncrementalEstimationContext<>(Optional.of(partialPlan), query);
-                Stream<P> filter = Stream.ofAll(this.extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query))
-                        .filter(extendedPlan -> this.planValidator.isPlanValid(extendedPlan, query).valid());
-                //local prune initial valid plans + cost estimation
-                Stream.ofAll(this.localPruneStrategy.prunePlans(filter.map(validExtendedPlan ->
-                        this.costEstimator.estimate(validExtendedPlan, partialEstimationContext)))).forEach(newPlans::add);
-            }
-
-            currentPlans = Stream.ofAll(this.globalPruneStrategy.prunePlans(newPlans)).toJavaList();
-            selectedPlans = Stream.ofAll(selectedPlans).appendAll(this.localPlanSelector.select(query, currentPlans)).toJavaList();
-        }
-
-        selectedPlans = this.globalPlanSelector.select(query, selectedPlans);
-        if(!Stream.ofAll(selectedPlans).isEmpty()) {
-            return Stream.ofAll(selectedPlans).get(0);
-        } else {
-            return null;
-        }
-    }
     //endregion
 }

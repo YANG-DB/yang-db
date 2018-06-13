@@ -19,7 +19,9 @@
         "creationTime",
         "creationUser",
         "deleteTime",
-        "deleteUser"
+        "deleteUser",
+        "refs",
+        "score"
       ]
     },
     {
@@ -40,7 +42,9 @@
         "bdt",
         "stringValue",
         "dateValue",
-        "intValue"
+        "intValue",
+        "refs",
+        "score"
       ]
     },
     {
@@ -59,7 +63,9 @@
         "creationTime",
         "creationUser",
         "deleteTime",
-        "deleteUser"
+        "deleteUser",
+        "refs",
+        "score"
       ]
     },
     {
@@ -79,7 +85,9 @@
         "bdt",
         "stringValue",
         "dateValue",
-        "intValue"
+        "intValue",
+        "refs",
+        "score"
       ]
     },
     {
@@ -96,7 +104,8 @@
         "creationTime",
         "creationUser",
         "deleteTime",
-        "deleteUser"
+        "deleteUser",
+        "score"
       ]
     },
     {
@@ -112,7 +121,9 @@
         "creationTime",
         "creationUser",
         "deleteTime",
-        "deleteUser"
+        "deleteUser",
+        "refs",
+        "score"
       ]
     }
   ],
@@ -389,6 +400,16 @@
     {
       "pType": "entityBCategory",
       "name": "entityBCategory",
+      "type": "string"
+    },
+    {
+      "pType":"score",
+      "name":"score",
+      "type":"float"
+    },
+    {
+      "pType": "refs",
+      "name": "refs",
       "type": "string"
     },
     {

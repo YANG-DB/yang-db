@@ -309,6 +309,13 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return new AsgEBase<>(relPropGroup);
         }
 
+        public static AsgEBase<RelPropGroup> relPropGroup(int eNum, QuantType quantType, RelProp ... props) {
+            RelPropGroup relPropGroup = new RelPropGroup(Arrays.asList(props));
+            relPropGroup.seteNum(eNum);
+            relPropGroup.setQuantType(quantType);
+            return new AsgEBase<>(relPropGroup);
+        }
+
         public static AsgEBase<OptionalComp> optional(int eNum) {
             OptionalComp optionalComp = new OptionalComp(eNum, 0);
             return new AsgEBase<>(optionalComp);

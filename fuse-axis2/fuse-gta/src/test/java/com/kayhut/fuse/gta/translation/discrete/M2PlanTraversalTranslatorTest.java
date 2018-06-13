@@ -14,15 +14,23 @@ import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.JoinCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.SchematicRankedEProp;
+import com.kayhut.fuse.model.query.properties.ScoreEProp;
+import com.kayhut.fuse.model.query.properties.ScoreEPropGroup;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.unipop.process.JoinStep;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -32,12 +40,15 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.unipop.structure.UniGraph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static org.mockito.ArgumentMatchers.any;
@@ -90,6 +101,28 @@ public class M2PlanTraversalTranslatorTest {
         return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
     }
 
+    public static AsgQuery simpleBoostingQuery(String queryName, String ontologyName) {
+        Start start = new Start();
+        start.seteNum(0);
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteNum(1);
+        eTyped.seteTag("A");
+        eTyped.seteType("1");
+
+        EPropGroup group = new EPropGroup(2);
+        group.getProps().add(new ScoreEProp(2, "stringValue", Constraint.of(ConstraintOp.eq, "abc"), 100));
+
+        AsgEBase<Start> asgStart =
+                AsgEBase.Builder.<Start>get().withEBase(start)
+                        .withNext(AsgEBase.Builder.get().withEBase(eTyped)
+                                .withNext(AsgEBase.Builder.get().withEBase(group).build())
+                                .build())
+                        .build();
+
+        return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
+    }
+
     @Test
     public void simpleJoinTranslationTest(){
         AsgQuery asgQuery = simpleQuery1("q","o");
@@ -130,6 +163,19 @@ public class M2PlanTraversalTranslatorTest {
         Assert.assertEquals(__.start().asAdmin().addStep(joinStep), actualTraversal);
     }
 
+    @Test
+    public void boostingTest(){
+        AsgQuery asgQuery = simpleBoostingQuery("q","o");
+        Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery,1)), new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 2)));
+
+        PlanDetailedCost cost = new PlanDetailedCost(new DoubleCost(0), Collections.singleton(new PlanWithCost<>(plan, new CountEstimatesCost(0, 100))));
+        Ontology.Accessor ont = getOntologyAccessor();
+        GraphTraversal<?, ?> translate = translator.translate(new PlanWithCost<>(plan, cost), new TranslationContext(ont, new PromiseGraph().traversal()));
+
+        int x = 2;
+
+    }
+
     private Ontology.Accessor getOntologyAccessor() {
         Ontology ontology = Mockito.mock(Ontology.class);
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
@@ -150,6 +196,9 @@ public class M2PlanTraversalTranslatorTest {
                     return  relTypes;
                 }
         );
+        when(ontology.getProperties()).thenAnswer(invocationOnMock -> {
+            return Arrays.asList(new Property("stringValue", "stringValue", "string"));
+        });
 
         return new Ontology.Accessor(ontology);
     }

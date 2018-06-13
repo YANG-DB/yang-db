@@ -37,6 +37,7 @@ public class M1AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new ConstraintIterableTransformationAsgStrategy(),
                 new RedundantLikeConstraintAsgStrategy(),
                 new RedundantLikeAnyConstraintAsgStrategy(),
+                new LikeToEqTransformationAsgStrategy(),
                 new RedundantInSetConstraintAsgStrategy(),
                 new RedundantPropGroupAsgStrategy(),
                 new DefaultSelectionAsgStrategy(this.ontologyProvider)

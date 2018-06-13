@@ -16,12 +16,19 @@ import javaslang.collection.Stream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Created by moti on 2/27/2017.
  */
 public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
-    public InitialPlanGeneratorExtensionStrategy() {}
+    public InitialPlanGeneratorExtensionStrategy() {
+        this.planPredicate = plan -> true;
+    }
+
+    public InitialPlanGeneratorExtensionStrategy(Predicate<Plan> planPredicate) {
+        this.planPredicate = planPredicate;
+    }
 
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
@@ -50,7 +57,9 @@ public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrat
                     }
 
                     return newPlan;
-                }).toJavaList();
+                }).filter(this.planPredicate).toJavaList();
     }
+
+    private Predicate<Plan> planPredicate;
 
 }

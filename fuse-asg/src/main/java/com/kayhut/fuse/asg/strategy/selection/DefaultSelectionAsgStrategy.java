@@ -21,6 +21,9 @@ import java.util.Set;
 
 /**
  * Created by Roman on 13/06/2017.
+ *
+ * Go over all EPropGroups - if no projection was requested - go over all existing entity's props and add them as default
+ * - similar to "select * from entity type"
  */
 public class DefaultSelectionAsgStrategy implements AsgStrategy {
     //region Constructors

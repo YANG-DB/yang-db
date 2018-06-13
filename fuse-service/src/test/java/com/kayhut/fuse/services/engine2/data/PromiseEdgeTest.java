@@ -4,9 +4,12 @@ import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.NonRedundantTestSuite;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexFilterController;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -24,6 +27,7 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
 import org.joda.time.DateTime;
 import org.junit.*;
@@ -40,7 +44,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Elad on 4/25/2017.
  */
-public class PromiseEdgeTest{
+public class PromiseEdgeTest {
     static TransportClient client;
     static ElasticGraphConfiguration configuration;
     static UniGraph graph;
@@ -166,7 +170,7 @@ public class PromiseEdgeTest{
 
         //create vertices getTo start getFrom (all)
         List<Vertex> startVertices = new ArrayList<>();
-        for(int i=0; i<13; i++) {
+        for (int i = 0; i < 13; i++) {
             Vertex v = mock(Vertex.class);
             when(v.id()).thenReturn("d" + i);
             when(v.label()).thenReturn("Dragon");
@@ -186,7 +190,8 @@ public class PromiseEdgeTest{
         when(configuration.getElasticGraphScrollTime()).thenReturn(100);
         when(configuration.getElasticGraphDefaultSearchSize()).thenReturn(100L);
 
-        SearchVertexQuery.SearchVertexController controller = new LoggingSearchVertexController(new PromiseVertexFilterController(client, configuration, graph, schemaProvider),registry);
+        SearchVertexQuery.SearchVertexController controller = new LoggingSearchVertexController(new PromiseVertexFilterController(client, configuration, graph, schemaProvider,
+                context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT)), registry);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
@@ -205,7 +210,7 @@ public class PromiseEdgeTest{
         Random r = new Random();
         List<String> colors = Arrays.asList("red", "green", "yellow", "blue");
         List<Map<String, Object>> dragons = new ArrayList<>();
-        for(int i = 0 ; i < numDragons ; i++) {
+        for (int i = 0; i < numDragons; i++) {
             Map<String, Object> dragon = new HashedMap();
             dragon.put("id", "d" + Integer.toString(i));
             dragon.put("type", "Dragon");
@@ -221,7 +226,7 @@ public class PromiseEdgeTest{
         Random r = new Random();
         List<Map<String, Object>> ownDocs = new ArrayList<>();
 
-        for(int i = 0 ; i < numRels ; i++) {
+        for (int i = 0; i < numRels; i++) {
 
             Map<String, Object> fire = new HashedMap();
 

@@ -17,6 +17,7 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,9 +25,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.ePropGroup;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.quant1;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
+import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
@@ -163,6 +169,48 @@ public class ConstraintIterableTransformationAsgStrategyTest {
         constraintIterableTransformationAsgStrategy.apply(asgQueryWithEProps, asgStrategyContext);
         Object expr = ((EProp) AsgQueryUtil.element(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
         assertThat(expr, instanceOf(List.class));
+    }
+
+    @Test
+    public void asgConstraintTransformationCharEscapeTest() throws Exception {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "()*?[&&]]|$%~!{}\\"))))
+                .build();
+
+        //Setting The EProp expression as a date represented by Long value
+
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
+        ConstraintExpCharEscapeTransformationAsgStrategy constraintIterableTransformationAsgStrategy = new ConstraintExpCharEscapeTransformationAsgStrategy();
+
+        //Applying the Strategy on the Eprop with the Epoch time
+        constraintIterableTransformationAsgStrategy.apply(asgQuery, asgStrategyContext);
+        final EPropGroup eBase = (EPropGroup) AsgQueryUtil.element(asgQuery, 3).get().geteBase();
+        Assert.assertEquals("()*\\?[&&]]|$%~!{}\\\\",eBase.getProps().get(0).getCon().getExpr());
+    }
+    @Test
+    public void asgConstraintTransformationCharEscapeNestedTest() throws Exception {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, Arrays.asList("a", "()*?[&&]]|$%~!{}\\", "b"))), EProp.of(3, "name", Constraint.of(ConstraintOp.like, "***"))))
+                .build();
+
+        //Setting The EProp expression as a date represented by Long value
+
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
+        ConstraintExpCharEscapeTransformationAsgStrategy constraintIterableTransformationAsgStrategy = new ConstraintExpCharEscapeTransformationAsgStrategy();
+
+        //Applying the Strategy on the Eprop with the Epoch time
+        constraintIterableTransformationAsgStrategy.apply(asgQuery, asgStrategyContext);
+        final EPropGroup eBase = (EPropGroup) AsgQueryUtil.element(asgQuery, 3).get().geteBase();
+        final List expr = (List) eBase.getProps().get(0).getCon().getExpr();
+        Assert.assertEquals("a", expr.get(0));
+        Assert.assertEquals("()*\\?[&&]]|$%~!{}\\\\",expr.get(1));
+        Assert.assertEquals("b",expr.get(2));
+
+        Assert.assertEquals("***", eBase.getProps().get(1).getCon().getExpr());
     }
 
     @Test

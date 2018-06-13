@@ -22,7 +22,7 @@ public class FilterBulkSearchAppender implements SearchAppender<VertexController
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
         Traversal traversal = buildStartVerticesConstraint(context.getBulkVertices());
 
-        QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().filtered().filter().bool().must();
+        QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().bool().filter().bool().must();
         TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder, false);
         traversalQueryTranslator.visit(traversal);
 

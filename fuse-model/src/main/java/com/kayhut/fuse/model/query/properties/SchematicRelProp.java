@@ -3,7 +3,8 @@ package com.kayhut.fuse.model.query.properties;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 
 /**
- * Created by roman.margolis on 07/02/2018.
+ *
+ * Translates rType to a schematic name such as "stringValue.keyword"
  */
 public class SchematicRelProp extends RelProp {
     //region Constructors

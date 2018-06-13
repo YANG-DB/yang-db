@@ -13,6 +13,8 @@ import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptType;
 import org.geojson.Circle;
 import org.geojson.Envelope;
 import org.geojson.GeoJsonObject;
@@ -21,6 +23,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+
+import static org.elasticsearch.script.ScriptType.INLINE;
 
 /**
  * Created by User on 20/03/2017.
@@ -40,6 +44,7 @@ public class QueryBuilder {
         range,
         prefix,
         wildcard,
+        script,
         regexp,
         match,
         ids,
@@ -47,7 +52,8 @@ public class QueryBuilder {
         exists,
         queryBuilderFilter,
         param,
-        geoShape
+        geoShape,
+        boost
     }
 
     private enum SeekMode {
@@ -150,8 +156,8 @@ public class QueryBuilder {
             throw new UnsupportedOperationException("'filter' may not appear as first statement");
         }
 
-        if (this.current.op != Op.filtered) {
-            throw new UnsupportedOperationException("'filter' may only appear in the 'filtered' context");
+        if (this.current.op != Op.filtered && this.current.op != Op.bool) {
+            throw new UnsupportedOperationException("'filter' may only appear in a 'filtered' or 'bool' context");
         }
 
         if (seekLocalClass(current, FilterComposite.class) != null) {
@@ -165,6 +171,18 @@ public class QueryBuilder {
         return this;
     }
 
+    public QueryBuilder boost(long boost){
+        if (this.root == null) {
+            throw new UnsupportedOperationException("'bool' may not appear as first statement");
+        }
+
+
+        BoostComposite boostComposite = new BoostComposite(null, Op.boost, this.current, boost);
+        this.current.children.add(boostComposite);
+        this.current = boostComposite;
+        return this;
+    }
+
     public QueryBuilder bool() {
         return bool(null);
     }
@@ -174,8 +192,8 @@ public class QueryBuilder {
             throw new UnsupportedOperationException("'bool' may not appear as first statement");
         }
 
-        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
-            throw new UnsupportedOperationException("'bool' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        if (this.current.op != Op.query && this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should && current.op!= Op.boost) {
+            throw new UnsupportedOperationException("'bool' may only appear in the 'filter', 'must', 'mustNot' , 'should' , 'query' or 'boost' context");
         }
 
         if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
@@ -183,7 +201,7 @@ public class QueryBuilder {
             return this;
         }
 
-        if (this.current.op == Op.filter && seekLocalClass(current, BoolComposite.class) != null) {
+        if ((this.current.op == Op.filter || this.current.op == Op.query) && seekLocalClass(current, BoolComposite.class) != null) {
             this.current = seekLocalClass(current, BoolComposite.class);
             return this;
         }
@@ -276,8 +294,8 @@ public class QueryBuilder {
             throw new UnsupportedOperationException("'term' may not appear as first statement");
         }
 
-        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
-            throw new UnsupportedOperationException("'term' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should && current.op != Op.boost) {
+            throw new UnsupportedOperationException("'term' may only appear in the 'filter', 'must', 'mustNot', 'boost' or 'should' context");
         }
 
         if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
@@ -301,8 +319,8 @@ public class QueryBuilder {
             throw new UnsupportedOperationException("'terms' may not appear as first statement");
         }
 
-        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
-            throw new UnsupportedOperationException("'terms' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should && current.op != Op.boost) {
+            throw new UnsupportedOperationException("'terms' may only appear in the 'filter', 'must', 'mustNot', 'should' or 'boost' context");
         }
 
         if (!(Iterable.class.isAssignableFrom(value.getClass()))) {
@@ -372,6 +390,29 @@ public class QueryBuilder {
     }
 
     public QueryBuilder wildcard(String fieldName, String wildcard) { return wildcard(null, fieldName, wildcard); }
+
+    public QueryBuilder wildcardScript(String fieldName, String wildcard) { return wildcardScript(null, fieldName, wildcard); }
+
+    public QueryBuilder wildcardScript(String name, String fieldName, String wildcard) {
+        if (this.root == null) {
+            throw new UnsupportedOperationException("'wildcard' may not appear as first statement");
+        }
+
+        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
+            throw new UnsupportedOperationException("'wildcard' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        }
+
+        if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
+            this.current = seekLocalName(current, name);
+            return this;
+        }
+
+        Composite wildcardCompositeScript = new ScriptComposite("wildcard","native", fieldName, wildcard, current);
+        this.current.children.add(wildcardCompositeScript);
+        this.current = wildcardCompositeScript;
+
+        return this;
+    }
 
     public QueryBuilder wildcard(String name, String fieldName, String wildcard) {
         if (this.root == null) {
@@ -1162,30 +1203,26 @@ public class QueryBuilder {
         //region Composite Implementation
         @Override
         protected Object build() {
-            Iterable<org.elasticsearch.index.query.QueryBuilder> mustFilters = new ArrayList<>();
-            Iterable<org.elasticsearch.index.query.QueryBuilder> mustNotFilters = new ArrayList<>();
-            Iterable<org.elasticsearch.index.query.QueryBuilder> shouldFilters = new ArrayList<>();
+            BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
             for(Composite child : getChildren()) {
                 switch (child.getOp()) {
                     case must:
-                        mustFilters = (Iterable<org.elasticsearch.index.query.QueryBuilder>)child.build();
+                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>)child.build()).forEach(filter -> boolQueryBuilder.must(filter));
                         break;
 
                     case mustNot:
-                        mustNotFilters = (Iterable<org.elasticsearch.index.query.QueryBuilder>)child.build();
+                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>)child.build()).forEach(filter -> boolQueryBuilder.mustNot(filter));
                         break;
 
                     case should:
-                        shouldFilters = (Iterable<org.elasticsearch.index.query.QueryBuilder>)child.build();
+                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>)child.build()).forEach(filter -> boolQueryBuilder.should(filter));
+                        break;
+                    case filter:
+                        boolQueryBuilder.filter((org.elasticsearch.index.query.QueryBuilder) child.build());
                         break;
                 }
             }
-
-            BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-            javaslang.collection.Stream.ofAll(mustFilters).forEach(filter -> boolQueryBuilder.must(filter));
-            javaslang.collection.Stream.ofAll(mustNotFilters).forEach(filter -> boolQueryBuilder.mustNot(filter));
-            javaslang.collection.Stream.ofAll(shouldFilters).forEach(filter -> boolQueryBuilder.should(filter));
             return boolQueryBuilder;
         }
         //endregion
@@ -1489,6 +1526,37 @@ public class QueryBuilder {
         //endregion
     }
 
+    public class ScriptComposite extends FieldComposite {
+        //region Constructor
+        protected ScriptComposite(String name,String lang, String fieldName, String value, Composite parent) {
+            super(name, fieldName, Op.script, parent);
+            this.lang = lang;
+            this.value = value;
+        }
+        //endregion
+
+        //region Composite Implementation
+        @Override
+        protected Object build() {
+            final HashMap<String, Object> map = new HashMap<>();
+            map.put("field",getFieldName());
+            map.put("expression",getValue());
+            return QueryBuilders.scriptQuery(new Script(INLINE,lang,getName(),map ));
+        }
+        //endregion
+
+        //region Properties
+        public String getValue() {
+            return this.value;
+        }
+        //endregion
+
+        private final String lang;
+        //region Fields
+        private String value;
+        //endregion
+    }
+
     public class MatchComposite extends FieldComposite {
         //region Constructor
         protected MatchComposite(String name, String fieldName, Object value, Composite parent) {
@@ -1675,6 +1743,23 @@ public class QueryBuilder {
             }
         }
         //endregion
+    }
+
+    public class BoostComposite extends Composite{
+
+        public BoostComposite(String name, Op op, Composite parent, long boost) {
+            super(name, op, parent);
+            this.boost = boost;
+        }
+
+        @Override
+        protected Object build() {
+            org.elasticsearch.index.query.QueryBuilder queryBuilder = (org.elasticsearch.index.query.QueryBuilder) getChildren().get(0).build();
+            queryBuilder.boost(boost);
+            return queryBuilder;
+        }
+
+        private long boost;
     }
 
     private static ObjectMapper mapper = new ObjectMapper();

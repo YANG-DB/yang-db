@@ -12,6 +12,7 @@ import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.converter.SearchHitPromiseVertexConverter;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
@@ -44,11 +45,12 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class PromiseElementVertexController implements SearchQuery.SearchController {
 
     //region Constructors
-    public PromiseElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+    public PromiseElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
+        this.orderProviderFactory = orderProviderFactory;
     }
     //endregion
 
@@ -166,9 +168,9 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
                 searchRequest,
+                orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
-                searchBuilder.getScrollSize(),
-                searchBuilder.getScrollTime());
+                searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
 
         return convert(searchHits, new SearchHitPromiseVertexConverter(graph));
     }
@@ -187,5 +189,6 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
+    private SearchOrderProviderFactory orderProviderFactory;
     //endregion
 }

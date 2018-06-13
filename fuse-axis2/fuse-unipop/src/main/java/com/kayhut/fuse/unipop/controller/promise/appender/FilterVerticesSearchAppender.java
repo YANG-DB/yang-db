@@ -26,7 +26,7 @@ public class FilterVerticesSearchAppender implements SearchAppender<VertexContro
 
         Traversal traversal = buildStartVerticesConstraint(context.getBulkVertices());
 
-        QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().filtered().filter().bool().must();
+        QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().bool().filter().bool().must();
 
         TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder, false);
 

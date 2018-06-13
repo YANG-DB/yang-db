@@ -5,6 +5,7 @@ import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.asg.strategy.AsgStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.M2AsgStrategyRegistrar;
 import com.kayhut.fuse.dispatcher.asg.QueryToAsgTransformer;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.dispatcher.query.QueryTransformer;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -20,7 +21,7 @@ public class M2AsgModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(AsgStrategyRegistrar.class)
-                .to(M2AsgStrategyRegistrar.class);
+                .to(getAsgStrategyRegistrar(conf));
 
         binder.bind(new TypeLiteral<QueryTransformer<Query, AsgQuery>>(){})
                 .to(QueryToAsgTransformer.class)
@@ -30,4 +31,9 @@ public class M2AsgModule extends ModuleBase {
                 .to(AsgQueryTransformer.class);
     }
     //endregion
+
+
+    protected Class<? extends AsgStrategyRegistrar> getAsgStrategyRegistrar(Config conf) throws ClassNotFoundException {
+        return (Class<? extends  AsgStrategyRegistrar>)Class.forName(conf.getString(conf.getString("assembly")+".asg_strategy_registrar"));
+    }
 }

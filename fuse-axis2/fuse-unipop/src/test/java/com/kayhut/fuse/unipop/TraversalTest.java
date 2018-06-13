@@ -7,7 +7,8 @@ import com.kayhut.fuse.unipop.controller.common.ElementController;
 import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
-import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -19,6 +20,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,11 +41,13 @@ import static org.mockito.Mockito.mock;
 public class TraversalTest {
     Client client;
     ElasticGraphConfiguration configuration;
+    SearchOrderProviderFactory orderProvider;
 
     @Before
     public void setUp() throws Exception {
         client = mock(Client.class);
         configuration = mock(ElasticGraphConfiguration.class);
+        orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
 
     }
 
@@ -57,7 +61,7 @@ public class TraversalTest {
                 return ImmutableSet.of(
                         new ElementController(
                                 new LoggingSearchController(
-                                        new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider())
+                                        new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),orderProvider)
                                         , registry),
                                 new LoggingSearchController(
                                         new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
@@ -100,7 +104,7 @@ public class TraversalTest {
                 return ImmutableSet.of(
                         new ElementController(
                                 new LoggingSearchController(
-                                        new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider())
+                                        new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),orderProvider)
                                         , registry),
                                 new LoggingSearchController(
                                         new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),

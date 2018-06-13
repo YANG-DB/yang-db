@@ -9,6 +9,7 @@ import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteVertexConver
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -40,11 +41,13 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
             Client client,
             ElasticGraphConfiguration configuration,
             UniGraph graph,
-            GraphElementSchemaProvider schemaProvider) {
+            GraphElementSchemaProvider schemaProvider,
+            SearchOrderProviderFactory orderProviderFactory) {
 
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
+        this.orderProviderFactory = orderProviderFactory;
         this.schemaProvider = schemaProvider;
     }
     //endregion
@@ -97,9 +100,9 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
                 searchRequest,
+                orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
-                searchBuilder.getScrollSize(),
-                searchBuilder.getScrollTime());
+                searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
 
         ElementConverter<SearchHit, E> elementConverter = new DiscreteVertexConverter<>(context);
 
@@ -115,6 +118,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
     private Client client;
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
+    private SearchOrderProviderFactory orderProviderFactory;
     private GraphElementSchemaProvider schemaProvider;
 
     //endregion
