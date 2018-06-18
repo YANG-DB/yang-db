@@ -13,6 +13,8 @@ import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptType;
 import org.geojson.Circle;
 import org.geojson.Envelope;
 import org.geojson.GeoJsonObject;
@@ -21,6 +23,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+
+import static org.elasticsearch.script.ScriptType.INLINE;
 
 /**
  * Created by User on 20/03/2017.
@@ -40,6 +44,7 @@ public class QueryBuilder {
         range,
         prefix,
         wildcard,
+        script,
         regexp,
         match,
         ids,
@@ -385,6 +390,29 @@ public class QueryBuilder {
     }
 
     public QueryBuilder wildcard(String fieldName, String wildcard) { return wildcard(null, fieldName, wildcard); }
+
+    public QueryBuilder wildcardScript(String fieldName, String wildcard) { return wildcardScript(null, fieldName, wildcard); }
+
+    public QueryBuilder wildcardScript(String name, String fieldName, String wildcard) {
+        if (this.root == null) {
+            throw new UnsupportedOperationException("'wildcard' may not appear as first statement");
+        }
+
+        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
+            throw new UnsupportedOperationException("'wildcard' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        }
+
+        if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
+            this.current = seekLocalName(current, name);
+            return this;
+        }
+
+        Composite wildcardCompositeScript = new ScriptComposite("wildcard","native", fieldName, wildcard, current);
+        this.current.children.add(wildcardCompositeScript);
+        this.current = wildcardCompositeScript;
+
+        return this;
+    }
 
     public QueryBuilder wildcard(String name, String fieldName, String wildcard) {
         if (this.root == null) {
@@ -1493,6 +1521,37 @@ public class QueryBuilder {
         }
         //endregion
 
+        //region Fields
+        private String value;
+        //endregion
+    }
+
+    public class ScriptComposite extends FieldComposite {
+        //region Constructor
+        protected ScriptComposite(String name,String lang, String fieldName, String value, Composite parent) {
+            super(name, fieldName, Op.script, parent);
+            this.lang = lang;
+            this.value = value;
+        }
+        //endregion
+
+        //region Composite Implementation
+        @Override
+        protected Object build() {
+            final HashMap<String, Object> map = new HashMap<>();
+            map.put("field",getFieldName());
+            map.put("expression",getValue());
+            return QueryBuilders.scriptQuery(new Script(INLINE,lang,getName(),map ));
+        }
+        //endregion
+
+        //region Properties
+        public String getValue() {
+            return this.value;
+        }
+        //endregion
+
+        private final String lang;
         //region Fields
         private String value;
         //endregion

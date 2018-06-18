@@ -1,5 +1,6 @@
 package com.kayhut.test.framework.index;
 
+import com.kayhut.es.plugins.script.CommonScriptPlugin;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -9,12 +10,10 @@ import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
 import static com.kayhut.test.framework.TestUtil.deleteFolder;
 
@@ -127,10 +126,14 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("transport.type", "netty4")
                 .put("http.type", "netty4")
                 .put("http.enabled", "true")
+                .put("script.auto_reload_enabled", "false")
                 .put("transport.tcp.port", httpTransportPort)
                 .build();
 
-        this.node = new PluginConfigurableNode(settings, Collections.singletonList(Netty4Plugin.class));
+        this.node = new PluginConfigurableNode(settings, Arrays.asList(
+                Netty4Plugin.class,
+                CommonScriptPlugin.class));
+
         this.node = this.node.start();
     }
     //endregion

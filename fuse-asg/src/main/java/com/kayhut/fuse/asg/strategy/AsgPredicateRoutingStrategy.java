@@ -1,11 +1,12 @@
 package com.kayhut.fuse.asg.strategy;
 
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
+import javaslang.Tuple2;
+import javaslang.collection.Stream;
+import javaslang.control.Option;
 
 import java.util.List;
 import java.util.function.Function;
@@ -13,28 +14,25 @@ import java.util.function.Predicate;
 
 public class AsgPredicateRoutingStrategy<T extends EBase> implements AsgStrategy {
 
-    public AsgPredicateRoutingStrategy(Predicate<T> predicate, Function<AsgQuery, List<AsgEBase<T>>> elementSelector, AsgElementStrategy<T> trueStrategy, AsgElementStrategy<T> falseStrategy) {
-        this.predicate = predicate;
+    public AsgPredicateRoutingStrategy(List<Tuple2<Predicate<T>, AsgElementStrategy<T>>> predicates, Function<AsgQuery, List<AsgEBase<T>>> elementSelector) {
+        this.predicateWithStrategy = predicates;
         this.elementSelector = elementSelector;
-        this.trueStrategy = trueStrategy;
-        this.falseStrategy = falseStrategy;
     }
 
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        elementSelector.apply(query).forEach(ePropGroupAsgEBase -> {
-            if(predicate.test(ePropGroupAsgEBase.geteBase())){
-                trueStrategy.apply(query,  ePropGroupAsgEBase, context);
-            }
-            else {
-                falseStrategy.apply(query,  ePropGroupAsgEBase, context);
-            }
-        });
+        elementSelector.apply(query)
+                .forEach(ePropGroupAsgEBase -> {
+                    Option<AsgElementStrategy<T>> strategy = Stream.ofAll(predicateWithStrategy).find(p -> p._1()
+                            .test(ePropGroupAsgEBase.geteBase()))
+                            .map(Tuple2::_2);
+                    //only when a strategy match - do it
+                    if (!strategy.isEmpty())
+                        strategy.get().apply(query, ePropGroupAsgEBase, context);
+                });
     }
 
-    private Predicate<T> predicate;
+    private List<Tuple2<Predicate<T>, AsgElementStrategy<T>>> predicateWithStrategy;
     private Function<AsgQuery, List<AsgEBase<T>>> elementSelector;
-    private AsgElementStrategy<T> trueStrategy;
-    private AsgElementStrategy<T> falseStrategy;
 
 }

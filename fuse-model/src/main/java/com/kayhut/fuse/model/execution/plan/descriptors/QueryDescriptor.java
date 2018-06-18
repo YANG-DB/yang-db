@@ -90,17 +90,21 @@ public class QueryDescriptor implements Descriptor<Query> {
 
     static String printProps(EPropGroup propGroup) {
         String[] pStrings = Stream.ofAll(propGroup.getProps())
-                .map(p -> {
-                    if (p.getCon() != null) {
-                        return p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
-                    } else if (p.getProj() != null) {
-                        return p.getpType() + "<" + p.getProj().getClass().getSimpleName() + ">";
-                    } else {
-                        return p.getpType();
-                    }
-                }).toJavaArray(String.class);
+                .map(QueryDescriptor::printProp).toJavaArray(String.class);
 
         return ":" + Arrays.toString(pStrings);
+    }
+
+    static String printProp(EProp p) {
+        if (p instanceof RankingProp) {
+            return "boost:"+((RankingProp) p).getBoost() +"  " + p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
+        } else if (p.getCon() != null) {
+            return p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
+        } else if (p.getProj() != null) {
+            return p.getpType() + "<" + p.getProj().getClass().getSimpleName() + ">";
+        } else {
+            return p.getpType();
+        }
     }
     //endregion
 
@@ -131,7 +135,15 @@ public class QueryDescriptor implements Descriptor<Query> {
                 print(builder, query, findByEnum(query, ((EEntityBase) element.get()).getNext()), !((Next) element.get()).hasNext(), false, level, currentLine);
             } else if (element.get() instanceof Rel) {
                 print(builder, query, findByEnum(query, ((Rel) element.get()).getNext()), !((Next) element.get()).hasNext(), false, level, currentLine);
-            } else if (element.get() instanceof EProp || element.get() instanceof EPropGroup) {
+            } else if (element.get() instanceof ScoreEProp ) {
+                print(builder, query, element, true, true, level + 1, currentLine);
+            } else if (element.get() instanceof EPropGroup ) {
+                level = builder.size();
+                for (int i = 0; i < ((ScoreEPropGroup) element.get()).getGroups().size(); i++) {
+                    EPropGroup ePropGroup = ((ScoreEPropGroup) element.get()).getGroups().get(i);
+                    print(builder, query, Optional.of(ePropGroup), true, true, level, i);
+                }
+            } else if (element.get() instanceof EProp ) {
                 print(builder, query, element, true, true, level + 1, currentLine);
             } else if (element.get() instanceof RelProp || element.get() instanceof RelPropGroup) {
                 print(builder, query, element, true, true, level + 1, currentLine);

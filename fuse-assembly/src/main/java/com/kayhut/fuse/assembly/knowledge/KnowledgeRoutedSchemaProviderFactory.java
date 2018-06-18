@@ -49,7 +49,9 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                 new GraphElementPropertySchema.Impl("deleteUser", "string"),
                 new GraphElementPropertySchema.Impl("deleteTime", "date"),
                 new GraphElementPropertySchema.Impl("authorization", "string"),
-                new GraphElementPropertySchema.Impl("authorizationCount", "int")
+                new GraphElementPropertySchema.Impl("authorizationCount", "int"),
+                new GraphElementPropertySchema.Impl("score", "float"),
+                new GraphElementPropertySchema.Impl("refs", "string")
         );
 
         Iterable<GraphRedundantPropertySchema> redundantMetadataProperties = Stream.ofAll(metadataProperties)

@@ -56,10 +56,9 @@ public class KnowledgeSimpleEntityTests {
         // Start embedded ES
         elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
         // Load fuse engine config file
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        String val = classLoader.getResource("assembly/Knowledge/config/application.test.engine3.m1.dfs.knowledge.public.conf").getFile();
+        String confFilePath = Paths.get("src", "test", "resources", "application.test.engine3.m1.dfs.knowledge.public.conf").toString();
         // Start elastic data manager
-        manager = new KnowledgeDataInfraManager(val);
+        manager = new KnowledgeDataInfraManager(confFilePath);
         // Connect to elastic
         client = elasticEmbeddedNode.getClient();
         // Create indexes by templates
@@ -89,7 +88,7 @@ public class KnowledgeSimpleEntityTests {
         authNode.add("source2.procedure2");
         // Link to Reference
         ArrayNode refsNode = _mapper.createArrayNode();
-        refsNode.add("ref" + String.format(manager.getSchema().getIdFormat("reference"), 1));
+        //refsNode.add("ref" + String.format(manager.getSchema().getIdFormat("reference"), 1));
         // LogicalId
         String logicalId = "e" + String.format(manager.getSchema().getIdFormat("entity"), 1);
 
@@ -128,6 +127,7 @@ public class KnowledgeSimpleEntityTests {
                                         new Property("creationUser", "raw", "Shaul"),
                                         new Property("lastUpdateTime", "raw", "2018-05-27 14:32:56.533"),
                                         new Property("creationTime", "raw", "2018-05-26 10:02:30.133"),
+                                        new Property("refs", "raw", null),
                                         new Property("authorization", "raw", Arrays.asList("source1.procedure1", "source2.procedure2"))
                                         )).build()).build()).build();
 
