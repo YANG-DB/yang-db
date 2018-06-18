@@ -24,6 +24,7 @@ import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequ
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -47,12 +48,14 @@ import java.util.*;
 public class RankingKnowledgeDataInfraManager {
     private static final Logger logger = LoggerFactory.getLogger(RankingKnowledgeDataInfraManager.class);
 
-    private TransportClient client;
+    private Client client;
     private SimpleDateFormat sdf;
     private Config conf;
     private RawSchema schema;
 
-    public RankingKnowledgeDataInfraManager(String confPath) throws UnknownHostException {
+    public RankingKnowledgeDataInfraManager(String confPath, Client client) throws UnknownHostException {
+        this.client = client;
+
         try {
             File configFile = new File(confPath);
             this.conf = ConfigFactory.parseFileAnySyntax(configFile, ConfigParseOptions.defaults().setAllowMissing(false));
@@ -63,23 +66,6 @@ public class RankingKnowledgeDataInfraManager {
         } catch (Exception exc) {
 
         }
-    }
-
-    public void client_connect() {
-        Settings settings = Settings.builder().put("cluster.name", conf.getConfig("elasticsearch").getString("cluster_name")).build();
-        int port = conf.getConfig("elasticsearch").getInt("port");
-        client = new PreBuiltTransportClient(settings);
-        conf.getConfig("elasticsearch").getList("hosts").unwrapped().forEach(host -> {
-            try {
-                client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host.toString()), port));
-            } catch (UnknownHostException e) {
-                logger.error(e.getMessage(), e);
-            }
-        });
-    }
-
-    public void client_close() {
-        client.close();
     }
 
     public long init() throws IOException {

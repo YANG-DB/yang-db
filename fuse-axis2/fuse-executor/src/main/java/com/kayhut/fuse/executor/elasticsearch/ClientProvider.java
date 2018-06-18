@@ -39,15 +39,10 @@ public class ClientProvider implements Provider<Client> {
             return new MockClient();
         }
 
-        /*if (this.conf.hasPath("fuse.elasticsearch.mock")) {
-            boolean clientMock = this.conf.getBoolean("fuse.elasticsearch.mock");
-            if (clientMock) {
-                System.out.println("Using mock elasticsearch client!");
-                return new MockClient();
-            }
-        }*/
-
-        Settings settings = Settings.builder().put("cluster.name", this.configuration.getClusterName()).build();
+        Settings settings = Settings.builder()
+                .put("cluster.name", this.configuration.getClusterName())
+                .put("client.transport.ignore_cluster_name", this.configuration.getClientTransportIgnoreClusterName())
+                .build();
         TransportClient client = new PreBuiltTransportClient(settings);
         Stream.of(this.configuration.getClusterHosts()).forEach(host -> {
             try {
@@ -58,10 +53,6 @@ public class ClientProvider implements Provider<Client> {
         });
 
         return client;
-
-        /*return new LoggingClient(client,
-                LoggerFactory.getLogger(LoggingClient.class),
-                this.metricRegistry);*/
     }
     //endregion
 

@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import static com.kayhut.test.framework.TestUtil.deleteFolder;
 
@@ -21,6 +22,7 @@ import static com.kayhut.test.framework.TestUtil.deleteFolder;
  * Created by moti on 3/19/2017.
  */
 public class ElasticEmbeddedNode implements AutoCloseable {
+
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
         public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
@@ -79,7 +81,9 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     public TransportClient getClient() {
         if (this.client == null) {
             try {
-                Settings settings = Settings.builder().put("cluster.name", nodeName).build();
+                Settings settings = Settings.builder()
+                        .put("cluster.name", nodeName)
+                        .build();
                 this.client = new PreBuiltTransportClient(settings)
                         .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
             } catch (UnknownHostException e) {
@@ -106,6 +110,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
             this.node.close();
             this.node = null;
         }
+
 
         deleteFolder(esWorkingDir);
     }

@@ -56,11 +56,9 @@ public class RankingScoreBasedE2ETests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
-        manager = new RankingKnowledgeDataInfraManager(CONFIG_PATH);
-        manager.client_connect();
+        manager = new RankingKnowledgeDataInfraManager(CONFIG_PATH, instance.getClient());
         manager.init();
         manager.load();
-        //manager.client_close();
     }
 
     @AfterClass

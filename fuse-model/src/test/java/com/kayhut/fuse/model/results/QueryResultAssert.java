@@ -200,5 +200,11 @@ public class QueryResultAssert {
     private static void assertIfBothNotNull(Object expected, Object actual) {
         Assert.assertTrue(expected != null && actual != null);
     }
+
+    private static void assertIfBothNotEmpty(Iterable expected, Iterable actual) {
+        if (expected == null || Stream.ofAll(expected).isEmpty()) {
+            Assert.assertTrue(actual == null || Stream.ofAll(actual).isEmpty());
+        }
+    }
     //endregion
 }
