@@ -20,7 +20,7 @@ import java.io.File;
         HorsesGeneratorTest.class,
         KingdomsGeneratorTest.class,
         PersonsGeneratorTest.class,
-        DataGeneratorTest.class,
+        DataGeneratorRunnerTest.class,
         RandomUtilTest.class
 })
 public class TestSuite {
