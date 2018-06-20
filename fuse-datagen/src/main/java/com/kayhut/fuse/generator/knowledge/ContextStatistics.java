@@ -1,5 +1,7 @@
 package com.kayhut.fuse.generator.knowledge;
 
+import org.apache.tinkerpop.gremlin.structure.Direction;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -9,10 +11,8 @@ public class ContextStatistics {
         this.entityCategories = Collections.emptyMap();
         this.relationCategories = Collections.emptyMap();
 
-        this.entityFieldCounts = Collections.emptyMap();
-        this.relationFieldCounts = Collections.emptyMap();
-
         this.entityValueCounts = Collections.emptyMap();
+        this.entityGlobalValueCounts = Collections.emptyMap();
         this.relationValueCounts = Collections.emptyMap();
 
         this.entityRelationCounts = Collections.emptyMap();
@@ -43,43 +43,35 @@ public class ContextStatistics {
         this.relationCategories = relationCategories;
     }
 
-    public Map<String, Map<Integer, Integer>> getEntityFieldCounts() {
-        return entityFieldCounts;
-    }
-
-    public void setEntityFieldCounts(Map<String, Map<Integer, Integer>> entityFieldCounts) {
-        this.entityFieldCounts = entityFieldCounts;
-    }
-
-    public Map<String, Map<Integer, Integer>> getRelationFieldCounts() {
-        return relationFieldCounts;
-    }
-
-    public void setRelationFieldCounts(Map<String, Map<Integer, Integer>> relationFieldCounts) {
-        this.relationFieldCounts = relationFieldCounts;
-    }
-
-    public Map<Integer, Integer> getEntityValueCounts() {
+    public Map<String, Map<Integer, Integer>> getEntityValueCounts() {
         return entityValueCounts;
     }
 
-    public void setEntityValueCounts(Map<Integer, Integer> entityValueCounts) {
+    public void setEntityValueCounts(Map<String, Map<Integer, Integer>> entityValueCounts) {
         this.entityValueCounts = entityValueCounts;
     }
 
-    public Map<Integer, Integer> getRelationValueCounts() {
+    public Map<String, Map<Integer, Integer>> getEntityGlobalValueCounts() {
+        return entityGlobalValueCounts;
+    }
+
+    public void setEntityGlobalValueCounts(Map<String, Map<Integer, Integer>> entityGlobalValueCounts) {
+        this.entityGlobalValueCounts = entityGlobalValueCounts;
+    }
+
+    public Map<String, Map<Integer, Integer>> getRelationValueCounts() {
         return relationValueCounts;
     }
 
-    public void setRelationValueCounts(Map<Integer, Integer> relationValueCounts) {
+    public void setRelationValueCounts(Map<String, Map<Integer, Integer>> relationValueCounts) {
         this.relationValueCounts = relationValueCounts;
     }
 
-    public Map<Integer, Integer> getEntityRelationCounts() {
+    public Map<String, Map<Integer, Integer>> getEntityRelationCounts() {
         return entityRelationCounts;
     }
 
-    public void setEntityRelationCounts(Map<Integer, Integer> entityRelationCounts) {
+    public void setEntityRelationCounts(Map<String, Map<Integer, Integer>> entityRelationCounts) {
         this.entityRelationCounts = entityRelationCounts;
     }
 
@@ -105,6 +97,14 @@ public class ContextStatistics {
 
     public void setEntityValueReferenceCounts(Map<Integer, Integer> entityValueReferenceCounts) {
         this.entityValueReferenceCounts = entityValueReferenceCounts;
+    }
+
+    public Map<Integer, Integer> getEntityGlobalValueReferenceCounts() {
+        return entityGlobalValueReferenceCounts;
+    }
+
+    public void setEntityGlobalValueReferenceCounts(Map<Integer, Integer> entityGlobalValueReferenceCounts) {
+        this.entityGlobalValueReferenceCounts = entityGlobalValueReferenceCounts;
     }
 
     public Map<Integer, Integer> getRelationReferenceCounts() {
@@ -136,18 +136,17 @@ public class ContextStatistics {
     private Map<String, Integer> entityCategories;
     private Map<String, Integer> relationCategories;
 
-    private Map<String, Map<Integer, Integer>> entityFieldCounts;
-    private Map<String, Map<Integer, Integer>> relationFieldCounts;
+    private Map<String, Map<Integer, Integer>> entityValueCounts;
+    private Map<String, Map<Integer, Integer>> entityGlobalValueCounts;
+    private Map<String, Map<Integer, Integer>> relationValueCounts;
 
-    private Map<Integer, Integer> entityValueCounts;
-    private Map<Integer, Integer> relationValueCounts;
-
-    private Map<Integer, Integer> entityRelationCounts;
+    private Map<String, Map<Integer, Integer>> entityRelationCounts;
 
     private Map<Integer, Integer> insightEntityCounts;
 
     private Map<Integer, Integer> entityReferenceCounts;
     private Map<Integer, Integer> entityValueReferenceCounts;
+    private Map<Integer, Integer> entityGlobalValueReferenceCounts;
     private Map<Integer, Integer> relationReferenceCounts;
     private Map<Integer, Integer> relationValueReferenceCounts;
     private Map<Integer, Integer> insightReferenceCounts;
