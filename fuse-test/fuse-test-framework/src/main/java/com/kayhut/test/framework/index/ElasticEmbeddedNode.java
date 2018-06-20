@@ -32,12 +32,13 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     //region Members
     private final int httpPort;
-    private final int httpTransportPort;
     private final String esWorkingDir;
-    private final String nodeName;
     private final int numberOfShards;
     private Node node;
-    private TransportClient client = null;
+
+    static int httpTransportPort;
+    static String nodeName;
+    static TransportClient client = null;
     //endregion
 
     //region Constructors
@@ -62,49 +63,45 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     }
 
     public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards, ElasticIndexConfigurer... configurers) throws Exception {
+        ElasticEmbeddedNode.httpTransportPort = httpTransportPort;
+        ElasticEmbeddedNode.nodeName = nodeName;
         this.esWorkingDir = esWorkingDir;
         this.httpPort = httpPort;
-        this.httpTransportPort = httpTransportPort;
-        this.nodeName = nodeName;
         this.numberOfShards = numberOfShards;
         prepare();
 
         for (ElasticIndexConfigurer configurer : configurers) {
-            configurer.configure(this.getClient());
+            configurer.configure(getClient(nodeName,httpTransportPort));
         }
     }
 
     //endregion
 
     //region Methods
-    public TransportClient getClient() {
-        if (this.client == null) {
+    public static TransportClient getClient() {
+        return getClient(nodeName,httpTransportPort);
+    }
+
+    public static TransportClient getClient(String nodeName,int httpTransportPort) {
+        if (client == null) {
             try {
                 Settings settings = Settings.builder()
                         .put("cluster.name", nodeName)
                         .build();
-                this.client = new PreBuiltTransportClient(settings)
+                client = new PreBuiltTransportClient(settings)
                         .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
             } catch (UnknownHostException e) {
                 throw new UnknownError(e.getMessage());
             }
         }
 
-        return this.client;
+        return client;
     }
 
     @Override
     public void close() throws Exception {
         System.out.println("Closing");
-        if (this.client != null) {
-            try {
-                this.client.close();
-                this.client = null;
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-
+        closeClient();
         if (this.node != null) {
             this.node.close();
             this.node = null;
@@ -112,6 +109,17 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
 
         deleteFolder(esWorkingDir);
+    }
+
+    public static void closeClient() {
+        if (client != null) {
+            try {
+                client.close();
+                client = null;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     private void prepare() throws Exception {
