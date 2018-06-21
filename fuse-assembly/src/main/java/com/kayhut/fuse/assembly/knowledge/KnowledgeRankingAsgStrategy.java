@@ -25,6 +25,7 @@ import javaslang.collection.Stream;
 import javaslang.control.Option;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema.IndexingSchema.Type.exact;
 
@@ -51,8 +52,6 @@ import static com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema.
  * regular props represent the filter section of the query.
  */
 public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrategy<EPropGroup> {
-
-
     public KnowledgeRankingAsgStrategy(RuleBoostProvider boostProvider, OntologyProvider ontologyProvider, GraphElementSchemaProviderFactory schemaProviderFactory) {
         this.boostProvider = boostProvider;
         this.ontologyProvider = ontologyProvider;
@@ -91,24 +90,31 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
             if (!fieldProp.isEmpty()) {
                 Option<EProp> stringValue = Stream.ofAll(eProp.geteBase().getProps()).find(p -> p.getpType().equals("stringValue") &&
                         this.constraintOps.contains(p.getCon().getOp()));
-                if (!stringValue.isEmpty()) {
-                    EPropGroup wrapperGroup = new EPropGroup(eProp.geteNum());
-                    wrapperGroup.setQuantType(QuantType.some);
-                    EProp fieldPropElm = fieldProp.get(0);
-                    fieldNames.forEach(field ->
-                            appendRanking(query, eProp, new AsgEBase<>(wrapperGroup),
-                                    EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), new Constraint(ConstraintOp.eq, field)),
-                                    stringValue.get()));
-                    eProp.geteBase().getGroups().add(wrapperGroup);
-                    if (fieldPropElm.getCon().getExpr().toString().equals("nicknames")) {
-                        eProp.geteBase().getProps().remove(fieldPropElm);
-                        eProp.geteBase().getProps().add(EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), Constraint.of(ConstraintOp.inSet, fieldNames.toJavaList())));
-                    }
+                if (!stringValue.isEmpty() ) {
+                    if(!stringValue.get().getCon().getExpr().toString().matches("[*\\s]*")) {
+                        EPropGroup wrapperGroup = new EPropGroup(eProp.geteNum());
+                        wrapperGroup.setQuantType(QuantType.some);
+                        EProp fieldPropElm = fieldProp.get(0);
+                        fieldNames.forEach(field ->
+                                appendRanking(query, eProp, new AsgEBase<>(wrapperGroup),
+                                        EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), new Constraint(ConstraintOp.eq, field)),
+                                        stringValue.get()));
+                        eProp.geteBase().getGroups().add(wrapperGroup);
+                        if (fieldPropElm.getCon().getExpr().toString().equals("nicknames")) {
+                            eProp.geteBase().getProps().remove(fieldPropElm);
+                            eProp.geteBase().getProps().add(EProp.of(fieldPropElm.geteNum(), fieldPropElm.getpType(), Constraint.of(ConstraintOp.inSet, fieldNames.toJavaList())));
+                        }
 
-                    //up-most filter
-                    Iterable<EProp> newEprops = applyLikeAndEqRules(stringValue.get(), eProp, query);
-                    eProp.geteBase().getProps().remove(stringValue.get());
-                    newEprops.forEach(e -> eProp.geteBase().getProps().add(e));
+                        //up-most filter
+                        Iterable<EProp> newEprops = applyLikeAndEqRules(stringValue.get(), eProp, query);
+                        eProp.geteBase().getProps().remove(stringValue.get());
+                        newEprops.forEach(e -> eProp.geteBase().getProps().add(e));
+                    }
+                    else{
+                        Iterable<EProp> newEprops = applyLikeAndEqRules(stringValue.get(), eProp, query);
+                        eProp.geteBase().getProps().remove(stringValue.get());
+                        newEprops.forEach(e -> eProp.geteBase().getProps().add(e));
+                    }
                 }
 
             }
@@ -231,7 +237,8 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
 
         EPropGroup groupRule2Score = new ScoreEPropGroup(stringValue.geteNum(), boostProvider.getBoost(fieldProp, 4));
         groupRule2Score.setQuantType(QuantType.some);
-        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0).toJavaList();
+        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0)
+                .map(w -> w.length() > 10 ? w.substring(0,10): w).toJavaList();
         groupRule2Score.getProps().add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.inSet, terms)));
         group.getGroups().add(groupRule2Score);
         return group;
@@ -281,7 +288,8 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
 
         EPropGroup groupRule2Score = new ScoreEPropGroup(stringValue.geteNum(), boostProvider.getBoost(fieldProp, ruleIndex));
         groupRule2Score.setQuantType(QuantType.all);
-        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0).toJavaList();
+        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0)
+                .map(w -> w.length() > 10 ? w.substring(0,10): w).toJavaList();
         groupRule2Score.getProps().add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.inSet, terms)));
         ruleGroup.getGroups().add(groupRule2Score);
         return ruleGroup;
@@ -333,7 +341,8 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
 
         EPropGroup groupRule2Score = new ScoreEPropGroup(stringValue.geteNum(), boostProvider.getBoost(fieldProp, ruleIndex));
         groupRule2Score.setQuantType(QuantType.all);
-        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0).toJavaList();
+        List<String> terms = Stream.ofAll(Arrays.asList(stringValue.getCon().getExpr().toString().trim().replace("*", " ").split("\\s"))).filter(w -> w.length() > 0)
+                .map(w -> w.length() > 10 ? w.substring(0,10): w).toJavaList();
         groupRule2Score.getProps().add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.inSet, terms)));
         ruleGroup.getGroups().add(groupRule2Score);
         return ruleGroup;
@@ -346,7 +355,17 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
         Ontology.Accessor ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt()).get());
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(ont.get());
 
-        EProp adjustedStringValue = new ScoreEProp(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.eq, stringValue.getCon().getExpr().toString().replace("*", " ").trim()), boostProvider.getBoost(fieldProp, 1));
+        String[] stringValueParts = stringValue.getCon().getExpr().toString().split("\\*");
+        StringJoiner joiner = new StringJoiner(" ");
+        for (String stringValuePart : stringValueParts) {
+            if(stringValuePart.length() > 0) {
+                joiner.add(stringValuePart);
+            }
+        }
+
+        String stringValueEquals = joiner.toString();
+
+        EProp adjustedStringValue = new ScoreEProp(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.eq, stringValueEquals), boostProvider.getBoost(fieldProp, 1));
         String schematicName = equalsField(parentGroup, schemaProvider, ont, stringValue.getpType());
         if (schematicName != null) {
             adjustedStringValue = new SchematicRankedEProp(adjustedStringValue.geteNum(), adjustedStringValue.getpType(), schematicName, adjustedStringValue.getCon(), boostProvider.getBoost(fieldProp, 1));

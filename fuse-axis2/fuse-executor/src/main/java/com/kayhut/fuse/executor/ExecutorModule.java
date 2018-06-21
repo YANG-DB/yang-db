@@ -232,6 +232,10 @@ public class ExecutorModule extends ModuleBase {
         configuration.setElasticGraphMaxSearchSize(conf.getLong("elasticsearch.max_search_size"));
         configuration.setElasticGraphScrollSize(conf.getInt("elasticsearch.scroll_size"));
         configuration.setElasticGraphScrollTime(conf.getInt("elasticsearch.scroll_time"));
+
+        configuration.setClientTransportIgnoreClusterName(conf.hasPath("client.transport.ignore_cluster_name") &&
+                conf.getBoolean("client.transport.ignore_cluster_name"));
+        
         return configuration;
     }
 

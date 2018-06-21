@@ -12,6 +12,12 @@ import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Assignment {
+    //region Constructors
+    public Assignment() {
+        this.entities = Collections.emptyList();
+        this.relationships = Collections.emptyList();
+    }
+    //endregion
 
     //region Properties
     public List<Relationship> getRelationships ()

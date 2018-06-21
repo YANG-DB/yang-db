@@ -1,17 +1,14 @@
 package com.kayhut.fuse.assembly.knowlegde;
 
-import com.cedarsoftware.util.io.JsonObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
-import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
-import io.swagger.util.Json;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -23,6 +20,8 @@ import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequ
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -34,8 +33,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -47,6 +44,8 @@ import java.util.*;
  */
 public class KnowledgeDataInfraManager  {
     private static final Logger logger = LoggerFactory.getLogger(KnowledgeDataInfraManager.class);
+    public static final String ENTITY = "entity";
+    public static final String PGE = "pge";
 
     private TransportClient client;
     private SimpleDateFormat sdf;
@@ -64,6 +63,14 @@ public class KnowledgeDataInfraManager  {
         } catch (Exception exc) {
 
         }
+    }
+
+    public TransportClient getClient() {
+        return client;
+    }
+
+    public RawSchema getSchema() {
+        return schema;
     }
 
     public void client_connect() {
@@ -107,6 +114,32 @@ public class KnowledgeDataInfraManager  {
 
         return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
     }
+
+    public long init(TransportClient externalClient) throws IOException {
+        String workingDir = System.getProperty("user.dir");
+        File templates = Paths.get(workingDir, "resources", "assembly", "Knowledge", "indexTemplates").toFile();
+        File[] templateFiles = templates.listFiles();
+        if (templateFiles != null) {
+            for (File templateFile : templateFiles) {
+                String templateName = FilenameUtils.getBaseName(templateFile.getName());
+                String template = FileUtils.readFileToString(templateFile, "utf-8");
+                if (!externalClient.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
+                    externalClient.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet();
+                }
+                externalClient.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet();
+            }
+        }
+
+        Iterable<String> allIndices = schema.indices();
+
+        Stream.ofAll(allIndices)
+                .filter(index -> externalClient.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
+                .forEach(index -> externalClient.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
+        Stream.ofAll(allIndices).forEach(index -> externalClient.admin().indices().create(new CreateIndexRequest(index)).actionGet());
+
+        return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
+    }
+
 
     public long drop() throws IOException {
         Iterable<String> indices = schema.indices();
@@ -154,14 +187,14 @@ public class KnowledgeDataInfraManager  {
         _references.add(_mapper.writeValueAsString(ref));
     }
 
-    private final String cEntity = "entity";
+    private final String cEntity = ENTITY;
     private List<String> _entities;
 
     private void PrepareEntityValues() throws JsonProcessingException {
         _entities = new ArrayList<String>();
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cEntity);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat("entity"), 1));
+        on.put("logicalId", "e" + String.format(schema.getIdFormat(ENTITY), 1));
         on.put("context", "context1");
         on.put("category", "person");
         on.put("authorizationCount", 1);
@@ -183,7 +216,7 @@ public class KnowledgeDataInfraManager  {
 
         on = _mapper.createObjectNode();
         on.put("type", cEntity);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat("entity"), 2));
+        on.put("logicalId", "e" + String.format(schema.getIdFormat(ENTITY), 2));
         on.put("context", "context1");
         on.put("category", "person");
         on.put("authorizationCount", 1);
@@ -225,18 +258,18 @@ public class KnowledgeDataInfraManager  {
         _outRelations = new ArrayList<>();
         _relationValues = new ArrayList<>();
 
-        String p1Identity = "e" + String.format(schema.getIdFormat("entity"), 1) + ".context1";
-        String p2Identity = "e" + String.format(schema.getIdFormat("entity"), 2) + ".context1";
+        String p1Identity = "e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1";
+        String p2Identity = "e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1";
 
         // Relation 1
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cRelation);
         on.put("entityAId", p1Identity);
         on.put("entityACategory", "person");
-        on.put("entityALogicalId", "e" + String.format(schema.getIdFormat("entity"), 1));
+        on.put("entityALogicalId", "e" + String.format(schema.getIdFormat(ENTITY), 1));
         on.put("entityBId", p2Identity);
         on.put("entityBCategory", "person");
-        on.put("entityBLogicalId", "e" + String.format(schema.getIdFormat("entity"), 2));
+        on.put("entityBLogicalId", "e" + String.format(schema.getIdFormat(ENTITY), 2));
         on.put("context", "context1");
         on.put("category", "friendOf");
         on.put("authorizationCount", 1);
@@ -296,12 +329,12 @@ public class KnowledgeDataInfraManager  {
         // Relation 2
         on = _mapper.createObjectNode();
         on.put("type", cRelation);
-        on.put("entityAId", "e" + String.format(schema.getIdFormat("entity"), 1) + ".context1");
+        on.put("entityAId", "e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
         on.put("entityACategory", "person");
-        on.put("entityALogicalId", "e" + String.format(schema.getIdFormat("entity"), 1));
-        on.put("entityBId", "e" + String.format(schema.getIdFormat("entity"), 2) + ".context1");
+        on.put("entityALogicalId", "e" + String.format(schema.getIdFormat(ENTITY), 1));
+        on.put("entityBId", "e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1");
         on.put("entityBCategory", "person");
-        on.put("entityBLogicalId", "e" + String.format(schema.getIdFormat("entity"), 2));
+        on.put("entityBLogicalId", "e" + String.format(schema.getIdFormat(ENTITY), 2));
         on.put("context", "context1");
         on.put("category", "siblingOf");
         on.put("authorizationCount", 1);
@@ -403,8 +436,8 @@ public class KnowledgeDataInfraManager  {
 
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cEntityValue);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat("entity"), 1));
-        on.put("entityId", "e" + String.format(schema.getIdFormat("entity"), 1) + ".context1");
+        on.put("logicalId", "e" + String.format(schema.getIdFormat(ENTITY), 1));
+        on.put("entityId", "e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
         on.put("context", "context1");
         on.put("authorizationCount", 1);
         on.put("fieldId", "nicknames");
@@ -426,8 +459,8 @@ public class KnowledgeDataInfraManager  {
 
         on = _mapper.createObjectNode();
         on.put("type", cEntityValue);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat("entity"), 2));
-        on.put("entityId", "e" + String.format(schema.getIdFormat("entity"), 2) + ".context1");
+        on.put("logicalId", "e" + String.format(schema.getIdFormat(ENTITY), 2));
+        on.put("entityId", "e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1");
         on.put("context", "context1");
         on.put("authorizationCount", 1);
         on.put("fieldId", "nicknames");
@@ -448,8 +481,8 @@ public class KnowledgeDataInfraManager  {
 
         on = _mapper.createObjectNode();
         on.put("type", cEntityValue);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat("entity"), 2));
-        on.put("entityId", "e" + String.format(schema.getIdFormat("entity"), 2) + ".context1");
+        on.put("logicalId", "e" + String.format(schema.getIdFormat(ENTITY), 2));
+        on.put("entityId", "e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1");
         on.put("context", "context1");
         on.put("authorizationCount", 1);
         on.put("fieldId", "age");
@@ -484,7 +517,7 @@ public class KnowledgeDataInfraManager  {
         on.put("context", "context1");
 
         ArrayNode entityIds = _mapper.createArrayNode();
-        entityIds.add("e" + String.format(schema.getIdFormat("entity"), 1) + ".context1");
+        entityIds.add("e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
 
         on.put("entityIds", entityIds);
 
@@ -508,7 +541,7 @@ public class KnowledgeDataInfraManager  {
         on = _mapper.createObjectNode();
         on.put("type", "e.insight");
         on.put("insightId", insightId);
-        on.put("entityId","e" + String.format(schema.getIdFormat("entity"), 1) + ".context1");
+        on.put("entityId","e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
         _insightsEntities.add(_mapper.writeValueAsString(on));
 
         on = _mapper.createObjectNode();
@@ -517,8 +550,8 @@ public class KnowledgeDataInfraManager  {
         on.put("context", "context1");
 
         entityIds = _mapper.createArrayNode();
-        entityIds.add("e" + String.format(schema.getIdFormat("entity"), 1) + ".context1");
-        entityIds.add("e" + String.format(schema.getIdFormat("entity"), 2) + ".context1");
+        entityIds.add("e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
+        entityIds.add("e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1");
 
         on.put("entityIds", entityIds);
 
@@ -543,17 +576,17 @@ public class KnowledgeDataInfraManager  {
         on = _mapper.createObjectNode();
         on.put("type", "e.insight");
         on.put("insightId", insightId);
-        on.put("entityId","e" + String.format(schema.getIdFormat("entity"), 1) + ".context1");
+        on.put("entityId","e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
         _insightsEntities.add(_mapper.writeValueAsString(on));
         on = _mapper.createObjectNode();
         on.put("type", "e.insight");
         on.put("insightId", insightId);
-        on.put("entityId","e" + String.format(schema.getIdFormat("entity"), 2) + ".context1");
+        on.put("entityId","e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1");
         _insightsEntities.add(_mapper.writeValueAsString(on));
     }
 
     private final String cReference = "reference";
-    private final String cIndexType = "pge";
+    private final String cIndexType = PGE;
 
     private void BulkLoadInsights() {
         BulkRequestBuilder bulk = client.prepareBulk();
@@ -571,7 +604,7 @@ public class KnowledgeDataInfraManager  {
         List<Integer> insightsIds = Arrays.asList(1,2,2);
         List<Integer> entityLogicalIds = Arrays.asList(1,1,2);
         for(int i=0; i<_insightsEntities.size(); i++) {
-            String logicalEntId = "e" + String.format(schema.getIdFormat("entity"), entityLogicalIds.get(i));
+            String logicalEntId = "e" + String.format(schema.getIdFormat(ENTITY), entityLogicalIds.get(i));
             String insightId = "i" + String.format(schema.getIdFormat(cInsight), insightsIds.get(i));
             String logicalEntityIndex =
                     Stream.ofAll(schema.getPartitions(cEntity)).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
@@ -595,24 +628,34 @@ public class KnowledgeDataInfraManager  {
         bulk.execute();
     }
 
+    public void insertEntities(String index, RawSchema schema, Client client, BulkRequestBuilder bulk, List<String> entities ) {
+
+        for(int i = 0; i < entities.size(); i++) {
+            String mylogicalId = "e" + String.format(schema.getIdFormat(ENTITY), i);
+
+            IndexRequestBuilder request = client.prepareIndex()
+                    .setIndex(index)
+                    .setType(PGE)
+                    .setId(mylogicalId + "." + "context1")
+                    .setOpType(IndexRequest.OpType.INDEX)
+                    .setRouting(mylogicalId)
+                    .setSource(entities.get(i), XContentType.JSON);
+            bulk.add(request).get();
+        }
+
+    }
+
     private void BulkLoadEntitiesAndEntityValues() {
         BulkRequestBuilder bulk = client.prepareBulk();
-
-        String index = Stream.ofAll(schema.getPartitions(cEntity)).map(partition -> (IndexPartitions.Partition.Range) partition)
-                .filter(partition -> partition.isWithin("e" + String.format(schema.getIdFormat(cEntity), 1))).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-
-        for(int i=1; i<=_entities.size(); i++) {
-            String mylogicalId = "e" + String.format(schema.getIdFormat(cEntity), i);
-
-            bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId(mylogicalId + "." + "context1")
-                    .setOpType(IndexRequest.OpType.INDEX).setRouting(mylogicalId)
-                    .setSource(_entities.get(i-1), XContentType.JSON)).get();
-        }
+        String index = Stream.ofAll(schema.getPartitions(ENTITY)).map(partition -> (IndexPartitions.Partition.Range) partition)
+                .filter(partition -> partition.isWithin("e" + String.format(schema.getIdFormat(ENTITY), 1))).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
         List<Integer> evalues = Arrays.asList(1,2,2);
 
+        insertEntities(index,schema,client,bulk,_entities);
+
         for(int i=1; i<=_entitiesValues.size(); i++) {
-            String logicalId = "e" + String.format(schema.getIdFormat("entity"), evalues.get(i-1));
+            String logicalId = "e" + String.format(schema.getIdFormat(ENTITY), evalues.get(i-1));
             bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId("ev" + i)
                     .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                     .setSource(_entitiesValues.get(i-1), XContentType.JSON)).get();

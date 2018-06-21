@@ -175,11 +175,11 @@
             </plugin>
         </plugins>
 
-        <resources>
+        <!--<resources>
             <resource>
                 <directory>resources</directory>
             </resource>
-        </resources>
+        </resources>-->
 
     </build>
 

@@ -70,9 +70,7 @@ public class ConstraintExpCharEscapeTransformationAsgStrategy extends Constraint
             for (int i = 0; i < ((String) s).length(); i++) {
                 char c = ((String) s).charAt(i);
                 // These characters are part of the query syntax and must be escaped
-                if (c == '\\' || c == '+' || c == '-' || c == '!' || c == '(' || c == ')' || c == ':'
-                        || c == '^' || c == '[' || c == ']' || c == '\"' || c == '{' || c == '}' || c == '~'
-                        /* || c == '*' */ || c == '?' || c == '|' || c == '&' || c == '/') {
+                if ( c == '?' || c == '\\') {
                     sb.append('\\');
                 }
                 sb.append(c);
