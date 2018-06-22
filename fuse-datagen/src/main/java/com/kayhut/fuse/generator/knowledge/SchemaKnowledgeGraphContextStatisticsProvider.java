@@ -5,10 +5,14 @@ import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.metrics.cardinality.Cardinality;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +37,8 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
         fillRelationCategoriesAndReferencesContextStatistics(contextStatistics, context);
         fillRelationFieldValueAndReferencesContextStatistics(contextStatistics, context);
         fillInsightEntitiesAndReferencesContextStatistics(contextStatistics, context);
+
+        contextStatistics.setDistinctNumReferences(getDistintcNumReferences(context));
 
         return contextStatistics;
     }
@@ -227,6 +233,20 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                 Stream.ofAll(hits)
                         .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.sourceAsMap().get("refs")).size())
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
+    }
+
+    private long getDistintcNumReferences(String context) {
+        SearchResponse response = this.client.prepareSearch()
+                .setIndices(String.join(",", this.schema.getEntityIndex(), this.schema.getRelationIndex(), this.schema.getInsightIndex()))
+                .setQuery(boolQuery().filter(boolQuery()
+                        .must(termsQuery("type", Arrays.asList("entity", "e.value", "relation", "r.value", "insight")))
+                        .must(termQuery("context", context))
+                        .mustNot(existsQuery("deleteTime"))))
+                .addAggregation(AggregationBuilders.cardinality("countDistinctRefs").field("refs").precisionThreshold(40000))
+                .execute().actionGet();
+
+        Cardinality cardinality = response.getAggregations().get("a");
+        return cardinality.getValue();
     }
     //endregion
 

@@ -130,6 +130,14 @@ public class ContextStatistics {
     public void setInsightReferenceCounts(Map<Integer, Integer> insightReferenceCounts) {
         this.insightReferenceCounts = insightReferenceCounts;
     }
+
+    public long getDistinctNumReferences() {
+        return distinctNumReferences;
+    }
+
+    public void setDistinctNumReferences(long distinctNumReferences) {
+        this.distinctNumReferences = distinctNumReferences;
+    }
     //endregion
 
     //region Fields
@@ -150,5 +158,7 @@ public class ContextStatistics {
     private Map<Integer, Integer> relationReferenceCounts;
     private Map<Integer, Integer> relationValueReferenceCounts;
     private Map<Integer, Integer> insightReferenceCounts;
+
+    private long distinctNumReferences;
     //endregion
 }
