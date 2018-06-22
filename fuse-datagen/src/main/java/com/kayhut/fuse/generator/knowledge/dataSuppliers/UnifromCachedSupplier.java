@@ -1,6 +1,7 @@
 package com.kayhut.fuse.generator.knowledge.dataSuppliers;
 
-import java.util.ArrayList;
+import javaslang.collection.Stream;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,13 +10,13 @@ import java.util.function.Supplier;
 /**
  * Created by Roman on 6/22/2018.
  */
-public class CachedSupplier<T> extends RandomDataSupplier<T> {
+public class UnifromCachedSupplier<T> extends RandomDataSupplier<T> {
     //region Constructors
-    public CachedSupplier(Supplier<T> supplier, int maxCacheSize) {
+    public UnifromCachedSupplier(Supplier<T> supplier, int maxCacheSize) {
         this(supplier, maxCacheSize, 0);
     }
 
-    public CachedSupplier(Supplier<T> supplier, int maxCacheSize, long seed) {
+    public UnifromCachedSupplier(Supplier<T> supplier, int maxCacheSize, long seed) {
         super(seed);
         this.supplier = supplier;
         this.maxCacheSize = maxCacheSize;
@@ -26,7 +27,19 @@ public class CachedSupplier<T> extends RandomDataSupplier<T> {
     //region RandomDataSupplier Implementation
     @Override
     public T get() {
+        if (this.cacheSet.size() == maxCacheSize) {
+            this.cacheList = Stream.ofAll(this.cacheSet).toJavaList();
+            this.cacheSet = null;
+        }
 
+        if (this.cacheList != null) {
+            return this.cacheList.get(this.random.nextInt(this.cacheList.size()));
+        }
+
+        T item = this.supplier.get();
+        this.cacheSet.add(item);
+
+        return item;
     }
     //endregion
 
