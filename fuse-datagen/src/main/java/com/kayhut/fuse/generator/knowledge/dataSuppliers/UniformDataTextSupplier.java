@@ -21,31 +21,48 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 public class UniformDataTextSupplier extends RandomDataSupplier<String> {
     //region Constructors
     public UniformDataTextSupplier(Client client, String type, String fieldName, String index, int maxNumWords) {
-        this(client, type, fieldName, index, maxNumWords, 0);
+        this(client, type, fieldName, null, index, maxNumWords, 0);
     }
 
     public UniformDataTextSupplier(Client client, String type, String fieldName, String index, int maxNumWords, long seed) {
+        this(client, type, fieldName, null, index, maxNumWords, seed);
+    }
+
+    public UniformDataTextSupplier(Client client, String type, String fieldName, String context, String index, int maxNumWords) {
+        this(client, type, fieldName, index, maxNumWords, 0);
+    }
+
+    public UniformDataTextSupplier(Client client, String type, String fieldName, String context, String index, int maxNumWords, long seed) {
         super(seed);
         SearchHitScrollIterable hits = new SearchHitScrollIterable(
                 client,
-        client.prepareSearch().setIndices(index)
-                .setQuery(boolQuery().filter(
-                        boolQuery()
-                            .must(termQuery("type", type))
-                            .must(existsQuery(fieldName))
-                            .mustNot(existsQuery("deleteTime"))))
-                .setFetchSource(fieldName, null),
+                context != null ?
+                        client.prepareSearch().setIndices(index)
+                        .setQuery(boolQuery().filter(
+                                boolQuery()
+                                        .must(termQuery("type", type))
+                                        .must(existsQuery(fieldName))
+                                        .mustNot(existsQuery("deleteTime"))))
+                        .setFetchSource(fieldName, null) :
+                        client.prepareSearch().setIndices(index)
+                                .setQuery(boolQuery().filter(
+                                        boolQuery()
+                                                .must(termQuery("type", type))
+                                                .must(termQuery("context", context))
+                                                .must(existsQuery(fieldName))
+                                                .mustNot(existsQuery("deleteTime"))))
+                                .setFetchSource(fieldName, null),
                 new DefaultSearchOrderProvider().build(null),
                 1000000000,
                 1000,
                 60000);
 
         Set<String> wordSet = new HashSet<>();
-        for(SearchHit hit : hits) {
-            String fieldValue = (String)hit.sourceAsMap().get(fieldName);
+        for (SearchHit hit : hits) {
+            String fieldValue = (String) hit.sourceAsMap().get(fieldName);
             List<String> words = Stream.of(fieldValue.split(" ")).map(String::trim).toJavaList();
 
-            for(String word : words) {
+            for (String word : words) {
                 wordSet.add(word);
                 if (wordSet.size() == maxNumWords) {
                     break;

@@ -46,7 +46,7 @@ public class KnowledgeContextReferenceDataGenerator implements KnowledgeGraphGen
         }
 
         List<ElasticDocument<KnowledgeEntityBase>> references = new ArrayList<>();
-        while(this.numGenerated < this.numToGenerate) {
+        while(this.numGenerated < this.numToGenerate && references.size() < 1000) {
             references.add(new ElasticDocument<>(
                     this.generationContext.getElasticConfiguration().getWriteSchema().getReferenceIndex(),
                     "pge",

@@ -40,7 +40,7 @@ public class KnowledgeContextEntityDataGenerator implements KnowledgeGraphGenera
         }
 
         List<ElasticDocument<KnowledgeEntityBase>> entities = new ArrayList<>();
-        while(this.numGenerated < this.numToGenerate) {
+        while(this.numGenerated < this.numToGenerate && entities.size() < 1000) {
             String logicalId = this.logicalIdSupplier.get();
             String context = this.generationContext.getContextGenerationConfiguration().getToContext();
 

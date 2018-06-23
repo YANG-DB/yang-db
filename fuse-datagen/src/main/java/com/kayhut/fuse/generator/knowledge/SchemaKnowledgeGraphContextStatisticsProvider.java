@@ -99,6 +99,31 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                         .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.sourceAsMap().get("refs")).size())
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
 
+        contextStatistics.setEntityFieldTypes(
+                Stream.ofAll(hits)
+                    .groupBy(hit -> (String)hit.sourceAsMap().get("fieldId"))
+                        .toJavaMap(grouping -> {
+                            SearchHit hit = grouping._2().get(0);
+                            String type = null;
+                            if (hit.sourceAsMap().containsKey("stringValue")) {
+                                type = "stringValue";
+                            } else if (hit.sourceAsMap().containsKey("intValue")) {
+                                type = "intValue";
+                            } else if (hit.sourceAsMap().containsKey("dateValue")) {
+                                type = "dateValue";
+                            }
+
+                            return new Tuple2(grouping._1(), type);
+                        }));
+        contextStatistics.getEntityFieldTypes().put("title", "stringValue");
+        contextStatistics.getEntityFieldTypes().put("nicknames", "stringValue");
+
+        // add zero field counts
+        int numEntitiesInContext = Stream.ofAll(contextStatistics.getEntityCategories().values()).sum().intValue();
+        Stream.ofAll(contextStatistics.getEntityFieldTypes().keySet())
+                .map(fieldId -> new Tuple2<>(fieldId, contextStatistics.getEntityValueCounts().get(fieldId).size()))
+                .forEach(tuple -> contextStatistics.getEntityValueCounts().get(tuple._1()).put(0, numEntitiesInContext - tuple._2()));
+
         List<String> logicalIds = Stream.ofAll(hits).map(hit -> (String)hit.sourceAsMap().get("logicalId")).distinct().toJavaList();
         hits = Stream.ofAll(
                 new SearchHitScrollIterable(

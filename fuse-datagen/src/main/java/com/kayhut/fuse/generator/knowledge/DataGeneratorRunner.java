@@ -2,10 +2,11 @@ package com.kayhut.fuse.generator.knowledge;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.generator.knowledge.dataSuppliers.*;
-import com.kayhut.fuse.generator.knowledge.idSuppliers.PrefixIdSupplier;
+import com.kayhut.fuse.generator.knowledge.idSuppliers.FormatIdSupplier;
 import com.kayhut.fuse.generator.knowledge.model.Entity;
 import com.kayhut.fuse.generator.knowledge.model.KnowledgeEntityBase;
 import com.kayhut.fuse.generator.knowledge.model.Reference;
+import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
@@ -75,10 +76,18 @@ public class DataGeneratorRunner {
             elasticWriter.write(knowledgeDocuments);
             knowledgeDocuments = generator.generate(null);
         }
+
+        //generate entity context values
+        generator = getContextEntityValueGenerator(client, elasticConfiguration, generationContext, logicalIdsInvolved, referenceIds);
+        knowledgeDocuments = generator.generate(null);
+        while (!Stream.ofAll(knowledgeDocuments).isEmpty()) {
+            elasticWriter.write(knowledgeDocuments);
+            knowledgeDocuments = generator.generate(null);
+        }
     }
 
     private static KnowledgeGraphGenerator<Object> getReferenceGenerator(Client client, ElasticConfiguration elasticConfiguration, GenerationContext generationContext) {
-        Supplier<String> referenceIdSupplier = new PrefixIdSupplier("ref", 1000000, 2000000, elasticConfiguration.getWriteSchema());
+        Supplier<String> referenceIdSupplier = new FormatIdSupplier("ref" + elasticConfiguration.getWriteSchema().getIdFormat(), 1000000, 2000000);
         Supplier<Date> metadataDateSupplier = new UnifromBoundedDateSupplier(
                 System.currentTimeMillis() - (long) (1000L * 60L * 60L * 24L * 30L),
                 System.currentTimeMillis());
@@ -128,7 +137,18 @@ public class DataGeneratorRunner {
             ElasticConfiguration elasticConfiguration,
             GenerationContext generationContext,
             List<String> referenceIds) {
-        Supplier<String> logicalIdSupplier = new PrefixIdSupplier("e", 1000000, 2000000, elasticConfiguration.getWriteSchema());
+        String fromContext = generationContext.getContextGenerationConfiguration().getFromContext();
+
+        Supplier<String> logicalIdSupplier = new ProbabilisticCompositeSupplier<>(
+                new UniformDataTextSupplier(
+                        client,
+                        "entity",
+                        "logicalId",
+                        fromContext,
+                        generationContext.getElasticConfiguration().getReadSchema().getEntityIndex(),
+                        100000),
+                generationContext.getContextGenerationConfiguration().getEntityOverlapFactor(),
+                new FormatIdSupplier("e" + elasticConfiguration.getWriteSchema().getIdFormat(), 1000000, 2000000));
 
         Supplier<String> categorySupplier = new UnifromCachedSupplier<>(
                 Stream.ofAll(generationContext.getContextStatistics().getEntityCategories().entrySet())
@@ -159,6 +179,71 @@ public class DataGeneratorRunner {
                 logicalIdSupplier,
                 categorySupplier,
                 metadataSupplier);
+    }
+
+    private static KnowledgeGraphGenerator<Object> getContextEntityValueGenerator(
+            Client client,
+            ElasticConfiguration elasticConfiguration,
+            GenerationContext generationContext,
+            List<String> logicalIds,
+            List<String> referenceIds) {
+
+        String fromContext = generationContext.getContextGenerationConfiguration().getFromContext();
+
+        Supplier<String> entityValueIdSupplier = new FormatIdSupplier("ev" + elasticConfiguration.getWriteSchema().getIdFormat(), 1000000, 2000000);
+        Supplier<String> logicalIdSupplier = new OrderedSupplier<>(logicalIds);
+
+        Supplier<String> nameSupplier = new UnifromCachedSupplier<>(new NameSupplier(4, 12), 1000);
+        Supplier<Date> metadataDateSupplier = new UnifromBoundedDateSupplier(
+                System.currentTimeMillis() - (long) (1000L * 60L * 60L * 24L * 30L),
+                System.currentTimeMillis());
+        Supplier<Iterable<String>> refsSupplier = new IterableSupplier<>(
+                new UnifromCachedSupplier<>(referenceIds),
+                new UnifromCachedSupplier<>(
+                        Stream.ofAll(generationContext.getContextStatistics().getEntityValueReferenceCounts().entrySet())
+                                .sortBy(Map.Entry::getValue)
+                                .flatMap(entry -> Stream.fill(entry.getValue(), entry::getKey))
+                                .toJavaList()));
+
+        Supplier<KnowledgeEntityBase.Metadata> metadataSupplier = new MetadataSupplier(
+                metadataDateSupplier,
+                nameSupplier,
+                refsSupplier);
+
+        Map<String, Supplier<Integer>> fieldNumValuesSuppliers =
+                Stream.ofAll(generationContext.getContextStatistics().getEntityValueCounts().entrySet())
+                    .toJavaMap(entry -> new Tuple2<String, Supplier<Integer>>(
+                            entry.getKey(),
+                            new UnifromCachedSupplier<Integer>(
+                                    Stream.ofAll(entry.getValue().entrySet())
+                                            .sortBy(Map.Entry::getValue)
+                                            .flatMap(entry1 -> Stream.fill(entry1.getValue(), entry1::getKey))
+                                            .toJavaList())));
+
+        Map<String, Supplier> fieldValuesSupplier =
+                Stream.ofAll(generationContext.getContextStatistics().getEntityValueCounts().entrySet())
+                .toJavaMap(entry -> new Tuple2<String, Supplier<Object>>(
+                        entry.getKey(),
+                        new ProbabilisticCompositeSupplier(
+                                new UniformFieldDataSupplier<>(
+                                        client,
+                                        "e.value",
+                                        entry.getKey(),
+                                        fromContext,
+                                        elasticConfiguration.getReadSchema().getEntityIndex(),
+                                        100000),
+                                generationContext.getContextGenerationConfiguration().getEntityValueOverlapFactor(),
+                                () -> (Object)null) //TODO
+                        ));
+
+        return new KnowledgeContextEntityValueDataGenerator(
+                client,
+                generationContext,
+                entityValueIdSupplier,
+                logicalIdSupplier,
+                metadataSupplier,
+                fieldNumValuesSuppliers,
+                fieldValuesSupplier);
     }
 
     private static Client getClient(ElasticConfiguration elasticConfiguration) throws UnknownHostException {
