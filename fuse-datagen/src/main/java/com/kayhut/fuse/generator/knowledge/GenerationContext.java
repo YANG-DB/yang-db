@@ -5,25 +5,45 @@ package com.kayhut.fuse.generator.knowledge;
  */
 public class GenerationContext {
     //region Constructors
-    public GenerationContext(ContextGenerationConfiguration configuration, ContextStatistics contextStatistics) {
-        this.configuration = configuration;
+    public GenerationContext(
+            ElasticConfiguration elasticConfiguration,
+            ContextGenerationConfiguration contextGenerationConfiguration,
+            ContextStatistics contextStatistics) {
+        this.elasticConfiguration = elasticConfiguration;
+        this.contextGenerationConfiguration = contextGenerationConfiguration;
         this.contextStatistics = contextStatistics;
     }
     //endregion
 
     //region Properties
+    public ElasticConfiguration getElasticConfiguration() {
+        return elasticConfiguration;
+    }
 
-    public ContextGenerationConfiguration getConfiguration() {
-        return configuration;
+    public void setElasticConfiguration(ElasticConfiguration elasticConfiguration) {
+        this.elasticConfiguration = elasticConfiguration;
+    }
+
+    public ContextGenerationConfiguration getContextGenerationConfiguration() {
+        return contextGenerationConfiguration;
+    }
+
+    public void setContextGenerationConfiguration(ContextGenerationConfiguration contextGenerationConfiguration) {
+        this.contextGenerationConfiguration = contextGenerationConfiguration;
     }
 
     public ContextStatistics getContextStatistics() {
         return contextStatistics;
     }
+
+    public void setContextStatistics(ContextStatistics contextStatistics) {
+        this.contextStatistics = contextStatistics;
+    }
     //endregion
 
     //region Fields
-    private ContextGenerationConfiguration configuration;
+    private ElasticConfiguration elasticConfiguration;
+    private ContextGenerationConfiguration contextGenerationConfiguration;
     private ContextStatistics contextStatistics;
     //endregion
 }

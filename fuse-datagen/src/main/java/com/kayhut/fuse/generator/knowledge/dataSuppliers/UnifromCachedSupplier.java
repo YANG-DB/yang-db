@@ -22,6 +22,16 @@ public class UnifromCachedSupplier<T> extends RandomDataSupplier<T> {
         this.maxCacheSize = maxCacheSize;
         this.cacheSet = new HashSet<>();
     }
+
+    public UnifromCachedSupplier(Iterable<T> cache) {
+        this(cache, 0);
+    }
+
+    public UnifromCachedSupplier(Iterable<T> cache, long seed) {
+        super(seed);
+        this.cacheSet = Stream.ofAll(cache).toJavaSet();
+        this.maxCacheSize = this.cacheSet.size();
+    }
     //endregion
 
     //region RandomDataSupplier Implementation

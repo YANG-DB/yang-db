@@ -4,7 +4,9 @@ import com.kayhut.fuse.generator.knowledge.model.KnowledgeEntityBase;
 import com.kayhut.fuse.generator.knowledge.model.Reference;
 import org.elasticsearch.client.Client;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -15,10 +17,24 @@ public class KnowledgeContextReferenceDataGenerator implements KnowledgeGraphGen
     public KnowledgeContextReferenceDataGenerator(
             Client client,
             GenerationContext generationContext,
-            Supplier<String> referenceIdSupplier) {
+            Supplier<String> referenceIdSupplier,
+            Supplier<KnowledgeEntityBase.Metadata> metadataSupplier,
+            Supplier<String> titleSupplier,
+            Supplier<String> contentSupplier,
+            Supplier<String> urlSupplier,
+            Supplier<String> systemSupplier) {
         this.client = client;
         this.generationContext = generationContext;
         this.referenceIdSupplier = referenceIdSupplier;
+        this.metadataSupplier = metadataSupplier;
+        this.titleSupplier = titleSupplier;
+        this.contentSupplier = contentSupplier;
+        this.urlSupplier = urlSupplier;
+        this.systemSupplier = systemSupplier;
+
+        this.numToGenerate = (int)Math.floor(
+                generationContext.getContextStatistics().getDistinctNumReferences() *
+                        generationContext.getContextGenerationConfiguration().getScaleFactor());
     }
     //endregion
 
@@ -29,9 +45,24 @@ public class KnowledgeContextReferenceDataGenerator implements KnowledgeGraphGen
             return Collections.emptyList();
         }
 
+        List<ElasticDocument<KnowledgeEntityBase>> references = new ArrayList<>();
+        while(this.numGenerated < this.numToGenerate) {
+            references.add(new ElasticDocument<>(
+                    this.generationContext.getElasticConfiguration().getWriteSchema().getReferenceIndex(),
+                    "pge",
+                    this.referenceIdSupplier.get(),
+                    null,
+                    new Reference(
+                            this.titleSupplier.get(),
+                            this.contentSupplier.get(),
+                            this.urlSupplier.get(),
+                            this.systemSupplier.get(),
+                            this.metadataSupplier.get())));
 
+            this.numGenerated++;
+        }
 
-        return null;
+        return references;
     }
     //endregion
 
@@ -40,6 +71,11 @@ public class KnowledgeContextReferenceDataGenerator implements KnowledgeGraphGen
     private GenerationContext generationContext;
 
     private Supplier<String> referenceIdSupplier;
+    private Supplier<KnowledgeEntityBase.Metadata> metadataSupplier;
+    private Supplier<String> titleSupplier;
+    private Supplier<String> contentSupplier;
+    private Supplier<String> urlSupplier;
+    private Supplier<String> systemSupplier;
 
     private int numGenerated;
     private int numToGenerate;
