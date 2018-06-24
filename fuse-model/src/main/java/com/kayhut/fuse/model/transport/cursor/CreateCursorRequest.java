@@ -17,6 +17,7 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
         @JsonSubTypes.Type(name = "graph", value = CreateGraphCursorRequest.class),
         @JsonSubTypes.Type(name = "graphHierarchy", value = CreateGraphHierarchyCursorRequest.class),
         @JsonSubTypes.Type(name = "csv", value = CreateCsvCursorRequest.class),
+        @JsonSubTypes.Type(name = "hierarchyFlatten", value = CreateHierarchyFlattenCursorRequest.class)
 })
 public abstract class CreateCursorRequest {
     public static final String defaultTimeout = "CreateCursorRequest.@timeout";
