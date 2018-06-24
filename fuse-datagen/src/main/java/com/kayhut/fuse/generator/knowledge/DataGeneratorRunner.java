@@ -6,6 +6,7 @@ import com.kayhut.fuse.generator.knowledge.idSuppliers.FormatIdSupplier;
 import com.kayhut.fuse.generator.knowledge.model.Entity;
 import com.kayhut.fuse.generator.knowledge.model.KnowledgeEntityBase;
 import com.kayhut.fuse.generator.knowledge.model.Reference;
+import com.kayhut.fuse.generator.knowledge.model.Relation;
 import com.kayhut.fuse.unipop.controller.search.DefaultSearchOrderProvider;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import javaslang.Tuple2;
@@ -150,6 +151,20 @@ public class DataGeneratorRunner {
                         knowledgeDocuments1 = generator1.generate(null);
                     }
                 });
+
+        // generate context relations
+        generator = getContextRelationGenerator(client, elasticConfiguration, generationContext, commonMetadataSupplier, logicalIdsInvolved);
+        List<String> relationIds = new ArrayList<>();
+        knowledgeDocuments = generator.generate(null);
+        while (!Stream.ofAll(knowledgeDocuments).isEmpty()) {
+            relationIds.addAll(Stream.ofAll(knowledgeDocuments)
+                    .filter(doc -> doc.getSource() instanceof Relation)
+                    .map(ElasticDocument::getId)
+                    .toJavaList());
+
+            elasticWriter.write(knowledgeDocuments);
+            knowledgeDocuments = generator.generate(null);
+        }
     }
 
     private static KnowledgeGraphGenerator<Object> getReferenceGenerator(Client client, ElasticConfiguration elasticConfiguration, GenerationContext generationContext) {
@@ -227,6 +242,47 @@ public class DataGeneratorRunner {
                 generationContext,
                 logicalIdSupplier,
                 categorySupplier,
+                metadataSupplier);
+    }
+
+    private static KnowledgeGraphGenerator<Object> getContextRelationGenerator(
+            Client client,
+            ElasticConfiguration elasticConfiguration,
+            GenerationContext generationContext,
+            Supplier<KnowledgeEntityBase.Metadata> metadataSupplier,
+            List<String> logicalIds) {
+
+        Supplier<String> logicalIdSupplier = new UnifromCachedSupplier<String>(logicalIds);
+        Supplier<String> relationIdSupplier = new FormatIdSupplier("r" + elasticConfiguration.getWriteSchema().getIdFormat(), 1000000, 2000000);
+
+        Supplier<String> categorySupplier = new UnifromCachedSupplier<>(
+                Stream.ofAll(generationContext.getContextStatistics().getRelationCategories().entrySet())
+                        .sortBy(Map.Entry::getValue)
+                        .flatMap(entry -> Stream.fill(entry.getValue(), entry::getKey))
+                        .toJavaList());
+
+        Supplier<Integer> numOutRelationsSupplier =
+                new UnifromCachedSupplier<>(
+                Stream.ofAll(generationContext.getContextStatistics().getEntityRelationCounts().get("out").entrySet())
+                        .sortBy(Map.Entry::getValue)
+                        .flatMap(entry1 -> Stream.fill(entry1.getValue(), entry1::getKey))
+                        .toJavaList());
+
+        Supplier<Integer> numInRelationsSupplier =
+                new UnifromCachedSupplier<>(
+                        Stream.ofAll(generationContext.getContextStatistics().getEntityRelationCounts().get("in").entrySet())
+                                .sortBy(Map.Entry::getValue)
+                                .flatMap(entry1 -> Stream.fill(entry1.getValue(), entry1::getKey))
+                                .toJavaList());
+
+        return new KnowledgeContextRelationDataGenerator(
+                client,
+                generationContext,
+                relationIdSupplier,
+                categorySupplier,
+                logicalIdSupplier,
+                numOutRelationsSupplier,
+                numInRelationsSupplier,
                 metadataSupplier);
     }
 
