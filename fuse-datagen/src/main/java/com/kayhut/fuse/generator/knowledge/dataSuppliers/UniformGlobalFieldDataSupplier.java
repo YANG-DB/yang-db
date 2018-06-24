@@ -11,20 +11,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
- * Created by Roman on 6/23/2018.
+ * Created by Roman on 6/24/2018.
  */
-public class UniformFieldDataSupplier<T> extends RandomDataSupplier<T> {
+public class UniformGlobalFieldDataSupplier<T> extends RandomDataSupplier<T> {
     //region Constructors
-    public UniformFieldDataSupplier(Client client, String type, String fieldId, String context, String index, int maxNumItems) {
-        this(client, type, fieldId, context, index, maxNumItems, 0);
+    public UniformGlobalFieldDataSupplier(Client client, String type, String fieldId, List<String> logicalIds, String index, int maxNumItems) {
+        this(client, type, fieldId, logicalIds, index, maxNumItems, 0);
     }
 
-    public UniformFieldDataSupplier(Client client, String type, String fieldId, String context, String index, int maxNumItems, long seed) {
+    public UniformGlobalFieldDataSupplier(Client client, String type, String fieldId, List<String> logicalIds, String index, int maxNumItems, long seed) {
         super(seed);
         SearchHitScrollIterable hits = new SearchHitScrollIterable(
                 client,
@@ -33,7 +31,8 @@ public class UniformFieldDataSupplier<T> extends RandomDataSupplier<T> {
                                 boolQuery()
                                         .must(termQuery("type", type))
                                         .must(termQuery("fieldId", fieldId))
-                                        .must(termQuery("context", context))
+                                        .must(termQuery("context", "global"))
+                                        .must(termsQuery("logicalId", logicalIds))
                                         .mustNot(existsQuery("deleteTime"))))
                         .setFetchSource(new String[] { "stringValue", "intValue", "dateValue" }, null),
                 new DefaultSearchOrderProvider().build(null),
@@ -43,7 +42,7 @@ public class UniformFieldDataSupplier<T> extends RandomDataSupplier<T> {
 
         Set<T> itemSet = new HashSet<>();
         for (SearchHit hit : hits) {
-            T fieldValue = (T)Stream.of(
+            T fieldValue = (T) Stream.of(
                     hit.sourceAsMap().get("stringValue"),
                     hit.sourceAsMap().get("intValue"),
                     hit.sourceAsMap().get("dateValue"))

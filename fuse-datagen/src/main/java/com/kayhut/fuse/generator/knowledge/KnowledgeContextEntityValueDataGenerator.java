@@ -18,20 +18,25 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
     KnowledgeContextEntityValueDataGenerator(
             Client client,
             GenerationContext generationContext,
+            String fieldId,
+            String context,
             Supplier<String> entityValueIdSupplier,
             Supplier<String> logicalIdSupplier,
             Supplier<KnowledgeEntityBase.Metadata> metadataSupplier,
-            Map<String, Supplier<Integer>> fieldNumValuesSuppliers,
-            Map<String, Supplier> fieldValuesSuppliers) {
+            Supplier<Integer> fieldNumValuesSupplier,
+            Supplier fieldValuesSupplier) {
         this.client = client;
         this.generationContext = generationContext;
+
+        this.fieldId = fieldId;
+        this.context = context;
 
         this.entityValueIdSupplier = entityValueIdSupplier;
         this.logicalIdSupplier = logicalIdSupplier;
         this.metadataSupplier = metadataSupplier;
 
-        this.fieldNumValuesSuppliers = fieldNumValuesSuppliers;
-        this.fieldValuesSuppliers = fieldValuesSuppliers;
+        this.fieldNumValuesSupplier = fieldNumValuesSupplier;
+        this.fieldValuesSupplier = fieldValuesSupplier;
     }
     //endregion
 
@@ -43,20 +48,19 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
         while(evalues.size() < 1000) {
             try {
                 String logicalId = this.logicalIdSupplier.get();
-                String context = this.generationContext.getContextGenerationConfiguration().getToContext();
-                String entityId = String.format("%s.%s", logicalId, context);
+                String entityId = String.format("%s.%s", logicalId, this.context);
+                String fieldType = this.generationContext.getContextStatistics().getEntityFieldTypes().get(this.fieldId);
 
                 evalues.addAll(
-                        Stream.ofAll(this.generationContext.getContextStatistics().getEntityFieldTypes().entrySet())
-                        .flatMap(fieldType -> Stream.fill(this.fieldNumValuesSuppliers.get(fieldType.getKey()).get(),
+                        Stream.fill(
+                                this.fieldNumValuesSupplier.get(),
                                 () -> new ElasticDocument<>(
                                         this.generationContext.getElasticConfiguration().getWriteSchema().getEntityIndex(),
                                         "pge",
                                         this.entityValueIdSupplier.get(),
                                         logicalId,
-                                        createValue(logicalId, context, entityId, fieldType.getKey(), fieldType.getValue()))))
+                                        createValue(logicalId, this.context, entityId, fieldId, fieldType)))
                         .toJavaList());
-
             } catch (NoSuchElementException ex) {
                 break;
             }
@@ -75,7 +79,7 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
                         context,
                         entityId,
                         fieldId,
-                        (String)this.fieldValuesSuppliers.get(fieldId).get(),
+                        (String)this.fieldValuesSupplier.get(),
                         metadataSupplier.get());
             case "intValue":
                 return new EvalueInt(
@@ -83,7 +87,7 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
                         context,
                         entityId,
                         fieldId,
-                        (int)this.fieldValuesSuppliers.get(fieldId).get(),
+                        (int)this.fieldValuesSupplier.get(),
                         metadataSupplier.get());
             case "dateValue":
                 return new EvalueDate(
@@ -91,7 +95,7 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
                         context,
                         entityId,
                         fieldId,
-                        (Date)this.fieldValuesSuppliers.get(fieldId).get(),
+                        (Date)this.fieldValuesSupplier.get(),
                         metadataSupplier.get());
             default: throw new RuntimeException("unsupported field type: " + fieldType);
         }
@@ -106,7 +110,10 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
     private Supplier<String> logicalIdSupplier;
     private Supplier<KnowledgeEntityBase.Metadata> metadataSupplier;
 
-    private Map<String, Supplier<Integer>> fieldNumValuesSuppliers;
-    private Map<String, Supplier> fieldValuesSuppliers;
+    private String fieldId;
+    private String context;
+
+    private Supplier<Integer> fieldNumValuesSupplier;
+    private Supplier fieldValuesSupplier;
     //endregion
 }
