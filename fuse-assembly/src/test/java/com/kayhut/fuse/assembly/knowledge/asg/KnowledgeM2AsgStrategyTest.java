@@ -35,7 +35,10 @@ import static com.kayhut.fuse.model.query.quant.QuantType.some;
 //@Ignore("todo: fix tests")
 public class KnowledgeM2AsgStrategyTest {
 
-    public static final String SHERLEY_MUSTAFA = "Sherley? \\windzor";
+    public static final String windzor = "windzor";
+    public static final String sherley = "sherley";
+    public static final String Sherley = "Sherley";
+    public static final String SHERLEY_WINDZOR = sherley + "? \\" + windzor;
 
     //region Setup
     public String escape(String term) {
@@ -97,7 +100,7 @@ public class KnowledgeM2AsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "Sherley windzor"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, Sherley + " " + windzor))))
                 .build();
 
         asgStrategy.transform(asgQuery);
@@ -106,7 +109,7 @@ public class KnowledgeM2AsgStrategyTest {
         //verify original field filter was added with ranking eProp groups + title field added
         Assert.assertEquals(actual.getProps().size(), 3);
         Assert.assertEquals(actual.getProps().get(1).getpType(), "stringValue");
-        Assert.assertEquals(actual.getProps().get(1).getCon(), Constraint.of(ConstraintOp.eq, "Sherley windzor"));
+        Assert.assertEquals(actual.getProps().get(1).getCon(), Constraint.of(ConstraintOp.eq, sherley + " " + windzor));
 
         Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
         Assert.assertEquals(actual.getProps().get(0).getCon().getOp(), inSet);
@@ -134,7 +137,7 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertEquals(0, actualRulesGroup.getGroups().size());
         Assert.assertEquals(1, actualRulesGroup.getProps().size());
         Assert.assertEquals("stringValue", actualRulesGroup.getProps().get(0).getpType());
-        Assert.assertEquals(Constraint.of(ConstraintOp.eq, "Sherley windzor"), actualRulesGroup.getProps().get(0).getCon());
+        Assert.assertEquals(Constraint.of(ConstraintOp.eq, sherley + " " + windzor), actualRulesGroup.getProps().get(0).getCon());
 
 
         // second field id: nicknames
@@ -149,7 +152,7 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertEquals(0, actualRulesGroup.getGroups().size());
         Assert.assertEquals(1, actualRulesGroup.getProps().size());
         Assert.assertEquals("stringValue", actualRulesGroup.getProps().get(0).getpType());
-        Assert.assertEquals(Constraint.of(ConstraintOp.eq, "Sherley windzor"), actualRulesGroup.getProps().get(0).getCon());
+        Assert.assertEquals(Constraint.of(ConstraintOp.eq, sherley + " " + windzor), actualRulesGroup.getProps().get(0).getCon());
     }
 
     @Test
@@ -159,7 +162,7 @@ public class KnowledgeM2AsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, SHERLEY_MUSTAFA))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, SHERLEY_WINDZOR))))
                 .build();
 
         asgStrategy.transform(asgQuery);
@@ -168,7 +171,7 @@ public class KnowledgeM2AsgStrategyTest {
         //verify original field filter was added with ranking eProp groups + title field added
         Assert.assertEquals(actual.getProps().size(), 3);
         Assert.assertEquals(actual.getProps().get(1).getpType(), "stringValue");
-        Assert.assertEquals(actual.getProps().get(1).getCon(), Constraint.of(ConstraintOp.eq, SHERLEY_MUSTAFA));
+        Assert.assertEquals(actual.getProps().get(1).getCon(), Constraint.of(ConstraintOp.eq, SHERLEY_WINDZOR));
 
         Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
         Assert.assertEquals(actual.getProps().get(0).getCon().getOp(), inSet);
@@ -196,7 +199,7 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertEquals(0, actualRulesGroup.getGroups().size());
         Assert.assertEquals(1, actualRulesGroup.getProps().size());
         Assert.assertEquals("stringValue", actualRulesGroup.getProps().get(0).getpType());
-        Assert.assertEquals(Constraint.of(ConstraintOp.eq, SHERLEY_MUSTAFA), actualRulesGroup.getProps().get(0).getCon());
+        Assert.assertEquals(Constraint.of(ConstraintOp.eq, SHERLEY_WINDZOR), actualRulesGroup.getProps().get(0).getCon());
 
 
         // second field id: nicknames
@@ -211,7 +214,7 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertEquals(0, actualRulesGroup.getGroups().size());
         Assert.assertEquals(1, actualRulesGroup.getProps().size());
         Assert.assertEquals("stringValue", actualRulesGroup.getProps().get(0).getpType());
-        Assert.assertEquals(Constraint.of(ConstraintOp.eq, SHERLEY_MUSTAFA), actualRulesGroup.getProps().get(0).getCon());
+        Assert.assertEquals(Constraint.of(ConstraintOp.eq, SHERLEY_WINDZOR), actualRulesGroup.getProps().get(0).getCon());
     }
 
     @Test
@@ -221,7 +224,7 @@ public class KnowledgeM2AsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "Sherley* windzor?"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, Sherley + "* " + windzor + "?"))))
                 .build();
 
         asgStrategy.transform(asgQuery);
@@ -241,11 +244,11 @@ public class KnowledgeM2AsgStrategyTest {
 
         // first field id: nicknames
         EPropGroup nicknamesGroup = actual.getGroups().get(0).getGroups().get(0);
-        validateGroupForTestLikeWithAsterisksInMiddle(nicknamesGroup, "nicknames", "Sherley* windzor?".split(" "), 1);
+        validateGroupForTestLikeWithAsterisksInMiddle(nicknamesGroup, "nicknames", (sherley + "* " + windzor + "?").split(" "), 1);
 
         // first field id: title
         EPropGroup titleGroup = actual.getGroups().get(0).getGroups().get(1);
-        validateGroupForTestLikeWithAsterisksInMiddle(titleGroup, "title", "Sherley* windzor?".split(" "), 2);
+        validateGroupForTestLikeWithAsterisksInMiddle(titleGroup, "title", (sherley + "* " + windzor + "?").split(" "), 2);
     }
 
     private void validateGroupForTestLikeWithAsterisksInMiddle(EPropGroup nicknamesGroup, String fieldName, String[] terms, int factor) {
@@ -367,7 +370,7 @@ public class KnowledgeM2AsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley*windzor*"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*" + Sherley + "*" + windzor + "*"))))
                 .build();
 
         asgStrategy.transform(asgQuery);
@@ -433,8 +436,8 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().size(), 1);
         //terms Sherley, windzor
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
-        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
+        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(sherley));
+        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(windzor));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule3Group = titleGroup.getGroups().get(0).getGroups().get(2);
@@ -463,8 +466,8 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().size(), 1);
         //terms Sherley, windzor
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
-        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
+        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(sherley));
+        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(windzor));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule4Group = titleGroup.getGroups().get(0).getGroups().get(3);
@@ -478,14 +481,14 @@ public class KnowledgeM2AsgStrategyTest {
         // 2) Sherley*
         // 2) *Sherley*
         Assert.assertEquals(rule4Group.getGroups().get(0).getProps().size(), 1);
-        Assert.assertTrue(rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().equals("*Sherley*windzor*"));
+        Assert.assertTrue(rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().equals("*" + sherley + "*" + windzor + "*"));
 
         //expecting boosting group with terms
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().size(), 1);
         //terms Sherley, windzor
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
-        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
+        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(sherley));
+        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(windzor));
     }
 
     @Test
@@ -495,7 +498,7 @@ public class KnowledgeM2AsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley windzor*"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*" + Sherley + " " + windzor + "*"))))
                 .build();
 
         asgStrategy.transform(asgQuery);
@@ -558,8 +561,8 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().size(), 1);
         //terms Sherley, windzor
         Assert.assertEquals(rule2Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
-        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
+        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(sherley));
+        Assert.assertTrue(((List) rule2Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(windzor));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule3Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(2);
@@ -583,8 +586,8 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().size(), 1);
         //terms Sherley, windzor
         Assert.assertEquals(rule3Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
-        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
+        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(sherley));
+        Assert.assertTrue(((List) rule3Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(windzor));
 
         //third condition - expecting 2 inner groups - one for boosting and one for filter with asterisks rules
         EPropGroup rule4Group = actual.getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroups().get(3);
@@ -599,14 +602,14 @@ public class KnowledgeM2AsgStrategyTest {
         // 2) Sherley*
         // 2) *Sherley*
         Assert.assertEquals(rule4Group.getGroups().get(0).getProps().size(), 1);
-        Assert.assertTrue(rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().equals("*Sherley*windzor*"));
+        Assert.assertTrue(rule4Group.getGroups().get(0).getProps().get(0).getCon().getExpr().toString().equals("*" + sherley + "*" + windzor + "*"));
 
         //expecting boosting group with terms
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().size(), 1);
         //terms Sherley, windzor
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
-        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
-        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
+        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(sherley));
+        Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains(windzor));
     }
 
     @Test
@@ -616,7 +619,7 @@ public class KnowledgeM2AsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.eq, "Sherley windzor"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.eq, Sherley + " " + windzor))))
                 .build();
 
         asgStrategy.transform(asgQuery);
@@ -646,7 +649,7 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertTrue(nicknameRule.getGroups().get(0).getProps().get(0) instanceof RankingProp);
         Assert.assertEquals(((RankingProp) nicknameRule.getGroups().get(0).getProps().get(0)).getBoost(), 1000000);
         Assert.assertEquals(nicknameRule.getGroups().get(0).getProps().get(0).getpType(), "stringValue");
-        Assert.assertEquals(nicknameRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley windzor");
+        Assert.assertEquals(nicknameRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), sherley + " " + windzor);
 
         // second field id: title
         EPropGroup titleRule = actual.getGroups().get(0).getGroups().get(1);
@@ -661,7 +664,7 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertTrue(titleRule.getGroups().get(0).getProps().get(0) instanceof RankingProp);
         Assert.assertEquals(((RankingProp) titleRule.getGroups().get(0).getProps().get(0)).getBoost(), 2000000);
         Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getpType(), "stringValue");
-        Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley windzor");
+        Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), sherley + " " + windzor);
 
 
     }
@@ -674,7 +677,7 @@ public class KnowledgeM2AsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, new String[]{"nicknames"})),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.eq, "Sherley* windzor"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.eq, Sherley + "* " + windzor))))
                 .build();
 
         asgStrategy.transform(asgQuery);
@@ -703,7 +706,7 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertTrue(titleRule.getGroups().get(0).getProps().get(0) instanceof ScoreEProp);
         Assert.assertEquals(((ScoreEProp) titleRule.getGroups().get(0).getProps().get(0)).getBoost(), 100);
         Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getpType(), "stringValue");
-        Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley windzor");
+        Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), sherley + " " + windzor);
 
         // second field id: nicknames
         EPropGroup nickNamesRule = actual.getGroups().get(0).getGroups().get(1);
@@ -718,7 +721,7 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertTrue(nickNamesRule.getGroups().get(0).getProps().get(0) instanceof ScoreEProp);
         Assert.assertEquals(((ScoreEProp) nickNamesRule.getGroups().get(0).getProps().get(0)).getBoost(), 100);
         Assert.assertEquals(nickNamesRule.getGroups().get(0).getProps().get(0).getpType(), "stringValue");
-        Assert.assertEquals(nickNamesRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley windzor");
+        Assert.assertEquals(nickNamesRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), sherley + " " + windzor);
 
 
     }
@@ -729,7 +732,7 @@ public class KnowledgeM2AsgStrategyTest {
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley*windzor*"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*" + Sherley + "*" + windzor + "*"))))
                 .build();
 
         AsgQuery transformedQuery = asgStrategy.transform(asgQuery);
@@ -737,9 +740,9 @@ public class KnowledgeM2AsgStrategyTest {
 
         Assert.assertEquals(3, ePropGroup.getProps().size());
         Assert.assertEquals("stringValue", ePropGroup.getProps().get(0).getpType());
-        Assert.assertEquals(Constraint.of(like, "*Sherley*"), ePropGroup.getProps().get(0).getCon());
+        Assert.assertEquals(Constraint.of(like, "*" + sherley + "*"), ePropGroup.getProps().get(0).getCon());
         Assert.assertEquals("stringValue", ePropGroup.getProps().get(1).getpType());
-        Assert.assertEquals(Constraint.of(like, "*windzor*"), ePropGroup.getProps().get(1).getCon());
+        Assert.assertEquals(Constraint.of(like, "*" + windzor + "*"), ePropGroup.getProps().get(1).getCon());
 
     }
 
@@ -750,7 +753,7 @@ public class KnowledgeM2AsgStrategyTest {
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(eq, "blabla")),
-                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*Sherley*windzor*"))))
+                        EProp.of(32, "stringValue", Constraint.of(ConstraintOp.like, "*" + Sherley + "*" + windzor + "*"))))
                 .build();
 
         AsgQuery transformedQuery = asgStrategy.transform(asgQuery);
@@ -759,9 +762,9 @@ public class KnowledgeM2AsgStrategyTest {
         Assert.assertEquals(4, ePropGroup.getProps().size());
         Assert.assertEquals("fieldId", ePropGroup.getProps().get(0).getpType());
         Assert.assertEquals("stringValue", ePropGroup.getProps().get(1).getpType());
-        Assert.assertEquals(Constraint.of(like, "*Sherley*"), ePropGroup.getProps().get(1).getCon());
+        Assert.assertEquals(Constraint.of(like, "*" + sherley + "*"), ePropGroup.getProps().get(1).getCon());
         Assert.assertEquals("stringValue", ePropGroup.getProps().get(2).getpType());
-        Assert.assertEquals(Constraint.of(like, "*windzor*"), ePropGroup.getProps().get(2).getCon());
+        Assert.assertEquals(Constraint.of(like, "*" + windzor + "*"), ePropGroup.getProps().get(2).getCon());
 
     }
 

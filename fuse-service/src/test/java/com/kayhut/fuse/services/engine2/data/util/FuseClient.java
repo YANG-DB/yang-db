@@ -71,6 +71,14 @@ public class FuseClient {
         return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
     }
 
+    public String initIndices(String catalogStoreUrl,String ontology) {
+        return getRequest(catalogStoreUrl+"/"+ontology + "/init");
+    }
+
+    public String dropIndices(String catalogStoreUrl,String ontology) {
+        return getRequest(catalogStoreUrl+"/"+ontology + "/drop");
+    }
+
     public CursorResourceInfo postCursor(String cursorStoreUrl) throws IOException {
         return this.postCursor(cursorStoreUrl, new CreatePathsCursorRequest());
     }
@@ -162,5 +170,6 @@ public class FuseClient {
 
     //region Fields
     private String fuseUrl;
+
     //endregion
 }
