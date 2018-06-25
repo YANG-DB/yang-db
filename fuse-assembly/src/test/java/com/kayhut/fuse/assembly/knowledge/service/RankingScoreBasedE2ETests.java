@@ -50,7 +50,7 @@ public class RankingScoreBasedE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        GlobalElasticEmbeddedNode.getInstance(KNOWLEDGE);
+        GlobalElasticEmbeddedNode.getInstance(KNOWLEDGE);
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(CONFIG_PATH));
 

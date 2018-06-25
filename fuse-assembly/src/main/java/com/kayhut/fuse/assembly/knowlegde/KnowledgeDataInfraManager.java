@@ -648,7 +648,8 @@ public class KnowledgeDataInfraManager  {
     private void BulkLoadEntitiesAndEntityValues() {
         BulkRequestBuilder bulk = client.prepareBulk();
         String index = Stream.ofAll(schema.getPartitions(ENTITY)).map(partition -> (IndexPartitions.Partition.Range) partition)
-                .filter(partition -> partition.isWithin("e" + String.format(schema.getIdFormat(ENTITY), 1))).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
+                .filter(partition -> partition.isWithin("e" + String.format(schema.getIdFormat(ENTITY), 1)))
+                .map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
         List<Integer> evalues = Arrays.asList(1,2,2);
 

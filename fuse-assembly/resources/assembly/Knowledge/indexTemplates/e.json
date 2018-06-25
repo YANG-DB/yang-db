@@ -65,6 +65,18 @@
         "refs": {
           "type": "keyword"
         },
+        "files": {
+          "type": "keyword"
+        },
+        "name": {
+          "type": "keyword"
+        },
+        "path": {
+          "type": "keyword"
+        },
+        "mimeType": {
+          "type": "keyword"
+        },
         "entityId": {
           "type": "keyword"
         },
@@ -82,6 +94,28 @@
           "type": "date"
         },
         "stringValue": {
+          "type": "text",
+          "analyzer": "knowledge_ngram_analyzer",
+          "search_analyzer": "knowledge_standard_analyzer",
+          "fields": {
+            "keyword": {
+              "normalizer":"lowercase_norm",
+              "type": "keyword"
+            }
+          }
+        },
+        "description": {
+          "type": "text",
+          "analyzer": "knowledge_ngram_analyzer",
+          "search_analyzer": "knowledge_standard_analyzer",
+          "fields": {
+            "keyword": {
+              "normalizer":"lowercase_norm",
+              "type": "keyword"
+            }
+          }
+        },
+        "displayName": {
           "type": "text",
           "analyzer": "knowledge_ngram_analyzer",
           "search_analyzer": "knowledge_standard_analyzer",

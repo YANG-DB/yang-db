@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowledge;
+package com.kayhut.fuse.assembly.knowledge.domain;
 
 import com.kayhut.fuse.model.ontology.*;
 
