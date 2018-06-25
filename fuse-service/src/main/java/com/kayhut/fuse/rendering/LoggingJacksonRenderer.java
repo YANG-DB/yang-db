@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.primitives.Bytes;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.kayhut.fuse.dispatcher.logging.ElapsedFrom;
-import com.kayhut.fuse.dispatcher.logging.LogMessage;
-import com.kayhut.fuse.dispatcher.logging.LogType;
-import com.kayhut.fuse.dispatcher.logging.MethodName;
+import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import org.jooby.MediaType;
 import org.slf4j.Logger;
@@ -21,14 +18,14 @@ import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
 import static com.kayhut.fuse.dispatcher.logging.LogType.start;
 import static com.kayhut.fuse.dispatcher.logging.LogType.success;
 
-public class JacksonLoggingRenderer extends JacksonBaseRenderer {
-    public static final String mapperParameter = "JacksonLoggingRenderer.@mapper";
-    public static final String typeParameter = "JacksonLoggingRenderer.@type";
-    public static final String loggerParameter = "JacksonLoggingRenderer.@logger";
+public class LoggingJacksonRenderer extends JacksonBaseRenderer {
+    public static final String mapperParameter = "LoggingJacksonRenderer.@mapper";
+    public static final String typeParameter = "LoggingJacksonRenderer.@type";
+    public static final String loggerParameter = "LoggingJacksonRenderer.@logger";
 
     //region Constructors
     @Inject
-    public JacksonLoggingRenderer(
+    public LoggingJacksonRenderer(
             @Named(mapperParameter) ObjectMapper mapper,
             @Named(typeParameter) MediaType type,
             @Named(loggerParameter) Logger logger,
@@ -50,7 +47,7 @@ public class JacksonLoggingRenderer extends JacksonBaseRenderer {
     }
 
     protected void renderValue(final Object value, final Context ctx) throws Exception {
-        new LogMessage.Impl(this.logger, trace, "start renderValue", LogType.of(start), renderValue, ElapsedFrom.now()).log();
+        new LogMessage.Impl(this.logger, trace, "start renderValue", sequence, LogType.of(start), renderValue, ElapsedFrom.now()).log();
 
         Timer.Context timerContext = this.metricRegistry.timer(MetricRegistry.name(this.getClass().getName(), renderValue.toString())).time();
         byte[] bytes = this.mapper.writeValueAsBytes(value);
@@ -92,7 +89,7 @@ public class JacksonLoggingRenderer extends JacksonBaseRenderer {
 
         ctx.length((long)bytes.length).send(bytes);
 
-        new LogMessage.Impl(this.logger, trace, "finish renderValue", LogType.of(success), renderValue, ElapsedFrom.now()).log();
+        new LogMessage.Impl(this.logger, trace, "finish renderValue", sequence, LogType.of(success), renderValue, ElapsedFrom.now()).log();
     }
 
     @Override
@@ -106,6 +103,7 @@ public class JacksonLoggingRenderer extends JacksonBaseRenderer {
     protected MetricRegistry metricRegistry;
 
     private static MethodName.MDCWriter renderValue = MethodName.of("renderValue");
+    private static LogMessage.MDCWriter sequence = Sequence.incr();
 
     private static byte[] renderElapsedBytes = "renderElapsed".getBytes();
     private static byte[] totalElapsedBytes = "totalElapsed".getBytes();

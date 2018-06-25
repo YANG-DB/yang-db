@@ -40,22 +40,22 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
         boolean thrownException = false;
 
         try {
-            new LogMessage.Impl(this.verboseLogger, trace, "start getVertexSchemas label: {}", LogType.of(start), getVertexSchemas, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, trace, "start getVertexSchemas label: {}", sequence, LogType.of(start), getVertexSchemas, ElapsedFrom.now())
                 .with(label).log();
             Iterable<GraphVertexSchema> vertexSchemas = this.schemaProvider.getVertexSchemas(label);
             if (Stream.ofAll(vertexSchemas).isEmpty()) {
                 new LogMessage.Impl(this.warnLogger, warn, "no vertex schema found for label: {}",
-                        LogType.of(log), getVertexSchemas, ElapsedFrom.now()).with(label).log();
+                        sequence, LogType.of(log), getVertexSchemas, ElapsedFrom.now()).with(label).log();
             }
             return vertexSchemas;
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage.Impl(this.verboseLogger, error, "failed getVertexSchemas label: {}", LogType.of(failure), getVertexSchemas, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, error, "failed getVertexSchemas label: {}", sequence, LogType.of(failure), getVertexSchemas, ElapsedFrom.now())
                     .with(label, ex).log();
             throw ex;
         } finally {
             if (!thrownException) {
-                new LogMessage.Impl(this.verboseLogger, trace, "finish getVertexSchemas label: {}", LogType.of(success), getVertexSchemas, ElapsedFrom.now())
+                new LogMessage.Impl(this.verboseLogger, trace, "finish getVertexSchemas label: {}", sequence, LogType.of(success), getVertexSchemas, ElapsedFrom.now())
                         .with(label).log();
             }
         }
@@ -66,22 +66,22 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
         boolean thrownException = false;
 
         try {
-            new LogMessage.Impl(this.verboseLogger, trace, "start getEdgeSchemas label: {}", LogType.of(start), getEdgeSchemas, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, trace, "start getEdgeSchemas label: {}", sequence, LogType.of(start), getEdgeSchemas, ElapsedFrom.now())
                     .with(label).log();
             Iterable<GraphEdgeSchema> edgeSchemas = this.schemaProvider.getEdgeSchemas(label);
             if (Stream.ofAll(edgeSchemas).isEmpty()) {
                 new LogMessage.Impl(this.warnLogger, warn, "no edge schema found for label: {}",
-                        LogType.of(log), getEdgeSchemas, ElapsedFrom.now()).with(label).log();
+                        sequence, LogType.of(log), getEdgeSchemas, ElapsedFrom.now()).with(label).log();
             }
             return edgeSchemas;
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage.Impl(this.verboseLogger, error, "failed getEdgeSchemas label: {}", LogType.of(failure), getEdgeSchemas, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, error, "failed getEdgeSchemas label: {}", sequence, LogType.of(failure), getEdgeSchemas, ElapsedFrom.now())
                     .with(label, ex).log();
             throw ex;
         } finally {
             if (!thrownException) {
-                new LogMessage.Impl(this.verboseLogger, trace, "finish getEdgeSchemas label: {}", LogType.of(success), getEdgeSchemas, ElapsedFrom.now())
+                new LogMessage.Impl(this.verboseLogger, trace, "finish getEdgeSchemas label: {}", sequence, LogType.of(success), getEdgeSchemas, ElapsedFrom.now())
                         .with(label).log();
             }
         }
@@ -92,22 +92,22 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
         boolean thrownException = false;
 
         try {
-            new LogMessage.Impl(this.verboseLogger, trace, "start getEdgeSchemas vertexLabelA: {}, label: {}", LogType.of(start), getEdgeSchemas, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, trace, "start getEdgeSchemas vertexLabelA: {}, label: {}", sequence, LogType.of(start), getEdgeSchemas, ElapsedFrom.now())
                     .with(vertexLabelA, label).log();
             Iterable<GraphEdgeSchema> edgeSchemas = this.schemaProvider.getEdgeSchemas(vertexLabelA, label);
             if (Stream.ofAll(edgeSchemas).isEmpty()) {
                 new LogMessage.Impl(this.warnLogger, warn, "no edge schema found for vertexLabelA: {}, label: {}",
-                        LogType.of(log), getEdgeSchemas, ElapsedFrom.now()).with(vertexLabelA, label).log();
+                        sequence, LogType.of(log), getEdgeSchemas, ElapsedFrom.now()).with(vertexLabelA, label).log();
             }
             return edgeSchemas;
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage.Impl(this.verboseLogger, error, "failed getEdgeSchemas vertexLabelA: {}, label: {}", LogType.of(failure), getEdgeSchemas, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, error, "failed getEdgeSchemas vertexLabelA: {}, label: {}", sequence, LogType.of(failure), getEdgeSchemas, ElapsedFrom.now())
                     .with(vertexLabelA, label, ex).log();
             throw ex;
         } finally {
             if (!thrownException) {
-                new LogMessage.Impl(this.verboseLogger, trace, "finish getEdgeSchemas vertexLabelA: {}, label: {}", LogType.of(success), getEdgeSchemas, ElapsedFrom.now())
+                new LogMessage.Impl(this.verboseLogger, trace, "finish getEdgeSchemas vertexLabelA: {}, label: {}", sequence, LogType.of(success), getEdgeSchemas, ElapsedFrom.now())
                         .with(vertexLabelA, label).log();
             }
         }
@@ -118,22 +118,22 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
         boolean thrownException = false;
 
         try {
-            new LogMessage.Impl(this.verboseLogger, trace, "start getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}", LogType.of(start), getEdgeSchemas, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, trace, "start getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}", sequence, LogType.of(start), getEdgeSchemas, ElapsedFrom.now())
                     .with(vertexLabelA, direction.toString(), label).log();
             Iterable<GraphEdgeSchema> edgeSchemas = this.schemaProvider.getEdgeSchemas(vertexLabelA, direction, label);
             if (Stream.ofAll(edgeSchemas).isEmpty()) {
                 new LogMessage.Impl(this.warnLogger, warn, "no edge schema found for vertexLabelA: {}, direction: {}, label: {}",
-                        LogType.of(log), getEdgeSchemas, ElapsedFrom.now()).with(vertexLabelA, direction.toString(), label).log();
+                        sequence, LogType.of(log), getEdgeSchemas, ElapsedFrom.now()).with(vertexLabelA, direction.toString(), label).log();
             }
             return edgeSchemas;
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage.Impl(this.verboseLogger, error, "failed getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}", LogType.of(failure), getEdgeSchemas, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, error, "failed getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}", sequence, LogType.of(failure), getEdgeSchemas, ElapsedFrom.now())
                     .with(vertexLabelA, direction.toString(), label, ex).log();
             throw ex;
         } finally {
             if (!thrownException) {
-                new LogMessage.Impl(this.verboseLogger, trace, "finish getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}", LogType.of(success), getEdgeSchemas, ElapsedFrom.now())
+                new LogMessage.Impl(this.verboseLogger, trace, "finish getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}", sequence, LogType.of(success), getEdgeSchemas, ElapsedFrom.now())
                         .with(vertexLabelA, direction.toString(), label).log();
             }
         }
@@ -144,22 +144,22 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
         boolean thrownException = false;
 
         try {
-            new LogMessage.Impl(this.verboseLogger, trace, "start getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}, vertexLabelB: {}", LogType.of(start), getEdgeSchemas, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, trace, "start getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}, vertexLabelB: {}", sequence, LogType.of(start), getEdgeSchemas, ElapsedFrom.now())
                     .with(vertexLabelA, direction.toString(), label, vertexLabelB).log();
             Iterable<GraphEdgeSchema> edgeSchemas = this.schemaProvider.getEdgeSchemas(vertexLabelA, direction, label, vertexLabelB);
             if (Stream.ofAll(edgeSchemas).isEmpty()) {
                 new LogMessage.Impl(this.warnLogger, warn, "no edge schema found for vertexLabelA: {}, direction: {}, label: {}, vertexLabelB: {}",
-                        LogType.of(log), getEdgeSchemas, ElapsedFrom.now()).with(vertexLabelA, direction.toString(), label, vertexLabelB).log();
+                        sequence, LogType.of(log), getEdgeSchemas, ElapsedFrom.now()).with(vertexLabelA, direction.toString(), label, vertexLabelB).log();
             }
             return edgeSchemas;
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage.Impl(this.verboseLogger, error, "failed getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}, vertexLabelB: {}", LogType.of(failure), getEdgeSchemas, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, error, "failed getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}, vertexLabelB: {}", sequence, LogType.of(failure), getEdgeSchemas, ElapsedFrom.now())
                     .with(vertexLabelA, direction.toString(), label, vertexLabelB, ex).log();
             throw ex;
         } finally {
             if (!thrownException) {
-                new LogMessage.Impl(this.verboseLogger, trace, "finish getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}, vertexLabelB: {}", LogType.of(success), getEdgeSchemas, ElapsedFrom.now())
+                new LogMessage.Impl(this.verboseLogger, trace, "finish getEdgeSchemas vertexLabelA: {}, direction: {}, label: {}, vertexLabelB: {}", sequence, LogType.of(success), getEdgeSchemas, ElapsedFrom.now())
                         .with(vertexLabelA, direction.toString(), label, vertexLabelB).log();
             }
         }
@@ -170,22 +170,22 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
         boolean thrownException = false;
 
         try {
-            new LogMessage.Impl(this.verboseLogger, trace, "start getPropertySchema name: {}", LogType.of(start), getPropertySchema, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, trace, "start getPropertySchema name: {}", sequence, LogType.of(start), getPropertySchema, ElapsedFrom.now())
                     .with(name).log();
             Optional<GraphElementPropertySchema> propertySchema = this.schemaProvider.getPropertySchema(name);
             if (!propertySchema.isPresent()) {
                 new LogMessage.Impl(this.warnLogger, warn, "no property schema found for name: {}",
-                        LogType.of(log), getPropertySchema, ElapsedFrom.now()).with(name).log();
+                        sequence, LogType.of(log), getPropertySchema, ElapsedFrom.now()).with(name).log();
             }
             return propertySchema;
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage.Impl(this.verboseLogger, error, "failed getPropertySchema name: {}", LogType.of(failure), getPropertySchema, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, error, "failed getPropertySchema name: {}", sequence, LogType.of(failure), getPropertySchema, ElapsedFrom.now())
                     .with(name, ex).log();
             throw ex;
         } finally {
             if (!thrownException) {
-                new LogMessage.Impl(this.verboseLogger, trace, "finish getPropertySchema name: {}", LogType.of(success), getPropertySchema, ElapsedFrom.now())
+                new LogMessage.Impl(this.verboseLogger, trace, "finish getPropertySchema name: {}", sequence, LogType.of(success), getPropertySchema, ElapsedFrom.now())
                         .with(name).log();
             }
         }
@@ -196,21 +196,21 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
         boolean thrownException = false;
 
         try {
-            new LogMessage.Impl(this.verboseLogger, trace, "start getVertexLabels", LogType.of(start), getVertexLabels, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.verboseLogger, trace, "start getVertexLabels", sequence, LogType.of(start), getVertexLabels, ElapsedFrom.now()).log();
             Iterable<String> vertexLabels = this.schemaProvider.getVertexLabels();
             if (Stream.ofAll(vertexLabels).isEmpty()) {
                 new LogMessage.Impl(this.warnLogger, warn, "no vertex labels found",
-                        LogType.of(log), getVertexLabels, ElapsedFrom.now()).log();
+                        sequence, LogType.of(log), getVertexLabels, ElapsedFrom.now()).log();
             }
             return vertexLabels;
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage.Impl(this.verboseLogger, error, "failed getVertexLabels", LogType.of(failure), getVertexLabels, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, error, "failed getVertexLabels", sequence, LogType.of(failure), getVertexLabels, ElapsedFrom.now())
                     .with(ex).log();
             throw ex;
         } finally {
             if (!thrownException) {
-                new LogMessage.Impl(this.verboseLogger, trace, "finish getVertexLabels", LogType.of(success), getVertexLabels, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.verboseLogger, trace, "finish getVertexLabels", sequence, LogType.of(success), getVertexLabels, ElapsedFrom.now()).log();
             }
         }
     }
@@ -220,21 +220,21 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
         boolean thrownException = false;
 
         try {
-            new LogMessage.Impl(this.verboseLogger, trace, "start getEdgeLabels", LogType.of(start), getEdgeLabels, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.verboseLogger, trace, "start getEdgeLabels", sequence, LogType.of(start), getEdgeLabels, ElapsedFrom.now()).log();
             Iterable<String> vertexLabels = this.schemaProvider.getEdgeLabels();
             if (Stream.ofAll(vertexLabels).isEmpty()) {
                 new LogMessage.Impl(this.warnLogger, warn, "no edge labels found",
-                        LogType.of(log), getVertexLabels, ElapsedFrom.now()).log();
+                        sequence, LogType.of(log), getVertexLabels, ElapsedFrom.now()).log();
             }
             return vertexLabels;
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage.Impl(this.verboseLogger, error, "failed getEdgeLabels", LogType.of(failure), getEdgeLabels, ElapsedFrom.now())
+            new LogMessage.Impl(this.verboseLogger, error, "failed getEdgeLabels", sequence, LogType.of(failure), getEdgeLabels, ElapsedFrom.now())
                     .with(ex).log();
             throw ex;
         } finally {
             if (!thrownException) {
-                new LogMessage.Impl(this.verboseLogger, trace, "finish getEdgeLabels", LogType.of(success), getEdgeLabels, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.verboseLogger, trace, "finish getEdgeLabels", sequence, LogType.of(success), getEdgeLabels, ElapsedFrom.now()).log();
             }
         }
     }
@@ -250,5 +250,7 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
     private static MethodName.MDCWriter getPropertySchema = MethodName.of("getPropertySchema");
     private static MethodName.MDCWriter getVertexLabels = MethodName.of("getVertexLabels");
     private static MethodName.MDCWriter getEdgeLabels = MethodName.of("getEdgeLabels");
+
+    private static LogMessage.MDCWriter sequence = Sequence.incr();
     //endregion
 }

@@ -61,16 +61,17 @@ public class LoggingPageController implements PageController {
         ContentResponse<PageResourceInfo> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start create", LogType.of(start), create).log();
+            new LogMessage.Impl(this.logger, trace, "start create", sequence, LogType.of(start), create).log();
             this.metricRegistry.counter(name(this.logger.getName(), "count")).inc();
             response = this.controller.create(queryId, cursorId, createPageRequest);
             new LogMessage.Impl(this.logger, info, "finish create",
-                    LogType.of(success), create, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
+                    sequence, LogType.of(success), create, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish create",
+                    sequence, LogType.of(success), create, ElapsedFrom.now()).log();
             this.metricRegistry.counter(name(this.logger.getName(), "count")).dec();
             this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed create", LogType.of(failure), create, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed create", sequence, LogType.of(failure), create, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "failure")).mark();
             this.metricRegistry.counter(name(this.logger.getName(), "count")).dec();
@@ -96,14 +97,15 @@ public class LoggingPageController implements PageController {
         ContentResponse<PageResourceInfo> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start createAndFetch", LogType.of(start), createAndFetch).log();
+            new LogMessage.Impl(this.logger, trace, "start createAndFetch", sequence, LogType.of(start), createAndFetch).log();
             response = this.controller.createAndFetch(queryId, cursorId, createPageRequest);
             new LogMessage.Impl(this.logger, info, "finish createAndFetch",
-                    LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish createAndFetch", LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
+                    sequence, LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish createAndFetch",
+                    sequence, LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), createAndFetch.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed createAndFetch", LogType.of(failure), createAndFetch, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed createAndFetch", sequence, LogType.of(failure), createAndFetch, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), createAndFetch.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -128,13 +130,17 @@ public class LoggingPageController implements PageController {
         ContentResponse<StoreResourceInfo> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorId", LogType.of(start), getInfoByQueryIdAndCursorId).log();
+            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorId",
+                    sequence, LogType.of(start), getInfoByQueryIdAndCursorId).log();
             response = this.controller.getInfo(queryId, cursorId);
-            new LogMessage.Impl(this.logger, info, "finish getInfoByQueryIdAndCursorId", LogType.of(success), getInfoByQueryIdAndCursorId, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryIdAndCursorId", LogType.of(success), getInfoByQueryIdAndCursorId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getInfoByQueryIdAndCursorId",
+                    sequence, LogType.of(success), getInfoByQueryIdAndCursorId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryIdAndCursorId",
+                    sequence, LogType.of(success), getInfoByQueryIdAndCursorId, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryIdAndCursorId.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getInfoByQueryIdAndCursorId", LogType.of(failure), getInfoByQueryIdAndCursorId, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getInfoByQueryIdAndCursorId",
+                    sequence, LogType.of(failure), getInfoByQueryIdAndCursorId, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryIdAndCursorId.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -159,13 +165,17 @@ public class LoggingPageController implements PageController {
         ContentResponse<PageResourceInfo> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorIdAndPageId", LogType.of(start), getInfoByQueryIdAndCursorIdAndPageId).log();
+            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorIdAndPageId",
+                    sequence, LogType.of(start), getInfoByQueryIdAndCursorIdAndPageId).log();
             response = this.controller.getInfo(queryId, cursorId, pageId);
-            new LogMessage.Impl(this.logger, info, "finish getInfoByQueryIdAndCursorIdAndPageId", LogType.of(success), getInfoByQueryIdAndCursorIdAndPageId, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryIdAndCursorIdAndPageId", LogType.of(success), getInfoByQueryIdAndCursorIdAndPageId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getInfoByQueryIdAndCursorIdAndPageId",
+                    sequence, LogType.of(success), getInfoByQueryIdAndCursorIdAndPageId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryIdAndCursorIdAndPageId",
+                    sequence, LogType.of(success), getInfoByQueryIdAndCursorIdAndPageId, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryIdAndCursorIdAndPageId.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getInfoByQueryIdAndCursorIdAndPageId", LogType.of(failure), getInfoByQueryIdAndCursorIdAndPageId, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getInfoByQueryIdAndCursorIdAndPageId",
+                    sequence, LogType.of(failure), getInfoByQueryIdAndCursorIdAndPageId, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryIdAndCursorIdAndPageId.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -190,10 +200,10 @@ public class LoggingPageController implements PageController {
         ContentResponse<Object> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getData", LogType.of(start), getData).log();
+            new LogMessage.Impl(this.logger, trace, "start getData", sequence, LogType.of(start), getData).log();
             response = this.controller.getData(queryId, cursorId, pageId);
-            new LogMessage.Impl(this.logger, info, "finish getData", LogType.of(success), getData, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getData", LogType.of(success), getData, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getData", sequence, LogType.of(success), getData, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getData", sequence, LogType.of(success), getData, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), getData.toString(), "success")).mark();
         } catch (Exception ex) {
             new LogMessage.Impl(this.logger, error, "failed getData", LogType.of(failure), getData, ElapsedFrom.now())
@@ -221,13 +231,13 @@ public class LoggingPageController implements PageController {
         ContentResponse<Boolean> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start delete", LogType.of(start), delete).log();
+            new LogMessage.Impl(this.logger, trace, "start delete", sequence, LogType.of(start), delete).log();
             response = this.controller.delete(queryId, cursorId, pageId);
-            new LogMessage.Impl(this.logger, info, "finish delete", LogType.of(success), delete, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish delete", LogType.of(success), delete, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish delete", sequence, LogType.of(success), delete, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish delete", sequence, LogType.of(success), delete, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), delete.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed delete", LogType.of(failure), delete, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed delete", sequence, LogType.of(failure), delete, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), delete.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -254,5 +264,7 @@ public class LoggingPageController implements PageController {
     private static MethodName.MDCWriter getInfoByQueryIdAndCursorIdAndPageId = MethodName.of("getInfoByQueryIdAndCursorIdAndPageId");
     private static MethodName.MDCWriter getData = MethodName.of("getData");
     private static MethodName.MDCWriter delete = MethodName.of("delete");
+
+    private static LogMessage.MDCWriter sequence = Sequence.incr();
     //endregion
 }

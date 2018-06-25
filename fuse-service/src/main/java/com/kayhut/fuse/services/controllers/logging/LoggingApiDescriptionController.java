@@ -55,13 +55,13 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
         ContentResponse<FuseResourceInfo> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getInfo", LogType.of(start), getInfo).log();
+            new LogMessage.Impl(this.logger, trace, "start getInfo", sequence, LogType.of(start), getInfo).log();
             response = this.controller.getInfo();
-            new LogMessage.Impl(this.logger, info, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getInfo", sequence, LogType.of(success), getInfo, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getInfo", sequence, LogType.of(success), getInfo, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getInfo", LogType.of(failure), getInfo, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getInfo", sequence, LogType.of(failure), getInfo, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -83,5 +83,6 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
     private ApiDescriptionController controller;
 
     private static LogMessage.MDCWriter getInfo = MethodName.of("getInfo");
+    private static LogMessage.MDCWriter sequence = Sequence.incr();
     //endregion
 }

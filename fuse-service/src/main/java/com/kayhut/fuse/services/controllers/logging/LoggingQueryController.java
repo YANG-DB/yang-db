@@ -70,18 +70,18 @@ public class LoggingQueryController implements QueryController {
 
         try {
             this.metricRegistry.counter(name(this.logger.getName(), "count")).inc();
-            new LogMessage.Impl(this.logger, trace, "start create", LogType.of(start), create).log();
+            new LogMessage.Impl(this.logger, trace, "start create", sequence, LogType.of(start), create).log();
             if (request.getQuery() != null) {
-                new LogMessage.Impl(this.logger, debug, "query: {}", LogType.of(log), create)
+                new LogMessage.Impl(this.logger, debug, "query: {}", sequence, LogType.of(log), create)
                         .with(this.queryDescriptor.describe(request.getQuery())).log();
             }
             response = this.controller.create(request);
-            new LogMessage.Impl(this.logger, info, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish create", sequence, LogType.of(success), create, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish create", sequence, LogType.of(success), create, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), "create", "success")).mark();
             this.metricRegistry.counter(name(this.logger.getName(), "count")).dec();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed create", LogType.of(failure), create, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed create", sequence, LogType.of(failure), create, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "failure")).mark();
             this.metricRegistry.counter(name(this.logger.getName(), "count")).dec();
@@ -107,13 +107,13 @@ public class LoggingQueryController implements QueryController {
         ContentResponse<QueryResourceInfo> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start createAndFetch", LogType.of(start), createAndFetch).log();
+            new LogMessage.Impl(this.logger, trace, "start createAndFetch", sequence, LogType.of(start), createAndFetch).log();
             response = this.controller.createAndFetch(request);
-            new LogMessage.Impl(this.logger, info, "finish createAndFetch", LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish createAndFetch", LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish createAndFetch", sequence, LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish createAndFetch", sequence, LogType.of(success), createAndFetch, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), "createAndFetch", "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed createAndFetch", LogType.of(failure), createAndFetch, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed createAndFetch", sequence, LogType.of(failure), createAndFetch, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), createAndFetch.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -137,13 +137,13 @@ public class LoggingQueryController implements QueryController {
         ContentResponse<StoreResourceInfo> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getInfo", LogType.of(start), getInfo).log();
+            new LogMessage.Impl(this.logger, trace, "start getInfo", sequence, LogType.of(start), getInfo).log();
             response = this.controller.getInfo();
-            new LogMessage.Impl(this.logger, info, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getInfo", sequence, LogType.of(success), getInfo, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getInfo", sequence, LogType.of(success), getInfo, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), getInfo.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getInfo", LogType.of(failure), getInfo, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getInfo", sequence, LogType.of(failure), getInfo, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getInfo.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -168,13 +168,13 @@ public class LoggingQueryController implements QueryController {
         ContentResponse<QueryResourceInfo> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryId", LogType.of(start), getInfoByQueryId).log();
+            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryId", sequence, LogType.of(start), getInfoByQueryId).log();
             response = this.controller.getInfo(queryId);
-            new LogMessage.Impl(this.logger, info, "finish getInfoByQueryId", LogType.of(success), getInfoByQueryId, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryId", LogType.of(success), getInfoByQueryId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getInfoByQueryId", sequence, LogType.of(success), getInfoByQueryId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryId", sequence, LogType.of(success), getInfoByQueryId, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryId.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getInfoByQueryId", LogType.of(failure), getInfoByQueryId, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getInfoByQueryId", sequence, LogType.of(failure), getInfoByQueryId, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryId.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -199,13 +199,13 @@ public class LoggingQueryController implements QueryController {
         ContentResponse<Query> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getV1ByQueryId", LogType.of(start), getV1ByQueryId).log();
+            new LogMessage.Impl(this.logger, trace, "start getV1ByQueryId", sequence, LogType.of(start), getV1ByQueryId).log();
             response = this.controller.getV1(queryId);
-            new LogMessage.Impl(this.logger, info, "finish getV1ByQueryId", LogType.of(success), getV1ByQueryId, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getV1ByQueryId", LogType.of(success), getV1ByQueryId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getV1ByQueryId", sequence, LogType.of(success), getV1ByQueryId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getV1ByQueryId", sequence, LogType.of(success), getV1ByQueryId, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), getV1ByQueryId.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getV1ByQueryId", LogType.of(failure), getV1ByQueryId, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getV1ByQueryId", sequence, LogType.of(failure), getV1ByQueryId, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getV1ByQueryId.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -229,13 +229,13 @@ public class LoggingQueryController implements QueryController {
         ContentResponse<AsgQuery> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getAsgByQueryId", LogType.of(start), getAsgByQueryId).log();
+            new LogMessage.Impl(this.logger, trace, "start getAsgByQueryId", sequence, LogType.of(start), getAsgByQueryId).log();
             response = this.controller.getAsg(queryId);
-            new LogMessage.Impl(this.logger, info, "finish getAsgByQueryId", LogType.of(success), getAsgByQueryId, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getAsgByQueryId", LogType.of(success), getAsgByQueryId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getAsgByQueryId", sequence, LogType.of(success), getAsgByQueryId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getAsgByQueryId", sequence, LogType.of(success), getAsgByQueryId, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), getAsgByQueryId.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getAsgByQueryId", LogType.of(failure), getAsgByQueryId, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getAsgByQueryId", sequence, LogType.of(failure), getAsgByQueryId, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getAsgByQueryId.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -296,13 +296,13 @@ public class LoggingQueryController implements QueryController {
         ContentResponse<Boolean> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start delete", LogType.of(start), delete).log();
+            new LogMessage.Impl(this.logger, trace, "start delete", sequence, LogType.of(start), delete).log();
             response = this.controller.delete(queryId);
-            new LogMessage.Impl(this.logger, info, "finish delete", LogType.of(success), delete, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish delete", LogType.of(success), delete, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish delete", sequence, LogType.of(success), delete, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish delete", sequence, LogType.of(success), delete, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), delete.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed delete", LogType.of(failure), delete, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed delete", sequence, LogType.of(failure), delete, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), delete.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -333,5 +333,7 @@ public class LoggingQueryController implements QueryController {
     private static MethodName.MDCWriter getAsgByQueryId = MethodName.of("getAsgByQueryId");
     private static MethodName.MDCWriter getInfoByQueryId = MethodName.of("getInfoByQueryId");
     private static MethodName.MDCWriter delete = MethodName.of("delete");
+
+    private static LogMessage.MDCWriter sequence = Sequence.incr();
     //endregion
 }

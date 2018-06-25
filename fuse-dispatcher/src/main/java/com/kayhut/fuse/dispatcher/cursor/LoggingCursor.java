@@ -1,9 +1,6 @@
 package com.kayhut.fuse.dispatcher.cursor;
 
-import com.kayhut.fuse.dispatcher.logging.ElapsedFrom;
-import com.kayhut.fuse.dispatcher.logging.LogMessage;
-import com.kayhut.fuse.dispatcher.logging.LogType;
-import com.kayhut.fuse.dispatcher.logging.MethodName;
+import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import org.slf4j.Logger;
@@ -29,16 +26,16 @@ public class LoggingCursor implements Cursor {
         boolean thrownException = false;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getNextResults", LogType.of(start), getNextResults, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getNextResults", sequence, LogType.of(start), getNextResults, ElapsedFrom.now()).log();
             return this.cursor.getNextResults(numResults);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage.Impl(this.logger, error, "failed getNextResults", LogType.of(failure), getNextResults, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getNextResults", sequence, LogType.of(failure), getNextResults, ElapsedFrom.now())
                     .with(ex).log();
             throw ex;
         } finally {
             if (!thrownException) {
-                new LogMessage.Impl(this.logger, trace, "finish getNextResults", LogType.of(success), getNextResults, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.logger, trace, "finish getNextResults", sequence, LogType.of(success), getNextResults, ElapsedFrom.now()).log();
             }
         }
     }
@@ -49,5 +46,6 @@ public class LoggingCursor implements Cursor {
     private Logger logger;
 
     private static MethodName.MDCWriter getNextResults = MethodName.of("getNextResults");
+    private static LogMessage.MDCWriter sequence = Sequence.incr();
     //endregion
 }

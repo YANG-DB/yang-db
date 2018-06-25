@@ -31,6 +31,35 @@ public class OntologyTest {
     }
 
     @Test
+    public void a() {
+        int numIterations = 50000;
+
+        for(int i = 0; i < numIterations ; i++) {
+            int a = Integer.parseInt(Integer.toString(i));
+        }
+
+        int a = 0;
+        int b = 0;
+
+        long start = System.currentTimeMillis();
+        for(int i = 0; i < numIterations ; i++) {
+            b += 1;
+        }
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println("empty loop elapsed: " + elapsed);
+
+        start = System.currentTimeMillis();
+        for(int i = 0; i < numIterations ; i++) {
+            a = Integer.parseInt(Integer.toString(i));
+        }
+        elapsed = System.currentTimeMillis() - start;
+
+        System.out.println("parsing loop elapsed: " + elapsed);
+        System.out.println(a);
+        System.out.println(b);
+    }
+
+    @Test
     @Ignore
     public void testShortOntologySerialization() throws IOException, JSONException {
         String ontologyActualJSON = mapper.writeValueAsString(ontologyShortObj);
