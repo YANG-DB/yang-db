@@ -133,7 +133,7 @@ public class QueryResultAssert {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
-        Assert.assertTrue(expected.getpType().equals(actual.getpType()));
+        Assert.assertEquals(expected.getpType(), actual.getpType());
         Assert.assertEquals(expected.getValue(), actual.getValue());
         Assert.assertEquals(expected.getAgg(), actual.getAgg());
     }
@@ -199,6 +199,12 @@ public class QueryResultAssert {
 
     private static void assertIfBothNotNull(Object expected, Object actual) {
         Assert.assertTrue(expected != null && actual != null);
+    }
+
+    private static void assertIfBothNotEmpty(Iterable expected, Iterable actual) {
+        if (expected == null || Stream.ofAll(expected).isEmpty()) {
+            Assert.assertTrue(actual == null || Stream.ofAll(actual).isEmpty());
+        }
     }
     //endregion
 }

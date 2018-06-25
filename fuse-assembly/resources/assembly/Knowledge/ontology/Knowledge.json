@@ -97,6 +97,28 @@
         "title",
         "content",
         "url",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser",
+        "score"
+      ]
+    },
+    {
+      "eType": "File",
+      "name": "File",
+      "properties": [
+        "logicalId",
+        "entityId",
+        "name",
+        "path",
+        "displayName",
+        "mimeType",
+        "category",
+        "description",
         "system",
         "authorization",
         "lastUpdateUser",
@@ -206,6 +228,17 @@
       ]
     },
     {
+      "rType": "hasEntityFile",
+      "name": "hasEntityFile",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "File"
+        }
+      ]
+    },
+    {
       "rType": "hasEvalueReference",
       "name": "hasEvalueReference",
       "directional": true,
@@ -285,6 +318,31 @@
     {
       "pType": "title",
       "name": "title",
+      "type": "string"
+    },
+    {
+      "pType": "name",
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "pType": "path",
+      "name": "path",
+      "type": "string"
+    },
+    {
+      "pType": "displayName",
+      "name": "displayName",
+      "type": "string"
+    },
+    {
+      "pType": "mimeType",
+      "name": "mimeType",
+      "type": "string"
+    },
+    {
+      "pType": "description",
+      "name": "description",
       "type": "string"
     },
     {
@@ -403,6 +461,16 @@
       "type": "string"
     },
     {
+      "pType":"score",
+      "name":"score",
+      "type":"float"
+    },
+    {
+      "pType": "refs",
+      "name": "refs",
+      "type": "string"
+    },
+    {
       "pType": "id",
       "name": "id",
       "type": "string"
@@ -411,16 +479,6 @@
       "pType": "type",
       "name": "type",
       "type": "string"
-    },
-    {
-      "pType":"refs",
-      "name":"refs",
-      "type":"string"
-    },
-    {
-      "pType":"score",
-      "name":"score",
-      "type":"float"
     }
   ]
 }

@@ -15,6 +15,7 @@ public class KnowledgeRawSchemaShort implements RawSchema {
 
     //region Static
     public static final String ENTITY = "entity";
+    public static final String FILE = "file";
     public static final String ENTITY_VALUE = "e.value";
     public static final String RELATION = "relation";
     public static final String RELATION_VALUE = "r.value";
@@ -63,6 +64,8 @@ public class KnowledgeRawSchemaShort implements RawSchema {
                 return new IndexPartitions.Impl("relationId", getPartitions(RELATION));
             case INSIGHT:
                 return new IndexPartitions.Impl("_id", getPartitions(INSIGHT));
+            case FILE:
+                return new IndexPartitions.Impl("_id", getPartitions(ENTITY));
             case REFERENCE:
                 return  new IndexPartitions.Impl("_id", getPartitions(REFERENCE));
 
@@ -73,7 +76,12 @@ public class KnowledgeRawSchemaShort implements RawSchema {
     @Override
     public List<IndexPartitions.Partition> getPartitions(String type) {
         switch (type) {
-            case ENTITY:
+            case FILE :
+                return Arrays.asList(
+                        new IndexPartitions.Partition.Range.Impl<>("e00000000", "e10000000", "e0"),
+                        new IndexPartitions.Partition.Range.Impl<>("e10000000", "e20000000", "e1"),
+                        new IndexPartitions.Partition.Range.Impl<>("e20000000", "e30000000", "e2"));
+            case ENTITY :
                 return Arrays.asList(
                         new IndexPartitions.Partition.Range.Impl<>("e00000000", "e10000000", "e0"),
                         new IndexPartitions.Partition.Range.Impl<>("e10000000", "e20000000", "e1"),

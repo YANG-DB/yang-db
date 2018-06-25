@@ -1,7 +1,6 @@
 package com.kayhut.fuse.assembly.knowledge.service;
 
 import com.kayhut.fuse.assembly.knowledge.RankingKnowledgeDataInfraManager;
-import com.kayhut.fuse.assembly.knowlegde.KnowledgeDataInfraManager;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
@@ -12,7 +11,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.Quant1;
@@ -21,8 +20,9 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.*;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.Entity;
+import com.kayhut.fuse.model.results.QueryResultAssert;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
@@ -30,7 +30,10 @@ import com.kayhut.test.data.DragonsOntology;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import org.jooby.Jooby;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,15 +41,16 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.model.OntologyTestUtils.*;
+import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
 
 public class RankingScoreBasedE2ETests {
+    public static final String KNOWLEDGE = "knowledge";
     private static Jooby app;
     public static String CONFIG_PATH = Paths.get("src","test","resources",  "application.test.engine3.m1.dfs.knowledge-test.public.conf").toString();
 
     @BeforeClass
     public static void setup() throws Exception {
-        ElasticEmbeddedNode instance = GlobalElasticEmbeddedNode.getInstance();
+        GlobalElasticEmbeddedNode.getInstance(KNOWLEDGE);
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(CONFIG_PATH));
 
@@ -56,11 +60,9 @@ public class RankingScoreBasedE2ETests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
-        manager = new RankingKnowledgeDataInfraManager(CONFIG_PATH);
-        manager.client_connect();
+        manager = new RankingKnowledgeDataInfraManager(CONFIG_PATH, ElasticEmbeddedNode.getClient(KNOWLEDGE,9300));
         manager.init();
         manager.load();
-        //manager.client_close();
     }
 
     @AfterClass
@@ -74,39 +76,6 @@ public class RankingScoreBasedE2ETests {
     }
 
 
-    private void testAndAssertQuery(Query query, AssignmentsQueryResult expectedAssignmentsQueryResult) throws Exception {
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
-
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
-
-        AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        QueryResultAssert.assertEquals(expectedAssignmentsQueryResult, actualAssignmentsQueryResult, shouldIgnoreRelId());
-    }
-
-
-
-    private static Iterable<Map<String, Object>> createPeople(int numPeople) {
-        List<Map<String, Object>> people = new ArrayList<>();
-        for(int i = 0 ; i < numPeople ; i++) {
-            Map<String, Object> person = new HashMap<>();
-            String context = "ctx1";
-            person.put("id",String.format("e%08d.", i) + context);
-            person.put("type", "entity");
-            person.put("category", "Person");
-            person.put("context", context);
-            person.put("logicalId", String.format("e%08d", i));
-            people.add(person);
-        }
-        return people;
-    }
     //endregion
 
 
@@ -249,10 +218,33 @@ public class RankingScoreBasedE2ETests {
         Assert.assertEquals("e00000004.global", globalEntitiesSorted.get(2).geteID());
     }
 
+    @Test
+    public void testMotiTitleLikeSingleWildcardUpperCase() throws IOException, InterruptedException {
+        Query query = getByTitleLike("Moti*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(3, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000002.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(1).geteID());
+        Assert.assertEquals("e00000004.global", globalEntitiesSorted.get(2).geteID());
+    }
+
 
     @Test
     public void testMotiCoNickLike() throws IOException, InterruptedException {
         Query query = getByNicknamesLike("*moti co*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(2, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000001.global", globalEntitiesSorted.get(0).geteID());
+        Assert.assertEquals("e00000003.global", globalEntitiesSorted.get(1).geteID());
+    }
+
+    @Test
+    public void testMotiCoNickLikeUpperCase() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*Moti Co*");
         AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
@@ -274,6 +266,16 @@ public class RankingScoreBasedE2ETests {
     @Test
     public void testVeorgianaSuzetteNickLike() throws IOException, InterruptedException {
         Query query = getByNicknamesLike("*veorgiana*suzette*");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
+        Assert.assertEquals(1, globalEntitiesSorted.size());
+        Assert.assertEquals("e00000008.global", globalEntitiesSorted.get(0).geteID());
+    }
+
+    @Test
+    public void testVeorgianaSuzetteNickLikeUpperCase() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("*veorgiana*SUZETTE*");
         AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntitiesSorted = getGlobalEntitesSorted(assignmentsQueryResult);
@@ -354,12 +356,38 @@ public class RankingScoreBasedE2ETests {
         Assert.assertTrue(namesSet.contains("e00000018.global"));
         Assert.assertTrue(namesSet.contains("e00000019.global"));
         Assert.assertTrue(namesSet.contains("e00000020.global"));
+    }
+
+    @Test
+    public void testWhitespace() throws IOException, InterruptedException {
+        Query query = getByNicknamesLike("* *");
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+        List<Entity> globalEntities
+                = assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).collect(Collectors.toList());
+        Assert.assertEquals(15, globalEntities.size());
+        Set<String> namesSet = globalEntities.stream().map(e -> e.geteID()).collect(Collectors.toSet());
 
     }
 
     @Test
     public void testTitleLikeAny() throws IOException, InterruptedException {
         Query query = getByTitleLikeAny(Arrays.asList("*moti*", "*cohen*"));
+        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
+
+        List<Entity> globalEntities
+                = assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).collect(Collectors.toList());
+        Assert.assertEquals(3, globalEntities.size());
+        Set<String> namesSet = globalEntities.stream().map(e -> e.geteID()).collect(Collectors.toSet());
+        Assert.assertTrue(namesSet.contains("e00000001.global"));
+        Assert.assertTrue(namesSet.contains("e00000002.global"));
+        Assert.assertTrue(namesSet.contains("e00000004.global"));
+    }
+
+    @Test
+    public void testTitleLikeAnyUpperCase() throws IOException, InterruptedException {
+        Query query = getByTitleLikeAny(Arrays.asList("*MOTI*", "*COHEN*"));
         AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
 
@@ -412,19 +440,6 @@ public class RankingScoreBasedE2ETests {
     private List<Entity> getGlobalEntitesSorted(AssignmentsQueryResult assignmentsQueryResult) {
         return assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).sorted((o1, o2) -> -1*Double.compare((double) o1.getProperties().stream().filter(p -> p.getpType().equals("score")).findFirst().get().getValue(),
                 (double) o2.getProperties().stream().filter(p -> p.getpType().equals("score")).findFirst().get().getValue())).collect(Collectors.toList());
-    }
-
-    private Query getEntities() {
-        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
-                new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$("Entity"), 2,0),
-                new Rel(2,$ont.rType$("hasEntity"), Rel.Direction.L, "", 3, 0),
-                new ETyped(3,"B", $ont.eType$("LogicalEntity"), 4,0 ),
-                new Rel(4, $ont.rType$("hasEntity"), Rel.Direction.R, "", 5, 0),
-                new ETyped(5, "C", $ont.eType$("Entity"), 6,0),
-                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
-                new ETyped(7, "D", $ont.eType$("Evalue"), 0,0)
-        )).build();
     }
 
     private Query getByNicknamesLike(String nick) {
