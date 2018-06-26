@@ -22,7 +22,25 @@ public class CsvTraversalCursor implements Cursor {
         AssignmentsQueryResult newResult = (AssignmentsQueryResult) this.cursor.getNextResults(numResults);
 
         Stream.ofAll(newResult.getAssignments()).forEach(res -> builder.withLine(convertToCsv(res)));
+        if(csvCursorRequest.isWithHeaders()){
+            addHeaders(csvCursorRequest, builder);
+        }
         return builder.build();
+    }
+
+    private void addHeaders(CreateCsvCursorRequest csvCursorRequest, CsvQueryResult.Builder builder) {
+        if(csvCursorRequest.getCsvElements().length > 0){
+            String[] header = new String[csvCursorRequest.getCsvElements().length];
+            for (int i = 0; i < csvCursorRequest.getCsvElements().length; i++) {
+                CreateCsvCursorRequest.CsvElement currentElm = csvCursorRequest.getCsvElements()[i];
+                if(currentElm.getElementType() == CreateCsvCursorRequest.ElementType.Entity){
+                    header[i] = currentElm.getTag1() + "." + currentElm.getProperty();
+                }else{
+                    header[i] = currentElm.getTag1() + "-" + currentElm.getTag2() + "." + currentElm.getProperty();
+                }
+            }
+            builder.withHeader(header);
+        }
     }
 
     private String convertToCsv(Assignment assignment){

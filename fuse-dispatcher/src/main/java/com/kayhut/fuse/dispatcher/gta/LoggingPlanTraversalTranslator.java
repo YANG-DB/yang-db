@@ -4,10 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.kayhut.fuse.dispatcher.logging.ElapsedFrom;
-import com.kayhut.fuse.dispatcher.logging.LogMessage;
-import com.kayhut.fuse.dispatcher.logging.LogType;
-import com.kayhut.fuse.dispatcher.logging.MethodName;
+import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -51,7 +48,7 @@ public class LoggingPlanTraversalTranslator implements PlanTraversalTranslator {
         boolean thrownException = false;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start translate", LogType.of(start), translate, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start translate", sequence, LogType.of(start), translate, ElapsedFrom.now()).log();
             GraphTraversal<?, ?> traversal = this.innerTranslator.translate(planWithCost, context);
             //TODO: performance bug: The descriptor takes a very long time to render
             /*new LogMessage.Impl(this.logger, debug, "traversal: {}", LogType.of(log), translate, ElapsedFrom.now())
@@ -59,13 +56,13 @@ public class LoggingPlanTraversalTranslator implements PlanTraversalTranslator {
             return traversal;
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage.Impl(this.logger, error, "failed translate", LogType.of(failure), translate, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed translate", sequence, LogType.of(failure), translate, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), translate.toString(), "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage.Impl(this.logger, trace, "finish translate", LogType.of(success), translate, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.logger, trace, "finish translate", sequence, LogType.of(success), translate, ElapsedFrom.now()).log();
                 this.metricRegistry.meter(name(this.logger.getName(), translate.toString(), "success")).mark();
             }
             timerContext.stop();
@@ -80,5 +77,6 @@ public class LoggingPlanTraversalTranslator implements PlanTraversalTranslator {
     private Descriptor<GraphTraversal<?, ?>> descriptor;
 
     private static MethodName.MDCWriter translate = MethodName.of("translate");
+    private static LogMessage.MDCWriter sequence = Sequence.incr();
     //endregion
 }

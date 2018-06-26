@@ -59,13 +59,13 @@ public class LoggingCatalogController implements CatalogController {
         ContentResponse<Ontology> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getOntology", LogType.of(start), getOntology).log();
+            new LogMessage.Impl(this.logger, trace, "start getOntology", sequence, LogType.of(start), getOntology).log();
             response = this.controller.getOntology(id);
-            new LogMessage.Impl(this.logger, info, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getOntology", sequence, LogType.of(success), getOntology, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getOntology", sequence, LogType.of(success), getOntology, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getOntology", LogType.of(failure), getOntology, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getOntology", sequence, LogType.of(failure), getOntology, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -89,13 +89,13 @@ public class LoggingCatalogController implements CatalogController {
         ContentResponse<List<Ontology>> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getOntology", LogType.of(start), getOntology).log();
+            new LogMessage.Impl(this.logger, trace, "start getOntology", sequence, LogType.of(start), getOntology).log();
             response = this.controller.getOntologies();
-            new LogMessage.Impl(this.logger, info, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getOntology", sequence, LogType.of(success), getOntology, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getOntology", sequence, LogType.of(success), getOntology, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getOntology", LogType.of(failure), getOntology, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getOntology", sequence, LogType.of(failure), getOntology, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -119,13 +119,13 @@ public class LoggingCatalogController implements CatalogController {
         ContentResponse<GraphElementSchemaProvider> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getSchema", LogType.of(start), getSchema).log();
+            new LogMessage.Impl(this.logger, trace, "start getSchema", sequence, LogType.of(start), getSchema).log();
             response = this.controller.getSchema(id);
-            new LogMessage.Impl(this.logger, info, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getSchema", sequence, LogType.of(success), getSchema, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getSchema", sequence, LogType.of(success), getSchema, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getSchema", LogType.of(failure), getSchema, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getSchema", sequence, LogType.of(failure), getSchema, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -149,13 +149,13 @@ public class LoggingCatalogController implements CatalogController {
         ContentResponse<List<GraphElementSchemaProvider>> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start getSchema", LogType.of(start), getSchema).log();
+            new LogMessage.Impl(this.logger, trace, "start getSchema", sequence, LogType.of(start), getSchema).log();
             response = this.controller.getSchemas();
-            new LogMessage.Impl(this.logger, info, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish getSchema", sequence, LogType.of(success), getSchema, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getSchema", sequence, LogType.of(success), getSchema, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getSchema", LogType.of(failure), getSchema, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed getSchema", sequence, LogType.of(failure), getSchema, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -178,5 +178,7 @@ public class LoggingCatalogController implements CatalogController {
 
     private static MethodName.MDCWriter getOntology = MethodName.of("getOntology");
     private static MethodName.MDCWriter getSchema = MethodName.of("getSchema");
+
+    private static LogMessage.MDCWriter sequence = Sequence.incr();
     //endregion
 }
