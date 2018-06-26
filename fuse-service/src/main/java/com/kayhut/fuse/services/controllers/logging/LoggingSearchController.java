@@ -59,13 +59,13 @@ public class LoggingSearchController implements SearchController{
         ContentResponse response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start search", LogType.of(start), search).log();
+            new LogMessage.Impl(this.logger, trace, "start search", sequence, LogType.of(start), search).log();
             response = this.controller.search(request);
-            new LogMessage.Impl(this.logger, info, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish search", sequence, LogType.of(success), search, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish search", sequence, LogType.of(success), search, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed search", LogType.of(failure), search, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed search", sequence, LogType.of(failure), search, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -87,5 +87,6 @@ public class LoggingSearchController implements SearchController{
     private SearchController controller;
 
     private static MethodName.MDCWriter search = MethodName.of("search");
+    private static LogMessage.MDCWriter sequence = Sequence.incr();
     //endregion
 }

@@ -49,13 +49,13 @@ public class LoggingDataLoaderController implements DataLoaderController {
         ContentResponse<String> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start load", LogType.of(start), load).log();
+            new LogMessage.Impl(this.logger, trace, "start load", sequence, LogType.of(start), load).log();
             response = this.controller.load(ontology);
-            new LogMessage.Impl(this.logger, info, "finish load", LogType.of(success), load, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish load", LogType.of(success), load, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish load", sequence, LogType.of(success), load, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish load", sequence, LogType.of(success), load, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), load.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed load", LogType.of(failure), load, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed load", sequence, LogType.of(failure), load, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), load.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -76,13 +76,13 @@ public class LoggingDataLoaderController implements DataLoaderController {
         ContentResponse<String> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start init", LogType.of(start), init).log();
+            new LogMessage.Impl(this.logger, trace, "start init", sequence, LogType.of(start), init).log();
             response = this.controller.init(ontology);
-            new LogMessage.Impl(this.logger, info, "finish init", LogType.of(success), init, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish init", LogType.of(success), init, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish init", sequence, LogType.of(success), init, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish init", sequence, LogType.of(success), init, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), init.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed init", LogType.of(failure), init, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed init", sequence, LogType.of(failure), init, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), init.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -103,13 +103,13 @@ public class LoggingDataLoaderController implements DataLoaderController {
         ContentResponse<String> response = null;
 
         try {
-            new LogMessage.Impl(this.logger, trace, "start drop", LogType.of(start), drop).log();
+            new LogMessage.Impl(this.logger, trace, "start drop", sequence, LogType.of(start), drop).log();
             response = this.controller.drop(ontology);
-            new LogMessage.Impl(this.logger, info, "finish drop", LogType.of(success), drop, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish drop", LogType.of(success), drop, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, info, "finish drop", sequence, LogType.of(success), drop, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish drop", sequence, LogType.of(success), drop, ElapsedFrom.now()).log();
             this.metricRegistry.meter(name(this.logger.getName(), drop.toString(), "success")).mark();
         } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed drop", LogType.of(failure), drop, ElapsedFrom.now())
+            new LogMessage.Impl(this.logger, error, "failed drop", sequence, LogType.of(failure), drop, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), drop.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
@@ -131,5 +131,7 @@ public class LoggingDataLoaderController implements DataLoaderController {
     private static MethodName.MDCWriter load = MethodName.of("load");
     private static MethodName.MDCWriter init = MethodName.of("init");
     private static MethodName.MDCWriter drop = MethodName.of("drop");
+
+    private static LogMessage.MDCWriter sequence = Sequence.incr();
     //endregion
 }

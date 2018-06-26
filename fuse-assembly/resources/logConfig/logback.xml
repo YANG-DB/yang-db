@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="15 seconds" debug="false">
+  <conversionRule conversionWord="sequence" converterClass="com.kayhut.fuse.dispatcher.logging.Sequence$Converter" />
   <conversionRule conversionWord="requestId" converterClass="com.kayhut.fuse.logging.RequestId$Converter" />
   <conversionRule conversionWord="requestExternalId" converterClass="com.kayhut.fuse.logging.RequestExternalMetadata$IdConverter" />
   <conversionRule conversionWord="requestExternalOperation" converterClass="com.kayhut.fuse.logging.RequestExternalMetadata$OperationConverter" />
@@ -56,6 +57,10 @@
         <name>host</name>
         <value>%hostName</value>
         <allowEmpty>false</allowEmpty>
+      </property>
+      <property>
+        <name>sequence</name>
+        <value>%sequence</value>
       </property>
       <property>
         <name>requestScope</name>
