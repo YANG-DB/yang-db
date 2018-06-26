@@ -2,6 +2,10 @@ package com.kayhut.fuse.assembly.knowledge.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.kayhut.fuse.model.results.Entity;
+
+import java.util.Optional;
 
 //todo - for kobi usage
 public class ValueBuilder extends EntityId {
@@ -44,7 +48,22 @@ public class ValueBuilder extends EntityId {
     }
 
     @Override
-    public String toString(ObjectMapper mapper) throws JsonProcessingException {
+    public Optional<String> routing() {
+        return Optional.of(logicalId);
+    }
+
+    @Override
+    public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
+        return super.collect(mapper, node);
+    }
+
+    @Override
+    public Entity toEntity() {
         return null;
+    }
+
+    @Override
+    public String getETag() {
+        return "V"+id();
     }
 }

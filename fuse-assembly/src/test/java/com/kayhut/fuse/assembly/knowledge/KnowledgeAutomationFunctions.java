@@ -78,8 +78,6 @@ public class KnowledgeAutomationFunctions {
                             .put("type", "reference")
                             .put("title", "Title of - " + referenceId)
                             .put("url", "https://stackoverflow.com/questions")
-                            .put("value", "But I must explain to you how all this works")
-                            .put("system", "system1")
                             .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
                             .put("authorizationCount", 1)
                             .put("lastUpdateUser", "2018-05-27 14:32:56.533")

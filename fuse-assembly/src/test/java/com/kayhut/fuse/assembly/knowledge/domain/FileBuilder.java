@@ -1,14 +1,13 @@
 package com.kayhut.fuse.assembly.knowledge.domain;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
 import javaslang.collection.Stream;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 //todo - for kobi usage
 public class FileBuilder extends EntityId {
@@ -62,14 +61,14 @@ public class FileBuilder extends EntityId {
         return fileId;
     }
 
-    public String toString(ObjectMapper mapper) throws JsonProcessingException {
-        ArrayNode authNode = mapper.createArrayNode();
-        for (String auth : authorization) {
-            authNode.add(auth);
-        }
+    @Override
+    public Optional<String> routing() {
+        return Optional.of(logicalId);
+    }
 
-        //create knowledge entity
-        ObjectNode on = mapper.createObjectNode();
+    @Override
+    public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
+        ObjectNode on = super.collect(mapper, node);
         on.put("type", "file");
         on.put("name", name);
         on.put("path", path);
@@ -79,24 +78,20 @@ public class FileBuilder extends EntityId {
         on.put("description", description);
         on.put("logicalId", logicalId);
         on.put("entityId", entityId);
+        return on;
+    }
 
-            //metadata
-        on.put("authorization", authNode);
-        on.put("authorizationCount", authNode.size());
-        on.put("lastUpdateUser", lastUpdateUser);
-        on.put("lastUpdateTime", lastUpdateTime);
-        on.put("creationUser", creationUser);
-        on.put("creationTime", creationTime);
-
-        return mapper.writeValueAsString(on);
+    @Override
+    public String getETag() {
+        return "F" + id();
     }
 
     public Entity toEntity() {
         return Entity.Builder.instance()
                 .withEID(fileId)
-                .withETag(Stream.of("A").toJavaSet())
+                .withETag(Stream.of(getETag()).toJavaSet())
                 .withEType("File")
-                .withProperties(Arrays.asList(
+                .withProperties(collect(Arrays.asList(
                         new Property("name", "raw", name),
                         new Property("path", "raw", path),
                         new Property("displayName", "raw", displayName),
@@ -104,13 +99,8 @@ public class FileBuilder extends EntityId {
                         new Property("category", "raw", category),
                         new Property("description", "raw", description),
                         new Property("logicalId", "raw", logicalId),
-                        new Property("entityId", "raw", entityId),
-                        new Property("creationUser", "raw", creationUser),
-                        new Property("lastUpdateTime", "raw", lastUpdateTime),
-                        new Property("creationTime", "raw", creationTime),
-                        new Property("lastUpdateUser", "raw", lastUpdateUser),
-                        new Property("authorization", "raw", Arrays.asList(authorization))
-                )).build();
+                        new Property("entityId", "raw", entityId)
+                ))).build();
     }
 
 }

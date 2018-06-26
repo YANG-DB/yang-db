@@ -14,13 +14,39 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.kayhut.fuse.assembly.knowlegde.KnowledgeDataInfraManager.PGE;
 
 public class KnowledgeWriterContext {
-    private AtomicInteger counter = new AtomicInteger(0);
+    private AtomicInteger eCounter = new AtomicInteger(0);
+    private AtomicInteger evCounter = new AtomicInteger(0);
+    private AtomicInteger fCounter = new AtomicInteger(0);
+    private AtomicInteger refCounter = new AtomicInteger(0);
+    private AtomicInteger relCounter = new AtomicInteger(0);
+    private AtomicInteger iCounter = new AtomicInteger(0);
+
     public TransportClient client;
     public RawSchema schema;
     public ObjectMapper mapper;
 
     public String nextLogicalId(){
-        return  "e" + String.format(this.schema.getIdFormat("entity"), counter.incrementAndGet());
+        return  "e" + String.format(this.schema.getIdFormat("entity"), eCounter.incrementAndGet());
+    }
+
+    public String nextValueId(){
+        return  "ev" + String.format(this.schema.getIdFormat("entity"), evCounter.incrementAndGet());
+    }
+
+    public String nextRefId(){
+        return  "ref" + String.format(this.schema.getIdFormat("reference"), refCounter.incrementAndGet());
+    }
+
+    public String nextInsightId(){
+        return  "i" + String.format(this.schema.getIdFormat("insight"), iCounter.incrementAndGet());
+    }
+
+    public String nextRelId(){
+        return  "i" + String.format(this.schema.getIdFormat("relation"), relCounter.incrementAndGet());
+    }
+
+    public String nextFileId(){
+        return  "f" + String.format(this.schema.getIdFormat("file"), fCounter.incrementAndGet());
     }
 
     public static KnowledgeWriterContext init(TransportClient client, RawSchema schema) {
@@ -32,22 +58,23 @@ public class KnowledgeWriterContext {
     }
 
 
-    public static <T extends EntityId> int commit(KnowledgeWriterContext ctx,String index, T... builders) throws JsonProcessingException {
+    public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx,String index, T... builders) throws JsonProcessingException {
         int count = 0;
         final BulkRequestBuilder bulk = ctx.client.prepareBulk();
-        for (EntityId builder : builders) {
+        for (KnowledgeDomainBuilder builder : builders) {
             IndexRequestBuilder request = ctx.client.prepareIndex()
                     .setIndex(index)
                     .setType(PGE)
                     .setId(builder.id())
                     .setOpType(IndexRequest.OpType.INDEX)
-                    .setRouting(builder.logicalId)
                     .setSource(builder.toString(ctx.mapper), XContentType.JSON);
+            builder.routing().ifPresent(request::setRouting);
             count += bulk.add(request).get().getItems().length;
         }
         return count;
 
 
     }
+
 
 }
