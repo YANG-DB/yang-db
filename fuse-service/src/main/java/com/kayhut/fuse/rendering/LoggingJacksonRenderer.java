@@ -63,7 +63,7 @@ public class LoggingJacksonRenderer extends JacksonBaseRenderer {
             renderElapsed = TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS);
             byte[] renderElapsedValueBytes = String.format("%08d", renderElapsed).getBytes();
 
-            System.arraycopy(bytes, indexOfRenderElapsed, tmpBytes, 0, Math.min(tmpBytes.length, bytes.length - indexOfRenderElapsed + 1));
+            System.arraycopy(bytes, indexOfRenderElapsed, tmpBytes, 0, Math.min(tmpBytes.length, bytes.length - indexOfRenderElapsed));
             indexOfRenderElapsed += Bytes.indexOf(tmpBytes, zeroBytes);
 
             System.arraycopy(renderElapsedValueBytes, 0, bytes, indexOfRenderElapsed, renderElapsedValueBytes.length);
@@ -81,7 +81,7 @@ public class LoggingJacksonRenderer extends JacksonBaseRenderer {
 
             byte[] totalElapsedValueBytes = String.format("%08d", totalElapsed).getBytes();
 
-            System.arraycopy(bytes, indexOfTotalElapsed, tmpBytes, 0, Math.min(tmpBytes.length, bytes.length - indexOfTotalElapsed + 1));
+            System.arraycopy(bytes, indexOfTotalElapsed, tmpBytes, 0, Math.min(tmpBytes.length, bytes.length - indexOfTotalElapsed));
             indexOfTotalElapsed += Bytes.indexOf(tmpBytes, zeroBytes);
 
             System.arraycopy(totalElapsedValueBytes, 0, bytes, indexOfTotalElapsed, totalElapsedValueBytes.length);
