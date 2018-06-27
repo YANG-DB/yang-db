@@ -11,20 +11,18 @@
     <modules>
         <module>data-gen</module>
         <module>fuse-model</module>
-        <module>fuse-validator</module>
         <module>fuse-asg</module>
-        <module>fuse-dispatcher</module>
+        <module>fuse-core</module>
         <module>fuse-service</module>
-        <module>fuse-axis1</module>
         <module>fuse-axis2</module>
         <module>fuse-test</module>
         <module>fuse-datagen</module>
         <module>fuse-domain</module>
-        <module>geojson-jackson</module>
+        <module>fuse-geojson</module>
     </modules>
 
     <scm>
-        <developerConnection>scm:git:hhttp://ec2-52-31-47-238.eu-west-1.compute.amazonaws.com/fuse/es-plugins.git</developerConnection>
+        <developerConnection>scm:git:http://gita.westeurope.cloudapp.azure.com/fuse/Fuse.git</developerConnection>
         <tag>1.0</tag>
     </scm>
 
