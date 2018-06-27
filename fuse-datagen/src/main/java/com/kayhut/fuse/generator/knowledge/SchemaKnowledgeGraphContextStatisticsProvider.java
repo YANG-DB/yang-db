@@ -234,6 +234,23 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                 Stream.ofAll(hits)
                         .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.sourceAsMap().get("refs")).size())
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
+
+        contextStatistics.setRelationFieldTypes(
+                Stream.ofAll(hits)
+                        .groupBy(hit -> (String)hit.sourceAsMap().get("fieldId"))
+                        .toJavaMap(grouping -> {
+                            SearchHit hit = grouping._2().get(0);
+                            String type = null;
+                            if (hit.sourceAsMap().containsKey("stringValue")) {
+                                type = "stringValue";
+                            } else if (hit.sourceAsMap().containsKey("intValue")) {
+                                type = "intValue";
+                            } else if (hit.sourceAsMap().containsKey("dateValue")) {
+                                type = "dateValue";
+                            }
+
+                            return new Tuple2(grouping._1(), type);
+                        }));
     }
 
     private void fillInsightEntitiesAndReferencesContextStatistics(ContextStatistics contextStatistics, String context) {

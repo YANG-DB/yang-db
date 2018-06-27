@@ -9,14 +9,11 @@ import com.kayhut.fuse.generator.knowledge.model.Reference;
 import com.kayhut.fuse.generator.knowledge.model.Relation;
 import com.kayhut.fuse.unipop.controller.search.DefaultSearchOrderProvider;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
-import javaslang.Tuple2;
-import javaslang.Value;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.File;
@@ -71,7 +68,9 @@ public class DataGeneratorRunner {
             knowledgeDocuments = generator.generate(null);
         }
 
-        Supplier<KnowledgeEntityBase.Metadata> commonMetadataSupplier = getCommonMetadataSupplier(generationContext, referenceIds);
+        Supplier<KnowledgeEntityBase.Metadata> commonMetadataSupplier = getCommonMetadataSupplier(
+                generationContext.getContextStatistics().getEntityReferenceCounts(),
+                referenceIds);
 
         // generate entities
         generator = getContextEntityGenerator(client, elasticConfiguration, generationContext, commonMetadataSupplier);
@@ -85,6 +84,10 @@ public class DataGeneratorRunner {
             elasticWriter.write(knowledgeDocuments);
             knowledgeDocuments = generator.generate(null);
         }
+
+        Supplier<KnowledgeEntityBase.Metadata> commonEntityValueMetadataSupplier = getCommonMetadataSupplier(
+                generationContext.getContextStatistics().getEntityValueReferenceCounts(),
+                referenceIds);
 
         //generate entity global values
         Supplier<String> entityValueIdSupplier = new FormatIdSupplier("ev" + elasticConfiguration.getWriteSchema().getIdFormat(), 1000000, 2000000);
@@ -113,7 +116,7 @@ public class DataGeneratorRunner {
                                 fieldId,
                                 generationContext,
                                 entityValueIdSupplier,
-                                commonMetadataSupplier,
+                                commonEntityValueMetadataSupplier,
                                 newLogicalIds,
                                 fromContextLogicalIds);
                     } catch (IOException e) {
@@ -139,7 +142,7 @@ public class DataGeneratorRunner {
                                 fieldId,
                                 generationContext,
                                 entityValueIdSupplier,
-                                commonMetadataSupplier,
+                                commonEntityValueMetadataSupplier,
                                 logicalIdsInvolved);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -151,6 +154,10 @@ public class DataGeneratorRunner {
                         knowledgeDocuments1 = generator1.generate(null);
                     }
                 });
+
+        commonMetadataSupplier = getCommonMetadataSupplier(
+                generationContext.getContextStatistics().getRelationReferenceCounts(),
+                referenceIds);
 
         // generate context relations
         generator = getContextRelationGenerator(client, elasticConfiguration, generationContext, commonMetadataSupplier, logicalIdsInvolved);
@@ -165,6 +172,34 @@ public class DataGeneratorRunner {
             elasticWriter.write(knowledgeDocuments);
             knowledgeDocuments = generator.generate(null);
         }
+
+        Supplier<KnowledgeEntityBase.Metadata> commonRelationValueMetadataSupplier = getCommonMetadataSupplier(
+                generationContext.getContextStatistics().getRelationValueReferenceCounts(),
+                referenceIds);
+
+        // generate relation context values
+        Stream.ofAll(generationContext.getContextStatistics().getRelationFieldTypes().keySet())
+                .forEach(fieldId -> {
+                    KnowledgeGraphGenerator<Object> generator1 = null;
+                    try {
+                        generator1 = getContextRelationValueGenerator(
+                                client,
+                                elasticConfiguration,
+                                fieldId,
+                                generationContext,
+                                entityValueIdSupplier,
+                                commonRelationValueMetadataSupplier,
+                                logicalIdsInvolved);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    Iterable<ElasticDocument<KnowledgeEntityBase>> knowledgeDocuments1 = generator1.generate(null);
+                    while (!Stream.ofAll(knowledgeDocuments1).isEmpty()) {
+                        elasticWriter.write(knowledgeDocuments1);
+                        knowledgeDocuments1 = generator1.generate(null);
+                    }
+                });
     }
 
     private static KnowledgeGraphGenerator<Object> getReferenceGenerator(Client client, ElasticConfiguration elasticConfiguration, GenerationContext generationContext) {
@@ -386,8 +421,62 @@ public class DataGeneratorRunner {
                 fieldValuesSupplier);
     }
 
+    private static KnowledgeGraphGenerator<Object> getContextRelationValueGenerator(
+            Client client,
+            ElasticConfiguration elasticConfiguration,
+            String fieldId,
+            GenerationContext generationContext,
+            Supplier<String> relationValueIdSupplier,
+            Supplier<KnowledgeEntityBase.Metadata> metadataSupplier,
+            List<String> relationIds) throws IOException {
 
-    private static Supplier<KnowledgeEntityBase.Metadata> getCommonMetadataSupplier(GenerationContext generationContext, Iterable<String> referenceIds) {
+        String fieldType = generationContext.getContextStatistics().getEntityFieldTypes().get(fieldId);
+
+        String fromContext = generationContext.getContextGenerationConfiguration().getFromContext();
+
+        Supplier<String> relationIdSupplier = new OrderedSupplier<>(relationIds);
+
+        Supplier<Integer> fieldNumValuesSupplier =
+                new UnifromCachedSupplier<>(
+                        Stream.ofAll(generationContext.getContextStatistics().getRelationValueCounts().get(fieldId).entrySet())
+                                .sortBy(Map.Entry::getValue)
+                                .flatMap(entry1 -> Stream.fill(entry1.getValue(), entry1::getKey))
+                                .toJavaList());
+
+        Supplier fieldValuesSupplier =
+                new ProbabilisticCompositeSupplier<>(
+                        new UniformFieldDataSupplier<>(
+                                client,
+                                "r.value",
+                                fieldId,
+                                fromContext,
+                                elasticConfiguration.getReadSchema().getRelationIndex(),
+                                100000),
+                        generationContext.getContextGenerationConfiguration().getEntityValueOverlapFactor(),
+                        fieldType.equals("stringValue") ?
+                                new FunctionChainSupplier<>(
+                                        new UniformFileLinesCachedSupplier(String.format("%s.generation.values.txt", fieldId)), value -> value) :
+                                fieldType.equals("intValue") ?
+                                        new FunctionChainSupplier<>(
+                                                new UniformFileLinesCachedSupplier(String.format("%s.generation.values.txt", fieldId)),
+                                                Integer::parseInt) :
+                                        () -> null);
+
+
+        return new KnowledgeContextRelationValueDataGenerator(
+                client,
+                generationContext,
+                fieldId,
+                generationContext.getContextGenerationConfiguration().getToContext(),
+                relationValueIdSupplier,
+                relationIdSupplier,
+                metadataSupplier,
+                fieldNumValuesSupplier,
+                fieldValuesSupplier);
+    }
+
+
+    private static Supplier<KnowledgeEntityBase.Metadata> getCommonMetadataSupplier(Map<Integer, Integer> refCounts, Iterable<String> referenceIds) {
         Supplier<String> nameSupplier = new UnifromCachedSupplier<>(new NameSupplier(4, 12), 1000);
         Supplier<Date> metadataDateSupplier = new UnifromBoundedDateSupplier(
                 System.currentTimeMillis() - (long) (1000L * 60L * 60L * 24L * 30L),
@@ -395,7 +484,7 @@ public class DataGeneratorRunner {
         Supplier<Iterable<String>> refsSupplier = new IterableSupplier<>(
                 new UnifromCachedSupplier<>(referenceIds),
                 new UnifromCachedSupplier<>(
-                        Stream.ofAll(generationContext.getContextStatistics().getEntityValueReferenceCounts().entrySet())
+                        Stream.ofAll(refCounts.entrySet())
                                 .sortBy(Map.Entry::getValue)
                                 .flatMap(entry -> Stream.fill(entry.getValue(), entry::getKey))
                                 .toJavaList()));

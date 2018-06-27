@@ -47,6 +47,14 @@ public class ContextStatistics {
         return entityFieldTypes;
     }
 
+    public Map<String, String> getRelationFieldTypes() {
+        return relationFieldTypes;
+    }
+
+    public void setRelationFieldTypes(Map<String, String> relationFieldTypes) {
+        this.relationFieldTypes = relationFieldTypes;
+    }
+
     public void setEntityFieldTypes(Map<String, String> entityFieldTypes) {
         this.entityFieldTypes = entityFieldTypes;
     }
@@ -153,6 +161,7 @@ public class ContextStatistics {
     private Map<String, Integer> relationCategories;
 
     private Map<String, String> entityFieldTypes;
+    private Map<String, String> relationFieldTypes;
 
     private Map<String, Map<Integer, Integer>> entityValueCounts;
     private Map<String, Map<Integer, Integer>> entityGlobalValueCounts;
