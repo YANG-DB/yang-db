@@ -176,6 +176,7 @@ public class DataGeneratorRunner {
         Supplier<KnowledgeEntityBase.Metadata> commonRelationValueMetadataSupplier = getCommonMetadataSupplier(
                 generationContext.getContextStatistics().getRelationValueReferenceCounts(),
                 referenceIds);
+        Supplier<String> relationValueIdSupplier = new FormatIdSupplier("ev" + elasticConfiguration.getWriteSchema().getIdFormat(), 1000000, 2000000);
 
         // generate relation context values
         Stream.ofAll(generationContext.getContextStatistics().getRelationFieldTypes().keySet())
@@ -187,9 +188,9 @@ public class DataGeneratorRunner {
                                 elasticConfiguration,
                                 fieldId,
                                 generationContext,
-                                entityValueIdSupplier,
+                                relationValueIdSupplier,
                                 commonRelationValueMetadataSupplier,
-                                logicalIdsInvolved);
+                                relationIds);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -200,6 +201,18 @@ public class DataGeneratorRunner {
                         knowledgeDocuments1 = generator1.generate(null);
                     }
                 });
+
+        Supplier<KnowledgeEntityBase.Metadata> commonInsightMetadataSupplier = getCommonMetadataSupplier(
+                generationContext.getContextStatistics().getInsightReferenceCounts(),
+                referenceIds);
+
+        // generate insights
+        generator = getContextInsightGenerator(client, elasticConfiguration, generationContext, commonInsightMetadataSupplier, logicalIdsInvolved);
+        knowledgeDocuments = generator.generate(null);
+        while (!Stream.ofAll(knowledgeDocuments).isEmpty()) {
+            elasticWriter.write(knowledgeDocuments);
+            knowledgeDocuments = generator.generate(null);
+        }
     }
 
     private static KnowledgeGraphGenerator<Object> getReferenceGenerator(Client client, ElasticConfiguration elasticConfiguration, GenerationContext generationContext) {
@@ -473,6 +486,44 @@ public class DataGeneratorRunner {
                 metadataSupplier,
                 fieldNumValuesSupplier,
                 fieldValuesSupplier);
+    }
+
+    private static KnowledgeGraphGenerator<Object> getContextInsightGenerator(
+            Client client,
+            ElasticConfiguration elasticConfiguration,
+            GenerationContext generationContext,
+            Supplier<KnowledgeEntityBase.Metadata> metadataSupplier,
+            List<String> logicalIds) {
+
+        Supplier<String> logicalIdSupplier = new UnifromCachedSupplier<String>(logicalIds);
+        Supplier<String> insightIdSupplier = new FormatIdSupplier("i" + elasticConfiguration.getWriteSchema().getIdFormat(), 1000000, 2000000);
+
+        Supplier<String> contentSupplier = new FunctionChainSupplier<>(
+                new IterableSupplier<>(
+                        new UniformDataTextSupplier(
+                                client,
+                                "insight",
+                                "content",
+                                generationContext.getElasticConfiguration().getReadSchema().getInsightIndex(),
+                                100000),
+                        new UnifromBoundedIntSupplier(8, 20)),
+                words -> String.join(" ", Stream.ofAll(words).toArray()));
+
+        Supplier<Integer> numEntitiesSupplier =
+                new UnifromCachedSupplier<>(
+                        Stream.ofAll(generationContext.getContextStatistics().getInsightEntityCounts().entrySet())
+                                .sortBy(Map.Entry::getValue)
+                                .flatMap(entry1 -> Stream.fill(entry1.getValue(), entry1::getKey))
+                                .toJavaList());
+
+        return new KnowledgeContextInsightDataGenerator(
+                client,
+                generationContext,
+                insightIdSupplier,
+                contentSupplier,
+                logicalIdSupplier,
+                numEntitiesSupplier,
+                metadataSupplier);
     }
 
 

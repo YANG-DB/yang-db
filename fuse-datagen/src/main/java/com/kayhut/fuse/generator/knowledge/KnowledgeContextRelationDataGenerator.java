@@ -44,6 +44,8 @@ public class KnowledgeContextRelationDataGenerator implements KnowledgeGraphGene
         this.numToGenerate = (int) Math.floor(
                 Stream.ofAll(this.generationContext.getContextStatistics().getRelationCategories().values()).sum().intValue() *
                         this.generationContext.getContextGenerationConfiguration().getScaleFactor());
+
+        this.entityCategories = new HashMap<>();
     }
     //endregion
 
