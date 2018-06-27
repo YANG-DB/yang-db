@@ -2,6 +2,7 @@ package com.kayhut.fuse.executor.elasticsearch.logging;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
+import com.kayhut.fuse.dispatcher.logging.ElasticQuery;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchResponse;
@@ -44,10 +45,10 @@ public class LoggingSearchScrollRequestBuilder extends SearchScrollRequestBuilde
     @Override
     public ListenableActionFuture<SearchResponse> execute() {
         Closeable timerContext = this.timer.time();
+//        Composite.of()
 
         try {
             this.startMessage.log();
-            this.verboseMessage.with(this.toString()).log();
             return new LoggingActionFuture<>(
                     super.execute(),
                     this.successMessage,

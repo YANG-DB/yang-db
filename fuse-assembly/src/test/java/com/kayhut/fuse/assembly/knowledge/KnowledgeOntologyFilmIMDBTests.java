@@ -187,7 +187,7 @@ public class KnowledgeOntologyFilmIMDBTests {
                 new Rel(8, $ont.rType$("hasEvalue"), R, null, 13, 0),
                 new ETyped(9, "B", $ont.eType$("Insight"), 10, 0),
                 new Quant1(10, QuantType.all, Arrays.asList(11, 12), 0),
-                new EProp(11, $ont.pType$("content"), Constraint.of(ConstraintOp.eq, "4 wins & 1 nomination." // "*wins*")),
+                new EProp(11, $ont.pType$("value"), Constraint.of(ConstraintOp.eq, "4 wins & 1 nomination." // "*wins*")),
         new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
                 new ETyped(13, "C", $ont.eType$("Evalue"), 14, 0),
                 new Quant1(14, QuantType.all, Arrays.asList(15,16), 0),

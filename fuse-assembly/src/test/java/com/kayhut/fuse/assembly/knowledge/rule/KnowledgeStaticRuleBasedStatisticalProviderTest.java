@@ -1,7 +1,7 @@
 package com.kayhut.fuse.assembly.knowledge.rule;
 
 import com.kayhut.fuse.assembly.knowledge.KnowledgeStaticRuleBasedStatisticalProvider;
-import com.kayhut.fuse.assembly.knowledge.KnowlegdeOntology;
+import com.kayhut.fuse.assembly.knowledge.domain.KnowlegdeOntology;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.entity.EConcrete;

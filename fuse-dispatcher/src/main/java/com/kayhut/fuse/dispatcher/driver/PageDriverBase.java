@@ -1,5 +1,6 @@
 package com.kayhut.fuse.dispatcher.driver;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
@@ -8,7 +9,6 @@ import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
-import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import javaslang.collection.Stream;
 
@@ -56,7 +56,7 @@ public abstract class PageDriverBase implements PageDriver {
     @Override
     public Optional<StoreResourceInfo> getInfo(String queryId, String cursorId) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
-        if(!queryResource.isPresent()) {
+        if (!queryResource.isPresent()) {
             return Optional.empty();
         }
 
@@ -71,13 +71,13 @@ public abstract class PageDriverBase implements PageDriver {
                 .map(pageId -> this.urlSupplier.resourceUrl(queryId, cursorId, pageId))
                 .toJavaList();
 
-        return Optional.of(new StoreResourceInfo(this.urlSupplier.pageStoreUrl(queryId, cursorId),null, resourceUrls));
+        return Optional.of(new StoreResourceInfo(this.urlSupplier.pageStoreUrl(queryId, cursorId), null, resourceUrls));
     }
 
     @Override
     public Optional<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
-        if(!queryResource.isPresent()) {
+        if (!queryResource.isPresent()) {
             return Optional.empty();
         }
 
@@ -102,7 +102,7 @@ public abstract class PageDriverBase implements PageDriver {
     @Override
     public Optional<Object> getData(String queryId, String cursorId, String pageId) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
-        if(!queryResource.isPresent()) {
+        if (!queryResource.isPresent()) {
             return Optional.empty();
         }
 
@@ -133,6 +133,26 @@ public abstract class PageDriverBase implements PageDriver {
 
         cursorResource.get().deletePageResource(pageId);
         return Optional.of(true);
+    }
+
+    @Override
+    public Optional<JsonNode> getElasticQueries(String queryId, String cursorId, String pageId) {
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
+        if (!queryResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        if (!cursorResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<PageResource> pageResource = cursorResource.get().getPageResource(pageId);
+        if (!pageResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(pageResource.get().getElasticQueries());
     }
     //endregion
 

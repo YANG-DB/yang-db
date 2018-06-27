@@ -30,6 +30,7 @@ public class PageResourceInfo extends ResourceInfoBase{
         super(resourceUrl,resourceId);
         this.executionTime = executionTime;
         this.dataUrl = this.getResourceUrl() + "/data";
+        this.elasticQueryUrl = resourceUrl +"/elastic";
         this.requestedPageSize = requestedPageSize;
         this.actualPageSize = actualPageSize;
         this.isAvailable = isAvailable;
@@ -72,6 +73,8 @@ public class PageResourceInfo extends ResourceInfoBase{
         isAvailable = available;
     }
 
+    public String getElasticQueryUrl() { return elasticQueryUrl; }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public Object getData() {
         return data;
@@ -90,5 +93,6 @@ public class PageResourceInfo extends ResourceInfoBase{
     private int actualPageSize;
     private boolean isAvailable;
     private Object data;
+    private String elasticQueryUrl;
     //endregion
 }

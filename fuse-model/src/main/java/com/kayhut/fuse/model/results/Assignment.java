@@ -70,6 +70,11 @@ public class Assignment {
         //endregion
 
         //region Public Methods
+        public Builder withEntities(List<Entity> entities) {
+            entities.forEach(this::withEntity);
+            return this;
+        }
+
         public Builder withEntity(Entity entity) {
             Entity currentEntity = this.entities.get(entity.geteID());
             if (currentEntity != null) {
@@ -102,6 +107,7 @@ public class Assignment {
         //region Fields
         private Map<String, Entity> entities;
         private List<Relationship> relationships;
+
         //endregion
     }
 

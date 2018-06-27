@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowledge;
+package com.kayhut.fuse.assembly.knowledge.domain;
 
 import com.kayhut.fuse.model.ontology.*;
 
@@ -47,7 +47,7 @@ public class KnowlegdeOntology {
 
 // Reference
     public static Property url = new Property("url", STRING, "url");
-    public static Property content = new Property("content", STRING, "content");
+    public static Property content = new Property("value", STRING, "value");
     public static Property system = new Property("system", STRING, "system");
 
 

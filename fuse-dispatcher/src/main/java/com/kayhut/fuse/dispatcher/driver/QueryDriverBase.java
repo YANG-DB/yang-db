@@ -1,5 +1,6 @@
 package com.kayhut.fuse.dispatcher.driver;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.query.QueryTransformer;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
@@ -90,6 +91,16 @@ public abstract class QueryDriverBase  implements QueryDriver {
         }
 
         return Optional.of(queryResource.get().getAsgQuery());
+    }
+
+    @Override
+    public Optional<JsonNode> getElasticQueries(String queryId) {
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
+        if (!queryResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(queryResource.get().getElasticQueries());
     }
 
     @Override

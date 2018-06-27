@@ -9,8 +9,10 @@ import java.util.List;
 /**
  * resources
  * http://domain/fuse/query/:id
- * http://domain/fuse/query/:id/plan
+ * http://domain/fuse/query/:id/asg
  * http://domain/fuse/query/:id/v1
+ * http://domain/fuse/query/:id/plan
+ * http://domain/fuse/query/:id/elastic
  * http://domain/fuse/query/:id/cursor/:sequence
  * http://domain/fuse/query/:id/cursor/:sequence/result/:sequence
  */
@@ -29,6 +31,7 @@ public class QueryResourceInfo extends ResourceInfoBase{
         this.v1QueryUrl = resourceUrl +"/v1";
         this.asgUrl = resourceUrl +"/asg";
         this.explainPlanUrl = resourceUrl +"/plan";
+        this.elasticQueryUrl = resourceUrl +"/elastic";
         this.cursorResourceInfos = cursorResourceInfos == null ? Collections.emptyList() : Stream.ofAll(cursorResourceInfos).toJavaList();
     }
 
@@ -48,6 +51,8 @@ public class QueryResourceInfo extends ResourceInfoBase{
     }
 
     public String getAsgUrl() { return asgUrl; }
+
+    public String getElasticQueryUrl() { return elasticQueryUrl; }
 
     public FuseError getError() {
         return error;
@@ -76,6 +81,7 @@ public class QueryResourceInfo extends ResourceInfoBase{
     private String explainPlanUrl;
     private String v1QueryUrl;
     private String asgUrl;
+    private String elasticQueryUrl;
 
     private FuseError error;
 
