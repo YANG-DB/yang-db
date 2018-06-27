@@ -11,6 +11,8 @@ import org.elasticsearch.common.xcontent.XContentType;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeDataInfraManager.PGE;
+
 
 public class KnowledgeWriterContext {
     private AtomicInteger eCounter = new AtomicInteger(0);
@@ -63,7 +65,7 @@ public class KnowledgeWriterContext {
         for (KnowledgeDomainBuilder builder : builders) {
             IndexRequestBuilder request = ctx.client.prepareIndex()
                     .setIndex(index)
-                    .setType("pge")
+                    .setType(PGE)
                     .setId(builder.id())
                     .setOpType(IndexRequest.OpType.INDEX)
                     .setSource(builder.toString(ctx.mapper), XContentType.JSON);

@@ -13,14 +13,25 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>fuse-domain-knowledge-assembly</module>
         <module>fuse-domain-knowledge-ext</module>
         <module>fuse-domain-knowledge-datagen</module>
         <module>fuse-domain-knowledge-test</module>
+        <module>fuse-domain-knowledge-assembly</module>
     </modules>
 
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-ext</artifactId>
+                <version>0.4-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

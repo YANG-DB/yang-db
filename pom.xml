@@ -19,7 +19,6 @@
         <module>fuse-axis2</module>
         <module>fuse-test</module>
         <module>fuse-datagen</module>
-        <module>fuse-assembly</module>
         <module>fuse-domain</module>
         <module>geojson-jackson</module>
     </modules>
