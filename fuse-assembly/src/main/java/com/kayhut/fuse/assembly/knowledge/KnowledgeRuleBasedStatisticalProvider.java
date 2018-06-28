@@ -156,12 +156,12 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
                 }
 
                 @Override
-                public Statistics.SummaryStatistics getEdgeStatistics(Rel item) {
+                public Statistics.SummaryStatistics getEdgeStatistics(Rel item, EEntityBase source) {
                     return new Statistics.SummaryStatistics(1, 1);
                 }
 
                 @Override
-                public Statistics.SummaryStatistics getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter) {
+                public Statistics.SummaryStatistics getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter, EEntityBase source) {
                     return new Statistics.SummaryStatistics(1, 1);
                 }
 

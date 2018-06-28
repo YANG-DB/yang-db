@@ -41,4 +41,42 @@ public class AsgQueryAssert {
             QueryAssert.assertEquals((Quant1)asgEBase1.geteBase(), (Quant1)asgEBase2.geteBase());
         }
     }
+
+    public static void assertEquals(AsgQuery expectedQuery, AsgQuery actualQuery){
+        if(expectedQuery == null){
+            Assert.assertNull(actualQuery);
+        }
+
+        Assert.assertTrue(expectedQuery != null && actualQuery != null);
+
+        Assert.assertEquals(expectedQuery.getName(), actualQuery.getName());
+        Assert.assertEquals(expectedQuery.getOnt(), actualQuery.getOnt());
+
+        assertEqualsRec(expectedQuery.getStart(), actualQuery.getStart());
+
+    }
+
+    public static void assertEqualsRec(AsgEBase expected, AsgEBase actual){
+        if(expected == null){
+            Assert.assertNull(actual);
+        }
+        Assert.assertTrue(expected != null && actual != null);
+
+        Assert.assertEquals(expected.geteBase().getClass(), actual.geteBase().getClass());
+
+        Assert.assertEquals(expected.geteNum(), actual.geteNum());
+
+        Assert.assertEquals(expected.getNext().size(), actual.getNext().size());
+
+        for (int i = 0; i < expected.getNext().size(); i++) {
+            assertEqualsRec((AsgEBase) expected.getNext().get(i), (AsgEBase)actual.getNext().get(i));
+        }
+
+        Assert.assertEquals(expected.getB().size(), actual.getB().size());
+
+        for (int i = 0; i < expected.getB().size(); i++) {
+            assertEqualsRec((AsgEBase) expected.getB().get(i), (AsgEBase)actual.getB().get(i));
+        }
+
+    }
 }

@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan.statistics;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
+import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
@@ -111,6 +112,8 @@ public class EBaseStatisticsProviderIndicesTests {
 
     @Test
     public void eRelDateGtFilterSingleIndexHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel();
         rel.setrType(OWN.getrType());
 
@@ -122,13 +125,15 @@ public class EBaseStatisticsProviderIndicesTests {
         prop.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(250, nodeStatistics.getTotal(), 0.1);
     }
 
     @Test
     public void eRelDateRangeFilterSingleIndexHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel();
         rel.setrType(OWN.getrType());
 
@@ -141,7 +146,7 @@ public class EBaseStatisticsProviderIndicesTests {
         prop.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(500/120d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(10/120d, nodeStatistics.getCardinality(), 0.1);
@@ -149,6 +154,8 @@ public class EBaseStatisticsProviderIndicesTests {
 
     @Test
     public void eRelDateInSetFilterSingleIndexHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel();
         rel.setrType(OWN.getrType());
 
@@ -160,7 +167,7 @@ public class EBaseStatisticsProviderIndicesTests {
         prop.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(2d, nodeStatistics.getCardinality(), 0.1);
@@ -169,6 +176,8 @@ public class EBaseStatisticsProviderIndicesTests {
 
     @Test
     public void eRelDateNotInSetFilterSingleIndexHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel();
         rel.setrType(OWN.getrType());
 
@@ -180,7 +189,7 @@ public class EBaseStatisticsProviderIndicesTests {
         prop.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(500d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(10, nodeStatistics.getCardinality(), 0.1);
@@ -188,6 +197,8 @@ public class EBaseStatisticsProviderIndicesTests {
 
     @Test
     public void eRelStringGtFilterHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel();
         rel.setrType(OWN.getrType());
 
@@ -199,13 +210,15 @@ public class EBaseStatisticsProviderIndicesTests {
         prop.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(150, nodeStatistics.getTotal(), 0.1);
     }
 
     @Test
     public void eRelStringGtFilterWithDateFilterHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel();
         rel.setrType(OWN.getrType());
 
@@ -223,13 +236,15 @@ public class EBaseStatisticsProviderIndicesTests {
         stringProp.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Arrays.asList(dateProp,stringProp));
 
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50, nodeStatistics.getTotal(), 0.1);
     }
 
     @Test
     public void eRelStringGtFilterWithDateRangeFilterHistogramTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
         Rel rel = new Rel();
         rel.setrType(OWN.getrType());
 
@@ -248,7 +263,7 @@ public class EBaseStatisticsProviderIndicesTests {
         stringProp.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Arrays.asList(dateProp,stringProp));
 
-        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50, nodeStatistics.getTotal(), 0.1);
     }

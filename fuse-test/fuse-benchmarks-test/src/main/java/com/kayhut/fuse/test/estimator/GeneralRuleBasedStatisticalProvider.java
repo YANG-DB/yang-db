@@ -17,7 +17,6 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 
 import java.util.OptionalDouble;
-import java.util.OptionalInt;
 
 /**
  * Created by lior on 27/02/2018.
@@ -62,12 +61,12 @@ public class GeneralRuleBasedStatisticalProvider implements StatisticsProviderFa
             }
 
             @Override
-            public Statistics.SummaryStatistics getEdgeStatistics(Rel item) {
+            public Statistics.SummaryStatistics getEdgeStatistics(Rel item, EEntityBase source) {
                 return new Statistics.SummaryStatistics(1, 1);
             }
 
             @Override
-            public Statistics.SummaryStatistics getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter) {
+            public Statistics.SummaryStatistics getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter, EEntityBase source) {
                 return new Statistics.SummaryStatistics(1, 1);
             }
 

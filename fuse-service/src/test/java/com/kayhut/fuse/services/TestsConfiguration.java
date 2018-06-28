@@ -3,6 +3,7 @@ package com.kayhut.fuse.services;
 import com.kayhut.fuse.services.engine2.data.CsvCursorTests;
 import com.kayhut.fuse.services.engine2.data.JoinE2EEpbMockTests;
 import com.kayhut.fuse.services.engine2.data.JoinE2ETests;
+import com.kayhut.fuse.services.engine2.data.SmartEpbCountTests;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -50,6 +51,7 @@ public class TestsConfiguration {
 
         this.testClassesToRun.add(JoinE2EEpbMockTests.class);
         this.testClassesToRun.add(JoinE2ETests.class);
+        this.testClassesToRun.add(SmartEpbCountTests.class);
     }
     //endregion
 
