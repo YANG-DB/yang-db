@@ -7,7 +7,6 @@ import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.quant.Quant1;
-import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
@@ -15,16 +14,13 @@ import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import com.kayhut.fuse.utils.FuseClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;

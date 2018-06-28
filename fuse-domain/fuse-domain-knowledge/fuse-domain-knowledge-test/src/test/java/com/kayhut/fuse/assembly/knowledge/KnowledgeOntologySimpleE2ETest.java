@@ -20,7 +20,7 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
-import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import com.kayhut.fuse.utils.FuseClient;
 import org.junit.*;
 
 import java.io.IOException;

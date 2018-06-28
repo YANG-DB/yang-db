@@ -81,10 +81,6 @@
         <!-- vividsolutions -->
         <vividsolutions.version>1.13</vividsolutions.version>
 
-        <!-- neo4j -->
-        <neo4j.version>3.1.0</neo4j.version>
-        <neo4j-java-driver.version>1.1.0</neo4j-java-driver.version>
-
         <!-- tinkerpop -->
         <tinkerpop.version>3.2.5</tinkerpop.version>
 
@@ -145,11 +141,6 @@
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-asg</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>fuse-neo4j</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
@@ -366,19 +357,6 @@
                 <version>${vividsolutions.version}</version>
             </dependency>
             <!-- vividsolutions -->
-
-            <!-- neo4j -->
-            <dependency>
-                <groupId>org.neo4j</groupId>
-                <artifactId>neo4j</artifactId>
-                <version>${neo4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.neo4j.driver</groupId>
-                <artifactId>neo4j-java-driver</artifactId>
-                <version>${neo4j-java-driver.version}</version>
-            </dependency>
-            <!-- neo4j -->
 
             <!-- tinkerpop -->
             <dependency>

@@ -8,7 +8,7 @@ import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
-import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import com.kayhut.fuse.utils.FuseClient;
 import com.kayhut.fuse.services.test.TestCase;
 
 import java.util.Arrays;

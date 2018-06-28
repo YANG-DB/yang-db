@@ -81,7 +81,6 @@
 
 
     <properties>
-        <neo4j.version>3.1.0</neo4j.version>
         <checkstyle.skip>true</checkstyle.skip>
     </properties>
 

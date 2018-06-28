@@ -12,7 +12,7 @@ import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import com.kayhut.fuse.utils.FuseClient;
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;

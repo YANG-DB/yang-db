@@ -10,7 +10,7 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
-import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import com.kayhut.fuse.utils.FuseClient;
 import com.kayhut.fuse.services.test.TestCase;
 
 import java.util.Arrays;
