@@ -535,7 +535,48 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(endB).toJavaSet()))
+                                Stream.of(endB).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "relatedTo",
+                                new GraphElementConstraint.Impl(__.has(T.label, "e.relation")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityAId"),
+                                        Optional.of("Entity"),
+                                        Collections.emptyList())),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityBId"),
+                                        Optional.of("Entity"),
+                                        Collections.singletonList(new GraphRedundantPropertySchema.Impl("category", "entityBCategory", "string")),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                        Optional.of(insightPartitions))),
+                                Direction.OUT,
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(endA).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "relatedTo",
+                                new GraphElementConstraint.Impl(__.has(T.label, "e.relation")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityAId"),
+                                        Optional.of("Entity"),
+                                        Collections.emptyList())),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityBId"),
+                                        Optional.of("Entity"),
+                                        Collections.singletonList(new GraphRedundantPropertySchema.Impl("category", "entityBCategory", "string")),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                        Optional.of(insightPartitions))),
+                                Direction.OUT,
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(endB).toJavaSet())
+                        )
                 );
     }
     //endregion
