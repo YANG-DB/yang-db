@@ -27,11 +27,12 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import static com.kayhut.fuse.assembly.knowlegde.KnowledgeDataInfraManager.ENTITY;
 import static com.kayhut.fuse.assembly.knowlegde.KnowledgeDataInfraManager.PGE;
-import java.security.MessageDigest;
+
 
 
 public class KnowledgeAutomationFunctions {
 
+    // Create Entity
     static public void CreateKnowledgeEntity(ObjectMapper mapper, KnowledgeDataInfraManager manager, TransportClient client, String type,
                                              String logicalId, String context, String category, String lastUpdateUser,
                                              String creationUser, String lastUpdateTime, String creationTime,
@@ -55,10 +56,11 @@ public class KnowledgeAutomationFunctions {
 
         entities.add(mapper.writeValueAsString(on));
         BulkRequestBuilder bulk = client.prepareBulk();
-        // Insert knowledge entity directly to elastic
+        // Insert knowledge entity directly to ES
         insertEntities("e1", manager.getSchema(), client, bulk, entities);
     }
 
+    // Create Reference -> with Constant properties
     static public void CreateKnowledgeReference(KnowledgeDataInfraManager manager, TransportClient client, int refNum) {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         BulkRequestBuilder bulk = client.prepareBulk();
@@ -87,6 +89,7 @@ public class KnowledgeAutomationFunctions {
         System.out.println("There are " + count + " references");
     }
 
+    // List of parameters
     static List<String> domains = Arrays.asList("com", "co.uk", "gov", "org", "net", "me", "ac");
     static Random random = new Random();
     static List<String> contexts = Arrays.asList("context1", "context2", "context3", "global");
@@ -97,6 +100,7 @@ public class KnowledgeAutomationFunctions {
     static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 
+    // Create References -> with Random properties
     static public void CreateKnowledgeReferences(KnowledgeDataInfraManager manager, TransportClient client, int refNum) {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         BulkRequestBuilder bulk = client.prepareBulk();
@@ -126,6 +130,7 @@ public class KnowledgeAutomationFunctions {
     }
 
 
+    // Read Entity (with V1 query)
     static public QueryResultBase FetchCreatedEntity(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, Query query)
             throws IOException, InterruptedException
     {
