@@ -1,0 +1,29 @@
+{
+  "mappings": {
+    "pge": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "type": {
+          "type": "keyword"
+        },
+        "name": {
+          "type": "keyword"
+        },
+        "gender": {
+          "type": "keyword"
+        },
+        "address": {
+          "type": "keyword"
+        },
+        "age": {
+          "type": "double"
+        },
+        "color": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}

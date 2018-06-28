@@ -14,7 +14,7 @@
         <module>fuse-asg</module>
         <module>fuse-core</module>
         <module>fuse-service</module>
-        <module>fuse-axis2</module>
+        <module>fuse-dv</module>
         <module>fuse-datagen</module>
         <module>fuse-domain</module>
         <module>fuse-geojson</module>
