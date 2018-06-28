@@ -11,12 +11,12 @@ import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.NonRedundantTestSuite;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.MappingElasticConfigurer;
-import com.kayhut.test.framework.index.Mappings;
-import com.kayhut.test.framework.index.Mappings.Mapping;
-import com.kayhut.test.framework.index.Mappings.Mapping.Property;
-import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.MappingElasticConfigurer;
+import com.kayhut.fuse.test.framework.index.Mappings;
+import com.kayhut.fuse.test.framework.index.Mappings.Mapping;
+import com.kayhut.fuse.test.framework.index.Mappings.Mapping.Property;
+import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -26,7 +26,7 @@ import org.junit.*;
 import java.io.IOException;
 import java.util.*;
 
-import static com.kayhut.test.framework.index.Mappings.Mapping.Property.Type.keyword;
+import static com.kayhut.fuse.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 import static io.restassured.RestAssured.given;
 
 /**

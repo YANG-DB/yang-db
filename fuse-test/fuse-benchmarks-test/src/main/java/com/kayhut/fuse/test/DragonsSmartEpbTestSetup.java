@@ -1,38 +1,27 @@
 package com.kayhut.fuse.test;
 
 import com.kayhut.fuse.model.OntologyTestUtils;
-import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.test.data.DragonsOntology;
-import com.kayhut.test.framework.index.MappingElasticConfigurer;
-import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
-import com.kayhut.test.framework.index.Mappings;
-import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import io.restassured.RestAssured;
-import io.restassured.config.LogConfig;
-import io.restassured.config.RestAssuredConfig;
+import com.kayhut.fuse.test.framework.index.MappingElasticConfigurer;
+import com.kayhut.fuse.test.framework.index.MappingFileElasticConfigurer;
+import com.kayhut.fuse.test.framework.index.Mappings;
+import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.codehaus.groovy.runtime.powerassert.SourceText;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.BIRTH_DATE;
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
-import static io.restassured.config.LogConfig.logConfig;
 
 public class DragonsSmartEpbTestSetup extends TestSetupBase  {
     public static void main(String[] args) throws Exception {

@@ -2,6 +2,10 @@ package com.kayhut.fuse.unipop.controller.discrete;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
+import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.Mappings;
+import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
 import com.kayhut.fuse.unipop.controller.search.DefaultSearchOrderProvider;
@@ -10,16 +14,14 @@ import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.FuseUniGraph;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
-import com.kayhut.test.framework.index.Mappings;
-import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.T;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -33,9 +35,9 @@ import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
+import static com.kayhut.fuse.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 import static com.kayhut.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
 import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
-import static com.kayhut.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 
 /**
  * Created by roman.margolis on 14/09/2017.

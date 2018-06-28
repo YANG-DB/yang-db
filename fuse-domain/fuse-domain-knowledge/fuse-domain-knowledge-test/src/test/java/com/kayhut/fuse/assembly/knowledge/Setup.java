@@ -4,8 +4,8 @@ import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeDataInfraManager;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import org.elasticsearch.client.transport.TransportClient;
 import org.jooby.Jooby;
 

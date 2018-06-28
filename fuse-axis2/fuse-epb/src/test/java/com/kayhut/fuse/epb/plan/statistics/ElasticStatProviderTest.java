@@ -1,14 +1,12 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.inject.Provider;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatProvider;
 import com.kayhut.fuse.epb.plan.statistics.util.StatConfigTestUtil;
 import com.kayhut.fuse.epb.plan.statistics.util.StatTestUtil;
 import com.kayhut.fuse.stat.StatCalculator;
-import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.configuration.Field;
 import com.kayhut.fuse.stat.model.configuration.Mapping;
@@ -16,17 +14,16 @@ import com.kayhut.fuse.stat.model.configuration.StatContainer;
 import com.kayhut.fuse.stat.model.configuration.Type;
 import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.histogram.*;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
-import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
-import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.MappingFileElasticConfigurer;
+import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 import java.nio.file.Paths;
 import java.util.Arrays;

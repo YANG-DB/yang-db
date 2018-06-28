@@ -15,10 +15,10 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
-import com.kayhut.test.framework.index.MappingElasticConfigurer;
-import com.kayhut.test.framework.index.Mappings;
-import com.kayhut.test.framework.index.Mappings.Mapping;
-import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import com.kayhut.fuse.test.framework.index.MappingElasticConfigurer;
+import com.kayhut.fuse.test.framework.index.Mappings;
+import com.kayhut.fuse.test.framework.index.Mappings.Mapping;
+import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
@@ -31,7 +31,7 @@ import java.util.*;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
-import static com.kayhut.test.framework.index.Mappings.Mapping.Property.Type.keyword;
+import static com.kayhut.fuse.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 
 /**
  * Created by roman.margolis on 02/10/2017.

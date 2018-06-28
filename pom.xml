@@ -9,13 +9,12 @@
     <version>0.4-SNAPSHOT</version>
 
     <modules>
-        <module>data-gen</module>
         <module>fuse-model</module>
+        <module>fuse-test</module>
         <module>fuse-asg</module>
         <module>fuse-core</module>
         <module>fuse-service</module>
         <module>fuse-axis2</module>
-        <module>fuse-test</module>
         <module>fuse-datagen</module>
         <module>fuse-domain</module>
         <module>fuse-geojson</module>
@@ -496,7 +495,6 @@
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-test-framework</artifactId>
                 <version>${fuse.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>

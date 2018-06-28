@@ -1,25 +1,16 @@
 package com.kayhut.fuse.services.engine2.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
-import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
-import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
-import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
-import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
-import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -27,7 +18,6 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.*;
-import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateCsvCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
@@ -35,12 +25,10 @@ import com.kayhut.fuse.services.engine2.CsvCursorTestSuite;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
-import com.kayhut.test.data.DragonsOntology;
-import com.kayhut.test.framework.index.MappingElasticConfigurer;
-import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
-import com.kayhut.test.framework.index.Mappings;
-import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import javaslang.collection.Stream;
+import com.kayhut.fuse.test.framework.index.MappingElasticConfigurer;
+import com.kayhut.fuse.test.framework.index.MappingFileElasticConfigurer;
+import com.kayhut.fuse.test.framework.index.Mappings;
+import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -56,8 +44,6 @@ import java.util.function.Function;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.ORIGINATED_IN;
 import static com.kayhut.test.data.DragonsOntology.*;
-import static java.util.Collections.singleton;
-import static java.util.Collections.singletonList;
 
 public class CsvCursorTests {
     @BeforeClass

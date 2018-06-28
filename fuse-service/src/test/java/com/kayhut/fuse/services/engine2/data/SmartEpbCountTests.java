@@ -1,8 +1,6 @@
 package com.kayhut.fuse.services.engine2.data;
 
-import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -32,15 +30,14 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.services.TestsConfiguration;
-import com.kayhut.fuse.services.engine2.JoinE2ETestSuite;
 import com.kayhut.fuse.services.engine2.SmartEpbCountTestSuite;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
-import com.kayhut.test.framework.index.MappingElasticConfigurer;
-import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
-import com.kayhut.test.framework.index.Mappings;
-import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import com.kayhut.fuse.test.framework.index.MappingElasticConfigurer;
+import com.kayhut.fuse.test.framework.index.MappingFileElasticConfigurer;
+import com.kayhut.fuse.test.framework.index.Mappings;
+import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;

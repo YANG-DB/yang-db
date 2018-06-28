@@ -1,23 +1,13 @@
 package com.kayhut.fuse.stat;
 
-import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
-import com.kayhut.fuse.stat.model.bucket.BucketRange;
-import com.kayhut.fuse.stat.model.configuration.Field;
-import com.kayhut.fuse.stat.model.configuration.Mapping;
-import com.kayhut.fuse.stat.model.configuration.StatContainer;
-import com.kayhut.fuse.stat.model.configuration.Type;
-import com.kayhut.fuse.stat.model.enums.DataType;
-import com.kayhut.fuse.stat.model.histogram.*;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatTestUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
-import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
-import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import com.kayhut.fuse.test.framework.index.MappingFileElasticConfigurer;
+import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
