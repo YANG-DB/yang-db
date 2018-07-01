@@ -120,6 +120,11 @@ public class FuseClient {
 
     }
 
+    public Long getFuseSnowflakeId() throws IOException {
+        return new ObjectMapper().readValue(unwrap(getRequest(this.fuseUrl+"/internal/snowflakeId")), Long.class);
+    }
+
+
     public Query getQueryObject(String v1QueryUrl) throws IOException {
         return unwrapDouble(getRequest(v1QueryUrl));
 
@@ -170,6 +175,7 @@ public class FuseClient {
 
     //region Fields
     private String fuseUrl;
+
 
     //endregion
 }

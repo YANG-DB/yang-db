@@ -24,9 +24,7 @@ import com.kayhut.fuse.model.results.QueryResultAssert;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
 import org.jooby.Jooby;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -54,6 +52,13 @@ public class RankingScoreBasedE2ETests {
         manager = new RankingKnowledgeDataInfraManager(CONFIG_PATH, ElasticEmbeddedNode.getClient(KNOWLEDGE,9300));
         manager.init();
         manager.load();
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        if(manager != null){
+            manager.drop();
+        }
     }
 
     //endregion

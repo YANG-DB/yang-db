@@ -6,6 +6,7 @@ import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
+import com.kayhut.fuse.model.Range;
 import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.JacksonQueryDescriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
@@ -247,11 +248,12 @@ public class ServiceModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
-                this.bind(new TypeLiteral<IdGeneratorController<Object>>(){})
-                        .to(new TypeLiteral<StandardIdGeneratorController<Object>>(){})
-                        .in(RequestScoped.class);
 
-                this.expose(new TypeLiteral<IdGeneratorController<Object>>(){});
+                this.bind(new TypeLiteral<IdGeneratorController<Range>>(){})
+                        .to(new TypeLiteral<StandardIdGeneratorController<Range>>(){})
+                        .asEagerSingleton();
+
+                this.expose(new TypeLiteral<IdGeneratorController<Range>>(){});
             }
         });
     }

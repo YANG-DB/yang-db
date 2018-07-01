@@ -3,6 +3,7 @@ package com.kayhut.fuse.dispatcher.modules;
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.kayhut.fuse.model.Range;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 
@@ -11,12 +12,7 @@ import org.jooby.Env;
  */
 public class DefaultIdGenModule extends ModuleBase {
     @Override
-    protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
-        binder.bind(new TypeLiteral<IdGeneratorDriver<Object>>(){}).toInstance(new IdGeneratorDriver<Object>() {
-            @Override
-            public Object getNext(String genName, int numIds) {
-                return null;
-            }
-        });
+    protected void configureInner(Env env, Config config, Binder binder) {
+        binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>(){}).toInstance((genName, numIds) -> new Range(1l,2l));
     }
 }

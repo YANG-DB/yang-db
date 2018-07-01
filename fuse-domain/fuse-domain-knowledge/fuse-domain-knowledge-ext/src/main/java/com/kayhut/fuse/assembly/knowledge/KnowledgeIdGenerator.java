@@ -3,6 +3,7 @@ package com.kayhut.fuse.assembly.knowledge;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.kayhut.fuse.model.Range;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -14,16 +15,19 @@ import org.elasticsearch.index.engine.VersionConflictEngineException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.kayhut.fuse.executor.ExecutorModule.globalClient;
+import static com.kayhut.fuse.executor.elasticsearch.logging.LoggingClient.clientParameter;
+
 /**
  * Created by roman.margolis on 20/03/2018.
  */
-public class KnowledgeIdGenerator implements IdGeneratorDriver<Object> {
+public class KnowledgeIdGenerator implements IdGeneratorDriver<Range> {
     public static final String indexNameParameter = "KnowledgeIdGenerator.@indexName";
 
     //region Constructors
     @Inject
     public KnowledgeIdGenerator(
-            Client client,
+            @Named(globalClient)Client client,
             @Named(indexNameParameter) String indexName) {
         this.client = client;
         this.sync = new Object();
@@ -34,7 +38,7 @@ public class KnowledgeIdGenerator implements IdGeneratorDriver<Object> {
 
     //region IdGenerator Implementation
     @Override
-    public Object getNext(String genName, int numIds) {
+    public Range getNext(String genName, int numIds) {
         synchronized (this.sync) {
             while(true) {
                 GetResponse getResponse = this.client.get(new GetRequest(this.indexName, "idsequence", genName)).actionGet();
@@ -66,43 +70,5 @@ public class KnowledgeIdGenerator implements IdGeneratorDriver<Object> {
     private Client client;
     private Object sync;
     private String indexName;
-    //endregion
-
-    //region Range
-    public static class Range {
-        //region Constructors
-        public Range() {
-
-        }
-
-        public Range(long lower, long upper) {
-            this.lower = lower;
-            this.upper = upper;
-        }
-        //endregion
-
-        //region Properties
-        public long getUpper() {
-            return upper;
-        }
-
-        public void setUpper(long upper) {
-            this.upper = upper;
-        }
-
-        public long getLower() {
-            return lower;
-        }
-
-        public void setLower(long lower) {
-            this.lower = lower;
-        }
-        //endregion
-
-        //region Fields
-        private long upper;
-        private long lower;
-        //endregion
-    }
     //endregion
 }

@@ -42,6 +42,8 @@ import static com.google.inject.name.Names.named;
  * Created by lior on 22/02/2017.
  */
 public class ExecutorModule extends ModuleBase {
+    public static final String globalClient = "ExecutorModule.@globalClient";
+
     //region Jooby.Module Implementation
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
@@ -144,14 +146,21 @@ public class ExecutorModule extends ModuleBase {
             @Override
             protected void configure() {
                 boolean createMock = conf.hasPath("fuse.elasticsearch.mock") && conf.getBoolean("fuse.elasticsearch.mock");
-                this.bind(ElasticGraphConfiguration.class).toInstance(createElasticGraphConfiguration(conf));
+                ElasticGraphConfiguration elasticGraphConfiguration = createElasticGraphConfiguration(conf);
+                this.bind(ElasticGraphConfiguration.class).toInstance(elasticGraphConfiguration);
+
+                ClientProvider provider = new ClientProvider(createMock, elasticGraphConfiguration);
+                Client client = provider.get();
 
                 this.bindConstant()
                         .annotatedWith(named(ClientProvider.createMockParameter))
                         .to(createMock);
+
                 this.bind(Client.class)
                         .annotatedWith(named(LoggingClient.clientParameter))
-                        .toProvider(ClientProvider.class).asEagerSingleton();
+                        .toInstance(client);
+                        //.toProvider(ClientProvider.class).asEagerSingleton();
+
                 this.bind(Logger.class)
                         .annotatedWith(named(LoggingClient.loggerParameter))
                         .toInstance(LoggerFactory.getLogger(LoggingClient.class));
@@ -159,7 +168,12 @@ public class ExecutorModule extends ModuleBase {
                         .to(TimeoutClientAdvisor.class)
                         .in(RequestScoped.class);
 
+                this.bind(Client.class)
+                        .annotatedWith(named(globalClient))
+                        .toInstance(client);
+
                 this.expose(Client.class);
+                this.expose(Client.class).annotatedWith(named(globalClient));
                 this.expose(ElasticGraphConfiguration.class);
             }
         });

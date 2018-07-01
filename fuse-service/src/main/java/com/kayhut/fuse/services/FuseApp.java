@@ -9,6 +9,7 @@ import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.services.appRegistrars.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueFactory;
 import javaslang.Tuple2;
 import org.jooby.Jooby;
@@ -16,12 +17,12 @@ import org.jooby.RequestLogger;
 import org.jooby.Results;
 import org.jooby.caffeine.CaffeineCache;
 import org.jooby.handlers.CorsHandler;
-import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
 import org.jooby.scanner.Scanner;
 import org.jooby.swagger.SwaggerUI;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -75,11 +76,14 @@ public class FuseApp extends Jooby {
     }
     //endregion
 
+
     //region Public Methods
-    public FuseApp conf(File file, String activeProfile) {
+    public FuseApp conf(File file, String activeProfile, Tuple2<String,ConfigValue> ... values) {
         Config config = ConfigFactory.parseFile(file);
         config = config.withValue("application.profile", ConfigValueFactory.fromAnyRef(activeProfile, "FuseApp"));
-
+        for (Tuple2<String, ConfigValue> value : values) {
+            config = config.withValue(value._1, value._2);
+        }
         super.use(config);
         return this;
     }

@@ -8,10 +8,7 @@ import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.results.*;
 import javaslang.collection.Stream;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +24,6 @@ import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.c
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder._ref;
 
-
 @Ignore
 public class KnowledgeSimpleEntityTests {
 
@@ -36,9 +32,11 @@ public class KnowledgeSimpleEntityTests {
         Setup.setup();
     }
 
+    @AfterClass
+    public static void tearDown() throws Exception {
+        Setup.teardown();
+    }
 
-
-    @Ignore
     @Test
     public void testInsertOneSimpleEntityWithBuilder() throws IOException, InterruptedException {
         KnowledgeWriterContext ctx = KnowledgeWriterContext.init(client, manager.getSchema());

@@ -7,7 +7,6 @@ import com.kayhut.fuse.model.transport.ContentResponse;
 
 import java.util.Optional;
 
-import static java.util.UUID.randomUUID;
 import static org.jooby.Status.NOT_FOUND;
 import static org.jooby.Status.OK;
 
@@ -28,10 +27,10 @@ public class StandardApiDescriptionController implements ApiDescriptionControlle
         return ContentResponse.Builder.<FuseResourceInfo>builder(OK, NOT_FOUND)
                 .data(Optional.of(new FuseResourceInfo(
                         "/fuse",
+                        "/fuse/internal",
                         "/fuse/health",
                         this.urlSupplier.queryStoreUrl(),
-                        "/fuse/search",
-                        this.urlSupplier.catalogStoreUrl())))
+                        "/fuse/search", this.urlSupplier.catalogStoreUrl())))
                 .compose();
     }
     //endregion
