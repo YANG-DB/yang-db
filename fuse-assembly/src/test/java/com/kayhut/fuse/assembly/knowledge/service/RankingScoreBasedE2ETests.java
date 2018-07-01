@@ -27,8 +27,8 @@ import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -50,7 +50,7 @@ public class RankingScoreBasedE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        GlobalElasticEmbeddedNode.getInstance(KNOWLEDGE);
+        GlobalElasticEmbeddedNode.getInstance(KNOWLEDGE);
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(CONFIG_PATH));
 

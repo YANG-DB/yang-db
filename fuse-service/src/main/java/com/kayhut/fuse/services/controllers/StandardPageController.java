@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
@@ -54,6 +55,13 @@ public class StandardPageController implements PageController {
 
         return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR)
                 .data(Optional.of(pageResourceInfoResponse.getData()))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<JsonNode> getElasticQueries(String queryId, String cursorId, String pageId) {
+        return Builder.<JsonNode>builder(OK, NOT_FOUND)
+                .data(this.driver.getElasticQueries(queryId,cursorId,pageId))
                 .compose();
     }
 

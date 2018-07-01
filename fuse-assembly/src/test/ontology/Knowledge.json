@@ -201,6 +201,17 @@
       ]
     },
     {
+      "rType": "hasEntityFile",
+      "name": "hasEntityFile",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "File"
+        }
+      ]
+    },
+    {
       "rType": "hasEvalueReference",
       "name": "hasEvalueReference",
       "directional": true,

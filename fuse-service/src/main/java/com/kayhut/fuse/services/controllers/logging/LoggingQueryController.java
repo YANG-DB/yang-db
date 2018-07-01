@@ -2,6 +2,7 @@ package com.kayhut.fuse.services.controllers.logging;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
@@ -10,18 +11,18 @@ import com.kayhut.fuse.logging.RequestExternalMetadata;
 import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.descriptors.Descriptor;
-import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
-import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.controllers.QueryController;
+import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
+import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
@@ -217,6 +218,7 @@ public class LoggingQueryController implements QueryController {
                 .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
                 .compose();
     }
+
     @Override
     public ContentResponse<AsgQuery> getAsg(String queryId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getAsgByQueryId.toString())).time();
@@ -238,6 +240,37 @@ public class LoggingQueryController implements QueryController {
             new LogMessage.Impl(this.logger, error, "failed getAsgByQueryId", sequence, LogType.of(failure), getAsgByQueryId, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getAsgByQueryId.toString(), "failure")).mark();
+            response = ContentResponse.internalError(ex);
+        }
+
+        return ContentResponse.Builder.builder(response)
+                .requestId(this.requestIdSupplier.get())
+                .external(this.requestExternalMetadataSupplier.get())
+                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<JsonNode> getElasticQueries(String queryId) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getElasticQueryByQueryId.toString())).time();
+
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
+                RequestIdByScope.of(queryId)).write();
+
+        ContentResponse<JsonNode> response = null;
+
+        try {
+            new LogMessage.Impl(this.logger, trace, "start getElasticQueryByQueryId", LogType.of(start), getElasticQueryByQueryId).log();
+            response = this.controller.getElasticQueries(queryId);
+            new LogMessage.Impl(this.logger, info, "finish getElasticQueryByQueryId", LogType.of(success), getElasticQueryByQueryId, ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "finish getElasticQueryByQueryId", LogType.of(success), getElasticQueryByQueryId, ElapsedFrom.now()).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getElasticQueryByQueryId.toString(), "success")).mark();
+        } catch (Exception ex) {
+            new LogMessage.Impl(this.logger, error, "failed getElasticQueryByQueryId", LogType.of(failure), getElasticQueryByQueryId, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getElasticQueryByQueryId.toString(), "failure")).mark();
             response = ContentResponse.internalError(ex);
         }
 
@@ -331,6 +364,7 @@ public class LoggingQueryController implements QueryController {
     private static MethodName.MDCWriter getInfo = MethodName.of("getInfo");
     private static MethodName.MDCWriter getV1ByQueryId = MethodName.of("getV1ByQueryId");
     private static MethodName.MDCWriter getAsgByQueryId = MethodName.of("getAsgByQueryId");
+    private static MethodName.MDCWriter getElasticQueryByQueryId = MethodName.of("getElasticQueryByQueryId");
     private static MethodName.MDCWriter getInfoByQueryId = MethodName.of("getInfoByQueryId");
     private static MethodName.MDCWriter delete = MethodName.of("delete");
 

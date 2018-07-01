@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="15 seconds" debug="false">
+  <!-- appenders -->
+  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>[%d{ISO8601}]-[%thread] %-5level %logger - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <!-- appenders -->
+
+  <!-- Ignore loggers -->
+  <logger name="org.jooby" additivity="false"/>
+  <logger name="org.elasticsearch" additivity="false"/>
+  <logger name="io.netty" additivity="false"/>
+  <logger name="org.unipop" additivity="false"/>
+  <logger name="org.apache.http" additivity="false"/>
+  <!-- Ignore loggers -->
+
+  <!-- root -->
+  <root level="debug">
+    <appender-ref ref="stdout" />
+  </root>
+  <!-- root -->
+</configuration>

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
@@ -161,6 +162,13 @@ public class StandardQueryController implements QueryController {
     public ContentResponse<AsgQuery> getAsg(String queryId) {
         return Builder.<AsgQuery>builder(OK, NOT_FOUND)
                 .data(this.driver.getAsg(queryId))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<JsonNode> getElasticQueries(String queryId) {
+        return Builder.<JsonNode>builder(OK, NOT_FOUND)
+                .data(this.driver.getElasticQueries(queryId))
                 .compose();
     }
 

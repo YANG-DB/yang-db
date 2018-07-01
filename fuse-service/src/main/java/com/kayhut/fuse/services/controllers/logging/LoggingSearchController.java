@@ -8,19 +8,17 @@ import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
 import com.kayhut.fuse.logging.RequestExternalMetadata;
 import com.kayhut.fuse.logging.RequestId;
-import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
-import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.controllers.SearchController;
+import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
+import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
 import static com.codahale.metrics.MetricRegistry.name;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.info;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
 import static com.kayhut.fuse.dispatcher.logging.LogType.*;
 
 /**

@@ -4,9 +4,8 @@ import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.FuseRunner;
 import com.kayhut.fuse.test.util.FuseClient;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
-import org.elasticsearch.client.transport.TransportClient;
+import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 
 import java.io.File;
 import java.nio.file.Paths;
