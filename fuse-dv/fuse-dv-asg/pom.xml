@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>fuse-axis2</artifactId>
+        <artifactId>fuse-dv</artifactId>
         <groupId>org.kayhut</groupId>
         <version>0.4-SNAPSHOT</version>
     </parent>
@@ -25,15 +25,15 @@
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-dispatcher</artifactId>
+            <artifactId>fuse-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-unipop</artifactId>
+            <artifactId>fuse-dv-unipop</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-executor</artifactId>
+            <artifactId>fuse-dv-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>

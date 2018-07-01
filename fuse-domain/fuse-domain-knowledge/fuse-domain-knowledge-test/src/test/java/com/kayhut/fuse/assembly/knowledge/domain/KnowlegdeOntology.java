@@ -7,8 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.Gender.TYPE_GENDER;
 import static com.kayhut.fuse.model.ontology.Property.Builder.get;
-import static com.kayhut.test.data.DragonsOntology.Gender.TYPE_GENDER;
+
 
 public class KnowlegdeOntology {
 

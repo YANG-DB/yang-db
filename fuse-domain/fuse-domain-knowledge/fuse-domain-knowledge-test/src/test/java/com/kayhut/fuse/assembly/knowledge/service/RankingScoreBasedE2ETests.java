@@ -2,14 +2,12 @@ package com.kayhut.fuse.assembly.knowledge.service;
 
 import com.kayhut.fuse.assembly.knowledge.RankingKnowledgeDataInfraManager;
 import com.kayhut.fuse.assembly.knowledge.Setup;
-import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
-import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
@@ -24,7 +22,6 @@ import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.QueryResultAssert;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
-import com.kayhut.test.data.DragonsOntology;
 import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
 import org.jooby.Jooby;
 import org.junit.Assert;
@@ -494,21 +491,6 @@ public class RankingScoreBasedE2ETests {
         )).build();
     }
 
-    private Query getDragonOriginKingdomX3Query() {
-        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
-                new Start(0, 1),
-                new EConcrete(1, "A", $ont.eType$(DragonsOntology.DRAGON.name), "Dragon_1", "D0", 2, 0),
-                new Rel(2, $ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DragonsOntology.KINGDOM.name), 4, 0),
-                new Quant1(4, QuantType.all, Arrays.asList(5,8),0),
-                new Rel(5, $ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()), Rel.Direction.L, null, 6, 0),
-                new ETyped(6, "C", $ont.eType$(DragonsOntology.DRAGON.name), 7, 0),
-                new EProp(7, NAME.type, Constraint.of(ConstraintOp.eq, "D")),
-                new Rel(8, $ont.rType$(OntologyTestUtils.ORIGINATED_IN.getName()), Rel.Direction.L, null, 9, 0),
-                new ETyped(9, "D", $ont.eType$(DragonsOntology.DRAGON.name), 10, 0),
-                new EProp(10, NAME.type, Constraint.of(ConstraintOp.eq, "F"))
-        )).build();
-    }
 
 
     protected boolean shouldIgnoreRelId() {

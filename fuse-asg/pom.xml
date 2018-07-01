@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-dispatcher</artifactId>
+            <artifactId>fuse-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>

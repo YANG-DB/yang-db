@@ -28,6 +28,7 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder._ref;
 
 
+@Ignore
 public class KnowledgeSimpleEntityTests {
 
     @BeforeClass

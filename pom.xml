@@ -13,8 +13,8 @@
         <module>fuse-test</module>
         <module>fuse-asg</module>
         <module>fuse-core</module>
-        <module>fuse-service</module>
         <module>fuse-dv</module>
+        <module>fuse-service</module>
         <module>fuse-domain</module>
         <module>fuse-geojson</module>
     </modules>
@@ -135,7 +135,7 @@
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
-                <artifactId>fuse-dispatcher</artifactId>
+                <artifactId>fuse-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
@@ -145,32 +145,32 @@
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
-                <artifactId>fuse-epb</artifactId>
+                <artifactId>fuse-dv-epb</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
-                <artifactId>fuse-executor</artifactId>
+                <artifactId>fuse-dv-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
-                <artifactId>fuse-stat</artifactId>
+                <artifactId>fuse-dv-stat</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
-                <artifactId>fuse-gta</artifactId>
+                <artifactId>fuse-dv-gta</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
-                <artifactId>fuse-unipop</artifactId>
+                <artifactId>fuse-dv-unipop</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
-                <artifactId>fuse-unipop-asg</artifactId>
+                <artifactId>fuse-dv-asg</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
@@ -180,17 +180,7 @@
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
-                <artifactId>fuse-validator</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>geojson-jackson</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>dragons-test-framework</artifactId>
+                <artifactId>fuse-geojson</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <!-- fuse -->
@@ -254,11 +244,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
                 <version>${commons-collections4.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-math3</artifactId>
-                <version>${commons-math3.version}</version>
             </dependency>
             <!-- commons -->
 
@@ -549,7 +534,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-math3</artifactId>
                 <version>${commons-math3.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>

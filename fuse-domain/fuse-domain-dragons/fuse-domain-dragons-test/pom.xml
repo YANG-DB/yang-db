@@ -17,7 +17,7 @@
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-executor</artifactId>
+            <artifactId>fuse-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
@@ -46,11 +46,11 @@
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-stat</artifactId>
+            <artifactId>fuse-dv-stat</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-epb</artifactId>
+            <artifactId>fuse-dv-epb</artifactId>
         </dependency>
 
         <dependency>

@@ -24,35 +24,27 @@
         <!-- runtime -->
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-validator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.kayhut</groupId>
             <artifactId>fuse-asg</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-unipop-asg</artifactId>
+            <artifactId>fuse-dv-asg</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-dispatcher</artifactId>
+            <artifactId>fuse-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-epb</artifactId>
+            <artifactId>fuse-dv-epb</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-executor</artifactId>
+            <artifactId>fuse-dv-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-gta</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.kayhut</groupId>
-            <artifactId>dragons-test-framework</artifactId>
+            <artifactId>fuse-dv-gta</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
@@ -65,10 +57,6 @@
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-caffeine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jooby</groupId>
-            <artifactId>jooby-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
