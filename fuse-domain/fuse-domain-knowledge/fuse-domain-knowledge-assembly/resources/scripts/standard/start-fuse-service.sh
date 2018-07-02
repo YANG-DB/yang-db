@@ -24,6 +24,9 @@ do
             argName=activeProfile
         elif [ "${var}" = "--debug" ]; then
             debugParams=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+        elif [ "${var}" = "--jmx" ]; then
+            jmxEnable=true
+            jmxPort=6979
         fi
     elif [ "${argName}" != "" ]; then
         declare "${argName}=${var}"
@@ -32,6 +35,13 @@ do
 done
 
 systemProperties=
+if [ "${jmxEnabled}" != "" ]; then
+    systemProperties="${systemProperties} -Dcom.sun.management.jmxremote=${jmxEnabled}"
+    systemProperties="${systemProperties} -Dcom.sun.management.jmxremote.port=${jmxPort}"
+    systemProperties="${systemProperties} -Dcom.sun.management.jmxremote.authenticate=false"
+    systemProperties="${systemProperties} -Dcom.sun.management.jmxremote.ssl=false"
+fi
+
 if [ "${elasticsearchHosts}" != "" ]; then
 	systemProperties="${systemProperties} -Delasticsearch.hosts=${elasticsearchHosts}"
 fi

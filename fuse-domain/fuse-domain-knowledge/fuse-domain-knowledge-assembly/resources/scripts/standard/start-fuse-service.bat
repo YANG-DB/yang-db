@@ -25,6 +25,9 @@ for %%x in (%*) do (
             set argName=activeProfile
         ) else if "%%~x"=="--debug" (
 			set debugParams=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+		) else if "%%~x"=="--jmx" (
+		    set jmxEnable=true
+		    set jmxPort=6979
 		)
 	) else if not "!argName!"=="" (
 		set !argName!=%%~x
@@ -33,6 +36,13 @@ for %%x in (%*) do (
 )
 
 set systemProperties=
+if not "!jmxEnable!"=="" (
+    set systemProperties=!systemProperties! -Dcom.sun.management.jmxremote=!jmxEnable!
+    set systemProperties=!systemProperties! -Dcom.sun.management.jmxremote.port=!jmxPort!
+    set systemProperties=!systemProperties! -Dcom.sun.management.jmxremote.authenticate=false
+    set systemProperties=!systemProperties! -Dcom.sun.management.jmxremote.ssl=false
+)
+
 if not "!elasticsearchHosts!"=="" (
 	set systemProperties=!systemProperties! -Delasticsearch.hosts=!elasticsearchHosts!
 )
