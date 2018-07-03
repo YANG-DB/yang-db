@@ -467,7 +467,7 @@
             </dependency>
             <dependency>
                 <groupId>org.kayhut</groupId>
-                <artifactId>fuse-unipop</artifactId>
+                <artifactId>fuse-dv-unipop</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
