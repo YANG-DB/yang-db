@@ -1,6 +1,7 @@
 package com.kayhut.fuse.executor.cursor.discrete;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.executor.utils.ConversionUtil;
@@ -12,6 +13,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.Stream;
@@ -24,6 +26,18 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import java.util.*;
 
 public class NewGraphHierarchyTraversalCursor implements Cursor {
+    //region Factory
+    public static class Factory implements CursorFactory {
+        //region CursorFactory Implementation
+        @Override
+        public Cursor createCursor(Context context) {
+            return new NewGraphHierarchyTraversalCursor((TraversalCursorContext)context,
+                    ((CreateGraphHierarchyCursorRequest)context.getCursorRequest()).getCountTags());
+        }
+        //endregion
+    }
+    //endregion
+
     //region Constructors
     public NewGraphHierarchyTraversalCursor(TraversalCursorContext context, Iterable<String> countTags) {
         this.countTags = Stream.ofAll(countTags).toJavaSet();

@@ -20,44 +20,24 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
         @JsonSubTypes.Type(name = "hierarchyFlatten", value = CreateHierarchyFlattenCursorRequest.class)
 })
 public abstract class CreateCursorRequest {
-    public static final String defaultTimeout = "CreateCursorRequest.@timeout";
-
-    public static final int TIMEOUT = 60 * 1000 * 3;
-
     public enum Include {
         all,
         entities,
         relationships
     }
 
-    public CreateCursorRequest() {
-        this(TIMEOUT);
-    }
-
     //region Constructors
-    @Inject
-    public CreateCursorRequest(@Named(defaultTimeout)
-                                       long timeout) {
+    public CreateCursorRequest() {
         this.include = Include.all;
-        this.timeout = timeout;
-    }
-
-    public CreateCursorRequest(CreatePageRequest createPageRequest,@Named(defaultTimeout) long timeout) {
-        this(Include.all, createPageRequest, timeout);
     }
 
     public CreateCursorRequest(CreatePageRequest createPageRequest) {
-        this(Include.all, createPageRequest, TIMEOUT);
+        this(Include.all, createPageRequest);
     }
 
     public CreateCursorRequest(Include include, CreatePageRequest createPageRequest) {
-        this(include, createPageRequest, TIMEOUT);
-    }
-
-    public CreateCursorRequest(Include include, CreatePageRequest createPageRequest, long timeout) {
         this.include = include;
         this.createPageRequest = createPageRequest;
-        this.timeout = timeout;
     }
     //endregion
 
@@ -69,14 +49,6 @@ public abstract class CreateCursorRequest {
 
     public void setCreatePageRequest(CreatePageRequest createPageRequest) {
         this.createPageRequest = createPageRequest;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -92,8 +64,6 @@ public abstract class CreateCursorRequest {
 
     //region Fields
     private CreatePageRequest createPageRequest;
-
-    private long timeout;
     private Include include;
     //endregion
 }

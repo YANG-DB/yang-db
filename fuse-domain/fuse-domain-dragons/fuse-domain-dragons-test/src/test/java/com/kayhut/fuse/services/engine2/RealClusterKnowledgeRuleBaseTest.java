@@ -536,7 +536,6 @@ public class RealClusterKnowledgeRuleBaseTest {
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CreateGraphCursorRequest cursorRequest = new CreateGraphCursorRequest();
-        cursorRequest.setTimeout(1500);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
@@ -678,7 +677,7 @@ public class RealClusterKnowledgeRuleBaseTest {
                 new CreateGraphHierarchyCursorRequest(
                         CreateCursorRequest.Include.entities,
                         Collections.singletonList("SE"),
-                        new CreatePageRequest(1000, true), 3 * 60 * 1000));
+                        new CreatePageRequest(1000, true)));
 
         Object pageDataObj = queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData();
         AssignmentsQueryResult pageData = new ObjectMapper().convertValue(pageDataObj, AssignmentsQueryResult.class);
@@ -1392,7 +1391,7 @@ public class RealClusterKnowledgeRuleBaseTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphHierarchyCursorRequest(Arrays.asList("B", "D"), 3 * 60 * 1000));
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphHierarchyCursorRequest(Arrays.asList("B", "D")));
 
         long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 10);

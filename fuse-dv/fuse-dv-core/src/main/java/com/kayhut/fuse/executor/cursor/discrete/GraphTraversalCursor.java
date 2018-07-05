@@ -1,6 +1,8 @@
 package com.kayhut.fuse.executor.cursor.discrete;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
+import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
@@ -14,6 +16,17 @@ import java.util.*;
  * Created by roman.margolis on 02/10/2017.
  */
 public class GraphTraversalCursor implements Cursor {
+    //region Factory
+    public static class Factory implements CursorFactory {
+        //region CursorFactory Implementation
+        @Override
+        public Cursor createCursor(Context context) {
+            return new GraphTraversalCursor(new PathsTraversalCursor((TraversalCursorContext)context));
+        }
+        //endregion
+    }
+    //endregion
+
     //region Constructors
     public GraphTraversalCursor(Cursor cursor) {
         this.cursor = cursor;

@@ -27,7 +27,7 @@ import static com.codahale.metrics.MetricRegistry.name;
         String annotationName = annotation.name();
 
         Class<?> declaringClass = ((Method) invocation.getStaticPart()).getDeclaringClass();
-        String name = name(declaringClass, invocation.getMethod().getName());
+        String name = name(declaringClass, invocation.getMethod().getType());
         org.slf4j.Logger logger = LoggerFactory.getLogger(declaringClass);
 
 

@@ -11,11 +11,6 @@ public class CreateGraphCursorRequest extends CreateCursorRequest {
     //region Constructors
     public CreateGraphCursorRequest() {}
 
-    @Inject
-    public CreateGraphCursorRequest(@Named(defaultTimeout) long timeout) {
-        super(timeout);
-    }
-
     public CreateGraphCursorRequest(CreatePageRequest createPageRequest) {
         super(createPageRequest);
     }

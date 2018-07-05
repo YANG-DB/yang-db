@@ -21,7 +21,7 @@ public class StandardSearchController implements SearchController {
     public ContentResponse search(CreateQueryRequest request) {
         /*String id = getOrCreateId(request.getRequestId());
         ContentResponse response = ContentResponse.Builder.builder(id)
-                .queryMetadata(new QueryMetadata(id, request.getName(), request.getType(), System.currentTimeMillis()))
+                .queryMetadata(new QueryMetadata(id, request.getType(), request.getType(), System.currentTimeMillis()))
                 //todo implement this
                 .queryResourceResult(new QueryResourceInfo())
                 .data(GraphContent.GraphBuilder.builder(request.getRequestId())

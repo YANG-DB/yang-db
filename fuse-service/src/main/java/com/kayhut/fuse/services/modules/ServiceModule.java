@@ -41,9 +41,7 @@ public class ServiceModule extends ModuleBase {
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
         // bind common components
         long defaultTimeout = config.hasPath("fuse.cursor.timeout") ? config.getLong("fuse.cursor.timeout") : 60*1000*3;
-        binder.bindConstant()
-                .annotatedWith(named(CreateCursorRequest.defaultTimeout))
-                .to(defaultTimeout);
+
         binder.bind(RequestIdSupplier.class)
                 .annotatedWith(named(CachedRequestIdSupplier.RequestIdSupplierParameter))
                 .to(SnowflakeRequestIdSupplier.class)

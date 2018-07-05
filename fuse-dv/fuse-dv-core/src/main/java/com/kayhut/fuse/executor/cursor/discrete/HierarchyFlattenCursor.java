@@ -1,6 +1,8 @@
 package com.kayhut.fuse.executor.cursor.discrete;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
+import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.transport.cursor.CreateHierarchyFlattenCursorRequest;
 import com.opencsv.CSVWriter;
@@ -11,11 +13,26 @@ import java.io.StringWriter;
 import java.util.*;
 
 public class HierarchyFlattenCursor implements Cursor {
+    //region Factory
+    public static class Factory implements CursorFactory {
+        //region CursorFactory Implementation
+        @Override
+        public Cursor createCursor(Context context) {
+            return new HierarchyFlattenCursor(
+                    new PathsTraversalCursor((TraversalCursorContext)context),
+                    (CreateHierarchyFlattenCursorRequest)context.getCursorRequest());
+        }
+        //endregion
+    }
+    //endregion
 
+    //region Constructors
     public HierarchyFlattenCursor(PathsTraversalCursor innerCursor, CreateHierarchyFlattenCursorRequest cursorRequest) {
         this.innerCursor = innerCursor;
     }
+    //endregion
 
+    //region Cursor Implementation
     @Override
     public QueryResultBase getNextResults(int numResults) {
         Map<String, Set<String>> childMap = new HashMap<>();
@@ -63,7 +80,9 @@ public class HierarchyFlattenCursor implements Cursor {
         }
         return builder.build();
     }
+    //endregion
 
+    //region Private Methods
     private Collection<? extends HierarchyPath> visitNode(String node, Stack<String> nodeStack, Set<String> handledVertices,  Map<String, Set<String>> childMap) {
         List<HierarchyPath> paths = new ArrayList<>();
 
@@ -97,11 +116,15 @@ public class HierarchyFlattenCursor implements Cursor {
 
         return paths;
     }
+    //endregion
 
+    //region Fields
     private PathsTraversalCursor innerCursor;
     private char separator = ',';
     private char quotechar = '"';
+    //endregion
 
+    //region HierarchyPath
     private class HierarchyPath{
         private String parent;
         private String child;
@@ -137,4 +160,5 @@ public class HierarchyFlattenCursor implements Cursor {
             this.dist = dist;
         }
     }
+    //endregion
 }

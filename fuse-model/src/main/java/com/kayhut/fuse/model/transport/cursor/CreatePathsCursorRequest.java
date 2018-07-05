@@ -9,13 +9,8 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
  */
 public class CreatePathsCursorRequest extends CreateCursorRequest {
     //region Constructors
-
     public CreatePathsCursorRequest() {
-    }
-
-    @Inject
-    public CreatePathsCursorRequest(@Named(defaultTimeout) long timeout) {
-        super(timeout);
+        super();
     }
 
     public CreatePathsCursorRequest(CreatePageRequest createPageRequest) {

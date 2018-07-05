@@ -2,12 +2,14 @@ package com.kayhut.fuse.executor;
 
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
+import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.executor.cursor.discrete.*;
 import com.kayhut.fuse.executor.driver.StandardCursorDriver;
 import com.kayhut.fuse.executor.driver.StandardPageDriver;
 import com.kayhut.fuse.executor.driver.StandardQueryDriver;
@@ -20,8 +22,8 @@ import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.executor.ontology.schema.*;
+import com.kayhut.fuse.model.transport.cursor.*;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.typesafe.config.Config;
@@ -47,8 +49,8 @@ public class ExecutorModule extends ModuleBase {
     //region Jooby.Module Implementation
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-
         bindInitialDataLoader(env, conf, binder);
+        bindCursorBindings(env, conf, binder);
         bindCursorFactory(env, conf, binder);
         bindElasticClient(env, conf, binder);
         bindRawSchema(env, conf, binder);
@@ -114,29 +116,52 @@ public class ExecutorModule extends ModuleBase {
         });
     }
 
+    protected void bindCursorBindings(Env env, Config conf, Binder binder) {
+        binder.install(new CursorBindingModule(new CompositeCursorFactory.Binding(
+                "paths",
+                CreatePathsCursorRequest.class,
+                new PathsTraversalCursor.Factory())));
+
+        binder.install(new CursorBindingModule(new CompositeCursorFactory.Binding(
+                "graph",
+                CreateGraphCursorRequest.class,
+                new GraphTraversalCursor.Factory())));
+
+        binder.install(new CursorBindingModule(new CompositeCursorFactory.Binding(
+                "graphHierarchy",
+                CreateGraphHierarchyCursorRequest.class,
+                new NewGraphHierarchyTraversalCursor.Factory())));
+
+        binder.install(new CursorBindingModule(new CompositeCursorFactory.Binding(
+                "hierarchyFlatten",
+                CreateHierarchyFlattenCursorRequest.class,
+                new HierarchyFlattenCursor.Factory())));
+
+        binder.install(new CursorBindingModule(new CompositeCursorFactory.Binding(
+                "csv",
+                CreateCsvCursorRequest.class,
+                new CsvTraversalCursor.Factory())));
+    }
+
     protected void bindCursorFactory(Env env, Config conf, Binder binder) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
-                try {
-                    this.bind(CursorFactory.class)
-                            .annotatedWith(named(LoggingCursorFactory.cursorFactoryParameter))
-                            .to(getCursorFactoryClass(conf))
-                            .asEagerSingleton();
-                    this.bind(Logger.class)
-                            .annotatedWith(named(LoggingCursorFactory.cursorLoggerParameter))
-                            .toInstance(LoggerFactory.getLogger(Cursor.class));
-                    this.bind(Logger.class)
-                            .annotatedWith(named(LoggingCursorFactory.traversalLoggerParameter))
-                            .toInstance(LoggerFactory.getLogger(Traversal.class));
-                    this.bind(CursorFactory.class)
-                            .to(LoggingCursorFactory.class)
-                            .asEagerSingleton();
+                this.bind(CursorFactory.class)
+                        .annotatedWith(named(LoggingCursorFactory.cursorFactoryParameter))
+                        .to(CompositeCursorFactory.class)
+                        .asEagerSingleton();
+                this.bind(Logger.class)
+                        .annotatedWith(named(LoggingCursorFactory.cursorLoggerParameter))
+                        .toInstance(LoggerFactory.getLogger(Cursor.class));
+                this.bind(Logger.class)
+                        .annotatedWith(named(LoggingCursorFactory.traversalLoggerParameter))
+                        .toInstance(LoggerFactory.getLogger(Traversal.class));
+                this.bind(CursorFactory.class)
+                        .to(LoggingCursorFactory.class)
+                        .asEagerSingleton();
 
-                    this.expose(CursorFactory.class);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+                this.expose(CursorFactory.class);
             }
         });
     }

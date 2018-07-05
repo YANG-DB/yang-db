@@ -1,6 +1,7 @@
 package com.kayhut.fuse.executor.cursor.discrete;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.executor.utils.ConversionUtil;
@@ -28,6 +29,17 @@ import static com.kayhut.fuse.model.results.AssignmentsQueryResult.Builder.insta
  * Created by roman.margolis on 02/10/2017.
  */
 public class PathsTraversalCursor implements Cursor {
+    //region Factory
+    public static class Factory implements CursorFactory {
+        //region CursorFactory Implementation
+        @Override
+        public Cursor createCursor(Context context) {
+            return new PathsTraversalCursor((TraversalCursorContext)context);
+        }
+        //endregion
+    }
+    //endregion
+
     //region Constructors
     public PathsTraversalCursor(TraversalCursorContext context) {
         this.context = context;
