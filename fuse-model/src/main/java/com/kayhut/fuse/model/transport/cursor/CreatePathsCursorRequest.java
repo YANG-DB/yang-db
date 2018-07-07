@@ -8,17 +8,19 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
  * Created by roman.margolis on 11/03/2018.
  */
 public class CreatePathsCursorRequest extends CreateCursorRequest {
+    public static final String CursorType = "paths";
+
     //region Constructors
     public CreatePathsCursorRequest() {
-        super();
+        super(CursorType);
     }
 
     public CreatePathsCursorRequest(CreatePageRequest createPageRequest) {
-        super(createPageRequest);
+        super(CursorType, createPageRequest);
     }
 
     public CreatePathsCursorRequest(Include include, CreatePageRequest createPageRequest) {
-        super(include, createPageRequest);
+        super(CursorType, include, createPageRequest);
     }
     //endregion
 }

@@ -41,7 +41,7 @@ public class CompositeCursorFactory implements CursorFactory {
 
     //region Constructors
     @Inject
-    public CompositeCursorFactory(Iterable<Binding> bindings) {
+    public CompositeCursorFactory(Set<Binding> bindings) {
         this.cursorFactories = Stream.ofAll(bindings)
                 .toJavaMap(binding -> new Tuple2<>(binding.getKlass(), binding.getCursorFactory()));
     }

@@ -1,8 +1,13 @@
 package com.kayhut.fuse.services.modules;
 
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
+import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
+import com.kayhut.fuse.dispatcher.cursor.CreateCursorRequestDeserializer;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
@@ -27,6 +32,9 @@ import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.util.Set;
 
 import static com.google.inject.name.Names.named;
 
@@ -75,6 +83,9 @@ public class ServiceModule extends ModuleBase {
 
         //bind request parameters
         binder.bind(PlanTraceOptions.class).in(RequestScoped.class);
+
+        // register PostConfigurer
+        binder.bind(PostConfigurer.class).asEagerSingleton();
     }
     //endregion
 
@@ -256,4 +267,13 @@ public class ServiceModule extends ModuleBase {
         });
     }
     //endregion
+
+    private static class PostConfigurer {
+        @Inject
+        public PostConfigurer(ObjectMapper mapper, Set<CompositeCursorFactory.Binding> cursorBindings) {
+            SimpleModule module = new SimpleModule();
+            module.addDeserializer(CreateCursorRequest.class, new CreateCursorRequestDeserializer(cursorBindings));
+            mapper.registerModules(module);
+        }
+    }
 }

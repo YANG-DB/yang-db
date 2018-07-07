@@ -50,7 +50,6 @@ public class ExecutorModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         bindInitialDataLoader(env, conf, binder);
-        bindCursorBindings(env, conf, binder);
         bindCursorFactory(env, conf, binder);
         bindElasticClient(env, conf, binder);
         bindRawSchema(env, conf, binder);
@@ -114,33 +113,6 @@ public class ExecutorModule extends ModuleBase {
                 }
             }
         });
-    }
-
-    protected void bindCursorBindings(Env env, Config conf, Binder binder) {
-        binder.install(new CursorBindingModule(new CompositeCursorFactory.Binding(
-                "paths",
-                CreatePathsCursorRequest.class,
-                new PathsTraversalCursor.Factory())));
-
-        binder.install(new CursorBindingModule(new CompositeCursorFactory.Binding(
-                "graph",
-                CreateGraphCursorRequest.class,
-                new GraphTraversalCursor.Factory())));
-
-        binder.install(new CursorBindingModule(new CompositeCursorFactory.Binding(
-                "graphHierarchy",
-                CreateGraphHierarchyCursorRequest.class,
-                new NewGraphHierarchyTraversalCursor.Factory())));
-
-        binder.install(new CursorBindingModule(new CompositeCursorFactory.Binding(
-                "hierarchyFlatten",
-                CreateHierarchyFlattenCursorRequest.class,
-                new HierarchyFlattenCursor.Factory())));
-
-        binder.install(new CursorBindingModule(new CompositeCursorFactory.Binding(
-                "csv",
-                CreateCsvCursorRequest.class,
-                new CsvTraversalCursor.Factory())));
     }
 
     protected void bindCursorFactory(Env env, Config conf, Binder binder) {

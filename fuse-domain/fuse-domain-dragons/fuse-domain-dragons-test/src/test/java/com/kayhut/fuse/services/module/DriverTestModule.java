@@ -1,14 +1,20 @@
 package com.kayhut.fuse.services.module;
 
 import com.google.inject.Binder;
+import com.google.inject.multibindings.Multibinder;
+import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.executor.cursor.discrete.GraphTraversalCursor;
+import com.kayhut.fuse.executor.cursor.discrete.PathsTraversalCursor;
 import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.dispatcher.driver.MockDriver;
 import com.kayhut.fuse.services.engine2.data.schema.InitialTestDataLoader;
 import com.kayhut.fuse.services.engine2.data.schema.discrete.M2DragonsPhysicalSchemaProvider;
@@ -30,9 +36,19 @@ public class DriverTestModule extends ModuleBase {
         binder.bind(PageDriver.class).to(MockDriver.Page.class).in(RequestScoped.class);
 
         binder.bind(GraphElementSchemaProviderFactory.class)
-                .toInstance(ontology -> new OntologySchemaProvider(ontology,new M2DragonsPhysicalSchemaProvider()));
+                .toInstance(ontology -> new OntologySchemaProvider(ontology, new M2DragonsPhysicalSchemaProvider()));
         binder.bind(Client.class).toInstance(new MockClient());
-        binder.bind(InitialGraphDataLoader.class).toInstance(new InitialTestDataLoader(null,null));
+        binder.bind(InitialGraphDataLoader.class).toInstance(new InitialTestDataLoader(null, null));
+
+        Multibinder.newSetBinder(binder, CompositeCursorFactory.Binding.class).addBinding().toInstance(new CompositeCursorFactory.Binding(
+                CreatePathsCursorRequest.CursorType,
+                CreatePathsCursorRequest.class,
+                new PathsTraversalCursor.Factory()));
+
+        Multibinder.newSetBinder(binder, CompositeCursorFactory.Binding.class).addBinding().toInstance(new CompositeCursorFactory.Binding(
+                CreateGraphCursorRequest.CursorType,
+                CreateGraphCursorRequest.class,
+                new GraphTraversalCursor.Factory()));
     }
 
 }

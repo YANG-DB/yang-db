@@ -38,20 +38,10 @@ public class CursorControllerRegistrar extends AppControllerRegistrarBase<Cursor
         app.use(appUrlSupplier.cursorStoreUrl(":queryId"))
                 .post(req -> {
                     Route.of("postCursor").write();
-                    String cursorType = req.param("cursorType").value();
+                    CreateCursorRequest cursorRequest = req.body(CreateCursorRequest.class);
 
-                    Optional<CompositeCursorFactory.Binding> cursorBinding = Stream.ofAll(app.require(new TypeLiteral<Set<CompositeCursorFactory.Binding>>(){}))
-                            .filter(binding -> binding.getType().equals(cursorType))
-                            .toJavaOptional();
-
-                    ContentResponse response = null;
-                    if (cursorBinding.isPresent()) {
-                        CreateCursorRequest cursorRequest = req.body(cursorBinding.get().getKlass());
-                        req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
-                        response = this.getController(app).create(req.param("queryId").value(), cursorRequest);
-                    } else {
-                        response = ContentResponse.internalError(new Exception(String.format("Unsupported cursor type: %s", cursorType)));
-                    }
+                    req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
+                    ContentResponse response = this.getController(app).create(req.param("queryId").value(), cursorRequest);
 
                     return Results.with(response, response.status());
                 });

@@ -11,14 +11,6 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "cursorType")
-@JsonSubTypes({
-        @JsonSubTypes.Type(name = "paths", value = CreatePathsCursorRequest.class),
-        @JsonSubTypes.Type(name = "graph", value = CreateGraphCursorRequest.class),
-        @JsonSubTypes.Type(name = "graphHierarchy", value = CreateGraphHierarchyCursorRequest.class),
-        @JsonSubTypes.Type(name = "csv", value = CreateCsvCursorRequest.class),
-        @JsonSubTypes.Type(name = "hierarchyFlatten", value = CreateHierarchyFlattenCursorRequest.class)
-})
 public abstract class CreateCursorRequest {
     public enum Include {
         all,
@@ -31,17 +23,30 @@ public abstract class CreateCursorRequest {
         this.include = Include.all;
     }
 
-    public CreateCursorRequest(CreatePageRequest createPageRequest) {
-        this(Include.all, createPageRequest);
+    public CreateCursorRequest(String cursorType) {
+        this(cursorType, null);
     }
 
-    public CreateCursorRequest(Include include, CreatePageRequest createPageRequest) {
+    public CreateCursorRequest(String cursorType, CreatePageRequest createPageRequest) {
+        this(cursorType, Include.all, createPageRequest);
+    }
+
+    public CreateCursorRequest(String cursorType, Include include, CreatePageRequest createPageRequest) {
+        this.cursorType = cursorType;
         this.include = include;
         this.createPageRequest = createPageRequest;
     }
     //endregion
 
     //region Properties
+    public String getCursorType() {
+        return cursorType;
+    }
+
+    public void setCursorType(String cursorType) {
+        this.cursorType = cursorType;
+    }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public CreatePageRequest getCreatePageRequest() {
         return createPageRequest;
@@ -63,6 +68,7 @@ public abstract class CreateCursorRequest {
     //endregions
 
     //region Fields
+    private String cursorType;
     private CreatePageRequest createPageRequest;
     private Include include;
     //endregion

@@ -1,7 +1,5 @@
 package com.kayhut.fuse.model.transport.cursor;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 
 import java.util.Collections;
@@ -10,7 +8,13 @@ import java.util.Collections;
  * Created by roman.margolis on 11/03/2018.
  */
 public class CreateGraphHierarchyCursorRequest extends CreateCursorRequest {
+    public static final String CursorType = "graphHierarchy";
+
     //region Constructors
+    public CreateGraphHierarchyCursorRequest() {
+        this(Collections.emptyList());
+    }
+
     public CreateGraphHierarchyCursorRequest(Iterable<String> countTags) {
         this(countTags, null);
     }
@@ -20,7 +24,7 @@ public class CreateGraphHierarchyCursorRequest extends CreateCursorRequest {
     }
 
     public CreateGraphHierarchyCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest) {
-        super(include, createPageRequest);
+        super(CursorType, include, createPageRequest);
         this.countTags = countTags;
     }
     //endregion

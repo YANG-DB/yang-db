@@ -1,5 +1,6 @@
 package com.kayhut.fuse.assembly.knowledge.service;
 
+import com.kayhut.fuse.assembly.knowledge.KnowledgeGraphHierarchyCursorRequest;
 import com.kayhut.fuse.assembly.knowledge.RankingKnowledgeDataInfraManager;
 import com.kayhut.fuse.assembly.knowledge.Setup;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
@@ -89,8 +90,7 @@ public class RankingScoreBasedE2ETests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphHierarchyCursorRequest(tags));
-        //CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new KnowledgeGraphHierarchyCursorRequest(tags));
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
