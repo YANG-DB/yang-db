@@ -1,7 +1,5 @@
 package com.kayhut.fuse.model.transport.cursor;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 
 import java.util.Collections;
@@ -10,27 +8,23 @@ import java.util.Collections;
  * Created by roman.margolis on 11/03/2018.
  */
 public class CreateGraphHierarchyCursorRequest extends CreateCursorRequest {
-    public CreateGraphHierarchyCursorRequest() {
-        this(Collections.emptyList(),TIMEOUT);
-
-    }
+    public static final String CursorType = "graphHierarchy";
 
     //region Constructors
-    @Inject
-    public CreateGraphHierarchyCursorRequest(@Named(defaultTimeout) long timeout) {
-        this(Collections.emptyList(),timeout);
+    public CreateGraphHierarchyCursorRequest() {
+        this(Collections.emptyList());
     }
 
-    public CreateGraphHierarchyCursorRequest(Iterable<String> countTags,@Named(defaultTimeout) long timeout) {
-        this(countTags, null,timeout);
+    public CreateGraphHierarchyCursorRequest(Iterable<String> countTags) {
+        this(countTags, null);
     }
 
-    public CreateGraphHierarchyCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest,@Named(defaultTimeout) long timeout) {
-        this(Include.all, countTags, createPageRequest,timeout);
+    public CreateGraphHierarchyCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest) {
+        this(Include.all, countTags, createPageRequest);
     }
 
-    public CreateGraphHierarchyCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest,@Named(defaultTimeout) long timeout) {
-        super(include, createPageRequest,timeout);
+    public CreateGraphHierarchyCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest) {
+        super(CursorType, include, createPageRequest);
         this.countTags = countTags;
     }
     //endregion

@@ -279,6 +279,8 @@ public class QueryTest {
 
     @Test
     public void queryCreateAndFetchV1QueryResource() throws IOException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+
         //query request
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
@@ -319,7 +321,7 @@ public class QueryTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
-                        Query data = FuseClient.unwrap(o.toString(), Query.class);
+                        Query data = fuseClient.unwrap(o.toString(), Query.class);
                         QueryAssert.assertEquals(data, request.getQuery());
                         return data != null;
                     } catch (Exception e) {
@@ -357,6 +359,8 @@ public class QueryTest {
 
     @Test
     public void queryCreateAndFetchAsgQueryResource() throws IOException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+
         //query request
         Query query = TestUtils.loadQuery("Q001.json");
         CreateQueryRequest request = new CreateQueryRequest();
@@ -400,7 +404,7 @@ public class QueryTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
-                        asgQuery[0] = FuseClient.unwrap(o.toString(), AsgQuery.class);
+                        asgQuery[0] = fuseClient.unwrap(o.toString(), AsgQuery.class);
                         assertTrue(asgQuery[0].getName() != null);
                         assertTrue(asgQuery[0].getOnt() != null);
                         assertTrue(AsgQueryUtil.elements(asgQuery[0]).size() >= request.getQuery().getElements().size());
@@ -423,7 +427,7 @@ public class QueryTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
-                        String data = StringUtils.strip(FuseClient.unwrap(o.toString()), "\"");
+                        String data = StringUtils.strip(fuseClient.unwrap(o.toString()), "\"");
                         assertEquals(AsgQueryDescriptor.print(asgQuery[0]).replace("\n", "\\n"), data);
                         return data != null;
                     } catch (Exception e) {
@@ -461,6 +465,8 @@ public class QueryTest {
 
     @Test
     public void queryCreateAndDeleteResource() throws IOException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+
         //query request
         Query query = TestUtils.loadQuery("Q001.json");
         CreateQueryRequest request = new CreateQueryRequest();
@@ -524,8 +530,8 @@ public class QueryTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
-                        assertEquals(QueryDescriptor.print(query).replace("\n", "\\n"), StringUtils.strip(FuseClient.unwrap(o.toString()), "\""));
-                        return FuseClient.unwrap(o.toString()) != null;
+                        assertEquals(QueryDescriptor.print(query).replace("\n", "\\n"), StringUtils.strip(fuseClient.unwrap(o.toString()), "\""));
+                        return fuseClient.unwrap(o.toString()) != null;
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;

@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.utils.FuseClient;
 import io.restassured.http.Header;
@@ -32,6 +33,8 @@ public class CursorTest {
      * execute query with expected plan result
      */
     public void cursor() throws IOException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+
         //query request
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
@@ -64,7 +67,7 @@ public class CursorTest {
 
         //create cursor resource
         AtomicReference<String> cursorId = new AtomicReference<>();
-        CreateCursorRequest cursorRequest = new CreateGraphCursorRequest();
+        CreateCursorRequest cursorRequest = new CreatePathsCursorRequest();
         given()
                 .contentType("application/json")
                 .header(new Header("fuse-external-id", "test"))
@@ -120,7 +123,7 @@ public class CursorTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
-                        String data = FuseClient.unwrap(o.toString());
+                        String data = fuseClient.unwrap(o.toString());
                         return data!=null;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -167,7 +170,7 @@ public class CursorTest {
 
         //create cuyrsor resource
         AtomicReference<String> cursorId = new AtomicReference<>();
-        CreateCursorRequest cursorRequest = new CreateGraphCursorRequest();
+        CreateCursorRequest cursorRequest = new CreatePathsCursorRequest();
         given()
                 .contentType("application/json")
                 .header(new Header("fuse-external-id", "test"))

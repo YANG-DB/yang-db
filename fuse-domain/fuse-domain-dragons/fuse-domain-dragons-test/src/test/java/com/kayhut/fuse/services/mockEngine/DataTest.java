@@ -33,6 +33,8 @@ public class DataTest {
      * execute query with expected plan result
      */
     public void data() throws IOException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+
         //query request
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
@@ -122,7 +124,7 @@ public class DataTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
-                        String data = FuseClient.unwrap(o.toString());
+                        String data = fuseClient.unwrap(o.toString());
                         return data!=null;
                     } catch (Exception e) {
                         e.printStackTrace();

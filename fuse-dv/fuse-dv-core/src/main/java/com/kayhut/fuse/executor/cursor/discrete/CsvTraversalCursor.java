@@ -1,6 +1,8 @@
 package com.kayhut.fuse.executor.cursor.discrete;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
+import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.transport.cursor.CreateCsvCursorRequest;
 import com.opencsv.CSVWriter;
@@ -10,11 +12,27 @@ import java.io.StringWriter;
 import java.util.*;
 
 public class CsvTraversalCursor implements Cursor {
+    //region CursorFactory
+    public static class Factory implements CursorFactory {
+        //region CursorFactory Implementation
+        @Override
+        public Cursor createCursor(Context context) {
+            return new CsvTraversalCursor(
+                    new PathsTraversalCursor((TraversalCursorContext)context),
+                    (CreateCsvCursorRequest) context.getCursorRequest());
+        }
+        //endregion
+    }
+    //endregion
+
+    //region Constructors
     public CsvTraversalCursor(Cursor cursor, CreateCsvCursorRequest csvCursorRequest) {
         this.cursor = cursor;
         this.csvCursorRequest = csvCursorRequest;
     }
+    //endregion
 
+    //region Cursor Implementation
     @Override
     public CsvQueryResult getNextResults(int numResults) {
 
@@ -27,7 +45,9 @@ public class CsvTraversalCursor implements Cursor {
         }
         return builder.build();
     }
+    //endregion
 
+    //region Private Methods
     private void addHeaders(CreateCsvCursorRequest csvCursorRequest, CsvQueryResult.Builder builder) {
         if(csvCursorRequest.getCsvElements().length > 0){
             String[] header = new String[csvCursorRequest.getCsvElements().length];
@@ -149,9 +169,12 @@ public class CsvTraversalCursor implements Cursor {
         }
         return values;
     }
+    //endregion
 
+    //region Fields
     private Cursor cursor;
     private CreateCsvCursorRequest csvCursorRequest;
     private char separator = ',';
     private char quotechar = '"';
+    //endregion
 }

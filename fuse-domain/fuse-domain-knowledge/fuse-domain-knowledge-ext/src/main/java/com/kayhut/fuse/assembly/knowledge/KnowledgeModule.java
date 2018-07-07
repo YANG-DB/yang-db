@@ -2,9 +2,15 @@ package com.kayhut.fuse.assembly.knowledge;
 
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
+import com.google.inject.multibindings.Multibinder;
+import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.executor.CursorBindingModule;
+import com.kayhut.fuse.executor.cursor.discrete.PathsTraversalCursor;
 import com.kayhut.fuse.model.Range;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
@@ -23,6 +29,10 @@ public class KnowledgeModule extends ModuleBase {
         binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>(){})
                 .to(KnowledgeIdGenerator.class).asEagerSingleton();
 
+        Multibinder.newSetBinder(binder, CompositeCursorFactory.Binding.class).addBinding().toInstance(new CompositeCursorFactory.Binding(
+                KnowledgeGraphHierarchyCursorRequest.CursorType,
+                KnowledgeGraphHierarchyCursorRequest.class,
+                new KnowledgeGraphHierarchyTraversalCursor.Factory()));
     }
     //endregion
 }
