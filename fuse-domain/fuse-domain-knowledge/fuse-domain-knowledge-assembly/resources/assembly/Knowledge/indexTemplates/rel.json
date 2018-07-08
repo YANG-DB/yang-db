@@ -8,7 +8,7 @@
       "refresh_interval": "100ms",
       "analysis": {
         "normalizer":{
-          "lowercase_norm":{
+          "lowercase_normalizer":{
             "filter":[
               "lowercase"
             ],
@@ -93,7 +93,7 @@
           "search_analyzer": "knowledge_standard_analyzer",
           "fields": {
             "keyword": {
-              "normalizer":"lowercase_norm",
+              "normalizer":"lowercase_normalizer",
               "type": "keyword"
             }
           }
