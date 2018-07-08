@@ -24,22 +24,28 @@ import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.c
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder._ref;
 
-@Ignore
 public class KnowledgeSimpleEntityTests {
+    static KnowledgeWriterContext ctx ;
 
     @BeforeClass
     public static void setup() throws Exception {
         Setup.setup();
+        ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() {
         Setup.teardown();
+    }
+
+    @After
+    public void after()  {
+        ctx.removeCreated();
+        ctx.clearCreated();
     }
 
     @Test
     public void testInsertOneSimpleEntityWithBuilder() throws IOException, InterruptedException {
-        KnowledgeWriterContext ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
         Assert.assertEquals(1, commit(ctx, INDEX, e1));
 
@@ -60,8 +66,42 @@ public class KnowledgeSimpleEntityTests {
     }
 
     @Test
+    public void testInsertEntityWithGlobalParent() throws IOException, InterruptedException {
+        final String logicalId = ctx.nextLogicalId();
+        final EntityBuilder global = _e(logicalId).cat("person");
+        final EntityBuilder e1 = _e(logicalId).cat("student").ctx("context1");
+        e1.global(global);
+        //verify inserted
+        Assert.assertEquals(1, commit(ctx, INDEX, global));
+        Assert.assertEquals(1, commit(ctx, INDEX, e1));
+
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = start().withEntity(e1.getETag()).withGlobalEntity(global.getETag()).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        // Check Entity Response
+        Assert.assertEquals(1, pageData.getSize());
+        Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
+        Assert.assertEquals(3, ((AssignmentsQueryResult) pageData).getAssignments().get(0).getEntities().size());
+        Assert.assertEquals(4, ((AssignmentsQueryResult) pageData).getAssignments().get(0).getRelationships().size());
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e1.toEntity())//context entity
+                        .withEntities(e1.subEntities())//logicalEntity
+                        .withEntity(global.toEntity())//global entity
+                        .withRelationships(e1.withRelations())//relationships
+                        .withRelationships(e1.withRelations())//relationships (double relationships for the 2 different etags variations...
+                        .build()).build();
+
+        // Check if expected and actual are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true,true);
+
+    }
+
+    @Test
     public void testInsertOneSimpleEntityWithReferenceBuilder() throws IOException, InterruptedException {
-        KnowledgeWriterContext ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
 
         // Create ref
@@ -121,7 +161,6 @@ public class KnowledgeSimpleEntityTests {
 
     @Test
     public void testInsertOneSimpleEntityWithFileAndReferenceBuilder() throws IOException, InterruptedException {
-        KnowledgeWriterContext ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
 
         // Create file
@@ -164,11 +203,11 @@ public class KnowledgeSimpleEntityTests {
         Assert.assertEquals(1, assignments.size());
         Assert.assertEquals(2, assignments.get(0).getRelationships().size());
         Assert.assertEquals("hasEntityReference", assignments.get(0).getRelationships().get(0).getrType());
-        Assert.assertEquals("hasEntityFile", assignments.get(0).getRelationships().get(1).getrType());
+        Assert.assertEquals("hasEfile", assignments.get(0).getRelationships().get(1).getrType());
 
         Assert.assertEquals(3, assignments.get(0).getEntities().size());
-        Assert.assertEquals("Entity", assignments.get(0).getEntities().get(0).geteType());
-        Assert.assertEquals("File", assignments.get(0).getEntities().get(1).geteType());
+        Assert.assertEquals("Entity", assignments.get(0).getEntities().get(1).geteType());
+        Assert.assertEquals("Efile", assignments.get(0).getEntities().get(0).geteType());
         Assert.assertEquals("Reference", assignments.get(0).getEntities().get(2).geteType());
 
         //bug logicalId returns on Reference entity
@@ -193,7 +232,6 @@ public class KnowledgeSimpleEntityTests {
 
     @Test
     public void testInsertEntityWithFileWithBuilder() throws IOException, InterruptedException {
-        KnowledgeWriterContext ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
 
         // Create file
@@ -225,11 +263,11 @@ public class KnowledgeSimpleEntityTests {
 
         Assert.assertEquals(1, assignments.size());
         Assert.assertEquals(1, assignments.get(0).getRelationships().size());
-        Assert.assertEquals("hasEntityFile", assignments.get(0).getRelationships().get(0).getrType());
+        Assert.assertEquals("hasEfile", assignments.get(0).getRelationships().get(0).getrType());
 
         Assert.assertEquals(2, assignments.get(0).getEntities().size());
-        Assert.assertEquals("Entity", assignments.get(0).getEntities().get(0).geteType());
-        Assert.assertEquals("File", assignments.get(0).getEntities().get(1).geteType());
+        Assert.assertEquals("Entity", assignments.get(0).getEntities().get(1).geteType());
+        Assert.assertEquals("Efile", assignments.get(0).getEntities().get(0).geteType());
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()

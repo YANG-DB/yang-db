@@ -16,10 +16,11 @@ import java.util.Optional;
 //todo - for kobi usage
 public class EntityBuilder extends EntityId {
     public static final String INDEX = "e0";
+    public static String type = "Entity";
+    public static String physicalType = "entity";
 
     public String logicalId;
     public String category = "person";
-    public String type = "entity";
     public String context = "global";
     public List<String> refs = new ArrayList<>();
 
@@ -44,6 +45,38 @@ public class EntityBuilder extends EntityId {
 
     public EntityBuilder ctx(String context) {
         this.context = context;
+        return this;
+    }
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public EntityBuilder global(EntityBuilder global) {
+        //add global entity
+        final LogicalEntity logicalEntity = new LogicalEntity(global.logicalId);
+        subEntities.add(logicalEntity.toEntity());
+        //add relationship
+        hasGlobal.add(Relationship.Builder.instance()
+                .withAgg(false)
+                .withDirectional(false)
+                .withEID1(logicalEntity.id())
+                .withEID2(this.id())
+                .withETag1(logicalEntity.getETag())
+                .withETag2(this.getETag())
+                .withRType("hasEntity")
+                .build());
+        hasGlobal.add(Relationship.Builder.instance()
+                .withAgg(false)
+                .withDirectional(false)
+                .withEID1(logicalEntity.id())
+                .withEID2(global.id())
+                .withETag1(logicalEntity.getETag())
+                .withETag2(global.getETag())
+                .withRType("hasEntity")
+                .build());
+
         return this;
     }
 
@@ -82,7 +115,7 @@ public class EntityBuilder extends EntityId {
                 .withEID2(file.fileId)
                 .withETag1(getETag())
                 .withETag2(file.getETag())
-                .withRType("hasEntityFile")
+                .withRType("hasEfile")
                 .build());
 
         return this;
@@ -98,7 +131,7 @@ public class EntityBuilder extends EntityId {
     }
 
     public String getETag() {
-        return "E" + id();
+        return "Entity." + id();
     }
 
     @Override
@@ -110,7 +143,7 @@ public class EntityBuilder extends EntityId {
         }
 
         //create knowledge entity
-        on.put("type", type);
+        on.put("type", physicalType);
         on.put("logicalId", logicalId);
         on.put("context", context);
         on.put("category", category);

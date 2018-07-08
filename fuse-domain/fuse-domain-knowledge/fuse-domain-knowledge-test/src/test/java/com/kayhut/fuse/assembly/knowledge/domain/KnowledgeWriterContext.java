@@ -3,13 +3,20 @@ package com.kayhut.fuse.assembly.knowledge.domain;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
+import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.rest.RestStatus;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeDataInfraManager.PGE;
 
@@ -25,29 +32,48 @@ public class KnowledgeWriterContext {
     public TransportClient client;
     public RawSchema schema;
     public ObjectMapper mapper;
+    public List<Items> created;
 
-    public String nextLogicalId(){
-        return  "e" + String.format(this.schema.getIdFormat("entity"), eCounter.incrementAndGet());
+
+    public int removeCreated() {
+        int[] count = new int[]{0};
+        List<String> indices = created.stream().map(item->item.index).collect(Collectors.toList());
+        created.forEach(entity -> {
+            try {
+                final DeleteResponse deleteResponse = client.delete(client.prepareDelete().setIndex(entity.index).setType(entity.type).setId(entity.id).request()).get();
+                count[0]+= deleteResponse.status()==RestStatus.OK ? 1 : 0;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        });
+        client.admin().indices().prepareRefresh(indices.toArray(new String[indices.size()])).get();
+        return count[0];
     }
 
-    public String nextValueId(){
-        return  "ev" + String.format(this.schema.getIdFormat("entity"), evCounter.incrementAndGet());
+    public String nextLogicalId() {
+        return "e" + String.format(this.schema.getIdFormat("entity"), eCounter.incrementAndGet());
     }
 
-    public String nextRefId(){
-        return  "ref" + String.format(this.schema.getIdFormat("reference"), refCounter.incrementAndGet());
+    public String nextValueId() {
+        return "ev" + String.format(this.schema.getIdFormat("entity"), evCounter.incrementAndGet());
     }
 
-    public String nextInsightId(){
-        return  "i" + String.format(this.schema.getIdFormat("insight"), iCounter.incrementAndGet());
+    public String nextRefId() {
+        return "ref" + String.format(this.schema.getIdFormat("reference"), refCounter.incrementAndGet());
     }
 
-    public String nextRelId(){
-        return  "i" + String.format(this.schema.getIdFormat("relation"), relCounter.incrementAndGet());
+    public String nextInsightId() {
+        return "i" + String.format(this.schema.getIdFormat("insight"), iCounter.incrementAndGet());
     }
 
-    public String nextFileId(){
-        return  "f" + String.format(this.schema.getIdFormat("file"), fCounter.incrementAndGet());
+    public String nextRelId() {
+        return "i" + String.format(this.schema.getIdFormat("relation"), relCounter.incrementAndGet());
+    }
+
+    public String nextFileId() {
+        return "f" + String.format(this.schema.getIdFormat("e.file"), fCounter.incrementAndGet());
     }
 
     public static KnowledgeWriterContext init(TransportClient client, RawSchema schema) {
@@ -55,11 +81,12 @@ public class KnowledgeWriterContext {
         context.client = client;
         context.schema = schema;
         context.mapper = new ObjectMapper();
+        context.created = new ArrayList<>();
         return context;
     }
 
 
-    public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx,String index, T... builders) throws JsonProcessingException {
+    public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx, String index, T... builders) throws JsonProcessingException {
         int count = 0;
         final BulkRequestBuilder bulk = ctx.client.prepareBulk();
         for (KnowledgeDomainBuilder builder : builders) {
@@ -70,12 +97,34 @@ public class KnowledgeWriterContext {
                     .setOpType(IndexRequest.OpType.INDEX)
                     .setSource(builder.toString(ctx.mapper), XContentType.JSON);
             builder.routing().ifPresent(request::setRouting);
-            count += bulk.add(request).get().getItems().length;
+            final BulkItemResponse[] items = bulk.add(request).get().getItems();
+            for (BulkItemResponse item : items) {
+                if (!item.isFailed()) {
+                    ctx.created.add(new Items(item.getIndex(),item.getType(),item.getId()));
+                    count++;
+                }
+
+            }
         }
+        ctx.client.admin().indices().prepareRefresh(index).get();
         return count;
 
 
     }
 
+    public void clearCreated() {
+        created.clear();
+    }
 
+    public static class Items {
+        public String index;
+        public String type;
+        public String id;
+
+        public Items(String index, String type, String id) {
+            this.index = index;
+            this.type = type;
+            this.id = id;
+        }
+    }
 }

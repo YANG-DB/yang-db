@@ -91,7 +91,7 @@ public class Assignment {
         }
 
         public Builder withRelationships(List<Relationship> relationships) {
-            this.relationships = relationships;
+            this.relationships.addAll(relationships);
             return this;
         }
 

@@ -4,6 +4,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.properties.BaseProp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
@@ -32,8 +33,8 @@ public class ConstraintExpLowercaseTransformationAsgStrategy extends ConstraintT
     //region Private Methods
 
     private void applyExpressionTransformation(AsgStrategyContext context, EBase eBase, Class klass) {
-        if (klass == EProp.class || klass == RelProp.class) {
-            EProp eProp = (EProp) eBase;
+        if (BaseProp.class.isAssignableFrom(klass)) {
+            BaseProp eProp = (BaseProp) eBase;
             Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
             final Constraint con = eProp.getCon();
             if (property.isPresent() && property.get().getType().equals("string")) {

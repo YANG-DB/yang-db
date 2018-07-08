@@ -9,7 +9,7 @@ import java.util.Optional;
 
 //todo - for kobi usage
 public abstract class KnowledgeDomainBuilder {
-    public String type;
+    public abstract String getType();
 
     public abstract String id();
 
