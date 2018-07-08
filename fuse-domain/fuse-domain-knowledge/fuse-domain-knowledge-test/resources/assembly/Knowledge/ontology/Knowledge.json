@@ -109,8 +109,8 @@
       ]
     },
     {
-      "eType": "File",
-      "name": "File",
+      "eType": "Efile",
+      "name": "Efile",
       "properties": [
         "logicalId",
         "entityId",
@@ -127,6 +127,7 @@
         "creationUser",
         "deleteTime",
         "deleteUser",
+        "refs",
         "score"
       ]
     },
@@ -217,6 +218,28 @@
       ]
     },
     {
+      "rType": "hasInsight",
+      "name": "hasInsight",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Insight"
+        }
+      ]
+    },
+    {
+      "rType": "hasEfile",
+      "name": "hasEfile",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Efile"
+        }
+      ]
+    },
+    {
       "rType": "hasEntityReference",
       "name": "hasEntityReference",
       "directional": true,
@@ -224,17 +247,6 @@
         {
           "eTypeA": "Entity",
           "eTypeB": "Reference"
-        }
-      ]
-    },
-    {
-      "rType": "hasEntityFile",
-      "name": "hasEntityFile",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": "Entity",
-          "eTypeB": "File"
         }
       ]
     },
@@ -283,13 +295,13 @@
       ]
     },
     {
-      "rType": "hasInsight",
-      "name": "hasInsight",
+      "rType": "hasEfileReference",
+      "name": "hasEfileReference",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": "Entity",
-          "eTypeB": "Insight"
+          "eTypeA": "Efile",
+          "eTypeB": "Reference"
         }
       ]
     }
