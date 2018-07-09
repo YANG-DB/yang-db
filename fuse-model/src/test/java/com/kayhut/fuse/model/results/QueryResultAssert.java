@@ -53,45 +53,50 @@ public class QueryResultAssert {
     }
 
     public static void assertEquals(Assignment expected, Assignment actual, boolean ignoreRelId, boolean ignoreTags) {
+        assertEquals(expected.getEntities(),actual.getEntities(), ignoreTags);
+        assertEquals(expected.getRelationships(),actual.getRelationships(), ignoreRelId,ignoreTags);
+    }
+
+    public static void assertEquals(List<Relationship> expected, List<Relationship> actual, boolean ignoreRelId, boolean ignoreTags) {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
-        assertIfBothNull(expected.getEntities(), actual.getEntities());
-        assertIfBothNotNull(expected.getEntities(), actual.getEntities());
-
-        Assert.assertEquals(expected.getEntities().size(), actual.getEntities().size());
-
-        List<Entity> expectedEntities = Stream.ofAll(expected.getEntities())
-                .sortBy(Entity::geteID).toJavaList();
-        List<Entity> actualEntities = Stream.ofAll(actual.getEntities())
-                .sortBy(Entity::geteID).toJavaList();
-
-        for (int i = 0; i < expectedEntities.size(); i++) {
-            assertEquals(expectedEntities.get(i), actualEntities.get(i),ignoreTags);
-        }
-
-        assertIfBothNull(expected.getRelationships(), actual.getRelationships());
-        assertIfBothNotNull(expected.getRelationships(), actual.getRelationships());
-
-        Assert.assertEquals(expected.getRelationships().size(), actual.getRelationships().size());
+        Assert.assertEquals(expected.size(), actual.size());
         if (ignoreRelId) {
-            List<Relationship> expectedRelationships = Stream.ofAll(expected.getRelationships())
-                    .sortBy(Relationship::toString).toJavaList();
-            List<Relationship> actualRelationships = Stream.ofAll(actual.getRelationships())
-                    .sortBy(Relationship::toString).toJavaList();
+            List<Relationship> expectedRelationships = Stream.ofAll(expected)
+                    .sortBy(rel -> rel.toString()).toJavaList();
+            List<Relationship> actualRelationships = Stream.ofAll(actual)
+                    .sortBy(rel -> rel.toString()).toJavaList();
 
             for (int i = 0; i < expectedRelationships.size(); i++) {
                 assertEquals(expectedRelationships.get(i), actualRelationships.get(i), ignoreRelId,ignoreTags);
             }
         } else {
-            List<Relationship> expectedRelationships = Stream.ofAll(expected.getRelationships())
+            List<Relationship> expectedRelationships = Stream.ofAll(expected)
                     .sortBy(Relationship::getrID).toJavaList();
-            List<Relationship> actualRelationships = Stream.ofAll(actual.getRelationships())
+            List<Relationship> actualRelationships = Stream.ofAll(actual)
                     .sortBy(Relationship::getrID).toJavaList();
 
             for (int i = 0; i < expectedRelationships.size(); i++) {
                 assertEquals(expectedRelationships.get(i), actualRelationships.get(i), ignoreRelId,ignoreTags);
             }
+        }
+
+    }
+
+    public static void assertEquals(List<Entity> expected, List<Entity> actual, boolean ignoreTags) {
+        assertIfBothNull(expected, actual);
+        assertIfBothNotNull(expected, actual);
+
+        Assert.assertEquals(expected.size(), actual.size());
+
+        List<Entity> expectedEntities = Stream.ofAll(expected)
+                .sortBy(Entity::geteID).toJavaList();
+        List<Entity> actualEntities = Stream.ofAll(actual)
+                .sortBy(Entity::geteID).toJavaList();
+
+        for (int i = 0; i < expectedEntities.size(); i++) {
+            assertEquals(expectedEntities.get(i), actualEntities.get(i),ignoreTags);
         }
 
     }

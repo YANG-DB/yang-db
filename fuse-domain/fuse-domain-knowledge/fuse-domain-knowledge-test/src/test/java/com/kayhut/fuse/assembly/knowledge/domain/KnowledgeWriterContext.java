@@ -13,6 +13,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,15 +34,32 @@ public class KnowledgeWriterContext {
     public RawSchema schema;
     public ObjectMapper mapper;
     public List<Items> created;
+    private List<EntityBuilder> entities;
+    private List<RelationBuilder> relations;
 
+    public KnowledgeWriterContext() {
+        entities = new ArrayList<>();
+        relations = new ArrayList<>();
+    }
+
+    public EntityBuilder e() {
+        EntityBuilder e = EntityBuilder._e(nextLogicalId());
+        entities.add(e);
+        return e;
+    }
+
+    public KnowledgeWriterContext rel(RelationBuilder... builders) {
+        relations.addAll(Arrays.asList(builders));
+        return this;
+    }
 
     public int removeCreated() {
         int[] count = new int[]{0};
-        List<String> indices = created.stream().map(item->item.index).collect(Collectors.toList());
+        List<String> indices = created.stream().map(item -> item.index).collect(Collectors.toList());
         created.forEach(entity -> {
             try {
                 final DeleteResponse deleteResponse = client.delete(client.prepareDelete().setIndex(entity.index).setType(entity.type).setId(entity.id).request()).get();
-                count[0]+= deleteResponse.status()==RestStatus.OK ? 1 : 0;
+                count[0] += deleteResponse.status() == RestStatus.OK ? 1 : 0;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -69,7 +87,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextRelId() {
-        return "i" + String.format(this.schema.getIdFormat("relation"), relCounter.incrementAndGet());
+        return "r" + String.format(this.schema.getIdFormat("relation"), relCounter.incrementAndGet());
     }
 
     public String nextFileId() {
@@ -97,14 +115,16 @@ public class KnowledgeWriterContext {
                     .setOpType(IndexRequest.OpType.INDEX)
                     .setSource(builder.toString(ctx.mapper), XContentType.JSON);
             builder.routing().ifPresent(request::setRouting);
-            final BulkItemResponse[] items = bulk.add(request).get().getItems();
-            for (BulkItemResponse item : items) {
-                if (!item.isFailed()) {
-                    ctx.created.add(new Items(item.getIndex(),item.getType(),item.getId()));
-                    count++;
-                }
+            bulk.add(request);
+        }
 
+        final BulkItemResponse[] items = bulk.get().getItems();
+        for (BulkItemResponse item : items) {
+            if (!item.isFailed()) {
+                ctx.created.add(new Items(item.getIndex(), item.getType(), item.getId()));
+                count++;
             }
+
         }
         ctx.client.admin().indices().prepareRefresh(index).get();
         return count;

@@ -1,10 +1,14 @@
 package com.kayhut.fuse.assembly.knowledge.domain;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.results.Entity;
+import com.kayhut.fuse.model.results.Property;
+import javaslang.collection.Stream;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 //todo - for kobi usage
@@ -12,15 +16,18 @@ public class ValueBuilder extends EntityId {
     public static String physicalType = "e.value";
     public static String type = "Evalue";
 
-    public String stringValue;
-    public String category;
+    public List<String> refs = new ArrayList<>();
     public String context;
-    public String[] refs;
+    public String fieldId;
+    public String bdt;
+    public String stringValue;
+    public String dateValue;
+    public int intValue = Integer.MIN_VALUE;
     private String valueId;
 
-    public static ValueBuilder _v(String stringValue){
+    public static ValueBuilder _v(String valueId){
         final ValueBuilder builder = new ValueBuilder();
-        builder.stringValue = stringValue;
+        builder.valueId = valueId;
         return builder;
     }
 
@@ -29,8 +36,23 @@ public class ValueBuilder extends EntityId {
         return this;
     }
 
-    public ValueBuilder cat(String category) {
-        this.category = category;
+    public ValueBuilder value(String value) {
+        this.stringValue = value;
+        return this;
+    }
+
+    public ValueBuilder value(int value) {
+        this.intValue = value;
+        return this;
+    }
+
+    public ValueBuilder bdt(String bdt) {
+        this.bdt = bdt;
+        return this;
+    }
+
+    public ValueBuilder field(String field) {
+        this.fieldId = field;
         return this;
     }
 
@@ -40,7 +62,7 @@ public class ValueBuilder extends EntityId {
     }
 
     public ValueBuilder ref(String ... ref) {
-        this.refs = ref;
+        this.refs = Arrays.asList(ref);
         return this;
     }
 
@@ -61,12 +83,47 @@ public class ValueBuilder extends EntityId {
 
     @Override
     public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
-        return super.collect(mapper, node);
+        ObjectNode on = super.collect(mapper, node);
+        //create value entity
+        on.put("type", physicalType);
+        on.put("logicalId", logicalId);
+        on.put("entityId", entityId);
+        on.put("fieldId", fieldId);
+        on.put("bdt", bdt);
+        on.put("context", context);
+        on.put("refs", collectRefs(mapper,refs));
+        if(stringValue!=null)
+            on.put("stringValue", stringValue);
+        else if(intValue!=Integer.MIN_VALUE)
+            on.put("intValue", intValue);
+        else if(dateValue!=null)
+            on.put("dateValue", dateValue);
+        return on;
     }
 
     @Override
     public Entity toEntity() {
-        return null;
+        Property value = new Property("stringValue", "raw", stringValue);;
+        if(stringValue!=null)
+            value = new Property("stringValue", "raw", stringValue);
+        else if(intValue!=Integer.MIN_VALUE)
+            value = new Property("intValue", "raw", intValue);
+        else if(dateValue!=null)
+            value = new Property("dateValue", "raw", dateValue);
+
+        return Entity.Builder.instance()
+                .withEID(id())
+                .withETag(Stream.of(getETag()).toJavaSet())
+                .withEType(getType())
+                .withProperties(collect(Arrays.asList(
+                        value,
+                        new Property("context", "raw", context),
+                        new Property("logicalId", "raw", logicalId),
+                        new Property("entityId", "raw", entityId),
+                        new Property("bdt", "raw", bdt),
+                        new Property("fieldId", "raw", fieldId),
+                        new Property("refs", "raw", !refs.isEmpty() ? refs : null)
+                ))).build();
     }
 
     @Override

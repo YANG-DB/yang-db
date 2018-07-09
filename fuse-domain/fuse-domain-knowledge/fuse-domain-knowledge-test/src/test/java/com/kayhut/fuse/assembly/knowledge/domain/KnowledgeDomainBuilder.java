@@ -2,9 +2,11 @@ package com.kayhut.fuse.assembly.knowledge.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.results.Entity;
 
+import java.util.List;
 import java.util.Optional;
 
 //todo - for kobi usage
@@ -27,6 +29,16 @@ public abstract class KnowledgeDomainBuilder {
     public abstract String getETag();
 
     public abstract ObjectNode collect(ObjectMapper mapper, ObjectNode node);
+
+
+    protected ArrayNode collectRefs(ObjectMapper mapper, List<String> refs) {
+        ArrayNode refsNode = mapper.createArrayNode();
+        for (String ref : refs) {
+            refsNode.add(ref);
+        }
+        return refsNode;
+    }
+
 
 
 }
