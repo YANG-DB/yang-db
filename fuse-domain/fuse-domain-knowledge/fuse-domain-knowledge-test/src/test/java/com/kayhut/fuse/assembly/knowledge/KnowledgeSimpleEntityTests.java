@@ -28,13 +28,7 @@ public class KnowledgeSimpleEntityTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        Setup.teardown();
     }
 
     @After
@@ -212,22 +206,25 @@ public class KnowledgeSimpleEntityTests {
         Assert.assertEquals("Reference", assignments.get(0).getEntities().get(1).geteType());
 
         //bug logicalId returns on Reference entity
+/*
         List<Entity> subEntities = e1.subEntities();
         Entity reference = Stream.ofAll(subEntities).find(entity -> entity.geteType().equals("Reference")).get();
         List<Property> newProps = new ArrayList<>(reference.getProperties());
         newProps.add(new Property("logicalId", "raw", e1.logicalId));
         reference.setProperties(newProps);
+*/
 
         //verify assignments return as expected
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
                         .withEntity(e1.toEntity())
-                        .withEntities(subEntities)
+                        .withEntities(e1.subEntities())
                         .withRelationships(e1.withRelations())
                         .build()).build();
 
         // Check if expected and actual are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true);
+        QueryResultAssert.assertEquals(expectedResult.getAssignments().get(0).getEntities(), ((AssignmentsQueryResult) pageData).getAssignments().get(0).getEntities(), true);
+        QueryResultAssert.assertEquals(expectedResult.getAssignments().get(0).getRelationships(), ((AssignmentsQueryResult) pageData).getAssignments().get(0).getRelationships(), true,true);
 
     }
 

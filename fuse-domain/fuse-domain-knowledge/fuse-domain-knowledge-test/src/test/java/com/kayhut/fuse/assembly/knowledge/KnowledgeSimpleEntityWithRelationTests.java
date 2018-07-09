@@ -28,14 +28,8 @@ public class KnowledgeSimpleEntityWithRelationTests {
     static KnowledgeWriterContext ctx;
 
     @BeforeClass
-    public static void setup() throws Exception {
-        Setup.setup();
+    public static void setup() {
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        Setup.teardown();
     }
 
     @After
