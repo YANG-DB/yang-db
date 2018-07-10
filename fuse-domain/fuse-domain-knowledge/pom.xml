@@ -16,6 +16,7 @@
         <module>fuse-domain-knowledge-ext</module>
         <module>fuse-domain-knowledge-datagen</module>
         <module>fuse-domain-knowledge-test</module>
+        <module>fuse-domain-knowledge-poc</module>
         <module>fuse-domain-knowledge-assembly</module>
     </modules>
 
@@ -28,6 +29,19 @@
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-domain-knowledge-ext</artifactId>
+                <version>0.4-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-test</artifactId>
+                <version>0.4-SNAPSHOT</version>
+                <type>test-jar</type>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-datagen</artifactId>
                 <version>0.4-SNAPSHOT</version>
                 <scope>compile</scope>
             </dependency>
