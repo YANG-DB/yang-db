@@ -3,6 +3,7 @@ package com.kayhut.fuse.test.framework.index;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javaslang.collection.Stream;
+import org.elasticsearch.ResourceAlreadyExistsException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -58,7 +59,12 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
 
             createIndexRequestBuilder.setSettings(Settings.builder().put("index.store.type", "fs").build());
 
-            createIndexRequestBuilder.execute().actionGet();
+            try {
+                createIndexRequestBuilder.execute().actionGet();
+            } catch (ResourceAlreadyExistsException ex) {
+                client.admin().indices().prepareDelete(indexName).execute().actionGet();
+                createIndexRequestBuilder.execute().actionGet();
+            }
         }
     }
     //endregion

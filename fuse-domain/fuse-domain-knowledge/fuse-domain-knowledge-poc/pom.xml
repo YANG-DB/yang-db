@@ -147,7 +147,6 @@
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-service</artifactId>
-            <version>0.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
