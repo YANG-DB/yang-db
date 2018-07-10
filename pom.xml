@@ -33,8 +33,8 @@
         <!-- plugins -->
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-        <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
-        <maven-surefire-report-plugin.version>2.21.0</maven-surefire-report-plugin.version>
+        <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
+        <maven-surefire-report-plugin.version>2.22.0</maven-surefire-report-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
         <maven-checkstyle-plugin.version>2.12.1</maven-checkstyle-plugin.version>
@@ -635,6 +635,7 @@
                     <configuration>
                         <threadCount>1</threadCount>
                         <perCoreThreadCount>false</perCoreThreadCount>
+                        <rerunFailingTestsCount>0</rerunFailingTestsCount>
                         <includes>
                             <include>**/*.java</include>
                         </includes>

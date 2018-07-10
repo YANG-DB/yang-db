@@ -9,6 +9,13 @@
     </parent>
 
     <artifactId>fuse-domain-dragons-test</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <hamcrest-all.version>1.3</hamcrest-all.version>
+        <hamcrest.version>1.3</hamcrest.version>
+        <hamcres-json.version>0.2</hamcres-json.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -80,13 +87,22 @@
         </dependency>
     </dependencies>
 
-    <properties>
-        <hamcrest-all.version>1.3</hamcrest-all.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <hamcres-json.version>0.2</hamcres-json.version>
-    </properties>
-    <modelVersion>4.0.0</modelVersion>
-
-
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <threadCount>1</threadCount>
+                    <perCoreThreadCount>false</perCoreThreadCount>
+                    <rerunFailingTestsCount>0</rerunFailingTestsCount>
+                    <includes>
+                        <include>**/*Suite.java</include>
+                    </includes>
+                    <parallel>methods</parallel>
+                    <argLine>-Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
