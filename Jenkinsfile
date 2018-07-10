@@ -22,7 +22,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'mvn clean install site'
+                sh 'mvn --settings maven_settings.xml clean install'
             }
         }
     }
