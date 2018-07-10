@@ -32,6 +32,19 @@
                 <version>0.4-SNAPSHOT</version>
                 <scope>compile</scope>
             </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-test</artifactId>
+                <version>0.4-SNAPSHOT</version>
+                <type>test-jar</type>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-datagen</artifactId>
+                <version>0.4-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

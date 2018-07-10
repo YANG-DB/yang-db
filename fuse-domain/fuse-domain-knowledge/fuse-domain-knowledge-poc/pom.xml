@@ -22,6 +22,11 @@
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
+            <artifactId>fuse-domain-knowledge-test</artifactId>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.kayhut</groupId>
             <artifactId>fuse-asg</artifactId>
         </dependency>
         <dependency>

@@ -32,6 +32,9 @@
 package com.kayhut.fuse.knowledge.view;
 
 
+import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext;
+import com.kayhut.fuse.graph.algorithm.BetweennessCentrality;
+import com.kayhut.fuse.graph.algorithm.PageRank;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Query;
@@ -44,13 +47,9 @@ import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
-import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
-import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
-import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
-import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.utils.FuseClient;
 import javafx.scene.paint.Color;
 import org.graphstream.graph.Edge;
@@ -69,6 +68,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KnowledgeQueryBuilder.start;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static java.lang.Thread.sleep;
 import static javafx.scene.paint.Color.*;
@@ -165,9 +165,33 @@ public class FuseViewer implements ViewerListener {
 
         populateGraph(graph);
 
+        BetweennessCentrality bcb = new BetweennessCentrality();
+        bcb.setUnweighted();
+        bcb.init(graph);
+        bcb.compute();
+        final double max = bcb.max(graph);
+
+/*
+        PageRank pageRank = new PageRank();
+        pageRank.setVerbose(true);
+        pageRank.init(graph);
+*/
+
+
         while (loop) {
             pipeIn.pump();
-            sleep(100);
+            for (Node node : graph) {
+                double factor = node.getAttribute("Cb", Double.class).doubleValue()/max;
+                final Color color = node.getAttribute("ui.color", Color.class);
+                node.setAttribute("ui.color",new Color(color.getRed(),color.getGreen(),color.getBlue(),factor));
+
+//                double rank = pageRank.getRank(node);
+//                if(node.getAttribute("ui.size", Float.class)!=null) {
+//                    final double factor = Math.sqrt(graph.getNodeCount() * rank * 5);
+//                    node.setAttribute("ui.size", node.getAttribute("ui.size", Float.class).floatValue() * factor);
+//                }
+            }
+            sleep(5000);
         }
 
         System.out.println("bye bye");
@@ -319,7 +343,7 @@ public class FuseViewer implements ViewerListener {
                             String title = n.getProperties().stream().filter(v -> v.getpType().equals("title"))
                                     .findAny().get().getValue().toString();
                             String shortTitle = title.length() > 10 ? title.substring(0, Math.min(title.length(), 10)) + "..." : title;
-                            System.out.println("add ref "+n.geteID());
+                            System.out.println("add ref " + n.geteID());
                             node = g.addNode(n.geteID());
                             node.setAttribute("ui.color", NamedColors.get(n.geteType()));
                             node.setAttribute("label", shortTitle);
@@ -376,7 +400,7 @@ public class FuseViewer implements ViewerListener {
                             insight.setAttribute("ui.class", "Insight");
                             break;
                         case "hasEntityReference":
-                            System.out.println("add edge "+r.geteID1() +"->" + r.geteID2());
+                            System.out.println("add edge " + r.geteID1() + "->" + r.geteID2());
                             final Edge reference = g.addEdge(r.getrID(), r.geteID1(), r.geteID2(), false);
                             reference.setAttribute("ui.color", GREEN);
                             reference.setAttribute("ui.class", "Reference");
@@ -392,20 +416,17 @@ public class FuseViewer implements ViewerListener {
     }
 
     private Assignment fetchAssignment(String... values) throws IOException, InterruptedException {
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query($ont, values));
-        CreateGraphCursorRequest cursorRequest = new CreateGraphCursorRequest();
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 3000);
+        return ((AssignmentsQueryResult) KnowledgeReaderContext.query(fuseClient, fuseResourceInfo, query($ont,values))).getAssignments().get(0);
+    }
 
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                sleep(10);
-            }
-        }
-
-        AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        return pageData.getAssignments().get(0);
+    private Query query(String... values) {
+        return start().withEntity("Entity")
+                .withGlobalEntity("Global")
+                .withRef("Ref")
+                .withValue("Val")
+                .withInsight("Insight")
+                .relatedTo("Rel", "SideB")
+                .build();
     }
 
     private Query query(Ontology.Accessor $ont, String... values) {
@@ -459,7 +480,7 @@ public class FuseViewer implements ViewerListener {
         }
 
         private static Color get(String name) {
-            return (Color) namedColors.values().toArray()[Math.abs(name.hashCode() % 147)];
+            return (Color) namedColors.values().toArray()[Math.abs(name.hashCode() % (namedColors.values().size()-1))];
         }
 
         private static Map<String, Color> createNamedColors() {
