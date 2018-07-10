@@ -3,6 +3,7 @@ package com.kayhut.fuse.assembly.knowledge.domain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.model.results.Relationship;
@@ -16,14 +17,16 @@ import java.util.Optional;
 //todo - for kobi usage
 public class EntityBuilder extends EntityId {
     public static final String INDEX = "e0";
+    public static String type = "Entity";
+    public static String physicalType = "entity";
 
     public String logicalId;
     public String category = "person";
-    public String type = "entity";
     public String context = "global";
     public List<String> refs = new ArrayList<>();
 
     public List<Entity> subEntities = new ArrayList<>();
+    public List<Relationship> hasRel = new ArrayList<>();
     public List<Relationship> hasGlobal = new ArrayList<>();
     public List<Relationship> hasFiles = new ArrayList<>();
     public List<Relationship> hasValues = new ArrayList<>();
@@ -44,6 +47,50 @@ public class EntityBuilder extends EntityId {
 
     public EntityBuilder ctx(String context) {
         this.context = context;
+        return this;
+    }
+
+    public void rel(RelationBuilder relationBuilder) {
+        this.hasRel.add(Relationship.Builder.instance()
+                .withAgg(false)
+                .withDirectional(false)
+                .withEID1(this.id())
+                .withEID2(relationBuilder.id())
+                .withETag1(this.getETag())
+                .withETag2(relationBuilder.getETag())
+                .withRType("hasRelation")
+                .build());
+    }
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public EntityBuilder global(EntityBuilder global) {
+        //add global entity
+        final LogicalEntity logicalEntity = new LogicalEntity(global.logicalId);
+        subEntities.add(logicalEntity.toEntity());
+        //add relationship
+        hasGlobal.add(Relationship.Builder.instance()
+                .withAgg(false)
+                .withDirectional(false)
+                .withEID1(logicalEntity.id())
+                .withEID2(this.id())
+                .withETag1(logicalEntity.getETag())
+                .withETag2(this.getETag())
+                .withRType("hasEntity")
+                .build());
+        hasGlobal.add(Relationship.Builder.instance()
+                .withAgg(false)
+                .withDirectional(false)
+                .withEID1(logicalEntity.id())
+                .withEID2(global.id())
+                .withETag1(logicalEntity.getETag())
+                .withETag2(global.getETag())
+                .withRType("hasEntity")
+                .build());
+
         return this;
     }
 
@@ -69,6 +116,27 @@ public class EntityBuilder extends EntityId {
         return this;
     }
 
+    public EntityBuilder value(ValueBuilder value) {
+        value.entityId = id();
+        value.logicalId = this.logicalId;
+        value.context = this.context;
+
+        //add as entities sub resource
+        subEntities.add(value.toEntity());
+        //add a relation
+        hasFiles.add(Relationship.Builder.instance()
+                .withAgg(false)
+                .withDirectional(false)
+                .withEID1(id())
+                .withEID2(value.id())
+                .withETag1(getETag())
+                .withETag2(value.getETag())
+                .withRType("hasEvalue")
+                .build());
+
+        return this;
+    }
+
     public EntityBuilder file(FileBuilder file) {
         file.entityId = id();
         file.logicalId = logicalId;
@@ -82,7 +150,7 @@ public class EntityBuilder extends EntityId {
                 .withEID2(file.fileId)
                 .withETag1(getETag())
                 .withETag2(file.getETag())
-                .withRType("hasEntityFile")
+                .withRType("hasEfile")
                 .build());
 
         return this;
@@ -98,23 +166,18 @@ public class EntityBuilder extends EntityId {
     }
 
     public String getETag() {
-        return "E" + id();
+        return "Entity." + id();
     }
 
     @Override
     public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
         ObjectNode on = super.collect(mapper, node);
-        ArrayNode refsNode = mapper.createArrayNode();
-        for (String ref : refs) {
-            refsNode.add(ref);
-        }
-
         //create knowledge entity
-        on.put("type", type);
+        on.put("type", physicalType);
         on.put("logicalId", logicalId);
         on.put("context", context);
         on.put("category", category);
-        on.put("refs", refsNode);
+        on.put("refs", collectRefs(mapper,refs));
         return on;
     }
 
@@ -136,6 +199,7 @@ public class EntityBuilder extends EntityId {
         return Stream.ofAll(hasGlobal)
                 .appendAll(hasValues)
                 .appendAll(hasRefs)
+                .appendAll(hasRel)
                 .appendAll(hasInsights)
                 .appendAll(hasFiles)
                 .toJavaList();

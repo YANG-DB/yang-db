@@ -11,8 +11,9 @@ import java.util.Optional;
 
 //todo - for kobi usage
 public class FileBuilder extends EntityId {
+    public static String type = "Efile";
+    public static String physicalType = "e.file";
     public String fileId;
-    public String type = "file";
     public String name;
     public String path;
     public String displayName;
@@ -57,6 +58,11 @@ public class FileBuilder extends EntityId {
     }
 
     @Override
+    public String getType() {
+        return type;
+    }
+
+    @Override
     public String id() {
         return fileId;
     }
@@ -67,9 +73,12 @@ public class FileBuilder extends EntityId {
     }
 
     @Override
+    /**
+     * compare purpose api
+     */
     public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
         ObjectNode on = super.collect(mapper, node);
-        on.put("type", "file");
+        on.put("type", physicalType);
         on.put("name", name);
         on.put("path", path);
         on.put("displayName", displayName);
@@ -83,14 +92,17 @@ public class FileBuilder extends EntityId {
 
     @Override
     public String getETag() {
-        return "F" + id();
+        return "File." + id();
     }
 
+    /**
+     * write purpose api
+     */
     public Entity toEntity() {
         return Entity.Builder.instance()
                 .withEID(fileId)
                 .withETag(Stream.of(getETag()).toJavaSet())
-                .withEType("File")
+                .withEType(getType())
                 .withProperties(collect(Arrays.asList(
                         new Property("name", "raw", name),
                         new Property("path", "raw", path),

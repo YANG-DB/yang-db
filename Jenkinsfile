@@ -1,10 +1,16 @@
 pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '3'))
+        disableConcurrentBuilds()
+        timestamps()
     }
     
     agent any
     
+    triggers {
+        pollSCM('*/10 * * * *')
+    }
+        
     tools {
         maven 'maven_3.5.3'
     }
@@ -16,16 +22,17 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'mvn clean install -DskipTests'
+                sh 'mvn clean install site'
             }
         }
-        stage('Archive') {
-            steps {
-                archiveArtifacts(
-                    artifacts: '**/*.jar',
-                    fingerprint: true
-                )
-            }
+    }
+    
+    post {
+        success {
+            archiveArtifacts(
+                artifacts: '**/*.jar',
+                fingerprint: true
+            )
         }
     }
 }

@@ -52,7 +52,7 @@ public class KnowledgeDataInfraManager  {
     private Config conf;
     private RawSchema schema;
 
-    public KnowledgeDataInfraManager(String confPath) throws UnknownHostException {
+    public KnowledgeDataInfraManager(String confPath) {
         try {
             File configFile = new File(confPath);
             this.conf = ConfigFactory.parseFileAnySyntax(configFile, ConfigParseOptions.defaults().setAllowMissing(false));
@@ -61,7 +61,7 @@ public class KnowledgeDataInfraManager  {
             sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         } catch (Exception exc) {
-
+            throw new RuntimeException(exc);
         }
     }
 

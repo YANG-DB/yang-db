@@ -13,7 +13,7 @@ public class QueryResultAssert {
         assertEquals(expected, actual, false);
     }
 
-    public static void assertEquals(CsvQueryResult expected, CsvQueryResult actual){
+    public static void assertEquals(CsvQueryResult expected, CsvQueryResult actual) {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
@@ -28,7 +28,7 @@ public class QueryResultAssert {
     }
 
     //region Public Methods
-    public static void assertEquals(AssignmentsQueryResult expected, AssignmentsQueryResult actual, boolean ignoreRelId) {
+    public static void assertEquals(AssignmentsQueryResult expected, AssignmentsQueryResult actual, boolean ignoreRelId, boolean ignoreTags) {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
@@ -42,63 +42,83 @@ public class QueryResultAssert {
         List<Assignment> actualAssignments = Stream.ofAll(actual.getAssignments())
                 .sortBy(Assignment::toString).toJavaList();
 
-        for(int i = 0 ; i < expectedAssignments.size() ; i++) {
-            assertEquals(expectedAssignments.get(i), actualAssignments.get(i), ignoreRelId);
+        for (int i = 0; i < expectedAssignments.size(); i++) {
+            assertEquals(expectedAssignments.get(i), actualAssignments.get(i), ignoreRelId, ignoreTags);
         }
+
+    }
+
+    public static void assertEquals(AssignmentsQueryResult expected, AssignmentsQueryResult actual, boolean ignoreRelId) {
+        assertEquals(expected, actual, ignoreRelId, false);
+    }
+
+    public static void assertEquals(Assignment expected, Assignment actual, boolean ignoreRelId, boolean ignoreTags) {
+        assertEquals(expected.getEntities(),actual.getEntities(), ignoreTags);
+        assertEquals(expected.getRelationships(),actual.getRelationships(), ignoreRelId,ignoreTags);
+    }
+
+    public static void assertEquals(List<Relationship> expected, List<Relationship> actual, boolean ignoreRelId, boolean ignoreTags) {
+        assertIfBothNull(expected, actual);
+        assertIfBothNotNull(expected, actual);
+
+        Assert.assertEquals(expected.size(), actual.size());
+        if (ignoreRelId) {
+            List<Relationship> expectedRelationships = Stream.ofAll(expected)
+                    .sortBy(rel -> rel.toString()).toJavaList();
+            List<Relationship> actualRelationships = Stream.ofAll(actual)
+                    .sortBy(rel -> rel.toString()).toJavaList();
+
+            for (int i = 0; i < expectedRelationships.size(); i++) {
+                assertEquals(expectedRelationships.get(i), actualRelationships.get(i), ignoreRelId,ignoreTags);
+            }
+        } else {
+            List<Relationship> expectedRelationships = Stream.ofAll(expected)
+                    .sortBy(Relationship::getrID).toJavaList();
+            List<Relationship> actualRelationships = Stream.ofAll(actual)
+                    .sortBy(Relationship::getrID).toJavaList();
+
+            for (int i = 0; i < expectedRelationships.size(); i++) {
+                assertEquals(expectedRelationships.get(i), actualRelationships.get(i), ignoreRelId,ignoreTags);
+            }
+        }
+
+    }
+
+    public static void assertEquals(List<Entity> expected, List<Entity> actual, boolean ignoreTags) {
+        assertIfBothNull(expected, actual);
+        assertIfBothNotNull(expected, actual);
+
+        Assert.assertEquals(expected.size(), actual.size());
+
+        List<Entity> expectedEntities = Stream.ofAll(expected)
+                .sortBy(Entity::geteID).toJavaList();
+        List<Entity> actualEntities = Stream.ofAll(actual)
+                .sortBy(Entity::geteID).toJavaList();
+
+        for (int i = 0; i < expectedEntities.size(); i++) {
+            assertEquals(expectedEntities.get(i), actualEntities.get(i),ignoreTags);
+        }
+
     }
 
     public static void assertEquals(Assignment expected, Assignment actual, boolean ignoreRelId) {
-        assertIfBothNull(expected, actual);
-        assertIfBothNotNull(expected, actual);
-
-        assertIfBothNull(expected.getEntities(), actual.getEntities());
-        assertIfBothNotNull(expected.getEntities(), actual.getEntities());
-
-        Assert.assertEquals(expected.getEntities().size(), actual.getEntities().size());
-
-        List<Entity> expectedEntities = Stream.ofAll(expected.getEntities())
-                .sortBy(Entity::geteID).toJavaList();
-        List<Entity> actualEntities = Stream.ofAll(actual.getEntities())
-                .sortBy(Entity::geteID).toJavaList();
-
-        for(int i = 0 ; i < expectedEntities.size() ; i++) {
-            assertEquals(expectedEntities.get(i), actualEntities.get(i));
-        }
-
-        assertIfBothNull(expected.getRelationships(), actual.getRelationships());
-        assertIfBothNotNull(expected.getRelationships(), actual.getRelationships());
-
-        Assert.assertEquals(expected.getRelationships().size(), actual.getRelationships().size());
-        if(ignoreRelId){
-            List<Relationship> expectedRelationships = Stream.ofAll(expected.getRelationships())
-                    .sortBy(Relationship::toString).toJavaList();
-            List<Relationship> actualRelationships = Stream.ofAll(actual.getRelationships())
-                    .sortBy(Relationship::toString).toJavaList();
-
-            for (int i = 0; i < expectedRelationships.size(); i++) {
-                assertEquals(expectedRelationships.get(i), actualRelationships.get(i), ignoreRelId);
-            }
-        }
-        else {
-            List<Relationship> expectedRelationships = Stream.ofAll(expected.getRelationships())
-                    .sortBy(Relationship::getrID).toJavaList();
-            List<Relationship> actualRelationships = Stream.ofAll(actual.getRelationships())
-                    .sortBy(Relationship::getrID).toJavaList();
-
-            for (int i = 0; i < expectedRelationships.size(); i++) {
-                assertEquals(expectedRelationships.get(i), actualRelationships.get(i), ignoreRelId);
-            }
-        }
+        assertEquals(expected,actual,ignoreRelId,false);
     }
 
     public static void assertEquals(Entity expected, Entity actual) {
+        assertEquals(expected,actual,false);
+    }
+
+    public static void assertEquals(Entity expected, Entity actual, boolean ignoreTags ) {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
-        Assert.assertEquals(expected.geteID(), actual.geteID());
-        Assert.assertEquals(Stream.ofAll(expected.geteTag()).sorted().toJavaList().toString(),
-                Stream.ofAll(actual.geteTag()).sorted().toJavaList().toString());
         Assert.assertTrue(expected.geteType().equals(actual.geteType()));
+        Assert.assertEquals(expected.geteID(), actual.geteID());
+        if(!ignoreTags) {
+            Assert.assertEquals(Stream.ofAll(expected.geteTag()).sorted().toJavaList().toString(),
+                    Stream.ofAll(actual.geteTag()).sorted().toJavaList().toString());
+        }
 
         assertIfBothNull(expected.getProperties(), actual.getProperties());
         assertIfBothNotNull(expected.getProperties(), actual.getProperties());
@@ -110,7 +130,7 @@ public class QueryResultAssert {
         List<Property> actualProperties = Stream.ofAll(actual.getProperties())
                 .sortBy(Property::getpType).toJavaList();
 
-        for(int i = 0 ; i < expectedProperties.size() ; i++) {
+        for (int i = 0; i < expectedProperties.size(); i++) {
             assertEquals(expectedProperties.get(i), actualProperties.get(i));
         }
 
@@ -124,7 +144,7 @@ public class QueryResultAssert {
         List<AttachedProperty> actualAttachedProperties = Stream.ofAll(actual.getAttachedProperties())
                 .sortBy(AttachedProperty::getpName).toJavaList();
 
-        for(int i = 0 ; i < expectedAttachedProperties.size() ; i++) {
+        for (int i = 0; i < expectedAttachedProperties.size(); i++) {
             assertEquals(expectedAttachedProperties.get(i), actualAttachedProperties.get(i));
         }
     }
@@ -148,17 +168,25 @@ public class QueryResultAssert {
     }
 
     public static void assertEquals(Relationship expected, Relationship actual, boolean ignoreRelId) {
+        assertEquals(expected,actual,ignoreRelId,false);
+    }
+
+    public static void assertEquals(Relationship expected, Relationship actual, boolean ignoreRelId, boolean ignoreTags ) {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
 
         Assert.assertTrue(expected.getrType().equals(actual.getrType()));
-        if(!ignoreRelId)
+        if (!ignoreRelId)
             Assert.assertEquals(expected.getrID(), actual.getrID());
+
         Assert.assertEquals(expected.geteID1(), actual.geteID1());
         Assert.assertEquals(expected.geteID2(), actual.geteID2());
-        Assert.assertEquals(expected.geteTag1(), actual.geteTag1());
-        Assert.assertEquals(expected.geteTag2(), actual.geteTag2());
+
+        if(!ignoreTags) {
+            Assert.assertEquals(expected.geteTag1(), actual.geteTag1());
+            Assert.assertEquals(expected.geteTag2(), actual.geteTag2());
+        }
 
         assertIfBothNull(expected.getProperties(), actual.getProperties());
         assertIfBothNotNull(expected.getProperties(), actual.getProperties());
@@ -170,7 +198,7 @@ public class QueryResultAssert {
         List<Property> actualProperties = Stream.ofAll(actual.getProperties())
                 .sortBy(Property::getpType).toJavaList();
 
-        for(int i = 0 ; i < expectedProperties.size() ; i++) {
+        for (int i = 0; i < expectedProperties.size(); i++) {
             assertEquals(expectedProperties.get(i), actualProperties.get(i));
         }
 
@@ -184,7 +212,7 @@ public class QueryResultAssert {
         List<AttachedProperty> actualAttachedProperties = Stream.ofAll(actual.getAttachedProperties())
                 .sortBy(AttachedProperty::getpName).toJavaList();
 
-        for(int i = 0 ; i < expectedAttachedProperties.size() ; i++) {
+        for (int i = 0; i < expectedAttachedProperties.size(); i++) {
             assertEquals(expectedAttachedProperties.get(i), actualAttachedProperties.get(i));
         }
     }

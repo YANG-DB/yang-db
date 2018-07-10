@@ -16,13 +16,16 @@ import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.utils.FuseClient;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
+import static com.kayhut.fuse.model.query.Rel.Direction.L;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
 public class KnowledgeReaderContext {
@@ -56,8 +59,18 @@ public class KnowledgeReaderContext {
             return builder;
         }
 
+        public KnowledgeQueryBuilder withGlobalEntity(String eTag) {
+            entityStack.peek().getNext().add(currentEnum());
+            this.elements.add(new Rel(currentEnum(), "hasEntity", L, null, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), LogicalEntity.type, LogicalEntity.type, nextEnum(), 0));
+            this.elements.add(new Rel(currentEnum(), "hasEntity", R, null, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), eTag, EntityBuilder.type, nextEnum(), 0));
+            nextEnum();//continue
+            return this;
+        }
+
         public KnowledgeQueryBuilder withEntity(String eTag) {
-            this.elements.add(new ETyped(currentEnum(), eTag, "Entity", nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), eTag, EntityBuilder.type, nextEnum(), 0));
             Quant1 quant1 = new Quant1(currentEnum(), QuantType.all, new ArrayList<>(), 0);
             this.elements.add(quant1);
             entityStack.push(quant1);
@@ -65,11 +78,35 @@ public class KnowledgeReaderContext {
             return this;
         }
 
+        public KnowledgeQueryBuilder relatedTo(String eTag, String sideB) {
+            entityStack.peek().getNext().add(currentEnum());
+            this.elements.add(new Rel(currentEnum(), "hasRelation", R, EntityBuilder.type, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), eTag, RelationBuilder.type, nextEnum(), 0));
+            Quant1 quant1 = new Quant1(currentEnum(), QuantType.all, new ArrayList<>(), 0);
+            this.elements.add(quant1);
+            entityStack.push(quant1);
+            nextEnum();//continue
+
+            entityStack.peek().getNext().add(currentEnum());
+            this.elements.add(new Rel(currentEnum(), "hasRelation", L, EntityBuilder.type, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), sideB, EntityBuilder.type, nextEnum(), 0));
+
+            nextEnum();//continue
+            return this;
+        }
 
         public KnowledgeQueryBuilder withFile(String eTag) {
             entityStack.peek().getNext().add(currentEnum());
-            this.elements.add(new Rel(currentEnum(), "hasEntityFile", R, null, nextEnum(), 0));
-            this.elements.add(new ETyped(currentEnum(), eTag, "File", 0, 0));
+            this.elements.add(new Rel(currentEnum(), "hasEfile", R, null, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), eTag, FileBuilder.type, 0, 0));
+            nextEnum();//continue
+            return this;
+        }
+
+        public KnowledgeQueryBuilder withValue(String eTag) {
+            entityStack.peek().getNext().add(currentEnum());
+            this.elements.add(new Rel(currentEnum(), "hasEvalue", R, null, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), eTag, ValueBuilder.type, 0, 0));
             nextEnum();//continue
             return this;
         }
@@ -77,7 +114,7 @@ public class KnowledgeReaderContext {
         public KnowledgeQueryBuilder withRef(String eTag) {
             entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasEntityReference", R, null, nextEnum(), 0));
-            this.elements.add(new ETyped(currentEnum(), eTag, "Reference", 0, 0));
+            this.elements.add(new ETyped(currentEnum(), eTag, RefBuilder.type, 0, 0));
             nextEnum();//continue
             return this;
         }
@@ -85,13 +122,13 @@ public class KnowledgeReaderContext {
         public KnowledgeQueryBuilder withInsight(String eTag) {
             entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasInsight", R, null, nextEnum(), 0));
-            this.elements.add(new ETyped(currentEnum(), eTag, "Insight", 0, 0));
+            this.elements.add(new ETyped(currentEnum(), eTag, InsightBuilder.type, 0, 0));
             nextEnum();//continue
             return this;
         }
 
         public Query build() {
-            if(this.elements.get(this.elements.size()-1) instanceof EEntityBase) {
+            if (this.elements.get(this.elements.size() - 1) instanceof EEntityBase) {
                 ((EEntityBase) this.elements.get(this.elements.size() - 1)).setNext(0);
             }
             return knowledge.withElements(elements).build();
