@@ -3,6 +3,7 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '3'))
         disableConcurrentBuilds()
         timestamps()
+        deleteDir()
     }
     
     agent any
@@ -33,7 +34,6 @@ pipeline {
                 artifacts: '**/*.jar',
                 fingerprint: true
             )
-            deleteDir()
         }
     }
 }
