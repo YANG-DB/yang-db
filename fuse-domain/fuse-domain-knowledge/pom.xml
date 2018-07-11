@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>fuse-domain</artifactId>
-        <groupId>org.kayhut</groupId>
+        <groupId>com.kayhut</groupId>
         <version>0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -16,6 +16,7 @@
         <module>fuse-domain-knowledge-ext</module>
         <module>fuse-domain-knowledge-datagen</module>
         <module>fuse-domain-knowledge-test</module>
+        <module>fuse-domain-knowledge-poc</module>
         <module>fuse-domain-knowledge-assembly</module>
     </modules>
 
@@ -26,8 +27,21 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-domain-knowledge-ext</artifactId>
+                <version>0.4-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-test</artifactId>
+                <version>0.4-SNAPSHOT</version>
+                <type>test-jar</type>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-datagen</artifactId>
                 <version>0.4-SNAPSHOT</version>
                 <scope>compile</scope>
             </dependency>

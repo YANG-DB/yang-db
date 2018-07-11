@@ -10,6 +10,8 @@ import java.util.List;
  * Created by roman.margolis on 11/03/2018.
  */
 public class CreateCsvCursorRequest extends CreateCursorRequest {
+    public static final String CursorType = "csv";
+
     //region Constructors
     public CreateCsvCursorRequest() {
         this(null, null);
@@ -29,7 +31,7 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
     }
 
     public CreateCsvCursorRequest(CsvElement[] csvElements, CreatePageRequest createPageRequest, boolean withHeaders) {
-        super(createPageRequest);
+        super(CursorType, createPageRequest);
         this.csvElements = csvElements;
         this.withHeaders = withHeaders;
     }

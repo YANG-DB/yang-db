@@ -1,10 +1,13 @@
 package com.kayhut.fuse.executor.cursor.discrete;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
+import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Relationship;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
@@ -14,6 +17,19 @@ import java.util.*;
  * Created by roman.margolis on 11/03/2018.
  */
 public class GraphHierarchyTraversalCursor implements Cursor {
+    //region Factory
+    public static class Factory implements CursorFactory {
+        //region CursorFactory Implementation
+        @Override
+        public Cursor createCursor(Context context) {
+            return new GraphHierarchyTraversalCursor(
+                    new PathsTraversalCursor((TraversalCursorContext)context),
+                    ((CreateGraphHierarchyCursorRequest)context.getCursorRequest()).getCountTags());
+        }
+        //endregion
+    }
+    //endregion
+
     //region Constructors
     public GraphHierarchyTraversalCursor(Cursor cursor, Iterable<String> countTags) {
         this.cursor = cursor;

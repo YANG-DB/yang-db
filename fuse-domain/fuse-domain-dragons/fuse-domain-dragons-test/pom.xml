@@ -4,23 +4,30 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>fuse-domain-dragons</artifactId>
-        <groupId>org.kayhut</groupId>
+        <groupId>com.kayhut</groupId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>fuse-domain-dragons-test</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <hamcrest-all.version>1.3</hamcrest-all.version>
+        <hamcrest.version>1.3</hamcrest.version>
+        <hamcres-json.version>0.2</hamcres-json.version>
+    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-test-framework</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-service</artifactId>
         </dependency>
         <dependency>
@@ -45,11 +52,11 @@
             <version>2.4.0</version>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-dv-stat</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-dv-epb</artifactId>
         </dependency>
 
@@ -60,14 +67,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-service</artifactId>
             <version>${fuse.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
             <version>${fuse.version}</version>
             <type>test-jar</type>
@@ -80,13 +87,22 @@
         </dependency>
     </dependencies>
 
-    <properties>
-        <hamcrest-all.version>1.3</hamcrest-all.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <hamcres-json.version>0.2</hamcres-json.version>
-    </properties>
-    <modelVersion>4.0.0</modelVersion>
-
-
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <threadCount>1</threadCount>
+                    <perCoreThreadCount>false</perCoreThreadCount>
+                    <rerunFailingTestsCount>0</rerunFailingTestsCount>
+                    <includes>
+                        <include>**/*Suite.java</include>
+                    </includes>
+                    <parallel>methods</parallel>
+                    <argLine>-Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

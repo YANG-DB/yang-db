@@ -22,6 +22,8 @@ public class InternalsControllerRegistrar extends AppControllerRegistrarBase<Int
                 .get(req -> Results.with(this.getController(app).getVersion()));
         app.use("/fuse/internal/snowflakeId")
                 .get(req -> Results.with(this.getController(app).getSnowflakeId()));
+        app.use("/fuse/internal/cursorBindings")
+                .get(req -> Results.with(this.getController(app).getCursorBindings()));
         app.use("/fuse/internal/statisticsProvider/setup")
                 .get(req -> Results.with(this.getController(app).getStatisticsProviderSetup()));
         app.use("/fuse/internal/statisticsProvider/refresh")

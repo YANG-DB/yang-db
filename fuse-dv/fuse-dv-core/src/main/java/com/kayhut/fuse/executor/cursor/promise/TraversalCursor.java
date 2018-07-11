@@ -5,6 +5,7 @@ package com.kayhut.fuse.executor.cursor.promise;
  */
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
@@ -37,6 +38,16 @@ import static com.kayhut.fuse.model.results.AssignmentsQueryResult.Builder.insta
  * Created by liorp on 3/20/2017.
  */
 public class TraversalCursor implements Cursor {
+    //region Factory
+    public static class Factory implements CursorFactory {
+        //region CursorFactory Implementation
+        @Override
+        public Cursor createCursor(Context context) {
+            return new TraversalCursor((TraversalCursorContext)context);
+        }
+        //endregion
+    }
+    //endregion
 
     //region Constructors
     public TraversalCursor(TraversalCursorContext context) {

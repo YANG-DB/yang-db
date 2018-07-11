@@ -17,6 +17,7 @@ import org.jooby.RequestLogger;
 import org.jooby.Results;
 import org.jooby.caffeine.CaffeineCache;
 import org.jooby.handlers.CorsHandler;
+import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
 import org.jooby.scanner.Scanner;
 import org.jooby.swagger.SwaggerUI;

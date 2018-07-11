@@ -55,7 +55,6 @@ public class LoggingJacksonModule extends ModuleBase {
 
     //region Fields
     private MetricRegistry metricRegistry;
-
     private boolean enabled = false;
     //endregion
 }

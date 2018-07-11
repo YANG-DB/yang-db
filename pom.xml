@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.kayhut</groupId>
+    <groupId>com.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
     <version>0.4-SNAPSHOT</version>
@@ -33,8 +33,8 @@
         <!-- plugins -->
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-        <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
-        <maven-surefire-report-plugin.version>2.21.0</maven-surefire-report-plugin.version>
+        <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
+        <maven-surefire-report-plugin.version>2.22.0</maven-surefire-report-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
         <maven-checkstyle-plugin.version>2.12.1</maven-checkstyle-plugin.version>
@@ -129,57 +129,57 @@
         <dependencies>
             <!-- fuse -->
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-model</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-asg</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-dv-epb</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-dv-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-dv-stat</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-dv-gta</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-dv-unipop</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-dv-asg</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-service</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-geojson</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
@@ -454,33 +454,33 @@
             <!-- test -->
             <!-- fuse -->
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-test-framework</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-model</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-dv-unipop</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-service</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-asg</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
@@ -635,6 +635,7 @@
                     <configuration>
                         <threadCount>1</threadCount>
                         <perCoreThreadCount>false</perCoreThreadCount>
+                        <rerunFailingTestsCount>0</rerunFailingTestsCount>
                         <includes>
                             <include>**/*.java</include>
                         </includes>
@@ -723,9 +724,9 @@
             <url>file://target/site</url>
         </site>
         <repository>
-            <id>nexuss.westeurope.cloudapp.azure.com-snapshots</id>
-            <name>nexuss.westeurope.cloudapp.azure.com-snapshots</name>
-            <url>https://nexuss.westeurope.cloudapp.azure.com:8443/repository/maven-snapshots/</url>
+            <id>fuse-releases</id>
+            <name>fuse-releases</name>
+            <url>http://ec2-52-210-247-209.eu-west-1.compute.amazonaws.com:8081/repository/fuse/</url>
         </repository>
     </distributionManagement>
 

@@ -12,8 +12,9 @@ import java.util.List;
 
 //todo - for kobi usage
 public class InsightBuilder extends EntityId {
-    public static final String INSIGNT = "Insignt";
-    public String type = "insight";
+    public static final String type = "Insight";
+    public static String physicalType = "insight";
+
     public String content;
     public String context;
     public List<String> entityIds;
@@ -23,6 +24,11 @@ public class InsightBuilder extends EntityId {
         final InsightBuilder builder = new InsightBuilder();
         builder.insightId = id;
         return builder;
+    }
+
+    @Override
+    public String getType() {
+        return type;
     }
 
     @Override
@@ -39,7 +45,7 @@ public class InsightBuilder extends EntityId {
             entities.add(ent);
         }
         //create knowledge entity
-        on.put("type", type);
+        on.put("type", physicalType);
         on.put("content", content);
         on.put("context", context);
         on.put("entityIds", entities);
@@ -53,7 +59,7 @@ public class InsightBuilder extends EntityId {
         return Entity.Builder.instance()
                 .withEID(id())
                 .withETag(Stream.of(getETag()).toJavaSet())
-                .withEType("Insight")
+                .withEType(getType())
                 .withProperties(collect(Arrays.asList(
                         new Property("content", "raw", content),
                         new Property("context", "raw", context),
@@ -63,6 +69,6 @@ public class InsightBuilder extends EntityId {
 
     @Override
     public String getETag() {
-        return INSIGNT + "#" +id();
+        return "Insight."+id();
     }
 }

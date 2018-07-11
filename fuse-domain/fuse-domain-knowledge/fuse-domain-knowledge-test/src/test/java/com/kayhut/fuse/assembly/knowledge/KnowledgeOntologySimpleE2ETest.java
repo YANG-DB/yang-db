@@ -47,7 +47,7 @@ public class KnowledgeOntologySimpleE2ETest {
         Setup.cleanup();
     }
 
-    private AssignmentsQueryResult GetAssignmentForQuery(Query query, FuseResourceInfo resourceInfo, int timeout, int sleeptime, int cursorType) throws IOException, InterruptedException {
+    private AssignmentsQueryResult GetAssignmentForQuery(Query query, FuseResourceInfo resourceInfo, int sleeptime, int cursorType) throws IOException, InterruptedException {
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(resourceInfo.getQueryStoreUrl(), query);
         CreateCursorRequest cursorRequest = null;
 
@@ -58,14 +58,11 @@ public class KnowledgeOntologySimpleE2ETest {
             case 1:
                 cursorRequest = new CreatePathsCursorRequest();
                 break;
-            case 2:
-                cursorRequest = new CreateGraphHierarchyCursorRequest();
-                break;
             default:
                 cursorRequest = new CreateGraphCursorRequest();
                 break;
         }
-        cursorRequest.setTimeout(timeout);
+
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
@@ -96,7 +93,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(11, $ont.pType$("title"), Constraint.of(ConstraintOp.notEmpty)/*, "sample")*/))
         ).build();
 
-        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
         int resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize, 1);
         String rtype = pageData.getResultType();
@@ -120,7 +117,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
 
-        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
         resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize, 1);
         rtype = pageData.getResultType();
@@ -149,7 +146,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(17, $ont.pType$("creationTime"), Constraint.of(ConstraintOp.gt, "2018-01-01 00:00:00.000"))
         )).build();
 
-        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
         resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize, 1);
         rtype = pageData.getResultType();
@@ -204,7 +201,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
 
-        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
         CheckAssignmentQueryResults(1, 1, 2, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery1").withOnt($ont.name()).withElements(Arrays.asList(
@@ -219,7 +216,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
 
-        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
         CheckAssignmentQueryResults(1, 2, 4, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery2").withOnt($ont.name()).withElements(Arrays.asList(
@@ -234,7 +231,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Arla Nava"))
         )).build();
 
-        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
         CheckAssignmentQueryResults(1, 1, 2, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery3").withOnt($ont.name()).withElements(Arrays.asList(
@@ -248,7 +245,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Eve"))
         )).build();
 
-        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
         CheckAssignmentQueryResults(1, 2, 3, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery4").withOnt($ont.name()).withElements(Arrays.asList(
@@ -262,7 +259,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(12, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Shani"))
         )).build();
 
-        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
         CheckAssignmentQueryResults(1, 2, 3, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery5").withOnt($ont.name()).withElements(Arrays.asList(
@@ -280,7 +277,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(16, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "sum"))
         )).build();
 
-        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
         CheckAssignmentQueryResults(1, 3, 4, pageData);
 
         query = Query.Builder.instance().withName("SimpleQuery6").withOnt($ont.name()).withElements(Arrays.asList(
@@ -300,7 +297,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(16, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "sum"))
         )).build();
 
-        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 5000, 10, 0);
+        pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
         CheckAssignmentQueryResults(1, 2, 3, pageData);
     }
 

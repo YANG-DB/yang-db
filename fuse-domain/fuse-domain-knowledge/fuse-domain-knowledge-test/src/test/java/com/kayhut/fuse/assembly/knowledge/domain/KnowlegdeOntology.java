@@ -149,8 +149,8 @@ public class KnowlegdeOntology {
     }
      */
     public static class ENTITY_VALUE {
-        public static String name = "ENTITY_VALUE";
-        public static String type = "ENTITY_VALUE";
+        public static String name = "EVALUE";
+        public static String type = "EVALUE";
         public static List<Property> propertyList = Arrays.asList(id, logicalId, category, context,
                 creationTime, lastUpdateTime, creationUser, lastUpdateUser, deleteUpdateTime,
                 fieldId,bdt,stringValue,intValue,dateValue);
@@ -160,8 +160,8 @@ public class KnowlegdeOntology {
     }
 
     public static class RELATION_VALUE {
-        public static String name = "RELATION_VALUE";
-        public static String type = "RELATION_VALUE";
+        public static String name = "RVALUE";
+        public static String type = "RVALUE";
         public static List<Property> propertyList = Arrays.asList(id, logicalId, category,
                 creationTime, lastUpdateTime, creationUser, lastUpdateUser, deleteUpdateTime);
 
