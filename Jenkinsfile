@@ -21,7 +21,7 @@ pipeline {
     
     stages {
         stage('Pre-Build') {
-            step {
+            steps {
                 deleteDir()
             }
         }
