@@ -101,8 +101,6 @@
             <groupId>org.graphstream</groupId>
             <artifactId>gs-ui-javafx</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/gs-ui-javafx-0.0.1-SNAPSHOT.jar</systemPath>
         </dependency>
 
         <dependency>
