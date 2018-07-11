@@ -93,6 +93,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <forkCount>1</forkCount>
                     <threadCount>1</threadCount>
                     <perCoreThreadCount>false</perCoreThreadCount>
                     <rerunFailingTestsCount>0</rerunFailingTestsCount>

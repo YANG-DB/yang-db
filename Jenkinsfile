@@ -22,7 +22,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'mvn --settings maven_settings.xml clean install'
+                sh 'mvn -DforkCount=0 --settings maven_settings.xml clean install'
             }
         }
     }
