@@ -109,8 +109,8 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
                     Vertex child = edge.inVertex();
                     Vertex parent = edge.outVertex();
                     logicalModelAdderProvider.addChild(
-                            getLogicalElement(logicalItems, child),
                             getLogicalElement(logicalItems, parent),
+                            getLogicalElement(logicalItems, child),
                             parent.label(),
                             child.label());
                     objectIndex += 2;
