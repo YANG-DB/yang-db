@@ -6,6 +6,9 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -15,13 +18,10 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.utils.FuseClient;
+import javaslang.Tuple2;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
@@ -59,7 +59,7 @@ public class KnowledgeReaderContext {
             return builder;
         }
 
-        public KnowledgeQueryBuilder withGlobalEntity(String eTag) {
+        public KnowledgeQueryBuilder withGlobalEntity(String eTag, Filter... filters) {
             entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasEntity", L, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), LogicalEntity.type, LogicalEntity.type, nextEnum(), 0));
@@ -69,16 +69,21 @@ public class KnowledgeReaderContext {
             return this;
         }
 
-        public KnowledgeQueryBuilder withEntity(String eTag) {
+        public KnowledgeQueryBuilder withEntity(String eTag, Filter... filters) {
             this.elements.add(new ETyped(currentEnum(), eTag, EntityBuilder.type, nextEnum(), 0));
             Quant1 quant1 = new Quant1(currentEnum(), QuantType.all, new ArrayList<>(), 0);
             this.elements.add(quant1);
             entityStack.push(quant1);
             nextEnum();//continue
+            Arrays.stream(filters).forEach(filter -> {
+                entityStack.peek().getNext().add(currentEnum());
+                elements.add(filter.build(currentEnum()));
+                nextEnum();//continue
+            });
             return this;
         }
 
-        public KnowledgeQueryBuilder relatedTo(String eTag, String sideB) {
+        public KnowledgeQueryBuilder relatedTo(String eTag, String sideB, Filter... filters) {
             entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasRelation", R, EntityBuilder.type, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, RelationBuilder.type, nextEnum(), 0));
@@ -95,7 +100,7 @@ public class KnowledgeReaderContext {
             return this;
         }
 
-        public KnowledgeQueryBuilder withFile(String eTag) {
+        public KnowledgeQueryBuilder withFile(String eTag, Filter... filters) {
             entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasEfile", R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, FileBuilder.type, 0, 0));
@@ -103,7 +108,7 @@ public class KnowledgeReaderContext {
             return this;
         }
 
-        public KnowledgeQueryBuilder withValue(String eTag) {
+        public KnowledgeQueryBuilder withValue(String eTag, Filter... filters) {
             entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasEvalue", R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, ValueBuilder.type, 0, 0));
@@ -111,7 +116,7 @@ public class KnowledgeReaderContext {
             return this;
         }
 
-        public KnowledgeQueryBuilder withRef(String eTag) {
+        public KnowledgeQueryBuilder withRef(String eTag, Filter... filters) {
             entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasEntityReference", R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, RefBuilder.type, 0, 0));
@@ -119,7 +124,7 @@ public class KnowledgeReaderContext {
             return this;
         }
 
-        public KnowledgeQueryBuilder withInsight(String eTag) {
+        public KnowledgeQueryBuilder withInsight(String eTag, Filter... filters) {
             entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasInsight", R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, InsightBuilder.type, 0, 0));
@@ -156,6 +161,49 @@ public class KnowledgeReaderContext {
         }
         // return the relevant data
         return fuseClient.getPageData(pageResourceInfo.getDataUrl());
+    }
+
+    public static class Filter {
+        private Map<QuantType, List<Tuple2<String, Constraint>>> fields;
+        private AtomicInteger eNum;
+
+        private Filter() {
+            fields = new HashMap<>();
+        }
+
+        public static Filter filter() {
+            return new Filter();
+        }
+
+        public Filter with(QuantType quantType,String field, Constraint constraint) {
+            if (!fields.containsKey(quantType)) {
+                fields.put(quantType, new ArrayList<>());
+            }
+            final List<Tuple2<String, Constraint>> list = fields.get(QuantType.all);
+            list.add(new Tuple2<>(field, constraint));
+            return this;
+        }
+
+        public Filter and(String field, Constraint constraint) {
+            return with(QuantType.all, field,constraint);
+        }
+
+        public Filter or(String field, Constraint constraint) {
+            return with(QuantType.some, field,constraint);
+        }
+
+        public EPropGroup build(int eNum) {
+            this.eNum = new AtomicInteger(100 * eNum);
+            final EPropGroup total = new EPropGroup(eNum);
+            fields.forEach((quantType, tuple2s) -> {
+                final EPropGroup quantGroup = EPropGroup.of(this.eNum.incrementAndGet(), quantType, new EProp[]{});
+                tuple2s.forEach(field -> quantGroup.getProps().add(EProp.of(this.eNum.incrementAndGet(), field._1, field._2)));
+                total.getGroups().add(quantGroup);
+            });
+            return total;
+        }
+
+
     }
 
 }
