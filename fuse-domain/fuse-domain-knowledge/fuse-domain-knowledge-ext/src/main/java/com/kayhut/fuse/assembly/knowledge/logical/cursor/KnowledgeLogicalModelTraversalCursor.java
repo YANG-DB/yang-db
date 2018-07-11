@@ -1,5 +1,9 @@
-package com.kayhut.fuse.assembly.knowledge;
+package com.kayhut.fuse.assembly.knowledge.logical.cursor;
 
+import com.kayhut.fuse.assembly.knowledge.cursor.KnowledgeGraphHierarchyTraversalCursor;
+import com.kayhut.fuse.assembly.knowledge.logical.cursor.logicalModelFactories.LogicalElementFactory;
+import com.kayhut.fuse.assembly.knowledge.logical.cursor.modelAdders.LogicalModelAdderProvider;
+import com.kayhut.fuse.assembly.knowledge.logical.model.LogicalItemBase;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
@@ -14,6 +18,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateLogicalGraphHierarchyCursorRequest;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.Stream;
@@ -25,22 +30,20 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.*;
 
-public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
-    //region Factory
+public class KnowledgeLogicalModelTraversalCursor implements Cursor {
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
         @Override
         public Cursor createCursor(Context context) {
-            return new KnowledgeGraphHierarchyTraversalCursor(
+            return new KnowledgeLogicalModelTraversalCursor(
                     (TraversalCursorContext)context,
-                    ((CreateGraphHierarchyCursorRequest)context.getCursorRequest()).getCountTags());
+                    ((CreateLogicalGraphHierarchyCursorRequest)context.getCursorRequest()).getCountTags());
         }
         //endregion
     }
-    //endregion
 
     //region Constructors
-    public KnowledgeGraphHierarchyTraversalCursor(TraversalCursorContext context, Iterable<String> countTags) {
+    public KnowledgeLogicalModelTraversalCursor(TraversalCursorContext context, Iterable<String> countTags) {
         this.countTags = Stream.ofAll(countTags).toJavaSet();
         this.distinctIds = new HashSet<>();
         this.idsScore = new HashMap<>();
@@ -88,11 +91,68 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
     //region Cursor Implementation
     @Override
     public QueryResultBase getNextResults(int numResults) {
+        Map<String, LogicalItemBase> logicalItems = new HashMap<>();
+        LogicalElementFactory logicalElementFactory = new LogicalElementFactory();
+        LogicalModelAdderProvider logicalModelAdderProvider = new LogicalModelAdderProvider();
+        try {
+            while (this.distinctIds.size() < numResults) {
+                Path path = context.getTraversal().next();
+                List<Object> pathObjects = path.objects();
+
+                // First vertex not always connected to the closed edge.
+                Vertex vertex = (Vertex) pathObjects.get(0);
+                logicalItems.put(vertex.id().toString(), logicalElementFactory.createLogicalItem(vertex));
+                int objectIndex = 1;
+                while (objectIndex < path.objects().size()) {
+                    // Edge + next vertex
+                    vertex = (Vertex) pathObjects.get(objectIndex + 1);
+                    logicalItems.put(vertex.id().toString(), logicalElementFactory.createLogicalItem(vertex));
+                    Edge edge = (Edge) pathObjects.get(objectIndex);
+                    Vertex child = edge.inVertex();
+                    Vertex parent = edge.outVertex();
+                    logicalModelAdderProvider.addChild(logicalItems.get(parent.id().toString()), logicalItems.get(child.id().toString()), parent.label(), child.label());
+//
+//                    if (objectIndex % 2 == 0) {
+//                        // Vertex
+////                        Vertex vertex = (Vertex) pathObjects.get(objectIndex);
+////                        LogicalItemBase logicalElement = logicalItems.get((String) vertex.id());
+////                        if (logicalElement == null) {
+////                            logicalItems.put((String) vertex.id(), logicalElementFactory.createLogicalItem(vertex));
+////                        } else {
+////                            logicalElementFactory.putLogicalItem(vertex, logicalElement);
+////                        }
+//                    } else {
+//                        // Edge
+//                        // If out or in not exist - create
+//                        // then use Adder provider!
+//                        Edge edge = (Edge) pathObjects.get(objectIndex);
+//                        Vertex inVertex = edge.inVertex();
+//                        Vertex outVertex = edge.outVertex();
+//                        if (logicalItems.get((String) inVertex.id()) == null) {
+//                            logicalItems.put((String) inVertex.id(), logicalElementFactory.createLogicalItem(inVertex));
+//                        }
+//                        if (logicalItems.get((String) outVertex.id()) == null) {
+//                            logicalItems.put((String) outVertex.id(), logicalElementFactory.createLogicalItem(outVertex));
+//                        }
+//                        // logicalModelAdderProvider.addChild();
+//                    }
+                    objectIndex += 2;
+                }
+            }
+        } catch (NoSuchElementException ex) {
+
+        }
+
+
         Map<String, Map<Vertex, Set<String>>> idVertexEtagsMap = new HashMap<>();
         Map<String, Tuple2<Edge, String>> idEdgeEtagMap = new HashMap<>();
 
+        Ontology.Accessor ont = new Ontology.Accessor(this.context.getOntology());
+        //  LogicalModelAdderProvider logicalModelAdderProvider = new LogicalModelAdderProvider();
+
+
         try {
-            while(this.distinctIds.size() < numResults) {
+            while (this.distinctIds.size() < numResults) {
                 Path path = context.getTraversal().next();
                 List<Object> pathObjects = path.objects();
                 List<Set<String>> pathLabels = path.labels();
@@ -106,28 +166,27 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
                         this.distinctIds.add(element.id().toString());
                         addedIds.add(element.id().toString());
                     }
-                    if(element.label().equals("Evalue")){
+                    if (element.label().equals("Evalue")) {
                         org.apache.tinkerpop.gremlin.structure.Property<Object> score = element.property("score");
-                        if(score.isPresent()) {
+                        if (score.isPresent()) {
                             eValueScores.add((Float) score.value());
                         }
                     }
 
                     if (Vertex.class.isAssignableFrom(element.getClass()) && this.includeEntities) {
                         Map<Vertex, Set<String>> vertexEtagsMap = idVertexEtagsMap.computeIfAbsent(element.id().toString(), id -> new HashMap<>());
-                        vertexEtagsMap.computeIfAbsent((Vertex)element, vertex -> new HashSet<>()).add(pathLabel);
+                        vertexEtagsMap.computeIfAbsent((Vertex) element, vertex -> new HashSet<>()).add(pathLabel);
                     } else if (Edge.class.isAssignableFrom(element.getClass()) && this.includeRelationships) {
-                        idEdgeEtagMap.computeIfAbsent(element.id().toString(), id -> new Tuple2<>((Edge)element, pathLabel));
+                        idEdgeEtagMap.computeIfAbsent(element.id().toString(), id -> new Tuple2<>((Edge) element, pathLabel));
                     }
                 }
 
-                if(eValueScores.size() > 0){
+                if (eValueScores.size() > 0) {
                     Float score = Stream.ofAll(eValueScores).max().get();
                     addedIds.forEach(id -> {
                         this.idsScore.compute(id, (k, v) -> v == null ? score : Math.max(score, v));
                     });
                 }
-
 
 
             }
@@ -138,10 +197,9 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
         Assignment.Builder builder = Assignment.Builder.instance();
 
 
-
-        for(Map.Entry<String, Map<Vertex, Set<String>>> idVertexEtagsEntry : idVertexEtagsMap.entrySet()) {
+        for (Map.Entry<String, Map<Vertex, Set<String>>> idVertexEtagsEntry : idVertexEtagsMap.entrySet()) {
             Vertex mergedVertex = mergeVertices(Stream.ofAll(idVertexEtagsEntry.getValue().keySet()).toJavaList());
-            if(this.idsScore.containsKey(mergedVertex.id())) {
+            if (this.idsScore.containsKey(mergedVertex.id())) {
                 mergedVertex.property("score", this.idsScore.get(mergedVertex.id()));
             }
             Set<String> etags = Stream.ofAll(idVertexEtagsEntry.getValue().values()).flatMap(etags1 -> etags1).toJavaSet();
@@ -149,9 +207,7 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
         }
 
 
-
-
-        for(Map.Entry<String, Tuple2<Edge, String>> idEdgeEtagEntry : idEdgeEtagMap.entrySet()) {
+        for (Map.Entry<String, Tuple2<Edge, String>> idEdgeEtagEntry : idEdgeEtagMap.entrySet()) {
             Tuple3<EEntityBase, Rel, EEntityBase> relTuple = this.eRels.get(idEdgeEtagEntry.getValue()._2());
             builder.withRelationship(toRelationship(
                     idEdgeEtagEntry.getValue()._1(),

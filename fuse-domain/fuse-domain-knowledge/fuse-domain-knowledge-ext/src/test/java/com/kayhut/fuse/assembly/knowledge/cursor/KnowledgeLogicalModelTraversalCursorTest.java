@@ -1,12 +1,12 @@
-package com.kayhut.fuse.executor.cursor.discrete;
+package com.kayhut.fuse.assembly.knowledge.cursor;
 
-import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.executor.cursor.discrete.HierarchyFlattenCursor;
+import com.kayhut.fuse.executor.cursor.discrete.PathsTraversalCursor;
 import com.kayhut.fuse.model.results.*;
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.when;
 
-public class HierarchyFlattenCursorTest {
+public class KnowledgeLogicalModelTraversalCursorTest {
 
     @Test
     public void testSingleElement(){

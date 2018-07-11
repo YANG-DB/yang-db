@@ -9,6 +9,7 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -16,6 +17,7 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResultBase;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.utils.FuseClient;
 import javaslang.Tuple2;
@@ -24,6 +26,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.Filter.filter;
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
 import static com.kayhut.fuse.model.query.Rel.Direction.L;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
@@ -53,10 +56,25 @@ public class KnowledgeReaderContext {
             elements = new ArrayList<>();
         }
 
+        private Quant1 quant() {
+            //case we are in quant scope
+            Quant1 quant1 = new Quant1(currentEnum(), QuantType.all, new ArrayList<>(), 0);
+            this.elements.add(quant1);
+            entityStack.push(quant1);
+            nextEnum();//continue
+            return quant1;
+        }
+
         public static KnowledgeQueryBuilder start() {
             KnowledgeQueryBuilder builder = new KnowledgeQueryBuilder();
             builder.elements.add(new Start(builder.currentEnum(), builder.nextEnum()));
             return builder;
+        }
+
+        public KnowledgeQueryBuilder withGlobalEntityValues(String eTag, Filter... filters) {
+            return withGlobalEntity(eTag,
+                    filter().with(QuantType.all, "fieldId",Constraint.of(ConstraintOp.eq,"nicknames")),
+                    filter().with(QuantType.all, "fieldId",Constraint.of(ConstraintOp.eq,"title")));
         }
 
         public KnowledgeQueryBuilder withGlobalEntity(String eTag, Filter... filters) {
@@ -66,15 +84,28 @@ public class KnowledgeReaderContext {
             this.elements.add(new Rel(currentEnum(), "hasEntity", R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, EntityBuilder.type, nextEnum(), 0));
             nextEnum();//continue
+            //add global quant
+            quant();
+            //add global rel + values
+            elements.add(filter().with(QuantType.all, "context", Constraint.of(ConstraintOp.eq, "global"))
+                    .build(currentEnum()));
+            //adds to quant
+            entityStack.peek().getNext().add(currentEnum());
+            nextEnum();//continue
+            Arrays.stream(filters).forEach(filter -> {
+                //adds to quant
+                entityStack.peek().getNext().add(currentEnum());
+                //adds to element
+                elements.add(filter.build(currentEnum()));
+                //next enum
+                nextEnum();//continue
+            });
             return this;
         }
 
         public KnowledgeQueryBuilder withEntity(String eTag, Filter... filters) {
             this.elements.add(new ETyped(currentEnum(), eTag, EntityBuilder.type, nextEnum(), 0));
-            Quant1 quant1 = new Quant1(currentEnum(), QuantType.all, new ArrayList<>(), 0);
-            this.elements.add(quant1);
-            entityStack.push(quant1);
-            nextEnum();//continue
+            quant();
             Arrays.stream(filters).forEach(filter -> {
                 entityStack.peek().getNext().add(currentEnum());
                 elements.add(filter.build(currentEnum()));
@@ -113,6 +144,11 @@ public class KnowledgeReaderContext {
             this.elements.add(new Rel(currentEnum(), "hasEvalue", R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, ValueBuilder.type, 0, 0));
             nextEnum();//continue
+            Arrays.stream(filters).forEach(filter -> {
+                entityStack.peek().getNext().add(currentEnum());
+                elements.add(filter.build(currentEnum()));
+                nextEnum();//continue
+            });
             return this;
         }
 
@@ -144,12 +180,15 @@ public class KnowledgeReaderContext {
 
     static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, Query query)
             throws IOException, InterruptedException {
+        return query(fuseClient, fuseResourceInfo, query, new CreateGraphCursorRequest());
+    }
+
+    static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, Query query, CreateCursorRequest createCursorRequest)
+            throws IOException, InterruptedException {
         // get Query URL
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        // Create object of cursorRequest
-        CreateGraphCursorRequest cursorRequest = new CreateGraphCursorRequest();
         // Press on Cursor
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), cursorRequest);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), createCursorRequest);
         // Press on page to get the relevant page
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
         // Waiting until it gets the response
@@ -175,7 +214,7 @@ public class KnowledgeReaderContext {
             return new Filter();
         }
 
-        public Filter with(QuantType quantType,String field, Constraint constraint) {
+        public Filter with(QuantType quantType, String field, Constraint constraint) {
             if (!fields.containsKey(quantType)) {
                 fields.put(quantType, new ArrayList<>());
             }
@@ -185,11 +224,11 @@ public class KnowledgeReaderContext {
         }
 
         public Filter and(String field, Constraint constraint) {
-            return with(QuantType.all, field,constraint);
+            return with(QuantType.all, field, constraint);
         }
 
         public Filter or(String field, Constraint constraint) {
-            return with(QuantType.some, field,constraint);
+            return with(QuantType.some, field, constraint);
         }
 
         public EPropGroup build(int eNum) {
