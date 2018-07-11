@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>fuse-dv</artifactId>
-        <groupId>org.kayhut</groupId>
+        <groupId>com.kayhut</groupId>
         <version>0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -20,23 +20,23 @@
     <dependencies>
         <!-- runtime -->
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-dv-unipop</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-dv-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-asg</artifactId>
         </dependency>
         <dependency>
@@ -51,7 +51,7 @@
 
         <!-- test -->
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-asg</artifactId>
             <type>test-jar</type>
             <scope>test</scope>

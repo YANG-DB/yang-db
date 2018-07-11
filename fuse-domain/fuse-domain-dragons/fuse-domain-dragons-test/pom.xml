@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>fuse-domain-dragons</artifactId>
-        <groupId>org.kayhut</groupId>
+        <groupId>com.kayhut</groupId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
@@ -19,15 +19,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-test-framework</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-service</artifactId>
         </dependency>
         <dependency>
@@ -52,11 +52,11 @@
             <version>2.4.0</version>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-dv-stat</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-dv-epb</artifactId>
         </dependency>
 
@@ -67,14 +67,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-service</artifactId>
             <version>${fuse.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
             <version>${fuse.version}</version>
             <type>test-jar</type>

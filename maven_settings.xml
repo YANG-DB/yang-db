@@ -19,6 +19,11 @@
                     <name>mxsnapshots-proxy</name>
                     <url>http://ec2-52-210-247-209.eu-west-1.compute.amazonaws.com:8081/repository/maven-public/</url>
                 </repository>
+                <repository>
+                    <id>fuse-releases</id>
+                    <name>fuse-releases</name>
+                    <url>http://ec2-52-210-247-209.eu-west-1.compute.amazonaws.com:8081/repository/fuse/</url>
+                </repository>
             </repositories>
             <id>public</id>
         </profile>
@@ -34,7 +39,7 @@
             <password>Xw4cMS15Hw4k3y3B09BM</password>
         </server>
         <server>
-            <id>nexus-releases</id>
+            <id>fuse-releases</id>
             <username>fuse</username>
             <password>Xw4cMS15Hw4k3y3B09BM</password>
         </server>
