@@ -33,6 +33,7 @@ pipeline {
                 artifacts: '**/*.jar',
                 fingerprint: true
             )
+            deleteDir()
         }
     }
 }
