@@ -24,6 +24,7 @@ pipeline {
             step {
                 deleteDir()
             }
+        }
             
         stage('Build') {
             steps {
