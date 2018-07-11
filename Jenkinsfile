@@ -3,7 +3,6 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '3'))
         disableConcurrentBuilds()
         timestamps()
-        deleteDir()
     }
     
     agent any
@@ -21,6 +20,11 @@ pipeline {
     }
     
     stages {
+        stage('Pre-Build') {
+            step {
+                deleteDir()
+            }
+            
         stage('Build') {
             steps {
                 sh 'mvn -DforkCount=1 --settings maven_settings.xml clean install'
