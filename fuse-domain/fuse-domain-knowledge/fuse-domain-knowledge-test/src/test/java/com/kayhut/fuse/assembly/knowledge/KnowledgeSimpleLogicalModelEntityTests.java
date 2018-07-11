@@ -31,7 +31,6 @@ public class KnowledgeSimpleLogicalModelEntityTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
