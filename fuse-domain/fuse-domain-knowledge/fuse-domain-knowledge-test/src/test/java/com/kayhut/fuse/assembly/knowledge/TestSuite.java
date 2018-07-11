@@ -22,6 +22,7 @@ import static com.kayhut.fuse.assembly.knowledge.Setup.manager;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         KnowledgeSimpleEntityWithRelationTests.class,
+        KnowledgeSimpleEntityWithFilterTests.class,
         KnowledgeSimpleEntityTests.class
 })
 public class TestSuite {
