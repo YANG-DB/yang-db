@@ -16,7 +16,6 @@ import java.util.Optional;
 //todo - for kobi usage
 public class EntityBuilder extends EntityId {
     public static final String INDEX = "e0";
-    public static final String ENTITY = "Entity";
 
     public String logicalId;
     public String category = "person";
@@ -83,7 +82,7 @@ public class EntityBuilder extends EntityId {
                 .withEID2(file.fileId)
                 .withETag1(getETag())
                 .withETag2(file.getETag())
-                .withRType("has" + ENTITY + "File")
+                .withRType("hasEntityFile")
                 .build());
 
         return this;
@@ -99,7 +98,7 @@ public class EntityBuilder extends EntityId {
     }
 
     public String getETag() {
-        return ENTITY + "#" + id();
+        return "E" + id();
     }
 
     @Override
@@ -123,7 +122,7 @@ public class EntityBuilder extends EntityId {
         return Entity.Builder.instance()
                 .withEID(id())
                 .withETag(Stream.of(getETag()).toJavaSet())
-                .withEType(ENTITY)
+                .withEType("Entity")
                 .withProperties(
                         collect(Arrays.asList(
                                 new Property("category", "raw", category),
