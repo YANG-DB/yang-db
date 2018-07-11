@@ -144,9 +144,5 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.kayhut</groupId>
-            <artifactId>fuse-service</artifactId>
-        </dependency>
     </dependencies>
 </project>
