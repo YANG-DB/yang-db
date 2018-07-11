@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowledge;
+package com.kayhut.fuse.assembly.knowledge.cursor;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
@@ -112,12 +112,9 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
                         this.idsScore.compute(id, (k, v) -> v == null ? score : Math.max(score, v));
                     });
                 }
-
-
-
             }
         } catch (NoSuchElementException ex) {
-
+            //no more elements found in traversal
         }
 
         Assignment.Builder builder = Assignment.Builder.instance();

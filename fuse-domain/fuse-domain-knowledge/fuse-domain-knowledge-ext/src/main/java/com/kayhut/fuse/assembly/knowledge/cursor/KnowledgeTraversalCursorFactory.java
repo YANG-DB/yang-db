@@ -1,5 +1,6 @@
-package com.kayhut.fuse.assembly.knowledge;
+package com.kayhut.fuse.assembly.knowledge.cursor;
 
+import com.kayhut.fuse.assembly.knowledge.logical.cursor.KnowledgeLogicalModelTraversalCursor;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
@@ -25,6 +26,9 @@ public class KnowledgeTraversalCursorFactory implements CursorFactory {
         } else if (traversalCursorContext.getCursorRequest() instanceof CreateGraphHierarchyCursorRequest) {
               return new KnowledgeGraphHierarchyTraversalCursor(traversalCursorContext,
                     ((CreateGraphHierarchyCursorRequest)traversalCursorContext.getCursorRequest()).getCountTags());
+        } else if (traversalCursorContext.getCursorRequest() instanceof CreateLogicalGraphHierarchyCursorRequest) {
+              return new KnowledgeLogicalModelTraversalCursor(traversalCursorContext,
+                    ((CreateLogicalGraphHierarchyCursorRequest)traversalCursorContext.getCursorRequest()).getCountTags());
         }else if(traversalCursorContext.getCursorRequest() instanceof CreateCsvCursorRequest){
             return new CsvTraversalCursor(new PathsTraversalCursor(traversalCursorContext), (CreateCsvCursorRequest) traversalCursorContext.getCursorRequest());
         }

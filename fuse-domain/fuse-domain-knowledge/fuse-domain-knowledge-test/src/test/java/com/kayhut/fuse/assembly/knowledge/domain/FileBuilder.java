@@ -11,6 +11,7 @@ import java.util.Optional;
 
 //todo - for kobi usage
 public class FileBuilder extends EntityId {
+    public static final String FILE = "File";
     public String fileId;
     public String type = "file";
     public String name;
@@ -83,14 +84,14 @@ public class FileBuilder extends EntityId {
 
     @Override
     public String getETag() {
-        return "F" + id();
+        return FILE + "#" + id();
     }
 
     public Entity toEntity() {
         return Entity.Builder.instance()
                 .withEID(fileId)
                 .withETag(Stream.of(getETag()).toJavaSet())
-                .withEType("File")
+                .withEType(FILE)
                 .withProperties(collect(Arrays.asList(
                         new Property("name", "raw", name),
                         new Property("path", "raw", path),

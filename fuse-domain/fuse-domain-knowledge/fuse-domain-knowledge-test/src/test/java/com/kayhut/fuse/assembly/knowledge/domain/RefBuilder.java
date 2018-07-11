@@ -13,6 +13,7 @@ import static com.kayhut.fuse.assembly.knowledge.domain.KnowlegdeOntology.logica
 //todo - for kobi usage
 public class RefBuilder extends Metadata {
     public static final String REF_INDEX = "ref0";
+    public static final String REFERENCE = "Reference";
 
     public String type = "reference";
     public String title;
@@ -70,7 +71,7 @@ public class RefBuilder extends Metadata {
         return Entity.Builder.instance()
                 .withEID(id())
                 .withETag(Stream.of(getETag()).toJavaSet())
-                .withEType("Reference")
+                .withEType(REFERENCE)
                 .withProperties(collect(Stream.ofAll(Arrays.asList(
                         new Property("title", "raw", title),
                         new Property("content", "raw", content),
@@ -82,6 +83,6 @@ public class RefBuilder extends Metadata {
 
     @Override
     public String getETag() {
-        return "R" + id();
+        return REFERENCE + "#" + id();
     }
 }

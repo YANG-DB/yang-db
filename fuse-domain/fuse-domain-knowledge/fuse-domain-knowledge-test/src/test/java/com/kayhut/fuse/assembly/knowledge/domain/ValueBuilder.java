@@ -9,6 +9,7 @@ import java.util.Optional;
 
 //todo - for kobi usage
 public class ValueBuilder extends EntityId {
+    public static final String VALUE = "Value";
     public String type = "e.value";
     public String stringValue;
     public String category;
@@ -64,6 +65,6 @@ public class ValueBuilder extends EntityId {
 
     @Override
     public String getETag() {
-        return "V"+id();
+        return VALUE + "#" +id();
     }
 }

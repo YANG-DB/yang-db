@@ -7,11 +7,16 @@ import com.kayhut.fuse.assembly.knowledge.domain.RefBuilder;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.results.*;
+import com.kayhut.fuse.model.transport.cursor.CreateLogicalGraphHierarchyCursorRequest;
 import javaslang.collection.Stream;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.kayhut.fuse.assembly.knowledge.Setup.*;
@@ -25,7 +30,7 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder._ref;
 
 //@Ignore
-public class KnowledgeSimpleEntityTests {
+public class KnowledgeSimpleLogicalModelEntityTests {
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -35,28 +40,6 @@ public class KnowledgeSimpleEntityTests {
     @AfterClass
     public static void tearDown() throws Exception {
         Setup.teardown();
-    }
-
-    @Test
-    public void testInsertOneSimpleEntityWithBuilder() throws IOException, InterruptedException {
-        KnowledgeWriterContext ctx = KnowledgeWriterContext.init(client, manager.getSchema());
-        final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
-        Assert.assertEquals(1, commit(ctx, INDEX, e1));
-
-        // Create v1 query to fetch newly created entity
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Query query = start().withEntity(e1.getETag()).build();
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
-
-        // Check Entity Response
-        Assert.assertEquals(1, pageData.getSize());
-        Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
-
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance().withEntity(e1.toEntity()).build()).build();
-
-        // Check if expected and actual are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, false);
     }
 
     @Test
@@ -81,11 +64,12 @@ public class KnowledgeSimpleEntityTests {
         // Based on the knowledge ontology build the V1 query
         Query query = start()
                 .withEntity(e1.getETag())
+                .withGlobalEntity()
                 .withRef(ref.getETag())
                 .build();
 
         // Read Entity (with V1 query)
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, new CreateLogicalGraphHierarchyCursorRequest(Arrays.asList(EntityBuilder.ENTITY)));
 
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());

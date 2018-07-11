@@ -12,6 +12,7 @@ import java.util.List;
 
 //todo - for kobi usage
 public class InsightBuilder extends EntityId {
+    public static final String INSIGNT = "Insignt";
     public String type = "insight";
     public String content;
     public String context;
@@ -62,6 +63,6 @@ public class InsightBuilder extends EntityId {
 
     @Override
     public String getETag() {
-        return "I"+id();
+        return INSIGNT + "#" +id();
     }
 }
