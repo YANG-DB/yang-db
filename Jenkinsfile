@@ -20,12 +20,6 @@ pipeline {
     }
     
     stages {
-        stage('Pre-Build') {
-            steps {
-                deleteDir()
-            }
-        }
-            
         stage('Build') {
             steps {
                 sh 'mvn -DforkCount=1 --settings maven_settings.xml clean install'
