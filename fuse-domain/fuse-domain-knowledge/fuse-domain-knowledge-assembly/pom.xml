@@ -8,6 +8,7 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
 
     <artifactId>fuse-domain-knowledge-assembly</artifactId>
 
