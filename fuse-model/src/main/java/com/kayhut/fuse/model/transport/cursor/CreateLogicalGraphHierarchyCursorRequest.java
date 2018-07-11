@@ -1,7 +1,5 @@
 package com.kayhut.fuse.model.transport.cursor;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 
 import java.util.Collections;
@@ -10,32 +8,25 @@ import java.util.Collections;
  * Created by roman.margolis on 11/03/2018.
  */
 public class CreateLogicalGraphHierarchyCursorRequest extends CreateCursorRequest {
+    public static final String CursorType = "logicalGraph";
     public CreateLogicalGraphHierarchyCursorRequest() {
-        this(Collections.emptyList(),TIMEOUT);
+        this(Collections.emptyList());
 
     }
 
     //region Constructors
-    @Inject
-    public CreateLogicalGraphHierarchyCursorRequest(@Named(defaultTimeout) long timeout) {
-        this(Collections.emptyList(),timeout);
-    }
 
     public CreateLogicalGraphHierarchyCursorRequest(Iterable<String> countTags) {
-        this(countTags, null,TIMEOUT);
-    }
-
-    public CreateLogicalGraphHierarchyCursorRequest(Iterable<String> countTags, @Named(defaultTimeout) long timeout) {
-        this(countTags, null,timeout);
+        this(countTags, null);
     }
 
 
-    public CreateLogicalGraphHierarchyCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest, @Named(defaultTimeout) long timeout) {
-        this(Include.all, countTags, createPageRequest,timeout);
+    public CreateLogicalGraphHierarchyCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest) {
+        this(Include.all, countTags, createPageRequest);
     }
 
-    public CreateLogicalGraphHierarchyCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest, @Named(defaultTimeout) long timeout) {
-        super(include, createPageRequest,timeout);
+    public CreateLogicalGraphHierarchyCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest) {
+        super( CursorType,include, createPageRequest);
         this.countTags = countTags;
     }
     //endregion

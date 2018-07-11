@@ -1,18 +1,13 @@
 package com.kayhut.fuse.assembly.knowledge;
 
-import com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder;
-import com.kayhut.fuse.assembly.knowledge.domain.FileBuilder;
-import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
-import com.kayhut.fuse.assembly.knowledge.domain.RefBuilder;
+import com.kayhut.fuse.assembly.knowledge.domain.*;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.results.*;
+import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.transport.cursor.CreateLogicalGraphHierarchyCursorRequest;
 import javaslang.collection.Stream;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,24 +23,34 @@ import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.q
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder._ref;
+import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
 
 //@Ignore
 public class KnowledgeSimpleLogicalModelEntityTests {
+    static KnowledgeWriterContext ctx;
 
     @BeforeClass
     public static void setup() throws Exception {
         Setup.setup();
+        ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
-        Setup.teardown();
+    @After
+    public void after()  {
+        ctx.removeCreated();
+        ctx.clearCreated();
     }
 
     @Test
     public void testInsertOneSimpleEntityWithReferenceBuilder() throws IOException, InterruptedException {
-        KnowledgeWriterContext ctx = KnowledgeWriterContext.init(client, manager.getSchema());
-        final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        ValueBuilder v1 = _v(ctx.nextValueId()).field("title").value("Shirley Windzor");
+        ValueBuilder v2 = _v(ctx.nextValueId()).field("nicknames").value("student");
+
+        final EntityBuilder global = _e(ctx.nextLogicalId()).cat("person").ctx("global");
+        global.value(v1,v2);
+
+        final EntityBuilder e1 = _e(global.logicalId).cat("student").ctx("context1");
+        e1.global(global);
 
         // Create ref
         RefBuilder ref = _ref(ctx.nextRefId())
@@ -56,7 +61,8 @@ public class KnowledgeSimpleLogicalModelEntityTests {
         e1.reference(ref);
 
         //verify data inserted correctly
-        Assert.assertEquals(1, commit(ctx, INDEX, e1));
+        Assert.assertEquals(2, commit(ctx, INDEX, global,e1));
+        Assert.assertEquals(2, commit(ctx, INDEX, v1,v2));
         Assert.assertEquals(1, commit(ctx, REF_INDEX, ref));
 
         // Create v1 query to fetch newly created entity
@@ -64,12 +70,13 @@ public class KnowledgeSimpleLogicalModelEntityTests {
         // Based on the knowledge ontology build the V1 query
         Query query = start()
                 .withEntity(e1.getETag())
-                .withGlobalEntity()
                 .withRef(ref.getETag())
+                .withGlobalEntityValues(global.getETag())
                 .build();
 
         // Read Entity (with V1 query)
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, new CreateLogicalGraphHierarchyCursorRequest(Arrays.asList(EntityBuilder.ENTITY)));
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query,
+                new CreateLogicalGraphHierarchyCursorRequest(Arrays.asList(EntityBuilder.type)));
 
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());

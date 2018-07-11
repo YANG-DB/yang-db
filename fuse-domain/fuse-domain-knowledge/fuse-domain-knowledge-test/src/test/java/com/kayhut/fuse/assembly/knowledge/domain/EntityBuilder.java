@@ -116,6 +116,11 @@ public class EntityBuilder extends EntityId {
         return this;
     }
 
+    public EntityBuilder value(ValueBuilder ... value) {
+        Arrays.asList(value).forEach(this::value);
+        return this;
+    }
+
     public EntityBuilder value(ValueBuilder value) {
         value.entityId = id();
         value.logicalId = this.logicalId;
