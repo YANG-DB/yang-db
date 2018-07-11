@@ -3,7 +3,7 @@ package com.kayhut.fuse.assembly.knowledge.logical.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PovLogical extends LogicalItemBase {
+public class PovLogical extends LogicalElementBase {
     public PovLogical(String context, String category, Metadata metadata) {
         super(metadata);
         this.context = context;

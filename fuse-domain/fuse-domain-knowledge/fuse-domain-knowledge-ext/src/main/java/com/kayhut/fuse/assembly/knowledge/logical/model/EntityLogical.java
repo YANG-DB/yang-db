@@ -3,11 +3,10 @@ package com.kayhut.fuse.assembly.knowledge.logical.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class EntityLogical extends LogicalItemBase {
+public class EntityLogical extends LogicalElementBase {
     //region Constructors
     public EntityLogical(String id, String category, String title, List<String> nicknames, Metadata metadata) {
         super(metadata);

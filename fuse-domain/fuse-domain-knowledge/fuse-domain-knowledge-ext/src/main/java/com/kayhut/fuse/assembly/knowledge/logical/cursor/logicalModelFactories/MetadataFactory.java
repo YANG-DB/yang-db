@@ -9,25 +9,24 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
-class BaseElementFactory {
+class MetadataFactory {
     //region Constructors
 
-    BaseElementFactory() {
+    MetadataFactory() {
         this.dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 
     //endregion
 
-    LogicalItemBase.Metadata createMetadata(Vertex vertex) {
+    public LogicalElementBase.Metadata createMetadata(Vertex vertex) {
         ArrayList<String> authorizations = vertex.value(PhysicalElementProperties.AUTHORIZATION);
         // TODO: auth
 //        ArrayList<LogicalItemBase.Metadata.Authorization> logicalAuts = authorizations.stream().map(auth ->
 //                new LogicalItemBase.Metadata.Authorization(auth)).collect(Collectors.toList());
 
         try {
-            return new LogicalItemBase.Metadata(
+            return new LogicalElementBase.Metadata(
                     vertex.value(PhysicalElementProperties.CREATION_USER),
                     this.dateFormatter.parse(vertex.value(PhysicalElementProperties.CREATION_TIME)),
                     vertex.value(PhysicalElementProperties.LAST_UPDATED_USER),
@@ -39,8 +38,8 @@ class BaseElementFactory {
         }
         return null;
     }
+    //endregion
 
     //region Private
     private DateFormat dateFormatter;
-    //endregion
 }
