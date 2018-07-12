@@ -13,6 +13,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.properties.BasePropGroup;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.SchematicEProp;
@@ -27,6 +28,8 @@ import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
 import java.util.*;
+
+import static com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema.IndexingSchema.Type.*;
 
 /**
  * Created by roman.margolis on 07/03/2018.
@@ -100,28 +103,49 @@ public class LikeAnyConstraintTransformationAsgStrategy implements AsgStrategy ,
                                             EProp.of(eProp.geteNum(), eProp.getpType(), Constraint.of(ConstraintOp.like, value)),
                                             propertySchema.get()))));
 
-            Map<String, List<EPropGroup>> insetGroups = Stream.ofAll(wildcardRuleGroup.getGroups())
-                    .filter(group -> group.getProps().size() == 1)
-                    .filter(group -> group.getProps().get(0).getCon().getOp().equals(ConstraintOp.eq))
-                    .filter(group -> group.getProps().get(0) instanceof SchematicEProp)
-                    .groupBy(group -> group.getProps().get(0).getpType())
-                    .toJavaMap(grouping -> new Tuple2<>(grouping._1, grouping._2.toJavaList()));
+            List<String> ngramWords =
+                    Stream.ofAll(wildcardRuleGroup.getGroups())
+                            .flatMap(BasePropGroup::getProps)
+                            .flatMap(prop -> prop.getCon().getOp().equals(ConstraintOp.eq) ?
+                                    Stream.of(prop.getCon().getExpr().toString()) :
+                                    Stream.ofAll(LikeUtil.getWildcardNgrams(propertySchema.get(), prop.getCon().getExpr().toString())))
+                            .distinct()
+                            .toJavaList();
 
-            List<EProp> insetProps = Stream.ofAll(insetGroups.entrySet())
-                    .<EProp>map(entry -> new SchematicEProp(
+            Optional<EProp> ngramsOptimizationEprop =  propertySchema.get().getIndexingSchema(ngrams).isPresent() && !ngramWords.isEmpty()?
+                    Optional.of(new SchematicEProp(
                             0,
-                            entry.getKey(),
-                            ((SchematicEProp)entry.getValue().get(0).getProps().get(0)).getSchematicName(),
-                            Constraint.of(
-                                    ConstraintOp.inSet,
-                                    Stream.ofAll(entry.getValue()).map(group -> group.getProps().get(0).getCon().getExpr().toString()).toJavaList())))
-                    .toJavaList();
+                            eProp.getpType(),
+                            propertySchema.get().getIndexingSchema(ngrams).get().getName(),
+                            Constraint.of(ConstraintOp.inSet, ngramWords))) : Optional.empty();
 
-            Stream.ofAll(insetGroups.values()).flatMap(groups -> groups).forEach(group -> wildcardRuleGroup.getGroups().remove(group));
-            wildcardRuleGroup.getProps().addAll(insetProps);
+            List<EPropGroup> simpleWildcardGroups = propertySchema.get().getIndexingSchema(ngrams).isPresent() ?
+                    Stream.ofAll(wildcardRuleGroup.getGroups())
+                            .filter(group -> group.getProps().size() == 1)
+                            .filter(group -> group.getProps().get(0).getCon().getOp().equals(ConstraintOp.eq))
+                            .filter(group -> group.getProps().get(0) instanceof SchematicEProp)
+                            .filter(group -> ((SchematicEProp) group.getProps().get(0)).getSchematicName()
+                                    .equals(propertySchema.get().getIndexingSchema(ngrams).get().getName()))
+                            .toJavaList() : Collections.emptyList();
+
+            if (!simpleWildcardGroups.isEmpty()) {
+                wildcardRuleGroup.getProps().add(new SchematicEProp(
+                        0,
+                        eProp.getpType(),
+                        propertySchema.get().getIndexingSchema(ngrams).get().getName(),
+                        Constraint.of(
+                                ConstraintOp.inSet,
+                                Stream.ofAll(simpleWildcardGroups).map(group -> group.getProps().get(0).getCon().getExpr().toString()).toJavaList())));
+            }
+            simpleWildcardGroups.forEach(simpleWildcardGroup -> wildcardRuleGroup.getGroups().remove(simpleWildcardGroup));
 
             ePropGroupAsgEBase.geteBase().getProps().remove(eProp);
-            ePropGroupAsgEBase.geteBase().getGroups().add(wildcardRuleGroup);
+
+            ngramsOptimizationEprop.ifPresent(ngramsEprop -> ePropGroupAsgEBase.geteBase().getProps().add(ngramsEprop));
+
+            if (!wildcardRuleGroup.getGroups().isEmpty() || !wildcardRuleGroup.getProps().isEmpty()) {
+                ePropGroupAsgEBase.geteBase().getGroups().add(wildcardRuleGroup);
+            }
         }
     }
     //endregion

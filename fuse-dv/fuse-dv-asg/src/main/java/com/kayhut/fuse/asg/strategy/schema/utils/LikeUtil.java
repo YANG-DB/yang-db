@@ -83,13 +83,25 @@ public class LikeUtil {
     }
 
     public static Optional<EProp> getWildcardNgramsInsetProp(EProp eProp, GraphElementPropertySchema propertySchema) {
-        Optional<GraphElementPropertySchema.NgramsIndexingSchema> ngramsIndexingSchema = propertySchema.getIndexingSchema(ngrams);
-        if (!ngramsIndexingSchema.isPresent()) {
+        List<String> words = getWildcardNgrams(propertySchema, eProp.getCon().getExpr().toString());
+        if (words.isEmpty()) {
             return Optional.empty();
         }
 
-        List<String> words =
-                Stream.of(eProp.getCon().getExpr().toString().replace("*", " ").split(" "))
+        return Optional.of(new SchematicEProp(
+                0,
+                eProp.getpType(),
+                propertySchema.getIndexingSchema(ngrams).get().getName(),
+                Constraint.of(ConstraintOp.eq, words)));
+    }
+
+    public static List<String> getWildcardNgrams(GraphElementPropertySchema propertySchema, String wildcardExpression) {
+        Optional<GraphElementPropertySchema.NgramsIndexingSchema> ngramsIndexingSchema = propertySchema.getIndexingSchema(ngrams);
+        if (!ngramsIndexingSchema.isPresent()) {
+            return Collections.emptyList();
+        }
+
+        return Stream.of(wildcardExpression.replace("*", " ").split(" "))
                         .map(String::trim)
                         .filter(word -> word.length() > 0)
                         .flatMap(word -> word.length() > ngramsIndexingSchema.get().getMaxSize() ?
@@ -97,12 +109,6 @@ public class LikeUtil {
                                         word.substring(word.length() - ngramsIndexingSchema.get().getMaxSize() - 1, word.length() - 1)) :
                                 Stream.of(word))
                         .toJavaList();
-
-        return Optional.of(new SchematicEProp(
-                0,
-                eProp.getpType(),
-                ngramsIndexingSchema.get().getName(),
-                Constraint.of(ConstraintOp.eq, words)));
     }
 
     private static boolean ngramsApplicable(GraphElementPropertySchema propertySchema, String wildcardPart) {

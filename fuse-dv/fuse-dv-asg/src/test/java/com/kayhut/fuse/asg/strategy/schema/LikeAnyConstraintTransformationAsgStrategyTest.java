@@ -97,14 +97,14 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
+                                Collections.emptyList(),
                                 Collections.singletonList(
-                                        new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))
-                                ),
-                                Collections.emptyList())));
+                                        new EPropGroup(3, new SchematicEProp(0, "name", "name.keyword", Constraint.of(ConstraintOp.eq, "Sherley")))))));
 
         Assert.assertEquals(expected, actual);
     }
@@ -123,7 +123,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
@@ -149,7 +150,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Arrays.asList("She", "rley")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
@@ -177,7 +179,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
@@ -204,7 +207,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Arrays.asList("She", "rley")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
@@ -232,13 +236,13 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
                                 Collections.singletonList(
-                                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))
-                                ),
+                                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))),
                                 Collections.emptyList())));
 
         Assert.assertEquals(expected, actual);
@@ -258,7 +262,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Arrays.asList("She", "rley")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
@@ -286,7 +291,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
@@ -313,7 +319,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Arrays.asList("She", "rley")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
@@ -341,7 +348,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Collections.singletonList("Sherley")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
@@ -382,7 +390,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Arrays.asList("She", "rley")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
@@ -409,7 +418,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Arrays.asList("Sherley", "Windsor")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
@@ -433,7 +443,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Arrays.asList("Sherley", "Windsor")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
@@ -457,7 +468,8 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
 
         EPropGroup expected = new EPropGroup(3,
                 QuantType.all,
-                Collections.emptyList(),
+                Collections.singletonList(
+                        new SchematicEProp(0, "name", "name.ngrams", Constraint.of(ConstraintOp.inSet, Arrays.asList("Sherley", "Windsor")))),
                 Collections.singletonList(
                         new EPropGroup(3,
                                 QuantType.some,
