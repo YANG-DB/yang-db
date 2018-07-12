@@ -2,7 +2,7 @@ package com.kayhut.fuse.assembly.knowledge.logical.cursor;
 
 import com.kayhut.fuse.assembly.knowledge.consts.ETypes;
 import com.kayhut.fuse.assembly.knowledge.logical.cursor.logicalModelFactories.LogicalElementFactory;
-import com.kayhut.fuse.assembly.knowledge.logical.cursor.modelAdders.LogicalModelAdderProvider;
+import com.kayhut.fuse.assembly.knowledge.logical.cursor.modelSubResourceAdders.LogicalModelAdderProvider;
 import com.kayhut.fuse.assembly.knowledge.logical.model.ElementBaseLogical;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;

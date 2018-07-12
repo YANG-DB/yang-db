@@ -79,7 +79,6 @@ public class KnowledgeSimpleLogicalModelEntityTests {
         // Based on the knowledge ontology build the V1 query
         Query query = start()
                 .withEntity(e1.getETag())
-                .withValue("evalue")
                 .withRef(ref.getETag())
                 .withGlobalEntityValues(global.getETag())
                 .build();
