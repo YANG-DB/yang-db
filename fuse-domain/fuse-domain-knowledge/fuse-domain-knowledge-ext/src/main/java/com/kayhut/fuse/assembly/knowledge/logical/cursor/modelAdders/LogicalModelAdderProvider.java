@@ -12,7 +12,7 @@ public class LogicalModelAdderProvider {
         logicalModelAdders.put(String.format("%s.%s", ETypes.LOGICAL_ENTITY, ETypes.ENTITY),
                 new LogicalModelEntityPovAdder());
         logicalModelAdders.put(String.format("%s.%s", ETypes.ENTITY, ETypes.ENTITY_VALUE),
-                new LogicalModelEntityPovAdder());
+                new LogicalModelEntityEValueAdder());
         logicalModelAdders.put(String.format("%s.%s", ETypes.ENTITY, ETypes.REFERENCE),
                 new LogicalModelPovReferenceAdder());
     }

@@ -3,12 +3,14 @@ package com.kayhut.fuse.assembly.knowledge.logical.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class GlobalEntityLogical extends ElementBaseLogical {
     //region Constructors
-    public GlobalEntityLogical(String id, String category, String title, List<String> nicknames, Metadata metadata) {
+    public GlobalEntityLogical(String id, String category, String title, Set<String> nicknames, Metadata metadata) {
         super(metadata);
         this.id = id;
         this.category = category;
@@ -19,6 +21,7 @@ public class GlobalEntityLogical extends ElementBaseLogical {
     public GlobalEntityLogical(String id, String category, Metadata metadata) {
         super(metadata);
         this.id = id;
+        this.category = category;
     }
 
     public GlobalEntityLogical(String id) {
@@ -53,11 +56,11 @@ public class GlobalEntityLogical extends ElementBaseLogical {
         this.title = title;
     }
 
-    public List<String> getNicknames() {
+    public Set<String> getNicknames() {
         return nicknames;
     }
 
-    public void setNicknames(List<String> nicknames) {
+    public void setNicknames(HashSet<String> nicknames) {
         this.nicknames = nicknames;
     }
 
@@ -75,7 +78,7 @@ public class GlobalEntityLogical extends ElementBaseLogical {
     private String id;
     private String category;
     private String title;
-    private List<String> nicknames;
+    private Set<String> nicknames = new HashSet<>();
     private List<PovLogical> povs = new ArrayList<>();
     //endregion
 }

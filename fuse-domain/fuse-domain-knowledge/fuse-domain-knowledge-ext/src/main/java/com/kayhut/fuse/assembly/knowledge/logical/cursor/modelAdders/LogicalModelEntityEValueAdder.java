@@ -1,17 +1,27 @@
 package com.kayhut.fuse.assembly.knowledge.logical.cursor.modelAdders;
-import com.kayhut.fuse.assembly.knowledge.logical.model.GlobalEntityLogical;
-import com.kayhut.fuse.assembly.knowledge.logical.model.ElementBaseLogical;
-import com.kayhut.fuse.assembly.knowledge.logical.model.PovLogical;
+
+import com.kayhut.fuse.assembly.knowledge.consts.physicalElementProperties.PhysicalEntityProperties;
+import com.kayhut.fuse.assembly.knowledge.logical.model.*;
+
+import java.util.Map;
 
 
 public class LogicalModelEntityEValueAdder implements LogicalModelAdder {
     @Override
     public void addChild(ElementBaseLogical parent, ElementBaseLogical child) {
-        // TODO
+        if (parent instanceof GlobalEntityLogical) {
+            GlobalEntityLogical entity = (GlobalEntityLogical) parent;
+            FieldLogical field = (FieldLogical) child;
+            Map.Entry<String, ValueLogical> valueEntry = field.getValues().entrySet().iterator().next();
+            String valueContent = valueEntry.getValue().getContent();
+            if (field.getId().equals(PhysicalEntityProperties.TITLE)) {
+                entity.setTitle(valueContent);
+            } else {
+                entity.getNicknames().add(valueContent);
+            }
+        }
+        else{
 
-        GlobalEntityLogical globalEntityLogical = (GlobalEntityLogical)parent;
-        PovLogical povLogical = (PovLogical)child;
-
-        globalEntityLogical.getPovs().add(povLogical);
+        }
     }
 }

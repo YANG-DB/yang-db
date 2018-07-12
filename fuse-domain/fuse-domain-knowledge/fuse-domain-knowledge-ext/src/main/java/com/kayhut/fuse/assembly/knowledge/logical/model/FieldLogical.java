@@ -66,7 +66,7 @@ public class FieldLogical extends ElementBaseLogical {
     private String id;
     private String type;
     private String bdt;
-    private HashMap<String, ValueLogical> values;
+    private HashMap<String, ValueLogical> values = new HashMap<>();
 
 
 
