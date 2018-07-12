@@ -25,7 +25,7 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder._ref;
 import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
 
-//@Ignore
+@Ignore
 public class KnowledgeSimpleLogicalModelEntityTests {
     static KnowledgeWriterContext ctx;
 

@@ -6,7 +6,10 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
 import javaslang.collection.Stream;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +31,7 @@ public class KnowledgeSimpleEntityTests {
 
     @BeforeClass
     public static void setup() throws Exception {
+        Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
@@ -55,7 +59,7 @@ public class KnowledgeSimpleEntityTests {
                 .withAssignment(Assignment.Builder.instance().withEntity(e1.toEntity()).build()).build();
 
         // Check if expected and actual are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, false);
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, false,true);
     }
 
     @Test
@@ -90,8 +94,9 @@ public class KnowledgeSimpleEntityTests {
                         .build()).build();
 
         // Check if expected and actual are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true);
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true,false);
     }
+
     @Test
     public void testInsertOneSimpleEntityWithValues() throws IOException, InterruptedException {
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
@@ -150,7 +155,7 @@ public class KnowledgeSimpleEntityTests {
         Assert.assertEquals(1, pageData.getSize());
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
         Assert.assertEquals(3, ((AssignmentsQueryResult) pageData).getAssignments().get(0).getEntities().size());
-        Assert.assertEquals(4, ((AssignmentsQueryResult) pageData).getAssignments().get(0).getRelationships().size());
+        Assert.assertEquals(3, ((AssignmentsQueryResult) pageData).getAssignments().get(0).getRelationships().size());
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
