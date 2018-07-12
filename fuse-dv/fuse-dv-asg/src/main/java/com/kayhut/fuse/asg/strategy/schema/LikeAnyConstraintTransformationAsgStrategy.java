@@ -89,7 +89,7 @@ public class LikeAnyConstraintTransformationAsgStrategy implements AsgStrategy ,
                 continue;
             }
 
-            EPropGroup newEpropGroup = new EPropGroup(
+            EPropGroup wildcardRuleGroup = new EPropGroup(
                     eProp.geteNum(),
                     QuantType.some,
                     Collections.emptyList(),
@@ -100,7 +100,7 @@ public class LikeAnyConstraintTransformationAsgStrategy implements AsgStrategy ,
                                             EProp.of(eProp.geteNum(), eProp.getpType(), Constraint.of(ConstraintOp.like, value)),
                                             propertySchema.get()))));
 
-            Map<String, List<EPropGroup>> insetGroups = Stream.ofAll(newEpropGroup.getGroups())
+            Map<String, List<EPropGroup>> insetGroups = Stream.ofAll(wildcardRuleGroup.getGroups())
                     .filter(group -> group.getProps().size() == 1)
                     .filter(group -> group.getProps().get(0).getCon().getOp().equals(ConstraintOp.eq))
                     .filter(group -> group.getProps().get(0) instanceof SchematicEProp)
@@ -117,11 +117,11 @@ public class LikeAnyConstraintTransformationAsgStrategy implements AsgStrategy ,
                                     Stream.ofAll(entry.getValue()).map(group -> group.getProps().get(0).getCon().getExpr().toString()).toJavaList())))
                     .toJavaList();
 
-            Stream.ofAll(insetGroups.values()).flatMap(groups -> groups).forEach(group -> newEpropGroup.getGroups().remove(group));
-            newEpropGroup.getProps().addAll(insetProps);
+            Stream.ofAll(insetGroups.values()).flatMap(groups -> groups).forEach(group -> wildcardRuleGroup.getGroups().remove(group));
+            wildcardRuleGroup.getProps().addAll(insetProps);
 
             ePropGroupAsgEBase.geteBase().getProps().remove(eProp);
-            ePropGroupAsgEBase.geteBase().getGroups().add(newEpropGroup);
+            ePropGroupAsgEBase.geteBase().getGroups().add(wildcardRuleGroup);
         }
     }
     //endregion
