@@ -52,6 +52,13 @@ public class KnowledgeSimpleLogicalModelEntityTests {
         final EntityBuilder e1 = _e(global.logicalId).cat("student").ctx("context1");
         e1.global(global);
 
+        ValueBuilder v3 = _v(ctx.nextValueId()).field("job").value("blabla").ctx("context1").bdt("adf");
+        ValueBuilder v4 = _v(ctx.nextValueId()).field("job").value("aaa").ctx("context1").bdt("qwer");
+        ValueBuilder v5 = _v(ctx.nextValueId()).field("some field").value("jjjh").ctx("context1").bdt("qwer");
+        e1.value(v3);
+        e1.value(v4);
+        e1.value(v5);
+
         // Create ref
         RefBuilder ref = _ref(ctx.nextRefId())
                 .sys("sys")
@@ -59,6 +66,8 @@ public class KnowledgeSimpleLogicalModelEntityTests {
                 .url("http://someHosting/monti");
         //after ref is rendered add as a sub resource to the entity
         e1.reference(ref);
+
+
 
         //verify data inserted correctly
         Assert.assertEquals(2, commit(ctx, INDEX, global,e1));
@@ -70,11 +79,13 @@ public class KnowledgeSimpleLogicalModelEntityTests {
         // Based on the knowledge ontology build the V1 query
         Query query = start()
                 .withEntity(e1.getETag())
+                .withValue("evalue")
                 .withRef(ref.getETag())
                 .withGlobalEntityValues(global.getETag())
                 .build();
 
         // Read Entity (with V1 query)
+//        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query,
                 new CreateLogicalGraphHierarchyCursorRequest(Arrays.asList(EntityBuilder.type)));
 

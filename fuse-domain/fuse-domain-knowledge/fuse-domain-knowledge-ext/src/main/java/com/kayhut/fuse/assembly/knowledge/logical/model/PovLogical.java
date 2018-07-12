@@ -12,7 +12,7 @@ public class PovLogical extends ElementBaseLogical {
     }
 
     //region Properties
-    public HashMap<String, ReferenceLogical>  getReferences() {
+    public HashMap<String, ReferenceLogical> getReferences() {
         return references;
     }
 
@@ -36,12 +36,37 @@ public class PovLogical extends ElementBaseLogical {
     public void setCategory(String category) {
         this.category = category;
     }
+
     public HashMap<String, FieldLogical> getFields() {
         return fields;
     }
 
     public void setFields(HashMap<String, FieldLogical> fields) {
         this.fields = fields;
+    }
+
+    public HashMap<String, RelationLogical> getRelations() {
+        return relations;
+    }
+
+    public void setRelations(HashMap<String, RelationLogical> relations) {
+        this.relations = relations;
+    }
+
+    public HashMap<String, InsightLogical> getInsights() {
+        return insights;
+    }
+
+    public void setInsights(HashMap<String, InsightLogical> insights) {
+        this.insights = insights;
+    }
+
+    public HashMap<String, FileLogical> getFiles() {
+        return files;
+    }
+
+    public void setFiles(HashMap<String, FileLogical> files) {
+        this.files = files;
     }
 
     //region Fields
@@ -51,6 +76,15 @@ public class PovLogical extends ElementBaseLogical {
     private HashMap<String, ReferenceLogical> references = new HashMap<>();
     // field id is key
     private HashMap<String, FieldLogical> fields = new HashMap<>();
+    // relation id is key
+    private HashMap<String, RelationLogical> relations = new HashMap<>();
+    // insight id is key
+    private HashMap<String, InsightLogical> insights = new HashMap<>();
+    // file id is key
+    private HashMap<String, FileLogical> files = new HashMap<>();
+
+
+
 
     //endregion
 }
