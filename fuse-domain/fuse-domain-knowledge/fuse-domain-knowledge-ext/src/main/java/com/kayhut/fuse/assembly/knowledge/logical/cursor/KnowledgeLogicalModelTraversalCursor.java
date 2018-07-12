@@ -1,9 +1,9 @@
 package com.kayhut.fuse.assembly.knowledge.logical.cursor;
 
-import com.kayhut.fuse.assembly.knowledge.cursor.KnowledgeGraphHierarchyTraversalCursor;
+import com.kayhut.fuse.assembly.knowledge.consts.ETypes;
 import com.kayhut.fuse.assembly.knowledge.logical.cursor.logicalModelFactories.LogicalElementFactory;
 import com.kayhut.fuse.assembly.knowledge.logical.cursor.modelAdders.LogicalModelAdderProvider;
-import com.kayhut.fuse.assembly.knowledge.logical.model.LogicalItemBase;
+import com.kayhut.fuse.assembly.knowledge.logical.model.ElementBaseLogical;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
@@ -17,14 +17,12 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
-import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateLogicalGraphHierarchyCursorRequest;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
@@ -36,8 +34,8 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
         @Override
         public Cursor createCursor(Context context) {
             return new KnowledgeLogicalModelTraversalCursor(
-                    (TraversalCursorContext)context,
-                    ((CreateLogicalGraphHierarchyCursorRequest)context.getCursorRequest()).getCountTags());
+                    (TraversalCursorContext) context,
+                    ((CreateLogicalGraphHierarchyCursorRequest) context.getCursorRequest()).getCountTags());
         }
         //endregion
     }
@@ -91,7 +89,7 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
     //region Cursor Implementation
     @Override
     public QueryResultBase getNextResults(int numResults) {
-        Map<String, LogicalItemBase> logicalItems = new HashMap<>();
+        Map<String, ElementBaseLogical> logicalItems = new HashMap<>();
         LogicalElementFactory logicalElementFactory = new LogicalElementFactory();
         LogicalModelAdderProvider logicalModelAdderProvider = new LogicalModelAdderProvider();
         try {
@@ -101,128 +99,61 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
 
                 // First vertex not always connected to the closed edge.
                 Vertex vertex = (Vertex) pathObjects.get(0);
-                logicalItems.put(vertex.id().toString(), logicalElementFactory.createLogicalItem(vertex));
+                addVertexToLogicalItems(logicalItems, logicalElementFactory, vertex);
                 int objectIndex = 1;
                 while (objectIndex < path.objects().size()) {
                     // Edge + next vertex
                     vertex = (Vertex) pathObjects.get(objectIndex + 1);
-                    logicalItems.put(vertex.id().toString(), logicalElementFactory.createLogicalItem(vertex));
+                    addVertexToLogicalItems(logicalItems, logicalElementFactory, vertex);
                     Edge edge = (Edge) pathObjects.get(objectIndex);
                     Vertex child = edge.inVertex();
                     Vertex parent = edge.outVertex();
-                    logicalModelAdderProvider.addChild(logicalItems.get(parent.id().toString()), logicalItems.get(child.id().toString()), parent.label(), child.label());
-//
-//                    if (objectIndex % 2 == 0) {
-//                        // Vertex
-////                        Vertex vertex = (Vertex) pathObjects.get(objectIndex);
-////                        LogicalItemBase logicalElement = logicalItems.get((String) vertex.id());
-////                        if (logicalElement == null) {
-////                            logicalItems.put((String) vertex.id(), logicalElementFactory.createLogicalItem(vertex));
-////                        } else {
-////                            logicalElementFactory.putLogicalItem(vertex, logicalElement);
-////                        }
-//                    } else {
-//                        // Edge
-//                        // If out or in not exist - create
-//                        // then use Adder provider!
-//                        Edge edge = (Edge) pathObjects.get(objectIndex);
-//                        Vertex inVertex = edge.inVertex();
-//                        Vertex outVertex = edge.outVertex();
-//                        if (logicalItems.get((String) inVertex.id()) == null) {
-//                            logicalItems.put((String) inVertex.id(), logicalElementFactory.createLogicalItem(inVertex));
-//                        }
-//                        if (logicalItems.get((String) outVertex.id()) == null) {
-//                            logicalItems.put((String) outVertex.id(), logicalElementFactory.createLogicalItem(outVertex));
-//                        }
-//                        // logicalModelAdderProvider.addChild();
-//                    }
+                    logicalModelAdderProvider.addChild(
+                            getLogicalElement(logicalItems, parent),
+                            getLogicalElement(logicalItems, child),
+                            parent.label(),
+                            child.label());
                     objectIndex += 2;
                 }
             }
         } catch (NoSuchElementException ex) {
 
         }
-
-
-        Map<String, Map<Vertex, Set<String>>> idVertexEtagsMap = new HashMap<>();
-        Map<String, Tuple2<Edge, String>> idEdgeEtagMap = new HashMap<>();
-
-        Ontology.Accessor ont = new Ontology.Accessor(this.context.getOntology());
-        //  LogicalModelAdderProvider logicalModelAdderProvider = new LogicalModelAdderProvider();
-
-
-        try {
-            while (this.distinctIds.size() < numResults) {
-                Path path = context.getTraversal().next();
-                List<Object> pathObjects = path.objects();
-                List<Set<String>> pathLabels = path.labels();
-                Set<String> addedIds = new HashSet<>();
-                List<Float> eValueScores = new ArrayList<>();
-                for (int objectIndex = 0; objectIndex < path.objects().size(); objectIndex++) {
-                    Element element = (Element) pathObjects.get(objectIndex);
-                    String pathLabel = pathLabels.get(objectIndex).iterator().next();
-
-                    if (this.countTags.contains(pathLabel)) {
-                        this.distinctIds.add(element.id().toString());
-                        addedIds.add(element.id().toString());
-                    }
-                    if (element.label().equals("Evalue")) {
-                        org.apache.tinkerpop.gremlin.structure.Property<Object> score = element.property("score");
-                        if (score.isPresent()) {
-                            eValueScores.add((Float) score.value());
-                        }
-                    }
-
-                    if (Vertex.class.isAssignableFrom(element.getClass()) && this.includeEntities) {
-                        Map<Vertex, Set<String>> vertexEtagsMap = idVertexEtagsMap.computeIfAbsent(element.id().toString(), id -> new HashMap<>());
-                        vertexEtagsMap.computeIfAbsent((Vertex) element, vertex -> new HashSet<>()).add(pathLabel);
-                    } else if (Edge.class.isAssignableFrom(element.getClass()) && this.includeRelationships) {
-                        idEdgeEtagMap.computeIfAbsent(element.id().toString(), id -> new Tuple2<>((Edge) element, pathLabel));
-                    }
-                }
-
-                if (eValueScores.size() > 0) {
-                    Float score = Stream.ofAll(eValueScores).max().get();
-                    addedIds.forEach(id -> {
-                        this.idsScore.compute(id, (k, v) -> v == null ? score : Math.max(score, v));
-                    });
-                }
-
-
-            }
-        } catch (NoSuchElementException ex) {
-
-        }
-
-        Assignment.Builder builder = Assignment.Builder.instance();
-
-
-        for (Map.Entry<String, Map<Vertex, Set<String>>> idVertexEtagsEntry : idVertexEtagsMap.entrySet()) {
-            Vertex mergedVertex = mergeVertices(Stream.ofAll(idVertexEtagsEntry.getValue().keySet()).toJavaList());
-            if (this.idsScore.containsKey(mergedVertex.id())) {
-                mergedVertex.property("score", this.idsScore.get(mergedVertex.id()));
-            }
-            Set<String> etags = Stream.ofAll(idVertexEtagsEntry.getValue().values()).flatMap(etags1 -> etags1).toJavaSet();
-            builder.withEntity(toEntity(mergedVertex, etags));
-        }
-
-
-        for (Map.Entry<String, Tuple2<Edge, String>> idEdgeEtagEntry : idEdgeEtagMap.entrySet()) {
-            Tuple3<EEntityBase, Rel, EEntityBase> relTuple = this.eRels.get(idEdgeEtagEntry.getValue()._2());
-            builder.withRelationship(toRelationship(
-                    idEdgeEtagEntry.getValue()._1(),
-                    relTuple._1(),
-                    relTuple._2(),
-                    relTuple._3()));
-        }
-
-
-        Assignment assignment = builder.build();
-        return AssignmentsQueryResult.Builder.instance().withAssignment(assignment).build();
+        // TODO : return logical result
+        return null;
     }
     //endregion
 
     //region Private Methods
+
+    private ElementBaseLogical getLogicalElement(Map<String, ElementBaseLogical> logicalItems, Vertex vertex){
+        if(vertex.label().equals(ETypes.LOGICAL_ENTITY)){
+            return logicalItems.get(vertex.id().toString() + ".global");
+        }
+        return logicalItems.get(vertex.id().toString());
+    }
+
+    private void addVertexToLogicalItems(Map<String, ElementBaseLogical> logicalItems, LogicalElementFactory logicalElementFactory, Vertex vertex) {
+        String id = vertex.id().toString();
+        // Global entity special treatment
+        String globalEntitySuffix = ".global";
+        if (vertex.label().equals(ETypes.LOGICAL_ENTITY)) {
+            id += globalEntitySuffix;
+        }
+
+        if(!logicalItems.containsKey(id)){
+            logicalItems.put(id, logicalElementFactory.createLogicalItem(vertex));
+        }
+        else{
+            // On global entity, if already exist, should merge vertexes
+            // Also, on entity value - adding value to an existing field
+            if((id.contains(globalEntitySuffix) || vertex.label().equals(ETypes.ENTITY_VALUE))){
+                logicalItems.put(id, logicalElementFactory.mergeLogicalItemWithVertex(vertex, logicalItems.get(id)));
+            }
+        }
+    }
+
+
     private Entity toEntity(Vertex vertex, Set<String> eTags) {
         String eType = vertex.label();
         List<Property> properties = Stream.ofAll(vertex::properties)

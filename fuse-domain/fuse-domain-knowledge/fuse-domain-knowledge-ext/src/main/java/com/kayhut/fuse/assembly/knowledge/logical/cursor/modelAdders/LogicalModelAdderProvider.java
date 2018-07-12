@@ -1,9 +1,7 @@
 package com.kayhut.fuse.assembly.knowledge.logical.cursor.modelAdders;
 
 import com.kayhut.fuse.assembly.knowledge.consts.ETypes;
-import com.kayhut.fuse.assembly.knowledge.logical.model.LogicalItemBase;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
+import com.kayhut.fuse.assembly.knowledge.logical.model.ElementBaseLogical;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +10,8 @@ public class LogicalModelAdderProvider {
     public LogicalModelAdderProvider() {
         this.logicalModelAdders = new HashMap<>();
         logicalModelAdders.put(String.format("%s.%s", ETypes.LOGICAL_ENTITY, ETypes.ENTITY),
+                new LogicalModelEntityPovAdder());
+        logicalModelAdders.put(String.format("%s.%s", ETypes.ENTITY, ETypes.ENTITY_VALUE),
                 new LogicalModelEntityPovAdder());
         logicalModelAdders.put(String.format("%s.%s", ETypes.ENTITY, ETypes.REFERENCE),
                 new LogicalModelPovReferenceAdder());
@@ -26,7 +26,7 @@ public class LogicalModelAdderProvider {
         this.logicalModelAdders = logicalModelAdders;
     }
 
-    public void addChild(LogicalItemBase parentItem, LogicalItemBase childItem, String parentType, String childType) {
+    public void addChild(ElementBaseLogical parentItem, ElementBaseLogical childItem, String parentType, String childType) {
         String logicalAdderKey = String.format("%s.%s", parentType, childType);
         LogicalModelAdder logicalAdder = this.logicalModelAdders.get(logicalAdderKey);
         logicalAdder.addChild(parentItem, childItem);

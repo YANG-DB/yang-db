@@ -7,4 +7,5 @@ public final class ETypes {
     public static final String LOGICAL_ENTITY = "LogicalEntity";
     public static final String REFERENCE = "Reference";
     public static final String ENTITY = "Entity";
+    public static final String ENTITY_VALUE = "Evalue";
 }

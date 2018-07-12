@@ -6,6 +6,7 @@ import com.kayhut.fuse.asg.strategy.RuleBoostProvider;
 import com.kayhut.fuse.asg.strategy.schema.LikeAnyConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.asg.strategy.schema.LikeConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
@@ -14,21 +15,24 @@ import javaslang.collection.HashSet;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 
+import java.util.Arrays;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<EPropGroup> {
-    public static HashSet<String> fieldNames = HashSet.of("title").add("nicknames");
+    public static Set<String> fieldNames = Stream.of("title", "nicknames").toJavaSet();
 
+    //region Constructors
     public KnowledgeLikeCombinerStrategy(RuleBoostProvider boostProvider, OntologyProvider ontologyProvider, GraphElementSchemaProviderFactory schemaProviderFactory) {
-        super(List.of(
-                new Tuple2<Predicate<EPropGroup>, AsgElementStrategy<EPropGroup>>(KnowledgeLikeCombinerStrategy::ePropGroupContainsLikeField, new LikeConstraintTransformationAsgStrategy(ontologyProvider, schemaProviderFactory)),
-                new Tuple2<Predicate<EPropGroup>, AsgElementStrategy<EPropGroup>>(KnowledgeLikeCombinerStrategy::ePropGroupContainsLikeFieldOnSpecialFields, new KnowledgeRankingAsgStrategy(boostProvider, ontologyProvider, schemaProviderFactory)),
-                new Tuple2<Predicate<EPropGroup>, AsgElementStrategy<EPropGroup>>(KnowledgeLikeCombinerStrategy::ePropGroupContainsLikeAnyField, new LikeAnyConstraintTransformationAsgStrategy(ontologyProvider, schemaProviderFactory))
-                ).toJavaList(),
-                (query) -> com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.elements(query, EPropGroup.class));
+        super(Arrays.asList(
+                new Routing<>(KnowledgeLikeCombinerStrategy::ePropGroupContainsLikeField, new LikeConstraintTransformationAsgStrategy(ontologyProvider, schemaProviderFactory)),
+                new Routing<>(KnowledgeLikeCombinerStrategy::ePropGroupContainsLikeFieldOnSpecialFields, new KnowledgeRankingAsgStrategy(boostProvider, ontologyProvider, schemaProviderFactory)),
+                new Routing<>(KnowledgeLikeCombinerStrategy::ePropGroupContainsLikeAnyField, new LikeAnyConstraintTransformationAsgStrategy(ontologyProvider, schemaProviderFactory))),
+                (query) -> AsgQueryUtil.elements(query, EPropGroup.class));
     }
+    //endregion
 
-
+    //Routing Predicates
     private static boolean ePropGroupContainsLikeAnyField(EPropGroup ePropGroup) {
 
         if( !Stream.ofAll(ePropGroup.getProps())
@@ -85,5 +89,5 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
 
         return false;
     }
-
+    //endregion
 }

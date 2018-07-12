@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public abstract class LogicalItemBase {
+public abstract class ElementBaseLogical {
     public static class Metadata {
         public static class Authorization {
             public Authorization(String authorization) {
@@ -14,6 +14,7 @@ public abstract class LogicalItemBase {
                 this.s = authParts[0];
                 this.s = authParts[1];
             }
+
             private String s;
             private String pp;
 
@@ -101,7 +102,7 @@ public abstract class LogicalItemBase {
 
     //region Constructors
 
-    public LogicalItemBase(Metadata metadata) {
+    public ElementBaseLogical(Metadata metadata) {
         this.metadata = metadata;
     }
 

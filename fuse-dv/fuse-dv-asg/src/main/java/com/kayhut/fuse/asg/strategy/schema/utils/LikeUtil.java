@@ -63,7 +63,7 @@ public class LikeUtil {
                         exactIndexingSchema.get().getName(),
                         Constraint.of(ConstraintOp.like, "*" + wildcardParts.get(wildcardParts.size() - 1))));
 
-            } else if (ngramsApplicable(eProp, propertySchema, wildcardPart)) {
+            } else if (ngramsApplicable(propertySchema, wildcardPart)) {
                 newEprops.add(new SchematicEProp(
                         0,
                         eProp.getpType(),
@@ -82,7 +82,36 @@ public class LikeUtil {
         return newEprops;
     }
 
-    private static boolean ngramsApplicable(EProp eProp, GraphElementPropertySchema propertySchema, String wildcardPart) {
+    public static Optional<EProp> getWildcardNgramsInsetProp(EProp eProp, GraphElementPropertySchema propertySchema) {
+        List<String> words = getWildcardNgrams(propertySchema, eProp.getCon().getExpr().toString());
+        if (words.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new SchematicEProp(
+                0,
+                eProp.getpType(),
+                propertySchema.getIndexingSchema(ngrams).get().getName(),
+                Constraint.of(ConstraintOp.eq, words)));
+    }
+
+    public static List<String> getWildcardNgrams(GraphElementPropertySchema propertySchema, String wildcardExpression) {
+        Optional<GraphElementPropertySchema.NgramsIndexingSchema> ngramsIndexingSchema = propertySchema.getIndexingSchema(ngrams);
+        if (!ngramsIndexingSchema.isPresent()) {
+            return Collections.emptyList();
+        }
+
+        return Stream.of(wildcardExpression.replace("*", " ").split(" "))
+                        .map(String::trim)
+                        .filter(word -> word.length() > 0)
+                        .flatMap(word -> word.length() > ngramsIndexingSchema.get().getMaxSize() ?
+                                Stream.of(word.substring(0, ngramsIndexingSchema.get().getMaxSize()),
+                                        word.substring(word.length() - ngramsIndexingSchema.get().getMaxSize() - 1, word.length() - 1)) :
+                                Stream.of(word))
+                        .toJavaList();
+    }
+
+    private static boolean ngramsApplicable(GraphElementPropertySchema propertySchema, String wildcardPart) {
         Optional<GraphElementPropertySchema.NgramsIndexingSchema> ngramsIndexingSchema = propertySchema.getIndexingSchema(ngrams);
 
         if (!wildcardPart.contains(" ") &&

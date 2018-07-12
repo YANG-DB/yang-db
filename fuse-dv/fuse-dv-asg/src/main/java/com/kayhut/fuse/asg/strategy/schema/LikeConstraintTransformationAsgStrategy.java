@@ -19,6 +19,7 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.SchematicEProp;
+import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
@@ -52,10 +53,7 @@ public class LikeConstraintTransformationAsgStrategy implements AsgStrategy, Asg
     }
     //endregion
 
-    //region Fields
-    private GraphElementSchemaProviderFactory schemaProviderFactory;
-    private OntologyProvider ontologyProvider;
-
+    //region AsgElementStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgEBase<EPropGroup> ePropGroupAsgEBase, AsgStrategyContext context) {
         Optional<Ontology> ontology = this.ontologyProvider.get(query.getOnt());
@@ -95,12 +93,35 @@ public class LikeConstraintTransformationAsgStrategy implements AsgStrategy, Asg
                 continue;
             }
 
-            Iterable<EProp> newEprops = LikeUtil.applyWildcardRules(eProp, propertySchema.get());
+            Iterable<EProp> wildcardRuleEprops = LikeUtil.applyWildcardRules(eProp, propertySchema.get());
+            List<EProp> ngramEprops = Stream.ofAll(wildcardRuleEprops)
+                    .filter(wildcardEprop -> wildcardEprop.getCon().getOp().equals(ConstraintOp.like))
+                    .map(wildcardEprop -> LikeUtil.getWildcardNgramsInsetProp(wildcardEprop, propertySchema.get()))
+                    .filter(Optional::isPresent)
+                    .map(ngramsEprop -> (SchematicEProp)ngramsEprop.get())
+                    .flatMap(ngramsEprop -> Stream.ofAll(CollectionUtil.listFromObjectValue(ngramsEprop.getCon().getExpr()))
+                            .map(word -> (EProp)new SchematicEProp(
+                                    0,
+                                    ngramsEprop.getpType(),
+                                    ngramsEprop.getSchematicName(),
+                                    Constraint.of(ConstraintOp.eq, word)
+                                    )))
+                    .appendAll(Stream.ofAll(wildcardRuleEprops)
+                        .filter(eprop -> eprop.getCon().getOp().equals(ConstraintOp.eq)))
+                    .toJavaList();
+
             ePropGroupAsgEBase.geteBase().getProps().remove(eProp);
-            ePropGroupAsgEBase.geteBase().getProps().addAll(Stream.ofAll(newEprops).toJavaList());
+            ePropGroupAsgEBase.geteBase().getProps().addAll(ngramEprops);
+            ePropGroupAsgEBase.geteBase().getProps().addAll(
+                    Stream.ofAll(wildcardRuleEprops)
+                            .filter(eprop -> eprop.getCon().getOp().equals(ConstraintOp.like))
+                            .toJavaList());
         }
-
-
     }
+    //endregion
+
+    //region Fields
+    private GraphElementSchemaProviderFactory schemaProviderFactory;
+    private OntologyProvider ontologyProvider;
     //endregion
 }

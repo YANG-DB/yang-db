@@ -72,18 +72,20 @@ public class KnowledgeReaderContext {
         }
 
         public KnowledgeQueryBuilder withGlobalEntityValues(String eTag, Filter... filters) {
-            return withGlobalEntity(eTag,
-                    filter().with(QuantType.all, "fieldId",Constraint.of(ConstraintOp.eq,"nicknames")),
-                    filter().with(QuantType.all, "fieldId",Constraint.of(ConstraintOp.eq,"title")));
+            return withGlobalEntity(eTag, Collections.EMPTY_LIST,
+                    Arrays.asList(filter().with(QuantType.all, "fieldId", Constraint.of(ConstraintOp.inSet,Arrays.asList("title", "nicknames")))));
         }
 
-        public KnowledgeQueryBuilder withGlobalEntity(String eTag, Filter... filters) {
+        public KnowledgeQueryBuilder withGlobalEntity(String eTag) {
+            return withGlobalEntity(eTag,Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+        }
+
+        public KnowledgeQueryBuilder withGlobalEntity(String eTag, List<Filter> entityFilter, List<Filter> entityValueFilter) {
             entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasEntity", L, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), LogicalEntity.type, LogicalEntity.type, nextEnum(), 0));
             this.elements.add(new Rel(currentEnum(), "hasEntity", R, null, nextEnum(), 0));
-            this.elements.add(new ETyped(currentEnum(), eTag, EntityBuilder.type, nextEnum(), 0));
-            nextEnum();//continue
+            this.elements.add(new ETyped(currentEnum(), eTag+"#"+currentEnum(), EntityBuilder.type, nextEnum(), 0));
             //add global quant
             quant();
             //add global rel + values
@@ -92,7 +94,13 @@ public class KnowledgeReaderContext {
             //adds to quant
             entityStack.peek().getNext().add(currentEnum());
             nextEnum();//continue
-            Arrays.stream(filters).forEach(filter -> {
+            entityStack.peek().getNext().add(currentEnum());
+            this.elements.add(new Rel(currentEnum(), "hasEvalue", R, null, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), eTag+"#"+currentEnum(), ValueBuilder.type, nextEnum(), 0));
+
+            quant();
+
+            entityValueFilter.forEach(filter -> {
                 //adds to quant
                 entityStack.peek().getNext().add(currentEnum());
                 //adds to element

@@ -781,13 +781,9 @@ public class KnowledgeM2AsgStrategyTest {
         EPropGroup ePropGroup = AsgQueryUtil.element$(transformedQuery, EPropGroup.class).geteBase();
 
         Assert.assertEquals(1, ePropGroup.getGroups().size());
-        Assert.assertEquals(1, ePropGroup.getGroups().get(0).getProps().size());
-        Assert.assertEquals(Constraint.of(eq, "cohen"), ePropGroup.getGroups().get(0).getProps().get(0).getCon());
-        Assert.assertEquals(1, ePropGroup.getGroups().get(0).getGroups().size());
+        Assert.assertEquals(2, ePropGroup.getGroups().get(0).getGroups().size());
+        Assert.assertEquals(Constraint.of(eq, "cohen"), ePropGroup.getGroups().get(0).getGroups().get(1).getProps().get(0).getCon());
         Assert.assertEquals(Constraint.of(like, "*moti"), ePropGroup.getGroups().get(0).getGroups().get(0).getProps().get(0).getCon());
-
-        int a = 5;
-
     }
     //endregion
 
