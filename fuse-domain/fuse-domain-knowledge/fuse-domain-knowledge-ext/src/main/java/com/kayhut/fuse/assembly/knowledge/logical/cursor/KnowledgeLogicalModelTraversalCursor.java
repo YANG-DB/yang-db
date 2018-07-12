@@ -3,7 +3,7 @@ package com.kayhut.fuse.assembly.knowledge.logical.cursor;
 import com.kayhut.fuse.assembly.knowledge.consts.ETypes;
 import com.kayhut.fuse.assembly.knowledge.logical.cursor.logicalModelFactories.LogicalElementFactory;
 import com.kayhut.fuse.assembly.knowledge.logical.cursor.modelAdders.LogicalModelAdderProvider;
-import com.kayhut.fuse.assembly.knowledge.logical.model.LogicalElementBase;
+import com.kayhut.fuse.assembly.knowledge.logical.model.ElementBaseLogical;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
@@ -89,7 +89,7 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
     //region Cursor Implementation
     @Override
     public QueryResultBase getNextResults(int numResults) {
-        Map<String, LogicalElementBase> logicalItems = new HashMap<>();
+        Map<String, ElementBaseLogical> logicalItems = new HashMap<>();
         LogicalElementFactory logicalElementFactory = new LogicalElementFactory();
         LogicalModelAdderProvider logicalModelAdderProvider = new LogicalModelAdderProvider();
         try {
@@ -126,25 +126,30 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
 
     //region Private Methods
 
-    private LogicalElementBase getLogicalElement(Map<String, LogicalElementBase> logicalItems, Vertex vertex){
+    private ElementBaseLogical getLogicalElement(Map<String, ElementBaseLogical> logicalItems, Vertex vertex){
         if(vertex.label().equals(ETypes.LOGICAL_ENTITY)){
             return logicalItems.get(vertex.id().toString() + ".global");
         }
         return logicalItems.get(vertex.id().toString());
     }
 
-    private void addVertexToLogicalItems(Map<String, LogicalElementBase> logicalItems, LogicalElementFactory logicalElementFactory, Vertex vertex) {
+    private void addVertexToLogicalItems(Map<String, ElementBaseLogical> logicalItems, LogicalElementFactory logicalElementFactory, Vertex vertex) {
         String id = vertex.id().toString();
         // Global entity special treatment
         String globalEntitySuffix = ".global";
         if (vertex.label().equals(ETypes.LOGICAL_ENTITY)) {
             id += globalEntitySuffix;
         }
-        if (id.contains(globalEntitySuffix) && logicalItems.containsKey(id)) {
-            logicalItems.put(id, logicalElementFactory.mergeLogicalItemWithVertex(vertex, logicalItems.get(id)));
-        }
-        else {
+
+        if(!logicalItems.containsKey(id)){
             logicalItems.put(id, logicalElementFactory.createLogicalItem(vertex));
+        }
+        else{
+            // On global entity, if already exist, should merge vertexes
+            // Also, on entity value - adding value to an existing field
+            if((id.contains(globalEntitySuffix) || vertex.label().equals(ETypes.ENTITY_VALUE))){
+                logicalItems.put(id, logicalElementFactory.mergeLogicalItemWithVertex(vertex, logicalItems.get(id)));
+            }
         }
     }
 

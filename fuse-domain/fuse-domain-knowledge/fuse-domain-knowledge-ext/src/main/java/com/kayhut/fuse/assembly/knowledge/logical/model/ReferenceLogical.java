@@ -1,6 +1,6 @@
 package com.kayhut.fuse.assembly.knowledge.logical.model;
 
-public class ReferenceLogical extends LogicalElementBase {
+public class ReferenceLogical extends ElementBaseLogical {
 
     //region Constructors
     public ReferenceLogical(String title, String url, String system, String content, Metadata metadata) {

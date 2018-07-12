@@ -1,9 +1,10 @@
 package com.kayhut.fuse.assembly.knowledge.logical.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class PovLogical extends LogicalElementBase {
+public class PovLogical extends ElementBaseLogical {
     public PovLogical(String context, String category, Metadata metadata) {
         super(metadata);
         this.context = context;
@@ -35,10 +36,19 @@ public class PovLogical extends LogicalElementBase {
     public void setCategory(String category) {
         this.category = category;
     }
+    public HashMap<String, FieldLogical> getFields() {
+        return fields;
+    }
+
+    public void setFields(HashMap<String, FieldLogical> fields) {
+        this.fields = fields;
+    }
 
     //region Fields
     private String context;
     private String category;
-    private List<ReferenceLogical> references= new ArrayList<>();
+    private List<ReferenceLogical> references = new ArrayList<>();
+    private HashMap<String, FieldLogical> fields = new HashMap<>();
+
     //endregion
 }

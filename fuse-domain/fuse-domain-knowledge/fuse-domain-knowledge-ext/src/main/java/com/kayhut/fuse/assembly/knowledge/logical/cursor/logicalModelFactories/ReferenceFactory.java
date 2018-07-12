@@ -1,7 +1,7 @@
 package com.kayhut.fuse.assembly.knowledge.logical.cursor.logicalModelFactories;
 
 import com.kayhut.fuse.assembly.knowledge.consts.physicalElementProperties.PhysicalReferenceProperties;
-import com.kayhut.fuse.assembly.knowledge.logical.model.LogicalElementBase;
+import com.kayhut.fuse.assembly.knowledge.logical.model.ElementBaseLogical;
 import com.kayhut.fuse.assembly.knowledge.logical.model.ReferenceLogical;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
@@ -15,7 +15,7 @@ public class ReferenceFactory extends ElementFactoryBase implements ElementFacto
     //endregion
 
     @Override
-    public LogicalElementBase createElement(Vertex vertex) {
+    public ElementBaseLogical createElement(Vertex vertex) {
         VertexProperty<String> titleProperty = vertex.property(PhysicalReferenceProperties.TITLE);
         VertexProperty<String> urlProperty = vertex.property(PhysicalReferenceProperties.URL);
         VertexProperty<String> systemProperty = vertex.property(PhysicalReferenceProperties.SYSTEM);
@@ -27,5 +27,10 @@ public class ReferenceFactory extends ElementFactoryBase implements ElementFacto
                 systemProperty == (VertexProperty.<String>empty()) ? null : systemProperty.value(),
                 contentProperty == (VertexProperty.<String>empty()) ? null : contentProperty.value(),
                 this.metadataFactory.createMetadata(vertex));
+    }
+
+    @Override
+    public ElementBaseLogical mergeElement(Vertex vertex, ElementBaseLogical logicalElement) {
+        return null;
     }
 }

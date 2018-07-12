@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class EntityLogical extends LogicalElementBase {
+public class GlobalEntityLogical extends ElementBaseLogical {
     //region Constructors
-    public EntityLogical(String id, String category, String title, List<String> nicknames, Metadata metadata) {
+    public GlobalEntityLogical(String id, String category, String title, List<String> nicknames, Metadata metadata) {
         super(metadata);
         this.id = id;
         this.category = category;
@@ -16,12 +16,12 @@ public class EntityLogical extends LogicalElementBase {
         this.nicknames = nicknames;
     }
 
-    public EntityLogical(String id, String category, Metadata metadata) {
+    public GlobalEntityLogical(String id, String category, Metadata metadata) {
         super(metadata);
         this.id = id;
     }
 
-    public EntityLogical(String id) {
+    public GlobalEntityLogical(String id) {
         super(null);
         this.id = id;
     }
