@@ -22,6 +22,7 @@ public class ReferenceFactory extends ElementFactoryBase implements ElementFacto
         VertexProperty<String> contentProperty = vertex.property(PhysicalReferenceProperties.CONTENT);
 
         return new ReferenceLogical(
+                vertex.id().toString(),
                 titleProperty == (VertexProperty.<String>empty()) ? null : titleProperty.value(),
                 urlProperty == (VertexProperty.<String>empty()) ? null : urlProperty.value(),
                 systemProperty == (VertexProperty.<String>empty()) ? null : systemProperty.value(),

@@ -3,8 +3,9 @@ package com.kayhut.fuse.assembly.knowledge.logical.model;
 public class ReferenceLogical extends ElementBaseLogical {
 
     //region Constructors
-    public ReferenceLogical(String title, String url, String system, String content, Metadata metadata) {
+    public ReferenceLogical(String id, String title, String url, String system, String content, Metadata metadata) {
         super(metadata);
+        this.id = id;
         this.title = title;
         this.url = url;
         this.system = system;
@@ -14,6 +15,14 @@ public class ReferenceLogical extends ElementBaseLogical {
     //endregion
 
     //region Properties
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
     public String getTitle() {
         return title;
     }
@@ -48,9 +57,11 @@ public class ReferenceLogical extends ElementBaseLogical {
     //endregion
 
     //region Fields
+    private String id;
     private String title;
     private String content;
     private String url;
     private String system;
+
     //endregion
 }

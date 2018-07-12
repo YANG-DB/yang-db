@@ -12,11 +12,11 @@ public class PovLogical extends ElementBaseLogical {
     }
 
     //region Properties
-    public List<ReferenceLogical> getReferences() {
+    public HashMap<String, ReferenceLogical>  getReferences() {
         return references;
     }
 
-    public void setReferences(List<ReferenceLogical> references) {
+    public void setReferences(HashMap<String, ReferenceLogical> references) {
         this.references = references;
     }
     //endregion
@@ -47,7 +47,9 @@ public class PovLogical extends ElementBaseLogical {
     //region Fields
     private String context;
     private String category;
-    private List<ReferenceLogical> references = new ArrayList<>();
+    // ref id is key
+    private HashMap<String, ReferenceLogical> references = new HashMap<>();
+    // field id is key
     private HashMap<String, FieldLogical> fields = new HashMap<>();
 
     //endregion

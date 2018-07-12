@@ -2,6 +2,8 @@ package com.kayhut.fuse.assembly.knowledge.logical.cursor.modelAdders;
 
 import com.kayhut.fuse.assembly.knowledge.logical.model.*;
 
+import java.util.HashMap;
+
 
 public class LogicalModelPovReferenceAdder implements LogicalModelAdder {
     @Override
@@ -9,7 +11,11 @@ public class LogicalModelPovReferenceAdder implements LogicalModelAdder {
         PovLogical povLogical = (PovLogical) parent;
         ReferenceLogical referenceLogical = (ReferenceLogical) child;
 
-        povLogical.getReferences().add(referenceLogical);
+        HashMap<String, ReferenceLogical> references = povLogical.getReferences();
+        String referenceId = referenceLogical.getId();
+        if(!references.containsKey(referenceId)){
+            references.put(referenceId, referenceLogical);
+        }
     }
 }
 

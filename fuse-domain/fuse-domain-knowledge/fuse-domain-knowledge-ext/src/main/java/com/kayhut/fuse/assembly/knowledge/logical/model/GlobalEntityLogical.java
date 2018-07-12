@@ -2,10 +2,7 @@ package com.kayhut.fuse.assembly.knowledge.logical.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class GlobalEntityLogical extends ElementBaseLogical {
@@ -64,11 +61,11 @@ public class GlobalEntityLogical extends ElementBaseLogical {
         this.nicknames = nicknames;
     }
 
-    public List<PovLogical> getPovs() {
+    public HashMap<String, PovLogical> getPovs() {
         return povs;
     }
 
-    public void setPovs(List<PovLogical> povs) {
+    public void setPovs(HashMap<String, PovLogical> povs) {
         this.povs = povs;
     }
 
@@ -79,6 +76,7 @@ public class GlobalEntityLogical extends ElementBaseLogical {
     private String category;
     private String title;
     private Set<String> nicknames = new HashSet<>();
-    private List<PovLogical> povs = new ArrayList<>();
+    // key is context
+    private HashMap<String, PovLogical> povs = new HashMap<>();
     //endregion
 }
