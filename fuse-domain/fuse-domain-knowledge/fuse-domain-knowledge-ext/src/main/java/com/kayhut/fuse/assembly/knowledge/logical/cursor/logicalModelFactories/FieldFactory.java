@@ -49,7 +49,7 @@ public class FieldFactory extends ElementFactoryBase implements ElementFactory {
     @Override
     public ElementBaseLogical mergeElement(Vertex vertex, ElementBaseLogical logicalElement) {
         ValueLogical valueLogical = new ValueLogical(vertex.id().toString(), getValueContent(vertex), this.metadataFactory.createMetadata(vertex));
-        ((FieldLogical) logicalElement).getValues().put(valueLogical.getId(), valueLogical);
+        ((FieldLogical) logicalElement).addValue(valueLogical);
         return null;
     }
 }

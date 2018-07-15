@@ -129,7 +129,7 @@ public class EntityBuilder extends EntityId {
         //add as entities sub resource
         subEntities.add(value.toEntity());
         //add a relation
-        hasFiles.add(Relationship.Builder.instance()
+        hasValues.add(Relationship.Builder.instance()
                 .withAgg(false)
                 .withDirectional(false)
                 .withEID1(id())

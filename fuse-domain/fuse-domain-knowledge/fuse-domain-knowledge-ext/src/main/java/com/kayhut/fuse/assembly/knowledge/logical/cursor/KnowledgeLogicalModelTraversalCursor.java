@@ -147,7 +147,7 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
         else{
             // On global entity, if already exist, should merge vertexes
             // Also, on entity value - adding value to an existing field
-            if((id.contains(globalEntitySuffix) || vertex.label().equals(ETypes.ENTITY_VALUE))){
+            if((id.contains(globalEntitySuffix))){
                 logicalItems.put(id, logicalElementFactory.mergeLogicalItemWithVertex(vertex, logicalItems.get(id)));
             }
         }

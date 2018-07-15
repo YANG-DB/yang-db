@@ -60,6 +60,12 @@ public class FieldLogical extends ElementBaseLogical {
     public void setValues(HashMap<String, ValueLogical> values) {
         this.values = values;
     }
+
+    public void addValue(ValueLogical valueToAdd){
+        if(!values.containsKey(valueToAdd.getId())){
+            values.put(valueToAdd.getId(), valueToAdd);
+        }
+    }
     //endregion
 
     //region Fields

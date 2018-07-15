@@ -69,6 +69,7 @@ public class PovLogical extends ElementBaseLogical {
         this.files = files;
     }
 
+
     //region Fields
     private String context;
     private String category;

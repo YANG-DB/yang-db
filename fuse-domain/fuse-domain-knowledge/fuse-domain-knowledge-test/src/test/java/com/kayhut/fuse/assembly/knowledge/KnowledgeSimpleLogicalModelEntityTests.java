@@ -71,6 +71,7 @@ public class KnowledgeSimpleLogicalModelEntityTests {
 
         //verify data inserted correctly
         Assert.assertEquals(2, commit(ctx, INDEX, global,e1));
+        Assert.assertEquals(3, commit(ctx, INDEX, v3,v4,v5));
         Assert.assertEquals(2, commit(ctx, INDEX, v1,v2));
         Assert.assertEquals(1, commit(ctx, REF_INDEX, ref));
 
@@ -79,6 +80,7 @@ public class KnowledgeSimpleLogicalModelEntityTests {
         // Based on the knowledge ontology build the V1 query
         Query query = start()
                 .withEntity(e1.getETag())
+                .withValue(v3.getETag())
                 .withRef(ref.getETag())
                 .withGlobalEntityValues(global.getETag())
                 .build();
