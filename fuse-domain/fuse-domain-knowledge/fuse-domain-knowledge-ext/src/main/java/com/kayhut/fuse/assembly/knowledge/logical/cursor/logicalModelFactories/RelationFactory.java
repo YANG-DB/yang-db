@@ -21,11 +21,15 @@ public class RelationFactory extends ElementFactoryBase implements ElementFactor
     public ElementBaseLogical createElement(Vertex vertex) {
         VertexProperty<String> contextPropery = vertex.property(PhysicalElementProperties.CONTEXT);
         VertexProperty<String> categoryProperty = vertex.property(PhysicalRelationProperties.RELATION_CATEGORY);
+        VertexProperty<String> entityAProperty = vertex.property(PhysicalRelationProperties.ENTITY_A);
+        VertexProperty<String> entityBProperty = vertex.property(PhysicalRelationProperties.ENTITY_B);
 
         return new RelationLogical(
                 vertex.id().toString(),
                 contextPropery == (VertexProperty.<String>empty()) ? null : contextPropery.value(),
                 categoryProperty == (VertexProperty.<String>empty()) ? null : categoryProperty.value(),
+                entityAProperty == (VertexProperty.<String>empty()) ? null : entityAProperty.value(),
+                entityBProperty == (VertexProperty.<String>empty()) ? null : entityBProperty.value(),
                 this.metadataFactory.createMetadata(vertex));
     }
 

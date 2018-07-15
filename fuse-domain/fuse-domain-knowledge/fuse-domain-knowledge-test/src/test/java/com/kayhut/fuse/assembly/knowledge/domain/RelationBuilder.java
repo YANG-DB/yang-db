@@ -35,14 +35,14 @@ public class RelationBuilder extends Metadata {
     public RelationBuilder sideA(EntityBuilder sideA) {
         this.entityAId = sideA.id();
         this.entityACategory = sideA.category;
-        sideA.rel(this);
+        sideA.rel(this,"out");
         return this;
     }
 
     public RelationBuilder sideB(EntityBuilder sideB) {
         this.entityBId = sideB.id();
         this.entityBCategory = sideB.category;
-        sideB.rel(this);
+        sideB.rel(this,"in");
         return this;
     }
 
@@ -66,7 +66,7 @@ public class RelationBuilder extends Metadata {
         return this;
     }
 
-   public RelationBuilder entityACategory(String entityACategory) {
+    public RelationBuilder entityACategory(String entityACategory) {
         this.entityACategory = entityACategory;
         return this;
     }
@@ -102,7 +102,7 @@ public class RelationBuilder extends Metadata {
         on.put("entityBId", entityBId);
         on.put("entityACategory", entityACategory);
         on.put("entityBCategory", entityBCategory);
-        on.put("refs", collectRefs(mapper,refs));
+        on.put("refs", collectRefs(mapper, refs));
         //make sure value or content
         return on;
     }
@@ -127,6 +127,45 @@ public class RelationBuilder extends Metadata {
     @Override
     public String getETag() {
         return "Reference." + id();
+    }
+
+    public static class EntityRelationBuilder extends KnowledgeDomainBuilder {
+        public static String physicalType = "e.relation";
+        private RelationBuilder builder;
+        private String dir;
+
+        public EntityRelationBuilder(RelationBuilder builder,String dir) {
+            this.builder = builder;
+            this.dir = dir;
+        }
+
+        @Override
+        public String getType() {
+            return physicalType;
+        }
+
+        @Override
+        public String id() {
+            return builder.id()+"."+dir;
+        }
+
+        @Override
+        public Entity toEntity() {
+            return null;
+        }
+
+        @Override
+        public String getETag() {
+            return null;
+        }
+
+        @Override
+        public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
+            builder.collect(mapper, node);
+            node.put("type",physicalType);
+            node.put("direction",dir);
+            return node;
+        }
     }
 
 }

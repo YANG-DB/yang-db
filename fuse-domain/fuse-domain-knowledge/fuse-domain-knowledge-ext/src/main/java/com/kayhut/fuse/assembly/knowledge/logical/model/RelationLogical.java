@@ -9,6 +9,14 @@ public class RelationLogical extends ElementBaseLogical {
         this.context = context;
         this.relationCategory = relationCategory;
     }
+    public RelationLogical(String id, String context, String relationCategory, String entityAId, String entityBId, Metadata metadata) {
+        super(metadata);
+        this.id = id;
+        this.context = context;
+        this.relationCategory = relationCategory;
+        this.entityA = new GlobalEntityLogical(entityAId);
+        this.entityB = new GlobalEntityLogical(entityBId);
+    }
 
     //region Properties
     public HashMap<String, ReferenceLogical> getReferences() {

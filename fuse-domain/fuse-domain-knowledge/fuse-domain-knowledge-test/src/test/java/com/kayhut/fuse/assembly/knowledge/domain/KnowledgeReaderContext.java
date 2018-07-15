@@ -37,7 +37,7 @@ public class KnowledgeReaderContext {
         private Query.Builder knowledge;
         private List<EBase> elements;
         private AtomicInteger counter = new AtomicInteger(0);
-        private Stack<Quant1> entityStack = new Stack<>();
+        public Stack<Quant1> entityStack = new Stack<>();
 
         private int nextEnum() {
             return counter.incrementAndGet();
@@ -122,8 +122,13 @@ public class KnowledgeReaderContext {
             return this;
         }
 
+
         public KnowledgeQueryBuilder relatedTo(String eTag, String sideB, Filter... filters) {
-            entityStack.peek().getNext().add(currentEnum());
+            return relatedTo(entityStack.peek(),eTag,sideB,filters);
+        }
+
+        public KnowledgeQueryBuilder relatedTo(Quant1 quantEntity, String eTag, String sideB, Filter... filters) {
+            quantEntity.getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasRelation", R, EntityBuilder.type, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, RelationBuilder.type, nextEnum(), 0));
             Quant1 quant1 = new Quant1(currentEnum(), QuantType.all, new ArrayList<>(), 0);

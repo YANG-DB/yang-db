@@ -52,7 +52,11 @@ public class EntityBuilder extends EntityId {
         return this;
     }
 
-    public void rel(RelationBuilder relationBuilder) {
+    public void rel(RelationBuilder relationBuilder, String dir) {
+        additional.add(new RelationBuilder.EntityRelationBuilder(relationBuilder,dir));
+        //add as entities sub resource
+        subEntities.add(relationBuilder.toEntity());
+
         this.hasRel.add(Relationship.Builder.instance()
                 .withAgg(false)
                 .withDirectional(false)

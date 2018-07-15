@@ -1,7 +1,9 @@
 package com.kayhut.fuse.assembly.knowledge.logical.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ValueLogical extends ElementBaseLogical {
     public ValueLogical(String id, String content, Metadata metadata) {
@@ -11,11 +13,11 @@ public class ValueLogical extends ElementBaseLogical {
     }
 
     //region Properties
-    public List<ReferenceLogical> getReferences() {
+    public HashMap<String, ReferenceLogical> getReferences() {
         return references;
     }
 
-    public void setReferences(List<ReferenceLogical> references) {
+    public void setReferences(HashMap<String, ReferenceLogical> references) {
         this.references = references;
     }
 
@@ -39,7 +41,7 @@ public class ValueLogical extends ElementBaseLogical {
     //region Fields
     private String id;
     private String content;
-    private List<ReferenceLogical> references = new ArrayList<>();
+    private HashMap<String, ReferenceLogical> references = new HashMap<>();
 
     //endregion
 }
