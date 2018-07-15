@@ -4,6 +4,7 @@ import com.kayhut.fuse.assembly.knowledge.consts.ETypes;
 import com.kayhut.fuse.assembly.knowledge.logical.cursor.logicalModelFactories.LogicalElementFactoryProvider;
 import com.kayhut.fuse.assembly.knowledge.logical.cursor.modelSubResourceAdders.LogicalModelAdderProvider;
 import com.kayhut.fuse.assembly.knowledge.logical.model.ElementBaseLogical;
+import com.kayhut.fuse.assembly.knowledge.logical.model.LogicalModelQueryResult;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
@@ -88,10 +89,11 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
 
     //region Cursor Implementation
     @Override
-    public QueryResultBase getNextResults(int numResults) {
+    public LogicalModelQueryResult getNextResults(int numResults) {
         Map<String, ElementBaseLogical> logicalItems = new HashMap<>();
         LogicalElementFactoryProvider logicalElementFactoryProvider = new LogicalElementFactoryProvider();
         LogicalModelAdderProvider logicalModelAdderProvider = new LogicalModelAdderProvider();
+        List <ElementBaseLogical> results = new ArrayList<>();
         try {
             while (this.distinctIds.size() < numResults) {
                 Path path = context.getTraversal().next();
@@ -120,7 +122,7 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
 
         }
         // TODO : return logical result
-        return null;
+        return LogicalModelQueryResult.Builder.instance().withResults(results).build();
     }
     //endregion
 

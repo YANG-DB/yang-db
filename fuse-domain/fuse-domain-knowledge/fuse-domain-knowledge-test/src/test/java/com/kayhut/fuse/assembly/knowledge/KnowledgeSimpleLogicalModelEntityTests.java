@@ -89,7 +89,6 @@ public class KnowledgeSimpleLogicalModelEntityTests {
         Query query = start()
                 .withEntity(e1.getETag())
                 .withValue(v3.getETag())
-                .withInsight(i1.getETag())
                 .withRef(ref.getETag())
                 .withGlobalEntityValues(global.getETag())
                 .build();
