@@ -15,6 +15,8 @@ public class LogicalModelAdderProvider {
                 new LogicalModelEntityEValueAdder());
         logicalModelAdders.put(String.format("%s.%s", ETypes.ENTITY, ETypes.REFERENCE),
                 new LogicalModelPovReferenceAdder());
+        logicalModelAdders.put(String.format("%s.%s", ETypes.ENTITY, ETypes.INSIGHT),
+                new LogicalModelPovInsightAdder());
     }
 
 

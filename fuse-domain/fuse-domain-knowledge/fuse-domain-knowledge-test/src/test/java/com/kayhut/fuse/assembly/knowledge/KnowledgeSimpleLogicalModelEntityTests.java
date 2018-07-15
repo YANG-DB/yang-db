@@ -64,7 +64,9 @@ public class KnowledgeSimpleLogicalModelEntityTests {
         entityIds.add(e1.id());
 
         InsightBuilder i1 = _i(ctx.nextInsightId()).entityIds(entityIds).context(e1.context).content("asdf");
+        InsightBuilder i2 = _i(ctx.nextInsightId()).entityIds(entityIds).context(e1.context).content("24345234");
         e1.insight(i1);
+        e1.insight(i2);
         // Create ref
         RefBuilder ref = _ref(ctx.nextRefId())
                 .sys("sys")
@@ -74,10 +76,10 @@ public class KnowledgeSimpleLogicalModelEntityTests {
         e1.reference(ref);
 
         //verify data inserted correctly
-        Assert.assertEquals(3, commit(ctx, INDEX, global,e1));
+        Assert.assertEquals(4, commit(ctx, INDEX, global,e1));
         Assert.assertEquals(3, commit(ctx, INDEX, v3,v4,v5));
         Assert.assertEquals(2, commit(ctx, INDEX, v1,v2));
-        Assert.assertEquals(1, commit(ctx, "i0", i1));
+        Assert.assertEquals(2, commit(ctx, "i0", i1, i2));
         Assert.assertEquals(1, commit(ctx, REF_INDEX, ref));
 
         // Create v1 query to fetch newly created entity
