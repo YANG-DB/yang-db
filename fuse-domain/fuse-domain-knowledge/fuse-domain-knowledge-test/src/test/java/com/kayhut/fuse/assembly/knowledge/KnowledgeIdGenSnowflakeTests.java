@@ -30,7 +30,6 @@ public class KnowledgeIdGenSnowflakeTests {
     public static void setup() throws Exception {
         // Start embedded ES
         elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("knowledge");
-        createIdGeneratorIndex(ElasticEmbeddedNode.getClient());
 
         // Load fuse engine config file
         String confFilePath = Paths.get("resources", "assembly", "Knowledge", "config", "application.test.engine3.m1.dfs.knowledge.public.conf").toString();

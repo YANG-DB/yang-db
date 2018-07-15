@@ -103,10 +103,7 @@ public class KnowledgeWriterContext {
         return context;
     }
 
-
-    public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx, String index, T... builders) throws JsonProcessingException {
-        int count = 0;
-        final BulkRequestBuilder bulk = ctx.client.prepareBulk();
+    private static void populateBulk(BulkRequestBuilder bulk,String index,KnowledgeWriterContext ctx,List<KnowledgeDomainBuilder> builders) throws JsonProcessingException {
         for (KnowledgeDomainBuilder builder : builders) {
             IndexRequestBuilder request = ctx.client.prepareIndex()
                     .setIndex(index)
@@ -117,6 +114,19 @@ public class KnowledgeWriterContext {
             builder.routing().ifPresent(request::setRouting);
             bulk.add(request);
         }
+    }
+
+    public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx, String index, T... builders) throws JsonProcessingException {
+        int count = 0;
+        final BulkRequestBuilder bulk = ctx.client.prepareBulk();
+            populateBulk(bulk,index,ctx,Arrays.asList(builders));
+            Arrays.asList(builders).forEach(builder -> {
+                try {
+                    populateBulk(bulk,index,ctx,builder.additional());
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            });
 
         final BulkItemResponse[] items = bulk.get().getItems();
         for (BulkItemResponse item : items) {

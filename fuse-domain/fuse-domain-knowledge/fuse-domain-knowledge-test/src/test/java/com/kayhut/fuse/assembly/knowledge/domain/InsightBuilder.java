@@ -86,4 +86,46 @@ public class InsightBuilder extends EntityId {
     public String getETag() {
         return "Insight."+id();
     }
+
+    public static class EntityInsightBuilder extends KnowledgeDomainBuilder {
+        public static String physicalType = "e.insight";
+
+        private final String logicalId;
+        private final String context;
+        private final String insightId;
+
+        public EntityInsightBuilder(String logicalId,String context, String insightId) {
+            this.logicalId = logicalId;
+            this.context = context;
+            this.insightId = insightId;
+        }
+
+        @Override
+        public String getType() {
+            return "e.insight";
+        }
+
+        @Override
+        public String id() {
+            return logicalId+"."+insightId;
+        }
+
+        @Override
+        public Entity toEntity() {
+            return null;
+        }
+
+        @Override
+        public String getETag() {
+            return "";
+        }
+
+        @Override
+        public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
+            node.put("type", physicalType);
+            node.put("entityId",logicalId+"."+context);
+            node.put("insightId",insightId);
+            return node;
+        }
+    }
 }

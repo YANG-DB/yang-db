@@ -23,6 +23,8 @@ public class EntityBuilder extends EntityId {
     public String logicalId;
     public String category = "person";
     public String context = "global";
+
+    public List<KnowledgeDomainBuilder> additional = new ArrayList<>();
     public List<String> refs = new ArrayList<>();
 
     public List<Entity> subEntities = new ArrayList<>();
@@ -143,11 +145,11 @@ public class EntityBuilder extends EntityId {
     }
 
     public EntityBuilder insight(InsightBuilder insight) {
-
+        additional.add(new InsightBuilder.EntityInsightBuilder(logicalId,context,insight.id()));
         //add as entities sub resource
         subEntities.add(insight.toEntity());
         //add a relation
-        hasValues.add(Relationship.Builder.instance()
+        hasInsights.add(Relationship.Builder.instance()
                 .withAgg(false)
                 .withDirectional(false)
                 .withEID1(id())
@@ -202,6 +204,11 @@ public class EntityBuilder extends EntityId {
         on.put("category", category);
         on.put("refs", collectRefs(mapper,refs));
         return on;
+    }
+
+    @Override
+    public List<KnowledgeDomainBuilder> additional() {
+        return additional;
     }
 
     public Entity toEntity() {
