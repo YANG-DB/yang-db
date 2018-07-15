@@ -71,6 +71,7 @@ public class EntityBuilder extends EntityId {
         //add global entity
         final LogicalEntity logicalEntity = new LogicalEntity(global.logicalId);
         subEntities.add(logicalEntity.toEntity());
+
         //add relationship
         hasGlobal.add(Relationship.Builder.instance()
                 .withAgg(false)
@@ -129,7 +130,7 @@ public class EntityBuilder extends EntityId {
         //add as entities sub resource
         subEntities.add(value.toEntity());
         //add a relation
-        hasFiles.add(Relationship.Builder.instance()
+        hasValues.add(Relationship.Builder.instance()
                 .withAgg(false)
                 .withDirectional(false)
                 .withEID1(id())

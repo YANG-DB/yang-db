@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.kayhut.fuse.assembly.knowledge.Setup.*;
 import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
@@ -31,7 +32,7 @@ public class KnowledgeSimpleEntityWithRelationTests {
     static KnowledgeWriterContext ctx;
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws Exception {
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
@@ -133,7 +134,9 @@ public class KnowledgeSimpleEntityWithRelationTests {
 
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Query query = start().withEntity(e1.getETag()).withGlobalEntity(global.getETag()).relatedTo(e1.getETag()+"->"+e2.getETag(),e2.getETag()).build();
+        Query query = start().withEntity(e1.getETag())
+                .withGlobalEntity(global.getETag(),false)
+                .relatedTo(e1.getETag()+"->"+e2.getETag(),e2.getETag()).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Check Entity Response

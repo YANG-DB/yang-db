@@ -37,7 +37,7 @@ public class KnowledgeReaderContext {
         private Query.Builder knowledge;
         private List<EBase> elements;
         private AtomicInteger counter = new AtomicInteger(0);
-        private Stack<Quant1> entityStack = new Stack<>();
+        private Stack<QuantScope> entityStack = new Stack<>();
 
         private int nextEnum() {
             return counter.incrementAndGet();
@@ -60,7 +60,7 @@ public class KnowledgeReaderContext {
             //case we are in quant scope
             Quant1 quant1 = new Quant1(currentEnum(), QuantType.all, new ArrayList<>(), 0);
             this.elements.add(quant1);
-            entityStack.push(quant1);
+            entityStack.push(new QuantScope(quant1, elements.get(currentEnum() - 1)));
             nextEnum();//continue
             return quant1;
         }
@@ -71,43 +71,51 @@ public class KnowledgeReaderContext {
             return builder;
         }
 
-        public KnowledgeQueryBuilder withGlobalEntityValues(String eTag, Filter... filters) {
-            return withGlobalEntity(eTag, Collections.EMPTY_LIST,
-                    Arrays.asList(filter().with(QuantType.all, "fieldId", Constraint.of(ConstraintOp.inSet,Arrays.asList("title", "nicknames")))));
+        public KnowledgeQueryBuilder withGlobalEntityValues(String eTag) {
+            return withGlobalEntity(eTag, true, Arrays.asList(filter().with(QuantType.all, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames")))));
         }
 
         public KnowledgeQueryBuilder withGlobalEntity(String eTag) {
-            return withGlobalEntity(eTag,Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+            return withGlobalEntity(eTag, true, Collections.EMPTY_LIST);
         }
 
-        public KnowledgeQueryBuilder withGlobalEntity(String eTag, List<Filter> entityFilter, List<Filter> entityValueFilter) {
-            entityStack.peek().getNext().add(currentEnum());
+        public KnowledgeQueryBuilder withGlobalEntity(String eTag, boolean withValues) {
+            return withGlobalEntity(eTag, withValues, Collections.EMPTY_LIST);
+        }
+
+        public KnowledgeQueryBuilder withGlobalEntity(String eTag, boolean withValues, List<Filter> entityValueFilter) {
+            addToQuant();
             this.elements.add(new Rel(currentEnum(), "hasEntity", L, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), LogicalEntity.type, LogicalEntity.type, nextEnum(), 0));
             this.elements.add(new Rel(currentEnum(), "hasEntity", R, null, nextEnum(), 0));
-            this.elements.add(new ETyped(currentEnum(), eTag+"#"+currentEnum(), EntityBuilder.type, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), eTag + "#" + currentEnum(), EntityBuilder.type, nextEnum(), 0));
             //add global quant
             quant();
             //add global rel + values
             elements.add(filter().with(QuantType.all, "context", Constraint.of(ConstraintOp.eq, "global"))
                     .build(currentEnum()));
             //adds to quant
-            entityStack.peek().getNext().add(currentEnum());
-            nextEnum();//continue
-            entityStack.peek().getNext().add(currentEnum());
-            this.elements.add(new Rel(currentEnum(), "hasEvalue", R, null, nextEnum(), 0));
-            this.elements.add(new ETyped(currentEnum(), eTag+"#"+currentEnum(), ValueBuilder.type, nextEnum(), 0));
-
-            quant();
-
-            entityValueFilter.forEach(filter -> {
-                //adds to quant
-                entityStack.peek().getNext().add(currentEnum());
-                //adds to element
-                elements.add(filter.build(currentEnum()));
-                //next enum
+            addToQuant();
+            //add values to global quant
+            if (withValues) {
                 nextEnum();//continue
-            });
+                addToQuant();
+                this.elements.add(new Rel(currentEnum(), "hasEvalue", R, null, nextEnum(), 0));
+                this.elements.add(new ETyped(currentEnum(), eTag + "#" + currentEnum(), ValueBuilder.type, nextEnum(), 0));
+
+                if (entityValueFilter.size() > 0) {
+                    quant();
+                    //add every filter
+                    entityValueFilter.forEach(filter -> {
+                        //adds to quant
+                        addToQuant();
+                        //adds to element
+                        elements.add(filter.build(currentEnum()));
+                        //next enum
+                        nextEnum();//continue
+                    });
+                }
+            }
             return this;
         }
 
@@ -115,23 +123,23 @@ public class KnowledgeReaderContext {
             this.elements.add(new ETyped(currentEnum(), eTag, EntityBuilder.type, nextEnum(), 0));
             quant();
             Arrays.stream(filters).forEach(filter -> {
-                entityStack.peek().getNext().add(currentEnum());
+                addToQuant();
                 elements.add(filter.build(currentEnum()));
                 nextEnum();//continue
             });
             return this;
         }
 
-        public KnowledgeQueryBuilder relatedTo(String eTag, String sideB, Filter... filters) {
-            entityStack.peek().getNext().add(currentEnum());
+        private void addToQuant() {
+            if (!entityStack.peek().quant1.getNext().contains(currentEnum())) {
+                entityStack.peek().quant1.getNext().add(currentEnum());
+            }
+        }
+
+        public KnowledgeQueryBuilder relatedTo(String eTag, String sideB) {
+            addToQuant();
             this.elements.add(new Rel(currentEnum(), "hasRelation", R, EntityBuilder.type, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, RelationBuilder.type, nextEnum(), 0));
-            Quant1 quant1 = new Quant1(currentEnum(), QuantType.all, new ArrayList<>(), 0);
-            this.elements.add(quant1);
-            entityStack.push(quant1);
-            nextEnum();//continue
-
-            entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasRelation", L, EntityBuilder.type, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), sideB, EntityBuilder.type, nextEnum(), 0));
 
@@ -140,7 +148,7 @@ public class KnowledgeReaderContext {
         }
 
         public KnowledgeQueryBuilder withFile(String eTag, Filter... filters) {
-            entityStack.peek().getNext().add(currentEnum());
+            addToQuant();
             this.elements.add(new Rel(currentEnum(), "hasEfile", R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, FileBuilder.type, 0, 0));
             nextEnum();//continue
@@ -148,12 +156,12 @@ public class KnowledgeReaderContext {
         }
 
         public KnowledgeQueryBuilder withValue(String eTag, Filter... filters) {
-            entityStack.peek().getNext().add(currentEnum());
+            addToQuant();
             this.elements.add(new Rel(currentEnum(), "hasEvalue", R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, ValueBuilder.type, 0, 0));
             nextEnum();//continue
             Arrays.stream(filters).forEach(filter -> {
-                entityStack.peek().getNext().add(currentEnum());
+                addToQuant();
                 elements.add(filter.build(currentEnum()));
                 nextEnum();//continue
             });
@@ -161,7 +169,7 @@ public class KnowledgeReaderContext {
         }
 
         public KnowledgeQueryBuilder withRef(String eTag, Filter... filters) {
-            entityStack.peek().getNext().add(currentEnum());
+            addToQuant();
             this.elements.add(new Rel(currentEnum(), "hasEntityReference", R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, RefBuilder.type, 0, 0));
             nextEnum();//continue
@@ -169,7 +177,7 @@ public class KnowledgeReaderContext {
         }
 
         public KnowledgeQueryBuilder withInsight(String eTag, Filter... filters) {
-            entityStack.peek().getNext().add(currentEnum());
+            addToQuant();
             this.elements.add(new Rel(currentEnum(), "hasInsight", R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, InsightBuilder.type, 0, 0));
             nextEnum();//continue
@@ -251,6 +259,16 @@ public class KnowledgeReaderContext {
         }
 
 
+    }
+
+    public static class QuantScope {
+        public Quant1 quant1;
+        public EBase paren;
+
+        public QuantScope(Quant1 quant1, EBase paren) {
+            this.quant1 = quant1;
+            this.paren = paren;
+        }
     }
 
 }

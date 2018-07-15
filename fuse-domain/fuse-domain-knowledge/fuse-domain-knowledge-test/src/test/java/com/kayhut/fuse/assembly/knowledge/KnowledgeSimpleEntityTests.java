@@ -31,7 +31,6 @@ public class KnowledgeSimpleEntityTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
@@ -137,7 +136,7 @@ public class KnowledgeSimpleEntityTests {
     }
 
     @Test
-    public void testInsertEntityWithGlobalParent() throws IOException, InterruptedException {
+    public void testInsertEntityWithGlobalParentNoResultsSinceNoValuesFound() throws IOException, InterruptedException {
         final String logicalId = ctx.nextLogicalId();
         final EntityBuilder global = _e(logicalId).cat("person");
         final EntityBuilder e1 = _e(logicalId).cat("student").ctx("context1");
@@ -154,20 +153,8 @@ public class KnowledgeSimpleEntityTests {
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
-        Assert.assertEquals(3, ((AssignmentsQueryResult) pageData).getAssignments().get(0).getEntities().size());
-        Assert.assertEquals(3, ((AssignmentsQueryResult) pageData).getAssignments().get(0).getRelationships().size());
-
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//context entity
-                        .withEntities(e1.subEntities())//logicalEntity
-                        .withEntity(global.toEntity())//global entity
-                        .withRelationships(e1.withRelations())//relationships
-                        .withRelationships(e1.withRelations())//relationships (double relationships for the 2 different etags variations...
-                        .build()).build();
-
-        // Check if expected and actual are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true,true);
+        Assert.assertEquals(0, ((AssignmentsQueryResult) pageData).getAssignments().get(0).getEntities().size());
+        Assert.assertEquals(0, ((AssignmentsQueryResult) pageData).getAssignments().get(0).getRelationships().size());
 
     }
 
