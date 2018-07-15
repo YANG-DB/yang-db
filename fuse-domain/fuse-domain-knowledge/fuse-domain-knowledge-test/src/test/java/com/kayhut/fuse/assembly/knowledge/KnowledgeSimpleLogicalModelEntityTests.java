@@ -18,6 +18,7 @@ import static com.kayhut.fuse.assembly.knowledge.Setup.*;
 import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder._e;
 import static com.kayhut.fuse.assembly.knowledge.domain.FileBuilder._f;
+import static com.kayhut.fuse.assembly.knowledge.domain.InsightBuilder._i;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KnowledgeQueryBuilder.start;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
@@ -59,6 +60,11 @@ public class KnowledgeSimpleLogicalModelEntityTests {
         e1.value(v4);
         e1.value(v5);
 
+        List<String> entityIds = new ArrayList<>();
+        entityIds.add(e1.id());
+
+        InsightBuilder i1 = _i(ctx.nextInsightId()).entityIds(entityIds).context(e1.context).content("asdf");
+        e1.insight(i1);
         // Create ref
         RefBuilder ref = _ref(ctx.nextRefId())
                 .sys("sys")
@@ -69,10 +75,12 @@ public class KnowledgeSimpleLogicalModelEntityTests {
 
 
 
+
         //verify data inserted correctly
         Assert.assertEquals(2, commit(ctx, INDEX, global,e1));
         Assert.assertEquals(3, commit(ctx, INDEX, v3,v4,v5));
         Assert.assertEquals(2, commit(ctx, INDEX, v1,v2));
+        Assert.assertEquals(1, commit(ctx, INDEX, i1));
         Assert.assertEquals(1, commit(ctx, REF_INDEX, ref));
 
         // Create v1 query to fetch newly created entity
@@ -81,6 +89,7 @@ public class KnowledgeSimpleLogicalModelEntityTests {
         Query query = start()
                 .withEntity(e1.getETag())
                 .withValue(v3.getETag())
+                .withInsight(i1.getETag())
                 .withRef(ref.getETag())
                 .withGlobalEntityValues(global.getETag())
                 .build();

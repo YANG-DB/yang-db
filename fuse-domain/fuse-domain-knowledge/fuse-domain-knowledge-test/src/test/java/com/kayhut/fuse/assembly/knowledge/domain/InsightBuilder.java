@@ -53,6 +53,21 @@ public class InsightBuilder extends EntityId {
         return on;
     }
 
+    public InsightBuilder entityIds(List<String> entityIds) {
+        this.entityIds = entityIds;
+        return this;
+    }
+
+    public InsightBuilder context(String context) {
+        this.context = context;
+        return this;
+    }
+
+    public InsightBuilder content(String content) {
+        this.content = content;
+        return this;
+    }
+
 
     @Override
     public Entity toEntity() {

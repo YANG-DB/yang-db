@@ -142,6 +142,24 @@ public class EntityBuilder extends EntityId {
         return this;
     }
 
+    public EntityBuilder insight(InsightBuilder insight) {
+
+        //add as entities sub resource
+        subEntities.add(insight.toEntity());
+        //add a relation
+        hasValues.add(Relationship.Builder.instance()
+                .withAgg(false)
+                .withDirectional(false)
+                .withEID1(id())
+                .withEID2(insight.id())
+                .withETag1(getETag())
+                .withETag2(insight.getETag())
+                .withRType("hasInsight")
+                .build());
+
+        return this;
+    }
+
     public EntityBuilder file(FileBuilder file) {
         file.entityId = id();
         file.logicalId = logicalId;
