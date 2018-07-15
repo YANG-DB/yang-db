@@ -9,19 +9,26 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LogicalElementFactory {
+public class LogicalElementFactoryProvider {
     //region Constructors
-    public LogicalElementFactory() {
+    public LogicalElementFactoryProvider() {
         this.logicalElementFactories = new HashMap<>();
         GlobalEntityFactory globalEntityFactory = new GlobalEntityFactory();
         ReferenceFactory referenceFactory = new ReferenceFactory();
         PovFactory povFactory = new PovFactory();
         FieldFactory fieldFactory = new FieldFactory();
+        FileFactory fileFactory = new FileFactory();
+        InsightFactory insightFactory = new InsightFactory();
+        RelationFactory relationFactory = new RelationFactory();
         logicalElementFactories.put(String.format("%s.%s", ETypes.ENTITY, "global"), globalEntityFactory);
         logicalElementFactories.put(ETypes.ENTITY, povFactory);
         logicalElementFactories.put(ETypes.ENTITY_VALUE, fieldFactory);
+        logicalElementFactories.put(ETypes.RELATION_VALUE, fieldFactory);
         logicalElementFactories.put(ETypes.LOGICAL_ENTITY, globalEntityFactory);
         logicalElementFactories.put(ETypes.REFERENCE, referenceFactory);
+        logicalElementFactories.put(ETypes.FILE, fileFactory);
+        logicalElementFactories.put(ETypes.INSIGHT, insightFactory);
+        logicalElementFactories.put(ETypes.RELATION, relationFactory);
     }
     //endregion
 

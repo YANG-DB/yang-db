@@ -1,7 +1,7 @@
 package com.kayhut.fuse.assembly.knowledge.logical.cursor;
 
 import com.kayhut.fuse.assembly.knowledge.consts.ETypes;
-import com.kayhut.fuse.assembly.knowledge.logical.cursor.logicalModelFactories.LogicalElementFactory;
+import com.kayhut.fuse.assembly.knowledge.logical.cursor.logicalModelFactories.LogicalElementFactoryProvider;
 import com.kayhut.fuse.assembly.knowledge.logical.cursor.modelSubResourceAdders.LogicalModelAdderProvider;
 import com.kayhut.fuse.assembly.knowledge.logical.model.ElementBaseLogical;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
@@ -90,7 +90,7 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
     @Override
     public QueryResultBase getNextResults(int numResults) {
         Map<String, ElementBaseLogical> logicalItems = new HashMap<>();
-        LogicalElementFactory logicalElementFactory = new LogicalElementFactory();
+        LogicalElementFactoryProvider logicalElementFactoryProvider = new LogicalElementFactoryProvider();
         LogicalModelAdderProvider logicalModelAdderProvider = new LogicalModelAdderProvider();
         try {
             while (this.distinctIds.size() < numResults) {
@@ -99,12 +99,12 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
 
                 // First vertex not always connected to the closed edge.
                 Vertex vertex = (Vertex) pathObjects.get(0);
-                addVertexToLogicalItems(logicalItems, logicalElementFactory, vertex);
+                addVertexToLogicalItems(logicalItems, logicalElementFactoryProvider, vertex);
                 int objectIndex = 1;
                 while (objectIndex < path.objects().size()) {
                     // Edge + next vertex
                     vertex = (Vertex) pathObjects.get(objectIndex + 1);
-                    addVertexToLogicalItems(logicalItems, logicalElementFactory, vertex);
+                    addVertexToLogicalItems(logicalItems, logicalElementFactoryProvider, vertex);
                     Edge edge = (Edge) pathObjects.get(objectIndex);
                     Vertex child = edge.inVertex();
                     Vertex parent = edge.outVertex();
@@ -133,7 +133,7 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
         return logicalItems.get(vertex.id().toString());
     }
 
-    private void addVertexToLogicalItems(Map<String, ElementBaseLogical> logicalItems, LogicalElementFactory logicalElementFactory, Vertex vertex) {
+    private void addVertexToLogicalItems(Map<String, ElementBaseLogical> logicalItems, LogicalElementFactoryProvider logicalElementFactoryProvider, Vertex vertex) {
         String id = vertex.id().toString();
         // Global entity special treatment
         String globalEntitySuffix = ".global";
@@ -142,13 +142,13 @@ public class KnowledgeLogicalModelTraversalCursor implements Cursor {
         }
 
         if(!logicalItems.containsKey(id)){
-            logicalItems.put(id, logicalElementFactory.createLogicalItem(vertex));
+            logicalItems.put(id, logicalElementFactoryProvider.createLogicalItem(vertex));
         }
         else{
             // On global entity, if already exist, should merge vertexes
             // Also, on entity value - adding value to an existing field
             if((id.contains(globalEntitySuffix))){
-                logicalItems.put(id, logicalElementFactory.mergeLogicalItemWithVertex(vertex, logicalItems.get(id)));
+                logicalItems.put(id, logicalElementFactoryProvider.mergeLogicalItemWithVertex(vertex, logicalItems.get(id)));
             }
         }
     }
