@@ -59,7 +59,16 @@
         "elapsedFrom": {
           "type": "integer"
         },
+        "elasticElapsed": {
+          "type": "integer"
+        },
         "elasticElapsedTotal": {
+          "type": "integer"
+        },
+        "networkElasticElapsed": {
+          "type": "integer"
+        },
+        "networkElasticElapsedTotal": {
           "type": "integer"
         },
         "requestId": {
@@ -70,17 +79,6 @@
         },
         "requestExternalId": {
           "type": "keyword"
-        },
-        "kibana": {
-          "properties": {
-            "render": {
-              "properties": {
-                "tags": {
-                  "type": "keyword"
-                }
-              }
-            }
-          }
         }
       }
     }

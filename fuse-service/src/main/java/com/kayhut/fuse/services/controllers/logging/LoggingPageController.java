@@ -155,37 +155,6 @@ public class LoggingPageController implements PageController {
     }
 
     @Override
-    public ContentResponse<JsonNode> getElasticQueries(String queryId, String cursorId, String pageId) {
-        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getElasticQueryByQueryId.toString())).time();
-
-        Composite.of(Elapsed.now(), ElapsedFrom.now(),
-                RequestId.of(this.requestIdSupplier.get()),
-                RequestExternalMetadata.of(this.requestExternalMetadataSupplier.get()),
-                RequestIdByScope.of(queryId)).write();
-
-        ContentResponse<JsonNode> response = null;
-
-        try {
-            new LogMessage.Impl(this.logger, trace, "start getElasticQueryByQueryId", LogType.of(start), getElasticQueryByQueryId).log();
-            response = this.controller.getElasticQueries( queryId,  cursorId,  pageId);
-            new LogMessage.Impl(this.logger, info, "finish getElasticQueryByQueryId", LogType.of(success), getElasticQueryByQueryId, ElapsedFrom.now()).log();
-            new LogMessage.Impl(this.logger, trace, "finish getElasticQueryByQueryId", LogType.of(success), getElasticQueryByQueryId, ElapsedFrom.now()).log();
-            this.metricRegistry.meter(name(this.logger.getName(), getElasticQueryByQueryId.toString(), "success")).mark();
-        } catch (Exception ex) {
-            new LogMessage.Impl(this.logger, error, "failed getElasticQueryByQueryId", LogType.of(failure), getElasticQueryByQueryId, ElapsedFrom.now())
-                    .with(ex).log();
-            this.metricRegistry.meter(name(this.logger.getName(), getElasticQueryByQueryId.toString(), "failure")).mark();
-            response = ContentResponse.internalError(ex);
-        }
-
-        return ContentResponse.Builder.builder(response)
-                .requestId(this.requestIdSupplier.get())
-                .external(this.requestExternalMetadataSupplier.get())
-                .elapsed(TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS))
-                .compose();
-    }
-
-    @Override
     public ContentResponse<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfoByQueryIdAndCursorIdAndPageId.toString())).time();
 

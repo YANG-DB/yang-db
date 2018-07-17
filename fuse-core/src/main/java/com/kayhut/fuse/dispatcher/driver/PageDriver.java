@@ -15,6 +15,4 @@ public interface PageDriver {
     Optional<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId);
     Optional<Object> getData(String queryId, String cursorId, String pageId);
     Optional<Boolean> delete(String queryId, String cursorId, String pageId);
-    Optional<JsonNode> getElasticQueries(String queryId, String cursorId, String pageId);
-
 }

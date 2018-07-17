@@ -6,6 +6,8 @@ import org.slf4j.MDC;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static ch.qos.logback.classic.Level.TRACE;
 

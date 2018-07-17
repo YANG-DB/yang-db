@@ -59,13 +59,6 @@ public class StandardPageController implements PageController {
     }
 
     @Override
-    public ContentResponse<JsonNode> getElasticQueries(String queryId, String cursorId, String pageId) {
-        return Builder.<JsonNode>builder(OK, NOT_FOUND)
-                .data(this.driver.getElasticQueries(queryId,cursorId,pageId))
-                .compose();
-    }
-
-    @Override
     public ContentResponse<StoreResourceInfo> getInfo(String queryid, String cursorId) {
         return Builder.<StoreResourceInfo>builder(OK, NOT_FOUND)
                 .data(this.driver.getInfo(queryid, cursorId))
