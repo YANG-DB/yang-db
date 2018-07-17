@@ -240,5 +240,13 @@ public class KnowledgeSimpleEntityWithRelationTests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true,true);
 
     }
+    
+    @Test
+    public void testRelatedEntityRelType(){
+        final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2);
 
+
+    }
 }
