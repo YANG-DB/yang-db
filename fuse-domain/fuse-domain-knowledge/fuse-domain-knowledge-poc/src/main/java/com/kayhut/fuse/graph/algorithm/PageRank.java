@@ -312,8 +312,10 @@ public class PageRank implements DynamicAlgorithm, ElementSink {
 		this.graph = graph;
 		graph.addElementSink(this);
 		double initialRank = 1.0 / graph.getNodeCount();
-		for (Node node : graph)
+		for (Node node : graph) {
 			node.setAttribute(rankAttribute, initialRank);
+			node.setAttribute("nodeCount", graph.getNodeCount());
+		}
 		newRanks = new ArrayList<Double>(graph.getNodeCount());
 		upToDate = false;
 		iterationCount = 0;

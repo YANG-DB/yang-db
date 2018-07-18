@@ -32,26 +32,19 @@
 package com.kayhut.fuse.knowledge.view;
 
 
-import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext;
 import com.kayhut.fuse.graph.algorithm.BetweennessCentrality;
-import com.kayhut.fuse.graph.view.AssignmentToGraph;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.Start;
-import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.optional.OptionalComp;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
-import com.kayhut.fuse.model.query.quant.Quant1;
-import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
-import com.kayhut.fuse.model.results.Assignment;
-import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.fuse.utils.FuseClient;
 import javafx.scene.paint.Color;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
@@ -63,33 +56,29 @@ import org.graphstream.ui.view.ViewerListener;
 import org.graphstream.ui.view.ViewerPipe;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KnowledgeQueryBuilder.start;
 import static com.kayhut.fuse.graph.view.AssignmentToGraph.styleSheet;
-import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static java.lang.Thread.sleep;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 
-public class FuseViewer implements ViewerListener {
+public class FuseGraphConnectivityViewer implements ViewerListener {
     private boolean loop = true;
 
     public static void main(String[] args) throws Exception {
         System.setProperty("org.graphstream.ui", "org.graphstream.ui.javafx.util.Display");
-        new FuseViewer().run();
+        new FuseGraphConnectivityViewer().run();
 //        Application.launch(FuseViewer.class);
     }
 
-    public FuseViewer() throws IOException {
+    public FuseGraphConnectivityViewer() throws IOException {
         fuseClient = new FuseClient("http://localhost:8888/fuse");
         fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
         graph = new MultiGraph("g1");
-
     }
 
     public void viewClosed(String id) {
@@ -97,34 +86,6 @@ public class FuseViewer implements ViewerListener {
     }
 
     public void buttonPushed(String id) {
-        try {
-            //continue graph exploration
-            final Node node = graph.getNode(id);
-            if (node.getAttribute("ui.selected") != null &&
-                    node.getAttribute("ui.selected").toString().equals("true")) {
-                //show label
-                showId(node, true);
-            } else {
-                if (node.getAttribute("ui.expanded") == null) {
-                    populateGraph(graph, id.split("\\.")[0]);
-                    node.setAttribute("ui.expanded", "true");
-                }
-                showId(node, false);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void showId(Node node, boolean show) {
-        if (show) {
-            node.setAttribute("label", node.getId());
-        } else {
-            node.setAttribute("label", node.getAttribute("ui.label").toString());
-        }
-
     }
 
     public void buttonReleased(String id) {
@@ -201,66 +162,35 @@ public class FuseViewer implements ViewerListener {
 
     }
 
-    private void populateGraph(Graph g, String... values) throws IOException, InterruptedException {
-        AssignmentToGraph.populateGraph(g, fetchAssignment(values));
+    private void populateGraph(Graph graph) {
+        fetchGraph(graph);
     }
 
-    private Assignment fetchAssignment(String... values) throws IOException, InterruptedException {
-        return ((AssignmentsQueryResult) KnowledgeReaderContext.query(fuseClient, fuseResourceInfo, query($ont,values))).getAssignments().get(0);
+
+    private void fetchGraph(Graph g) {
+        final TransportClient client = ElasticEmbeddedNode.getClient("knowledge", 9300);
+        QueryBuilder qb = boolQuery().filter(
+                boolQuery().mustNot(boolQuery()
+                                .should(existsQuery("deleteUser"))
+                                .should(termQuery("direction","out"))
+                ));
+
+        SearchResponse scrollResp = client.prepareSearch("e*")
+                .addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
+                .setFetchSource(new String[]{"logicalId","entityId","entityAId","entityBId","refs"}, null)
+                .setScroll(new TimeValue(60000))
+                .setQuery(qb)
+                .setSize(1000).get(); //max of 100 hits will be returned for each scroll
+//Scroll until no hits are returned
+        do {
+            for (SearchHit hit : scrollResp.getHits().getHits()) {
+                final String id = hit.getId();
+            }
+
+            scrollResp = client.prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(60000)).execute().actionGet();
+        } while(scrollResp.getHits().getHits().length != 0); // Zero hits mark the end of the scroll and the while loop.
     }
 
-    private Query query(String... values) {
-        return start().withEntity("Entity")
-                .withGlobalEntity("Global")
-                .withRef("Ref")
-                .withValue("Val")
-                .withInsight("Insight")
-                .relatedTo("Rel", "SideB")
-                .build();
-    }
-
-    private Query query(Ontology.Accessor $ont, String... values) {
-        ArrayList<EBase> list = new ArrayList<>();
-        list.add(new Start(0, 1));
-        list.add(new ETyped(1, "SE", $ont.eType$("Entity"), 2, 0));
-
-        if (values.length > 0) {
-            list.add(new Quant1(2, QuantType.all, Arrays.asList(3, 4, 12, 20, 13, 555), 0));
-            list.add(new EProp(3, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")));
-            list.add(new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.inSet, Arrays.asList(values))));
-        } else {
-            list.add(new Quant1(2, QuantType.all, Arrays.asList(3, 12, 20, 13, 555), 0));
-            list.add(new EProp(3, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")));
-        }
-
-        list.addAll(Arrays.asList(
-                new Rel(20, $ont.rType$("hasEvalue"), R, null, 21, 0),
-                new ETyped(21, "B", $ont.eType$("Evalue"), 0, 0),
-
-                new OptionalComp(555, 5),
-                new Rel(5, $ont.rType$("hasRelation"), R, null, 6, 0),
-                new ETyped(6, "R", $ont.eType$("Relation"), 7, 0),
-                new Quant1(7, QuantType.all, Arrays.asList(10, 11), 0),
-
-                new OptionalComp(12, 120),
-                new Rel(120, "hasEntityReference", R, null, 121, 0),
-                new ETyped(121, "ERef", "Reference", 0, 0),
-
-                new OptionalComp(13, 130),
-                new Rel(130, "hasInsight", R, null, 131, 0),
-                new ETyped(131, "Ins", "Insight", 0, 0),
-
-                new OptionalComp(10, 100),
-                new Rel(100, "hasRvalue", R, null, 101, 0),
-                new ETyped(101, "RV", "Rvalue", 0, 0),
-
-                new OptionalComp(11, 110),
-                new Rel(110, "hasRelationReference", R, null, 111, 0),
-                new ETyped(111, "RRef", "Reference", 0, 0))
-
-        );
-        return Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(list).build();
-    }
 
     private Ontology.Accessor $ont;
     private FuseClient fuseClient;

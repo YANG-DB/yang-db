@@ -9,7 +9,7 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../</directory>
+            <directory>${project.basedir}/../../../</directory>
             <outputDirectory>Fuse/</outputDirectory>
             <useDefaultExcludes>true</useDefaultExcludes>
             <excludes>

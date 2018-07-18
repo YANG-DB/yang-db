@@ -21,10 +21,14 @@ import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
 import org.jooby.scanner.Scanner;
 import org.jooby.swagger.SwaggerUI;
+import org.reflections.Reflections;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -57,23 +61,40 @@ public class FuseApp extends Jooby {
         assets("public/assets/**");
 
         new LoggingJacksonRendererRegistrar(metricRegistry).register(this, localUrlSupplier);
-
         new BeforeAfterAppRegistrar().register(this, localUrlSupplier);
-        new HomeAppRegistrar().register(this, localUrlSupplier);
         new CorsAppRegistrar().register(this, localUrlSupplier);
+        new HomeAppRegistrar().register(this, localUrlSupplier);
         new HealthAppRegistrar().register(this, localUrlSupplier);
-        new ApiDescriptionControllerRegistrar().register(this, localUrlSupplier);
-        new DataLoaderControllerRegistrar().register(this, localUrlSupplier);
-        new CatalogControllerRegistrar().register(this, localUrlSupplier);
-        new QueryControllerRegistrar().register(this, localUrlSupplier);
-        new CursorControllerRegistrar().register(this, localUrlSupplier);
-        new PageControllerRegistrar().register(this, localUrlSupplier);
-        new SearchControllerRegistrar().register(this, localUrlSupplier);
-        new InternalsControllerRegistrar().register(this, localUrlSupplier);
-        new IdGeneratorControllerRegistrar().register(this, localUrlSupplier);
+
+        //dynamically load AppControllerRegistrar that comply with com.kayhut.fuse.services package and derive from AppControllerRegistrarBase
+        additionalRegistrars(this, localUrlSupplier);
+        //swagger
         new SwaggerUI()
                 .filter(route -> route.pattern().startsWith("/fuse"))
                 .install(this);
+    }
+
+    /**
+     * dynamically load AppControllerRegistrar that comply with com.kayhut.fuse.services package and derive from AppControllerRegistrarBase
+     * @param fuseApp
+     * @param localUrlSupplier
+     */
+    private void additionalRegistrars(FuseApp fuseApp, AppUrlSupplier localUrlSupplier) {
+        Reflections reflections = new Reflections(FuseApp.class.getPackage().getName());
+        Set<Class<? extends AppControllerRegistrarBase>> allClasses = reflections.getSubTypesOf(AppControllerRegistrarBase.class);
+        allClasses.forEach(clazz-> {
+            try {
+                clazz.getConstructor().newInstance().register(fuseApp,localUrlSupplier);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        });
     }
     //endregion
 
