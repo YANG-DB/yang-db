@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
+import com.kayhut.fuse.graph.algorithm.BetweennessCentrality;
 import com.kayhut.fuse.graph.algorithm.PageRank;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.transport.ContentResponse;
@@ -17,6 +18,8 @@ import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
+import org.graphstream.algorithm.Algorithm;
+import org.graphstream.algorithm.TarjanStronglyConnectedComponents;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -70,7 +73,7 @@ public class StandardPocGraphController implements PocGraphController {
     @Override
     public ContentResponse<ObjectNode> getGraphWithRank(boolean cache, String queryId, String cursorId, String pageId, @Nullable String context) {
         try {
-            init(cache, queryId, cursorId, pageId, context);
+            init(new PageRank().setVerbose(true), cache, queryId, cursorId, pageId, context);
             final Graph graph = getGraph(queryId, cursorId, pageId, context);
 
             Graph queryGraph;
@@ -87,7 +90,7 @@ public class StandardPocGraphController implements PocGraphController {
             node.set("nodes", mapper.createArrayNode().addAll(queryGraph.getNodeSet().stream().map(this::project).collect(Collectors.toList())));
             node.set("edges", mapper.createArrayNode().addAll(queryGraph.getEdgeSet().stream().map(this::project).collect(Collectors.toList())));
             return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND).data(Optional.of(node)).compose();
-        }catch (Exception err) {
+        } catch (Exception err) {
             throw new RuntimeException(err);
         }
     }
@@ -95,7 +98,7 @@ public class StandardPocGraphController implements PocGraphController {
     @Override
     public ContentResponse<ObjectNode> getGraphWithRank(boolean cache, int takeTopN, @Nullable String context) {
         try {
-            init(cache, "top[" + takeTopN + "]", "0", "0", context);
+            init(new PageRank().setVerbose(true),cache, "top[" + takeTopN + "]", "0", "0", context);
             final Graph graph = getGraph("top[" + takeTopN + "]", "0", "0", context);
 
             final Graph subGraph = cloneGraph(mapper, graph, n -> n.getAttribute("type").equals("entity"), takeTopN);
@@ -110,22 +113,47 @@ public class StandardPocGraphController implements PocGraphController {
     }
 
     @Override
-    public ContentResponse<Map> getGraphWithConnectivity(boolean cache, String queryId, String cursorId, String pageId, String context) {
-        final MultiGraph queryGraph = new MultiGraph(pageId);
-        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(Collections.EMPTY_MAP)).compose();
+    public ContentResponse<ObjectNode> getGraphWithConnectedComponents(boolean cache, int takeTopN, @Nullable String context) {
+        try {
+            init(new TarjanStronglyConnectedComponents(),cache, "top[" + takeTopN + "]", "0", "0", context);
+            final Graph graph = getGraph("top[" + takeTopN + "]", "0", "0", context);
+
+            final Graph subGraph = cloneGraph(mapper, graph, n -> n.getAttribute("type").equals("entity"), takeTopN);
+            final ObjectNode node = mapper.createObjectNode();
+            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            node.set("nodes", mapper.createArrayNode().addAll(subGraph.getNodeSet().stream().map(this::project).collect(Collectors.toList())));
+            node.set("edges", mapper.createArrayNode().addAll(subGraph.getEdgeSet().stream().map(this::project).collect(Collectors.toList())));
+            return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND).data(Optional.of(node)).compose();
+        } catch (Exception err) {
+            throw new RuntimeException(err);
+        }
     }
 
-    private void init(boolean cache, String queryId, String cursorId, String pageId, @Nullable String context) {
+    @Override
+    public ContentResponse<ObjectNode> getGraphWithConnectivity(boolean cache, int takeTopN, @Nullable String context) {
+        try {
+            init(new BetweennessCentrality(), cache, "top[" + takeTopN + "]", "0", "0", context);
+            final Graph graph = getGraph("top[" + takeTopN + "]", "0", "0", context);
+
+            final Graph subGraph = cloneGraph(mapper, graph, n -> n.getAttribute("type").equals("entity"), takeTopN);
+            final ObjectNode node = mapper.createObjectNode();
+            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            node.set("nodes", mapper.createArrayNode().addAll(subGraph.getNodeSet().stream().map(this::project).collect(Collectors.toList())));
+            node.set("edges", mapper.createArrayNode().addAll(subGraph.getEdgeSet().stream().map(this::project).collect(Collectors.toList())));
+            return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND).data(Optional.of(node)).compose();
+        } catch (Exception err) {
+            throw new RuntimeException(err);
+        }
+    }
+
+    private void init(Algorithm algorithm, boolean cache, String queryId, String cursorId, String pageId, @Nullable String context) {
         final List<String> indices = Stream.ofAll(schema.getPartition("entity").getPartitions()).flatMap(partition -> partition.getIndices()).toJavaList();
         if (!cache || getGraph(queryId, cursorId, pageId, context).getNodeSet().size() == 0) {
             final MultiGraph graph = new MultiGraph(getId(queryId, cursorId, pageId, context));
             this.graph.put(queryId + "." + cursorId + "." + pageId, graph);
-            PageRank pageRank = new PageRank();
-            pageRank.setVerbose(true);
             GraphBuilder.populate(graph, client, Optional.ofNullable(context), Optional.ofNullable(context), fields, indices.toArray(new String[indices.size()]));
-            pageRank.init(graph);
-            pageRank.compute();
+            algorithm.init(graph);
+            algorithm.compute();
         }
     }
 

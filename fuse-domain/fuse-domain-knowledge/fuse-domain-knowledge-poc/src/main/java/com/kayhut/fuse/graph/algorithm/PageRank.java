@@ -302,8 +302,9 @@ public class PageRank implements DynamicAlgorithm, ElementSink {
 	 * @param verbose
 	 *            Verbose mode
 	 */
-	public void setVerbose(boolean verbose) {
+	public PageRank setVerbose(boolean verbose) {
 		this.verbose = verbose;
+		return this;
 	}
 
 	// DynamicAlgorithm implementation
