@@ -39,15 +39,18 @@ public class PocControllerRegistrar extends AppControllerRegistrarBase<PocGraphC
                 .get(req -> Results.redirect("/public/assets/ResultsTreeViewer.html" +
                         "/fuse/poc/graph/query/" + req.param("queryId").value() + "/cursor/"
                         + req.param("cursorId").value()
-                        + "/page/" + req.param("pageId").value()
-
-
+                        + "/page/" + req.param("pageId").value() +"?" +
+                        (req.param("cache").isSet() ? req.param("cache").booleanValue() : false) + ";" +
+                        (req.param("context").isSet() ? req.param("context").toString() : null)
                 ));
 
         /** view the entire graph with d3 html*/
         app.use(pocUrlSupplier.baseUrl() + "/view")
                 .get(req -> Results.redirect("/public/assets/ResultsTreeViewer.html" +
-                        "fuse/poc/graph?count=" +( req.param("count").isSet() ? req.param("count").intValue() : -1)));
+                        "fuse/poc/graph?count=" +
+                        (req.param("cache").isSet() ? req.param("cache").booleanValue() : false) + ";" +
+                        (req.param("count").isSet() ? req.param("count").intValue() : -1) + ";" +
+                        (req.param("context").isSet() ? req.param("context").toString() : null)));
     }
     //endregion
 }

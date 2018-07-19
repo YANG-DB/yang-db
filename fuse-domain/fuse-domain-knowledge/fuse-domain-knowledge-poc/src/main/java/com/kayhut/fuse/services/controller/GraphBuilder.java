@@ -59,7 +59,7 @@ public class GraphBuilder {
                             .should(existsQuery("deleteUser"))
                             .should(termQuery("direction", "out"))
                     ));
-            context.ifPresent(ctx -> boolQueryBuilder.must(termQuery("context", context)));
+            context.ifPresent(ctx -> boolQueryBuilder.must(termQuery("context", ctx)));
 
             SearchResponse scrollResp = client.prepareSearch(indices)
                     .setFetchSource(fields.toArray(new String[fields.size()]), null)
