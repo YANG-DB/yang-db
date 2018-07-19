@@ -45,6 +45,21 @@ public interface LogMessage {
     interface MDCWriter {
         void write();
 
+        class Noop implements MDCWriter {
+            public static final Noop instance = new Noop();
+
+            //region Constructors
+            private Noop() {}
+            //endregion
+
+            //region MDCWriter Implementation
+            @Override
+            public void write() {
+
+            }
+            //endregion
+        }
+
         class KeyValue implements MDCWriter {
             //region Constructors
             public KeyValue(String key, String value) {
