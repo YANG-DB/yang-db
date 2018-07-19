@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.kayhut.fuse.graph.algorithm.PageRank.DEFAULT_RANK_ATTRIBUTE;
 import static com.kayhut.fuse.graph.view.AssignmentToGraph.enrich;
@@ -28,13 +29,13 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 
 public class GraphBuilder {
     public static Map<String, Object> getAttributes(Element node) {
-        return node.attributeKeys().map(key -> new Tuple2<>(key, node.getAttribute(key)))
+        return node.getAttributeKeySet().stream().map(key -> new Tuple2<>(key, node.getAttribute(key)))
                 .collect(Collectors.toMap(p -> p._1, p -> p._2));
     }
 
     public static Graph cloneGraph(ObjectMapper mapper,Graph g, Predicate<Node> filter, int takeTopN) {
         Graph graph = new MultiGraph(g.getId() + ".Filtered");
-        g.nodes().filter(filter).sorted((o1, o2) ->
+        g.getNodeSet().stream().filter(filter).sorted((o1, o2) ->
                 (int) (Math.pow(Long.valueOf(o1.getAttribute("nodeCount").toString()), 2)
                         * (Double.valueOf(o2.getAttribute(DEFAULT_RANK_ATTRIBUTE).toString()) - Double.valueOf(o1.getAttribute(DEFAULT_RANK_ATTRIBUTE).toString()))))
                 .limit(takeTopN > 0 ? takeTopN : Integer.MAX_VALUE)
@@ -43,7 +44,7 @@ public class GraphBuilder {
     }
 
     private static Node cloneNode(Node target, Node source) {
-        target.setAttributes(getAttributes(source));
+        getAttributes(source).forEach((key,value)->target.setAttribute(key,value));
         return target;
     }
 
@@ -84,20 +85,22 @@ public class GraphBuilder {
                             node.setAttribute("context", hit.getSource().get("context").toString());
                             node.setAttribute("category", hit.getSource().get("category").toString());
                             node.setAttribute("logicalId", hit.getSource().get("logicalId").toString());
-                            ((List) hit.getSource().get("refs")).forEach(ref -> {
-                                if (g.getNode(ref.toString()) == null) {
-                                    final Node reference = g.addNode(ref.toString());
-                                    reference.setAttribute("referrers", Array.of(id));
-                                    reference.setAttribute("ui.color", BURLYWOOD);
-                                    reference.setAttribute("ui.size", 20f);
-                                    reference.setAttribute("type", "reference");
-                                } else {
-                                    //append entityId to logicalId
-                                    ((Array) g.getNode(ref.toString()).getAttribute("referrers")).append(id);
-                                }
-                                final Edge edge = g.addEdge(id + "->" + ref.toString(), id, ref.toString());
-                                edge.setAttribute("ui.color", LIGHTCORAL);
-                            });
+                            if(hit.getSource().containsKey("refs")) {
+                                ((List) hit.getSource().get("refs")).forEach(ref -> {
+                                    if (g.getNode(ref.toString()) == null) {
+                                        final Node reference = g.addNode(ref.toString());
+                                        reference.setAttribute("referrers", Array.of(id));
+                                        reference.setAttribute("ui.color", BURLYWOOD);
+                                        reference.setAttribute("ui.size", 20f);
+                                        reference.setAttribute("type", "reference");
+                                    } else {
+                                        //append entityId to logicalId
+                                        ((Array) g.getNode(ref.toString()).getAttribute("referrers")).append(id);
+                                    }
+                                    final Edge edge = g.addEdge(id + "->" + ref.toString(), id, ref.toString());
+                                    edge.setAttribute("ui.color", LIGHTCORAL);
+                                });
+                            }
                             break;
                         case "e.value":
                             node = g.getNode(id);
@@ -122,21 +125,23 @@ public class GraphBuilder {
                             node.setAttribute("ui.size", 30f);
                             node.setAttribute("entityId", entityId);
                             node.setAttribute("logicalId", hit.getSource().get("logicalId").toString());
-                            ((List) hit.getSource().get("refs")).forEach(ref -> {
-                                if (g.getNode(ref.toString()) == null) {
-                                    final Node reference = g.addNode(ref.toString());
-                                    reference.setAttribute("context", hit.getSource().get("context").toString());
-                                    reference.setAttribute("referrers", Array.of(id));
-                                    reference.setAttribute("ui.color", BURLYWOOD);
-                                    reference.setAttribute("ui.size", 20f);
-                                    reference.setAttribute("type", "reference");
-                                } else {
-                                    //append entityId to logicalId
-                                    ((Array) g.getNode(ref.toString()).getAttribute("referrers")).append(id);
-                                }
-                                final Edge edge = g.addEdge(id + "->" + ref.toString(), id, ref.toString());
-                                edge.setAttribute("ui.color", LIGHTCORAL);
-                            });
+                            if(hit.getSource().containsKey("refs")) {
+                                ((List) hit.getSource().get("refs")).forEach(ref -> {
+                                    if (g.getNode(ref.toString()) == null) {
+                                        final Node reference = g.addNode(ref.toString());
+                                        reference.setAttribute("context", hit.getSource().get("context").toString());
+                                        reference.setAttribute("referrers", Array.of(id));
+                                        reference.setAttribute("ui.color", BURLYWOOD);
+                                        reference.setAttribute("ui.size", 20f);
+                                        reference.setAttribute("type", "reference");
+                                    } else {
+                                        //append entityId to logicalId
+                                        ((Array) g.getNode(ref.toString()).getAttribute("referrers")).append(id);
+                                    }
+                                    final Edge edge = g.addEdge(id + "->" + ref.toString(), id, ref.toString());
+                                    edge.setAttribute("ui.color", LIGHTCORAL);
+                                });
+                            }
 
                             //add entityId node (if not already exists)
                             if (g.getNode(entityId) == null) {

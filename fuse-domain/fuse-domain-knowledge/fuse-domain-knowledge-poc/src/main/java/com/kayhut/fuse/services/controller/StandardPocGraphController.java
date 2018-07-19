@@ -69,36 +69,44 @@ public class StandardPocGraphController implements PocGraphController {
 
     @Override
     public ContentResponse<ObjectNode> getGraphWithRank(boolean cache, String queryId, String cursorId, String pageId, @Nullable String context) {
-        init(cache, queryId, cursorId, pageId, context);
-        final Graph graph = getGraph(queryId, cursorId, pageId, context);
+        try {
+            init(cache, queryId, cursorId, pageId, context);
+            final Graph graph = getGraph(queryId, cursorId, pageId, context);
 
-        Graph queryGraph;
-        final Optional<Object> data = driver.getData(queryId, cursorId, pageId);
-        if (data.isPresent()) {
-            AssignmentsQueryResult assignments = (AssignmentsQueryResult) data.get();
-            queryGraph = populateFromAssignment(mapper, graph, assignments.getAssignments().get(0));
-        } else {
-            //return entire graph
-            queryGraph = cloneGraph(mapper, graph, n -> n.getAttribute("type").equals("entity"), 100);
+            Graph queryGraph;
+            final Optional<Object> data = driver.getData(queryId, cursorId, pageId);
+            if (data.isPresent()) {
+                AssignmentsQueryResult assignments = (AssignmentsQueryResult) data.get();
+                queryGraph = populateFromAssignment(mapper, graph, assignments.getAssignments().get(0));
+            } else {
+                //return entire graph
+                queryGraph = cloneGraph(mapper, graph, n -> n.getAttribute("type").equals("entity"), 100);
+            }
+            final ObjectNode node = mapper.createObjectNode();
+            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            node.set("nodes", mapper.createArrayNode().addAll(queryGraph.getNodeSet().stream().map(this::project).collect(Collectors.toList())));
+            node.set("edges", mapper.createArrayNode().addAll(queryGraph.getEdgeSet().stream().map(this::project).collect(Collectors.toList())));
+            return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND).data(Optional.of(node)).compose();
+        }catch (Exception err) {
+            throw new RuntimeException(err);
         }
-        final ObjectNode node = mapper.createObjectNode();
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        node.set("nodes", mapper.createArrayNode().addAll(queryGraph.nodes().map(this::project).collect(Collectors.toList())));
-        node.set("edges", mapper.createArrayNode().addAll(queryGraph.edges().map(this::project).collect(Collectors.toList())));
-        return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND).data(Optional.of(node)).compose();
     }
 
     @Override
     public ContentResponse<ObjectNode> getGraphWithRank(boolean cache, int takeTopN, @Nullable String context) {
-        init(cache, "top[" + takeTopN + "]", "0", "0", context);
-        final Graph graph = getGraph("top[" + takeTopN + "]", "0", "0", context);
+        try {
+            init(cache, "top[" + takeTopN + "]", "0", "0", context);
+            final Graph graph = getGraph("top[" + takeTopN + "]", "0", "0", context);
 
-        final Graph subGraph = cloneGraph(mapper, graph, n -> n.getAttribute("type").equals("entity"), takeTopN);
-        final ObjectNode node = mapper.createObjectNode();
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        node.set("nodes", mapper.createArrayNode().addAll(subGraph.nodes().map(this::project).collect(Collectors.toList())));
-        node.set("edges", mapper.createArrayNode().addAll(subGraph.edges().map(this::project).collect(Collectors.toList())));
-        return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND).data(Optional.of(node)).compose();
+            final Graph subGraph = cloneGraph(mapper, graph, n -> n.getAttribute("type").equals("entity"), takeTopN);
+            final ObjectNode node = mapper.createObjectNode();
+            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            node.set("nodes", mapper.createArrayNode().addAll(subGraph.getNodeSet().stream().map(this::project).collect(Collectors.toList())));
+            node.set("edges", mapper.createArrayNode().addAll(subGraph.getEdgeSet().stream().map(this::project).collect(Collectors.toList())));
+            return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND).data(Optional.of(node)).compose();
+        } catch (Exception err) {
+            throw new RuntimeException(err);
+        }
     }
 
     @Override
@@ -110,7 +118,7 @@ public class StandardPocGraphController implements PocGraphController {
 
     private void init(boolean cache, String queryId, String cursorId, String pageId, @Nullable String context) {
         final List<String> indices = Stream.ofAll(schema.getPartition("entity").getPartitions()).flatMap(partition -> partition.getIndices()).toJavaList();
-        if (!cache || getGraph(queryId, cursorId, pageId, context).nodes().count() == 0) {
+        if (!cache || getGraph(queryId, cursorId, pageId, context).getNodeSet().size() == 0) {
             final MultiGraph graph = new MultiGraph(getId(queryId, cursorId, pageId, context));
             this.graph.put(queryId + "." + cursorId + "." + pageId, graph);
             PageRank pageRank = new PageRank();
@@ -132,13 +140,13 @@ public class StandardPocGraphController implements PocGraphController {
     }
 
     private JsonNode project(Node node) {
-        final ArrayNode attributes = mapper.createArrayNode().addAll(node.attributeKeys()
+        final ArrayNode attributes = mapper.createArrayNode().addAll(node.getAttributeKeySet().stream()
                 .map(key -> mapper.createObjectNode().put(key, node.getAttribute(key).toString())).collect(Collectors.toList()));
         return mapper.createObjectNode().put("id", node.getId()).put("degree", node.getDegree()).set("attributes", attributes);
     }
 
     private JsonNode project(Edge node) {
-        final ArrayNode attributes = mapper.createArrayNode().addAll(node.attributeKeys()
+        final ArrayNode attributes = mapper.createArrayNode().addAll(node.getAttributeKeySet().stream()
                 .map(key -> mapper.createObjectNode().put(key,
                         node.getAttribute(key).toString())).collect(Collectors.toList()));
         return mapper.createObjectNode().put("id", node.getId())

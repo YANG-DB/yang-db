@@ -8,8 +8,11 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static com.kayhut.fuse.services.controller.GraphBuilder.getAttributes;
 import static javafx.scene.paint.Color.*;
@@ -86,12 +89,12 @@ public class AssignmentToGraph {
     public static Node enrich(ObjectMapper mapper,Node source,Node target) {
             switch (source.getAttribute("type").toString()) {
                 case "entity":
-                    final List<ObjectNode> collect = source.neighborNodes()
+                    final List<ObjectNode> collect = iteratorToStream(source.getNeighborNodeIterator(),false)
                             .filter(p -> p.getAttribute("type").equals("e.value"))
                             .map(q -> mapper.createObjectNode().put(q.getAttribute("fieldId").toString(), q.getAttribute("value").toString()))
                             .collect(Collectors.toList());
                     target.setAttribute("values", mapper.createArrayNode().addAll(collect));
-                    target.setAttribute("label", source.getAttribute("category"));
+                    target.setAttribute("label", source.getAttribute("category").toString());
                     break;
                 case "e.value":
                     break;
@@ -109,12 +112,12 @@ public class AssignmentToGraph {
             assignment.getEntities().forEach(n -> {
                 if (g.getNode(n.geteID()) != null) {
                     Node node = subGraph.addNode(n.geteID());
-                    node.setAttributes(getAttributes(g.getNode(n.geteID())));
+                    getAttributes(g.getNode(n.geteID())).forEach(node::setAttribute);
                     switch (n.geteType()) {
                         case "Entity":
                             final String category = n.getProperties().stream().filter(v -> v.getpType().equals("category"))
                                     .findAny().get().getValue().toString();
-                            final List<ObjectNode> collect = g.getNode(n.geteID()).neighborNodes()
+                            final List<ObjectNode> collect = iteratorToStream(g.getNode(n.geteID()).getNeighborNodeIterator(),false)
                                     .filter(p -> p.getAttribute("type").equals("e.value"))
                                     .map(q -> mapper.createObjectNode().put(q.getAttribute("fieldId").toString(), q.getAttribute("value").toString()))
                                     .collect(Collectors.toList());
@@ -183,7 +186,7 @@ public class AssignmentToGraph {
                                     .findAny().get().getValue().toString();
 
                             Node nodeSideB = subGraph.addNode(sideB);
-                            nodeSideB.setAttributes(getAttributes(g.getNode(sideB)));
+                            getAttributes(g.getNode(sideB)).forEach(nodeSideB::setAttribute);
 
                             nodeSideB.setAttribute("label", sideBCategory);
                             nodeSideB.setAttribute("ui.label", sideBCategory);
@@ -193,7 +196,7 @@ public class AssignmentToGraph {
 
 
                             final Edge edge = subGraph.addEdge(sideA + "->" + sideB, sideA, sideB);
-                            edge.setAttributes(getAttributes(g.getEdge(sideA + "->" + sideB)));
+                            getAttributes(g.getEdge(sideA + "->" + sideB)).forEach(edge::setAttribute);
 
                             edge.setAttribute("ui.color", BLUE);
                             edge.setAttribute("ui.label", edgeCategory);
@@ -215,6 +218,11 @@ public class AssignmentToGraph {
             });
         }
         return subGraph;
+    }
+
+    public static <T> Stream<T> iteratorToStream(final Iterator<T> iterator, final boolean parallell) {
+        Iterable<T> iterable = () -> iterator;
+        return StreamSupport.stream(iterable.spliterator(), parallell);
     }
 
     public static void populateGraph(Graph g, Assignment assignment) {
