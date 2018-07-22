@@ -59,6 +59,7 @@ public class FuseApp extends Jooby {
         use("*", new CorsHandler());
         //expose html assets
         assets("public/assets/**");
+        assets("public/assets/lib/**");
 
         new LoggingJacksonRendererRegistrar(metricRegistry).register(this, localUrlSupplier);
         new BeforeAfterAppRegistrar().register(this, localUrlSupplier);
