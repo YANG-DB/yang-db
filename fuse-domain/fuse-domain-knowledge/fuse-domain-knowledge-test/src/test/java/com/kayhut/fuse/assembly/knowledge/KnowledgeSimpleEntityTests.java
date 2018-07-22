@@ -6,10 +6,7 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
 import javaslang.collection.Stream;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +23,7 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder._ref;
 import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
 
+@Ignore
 public class KnowledgeSimpleEntityTests {
     static KnowledgeWriterContext ctx ;
 

@@ -108,7 +108,7 @@ public class Constraint {
         return of(op, exp, "[]");
     }
 
-    public static Constraint of(ConstraintOp op,Object exp, String iType) {
+    public static Constraint of(ConstraintOp op, Object exp, String iType) {
         Constraint constraint = new Constraint();
         constraint.setExpr(exp);
         constraint.setOp(op);

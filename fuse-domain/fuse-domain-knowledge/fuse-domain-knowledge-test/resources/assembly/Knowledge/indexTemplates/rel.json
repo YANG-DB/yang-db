@@ -77,7 +77,7 @@
         "bdt": {
           "type": "keyword"
         },
-        "propertyId": {
+        "fieldId": {
           "type": "keyword"
         },
         "integerValue": {

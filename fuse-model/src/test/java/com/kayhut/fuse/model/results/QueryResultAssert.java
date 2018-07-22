@@ -32,6 +32,8 @@ public class QueryResultAssert {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
+        Assert.assertEquals(expected.getSize(), actual.getSize());
+
         assertIfBothNull(expected.getAssignments(), actual.getAssignments());
         assertIfBothNotNull(expected.getAssignments(), actual.getAssignments());
 
