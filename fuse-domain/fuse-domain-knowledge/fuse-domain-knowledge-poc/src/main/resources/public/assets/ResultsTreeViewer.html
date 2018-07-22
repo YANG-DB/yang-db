@@ -61,7 +61,8 @@
 
 <div id="body"></div>
 
-<script type='text/javascript' src="lib/d3.v3.min.js"></script>
+
+<script type='text/javascript' src="lib/d3.v3.js"></script>
 <script type='text/javascript' src="lib/d3.tip.v0.6.3.js"></script>
 <script type='text/javascript' src="lib/jquery-1.10.2.min.js"></script>
 <script type='text/javascript' src="lib/jquery-ui.min.js"></script>
@@ -91,7 +92,8 @@
             var dataEdges = [];
             var dataNodes = [];
             var svg = d3.select("body").append("svg").attr({"width": w, "height": h});
-            dataset.data.nodes.filter(v => v.attributes[v.attributes.findIndex(item => item.hasOwnProperty("type"))].type === "entity")
+            dataset.data.nodes
+                .filter(v => v.attributes[v.attributes.findIndex(item => item.hasOwnProperty("type"))].type === "entity")
                 .map(v => {
                     v.name = v.attributes[v.attributes.findIndex(item => item.hasOwnProperty("label"))].label;
                     v.type = v.attributes[v.attributes.findIndex(item => item.hasOwnProperty("type"))].type;
@@ -109,7 +111,7 @@
                         });
                         dataEdges.push({
                             from: v.id,
-                            to: v.id + "." + Object.keys(item)[0],
+                            to: v.id + "." + Object.keys(item)[0] + "." + Object.values(item)[0],
                             source: dataNodes.findIndex(node => node.id === v.id),
                             target: dataNodes.findIndex(node => node.id === v.id + "." + Object.keys(item)[0] + "." + Object.values(item)[0])
                         })
@@ -117,27 +119,29 @@
                     return v;
                 });
             //mark start node
-            dataEdges.push(dataset.data.edges.map(v => {
-                v.from = v.source;
-                v.source = dataNodes.findIndex(node => node.id === v.source);
-                v.to = v.target;
-                v.target = dataNodes.findIndex(node => node.id === v.target);
-                return v;
-            }));
+            if(dataset.data.edges.length > 0 ) {
+                dataEdges.push(dataset.data.edges.map(v => {
+                    v.from = v.source;
+                    v.source = dataNodes.findIndex(node => node.id === v.source);
+                    v.to = v.target;
+                    v.target = dataNodes.findIndex(node => node.id === v.target);
+                    return v;
+                }));
+            }
 
             dataEdges = dataEdges.filter(item => {
-                return item.source > 0 && item.target > 0;
+                return item.source !== -1 && item.target !== -1 ;
             });
             let entities = dataNodes.filter(dn=>dn.type==="entity");
             let maxRank = Math.max(...entities.map(e=>e.attributes[e.attributes.findIndex(item => item.hasOwnProperty("PageRank"))].PageRank));
             let minRank = Math.min(...entities.map(e=>e.attributes[e.attributes.findIndex(item => item.hasOwnProperty("PageRank"))].PageRank));
-            let factor = (maxRank-minRank)/minRank
+            let factor = (maxRank-minRank)/minRank;
             //Set up tooltip
             var tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html(function (d) {
-                    return d.value + "";
+                    return `${d.label}:${d.value}-[${d.id}]`;
                 });
             svg.call(tip);
 
@@ -262,7 +266,7 @@
                     "stroke": "black"
                 })
                 .text(function (d) {
-                    return (d.label ? `${d.label}.${d.value}` : d.name);
+                    return `${d.label}:${d.value}`.length > 10 ? `${d.label}:${d.value}`.substr(0,9)+'...' : `${d.label}:${d.value}`  ;
                 });
 
             var edgepaths = svg.selectAll(".edgepath")
@@ -296,7 +300,7 @@
                     },
                     'dx': 80,
                     'dy': 0,
-                    'font-size': 10,
+                    'font-size': 6,
                     'fill': '#61aa67'
                 });
 
