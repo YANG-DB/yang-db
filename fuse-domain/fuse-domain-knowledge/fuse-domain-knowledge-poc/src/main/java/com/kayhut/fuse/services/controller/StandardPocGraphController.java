@@ -20,6 +20,7 @@ import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
 import org.graphstream.algorithm.Algorithm;
+import org.graphstream.algorithm.Centroid;
 import org.graphstream.algorithm.Eccentricity;
 import org.graphstream.algorithm.TarjanStronglyConnectedComponents;
 import org.graphstream.graph.Edge;
@@ -121,6 +122,21 @@ public class StandardPocGraphController implements PocGraphController {
     public ContentResponse<ObjectNode> getGraphWithConnectedComponents(boolean cache, int takeTopN, @Nullable String context) {
         try {
             init(Arrays.asList(new TarjanStronglyConnectedComponents()), cache,context);
+            final Graph graph = getGraph(context);
+
+            final ObjectNode node = mapper.createObjectNode();
+            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            node.set("nodes", mapper.createArrayNode().addAll(graph.getNodeSet().stream().map(this::project).collect(Collectors.toList())));
+            node.set("edges", mapper.createArrayNode().addAll(graph.getEdgeSet().stream().map(this::project).collect(Collectors.toList())));
+            return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND).data(Optional.of(node)).compose();
+        } catch (Exception err) {
+            throw new RuntimeException(err);
+        }
+    }
+    @Override
+    public ContentResponse<ObjectNode> getGraphWithCentroid(boolean cache, int takeTopN, @Nullable String context) {
+        try {
+            init(Arrays.asList(new APSP(),new Centroid()), cache,context);
             final Graph graph = getGraph(context);
 
             final ObjectNode node = mapper.createObjectNode();

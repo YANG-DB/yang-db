@@ -16,6 +16,8 @@ public interface PocGraphController {
 
     ContentResponse<ObjectNode> getGraphWithConnectedComponents(boolean cache, int topN, @Nullable String context);
 
+    ContentResponse<ObjectNode> getGraphWithCentroid(boolean cache, int topN, @Nullable String context);
+
     ContentResponse<ObjectNode> getGraphWithConnectivity(boolean cache, @Nullable String context);
 
     ContentResponse<ObjectNode> getGraphWithEccentricity(boolean cache, @Nullable String context);

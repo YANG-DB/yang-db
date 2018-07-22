@@ -42,6 +42,12 @@ public class PocControllerRegistrar extends AppControllerRegistrarBase<PocGraphC
                         req.param("count").isSet() ? req.param("count").intValue() : -1,
                         req.param("context").isSet() ? req.param("context").value() : null)));
 
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/centroid").baseUrl())
+                .get(req -> Results.json(this.getController(app).getGraphWithCentroid(
+                        req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
+                        req.param("count").isSet() ? req.param("count").intValue() : -1,
+                        req.param("context").isSet() ? req.param("context").value() : null)));
+
         app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/connectivity").baseUrl())
                 .get(req -> Results.json(this.getController(app).getGraphWithConnectivity(
                         req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
