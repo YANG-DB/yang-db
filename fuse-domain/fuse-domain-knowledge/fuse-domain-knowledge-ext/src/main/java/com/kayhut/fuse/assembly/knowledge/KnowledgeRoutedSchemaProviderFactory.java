@@ -15,6 +15,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import static com.kayhut.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.LogicalTypes.*;
+import static com.kayhut.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.MetadataFields.*;
+import static com.kayhut.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.SchemaFields.*;
+import static com.kayhut.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.SchemaTypes.*;
 import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
 import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endB;
 
@@ -22,6 +26,103 @@ import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application
  * Created by roman.margolis on 02/10/2017.
  */
 public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaProviderFactory {
+
+    public static final String DATE = "date";
+    public static final String INT = "int";
+    public static final String SCORE = "score";
+    public static final String FLOAT = "float";
+    public static final String STRING = "string";
+
+    public interface MetadataFields {
+        String CREATION_USER = "creationUser";
+        String CREATION_TIME = "creationTime";
+        String LAST_UPDATE_USER = "lastUpdateUser";
+        String LAST_UPDATE_TIME = "lastUpdateTime";
+        String DELETE_USER = "deleteUser";
+        String DELETE_TIME = "deleteTime";
+        String AUTHORIZATION = "authorization";
+        String AUTHORIZATION_COUNT = "authorizationCount";
+    }
+
+    public interface SchemaFields {
+        //primary key ids
+        String INSIGHT_ID = "insightId";
+        String LOGICAL_ID = "logicalId";
+        String FIELD_ID = "fieldId";
+        String RELATION_ID = "relationId";
+        String ENTITY_IDS = "entityIds";
+        String ENTITY_A_ID = "entityAId";
+        String ENTITY_B_ID = "entityBId";
+        String ENTITY_ID = "entityId";
+        String ENTITY_A_LOGICAL_ID = "entityALogicalId";
+        String ENTITY_B_LOGICAL_ID = "entityBLogicalId";
+
+        //property fields
+        String STRING_VALUE = "stringValue";
+        String SYSTEM = "system";
+        String DIRECTION = "direction";
+        String ENTITY_A_CATEGORY = "entityACategory";
+        String ENTITY_B_CATEGORY = "entityBCategory";
+        String CONTEXT = "context";
+        String BDT = "bdt";
+        String INT_VALUE = "intValue";
+        String DATE_VALUE = "dateValue";
+        String CATEGORY = "category";
+        String NAME = "name";
+        String DESCRIPTION = "description";
+        String MIME_TYPE = "mimeType";
+        String PATH = "path";
+        String DISPLAY_NAME = "displayName";
+        String TITLE = "title";
+        String VALUE = "value";
+        String URL = "url";
+        String CONTENT = "content";
+        String REFS = "refs";
+    }
+
+    public interface LogicalTypes {
+        String LOGICAL_ENTITY = "LogicalEntity";
+        String EFILE = "Efile";
+        String EVALUE = "Evalue";
+        String ENTITY = "Entity";
+        String INSIGHT = "Insight";
+        String REFERENCE = "Reference";
+        String RVALUE = "Rvalue";
+        String RELATION = "Relation";
+        //relations
+        String HAS_ENTITY = "hasEntity";
+        String HAS_EVALUE = "hasEvalue";
+        String HAS_OUT_RELATION = "hasOutRelation";
+        String HAS_IN_RELATION = "hasInRelation";
+        String HAS_EVALUE_REFERENCE = "hasEvalueReference";
+        String HAS_ENTITY_REFERENCE = "hasEntityReference";
+        String HAS_RVALUE_REFERENCE = "hasRvalueReference";
+        String HAS_INSIGHT_REFERENCE = "hasInsightReference";
+        String HAS_INSIGHT = "hasInsight";
+        String HAS_RELATION_REFERENCE = "hasRelationReference";
+        String HAS_EFILE_REFERENCE = "hasEfileReference";
+        String HAS_RELATION = "hasRelation";
+        String HAS_RVALUE = "hasRvalue";
+        String HAS_EFILE = "hasEfile";
+
+    }
+
+    public interface SchemaTypes {
+        String E_RELATION = "e.relation";
+        String E_VALUE = "e.value";
+        String E_FILE = "e.file";
+        String E_INSIGHT = "e.insight";
+        String R_VALUE = "r.value";
+
+        String S_ENTITY = "entity";
+        String S_RELATION = "relation";
+        String S_INSIGHT = "insight";
+        String S_REFERENCE = "reference";
+    }
+
+    public static final String KEYWORD = "keyword";
+    public static final String ID = "_id";
+
     private RawSchema schema;
     //region GraphElementSchemaProviderFactory Implementation
 
@@ -35,25 +136,25 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
         if (!ontology.getOnt().equals("Knowledge")) {
             return null;
         }
-        IndexPartitions entityPartitions = schema.getPartition("entity");
-        IndexPartitions entityValuePartitions = schema.getPartition("e.value");
-        IndexPartitions relationPartitions = schema.getPartition("relation");
-        IndexPartitions entityFilePartitions = schema.getPartition("e.file");
-        IndexPartitions relationValuePartitions = schema.getPartition("r.value");
-        IndexPartitions referencePartitions = schema.getPartition("reference");
-        IndexPartitions insightPartitions = schema.getPartition("insight");
+        IndexPartitions entityPartitions = schema.getPartition(SchemaTypes.S_ENTITY);
+        IndexPartitions entityValuePartitions = schema.getPartition(E_VALUE);
+        IndexPartitions relationPartitions = schema.getPartition(S_RELATION);
+        IndexPartitions entityFilePartitions = schema.getPartition(E_FILE);
+        IndexPartitions relationValuePartitions = schema.getPartition(R_VALUE);
+        IndexPartitions referencePartitions = schema.getPartition(SchemaTypes.S_REFERENCE);
+        IndexPartitions insightPartitions = schema.getPartition(SchemaTypes.S_INSIGHT);
 
         Iterable<GraphElementPropertySchema> metadataProperties = Arrays.asList(
-                new GraphElementPropertySchema.Impl("creationUser", "string"),
-                new GraphElementPropertySchema.Impl("creationTime", "date"),
-                new GraphElementPropertySchema.Impl("lastUpdateUser", "string"),
-                new GraphElementPropertySchema.Impl("lastUpdateTime", "date"),
-                new GraphElementPropertySchema.Impl("deleteUser", "string"),
-                new GraphElementPropertySchema.Impl("deleteTime", "date"),
-                new GraphElementPropertySchema.Impl("authorization", "string"),
-                new GraphElementPropertySchema.Impl("authorizationCount", "int"),
-                new GraphElementPropertySchema.Impl("score", "float"),
-                new GraphElementPropertySchema.Impl("refs", "string")
+                new GraphElementPropertySchema.Impl(CREATION_USER, STRING),
+                new GraphElementPropertySchema.Impl(CREATION_TIME, DATE),
+                new GraphElementPropertySchema.Impl(LAST_UPDATE_USER, STRING),
+                new GraphElementPropertySchema.Impl(LAST_UPDATE_TIME, DATE),
+                new GraphElementPropertySchema.Impl(DELETE_USER, STRING),
+                new GraphElementPropertySchema.Impl(DELETE_TIME, DATE),
+                new GraphElementPropertySchema.Impl(AUTHORIZATION, STRING),
+                new GraphElementPropertySchema.Impl(AUTHORIZATION_COUNT, INT),
+                new GraphElementPropertySchema.Impl(SCORE, FLOAT),
+                new GraphElementPropertySchema.Impl(REFS, STRING)
         );
 
         Iterable<GraphRedundantPropertySchema> redundantMetadataProperties = Stream.ofAll(metadataProperties)
@@ -62,183 +163,187 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                 .toJavaList();
 
         Iterable<GraphRedundantPropertySchema> entityEdgeRedundantProperties = Stream.<GraphRedundantPropertySchema>ofAll(Arrays.asList(
-                new GraphRedundantPropertySchema.Impl("logicalId", "logicalId", "string"),
-                new GraphRedundantPropertySchema.Impl("context", "context", "string"),
-                new GraphRedundantPropertySchema.Impl("category", "category", "string")))
+                new GraphRedundantPropertySchema.Impl(LOGICAL_ID, LOGICAL_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(CONTEXT, CONTEXT, STRING),
+                new GraphRedundantPropertySchema.Impl(CATEGORY, CATEGORY, STRING)))
                 .appendAll(redundantMetadataProperties).toJavaList();
 
         Iterable<GraphRedundantPropertySchema> valueEdgeRedundantProperties = Stream.<GraphRedundantPropertySchema>ofAll(Arrays.asList(
-                new GraphRedundantPropertySchema.Impl("logicalId", "logicalId", "string"),
-                new GraphRedundantPropertySchema.Impl("context", "context", "string"),
-                new GraphRedundantPropertySchema.Impl("fieldId", "fieldId", "string"),
-                new GraphRedundantPropertySchema.Impl("bdt", "bdt", "string"),
-                new GraphRedundantPropertySchema.Impl("stringValue", "stringValue", "string",
+                new GraphRedundantPropertySchema.Impl(LOGICAL_ID, LOGICAL_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(CONTEXT, CONTEXT, STRING),
+                new GraphRedundantPropertySchema.Impl(FIELD_ID, FIELD_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(BDT, BDT, STRING),
+                new GraphRedundantPropertySchema.Impl(STRING_VALUE, STRING_VALUE, STRING,
                         Arrays.asList(
-                                new GraphElementPropertySchema.ExactIndexingSchema.Impl("stringValue.keyword"),
-                                new GraphElementPropertySchema.NgramsIndexingSchema.Impl("stringValue", 10))),
-                new GraphRedundantPropertySchema.Impl("intValue", "intValue", "int"),
-                new GraphRedundantPropertySchema.Impl("dateValue", "dateValue", "date")))
+                                new GraphElementPropertySchema.ExactIndexingSchema.Impl(STRING_VALUE + "." + KEYWORD),
+                                new GraphElementPropertySchema.NgramsIndexingSchema.Impl(STRING_VALUE, 10))),
+                new GraphRedundantPropertySchema.Impl(INT_VALUE, INT_VALUE, INT),
+                new GraphRedundantPropertySchema.Impl(DATE_VALUE, DATE_VALUE, DATE)))
                 .appendAll(redundantMetadataProperties).toJavaList();
 
         Iterable<GraphRedundantPropertySchema> fileEdgeRedundantProperties = Stream.<GraphRedundantPropertySchema>ofAll(Arrays.asList(
-                new GraphRedundantPropertySchema.Impl("logicalId", "logicalId", "string"),
-                new GraphRedundantPropertySchema.Impl("context", "context", "string"),
-                new GraphRedundantPropertySchema.Impl("category", "category", "string"),
-                new GraphRedundantPropertySchema.Impl("name", "name", "string"),
-                new GraphRedundantPropertySchema.Impl("description", "description", "string",
+                new GraphRedundantPropertySchema.Impl(LOGICAL_ID, LOGICAL_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(CONTEXT, CONTEXT, STRING),
+                new GraphRedundantPropertySchema.Impl(CATEGORY, CATEGORY, STRING),
+                new GraphRedundantPropertySchema.Impl(NAME, NAME, STRING),
+                new GraphRedundantPropertySchema.Impl(DESCRIPTION, DESCRIPTION, STRING,
                         Arrays.asList(
-                                new GraphElementPropertySchema.ExactIndexingSchema.Impl("description.keyword"),
-                                new GraphElementPropertySchema.NgramsIndexingSchema.Impl("description", 10))),
-                new GraphRedundantPropertySchema.Impl("mimeType", "mimeType", "string"),
-                new GraphRedundantPropertySchema.Impl("path", "path", "string"),
-                new GraphRedundantPropertySchema.Impl("displayName", "displayName", "string")))
+                                new GraphElementPropertySchema.ExactIndexingSchema.Impl(DESCRIPTION + "." + KEYWORD),
+                                new GraphElementPropertySchema.NgramsIndexingSchema.Impl(DESCRIPTION, 10))),
+                new GraphRedundantPropertySchema.Impl(MIME_TYPE, MIME_TYPE, STRING),
+                new GraphRedundantPropertySchema.Impl(PATH, PATH, STRING),
+                new GraphRedundantPropertySchema.Impl(DISPLAY_NAME, DISPLAY_NAME, STRING)))
                 .appendAll(redundantMetadataProperties).toJavaList();
 
         Iterable<GraphRedundantPropertySchema> relationDualRedundantProperties = Stream.<GraphRedundantPropertySchema>ofAll(Arrays.asList(
-                new GraphRedundantPropertySchema.Impl("logicalId", "logicalId", "string"),
-                new GraphRedundantPropertySchema.Impl("context", "context", "string"),
-                new GraphRedundantPropertySchema.Impl("category", "category", "string")))
+                new GraphRedundantPropertySchema.Impl(LOGICAL_ID, LOGICAL_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(CONTEXT, CONTEXT, STRING),
+                new GraphRedundantPropertySchema.Impl(CATEGORY, CATEGORY, STRING)))
                 .appendAll(redundantMetadataProperties).toJavaList();
 
 
         Iterable<GraphRedundantPropertySchema> relationEntityARedundantProperties = Arrays.asList(
-                new GraphRedundantPropertySchema.Impl("category", "entityACategory", "string"),
-                new GraphRedundantPropertySchema.Impl("logicalId", "entityALogicalId", "string")
+                new GraphRedundantPropertySchema.Impl(CATEGORY, ENTITY_A_CATEGORY, STRING),
+                new GraphRedundantPropertySchema.Impl(LOGICAL_ID, ENTITY_A_LOGICAL_ID, STRING)
         );
 
         Iterable<GraphRedundantPropertySchema> relationEntityBRedundantProperties = Arrays.asList(
-                new GraphRedundantPropertySchema.Impl("category", "entityBCategory", "string"),
-                new GraphRedundantPropertySchema.Impl("logicalId", "entityBLogicalId", "string")
+                new GraphRedundantPropertySchema.Impl(CATEGORY, ENTITY_B_CATEGORY, STRING),
+                new GraphRedundantPropertySchema.Impl(LOGICAL_ID, ENTITY_B_LOGICAL_ID, STRING)
         );
 
         return new GraphElementSchemaProvider.Impl(
                 Arrays.asList(
-                        new GraphVirtualVertexSchema.Impl("LogicalEntity"),
+                        new GraphVirtualVertexSchema.Impl(LOGICAL_ENTITY),
                         new GraphVertexSchema.Impl(
-                                "Entity",
-                                new GraphElementConstraint.Impl(__.has(T.label, "entity")),
+                                LogicalTypes.ENTITY,
+                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_ENTITY)),
                                 Optional.of(new GraphElementRouting.Impl(
-                                        new GraphElementPropertySchema.Impl("logicalId", "string")
+                                        new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                 )),
                                 Optional.of(entityPartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
-                                        new GraphElementPropertySchema.Impl("category", "string"),
-                                        new GraphElementPropertySchema.Impl("logicalId", "string"),
-                                        new GraphElementPropertySchema.Impl("context", "string")))
-                                .appendAll(metadataProperties).toJavaList()),
+                                        new GraphElementPropertySchema.Impl(CATEGORY, STRING),
+                                        new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING),
+                                        new GraphElementPropertySchema.Impl(CONTEXT, STRING)))
+                                        .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
-                                "Efile",
-                                new GraphElementConstraint.Impl(__.has(T.label, "e.file")),
+                                EFILE,
+                                new GraphElementConstraint.Impl(__.has(T.label, E_FILE)),
                                 Optional.empty(),
                                 Optional.of(entityFilePartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
-                                        new GraphElementPropertySchema.Impl("entityId", "string"),
-                                        new GraphElementPropertySchema.Impl("logicalId", "string"),
-                                        new GraphElementPropertySchema.Impl("context", "string"),
-                                        new GraphElementPropertySchema.Impl("category", "string"),
-                                        new GraphElementPropertySchema.Impl("path", "string"),
-                                        new GraphElementPropertySchema.Impl("name", "string"),
-                                        new GraphElementPropertySchema.Impl("displayName", "string"),
-                                        new GraphElementPropertySchema.Impl("mimeType", "string"),
-                                        new GraphElementPropertySchema.Impl("description", "string",
-                                        Arrays.asList(
-                                                new GraphElementPropertySchema.ExactIndexingSchema.Impl("description.keyword"),
-                                                new GraphElementPropertySchema.NgramsIndexingSchema.Impl("description", 10)))))
+                                        new GraphElementPropertySchema.Impl(ENTITY_ID, STRING),
+                                        new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING),
+                                        new GraphElementPropertySchema.Impl(CONTEXT, STRING),
+                                        new GraphElementPropertySchema.Impl(CATEGORY, STRING),
+                                        new GraphElementPropertySchema.Impl(PATH, STRING),
+                                        new GraphElementPropertySchema.Impl(NAME, STRING),
+                                        new GraphElementPropertySchema.Impl(DISPLAY_NAME, STRING),
+                                        new GraphElementPropertySchema.Impl(MIME_TYPE, STRING),
+                                        new GraphElementPropertySchema.Impl(DESCRIPTION, STRING,
+                                                Arrays.asList(
+                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl(DESCRIPTION + "." + KEYWORD),
+                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl(DESCRIPTION, 10)))))
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
-                                "Evalue",
-                                new GraphElementConstraint.Impl(__.has(T.label, "e.value")),
+                                EVALUE,
+                                new GraphElementConstraint.Impl(__.has(T.label, E_VALUE)),
                                 Optional.empty(),
                                 Optional.of(entityValuePartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
-                                        new GraphElementPropertySchema.Impl("logicalId", "string"),
-                                        new GraphElementPropertySchema.Impl("context", "string"),
-                                        new GraphElementPropertySchema.Impl("bdt", "string"),
-                                        new GraphElementPropertySchema.Impl("fieldId", "string"),
-                                        new GraphElementPropertySchema.Impl("intValue", "int"),
-                                        new GraphElementPropertySchema.Impl("dateValue", "date"),
-                                        new GraphElementPropertySchema.Impl("stringValue", "string",
+                                        new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING),
+                                        new GraphElementPropertySchema.Impl(CONTEXT, STRING),
+                                        new GraphElementPropertySchema.Impl(BDT, STRING),
+                                        new GraphElementPropertySchema.Impl(FIELD_ID, STRING),
+                                        new GraphElementPropertySchema.Impl(INT_VALUE, INT),
+                                        new GraphElementPropertySchema.Impl(DATE_VALUE, DATE),
+                                        new GraphElementPropertySchema.Impl(STRING_VALUE, STRING,
                                                 Arrays.asList(
-                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl("stringValue.keyword"),
-                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl("stringValue", 10)))))
+                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl(STRING_VALUE + "." + KEYWORD),
+                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl(STRING_VALUE, 10)))))
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
-                                "Relation",
-                                new GraphElementConstraint.Impl(__.has(T.label, "relation")),
+                                RELATION,
+                                new GraphElementConstraint.Impl(__.has(T.label, S_RELATION)),
                                 Optional.empty(),
                                 Optional.of(relationPartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
-                                        new GraphElementPropertySchema.Impl("category", "string"),
-                                        new GraphElementPropertySchema.Impl("context", "string")))
+                                        new GraphElementPropertySchema.Impl(CATEGORY, STRING),
+                                        new GraphElementPropertySchema.Impl(CONTEXT, STRING)))
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
-                                "Rvalue",
-                                new GraphElementConstraint.Impl(__.has(T.label, "r.value")),
+                                RVALUE,
+                                new GraphElementConstraint.Impl(__.has(T.label, R_VALUE)),
                                 Optional.of(new GraphElementRouting.Impl(
-                                        new GraphElementPropertySchema.Impl("relationId", "string")
+                                        new GraphElementPropertySchema.Impl(RELATION_ID, STRING)
                                 )),
                                 Optional.of(relationPartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
-                                        new GraphElementPropertySchema.Impl("context", "string"),
-                                        new GraphElementPropertySchema.Impl("bdt", "string"),
-                                        new GraphElementPropertySchema.Impl("fieldId", "string"),
-                                        new GraphElementPropertySchema.Impl("intValue", "int"),
-                                        new GraphElementPropertySchema.Impl("dateValue", "date"),
-                                        new GraphElementPropertySchema.Impl("stringValue", "string",
+                                        new GraphElementPropertySchema.Impl(CONTEXT, STRING),
+                                        new GraphElementPropertySchema.Impl(BDT, STRING),
+                                        new GraphElementPropertySchema.Impl(FIELD_ID, STRING),
+                                        new GraphElementPropertySchema.Impl(INT_VALUE, INT),
+                                        new GraphElementPropertySchema.Impl(DATE_VALUE, DATE),
+                                        new GraphElementPropertySchema.Impl(STRING_VALUE, STRING,
                                                 Arrays.asList(
-                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl("stringValue.keyword"),
-                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl("stringValue", 10)))))
+                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl(STRING_VALUE + "." + KEYWORD),
+                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl(STRING_VALUE, 10)))))
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
-                                "Reference",
-                                new GraphElementConstraint.Impl(__.has(T.label, "reference")),
+                                LogicalTypes.REFERENCE,
+                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_REFERENCE)),
                                 Optional.empty(),
                                 Optional.of(referencePartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
-                                        new GraphElementPropertySchema.Impl("system", "string"),
-                                        new GraphElementPropertySchema.Impl("title", "string",
+                                        new GraphElementPropertySchema.Impl(SYSTEM, STRING),
+                                        new GraphElementPropertySchema.Impl(TITLE, STRING,
                                                 Arrays.asList(
-                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl("title.keyword"),
-                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl("title", 10))),
-                                        new GraphElementPropertySchema.Impl("value", "string",
+                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl(TITLE + "." + KEYWORD),
+                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl(TITLE, 10))),
+                                        new GraphElementPropertySchema.Impl(VALUE, STRING,
                                                 Arrays.asList(
-                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl("value.keyword"),
-                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl("value", 10))),
-                                        new GraphElementPropertySchema.Impl("url", "string",
+                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl(VALUE + "." + KEYWORD),
+                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl(VALUE, 10))),
+                                        new GraphElementPropertySchema.Impl(CONTENT, STRING,
                                                 Arrays.asList(
-                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl("url.keyword"),
-                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl("url", 10)))))
+                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl(CONTENT + "." + KEYWORD),
+                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl(CONTENT, 10))),
+                                        new GraphElementPropertySchema.Impl(URL, STRING,
+                                                Arrays.asList(
+                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl(URL + "." + KEYWORD),
+                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl(URL, 10)))))
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
-                                "Insight",
-                                new GraphElementConstraint.Impl(__.has(T.label, "insight")),
+                                LogicalTypes.INSIGHT,
+                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_INSIGHT)),
                                 Optional.empty(),
                                 Optional.of(insightPartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
-                                        new GraphElementPropertySchema.Impl("context", "string"),
-                                        new GraphElementPropertySchema.Impl("value", "string",
+                                        new GraphElementPropertySchema.Impl(CONTEXT, STRING),
+                                        new GraphElementPropertySchema.Impl(VALUE, STRING,
                                                 Arrays.asList(
-                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl("value.keyword"),
-                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl("value", 10)))))
+                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl(VALUE + "." + KEYWORD),
+                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl(VALUE, 10)))))
                                         .appendAll(metadataProperties).toJavaList())),
                 Arrays.asList(
                         new GraphEdgeSchema.Impl(
-                                "hasEntity",
-                                new GraphElementConstraint.Impl(__.has(T.label, "entity")),
+                                HAS_ENTITY,
+                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_ENTITY)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("logicalId"),
-                                        Optional.of("LogicalEntity"),
+                                        Collections.singletonList(LOGICAL_ID),
+                                        Optional.of(LOGICAL_ENTITY),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("_id", "string")
+                                                new GraphElementPropertySchema.Impl(ID, STRING)
                                         )),
                                         Optional.of(entityPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Entity"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         entityEdgeRedundantProperties,
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityValuePartitions))),
                                 Direction.OUT,
@@ -247,22 +352,22 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.empty(),
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
-                                "hasEvalue",
-                                new GraphElementConstraint.Impl(__.has(T.label, "e.value")),
+                                HAS_EVALUE,
+                                new GraphElementConstraint.Impl(__.has(T.label, E_VALUE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityId"),
-                                        Optional.of("Entity"),
+                                        Collections.singletonList(ENTITY_ID),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Evalue"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(EVALUE),
                                         valueEdgeRedundantProperties,
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityValuePartitions))),
                                 Direction.OUT,
@@ -271,22 +376,22 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.empty(),
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
-                                "hasEfile",
-                                new GraphElementConstraint.Impl(__.has(T.label, "e.file")),
+                                HAS_EFILE,
+                                new GraphElementConstraint.Impl(__.has(T.label, E_FILE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityId"),
-                                        Optional.of("Entity"),
+                                        Collections.singletonList(ENTITY_ID),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Efile"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(EFILE),
                                         fileEdgeRedundantProperties,
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityFilePartitions))),
                                 Direction.OUT,
@@ -295,22 +400,22 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.empty(),
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
-                                "hasRvalue",
-                                new GraphElementConstraint.Impl(__.has(T.label, "r.value")),
+                                HAS_RVALUE,
+                                new GraphElementConstraint.Impl(__.has(T.label, R_VALUE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("relationId"),
-                                        Optional.of("Relation"),
+                                        Collections.singletonList(RELATION_ID),
+                                        Optional.of(RELATION),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("_id", "string")
+                                                new GraphElementPropertySchema.Impl(ID, STRING)
                                         )),
                                         Optional.of(relationPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Rvalue"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(RVALUE),
                                         valueEdgeRedundantProperties,
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("relationId", "string")
+                                                new GraphElementPropertySchema.Impl(RELATION_ID, STRING)
                                         )),
                                         Optional.of(relationValuePartitions))),
                                 Direction.OUT,
@@ -319,19 +424,19 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.empty(),
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
-                                "hasRelation",
-                                new GraphElementConstraint.Impl(__.has(T.label, "e.relation")),
+                                HAS_RELATION,
+                                new GraphElementConstraint.Impl(__.has(T.label, E_RELATION)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Arrays.asList("entityAId", "entityBId"),
-                                        Optional.of("Entity"),
+                                        Arrays.asList(ENTITY_A_ID, ENTITY_B_ID),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("relationId"),
-                                        Optional.of("Relation"),
+                                        Collections.singletonList(RELATION_ID),
+                                        Optional.of(RELATION),
                                         relationDualRedundantProperties)),
                                 Direction.OUT,
                                 Optional.empty(),
@@ -340,18 +445,18 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasRelation",
-                                new GraphElementConstraint.Impl(__.has(T.label, "relation")),
+                                HAS_RELATION,
+                                new GraphElementConstraint.Impl(__.has(T.label, S_RELATION)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Arrays.asList("entityAId", "entityBId"),
-                                        Optional.of("Entity"),
+                                        Arrays.asList(ENTITY_A_ID, ENTITY_B_ID),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         Collections.emptyList())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Relation"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(RELATION),
                                         relationDualRedundantProperties,
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                                new GraphElementPropertySchema.Impl(ID, STRING))),
                                         Optional.of(relationPartitions))),
                                 Direction.OUT,
                                 Optional.empty(),
@@ -360,19 +465,19 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasOutRelation",
-                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "e.relation"), __.has("direction", Direction.OUT.toString().toLowerCase()))),
+                                HAS_OUT_RELATION,
+                                new GraphElementConstraint.Impl(__.and(__.has(T.label, E_RELATION), __.has(DIRECTION, Direction.OUT.toString().toLowerCase()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityAId"),
-                                        Optional.of("Entity"),
+                                        Collections.singletonList(ENTITY_A_ID),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("relationId"),
-                                        Optional.of("Relation"),
+                                        Collections.singletonList(RELATION_ID),
+                                        Optional.of(RELATION),
                                         relationDualRedundantProperties)),
                                 Direction.OUT,
                                 Optional.empty(),
@@ -381,18 +486,18 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasOutRelation",
-                                new GraphElementConstraint.Impl(__.has(T.label, "relation")),
+                                HAS_OUT_RELATION,
+                                new GraphElementConstraint.Impl(__.has(T.label, S_RELATION)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityAId"),
-                                        Optional.of("Entity"),
+                                        Collections.singletonList(ENTITY_A_ID),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         relationEntityARedundantProperties)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Relation"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(RELATION),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                                new GraphElementPropertySchema.Impl(ID, STRING))),
                                         Optional.of(relationPartitions))),
                                 Direction.OUT,
                                 Optional.empty(),
@@ -401,19 +506,19 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasInRelation",
-                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "e.relation"), __.has("direction", Direction.IN.toString().toLowerCase()))),
+                                HAS_IN_RELATION,
+                                new GraphElementConstraint.Impl(__.and(__.has(T.label, E_RELATION), __.has(DIRECTION, Direction.IN.toString().toLowerCase()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityAId"),
-                                        Optional.of("Entity"),
+                                        Collections.singletonList(ENTITY_A_ID),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("relationId"),
-                                        Optional.of("Relation"),
+                                        Collections.singletonList(RELATION_ID),
+                                        Optional.of(RELATION),
                                         relationDualRedundantProperties)),
                                 Direction.OUT,
                                 Optional.empty(),
@@ -422,18 +527,18 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasInRelation",
-                                new GraphElementConstraint.Impl(__.has(T.label, "relation")),
+                                HAS_IN_RELATION,
+                                new GraphElementConstraint.Impl(__.has(T.label, S_RELATION)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityBId"),
-                                        Optional.of("Entity"),
+                                        Collections.singletonList(ENTITY_B_ID),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         relationEntityBRedundantProperties)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Relation"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(RELATION),
                                         relationDualRedundantProperties,
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                                new GraphElementPropertySchema.Impl(ID, STRING))),
                                         Optional.of(relationPartitions))),
                                 Direction.OUT,
                                 Optional.empty(),
@@ -442,19 +547,19 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasEntityReference",
-                                new GraphElementConstraint.Impl(__.has(T.label, "entity")),
+                                HAS_ENTITY_REFERENCE,
+                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_ENTITY)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Entity"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("refs"),
-                                        Optional.of("Reference"),
+                                        Collections.singletonList(REFS),
+                                        Optional.of(LogicalTypes.REFERENCE),
                                         Collections.emptyList(),
                                         Optional.empty(),
                                         Optional.of(entityPartitions))),
@@ -465,19 +570,19 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasEvalueReference",
-                                new GraphElementConstraint.Impl(__.has(T.label, "e.value")),
+                                HAS_EVALUE_REFERENCE,
+                                new GraphElementConstraint.Impl(__.has(T.label, E_VALUE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Evalue"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(EVALUE),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityValuePartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("refs"),
-                                        Optional.of("Reference"),
+                                        Collections.singletonList(REFS),
+                                        Optional.of(LogicalTypes.REFERENCE),
                                         Collections.emptyList(),
                                         Optional.empty(),
                                         Optional.of(entityValuePartitions))),
@@ -488,19 +593,19 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasEfileReference",
-                                new GraphElementConstraint.Impl(__.has(T.label, "e.file")),
+                                HAS_EFILE_REFERENCE,
+                                new GraphElementConstraint.Impl(__.has(T.label, E_FILE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Efile"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(EFILE),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityValuePartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("refs"),
-                                        Optional.of("Reference"),
+                                        Collections.singletonList(REFS),
+                                        Optional.of(LogicalTypes.REFERENCE),
                                         Collections.emptyList(),
                                         Optional.empty(),
                                         Optional.of(entityFilePartitions))),
@@ -511,19 +616,19 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasRelationReference",
-                                new GraphElementConstraint.Impl(__.has(T.label, "relation")),
+                                HAS_RELATION_REFERENCE,
+                                new GraphElementConstraint.Impl(__.has(T.label, S_RELATION)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Relation"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(RELATION),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("_id", "string")
+                                                new GraphElementPropertySchema.Impl(ID, STRING)
                                         )),
                                         Optional.of(relationPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("refs"),
-                                        Optional.of("Reference"),
+                                        Collections.singletonList(REFS),
+                                        Optional.of(LogicalTypes.REFERENCE),
                                         Collections.emptyList(),
                                         Optional.empty(),
                                         Optional.of(relationPartitions))),
@@ -534,19 +639,19 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasRvalueReference",
-                                new GraphElementConstraint.Impl(__.has(T.label, "r.value")),
+                                HAS_RVALUE_REFERENCE,
+                                new GraphElementConstraint.Impl(__.has(T.label, R_VALUE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Rvalue"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(RVALUE),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("relationId", "string")
+                                                new GraphElementPropertySchema.Impl(RELATION_ID, STRING)
                                         )),
                                         Optional.of(relationValuePartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("refs"),
-                                        Optional.of("Reference"),
+                                        Collections.singletonList(REFS),
+                                        Optional.of(LogicalTypes.REFERENCE),
                                         Collections.emptyList(),
                                         Optional.empty(),
                                         Optional.of(relationValuePartitions))),
@@ -557,17 +662,17 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasInsightReference",
-                                new GraphElementConstraint.Impl(__.has(T.label, "insight")),
+                                HAS_INSIGHT_REFERENCE,
+                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_INSIGHT)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Insight"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(LogicalTypes.INSIGHT),
                                         Collections.emptyList(),
                                         Optional.empty(),
                                         Optional.of(insightPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("refs"),
-                                        Optional.of("Reference"),
+                                        Collections.singletonList(REFS),
+                                        Optional.of(LogicalTypes.REFERENCE),
                                         Collections.emptyList(),
                                         Optional.empty(),
                                         Optional.of(insightPartitions))),
@@ -578,19 +683,19 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasInsight",
-                                new GraphElementConstraint.Impl(__.has(T.label, "e.insight")),
+                                HAS_INSIGHT,
+                                new GraphElementConstraint.Impl(__.has(T.label, E_INSIGHT)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityId"),
-                                        Optional.of("Entity"),
+                                        Collections.singletonList(ENTITY_ID),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                         )),
                                         Optional.of(entityPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("insightId"),
-                                        Optional.of("Insight"),
+                                        Collections.singletonList(INSIGHT_ID),
+                                        Optional.of(LogicalTypes.INSIGHT),
                                         Collections.emptyList())),
                                 Direction.OUT,
                                 Optional.empty(),
@@ -599,18 +704,18 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList(),
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasInsight",
-                                new GraphElementConstraint.Impl(__.has(T.label, "insight")),
+                                HAS_INSIGHT,
+                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_INSIGHT)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityIds"),
-                                        Optional.of("Entity"),
+                                        Collections.singletonList(ENTITY_IDS),
+                                        Optional.of(LogicalTypes.ENTITY),
                                         Collections.emptyList())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("_id"),
-                                        Optional.of("Insight"),
+                                        Collections.singletonList(ID),
+                                        Optional.of(LogicalTypes.INSIGHT),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                                new GraphElementPropertySchema.Impl(ID, STRING))),
                                         Optional.of(insightPartitions))),
                                 Direction.OUT,
                                 Optional.empty(),
@@ -618,7 +723,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.empty(),
                                 Collections.emptyList(),
                                 Stream.of(endB).toJavaSet()))
-                );
+        );
     }
     //endregion
 }
