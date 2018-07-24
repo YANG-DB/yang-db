@@ -67,6 +67,7 @@ public class KnowledgeWriterContext {
             }
         });
         client.admin().indices().prepareRefresh(indices.toArray(new String[indices.size()])).get();
+        clearCreated();
         return count[0];
     }
 

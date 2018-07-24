@@ -45,6 +45,8 @@ public class RankingScoreBasedE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
+        System.out.println("RankingScoreBasedE2ETests - setup");
+
         Setup.setup();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -57,6 +59,8 @@ public class RankingScoreBasedE2ETests {
 
     @AfterClass
     public static void tearDown() throws Exception {
+        System.out.println("RankingScoreBasedE2ETests - teardown");
+
         if(manager != null){
             manager.drop();
         }

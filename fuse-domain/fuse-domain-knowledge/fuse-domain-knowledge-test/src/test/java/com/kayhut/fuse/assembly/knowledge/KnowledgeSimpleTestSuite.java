@@ -21,20 +21,25 @@ import static com.kayhut.fuse.assembly.knowledge.Setup.manager;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        KnowledgeSimpleEntityWithRelationTests.class,
+        /*KnowledgeSimpleEntityWithRelationTests.class,
         KnowledgeSimpleEntityWithFilterTests.class,
-        KnowledgeSimpleEntityTests.class
+        KnowledgeSimpleEntityTests.class,*/
+        KnowledgeSimpleEntityWithFilterE2ETests.class,
+        KnowledgeSimpleEvalueWithFilterE2ETests.class
 })
-public class TestSuite {
+
+public class KnowledgeSimpleTestSuite {
     public static KnowledgeWriterContext ctx;
 
     @BeforeClass
     public static void setup() throws Exception {
+        System.out.println("KnowledgeSimpleTestSuite - setup");
         Setup.setup();
     }
 
     @AfterClass
     public static void tearDown() {
+        System.out.println("KnowledgeSimpleTestSuite - teardown");
         Setup.teardown();
     }
 }

@@ -6,6 +6,7 @@ import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.fuse.utils.FuseClient;
+import org.elasticsearch.ResourceAlreadyExistsException;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 
@@ -47,6 +48,7 @@ public abstract class Setup {
 
     public static void createIdGeneratorIndex(Client client) {
         client.admin().indices().create(client.admin().indices().prepareCreate(IDGENERATOR_INDEX).request()).actionGet();
+
         Map<String, Object> doc = new HashMap<>();
         doc.put("value", 1);
         client.index(client.prepareIndex(IDGENERATOR_INDEX, "idsequence").setId("workerId").setSource(doc).request()).actionGet();

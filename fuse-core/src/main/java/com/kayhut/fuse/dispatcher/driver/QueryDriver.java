@@ -27,8 +27,6 @@ public interface QueryDriver {
 
     Optional<AsgQuery> getAsg(String queryId);
 
-    Optional<JsonNode> getElasticQueries(String queryId);
-
     Optional<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId);
 
     Optional<PlanNode<Plan>> planVerbose(String queryId);

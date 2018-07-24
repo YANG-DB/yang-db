@@ -2,7 +2,6 @@ package com.kayhut.fuse.executor.elasticsearch.logging;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
-import com.kayhut.fuse.dispatcher.logging.ElasticQuery;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchAction;
@@ -12,6 +11,7 @@ import org.elasticsearch.client.ElasticsearchClient;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.function.Function;
 
 /**
  * Created by roman.margolis on 14/12/2017.
@@ -21,10 +21,10 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder {
     public LoggingSearchRequestBuilder(
             ElasticsearchClient client,
             SearchAction action,
-            LogMessage startMessage,
-            LogMessage verboseMessage,
-            LogMessage successMessage,
-            LogMessage failureMessage,
+            Function<SearchRequestBuilder, LogMessage> startMessage,
+            Function<SearchRequestBuilder, LogMessage> verboseMessage,
+            Function<SearchResponse, LogMessage> successMessage,
+            Function<Exception, LogMessage> failureMessage,
             Timer timer,
             Meter successMeter,
             Meter failureMeter) {
@@ -46,9 +46,8 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder {
         Closeable timerContext = this.timer.time();
 
         try {
-            this.startMessage.log();
-            ElasticQuery.logQuery(this.toString()).write();
-            this.verboseMessage.with(this.toString()).log();
+            this.startMessage.apply(this).log();
+            this.verboseMessage.apply(this).log();
             return new LoggingActionFuture<>(
                     super.execute(),
                     this.successMessage,
@@ -57,7 +56,7 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder {
                     this.successMeter,
                     this.failureMeter);
         } catch (Exception ex) {
-            this.failureMessage.with(ex).log();
+            this.failureMessage.apply(ex).log();
             this.failureMeter.mark();
 
             try {
@@ -74,10 +73,11 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder {
     //endregion
 
     //region Fields
-    private LogMessage startMessage;
-    private LogMessage verboseMessage;
-    private LogMessage successMessage;
-    private LogMessage failureMessage;
+    private Function<SearchRequestBuilder, LogMessage> startMessage;
+    private Function<SearchRequestBuilder, LogMessage> verboseMessage;
+    private Function<SearchResponse, LogMessage> successMessage;
+    private Function<Exception, LogMessage> failureMessage;
+
     private Timer timer;
     private Meter successMeter;
     private Meter failureMeter;

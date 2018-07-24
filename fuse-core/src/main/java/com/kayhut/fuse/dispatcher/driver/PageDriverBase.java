@@ -134,26 +134,6 @@ public abstract class PageDriverBase implements PageDriver {
         cursorResource.get().deletePageResource(pageId);
         return Optional.of(true);
     }
-
-    @Override
-    public Optional<JsonNode> getElasticQueries(String queryId, String cursorId, String pageId) {
-        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
-        if (!queryResource.isPresent()) {
-            return Optional.empty();
-        }
-
-        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
-        if (!cursorResource.isPresent()) {
-            return Optional.empty();
-        }
-
-        Optional<PageResource> pageResource = cursorResource.get().getPageResource(pageId);
-        if (!pageResource.isPresent()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(pageResource.get().getElasticQueries());
-    }
     //endregion
 
     //region Protected Abstract Methods

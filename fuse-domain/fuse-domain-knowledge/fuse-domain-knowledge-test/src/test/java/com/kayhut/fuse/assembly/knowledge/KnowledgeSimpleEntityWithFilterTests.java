@@ -27,6 +27,7 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder._ref;
 import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
 
+@Ignore
 public class KnowledgeSimpleEntityWithFilterTests {
     static KnowledgeWriterContext ctx;
 
@@ -44,12 +45,62 @@ public class KnowledgeSimpleEntityWithFilterTests {
     @Test
     public void testInsertOneSimpleEntityWithEqFilterBuilder() throws IOException, InterruptedException {
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final EntityBuilder e3 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("cat").ctx("context1");
+        Assert.assertEquals(3, commit(ctx, INDEX, e1, e2, e3));
+
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = start().withEntity(e1.getETag(), filter().and("category", Constraint.of(ConstraintOp.eq, "person"))).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        // Check Entity Response
+        Assert.assertEquals(1, pageData.getSize());
+        Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e1.toEntity())
+                        .withEntity(e3.toEntity())
+                        .build()).build();
+
+        // Check if expected and actual are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, false,true);
+    }
+
+    @Test
+    public void testInsertOneSimpleEntityWithEqByIdFilterBuilder() throws IOException, InterruptedException {
+        final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
         final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("cat").ctx("context1");
         Assert.assertEquals(2, commit(ctx, INDEX, e1, e2));
 
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Query query = start().withEntity(e1.getETag(), filter().and("category", Constraint.of(ConstraintOp.eq, "person"))).build();
+        Query query = start().withEntity(e1.getETag(), filter().and("id", Constraint.of(ConstraintOp.eq, e1.id()))).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        // Check Entity Response
+        Assert.assertEquals(1, pageData.getSize());
+        Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e1.toEntity())
+                        .build()).build();
+
+        // Check if expected and actual are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, false,true);
+    }
+
+    @Test
+    public void testInsertOneSimpleEntityWithEqByLogicalIdFilterBuilder() throws IOException, InterruptedException {
+        final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("cat").ctx("context1");
+        Assert.assertEquals(2, commit(ctx, INDEX, e1, e2));
+
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = start().withEntity(e1.getETag(), filter().and("logicalId", Constraint.of(ConstraintOp.eq, e1.logicalId))).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Check Entity Response

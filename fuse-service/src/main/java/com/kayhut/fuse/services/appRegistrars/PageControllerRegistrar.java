@@ -47,13 +47,6 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                 .get(req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
                         appUrlSupplier.pageStoreUrl(req.param("queryId").value(), req.param("cursorId").value()) + "/" + req.param("pageId").value() + "/elastic"));
 
-        /** get the elastic queries */
-        app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/elastic")
-                .get(req -> {
-                    ContentResponse<JsonNode> response = this.getController(app).getElasticQueries(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
-                    return Results.json(response);
-                });
-
 
         /** get page info by id */
         app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))

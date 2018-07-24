@@ -132,13 +132,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     return Results.with(response, response.status());
                 });
 
-        /** get the elastic queries */
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/elastic")
-                .get(req -> {
-                    ContentResponse<JsonNode> response = this.getController(app).getElasticQueries(req.param("queryId").value());
-                    return Results.json(response);
-                });
-
         /** view the elastic query with d3 html*/
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/elastic/view")
                 .get(req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
