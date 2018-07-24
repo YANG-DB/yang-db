@@ -40,7 +40,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
     @BeforeClass
     public static void setup() throws Exception
     {
-        //Setup.setup();
+        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Evalue entities for tests
@@ -161,7 +161,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
     }
 
     // Open BUG 1 -> It supposed to give result of v4 only and NOT v2 ("Garage" and "garage" not supposed to be equal)
-    @Test(expected = ComparisonFailure.class)
+    @Test
     public void testEqEvalueByFieldId() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
