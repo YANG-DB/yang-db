@@ -19,19 +19,14 @@ import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
-import org.graphstream.algorithm.Algorithm;
-import org.graphstream.algorithm.Centroid;
-import org.graphstream.algorithm.Eccentricity;
-import org.graphstream.algorithm.TarjanStronglyConnectedComponents;
+import org.graphstream.algorithm.*;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.graph.view.AssignmentToGraph.populateFromAssignment;
@@ -102,12 +97,15 @@ public class StandardPocGraphController implements PocGraphController {
     }
 
     @Override
-    public ContentResponse<ObjectNode> getGraphWithRank(boolean cache, int takeTopN, @Nullable String context) {
+    public ContentResponse<ObjectNode> getGraphWithRank(boolean cache, int takeTopN, @Nullable String context, String category) {
         try {
             init(Arrays.asList(new PageRank().setVerbose(true)), cache, context);
-            final Graph graph = getGraph( context);
+            final Graph graph = getGraph(context);
 
-            final Graph subGraph = cloneGraph(mapper, graph, n -> n.getAttribute("type").equals("entity"), takeTopN);
+            final Graph subGraph = cloneGraph(mapper, graph, n ->
+                    (n.getAttribute("type").equals("entity") &&
+                            ((n.hasAttribute("context") && context != null) ? n.getAttribute("context").equals(context) : true) &&
+                            ((n.hasAttribute("category") && category != null) ? n.getAttribute("category").equals(category) : true)), takeTopN);
             final ObjectNode node = mapper.createObjectNode();
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             node.set("nodes", mapper.createArrayNode().addAll(subGraph.getNodeSet().stream().map(this::project).collect(Collectors.toList())));
@@ -119,9 +117,30 @@ public class StandardPocGraphController implements PocGraphController {
     }
 
     @Override
+    public ContentResponse<ObjectNode> getGraphPath(boolean cache, String sourceNodeId, String targetNodeId, String context) {
+        init(Collections.EMPTY_LIST, cache, context);
+        final Graph graph = getGraph(context);
+        Dijkstra dijkstra = new Dijkstra();
+        dijkstra.init(graph);
+        dijkstra.setSource(graph.getNode(sourceNodeId));
+        dijkstra.compute();
+
+        List<Node> nodesList = new ArrayList<>();
+        List<Edge> edgesList = new ArrayList<>();
+        for (Node node : dijkstra.getPathNodes(graph.getNode(targetNodeId))) nodesList.add(node);
+        for (Edge edge : dijkstra.getPathEdges(graph.getNode(targetNodeId))) edgesList.add(edge);
+
+        final ObjectNode node = mapper.createObjectNode();
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        node.set("nodes", mapper.createArrayNode().addAll(nodesList.stream().map(this::project).collect(Collectors.toList())));
+        node.set("edges", mapper.createArrayNode().addAll(edgesList.stream().map(this::project).collect(Collectors.toList())));
+        return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND).data(Optional.of(node)).compose();
+    }
+
+    @Override
     public ContentResponse<ObjectNode> getGraphWithConnectedComponents(boolean cache, int takeTopN, @Nullable String context) {
         try {
-            init(Arrays.asList(new TarjanStronglyConnectedComponents()), cache,context);
+            init(Arrays.asList(new TarjanStronglyConnectedComponents()), cache, context);
             final Graph graph = getGraph(context);
 
             final ObjectNode node = mapper.createObjectNode();
@@ -133,10 +152,11 @@ public class StandardPocGraphController implements PocGraphController {
             throw new RuntimeException(err);
         }
     }
+
     @Override
     public ContentResponse<ObjectNode> getGraphWithCentroid(boolean cache, int takeTopN, @Nullable String context) {
         try {
-            init(Arrays.asList(new APSP(),new Centroid()), cache,context);
+            init(Arrays.asList(new APSP(), new Centroid()), cache, context);
             final Graph graph = getGraph(context);
 
             final ObjectNode node = mapper.createObjectNode();
@@ -169,8 +189,8 @@ public class StandardPocGraphController implements PocGraphController {
     @Override
     public ContentResponse<ObjectNode> getGraphWithEccentricity(boolean cache, @Nullable String context) {
         try {
-            init(Arrays.asList(new APSP(),new Eccentricity()), cache,  context);
-            final Graph graph = getGraph( context);
+            init(Arrays.asList(new APSP(), new Eccentricity()), cache, context);
+            final Graph graph = getGraph(context);
 
             final Graph subGraph = cloneGraph(mapper, graph, n -> n.getAttribute("type").equals("entity"), -1);
             final ObjectNode node = mapper.createObjectNode();
@@ -183,22 +203,30 @@ public class StandardPocGraphController implements PocGraphController {
         }
     }
 
-    private void init(List<Algorithm> algorithms, boolean cache,@Nullable String ctx) {
-        init(algorithms,cache,"0","0","0",ctx);
+    private void init(List<Algorithm> algorithms, boolean cache, @Nullable String ctx) {
+        init(algorithms, cache, "0", "0", "0", ctx);
     }
 
     private void init(List<Algorithm> algorithms, boolean cache, String queryId, String cursorId, String pageId, @Nullable String ctx) {
-        String context = ctx!=null ? ctx : "all";
+        String context = ctx != null ? ctx : "all";
         final List<String> indices = Stream.ofAll(schema.getPartition("entity").getPartitions()).flatMap(partition -> partition.getIndices()).toJavaList();
+        Graph graph = new MultiGraph(getId(queryId, cursorId, pageId, context));
         if (!cache || getGraph(queryId, cursorId, pageId, context).getNodeSet().size() == 0) {
-            final MultiGraph graph = new MultiGraph(getId(queryId, cursorId, pageId, context));
             this.graph.put(queryId + "." + cursorId + "." + pageId, graph);
             populate(graph, client, Optional.empty(), Optional.ofNullable(ctx), fields, indices.toArray(new String[indices.size()]));
-            algorithms.forEach(algorithm -> {
-                algorithm.init(graph);
-                algorithm.compute();
-            });
+        } else {
+            graph = getGraph(queryId, cursorId, pageId, context);
         }
+        //run algorithms
+        Graph finalGraph = graph;
+        algorithms.forEach(algorithm -> {
+            if (!finalGraph.hasAttribute(algorithm.getClass().getSimpleName())) {
+                algorithm.init(finalGraph);
+                algorithm.compute();
+                finalGraph.setAttribute(algorithm.getClass().getSimpleName());
+            }
+        });
+
     }
 
     private String getId(String queryId, String cursorId, String pageId, @Nullable String context) {
@@ -208,7 +236,7 @@ public class StandardPocGraphController implements PocGraphController {
     //endregion
 
     private Graph getGraph(@Nullable String context) {
-        return getGraph("0","0","0",context);
+        return getGraph("0", "0", "0", context);
     }
 
     private Graph getGraph(String queryId, String cursorId, String pageId, @Nullable String context) {

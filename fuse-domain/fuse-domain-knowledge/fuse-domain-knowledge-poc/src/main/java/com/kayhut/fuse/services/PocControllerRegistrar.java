@@ -34,7 +34,8 @@ public class PocControllerRegistrar extends AppControllerRegistrarBase<PocGraphC
                 .get(req -> Results.json(this.getController(app).getGraphWithRank(
                         req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
                         req.param("count").isSet() ? req.param("count").intValue() : -1,
-                        req.param("context").isSet() ? req.param("context").value() : null)));
+                        req.param("context").isSet() ? req.param("context").value() : null,
+                        req.param("category").isSet() ? req.param("category").value() : null )));
 
         app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/connectedComp").baseUrl())
                 .get(req -> Results.json(this.getController(app).getGraphWithConnectedComponents(
@@ -56,6 +57,12 @@ public class PocControllerRegistrar extends AppControllerRegistrarBase<PocGraphC
         app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/ecentrality").baseUrl())
                 .get(req -> Results.json(this.getController(app).getGraphWithEccentricity(
                         req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
+                        req.param("context").isSet() ? req.param("context").value() : null)));
+
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/route").baseUrl())
+                .get(req -> Results.json(this.getController(app).getGraphPath(
+                        req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
+                        req.param("sourceId").value(),req.param("targetId").value(),
                         req.param("context").isSet() ? req.param("context").value() : null)));
 
         /** view the selected graph with d3 html*/
