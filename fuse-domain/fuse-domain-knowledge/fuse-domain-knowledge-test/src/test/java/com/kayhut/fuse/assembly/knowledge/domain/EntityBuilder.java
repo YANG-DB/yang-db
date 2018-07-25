@@ -23,6 +23,8 @@ public class EntityBuilder extends EntityId {
     public String logicalId;
     public String category = "person";
     public String context = "global";
+
+    public List<KnowledgeDomainBuilder> additional = new ArrayList<>();
     public List<String> refs = new ArrayList<>();
 
     public List<Entity> subEntities = new ArrayList<>();
@@ -50,7 +52,11 @@ public class EntityBuilder extends EntityId {
         return this;
     }
 
-    public void rel(RelationBuilder relationBuilder) {
+    public void rel(RelationBuilder relationBuilder, String dir) {
+        additional.add(new RelationBuilder.EntityRelationBuilder(this.id(), relationBuilder,dir));
+        //add as entities sub resource
+        subEntities.add(relationBuilder.toEntity());
+
         this.hasRel.add(Relationship.Builder.instance()
                 .withAgg(false)
                 .withDirectional(false)
@@ -143,6 +149,24 @@ public class EntityBuilder extends EntityId {
         return this;
     }
 
+    public EntityBuilder insight(InsightBuilder insight) {
+        additional.add(new InsightBuilder.EntityInsightBuilder(logicalId,context,insight.id()));
+        //add as entities sub resource
+        subEntities.add(insight.toEntity());
+        //add a relation
+        hasInsights.add(Relationship.Builder.instance()
+                .withAgg(false)
+                .withDirectional(false)
+                .withEID1(id())
+                .withEID2(insight.id())
+                .withETag1(getETag())
+                .withETag2(insight.getETag())
+                .withRType("hasInsight")
+                .build());
+
+        return this;
+    }
+
     public EntityBuilder file(FileBuilder file) {
         file.entityId = id();
         file.logicalId = logicalId;
@@ -185,6 +209,11 @@ public class EntityBuilder extends EntityId {
         on.put("category", category);
         on.put("refs", collectRefs(mapper,refs));
         return on;
+    }
+
+    @Override
+    public List<KnowledgeDomainBuilder> additional() {
+        return additional;
     }
 
     public Entity toEntity() {

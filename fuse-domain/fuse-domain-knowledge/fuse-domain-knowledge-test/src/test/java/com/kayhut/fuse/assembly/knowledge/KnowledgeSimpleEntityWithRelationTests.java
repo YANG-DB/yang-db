@@ -1,20 +1,29 @@
 package com.kayhut.fuse.assembly.knowledge;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kayhut.fuse.assembly.knowledge.domain.*;
 import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.Start;
+import com.kayhut.fuse.model.query.entity.EConcrete;
+import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
+import com.kayhut.fuse.model.query.quant.HQuant;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
+import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.collection.Stream;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.kayhut.fuse.assembly.knowledge.Setup.*;
 import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
@@ -33,7 +42,13 @@ public class KnowledgeSimpleEntityWithRelationTests {
 
     @BeforeClass
     public static void setup() throws Exception {
+        Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
+    }
+
+    @AfterClass
+    public static void teardown() throws Exception {
+        Setup.cleanup();
     }
 
     @After
@@ -47,8 +62,11 @@ public class KnowledgeSimpleEntityWithRelationTests {
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
         final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
         final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2);
+        e1.rel(rel,"out");
+        e2.rel(rel,"in");
 
-        Assert.assertEquals(2, commit(ctx, INDEX, e1,e2));
+
+        Assert.assertEquals(4, commit(ctx, INDEX, e1,e2));
         Assert.assertEquals(1, commit(ctx, REL_INDEX, rel));
 
         // Create v1 query to fetch newly created entity
@@ -74,23 +92,27 @@ public class KnowledgeSimpleEntityWithRelationTests {
     }
 
     @Test
+    @Ignore
     public void testInsertOneSimpleEntityWithRelationAndValue() throws IOException, InterruptedException {
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
         final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
         final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2);
+        e1.rel(rel,"out");
+        e2.rel(rel,"in");
+
         ValueBuilder v1 = _v(ctx.nextValueId()).field("name").value("Shirley Windzor").bdt("identifier");
         ValueBuilder v2 = _v(ctx.nextValueId()).field("name").value("Dorn Windzor").bdt("identifier");
         e1.value(v1);
         e2.value(v2);
 
-        Assert.assertEquals(2, commit(ctx, INDEX, e1,e2));
+        Assert.assertEquals(4, commit(ctx, INDEX, e1,e2));
         Assert.assertEquals(1, commit(ctx, REL_INDEX, rel));
         Assert.assertEquals(2, commit(ctx, INDEX, v1,v2));
 
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = start().withEntity(e1.getETag()).withValue(v1.getETag()).relatedTo(e1.getETag()+"->"+e2.getETag(),e2.getETag()).build();
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, new CreatePathsCursorRequest());
         List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
 
         // Check Entity Response
@@ -117,6 +139,7 @@ public class KnowledgeSimpleEntityWithRelationTests {
     }
 
     @Test(expected = AssertionError.class)
+    @Ignore("fix quant assignments")
     /**
      * todo check what fails in the engine
      */
@@ -126,16 +149,18 @@ public class KnowledgeSimpleEntityWithRelationTests {
         final EntityBuilder e1 = _e(logicalId).cat("person").ctx("context1");
         final EntityBuilder e2 = _e(logicalId).cat("person").ctx("context2");
         final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2);
+        e1.rel(rel,"out");
+        e2.rel(rel,"in");
         e1.global(global);
         e2.global(global);
         //verify inserted
-        Assert.assertEquals(3, commit(ctx, INDEX, global,e1,e2));
+        Assert.assertEquals(5, commit(ctx, INDEX, global,e1,e2));
         Assert.assertEquals(1, commit(ctx, REL_INDEX, rel));
 
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = start().withEntity(e1.getETag())
-                .withGlobalEntity(global.getETag(),false)
+                .withGlobalEntity(global.getETag())
                 .relatedTo(e1.getETag()+"->"+e2.getETag(),e2.getETag()).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -165,10 +190,13 @@ public class KnowledgeSimpleEntityWithRelationTests {
     }
 
     @Test
+    @Ignore
     public void testInsertOneSimpleEntityWithRelationAndReference() throws IOException, InterruptedException {
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
         final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
         final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2);
+        e1.rel(rel,"out");
+        e2.rel(rel,"in");
 
         // Create ref
         RefBuilder ref1 = _ref(ctx.nextRefId())
@@ -184,7 +212,7 @@ public class KnowledgeSimpleEntityWithRelationTests {
         e2.reference(ref2);
 
         //verify data inserted correctly
-        Assert.assertEquals(2, commit(ctx, INDEX, e1,e2));
+        Assert.assertEquals(4, commit(ctx, INDEX, e1,e2));
         Assert.assertEquals(2, commit(ctx, REF_INDEX, ref1,ref2));
         Assert.assertEquals(1, commit(ctx, REL_INDEX, rel));
 
@@ -240,13 +268,78 @@ public class KnowledgeSimpleEntityWithRelationTests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true,true);
 
     }
-    
-    @Test
-    public void testRelatedEntityRelType(){
-        final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
-        final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
-        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2);
 
+    @Test
+    public void testRelatedEntityRelTypeLeft() throws IOException, InterruptedException {
+
+        String creationTime = "2018-07-17 13:19:20.667";
+        final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("cat").ctx("context1");
+        String e1Id = e1.id();
+        final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).context("context1").cat("rel").creationTime(creationTime);
+        e1.rel(rel,"out");
+        e2.rel(rel,"in");
+
+
+        Assert.assertEquals(4, commit(ctx, INDEX, e1,e2));
+        Assert.assertEquals(1, commit(ctx, REL_INDEX, rel));
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        // Based on the knowledge ontology build the V1 query
+        Query query = Query.Builder.instance().withName("q2").withOnt("Knowledge").withElements(Arrays.asList(
+                new Start(0, 1),
+                new EConcrete(1, "A", "Entity", e1Id, "A", 2, 0),
+                new Rel(2, "relatedEntity", Rel.Direction.L, "", 3, 4),
+                new RelProp(4, "creationTime", Constraint.of(ConstraintOp.eq, creationTime), 0),
+                new ETyped(3, "B", "Entity", 0, 0)
+        )).build();
+
+        // Read Entity (with V1 query)
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) query(fuseClient, fuseResourceInfo, query, new KnowledgeGraphHierarchyCursorRequest());
+
+        Assert.assertEquals(1, pageData.getAssignments().size());
+        Assert.assertEquals(2,pageData.getAssignments().get(0).getEntities().size());
+        Entity entityA = Stream.ofAll(pageData.getAssignments().get(0).getEntities()).find(e -> e.geteTag().contains("A")).get();
+        Entity entityB = Stream.ofAll(pageData.getAssignments().get(0).getEntities()).find(e -> e.geteTag().contains("B")).get();
+        Assert.assertEquals(e1Id, entityA.geteID());
+        Assert.assertEquals(e2.id(), entityB.geteID());
+
+    }
+
+    @Test
+    public void testRelatedEntityRelTypeRight() throws IOException, InterruptedException {
+
+        String creationTime = "2018-07-17 13:19:20.667";
+        final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("cat").ctx("context1");
+        String e1Id = e1.id();
+        final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).context("context1").cat("rel").creationTime(creationTime);
+        e1.rel(rel,"out");
+        e2.rel(rel,"in");
+
+
+        Assert.assertEquals(4, commit(ctx, INDEX, e1,e2));
+        Assert.assertEquals(1, commit(ctx, REL_INDEX, rel));
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        // Based on the knowledge ontology build the V1 query
+        Query query = Query.Builder.instance().withName("q2").withOnt("Knowledge").withElements(Arrays.asList(
+                new Start(0, 1),
+                new EConcrete(1, "A", "Entity", e1Id, "A", 2, 0),
+                new Rel(2, "relatedEntity", Rel.Direction.R, "", 3, 4),
+                new RelProp(4, "creationTime", Constraint.of(ConstraintOp.eq, creationTime), 0),
+                new ETyped(3, "B", "Entity", 0, 0)
+        )).build();
+
+        // Read Entity (with V1 query)
+        AssignmentsQueryResult pageData = (AssignmentsQueryResult) query(fuseClient, fuseResourceInfo, query);
+
+        Assert.assertEquals(1, pageData.getAssignments().size());
+        Assert.assertEquals(2,pageData.getAssignments().get(0).getEntities().size());
+        Entity entityA = Stream.ofAll(pageData.getAssignments().get(0).getEntities()).find(e -> e.geteTag().contains("A")).get();
+        Entity entityB = Stream.ofAll(pageData.getAssignments().get(0).getEntities()).find(e -> e.geteTag().contains("B")).get();
+        Assert.assertEquals(e1Id, entityA.geteID());
+        Assert.assertEquals(e2.id(), entityB.geteID());
 
     }
 }

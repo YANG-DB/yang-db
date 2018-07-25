@@ -305,6 +305,30 @@
           "eTypeB": "Reference"
         }
       ]
+    },
+    {
+      "rType" : "relatedEntity",
+      "name" : "relatedEntity",
+      "directional" : true,
+      "ePairs":[
+        {
+          "eTypeA" : "Entity",
+          "eTypeB" : "Entity"
+        }
+      ],
+      "properties": [
+        "context",
+        "category",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser",
+        "refs",
+        "score"
+      ]
     }
   ],
   "properties": [

@@ -9,6 +9,7 @@ import javaslang.collection.Stream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 //todo - for kobi usage
 public class RelationBuilder extends Metadata {
@@ -26,6 +27,21 @@ public class RelationBuilder extends Metadata {
     private String relId;
     public List<String> refs = new ArrayList<>();
 
+    public RelationBuilder(RelationBuilder builder) {
+        super(builder);
+        this.relId = builder.relId;
+        this.category = builder.category;
+        this.context = builder.context;
+        this.entityAId = builder.entityAId;
+        this.entityBId = builder.entityBId;
+        this.entityACategory = builder.entityACategory;
+        this.entityBCategory = builder.entityBCategory;
+        this.refs = Arrays.asList(builder.refs.toArray(new String[builder.refs.size()]));
+    }
+
+    public RelationBuilder() {
+    }
+
     public static RelationBuilder _rel(String id) {
         final RelationBuilder builder = new RelationBuilder();
         builder.relId = id;
@@ -35,14 +51,12 @@ public class RelationBuilder extends Metadata {
     public RelationBuilder sideA(EntityBuilder sideA) {
         this.entityAId = sideA.id();
         this.entityACategory = sideA.category;
-        sideA.rel(this);
         return this;
     }
 
     public RelationBuilder sideB(EntityBuilder sideB) {
         this.entityBId = sideB.id();
         this.entityBCategory = sideB.category;
-        sideB.rel(this);
         return this;
     }
 
@@ -66,7 +80,7 @@ public class RelationBuilder extends Metadata {
         return this;
     }
 
-   public RelationBuilder entityACategory(String entityACategory) {
+    public RelationBuilder entityACategory(String entityACategory) {
         this.entityACategory = entityACategory;
         return this;
     }
@@ -102,7 +116,7 @@ public class RelationBuilder extends Metadata {
         on.put("entityBId", entityBId);
         on.put("entityACategory", entityACategory);
         on.put("entityBCategory", entityBCategory);
-        on.put("refs", collectRefs(mapper,refs));
+        on.put("refs", collectRefs(mapper, refs));
         //make sure value or content
         return on;
     }
@@ -127,6 +141,66 @@ public class RelationBuilder extends Metadata {
     @Override
     public String getETag() {
         return "Reference." + id();
+    }
+
+    public RelationBuilder creationTime(String creationTime) {
+        this.creationTime = creationTime;
+        return this;
+    }
+
+    public static class EntityRelationBuilder extends KnowledgeDomainBuilder {
+        public static String physicalType = "e.relation";
+        private RelationBuilder builder;
+        private String dir;
+
+        public EntityRelationBuilder(String entityAId,RelationBuilder source,String dir) {
+            this.builder = new RelationBuilder(source);
+            this.dir = dir;
+            //
+            if(!builder.entityAId.equals(entityAId)) {
+                String entityACategory = builder.entityACategory;
+
+                builder.entityACategory(builder.entityBCategory);
+                builder.entityBCategory(entityACategory);
+
+                builder.entityBId(builder.entityAId);
+                builder.entityAId(entityAId);
+            }
+        }
+
+        @Override
+        public String getType() {
+            return physicalType;
+        }
+
+        @Override
+        public String id() {
+            return builder.id()+"."+dir;
+        }
+
+        @Override
+        public Entity toEntity() {
+            return null;
+        }
+
+        @Override
+        public String getETag() {
+            return null;
+        }
+
+        @Override
+        public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
+            builder.collect(mapper, node);
+            node.put("type",physicalType);
+            node.put("direction",dir);
+            node.put("relationId", builder.id());
+            return node;
+        }
+
+        @Override
+        public Optional<String> routing() {
+            return Optional.of(this.builder.entityAId.split("\\.")[0]);
+        }
     }
 
 }

@@ -7,6 +7,7 @@ import com.kayhut.fuse.services.FuseRunner;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -21,12 +22,12 @@ import static com.kayhut.fuse.assembly.knowledge.Setup.manager;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        KnowledgeSimpleEntityWithRelationTests.class,
+        KnowledgeSimpleEntityTests.class,
         KnowledgeSimpleEntityWithFilterTests.class,
-        KnowledgeSimpleEntityTests.class
+        KnowledgeSimpleEntityWithRelationTests.class,
+
 })
 public class TestSuite {
-    public static KnowledgeWriterContext ctx;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -34,7 +35,8 @@ public class TestSuite {
     }
 
     @AfterClass
-    public static void tearDown() {
-        Setup.teardown();
+    public static void tearDown() throws Exception {
+        Setup.cleanup();
     }
 }
+

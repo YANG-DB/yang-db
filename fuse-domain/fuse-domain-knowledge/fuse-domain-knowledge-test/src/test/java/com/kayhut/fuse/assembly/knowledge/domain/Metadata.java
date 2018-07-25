@@ -23,6 +23,16 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
     public String lastUpdateTime = sdf.format(new Date(System.currentTimeMillis()));
     public String[] authorization = new String[]{"procedure.1", "procedure.2"};
 
+    public Metadata() {
+    }
+
+    public Metadata(Metadata builder) {
+        this.creationTime = builder.creationTime;
+        this.creationUser = builder.creationUser;
+        this.lastUpdateTime = builder.lastUpdateTime;
+        this.lastUpdateUser = builder.lastUpdateUser;
+    }
+
     public List<Property> collect(List<Property> properties) {
         ArrayList<Property> list = new ArrayList<>(properties);
         list.addAll(Arrays.asList(
@@ -48,4 +58,6 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
         node.put("creationTime", creationTime);
         return node;
     }
+
+
 }

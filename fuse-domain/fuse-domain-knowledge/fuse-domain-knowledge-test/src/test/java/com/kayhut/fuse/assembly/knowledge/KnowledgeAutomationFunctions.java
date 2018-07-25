@@ -3,6 +3,7 @@ package com.kayhut.fuse.assembly.knowledge;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
 import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeDataInfraManager;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.kayhut.fuse.model.query.Query;
@@ -36,7 +37,7 @@ public class KnowledgeAutomationFunctions {
     public static final String INDEX = "e0";
 
 
-    static public String CreateKnowledgeEntity(ObjectMapper mapper, KnowledgeDataInfraManager manager, TransportClient client, String type,
+    static public String CreateKnowledgeEntity(ObjectMapper mapper, KnowledgeConfigManager manager, TransportClient client, String type,
                                                String logicalId, String context, String category, String lastUpdateUser,
                                                String creationUser, String lastUpdateTime, String creationTime,
                                                Integer authorizationCount, ArrayNode authorizationNode, ArrayNode refsNode)
@@ -63,7 +64,7 @@ public class KnowledgeAutomationFunctions {
         return logicalId+"."+context;
     }
 
-    static public int CreateKnowledgeReference(KnowledgeDataInfraManager manager, TransportClient client, int refNum) {
+    static public int CreateKnowledgeReference(KnowledgeConfigManager manager, TransportClient client, int refNum) {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         BulkRequestBuilder bulk = client.prepareBulk();
         RawSchema schema = manager.getSchema();
