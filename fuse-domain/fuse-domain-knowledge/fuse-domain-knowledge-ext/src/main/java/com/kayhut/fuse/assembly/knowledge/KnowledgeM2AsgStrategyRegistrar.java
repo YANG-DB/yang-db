@@ -15,6 +15,9 @@ import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 
 import java.util.Arrays;
 
+import static com.kayhut.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.SchemaFields.*;
+import static com.kayhut.fuse.assembly.knowledge.consts.physicalElementProperties.PhysicalReferenceProperties.CONTENT;
+
 public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
     //region Constructors
     @Inject
@@ -48,7 +51,7 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new RedundantLikeConstraintAsgStrategy(),
                 new RedundantLikeAnyConstraintAsgStrategy(),
                 new LikeToEqTransformationAsgStrategy(),
-                new ConstraintExpLowercaseTransformationAsgStrategy(),
+                new ConstraintExpLowercaseTransformationAsgStrategy(Arrays.asList(STRING_VALUE,CONTENT,TITLE,DISPLAY_NAME,DESCRIPTION)),
                 new ExactConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 //knowledge ranking asg strategies
                 new KnowledgeLikeCombinerStrategy(ruleBoostProvider, ontologyProvider, schemaProviderFactory),

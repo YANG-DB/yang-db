@@ -34,7 +34,7 @@ package com.kayhut.fuse.knowledge.view;
 
 import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext;
 import com.kayhut.fuse.graph.algorithm.BetweennessCentrality;
-import com.kayhut.fuse.graph.algorithm.PageRank;
+import com.kayhut.fuse.graph.view.AssignmentToGraph;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Query;
@@ -52,7 +52,6 @@ import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.utils.FuseClient;
 import javafx.scene.paint.Color;
-import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
@@ -64,14 +63,16 @@ import org.graphstream.ui.view.ViewerListener;
 import org.graphstream.ui.view.ViewerPipe;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KnowledgeQueryBuilder.start;
+import static com.kayhut.fuse.graph.view.AssignmentToGraph.styleSheet;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static java.lang.Thread.sleep;
-import static javafx.scene.paint.Color.*;
 
 
 public class FuseViewer implements ViewerListener {
@@ -200,219 +201,8 @@ public class FuseViewer implements ViewerListener {
 
     }
 
-
-    protected String styleSheet =
-            "graph {"
-                    + "	canvas-color: white; "
-                    + "	fill-mode: gradient-radial; "
-                    + "	fill-color: white, #EEEEEE; "
-                    + "	padding: 80px; "
-                    + "}" +
-                    "node { " +
-                    "   fill-mode: dyn-plain;" +
-                    "   stroke-mode: plain;" +
-                    "	size-mode: dyn-size;" +
-                    "   text-visibility-mode: zoom-range;" +
-                    "   text-visibility: 0, 0.9;" +
-                    "} " +
-                    "node.Entity { " +
-                    "   fill-mode: dyn-plain;" +
-                    "   text-style: bold;" +
-                    "	shape: rounded-box;" +
-                    "	stroke-mode: plain;" +
-                    "} " +
-                    "node.Value { " +
-                    "	text-background-mode: rounded-box;" +
-                    "	text-background-color: #D2B48C;" +
-                    "} " +
-                    "node.Reference { " +
-                    "	shape: circle;" +
-                    "	text-background-mode: rounded-box;" +
-                    "	text-background-color: #D6B48C;" +
-                    "	text-alignment: above;" +
-                    "} " +
-                    "node.Insight { " +
-                    "	shape: diamond;" +
-                    "	text-background-mode: rounded-box;" +
-                    "	text-background-color: #E6B48C;" +
-                    "	text-alignment: above;" +
-                    "} " +
-                    "node:clicked {" +
-                    "   stroke-mode: plain;" +
-                    "   stroke-color: red;" +
-                    "}" +
-                    "node:selected {" +
-                    "   stroke-mode: plain;" +
-                    "   stroke-width: 6px;" +
-                    "   stroke-color: blue;" +
-                    "}" +
-                    "edge {" +
-                    "    fill-mode: dyn-plain; " +
-                    "	 size-mode: dyn-size;" +
-                    "}" +
-                    "edge.Insight {" +
-                    "    shape: cubic-curve;" +
-                    "    fill-mode: dyn-plain; " +
-                    "	 size-mode: dyn-size;" +
-                    "}" +
-                    "edge.Reference {" +
-                    "    shape: cubic-curve;" +
-                    "    fill-mode: dyn-plain; " +
-                    "	 size-mode: dyn-size;" +
-                    "}" +
-                    "edge.Relation {" +
-                    "    shape: cubic-curve;" +
-                    "    size: 3;" +
-                    "    fill-mode: dyn-plain; " +
-                    "	 size-mode: dyn-size;" +
-                    "}";
-
     private void populateGraph(Graph g, String... values) throws IOException, InterruptedException {
-        Assignment assignment = fetchAssignment(values);
-        final String[] context = new String[1];
-        if (assignment.getEntities() != null) {
-            assignment.getEntities().forEach(n -> {
-                if (g.getNode(n.geteID()) == null) {
-                    if (n.getProperties().stream().anyMatch(v -> v.getpType().equals("context"))) {
-                        context[0] = n.getProperties().stream().filter(v -> v.getpType().equals("context")).findAny().get().getValue().toString();
-                        if (g.getNode(context[0]) == null) {
-                            final Node node = g.addNode(context[0]);
-                            node.setAttribute("ui.size", 50f);
-                            node.setAttribute("label", context[0]);
-                            node.setAttribute("ui.label", context[0]);
-                            node.setAttribute("ui.color", BEIGE);
-                        }
-                    }
-                    Node node;
-
-                    switch (n.geteType()) {
-                        case "Entity":
-                            final String category = n.getProperties().stream().filter(v -> v.getpType().equals("category"))
-                                    .findAny().get().getValue().toString();
-                            node = g.addNode(n.geteID());
-                            node.setAttribute("label", category);
-                            node.setAttribute("ui.label", category);
-                            node.setAttribute("ui.color", NamedColors.get(n.geteType() + category));
-                            node.setAttribute("ui.size", 20f);
-                            node.setAttribute("ui.class", "Entity");
-                            node.setAttribute("ui.properties", n.getProperties());
-
-                            if (context[0] != null) {
-/*
-                        final Edge edge = g.addEdge(context[0] + "->" + n.geteID(), context[0], n.geteID());
-                        edge.setAttribute("ui.size", 5f);
-                        edge.setAttribute("ui.color", GRAY);
-*/
-                                break;
-                            }
-                        case "Evalue":
-                            String fieldId = n.getProperties().stream().filter(v -> v.getpType().equals("fieldId"))
-                                    .findAny().get().getValue().toString();
-                            String value = n.getProperties().stream().filter(v ->
-                                    v.getpType().equals("stringValue") ||
-                                            v.getpType().equals("intValue") ||
-                                            v.getpType().equals("dateValue"))
-                                    .findAny().get().getValue().toString();
-
-                            value = value.length() > 10 ? value.substring(0, Math.min(value.length(), 10)) + "..." : value;
-
-
-                            node = g.addNode(n.geteID());
-                            node.setAttribute("ui.color", NamedColors.get(n.geteType()));
-                            node.setAttribute("label", fieldId + ":" + value);
-                            node.setAttribute("ui.label", fieldId + ":" + value);
-                            node.setAttribute("ui.value", fieldId + ":" + value);
-                            node.setAttribute("ui.class", "Value");
-                            node.setAttribute("ui.properties", n.getProperties());
-
-                            break;
-                        case "Insight":
-                            String content = n.getProperties().stream().filter(v -> v.getpType().equals("content"))
-                                    .findAny().get().getValue().toString();
-                            String shortContent = content.length() > 10 ? content.substring(0, Math.min(content.length(), 10)) + "..." : content;
-
-                            node = g.addNode(n.geteID());
-                            node.setAttribute("ui.color", NamedColors.get(n.geteType()));
-                            node.setAttribute("label", shortContent);
-                            node.setAttribute("ui.label", shortContent);
-                            node.setAttribute("ui.value", content);
-                            node.setAttribute("ui.class", "Insight");
-                            node.setAttribute("ui.properties", n.getProperties());
-                            break;
-                        case "Reference":
-                            String title = n.getProperties().stream().filter(v -> v.getpType().equals("title"))
-                                    .findAny().get().getValue().toString();
-                            String shortTitle = title.length() > 10 ? title.substring(0, Math.min(title.length(), 10)) + "..." : title;
-                            System.out.println("add ref " + n.geteID());
-                            node = g.addNode(n.geteID());
-                            node.setAttribute("ui.color", NamedColors.get(n.geteType()));
-                            node.setAttribute("label", shortTitle);
-                            node.setAttribute("ui.label", shortTitle);
-                            node.setAttribute("ui.value", title);
-                            node.setAttribute("ui.class", "Reference");
-                            node.setAttribute("ui.properties", n.getProperties());
-                            break;
-                        case "Rvalue":
-                            break;
-                        case "Relation":
-                            final String edgeCategory = n.getProperties().stream().filter(v -> v.getpType().equals("category"))
-                                    .findAny().get().getValue().toString();
-
-                            final String sideA = n.getProperties().stream().filter(v -> v.getpType().equals("entityAId"))
-                                    .findAny().get().getValue().toString();
-                            final String sideB = n.getProperties().stream().filter(v -> v.getpType().equals("entityBId"))
-                                    .findAny().get().getValue().toString();
-                            //assuming sideA is present in the results - if side B not present -> add node to represent it
-                            if (g.getNode(sideB) == null) {
-                                final String sideBCategory = n.getProperties().stream().filter(v -> v.getpType().equals("entityBCategory"))
-                                        .findAny().get().getValue().toString();
-                                Node nodeSideB = g.addNode(sideB);
-                                nodeSideB.setAttribute("label", sideBCategory);
-                                nodeSideB.setAttribute("ui.label", sideBCategory);
-                                nodeSideB.setAttribute("ui.color", NamedColors.get(n.geteType() + sideBCategory));
-                                nodeSideB.setAttribute("ui.size", 20f);
-                                nodeSideB.setAttribute("ui.class", "Entity");
-                            }
-                            if (g.getEdge(n.geteID()) == null) {
-                                Edge in = g.addEdge(n.geteID(), sideA, sideB, false);
-                                in.setAttribute("ui.color", BLUE);
-                                in.setAttribute("ui.label", edgeCategory);
-                                in.setAttribute("ui.class", "Relation");
-                                in.setAttribute("ui.properties", n.getProperties());
-                            }
-                            break;
-                    }
-                }
-            });
-        }
-        if (assignment.getRelationships() != null) {
-            assignment.getRelationships().forEach(r -> {
-                if (g.getEdge(r.getrID()) == null) {
-                    switch (r.getrType()) {
-                        case "hasEvalue":
-                            final Edge eval = g.addEdge(r.getrID(), r.geteID1(), r.geteID2(), false);
-                            eval.setAttribute("ui.size", 1f);
-                            eval.setAttribute("ui.color", GRAY);
-                            break;
-                        case "hasInsight":
-                            final Edge insight = g.addEdge(r.getrID(), r.geteID1(), r.geteID2(), false);
-                            insight.setAttribute("ui.color", BLUEVIOLET);
-                            insight.setAttribute("ui.class", "Insight");
-                            break;
-                        case "hasEntityReference":
-                            System.out.println("add edge " + r.geteID1() + "->" + r.geteID2());
-                            final Edge reference = g.addEdge(r.getrID(), r.geteID1(), r.geteID2(), false);
-                            reference.setAttribute("ui.color", GREEN);
-                            reference.setAttribute("ui.class", "Reference");
-                            break;
-                        case "hasRelationReference":
-                            break;
-                        case "hasRvalue":
-                            break;
-                    }
-                }
-            });
-        }
+        AssignmentToGraph.populateGraph(g, fetchAssignment(values));
     }
 
     private Assignment fetchAssignment(String... values) throws IOException, InterruptedException {
@@ -470,173 +260,6 @@ public class FuseViewer implements ViewerListener {
 
         );
         return Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(list).build();
-    }
-
-    private static final class NamedColors {
-        private static final Map<String, Color> namedColors =
-                createNamedColors();
-
-        private NamedColors() {
-        }
-
-        private static Color get(String name) {
-            return (Color) namedColors.values().toArray()[Math.abs(name.hashCode() % (namedColors.values().size()-1))];
-        }
-
-        private static Map<String, Color> createNamedColors() {
-            Map<String, Color> colors = new HashMap<String, Color>(256);
-
-            colors.put("aliceblue", ALICEBLUE);
-            colors.put("antiquewhite", ANTIQUEWHITE);
-            colors.put("aqua", AQUA);
-            colors.put("aquamarine", AQUAMARINE);
-            colors.put("azure", AZURE);
-            colors.put("beige", BEIGE);
-            colors.put("bisque", BISQUE);
-            colors.put("black", BLACK);
-            colors.put("blanchedalmond", BLANCHEDALMOND);
-            colors.put("blue", BLUE);
-            colors.put("blueviolet", BLUEVIOLET);
-            colors.put("brown", BROWN);
-            colors.put("burlywood", BURLYWOOD);
-            colors.put("cadetblue", CADETBLUE);
-            colors.put("chartreuse", CHARTREUSE);
-            colors.put("chocolate", CHOCOLATE);
-            colors.put("coral", CORAL);
-            colors.put("cornflowerblue", CORNFLOWERBLUE);
-            colors.put("cornsilk", CORNSILK);
-            colors.put("crimson", CRIMSON);
-            colors.put("cyan", CYAN);
-            colors.put("darkblue", DARKBLUE);
-            colors.put("darkcyan", DARKCYAN);
-            colors.put("darkgoldenrod", DARKGOLDENROD);
-            colors.put("darkgray", DARKGRAY);
-            colors.put("darkgreen", DARKGREEN);
-            colors.put("darkgrey", DARKGREY);
-            colors.put("darkkhaki", DARKKHAKI);
-            colors.put("darkmagenta", DARKMAGENTA);
-            colors.put("darkolivegreen", DARKOLIVEGREEN);
-            colors.put("darkorange", DARKORANGE);
-            colors.put("darkorchid", DARKORCHID);
-            colors.put("darkred", DARKRED);
-            colors.put("darksalmon", DARKSALMON);
-            colors.put("darkseagreen", DARKSEAGREEN);
-            colors.put("darkslateblue", DARKSLATEBLUE);
-            colors.put("darkslategray", DARKSLATEGRAY);
-            colors.put("darkslategrey", DARKSLATEGREY);
-            colors.put("darkturquoise", DARKTURQUOISE);
-            colors.put("darkviolet", DARKVIOLET);
-            colors.put("deeppink", DEEPPINK);
-            colors.put("deepskyblue", DEEPSKYBLUE);
-            colors.put("dimgray", DIMGRAY);
-            colors.put("dimgrey", DIMGREY);
-            colors.put("dodgerblue", DODGERBLUE);
-            colors.put("firebrick", FIREBRICK);
-            colors.put("floralwhite", FLORALWHITE);
-            colors.put("forestgreen", FORESTGREEN);
-            colors.put("fuchsia", FUCHSIA);
-            colors.put("gainsboro", GAINSBORO);
-            colors.put("ghostwhite", GHOSTWHITE);
-            colors.put("gold", GOLD);
-            colors.put("goldenrod", GOLDENROD);
-            colors.put("gray", GRAY);
-            colors.put("green", GREEN);
-            colors.put("greenyellow", GREENYELLOW);
-            colors.put("grey", GREY);
-            colors.put("honeydew", HONEYDEW);
-            colors.put("hotpink", HOTPINK);
-            colors.put("indianred", INDIANRED);
-            colors.put("indigo", INDIGO);
-            colors.put("ivory", IVORY);
-            colors.put("khaki", KHAKI);
-            colors.put("lavender", LAVENDER);
-            colors.put("lavenderblush", LAVENDERBLUSH);
-            colors.put("lawngreen", LAWNGREEN);
-            colors.put("lemonchiffon", LEMONCHIFFON);
-            colors.put("lightblue", LIGHTBLUE);
-            colors.put("lightcoral", LIGHTCORAL);
-            colors.put("lightcyan", LIGHTCYAN);
-            colors.put("lightgoldenrodyellow", LIGHTGOLDENRODYELLOW);
-            colors.put("lightgray", LIGHTGRAY);
-            colors.put("lightgreen", LIGHTGREEN);
-            colors.put("lightgrey", LIGHTGREY);
-            colors.put("lightpink", LIGHTPINK);
-            colors.put("lightsalmon", LIGHTSALMON);
-            colors.put("lightseagreen", LIGHTSEAGREEN);
-            colors.put("lightskyblue", LIGHTSKYBLUE);
-            colors.put("lightslategray", LIGHTSLATEGRAY);
-            colors.put("lightslategrey", LIGHTSLATEGREY);
-            colors.put("lightsteelblue", LIGHTSTEELBLUE);
-            colors.put("lightyellow", LIGHTYELLOW);
-            colors.put("lime", LIME);
-            colors.put("limegreen", LIMEGREEN);
-            colors.put("linen", LINEN);
-            colors.put("magenta", MAGENTA);
-            colors.put("maroon", MAROON);
-            colors.put("mediumaquamarine", MEDIUMAQUAMARINE);
-            colors.put("mediumblue", MEDIUMBLUE);
-            colors.put("mediumorchid", MEDIUMORCHID);
-            colors.put("mediumpurple", MEDIUMPURPLE);
-            colors.put("mediumseagreen", MEDIUMSEAGREEN);
-            colors.put("mediumslateblue", MEDIUMSLATEBLUE);
-            colors.put("mediumspringgreen", MEDIUMSPRINGGREEN);
-            colors.put("mediumturquoise", MEDIUMTURQUOISE);
-            colors.put("mediumvioletred", MEDIUMVIOLETRED);
-            colors.put("midnightblue", MIDNIGHTBLUE);
-            colors.put("mintcream", MINTCREAM);
-            colors.put("mistyrose", MISTYROSE);
-            colors.put("moccasin", MOCCASIN);
-            colors.put("navajowhite", NAVAJOWHITE);
-            colors.put("navy", NAVY);
-            colors.put("oldlace", OLDLACE);
-            colors.put("olive", OLIVE);
-            colors.put("olivedrab", OLIVEDRAB);
-            colors.put("orange", ORANGE);
-            colors.put("orangered", ORANGERED);
-            colors.put("orchid", ORCHID);
-            colors.put("palegoldenrod", PALEGOLDENROD);
-            colors.put("palegreen", PALEGREEN);
-            colors.put("paleturquoise", PALETURQUOISE);
-            colors.put("palevioletred", PALEVIOLETRED);
-            colors.put("papayawhip", PAPAYAWHIP);
-            colors.put("peachpuff", PEACHPUFF);
-            colors.put("peru", PERU);
-            colors.put("pink", PINK);
-            colors.put("plum", PLUM);
-            colors.put("powderblue", POWDERBLUE);
-            colors.put("purple", PURPLE);
-            colors.put("red", RED);
-            colors.put("rosybrown", ROSYBROWN);
-            colors.put("royalblue", ROYALBLUE);
-            colors.put("saddlebrown", SADDLEBROWN);
-            colors.put("salmon", SALMON);
-            colors.put("sandybrown", SANDYBROWN);
-            colors.put("seagreen", SEAGREEN);
-            colors.put("seashell", SEASHELL);
-            colors.put("sienna", SIENNA);
-            colors.put("silver", SILVER);
-            colors.put("skyblue", SKYBLUE);
-            colors.put("slateblue", SLATEBLUE);
-            colors.put("slategray", SLATEGRAY);
-            colors.put("slategrey", SLATEGREY);
-            colors.put("snow", SNOW);
-            colors.put("springgreen", SPRINGGREEN);
-            colors.put("steelblue", STEELBLUE);
-            colors.put("tan", TAN);
-            colors.put("teal", TEAL);
-            colors.put("thistle", THISTLE);
-            colors.put("tomato", TOMATO);
-            colors.put("transparent", TRANSPARENT);
-            colors.put("turquoise", TURQUOISE);
-            colors.put("violet", VIOLET);
-            colors.put("wheat", WHEAT);
-            colors.put("white", WHITE);
-            colors.put("whitesmoke", WHITESMOKE);
-            colors.put("yellow", YELLOW);
-            colors.put("yellowgreen", YELLOWGREEN);
-
-            return colors;
-        }
     }
 
     private Ontology.Accessor $ont;

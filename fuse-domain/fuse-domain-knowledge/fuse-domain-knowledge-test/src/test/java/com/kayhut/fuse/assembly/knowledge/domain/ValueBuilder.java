@@ -6,10 +6,7 @@ import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
 import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 //todo - for kobi usage
 public class ValueBuilder extends EntityId {
@@ -21,7 +18,7 @@ public class ValueBuilder extends EntityId {
     public String fieldId;
     public String bdt;
     public String stringValue;
-    public String dateValue;
+    public Date dateValue;
     public int intValue = Integer.MIN_VALUE;
     private String valueId;
 
@@ -38,6 +35,11 @@ public class ValueBuilder extends EntityId {
 
     public ValueBuilder value(String value) {
         this.stringValue = value;
+        return this;
+    }
+
+    public ValueBuilder value(Date value) {
+        this.dateValue = value;
         return this;
     }
 
@@ -97,7 +99,7 @@ public class ValueBuilder extends EntityId {
         else if(intValue!=Integer.MIN_VALUE)
             on.put("intValue", intValue);
         else if(dateValue!=null)
-            on.put("dateValue", dateValue);
+            on.put("dateValue", sdf.format(dateValue));
         return on;
     }
 
@@ -109,7 +111,7 @@ public class ValueBuilder extends EntityId {
         else if(intValue!=Integer.MIN_VALUE)
             value = new Property("intValue", "raw", intValue);
         else if(dateValue!=null)
-            value = new Property("dateValue", "raw", dateValue);
+            value = new Property("dateValue", "raw", sdf.format(dateValue));
 
         return Entity.Builder.instance()
                 .withEID(id())

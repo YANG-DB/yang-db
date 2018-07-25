@@ -33,6 +33,8 @@ import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
 public class KnowledgeReaderContext {
 
+    public static final String KNOWLEDGE = "Knowledge";
+
     static public class KnowledgeQueryBuilder {
         private Query.Builder knowledge;
         private List<EBase> elements;
@@ -52,7 +54,7 @@ public class KnowledgeReaderContext {
         }
 
         private KnowledgeQueryBuilder() {
-            knowledge = Query.Builder.instance().withName(NAME.name).withOnt("Knowledge");
+            knowledge = Query.Builder.instance().withName(NAME.name).withOnt(KNOWLEDGE);
             elements = new ArrayList<>();
         }
 

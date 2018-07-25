@@ -22,7 +22,6 @@ public interface QueryController {
     ContentResponse<QueryResourceInfo> getInfo(String queryId);
     ContentResponse<Query> getV1(String queryId);
     ContentResponse<AsgQuery> getAsg(String queryId);
-    ContentResponse<JsonNode> getElasticQueries(String queryId);
     ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId);
     ContentResponse<PlanNode<Plan>> planVerbose(String queryId);
     ContentResponse<Boolean> delete(String queryId);

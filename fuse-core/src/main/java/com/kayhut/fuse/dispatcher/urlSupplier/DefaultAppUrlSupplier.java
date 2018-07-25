@@ -27,6 +27,11 @@ public class DefaultAppUrlSupplier implements AppUrlSupplier {
     }
 
     @Override
+    public String baseUrl() {
+        return baseUrl;
+    }
+
+    @Override
     public String queryStoreUrl() {
         return new ResourceStoreUrlSupplier(this.baseUrl, ResourceStoreUrlSupplier.Store.Query).get();
     }

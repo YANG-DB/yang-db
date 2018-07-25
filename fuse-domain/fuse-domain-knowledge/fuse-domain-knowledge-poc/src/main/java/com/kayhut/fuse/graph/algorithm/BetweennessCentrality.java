@@ -38,7 +38,6 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Compute the "betweenness" centrality of each vertex of a given graph.
@@ -408,8 +407,8 @@ public class BetweennessCentrality implements Algorithm {
             Node v = Q.removeFirst();
 
             S.add(v);
-//			Iterator<? extends Edge> ww = v.getLeavingEdgeIterator();
-            Iterator<? extends Edge> ww = v.leavingEdges().iterator();
+			Iterator<? extends Edge> ww = v.getLeavingEdgeIterator();
+//            Iterator<? extends Edge> ww = v.getLeavingEdgeIterator();
 
             while (ww.hasNext()) {
                 Edge l = ww.next();
@@ -459,8 +458,8 @@ public class BetweennessCentrality implements Algorithm {
             } else {
                 S.add(u);
 
-//				Iterator<? extends Edge> k = u.getLeavingEdgeIterator();
-                Iterator<? extends Edge> k = u.leavingEdges().iterator();
+				Iterator<? extends Edge> k = u.getLeavingEdgeIterator();
+//                Iterator<? extends Edge> k = u.leavingEdges().iterator();
 
                 while (k.hasNext()) {
 //					Node v = k.next();
@@ -529,8 +528,8 @@ public class BetweennessCentrality implements Algorithm {
 
             S.add(v);
 
-//			Iterator<? extends Edge> k = v.getLeavingEdgeIterator();
-            Iterator<? extends Edge> k = v.leavingEdges().iterator();
+			Iterator<? extends Edge> k = v.getLeavingEdgeIterator();
+//            Iterator<? extends Edge> k = v.leavingEdges().iterator();
 
             while (k.hasNext()) {
                 //Node w = k.next();
@@ -754,7 +753,7 @@ public class BetweennessCentrality implements Algorithm {
      */
     protected void initAllEdges(Graph graph) {
         if (doEdges) {
-            graph.edges().forEach(edge -> setCentrality(edge, 0.0));
+            graph.getEachEdge().forEach(edge -> setCentrality(edge, 0.0));
         }
     }
 
@@ -773,7 +772,7 @@ public class BetweennessCentrality implements Algorithm {
     }
 
     public double max(Graph graph) {
-        return graph.nodes().max(Comparator.comparing(v -> v.getAttribute("Cb", Double.class).intValue()))
+        return graph.getNodeSet().stream().max(Comparator.comparing(v -> v.getAttribute("Cb", Double.class).intValue()))
                 .get().getAttribute("Cb", Double.class).doubleValue();
     }
 
@@ -781,22 +780,22 @@ public class BetweennessCentrality implements Algorithm {
      * Delete attributes used by this algorithm in nodes and edges of the graph
      */
     public void cleanGraph() {
-        cleanElement(graph.edges());
-        cleanElement(graph.edges());
+        cleanElement(graph.getEachNode());
+        cleanElement(graph.getEachEdge());
     }
 
     /**
      * Delete attributes used by this algorithm in nodes of the graph
      */
     public void cleanNodes() {
-        cleanElement(graph.edges());
+        cleanElement(graph.getEachNode());
     }
 
     /**
      * Delete attributes used by this algorithm in edges of the graph
      */
     public void cleanEdges() {
-        cleanElement(graph.edges());
+        cleanElement(graph.getEachEdge());
     }
 
     /**
@@ -804,7 +803,7 @@ public class BetweennessCentrality implements Algorithm {
      *
      * @param it the list of elements
      */
-    private void cleanElement(Stream<? extends Edge> it) {
+    private void cleanElement(Iterable<? extends Element> it) {
         it.forEach(e -> {
             if (e.hasAttribute(predAttributeName))
                 e.removeAttribute(predAttributeName);

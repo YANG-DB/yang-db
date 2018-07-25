@@ -20,9 +20,12 @@ import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.collection.Stream;
+import javaslang.control.Option;
 import org.junit.*;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.kayhut.fuse.assembly.knowledge.Setup.*;
@@ -39,16 +42,19 @@ import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
 
 public class KnowledgeSimpleEntityWithRelationTests {
     static KnowledgeWriterContext ctx;
-
+    static SimpleDateFormat sdf;
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
+        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        //Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
     @AfterClass
     public static void teardown() throws Exception {
-        Setup.cleanup();
+        //Setup.cleanup();
     }
 
     @After
@@ -270,13 +276,13 @@ public class KnowledgeSimpleEntityWithRelationTests {
     }
 
     @Test
-    public void testRelatedEntityRelTypeLeft() throws IOException, InterruptedException {
+    public void testRelatedEntityRelTypeLeft() throws IOException, InterruptedException, ParseException {
 
         String creationTime = "2018-07-17 13:19:20.667";
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("cat").ctx("context1");
         String e1Id = e1.id();
         final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
-        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).context("context1").cat("rel").creationTime(creationTime);
+        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).context("context1").cat("rel").creationTime(sdf.parse(creationTime));
         e1.rel(rel,"out");
         e2.rel(rel,"in");
 
@@ -304,16 +310,21 @@ public class KnowledgeSimpleEntityWithRelationTests {
         Assert.assertEquals(e1Id, entityA.geteID());
         Assert.assertEquals(e2.id(), entityB.geteID());
 
+        Assert.assertEquals(1,pageData.getAssignments().get(0).getRelationships().size());
+        Option<Property> category = Stream.ofAll(pageData.getAssignments().get(0).getRelationships().get(0).getProperties()).find(p -> p.getpType().equals("category"));
+        Assert.assertFalse(category.isEmpty());
+        Assert.assertEquals("rel", category.get().getValue());
+
     }
 
     @Test
-    public void testRelatedEntityRelTypeRight() throws IOException, InterruptedException {
+    public void testRelatedEntityRelTypeRight() throws IOException, InterruptedException, ParseException {
 
         String creationTime = "2018-07-17 13:19:20.667";
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("cat").ctx("context1");
         String e1Id = e1.id();
         final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
-        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).context("context1").cat("rel").creationTime(creationTime);
+        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).context("context1").cat("rel").creationTime(sdf.parse(creationTime));
         e1.rel(rel,"out");
         e2.rel(rel,"in");
 

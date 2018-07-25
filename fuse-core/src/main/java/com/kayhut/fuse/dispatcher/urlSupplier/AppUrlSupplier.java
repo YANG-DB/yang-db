@@ -8,6 +8,7 @@ public interface AppUrlSupplier {
     String resourceUrl(String queryId, String cursorId);
     String resourceUrl(String queryId, String cursorId, String pageId);
 
+    String baseUrl();
     String queryStoreUrl();
     String cursorStoreUrl(String queryId);
     String pageStoreUrl(String queryId, String cursorId);

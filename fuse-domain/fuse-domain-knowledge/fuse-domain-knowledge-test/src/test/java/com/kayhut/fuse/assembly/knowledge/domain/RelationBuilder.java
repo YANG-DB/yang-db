@@ -143,10 +143,7 @@ public class RelationBuilder extends Metadata {
         return "Reference." + id();
     }
 
-    public RelationBuilder creationTime(String creationTime) {
-        this.creationTime = creationTime;
-        return this;
-    }
+
 
     public static class EntityRelationBuilder extends KnowledgeDomainBuilder {
         public static String physicalType = "e.relation";

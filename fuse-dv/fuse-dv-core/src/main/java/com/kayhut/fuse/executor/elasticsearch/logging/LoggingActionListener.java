@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Created by roman.margolis on 14/12/2017.
@@ -16,8 +17,8 @@ import java.util.Optional;
 public class LoggingActionListener<TResponse> implements ActionListener<TResponse> {
     //region Constructors
     public LoggingActionListener(
-            LogMessage successMessage,
-            LogMessage failureMessage,
+            Function<TResponse, LogMessage> successMessage,
+            Function<Exception, LogMessage> failureMessage,
             Closeable timerContext,
             Meter successMeter,
             Meter failureMeter) {
@@ -32,9 +33,9 @@ public class LoggingActionListener<TResponse> implements ActionListener<TRespons
 
     public LoggingActionListener(
             ActionListener<TResponse> innerActionListener,
-            LogMessage successMessage,
-            LogMessage failureMessage,
-            LogMessage innerFailureMessage,
+           Function<TResponse, LogMessage> successMessage,
+            Function<Exception, LogMessage> failureMessage,
+            Function<Exception, LogMessage> innerFailureMessage,
             Closeable timerContext,
             Meter successMeter,
             Meter failureMeter) {
@@ -56,9 +57,9 @@ public class LoggingActionListener<TResponse> implements ActionListener<TRespons
         try {
             innerActionListener.ifPresent(tResponseActionListener -> tResponseActionListener.onResponse(tResponse));
         } catch (Exception ex) {
-            innerFailureMessage.ifPresent(logMessage -> logMessage.with(ex).log());
+            innerFailureMessage.ifPresent(logMessage -> logMessage.apply(ex).log());
         } finally {
-            this.successMessage.log();
+            this.successMessage.apply(tResponse).log();
             this.successMeter.mark();
         }
     }
@@ -74,21 +75,21 @@ public class LoggingActionListener<TResponse> implements ActionListener<TRespons
         try {
             innerActionListener.ifPresent(tResponseActionListener -> tResponseActionListener.onFailure(e));
         } catch (Exception ex) {
-            innerFailureMessage.ifPresent(logMessage -> logMessage.with(ex).log());
+            innerFailureMessage.ifPresent(logMessage -> logMessage.apply(ex).log());
         } finally {
-            this.failureMessage.with(e).log();
+            this.failureMessage.apply(e).log();
             this.failureMeter.mark();
         }
     }
     //endregion
 
     //region Fields
-    private LogMessage successMessage;
-    private LogMessage failureMessage;
+    private Function<TResponse, LogMessage> successMessage;
+    private Function<Exception, LogMessage> failureMessage;
     private Closeable timerContext;
     private Meter successMeter;
     private Meter failureMeter;
     private Optional<ActionListener<TResponse>> innerActionListener;
-    private Optional<LogMessage> innerFailureMessage;
+    private Optional<Function<Exception, LogMessage>> innerFailureMessage;
     //endregion
 }

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
@@ -29,8 +30,8 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
     //region Constructors
     public LoggingActionFuture(
             ActionFuture<T> actionFuture,
-            LogMessage successMessage,
-            LogMessage failureMessage,
+            Function<T, LogMessage> successMessage,
+            Function<Exception, LogMessage> failureMessage,
             Closeable timerContext,
             Meter successMeter,
             Meter failureMeter) {
@@ -48,24 +49,18 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
     //region ActionFuture Implementation
     @Override
     public T actionGet() {
-        boolean thrownExcepion = false;
-
         try {
             T response = actionFuture.actionGet();
             callListenersOnResponse(response);
+            this.successMessage.apply(response).log();
+            this.successMeter.mark();
             return response;
         } catch (Exception ex) {
-            thrownExcepion = true;
             callListenersOnFailure(ex);
-            this.failureMessage.with(ex).log();
+            this.failureMessage.apply(ex).log();
             this.failureMeter.mark();
             throw ex;
         } finally {
-            if (!thrownExcepion) {
-                this.successMessage.log();
-                this.successMeter.mark();
-            }
-
             try {
                 this.timerContext.close();
             } catch (IOException e) {
@@ -76,24 +71,18 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
 
     @Override
     public T actionGet(String s) {
-        boolean thrownExcepion = false;
-
         try {
             T response = actionFuture.actionGet(s);
             callListenersOnResponse(response);
+            this.successMessage.apply(response).log();
+            this.successMeter.mark();
             return response;
         } catch (Exception ex) {
-            thrownExcepion = true;
             callListenersOnFailure(ex);
-            this.failureMessage.with(ex).log();
+            this.failureMessage.apply(ex).log();
             this.failureMeter.mark();
             throw ex;
         } finally {
-            if (!thrownExcepion) {
-                this.successMessage.log();
-                this.successMeter.mark();
-            }
-
             try {
                 this.timerContext.close();
             } catch (IOException e) {
@@ -104,24 +93,18 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
 
     @Override
     public T actionGet(long l) {
-        boolean thrownExcepion = false;
-
         try {
             T response = actionFuture.actionGet(l);
             callListenersOnResponse(response);
+            this.successMessage.apply(response).log();
+            this.successMeter.mark();
             return response;
         } catch (Exception ex) {
-            thrownExcepion = true;
             callListenersOnFailure(ex);
-            this.failureMessage.with(ex).log();
+            this.failureMessage.apply(ex).log();
             this.failureMeter.mark();
             throw ex;
         } finally {
-            if (!thrownExcepion) {
-                this.successMessage.log();
-                this.successMeter.mark();
-            }
-
             try {
                 this.timerContext.close();
             } catch (IOException e) {
@@ -132,24 +115,18 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
 
     @Override
     public T actionGet(long l, TimeUnit timeUnit) {
-        boolean thrownExcepion = false;
-
         try {
             T response = actionFuture.actionGet(l, timeUnit);
             callListenersOnResponse(response);
+            this.successMessage.apply(response).log();
+            this.successMeter.mark();
             return response;
         } catch (Exception ex) {
-            thrownExcepion = true;
             callListenersOnFailure(ex);
-            this.failureMessage.with(ex).log();
+            this.failureMessage.apply(ex).log();
             this.failureMeter.mark();
             throw ex;
         } finally {
-            if (!thrownExcepion) {
-                this.successMessage.log();
-                this.successMeter.mark();
-            }
-
             try {
                 this.timerContext.close();
             } catch (IOException e) {
@@ -160,24 +137,18 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
 
     @Override
     public T actionGet(TimeValue timeValue) {
-        boolean thrownExcepion = false;
-
         try {
             T response = actionFuture.actionGet(timeValue);
             callListenersOnResponse(response);
+            this.successMessage.apply(response).log();
+            this.successMeter.mark();
             return response;
         } catch (Exception ex) {
-            thrownExcepion = true;
             callListenersOnFailure(ex);
-            this.failureMessage.with(ex).log();
+            this.failureMessage.apply(ex).log();
             this.failureMeter.mark();
             throw ex;
         } finally {
-            if (!thrownExcepion) {
-                this.successMessage.log();
-                this.successMeter.mark();
-            }
-
             try {
                 this.timerContext.close();
             } catch (IOException e) {
@@ -203,24 +174,18 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
 
     @Override
     public T get() throws InterruptedException, ExecutionException {
-        boolean thrownExcepion = false;
-
         try {
             T response = actionFuture.get();
             callListenersOnResponse(response);
+            this.successMessage.apply(response).log();
+            this.successMeter.mark();
             return response;
         } catch (Exception ex) {
-            thrownExcepion = true;
             callListenersOnFailure(ex);
-            this.failureMessage.with(ex).log();
+            this.failureMessage.apply(ex).log();
             this.failureMeter.mark();
             throw ex;
         } finally {
-            if (!thrownExcepion) {
-                this.successMessage.log();
-                this.successMeter.mark();
-            }
-
             try {
                 this.timerContext.close();
             } catch (IOException e) {
@@ -231,24 +196,18 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
 
     @Override
     public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        boolean thrownExcepion = false;
-
         try {
             T response = actionFuture.get(timeout, unit);
             callListenersOnResponse(response);
+            this.successMessage.apply(response).log();
+            this.successMeter.mark();
             return response;
         } catch (Exception ex) {
-            thrownExcepion = true;
             callListenersOnFailure(ex);
-            this.failureMessage.with(ex).log();
+            this.failureMessage.apply(ex).log();
             this.failureMeter.mark();
             throw ex;
         } finally {
-            if (!thrownExcepion) {
-                this.successMessage.log();
-                this.successMeter.mark();
-            }
-
             try {
                 this.timerContext.close();
             } catch (IOException e) {
@@ -283,13 +242,11 @@ public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
 
     //region Fields
     private ActionFuture<T> actionFuture;
-    private LogMessage successMessage;
-    private LogMessage failureMessage;
+    private Function<T, LogMessage> successMessage;
+    private Function<Exception, LogMessage> failureMessage;
     private Closeable timerContext;
     private Meter successMeter;
     private Meter failureMeter;
-
-    private Iterable<LogMessage.MDCWriter> finalWriters;
 
     private List<ActionListener<T>> listeners;
     //endregion

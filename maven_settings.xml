@@ -28,9 +28,6 @@
             <id>public</id>
         </profile>
     </profiles>
-    <activeProfiles>
-        <activeProfile>public</activeProfile>
-    </activeProfiles>
 
     <servers>
         <server>
