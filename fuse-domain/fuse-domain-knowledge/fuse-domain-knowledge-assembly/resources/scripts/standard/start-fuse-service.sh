@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 mainClass=com.kayhut.fuse.services.FuseRunner
 configFile=config/application.conf
 classPath=".:lib/*"
