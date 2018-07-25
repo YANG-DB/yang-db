@@ -18,6 +18,7 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.jooby.MediaType;
 
 import java.io.IOException;
@@ -121,8 +122,20 @@ public class FuseClient {
         return this.objectMapper.readValue(unwrap(postRequest(pageStoreUrl, request)), PageResourceInfo.class);
     }
 
+    public PageResourceInfo getPage(String pageUrl,String pageId) throws IOException {
+        return this.objectMapper.readValue(unwrap(getRequest(pageUrl+"/"+pageId)), PageResourceInfo.class);
+    }
+
     public PageResourceInfo getPage(String pageUrl) throws IOException {
         return this.objectMapper.readValue(unwrap(getRequest(pageUrl)), PageResourceInfo.class);
+    }
+
+    public QueryResourceInfo getQuery(String queryUrl,String queryId) throws IOException {
+        return this.objectMapper.readValue(unwrap(getRequest(queryUrl+"/"+queryId)), QueryResourceInfo.class);
+    }
+
+    public CursorResourceInfo getCursor(String cursorUrl,String cursorId) throws IOException {
+        return this.objectMapper.readValue(unwrap(getRequest(cursorUrl+"/"+cursorId)), CursorResourceInfo.class);
     }
 
     public Ontology getOntology(String ontologyUrl) throws IOException {
@@ -151,6 +164,9 @@ public class FuseClient {
         return this.objectMapper.readValue(unwrap(getRequest(this.fuseUrl+"/internal/snowflakeId")), Long.class);
     }
 
+    public String getFuseUrl() {
+        return fuseUrl;
+    }
 
     public Query getQueryObject(String v1QueryUrl) throws IOException {
         return unwrapDouble(getRequest(v1QueryUrl));

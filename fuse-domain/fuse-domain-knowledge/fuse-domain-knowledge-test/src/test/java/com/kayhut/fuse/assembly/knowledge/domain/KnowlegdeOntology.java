@@ -120,8 +120,8 @@ public class KnowlegdeOntology {
      }
      */
     public static class ENTITY {
-        public static String name = "ENTITY";
-        public static String type = "ENTITY";
+        public static String name = "S_ENTITY";
+        public static String type = "S_ENTITY";
         public static List<Property> propertyList = Arrays.asList(id, logicalId, category, context,
                 creationTime, lastUpdateTime, creationUser, lastUpdateUser, deleteUpdateTime);
 
@@ -171,8 +171,8 @@ public class KnowlegdeOntology {
     }
 
     public static class REFERENCE {
-        public static String name = "REFERENCE";
-        public static String type = "REFERENCE";
+        public static String name = "S_REFERENCE";
+        public static String type = "S_REFERENCE";
         public static List<Property> propertyList = Arrays.asList(id, logicalId, category,
                 creationTime, lastUpdateTime, creationUser, lastUpdateUser, deleteUpdateTime);
 
