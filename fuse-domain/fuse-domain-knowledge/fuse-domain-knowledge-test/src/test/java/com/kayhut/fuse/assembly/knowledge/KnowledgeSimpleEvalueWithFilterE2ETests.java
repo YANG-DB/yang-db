@@ -41,7 +41,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
     @BeforeClass
     public static void setup() throws Exception
     {
-        Setup.setup();
+        //Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Evalue entities for tests
@@ -88,7 +88,6 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         Assert.assertEquals(10, commit(ctx, INDEX, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10));
     }
 
-    // STRING_VALUE,CONTENT,TITLE,DISPLAY_NAME,DESCRIPTION => Find lower and Upper
 
     @AfterClass
     public static void after() {
@@ -267,8 +266,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    // BUG 2 -> It's find "Chevrolet" and doesn't find "chevrolet" -> supposed to be the opposite!!!
-    @Test(expected = AssertionError.class)
+    @Test
     public void testLikeAnyEvalueByStringValue() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
@@ -287,7 +285,6 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
                         .withEntity(v1.toEntity()) // "Chevrolet"
                         .withEntity(v2.toEntity()) // "and"
                         .withEntity(v3.toEntity()) // "chevrolet"
-                        .withEntity(v4.toEntity()) // "Netanya"
                         .build()).build();
 
         // Check if expected and actual results are equal
