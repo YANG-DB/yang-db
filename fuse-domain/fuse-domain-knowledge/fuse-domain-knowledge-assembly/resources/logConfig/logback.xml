@@ -15,6 +15,7 @@
   <conversionRule conversionWord="elasticElapsedTotal" converterClass="com.kayhut.fuse.executor.elasticsearch.logging.ElasticElapsed$TotalConverter" />
   <conversionRule conversionWord="networkElasticElapsed" converterClass="com.kayhut.fuse.executor.elasticsearch.logging.NetworkElasticElapsed$SingleConverter" />
   <conversionRule conversionWord="networkElasticElapsedTotal" converterClass="com.kayhut.fuse.executor.elasticsearch.logging.NetworkElasticElapsed$TotalConverter" />
+  <conversionRule conversionWord="responseLength" converterClass="com.kayhut.fuse.logging.ResponseLength$Converter" />
 
   <!-- appenders -->
   <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
@@ -133,6 +134,10 @@
       <property>
         <name>route</name>
         <value>%route</value>
+      </property>
+      <property>
+        <name>responseLength</name>
+        <value>%responseLength</value>
       </property>
     </properties>
     <headers>

@@ -7,6 +7,7 @@ import com.google.common.primitives.Bytes;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
+import com.kayhut.fuse.logging.ResponseLength;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import org.jooby.MediaType;
 import org.slf4j.Logger;
@@ -89,7 +90,8 @@ public class LoggingJacksonRenderer extends JacksonBaseRenderer {
 
         ctx.length((long)bytes.length).send(bytes);
 
-        new LogMessage.Impl(this.logger, trace, "finish renderValue", sequence, LogType.of(success), renderValue, ElapsedFrom.now()).log();
+        new LogMessage.Impl(this.logger, trace, "finish renderValue",
+                sequence, LogType.of(success), renderValue, ElapsedFrom.now(), ResponseLength.of(bytes.length)).log();
     }
 
     @Override

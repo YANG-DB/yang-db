@@ -79,6 +79,9 @@
         },
         "requestExternalId": {
           "type": "keyword"
+        },
+        "responseLength": {
+          "type": "integer"
         }
       }
     }
