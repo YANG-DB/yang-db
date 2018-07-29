@@ -256,8 +256,6 @@ public class KnowledgeReaderContext {
             });
             return total;
         }
-
-
     }
 
 }

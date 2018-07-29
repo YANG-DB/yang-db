@@ -14,6 +14,8 @@ public interface PocGraphController {
 
     ContentResponse<ObjectNode> getGraphWithRank(boolean cache, int top, @Nullable String context, String category);
 
+    ContentResponse<String> getGraphWithRankReport(boolean cache, int top, @Nullable String context, String category, String... headers);
+
     ContentResponse<ObjectNode> getGraphPath(boolean cache, String sourceNodeId, String targetNodeId, String context);
 
     ContentResponse<ObjectNode> getGraphWithConnectedComponents(boolean cache, int topN, @Nullable String context);

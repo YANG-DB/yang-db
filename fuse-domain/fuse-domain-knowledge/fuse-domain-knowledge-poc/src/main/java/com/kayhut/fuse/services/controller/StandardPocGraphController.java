@@ -27,6 +27,7 @@ import org.graphstream.graph.implementations.MultiGraph;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.graph.view.AssignmentToGraph.populateFromAssignment;
@@ -114,6 +115,30 @@ public class StandardPocGraphController implements PocGraphController {
         } catch (Exception err) {
             throw new RuntimeException(err);
         }
+    }
+
+    @Override
+    public ContentResponse<String> getGraphWithRankReport(boolean cache, int takeTopN, @Nullable String context, String category, String... headers) {
+        init(Arrays.asList(new PageRank().setVerbose(true)), cache, context);
+        final Graph graph = getGraph(context);
+        StringJoiner headerRow = new StringJoiner(",").add("Rank").add("Id").add("Context").add("Category");
+        Arrays.asList(headers).forEach(header -> headerRow.add(header));
+
+        StringJoiner report = new StringJoiner(System.lineSeparator());
+        report.add(headerRow.toString());
+
+        final Graph subGraph = cloneGraph(mapper, graph, n ->
+                (n.getAttribute("type").equals("entity") &&
+                        ((n.hasAttribute("context") && context != null) ? n.getAttribute("context").equals(context) : true) &&
+                        ((n.hasAttribute("category") && category != null) ? n.getAttribute("category").equals(category) : true)), takeTopN);
+        AtomicInteger rank = new AtomicInteger();
+        subGraph.getNodeSet().forEach(node -> {
+            final StringJoiner line = new StringJoiner(",").add(Integer.toString(rank.getAndIncrement())).add(node.getId()).add(context).add(category);
+            Arrays.asList(headers).stream().filter(header -> node.hasAttribute("value." + header))
+                    .forEach(header -> line.add(node.getAttribute("value." + header)));
+            report.add(line.toString());
+        });
+        return Builder.<String>builder(ACCEPTED, NOT_FOUND).data(Optional.of(report.toString())).compose();
     }
 
     @Override

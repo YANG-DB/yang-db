@@ -22,7 +22,7 @@ public class PocControllerRegistrar extends AppControllerRegistrarBase<PocGraphC
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** get the health status of the service */
 
-        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/rank").resourceUrl(":queryId", ":cursorId", ":pageId"))
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE + "/rank").resourceUrl(":queryId", ":cursorId", ":pageId"))
                 .get(req -> Results.json(this.getController(app).getGraphWithRank(
                         req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
                         req.param("queryId").value(),
@@ -30,57 +30,66 @@ public class PocControllerRegistrar extends AppControllerRegistrarBase<PocGraphC
                         req.param("pageId").value(),
                         req.param("context").isSet() ? req.param("context").value() : null)));
 
-        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/rank").baseUrl())
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE + "/rank/report").baseUrl())
+                .get(req -> Results.json(this.getController(app).getGraphWithRankReport(
+                        req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
+                        req.param("count").isSet() ? req.param("count").intValue() : -1,
+                        req.param("context").isSet() ? req.param("context").value() : null,
+                        req.param("category").isSet() ? req.param("category").value() : null,
+                        req.param("headers").isSet() ? req.param("headers").value().split(",") : new String[]{"title"})));
+
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE + "/rank").baseUrl())
                 .get(req -> Results.json(this.getController(app).getGraphWithRank(
                         req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
                         req.param("count").isSet() ? req.param("count").intValue() : -1,
                         req.param("context").isSet() ? req.param("context").value() : null,
-                        req.param("category").isSet() ? req.param("category").value() : null )));
+                        req.param("category").isSet() ? req.param("category").value() : null)));
 
-        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/connectedComp").baseUrl())
+
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE + "/connectedComp").baseUrl())
                 .get(req -> Results.json(this.getController(app).getGraphWithConnectedComponents(
                         req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
                         req.param("count").isSet() ? req.param("count").intValue() : -1,
                         req.param("context").isSet() ? req.param("context").value() : null)));
 
-        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/centroid").baseUrl())
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE + "/centroid").baseUrl())
                 .get(req -> Results.json(this.getController(app).getGraphWithCentroid(
                         req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
                         req.param("count").isSet() ? req.param("count").intValue() : -1,
                         req.param("context").isSet() ? req.param("context").value() : null)));
 
-        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/connectivity").baseUrl())
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE + "/connectivity").baseUrl())
                 .get(req -> Results.json(this.getController(app).getGraphWithConnectivity(
                         req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
                         req.param("context").isSet() ? req.param("context").value() : null)));
 
-        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/ecentrality").baseUrl())
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE + "/ecentrality").baseUrl())
                 .get(req -> Results.json(this.getController(app).getGraphWithEccentricity(
                         req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
                         req.param("context").isSet() ? req.param("context").value() : null)));
 
-        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/route").baseUrl())
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE + "/route").baseUrl())
                 .get(req -> Results.json(this.getController(app).getGraphPath(
                         req.param("cache").isSet() ? req.param("cache").booleanValue() : false,
-                        req.param("sourceId").value(),req.param("targetId").value(),
+                        req.param("sourceId").value(), req.param("targetId").value(),
                         req.param("context").isSet() ? req.param("context").value() : null)));
 
         /** view the selected graph with d3 html*/
-        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/rank").resourceUrl(":queryId", ":cursorId", ":pageId") + "/view")
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE + "/rank").resourceUrl(":queryId", ":cursorId", ":pageId") + "/view")
                 .get(req -> Results.redirect("/public/assets/ResultsTreeViewer.html?q=" +
                         "fuse/poc/graph/rank/query/" + req.param("queryId").value() + "/cursor/"
                         + req.param("cursorId").value()
-                        + "/page/" + req.param("pageId").value() +"?" +
-                        (req.param("cache").isSet() ? ("cache="+req.param("cache").booleanValue()) : ("cache=false")) + ";" +
-                        (req.param("context").isSet() ? ("context="+req.param("context").toString()) : "")));
+                        + "/page/" + req.param("pageId").value() + "?" +
+                        (req.param("cache").isSet() ? ("cache=" + req.param("cache").booleanValue()) : ("cache=false")) + ";" +
+                        (req.param("context").isSet() ? ("context=" + req.param("context").toString()) : "")));
 
         /** view the entire graph with d3 html*/
-        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE+"/rank").baseUrl() + "/view")
+        app.use(new DefaultAppUrlSupplier(appUrlSupplier.baseUrl() + BASE + "/rank").baseUrl() + "/view")
                 .get(req -> Results.redirect("/public/assets/ResultsTreeViewer.html?q=" +
                         "fuse/poc/graph/rank?" +
-                        (req.param("cache").isSet() ? ("cache="+req.param("cache").booleanValue()) : ("cache=false")) + ";" +
-                        (req.param("count").isSet() ? ("count="+req.param("count").intValue()) :  ("count=-1")) + ";" +
-                        (req.param("context").isSet() ? ("context="+req.param("context").toString()) : "")));
+                        (req.param("cache").isSet() ? ("cache=" + req.param("cache").booleanValue()) : ("cache=false")) + ";" +
+                        (req.param("count").isSet() ? ("count=" + req.param("count").intValue()) : ("count=-1")) + ";" +
+                        (req.param("context").isSet() ? ("context=" + req.param("context").toString()) : "")));
     }
     //endregion
 }

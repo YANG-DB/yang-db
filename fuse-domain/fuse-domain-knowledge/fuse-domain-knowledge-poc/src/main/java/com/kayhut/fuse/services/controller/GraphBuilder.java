@@ -55,12 +55,11 @@ public class GraphBuilder {
             g.setAttribute("ui.quality");
             final BoolQueryBuilder boolQueryBuilder = boolQuery();
             QueryBuilder qb = boolQuery().filter(
-                    boolQueryBuilder
-                            .mustNot(boolQuery()
-                                    .should(existsQuery("deleteUser"))
-                                    .should(termQuery("direction", "out"))
-                            ));
-            context.ifPresent(ctx->boolQueryBuilder.must(termsQuery("context", arrayOf("global", context))));
+                    boolQueryBuilder.mustNot(boolQuery()
+                            .should(existsQuery("deleteUser"))
+                            .should(termQuery("direction", "out"))
+                    ));
+            context.ifPresent(ctx -> boolQueryBuilder.must(termQuery("context", ctx)));
 
             SearchResponse scrollResp = client.prepareSearch(indices)
                     .setFetchSource(fields.toArray(new String[fields.size()]), null)
