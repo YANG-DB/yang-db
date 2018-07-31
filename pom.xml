@@ -17,6 +17,7 @@
         <module>fuse-service</module>
         <module>fuse-domain</module>
         <module>fuse-geojson</module>
+        <module>fuse-client</module>
     </modules>
 
     <scm>
