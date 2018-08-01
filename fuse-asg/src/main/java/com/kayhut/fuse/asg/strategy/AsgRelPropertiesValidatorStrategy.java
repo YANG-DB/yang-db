@@ -9,12 +9,10 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.validation.ValidationResult;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.elements;
@@ -72,8 +70,10 @@ public class AsgRelPropertiesValidatorStrategy implements AsgValidatorStrategy {
         }
 
         //expresion
-        if(property.getCon().getExpr()==null) {
-            errors.add(String.format(ERROR_3 ," expression ",property));
+        if (!Arrays.asList(ConstraintOp.empty, ConstraintOp.notEmpty).contains(property.getCon().getOp())) {
+            if (property.getCon().getExpr() == null) {
+                errors.add(String.format(ERROR_3, " expression ", property));
+            }
         }
 
         //operation
