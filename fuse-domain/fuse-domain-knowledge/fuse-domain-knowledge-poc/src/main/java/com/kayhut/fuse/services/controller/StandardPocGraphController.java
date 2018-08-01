@@ -128,7 +128,7 @@ public class StandardPocGraphController implements PocGraphController {
         report.add(headerRow.toString());
 
         final Graph subGraph = cloneGraph(mapper, graph, n ->
-                (n.getAttribute("type").equals("entity") &&
+                (n.hasAttribute("type") && n.getAttribute("type").equals("entity") &&
                         ((n.hasAttribute("context") && context != null) ? n.getAttribute("context").equals(context) : true) &&
                         ((n.hasAttribute("category") && category != null) ? n.getAttribute("category").equals(category) : true)), takeTopN);
         AtomicInteger rank = new AtomicInteger();
