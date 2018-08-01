@@ -25,7 +25,10 @@ import static com.kayhut.fuse.assembly.knowledge.Setup.manager;
         KnowledgeSimpleEntityWithFilterTests.class,
         KnowledgeSimpleEntityTests.class,*/
         KnowledgeSimpleEntityWithFilterE2ETests.class,
-        KnowledgeSimpleEvalueWithFilterE2ETests.class
+        KnowledgeSimpleEvalueWithFilterE2ETests.class,
+        KnowledgeSimpleEfileWithFilterE2ETests.class,
+        KnowledgeSimpleReferenceWithFilterE2ETests.class,
+        KnowledgeSimpleRelationWithFilterE2ETests.class
 })
 
 public class KnowledgeSimpleTestSuite {

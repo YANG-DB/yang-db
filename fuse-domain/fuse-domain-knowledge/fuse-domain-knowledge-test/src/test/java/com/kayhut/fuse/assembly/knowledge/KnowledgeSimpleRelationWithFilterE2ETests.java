@@ -1,7 +1,7 @@
 package com.kayhut.fuse.assembly.knowledge;
 
-import com.kayhut.fuse.assembly.knowledge.domain.FileBuilder;
 import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
+import com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -26,17 +26,17 @@ import java.util.TimeZone;
 import static com.kayhut.fuse.assembly.knowledge.Setup.client;
 import static com.kayhut.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.kayhut.fuse.assembly.knowledge.Setup.manager;
-import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
-import static com.kayhut.fuse.assembly.knowledge.domain.FileBuilder._f;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
+import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
+import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 
 
-public class KnowledgeSimpleEfileWithFilterE2ETests {
+public class KnowledgeSimpleRelationWithFilterE2ETests {
 
     static KnowledgeWriterContext ctx;
-    static FileBuilder f1, f2, f3, f4, f5, f6, f7;
+    static RelationBuilder rel1, rel2, rel3, rel4, rel5, rel6, rel7, rel8;
     static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @BeforeClass
@@ -44,44 +44,33 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
         //Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
-        // Efile entities for tests
-        f1 = _f(ctx.nextFileId()).name("mazda").path("https://www.google.co.il").mime("string").cat("cars")
-                .desc("search mazda at google").creationUser("Haim Hania").creationTime(sdf.parse("2012-01-17 03:03:04.827"))
-                .lastUpdateUser("Dudi Fargon").lastUpdateTime(sdf.parse("2011-04-16 00:00:00.000"))
-                .deleteTime(sdf.parse("2018-02-02 02:02:02.222"));
-        f2 = _f(ctx.nextFileId()).name("opel").path("https://www.google.co.il").mime("string").cat("new car")
-                .desc("search opel at google").creationUser("Haim hania").creationTime(sdf.parse("2012-01-17 03:03:04.827"))
-                .lastUpdateUser("dudi Fargon").lastUpdateTime(sdf.parse("2017-06-01 12:34:56.789"))
-                .deleteTime(sdf.parse("2018-01-01 12:12:12.122"));
-        f3 = _f(ctx.nextFileId()).name("mazda").path("http://www.baeldung.com").mime("String").cat("cars")
-                .desc("search for mazda").creationUser("Haim Hania").creationTime(sdf.parse("2012-01-17 03:03:04.727"))
-                .lastUpdateUser("Dudi fargon").lastUpdateTime(sdf.parse("2017-05-01 12:34:56.789"))
-                .deleteTime(sdf.parse("2018-02-02 02:02:02.222"));
-        f4 = _f(ctx.nextFileId()).name("Mazda").path("http://www.baeldung.com/java-tuples").mime("Integer").cat("New Cars")
-                .desc("Mazda at google").creationUser("haim Hania").creationTime(sdf.parse("2014-03-01 01:01:01.111"))
-                .lastUpdateUser("Dudi Fargon").lastUpdateTime(sdf.parse("2016-06-01 12:34:56.789"))
-                .deleteTime(sdf.parse("2018-02-02 02:02:02.222"));
-        f5 = _f(ctx.nextFileId()).name("Opel").path("https://www.google.co.il/search?source=hp&ei").mime("integer")
-                .cat("Cars").desc("Opel at google").creationUser("Haim").creationTime(sdf.parse("2014-03-01 01:01:01.111"))
-                .lastUpdateUser("Dudi").lastUpdateTime(sdf.parse("2011-04-16 00:00:00.000"))
-                .deleteTime(sdf.parse("2010-03-03 03:03:02.333"));
-        f6 = _f(ctx.nextFileId()).name("Opel").path("https://en.wikipedia.org").mime("int").cat("cars")
-                .desc("opel at google").creationUser("Hania").creationTime(sdf.parse("2015-12-11 11:05:05.543"))
-                .lastUpdateUser("Fargon").lastUpdateTime(sdf.parse("2011-04-16 00:00:00.000"))
-                .deleteTime(sdf.parse("2008-12-12 12:12:12.129"));
-        f7 = _f(ctx.nextFileId()).name("citroen azda").path("https://en.wikipedia.org/wiki/Citroen").mime("Int").cat("car")
-                .desc("Citroen search").creationUser("Haim Hania").creationTime(sdf.parse("2016-11-12 12:11:10.123"))
-                .lastUpdateUser("Fargon").lastUpdateTime(sdf.parse("2009-04-16 00:00:00.000"))
-                .deleteTime(sdf.parse("2005-10-10 10:10:10.101"));
-        f1.logicalId = ctx.nextLogicalId();
-        f2.logicalId = ctx.nextLogicalId();
-        f3.logicalId = ctx.nextLogicalId();
-        f4.logicalId = ctx.nextLogicalId();
-        f5.logicalId = ctx.nextLogicalId();
-        f6.logicalId = ctx.nextLogicalId();
-        f7.logicalId = ctx.nextLogicalId();
-        // Insert Efile entities to ES
-        Assert.assertEquals(7, commit(ctx, INDEX, f1, f2, f3, f4, f5, f6, f7));
+        // Relation entities for tests
+        rel1 = _rel(ctx.nextRelId()).context("Car companies").cat("Cars").creationUser("Liat Plesner")
+                .lastUpdateUser("Yael Pery").creationTime(sdf.parse("2010-04-31 11:04:29.089"))
+                .lastUpdateTime(sdf.parse("2018-01-01 00:39:56.000")).deleteTime(sdf.parse("2018-02-02 22:22:22.222"));
+        rel2 = _rel(ctx.nextRelId()).context("Car Companies").cat("cars").creationUser("liat plesner")
+                .lastUpdateUser("Yael pery").creationTime(sdf.parse("1990-00-00 00:00:00.400"))
+                .lastUpdateTime(sdf.parse("2018-01-01 00:39:56.000")).deleteTime(sdf.parse("2018-05-03 19:19:19.192"));
+        rel3 = _rel(ctx.nextRelId()).context("Number of wheels").cat("Wheels").creationUser("Liat Moshe")
+                .lastUpdateUser("yael pery").creationTime(sdf.parse("2010-04-31 11:04:29.089"))
+                .lastUpdateTime(sdf.parse("2017-02-29 02:41:41.489")).deleteTime(sdf.parse("2010-09-09 19:19:11.999"));
+        rel4 = _rel(ctx.nextRelId()).context("Quantity of wheels").cat("wheels").creationUser("Yaacov Gabuy")
+                .lastUpdateUser("Meir Pery").creationTime(sdf.parse("1999-01-01 00:00:00.400"))
+                .lastUpdateTime(sdf.parse("2017-02-29 02:41:42.489")).deleteTime(sdf.parse("2008-08-08 88:88:88.888"));
+        rel5 = _rel(ctx.nextRelId()).context("Quantity of Wheels").cat("Wheels").creationUser("Yaacov")
+                .lastUpdateUser("Moshe").creationTime(sdf.parse("2009-01-01 00:00:00.400"))
+                .lastUpdateTime(sdf.parse("2006-06-07 05:45:55.565")).deleteTime(sdf.parse("2004-02-03 11:11:11.022"));
+        rel6 = _rel(ctx.nextRelId()).context("spare tire").cat("alternate wheel").creationUser("Moshe David Levi")
+                .lastUpdateUser("Haim Ben Aharon").creationTime(sdf.parse("2014-12-01 12:24:36.786"))
+                .lastUpdateTime(sdf.parse("2006-06-07 05:45:55.565")).deleteTime(sdf.parse("2002-02-03 11:11:11.022"));
+        rel7 = _rel(ctx.nextRelId()).context("white car").cat("car").creationUser("Moshe Levi")
+                .lastUpdateUser("Haim Ben Aharon").creationTime(sdf.parse("2017-02-29 02:41:41.489"))
+                .lastUpdateTime(sdf.parse("2011-01-01 01:34:56.000")).deleteTime(sdf.parse("2001-02-03 11:11:11.022"));
+        rel8 = _rel(ctx.nextRelId()).context("car sales").cat("Radio").creationUser("Moshe David Levi")
+                .lastUpdateUser("Haim Aharon").creationTime(sdf.parse("2017-02-29 02:41:41.489"))
+                .lastUpdateTime(sdf.parse("2011-01-01 01:34:56.000")).deleteTime(sdf.parse("2018-02-02 22:22:22.222"));
+        // Insert Relation entities to ES
+        Assert.assertEquals(8, commit(ctx, REL_INDEX, rel1, rel2, rel3, rel4, rel5, rel6, rel7, rel8));
     }
 
     @AfterClass
@@ -89,24 +78,26 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
         ctx.removeCreated();
     }
 
+    // STRING_VALUE, CONTENT, TITLE, DISPLAY_NAME, DESCRIPTION => Find lower and Upper
+
     // Start Tests:
     @Test
-    public void testEqEfileByLogicalId() throws IOException, InterruptedException
+    public void testEqRelationByContext() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "logicalId", Constraint.of(ConstraintOp.eq, f1.logicalId))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "context", Constraint.of(ConstraintOp.eq, rel1.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity())  //context entity
+                        .withEntity(rel1.toEntity())  //context entity
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -114,22 +105,22 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testEqEfileById() throws IOException, InterruptedException
+    public void testEqRelationById() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "id", Constraint.of(ConstraintOp.eq, f1.id()))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "id", Constraint.of(ConstraintOp.eq, rel6.id()))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity())  //context entity
+                        .withEntity(rel6.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -137,22 +128,22 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testEqEfileByName() throws IOException, InterruptedException
+    public void testEqRelationByCategory() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "name", Constraint.of(ConstraintOp.eq, f1.name))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "category", Constraint.of(ConstraintOp.eq, rel3.category))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f3.toEntity())
+                        .withEntity(rel3.toEntity()).withEntity(rel5.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -160,22 +151,22 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testEqEfileByMimeType() throws IOException, InterruptedException
+    public void testEqRelationByCreationUser() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "mimeType", Constraint.of(ConstraintOp.eq, f1.mimeType))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "creationUser", Constraint.of(ConstraintOp.eq, rel6.creationUser))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f2.toEntity())
+                        .withEntity(rel6.toEntity()).withEntity(rel8.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -183,22 +174,22 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testEqEfileByCategory() throws IOException, InterruptedException
+    public void testEqRelationByCreationTime() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "category", Constraint.of(ConstraintOp.eq, f1.category))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "creationTime", Constraint.of(ConstraintOp.eq, rel1.creationTime))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f3.toEntity()).withEntity(f6.toEntity())  // cars
+                        .withEntity(rel1.toEntity()).withEntity(rel3.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -206,22 +197,22 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testEqEfileByCreationUser() throws IOException, InterruptedException
+    public void testEqRelationByLastUpdateUser() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "creationUser", Constraint.of(ConstraintOp.eq, f1.creationUser))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "lastUpdateUser", Constraint.of(ConstraintOp.eq, rel2.lastUpdateUser))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f3.toEntity()).withEntity(f7.toEntity())  // Haim Hania
+                        .withEntity(rel2.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -229,22 +220,22 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testEqEfileByCreationTime() throws IOException, InterruptedException
+    public void testEqRelationByLastUpdateTime() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "creationTime", Constraint.of(ConstraintOp.eq, f1.creationTime))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "lastUpdateTime", Constraint.of(ConstraintOp.eq, rel2.lastUpdateTime))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f2.toEntity())
+                        .withEntity(rel1.toEntity()).withEntity(rel2.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -252,22 +243,22 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testEqEfileByLastUpdateUser() throws IOException, InterruptedException
+    public void testEqRelationByDeleteTime() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "lastUpdateUser", Constraint.of(ConstraintOp.eq, f1.lastUpdateUser))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "deleteTime", Constraint.of(ConstraintOp.eq, rel8.deleteTime))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f4.toEntity())
+                        .withEntity(rel1.toEntity()).withEntity(rel8.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -275,70 +266,24 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testEqEfileByLastUpdateTime() throws IOException, InterruptedException
+    public void testEqRelationByIdAndContext() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "lastUpdateTime", Constraint.of(ConstraintOp.eq, f1.lastUpdateTime))
-                )).build();
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
-
-        // Create expectedResult
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f5.toEntity()).withEntity(f6.toEntity())
-                        .build()).build();
-
-        // Check if expected and actual results are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
-    }
-
-    @Test
-    public void testEqEfileByDeleteTime() throws IOException, InterruptedException
-    {
-        // Create v1 query to fetch newly created entity
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
-                .withElements(Arrays.asList(
-                        new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "deleteTime", Constraint.of(ConstraintOp.eq, f1.deleteTime))
-                )).build();
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
-
-        // Create expectedResult
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f3.toEntity()).withEntity(f4.toEntity())
-                        .build()).build();
-
-        // Check if expected and actual results are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
-    }
-
-    @Test
-    public void testEqEfileByLogicalIdAndName() throws IOException, InterruptedException
-    {
-        // Create v1 query to fetch newly created entity
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
-                .withElements(Arrays.asList(
-                        new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
+                        new ETyped(1, "A", "Relation", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                        new EProp(3, "logicalId", Constraint.of(ConstraintOp.eq, f5.logicalId)),
-                        new EProp(4, "name", Constraint.of(ConstraintOp.eq, f5.name))
+                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rel5.context)),
+                        new EProp(4, "id", Constraint.of(ConstraintOp.eq, rel5.id()))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f5.toEntity())
+                        .withEntity(rel5.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -346,24 +291,24 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testEqEfileByLogicalIdAndCategory() throws IOException, InterruptedException
+    public void testEqRelationByCategoryAndContext() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
+                        new ETyped(1, "A", "Relation", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                        new EProp(3, "logicalId", Constraint.of(ConstraintOp.eq, f6.logicalId)),
-                        new EProp(4, "category", Constraint.of(ConstraintOp.eq, f6.category))
+                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rel2.context)),
+                        new EProp(4, "category", Constraint.of(ConstraintOp.eq, rel2.category))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f6.toEntity())
+                        .withEntity(rel2.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -371,25 +316,25 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testEqEfileByLogicalIdCategoryAndLastUpdateTime() throws IOException, InterruptedException
+    public void testEqRelationByCategoryContextAndDeleteTime() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
+                        new ETyped(1, "A", "Relation", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
-                        new EProp(3, "logicalId", Constraint.of(ConstraintOp.eq, f7.logicalId)),
-                        new EProp(4, "category", Constraint.of(ConstraintOp.eq, f7.category)),
-                        new EProp(5, "lastUpdateTime", Constraint.of(ConstraintOp.eq, f7.lastUpdateTime))
+                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rel7.context)),
+                        new EProp(3, "deleteTime", Constraint.of(ConstraintOp.eq, rel7.deleteTime)),
+                        new EProp(4, "category", Constraint.of(ConstraintOp.eq, rel7.category))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f7.toEntity())
+                        .withEntity(rel7.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -397,25 +342,23 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testInSetEfileByLogicalId() throws IOException, InterruptedException
+    public void testInSetRelationByCategory() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                        new EProp(3, "logicalId", Constraint.of(ConstraintOp.inSet,
-                                Arrays.asList(f6.logicalId, f4.logicalId, f2.logicalId, f3.logicalId)))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "category", Constraint.of(ConstraintOp.inSet,
+                                Arrays.asList(rel2.category, rel3.category)))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f6.toEntity()).withEntity(f4.toEntity())
-                        .withEntity(f2.toEntity()).withEntity(f3.toEntity())
+                        .withEntity(rel2.toEntity()).withEntity(rel3.toEntity()).withEntity(rel5.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -423,22 +366,22 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testLikeEfileStartOnName() throws IOException, InterruptedException
+    public void testLikeRelationStartOnCategory() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "name", Constraint.of(ConstraintOp.like, "Ope*"))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "category", Constraint.of(ConstraintOp.like, "car*"))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f5.toEntity()).withEntity(f6.toEntity())
+                        .withEntity(rel2.toEntity()).withEntity(rel7.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -446,23 +389,22 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testLikeEfileEndOnName() throws IOException, InterruptedException
+    public void testLikeRelationEndOnCategory() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "name", Constraint.of(ConstraintOp.like, "*pel"))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "category", Constraint.of(ConstraintOp.like, "*heel"))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f5.toEntity()).withEntity(f6.toEntity())
-                        .withEntity(f2.toEntity())
+                        .withEntity(rel6.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -470,23 +412,49 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testLikeEfileContainsOnName() throws IOException, InterruptedException
+    public void testLikeRelationContainsOnCategory() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "name", Constraint.of(ConstraintOp.like, "*azd*"))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "category", Constraint.of(ConstraintOp.like, "*heel*"))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f3.toEntity())
-                        .withEntity(f4.toEntity()).withEntity(f7.toEntity())
+                        .withEntity(rel3.toEntity()).withEntity(rel4.toEntity())
+                        .withEntity(rel5.toEntity()).withEntity(rel6.toEntity())
+                        .build()).build();
+
+        // Check if expected and actual results are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
+
+
+    @Test
+    public void testLikeAnyRelationContainsOnCategory() throws IOException, InterruptedException
+    {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "category", Constraint.of(ConstraintOp.likeAny,  Arrays.asList("*ar*", "*ee*")))
+                )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        // Create expectedResult
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(rel1.toEntity()).withEntity(rel2.toEntity()).withEntity(rel3.toEntity())
+                        .withEntity(rel4.toEntity()).withEntity(rel5.toEntity())
+                        .withEntity(rel6.toEntity()).withEntity(rel7.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -494,25 +462,22 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testLikAnyEfileContainsOnName() throws IOException, InterruptedException
+    public void testGtRelationByLastUpdateTime() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                        new EProp(3, "name", Constraint.of(ConstraintOp.likeAny, Arrays.asList("*zd*", "*pe*")))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "lastUpdateTime", Constraint.of(ConstraintOp.gt, rel3.lastUpdateTime))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f2.toEntity()).withEntity(f3.toEntity())
-                        .withEntity(f4.toEntity()).withEntity(f5.toEntity())
-                        .withEntity(f6.toEntity()).withEntity(f7.toEntity())
+                        .withEntity(rel1.toEntity()).withEntity(rel2.toEntity()).withEntity(rel4.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -520,22 +485,23 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testGtEfileByCreationTime() throws IOException, InterruptedException
+    public void testGteRelationByLastUpdateTime() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "creationTime", Constraint.of(ConstraintOp.gt, f4.creationTime))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "lastUpdateTime", Constraint.of(ConstraintOp.ge, rel3.lastUpdateTime))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f6.toEntity()).withEntity(f7.toEntity())
+                        .withEntity(rel1.toEntity()).withEntity(rel2.toEntity())
+                        .withEntity(rel3.toEntity()).withEntity(rel4.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -543,23 +509,22 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testGteEfileByCreationTime() throws IOException, InterruptedException
+    public void testLtRelationByLastUpdateTime() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "creationTime", Constraint.of(ConstraintOp.ge, f4.creationTime))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "lastUpdateTime", Constraint.of(ConstraintOp.lt, rel7.lastUpdateTime))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f4.toEntity()).withEntity(f5.toEntity())
-                        .withEntity(f6.toEntity()).withEntity(f7.toEntity())
+                        .withEntity(rel5.toEntity()).withEntity(rel6.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -567,23 +532,23 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testLtEfileByCreationTime() throws IOException, InterruptedException
+    public void testLteRelationByLastUpdateTime() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "creationTime", Constraint.of(ConstraintOp.lt, f4.creationTime))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "lastUpdateTime", Constraint.of(ConstraintOp.le, rel7.lastUpdateTime))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f2.toEntity())
-                        .withEntity(f3.toEntity())
+                        .withEntity(rel5.toEntity()).withEntity(rel6.toEntity())
+                        .withEntity(rel7.toEntity()).withEntity(rel8.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -591,23 +556,24 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testLteEfileByCreationTime() throws IOException, InterruptedException
+    public void testNeRelationByContext() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "creationTime", Constraint.of(ConstraintOp.le, f4.creationTime))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "context", Constraint.of(ConstraintOp.ne, rel1.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f2.toEntity()).withEntity(f3.toEntity())
-                        .withEntity(f4.toEntity()).withEntity(f5.toEntity())
+                        .withEntity(rel2.toEntity()).withEntity(rel3.toEntity()).withEntity(rel4.toEntity())
+                        .withEntity(rel5.toEntity()).withEntity(rel6.toEntity())
+                        .withEntity(rel7.toEntity()).withEntity(rel8.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -615,39 +581,15 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @Test
-    public void testNeEfileByName() throws IOException, InterruptedException
+    public void testEmptyRelationByLastUpdateTime() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "name", Constraint.of(ConstraintOp.ne, f1.name))
-                )).build();
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
-
-        // Create expectedResult
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f2.toEntity()).withEntity(f4.toEntity()).withEntity(f5.toEntity())
-                        .withEntity(f6.toEntity()).withEntity(f7.toEntity())
-                        .build()).build();
-
-        // Check if expected and actual results are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
-    }
-
-    @Test
-    public void testEmptyEfileByName() throws IOException, InterruptedException
-    {
-        // Create v1 query to fetch newly created entity
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
-                .withElements(Arrays.asList(
-                        new Start(0, 1),
-                        new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "name", Constraint.of(ConstraintOp.like, "Reno"))
+                        new ETyped(1, "A", "Relation", 2, 0),
+                        new EProp(2, "lastUpdateTime", Constraint.of(ConstraintOp.eq, rel2.creationTime))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
