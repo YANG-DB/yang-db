@@ -37,7 +37,7 @@ public class ConstraintExpLowercaseTransformationAsgStrategy extends ConstraintT
             BaseProp eProp = (BaseProp) eBase;
             Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
             final Constraint con = eProp.getCon();
-            if (property.isPresent() && property.get().getType().equals("string")) {
+            if (con != null && property.isPresent() && property.get().getType().equals("string")) {
                 if (con.getExpr() instanceof List) {
                     con.setExpr(Stream.ofAll((List) con.getExpr()).map(e->e.toString().toLowerCase()).toJavaList());
                 } else if(con.getExpr() instanceof String){

@@ -53,10 +53,12 @@ public class ConstraintTypeTransformationAsgStrategy extends ConstraintTransform
         if (klass == RelProp.class) {
             RelProp relProp = (RelProp) eBase;
             Optional<Property> property = context.getOntologyAccessor().$property(relProp.getpType());
-            ConstraintOp op = relProp.getCon().getOp();
-            if (property.isPresent() && isSingleElementOp(op)) {
-                Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), relProp.getCon().getExpr()));
-                relProp.setCon(newCon);
+            if(relProp.getCon() != null) {
+                ConstraintOp op = relProp.getCon().getOp();
+                if (property.isPresent() && isSingleElementOp(op)) {
+                    Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), relProp.getCon().getExpr()));
+                    relProp.setCon(newCon);
+                }
             }
         }
     }

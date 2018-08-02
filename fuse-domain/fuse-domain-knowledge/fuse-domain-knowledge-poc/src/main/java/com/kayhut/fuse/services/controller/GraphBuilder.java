@@ -15,6 +15,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,14 +53,14 @@ public class GraphBuilder {
             styleSheet.ifPresent(style -> g.setAttribute("ui.stylesheet", style));
             g.setAttribute("ui.antialias");
             g.setAttribute("ui.quality");
-
             final BoolQueryBuilder boolQueryBuilder = boolQuery();
             QueryBuilder qb = boolQuery().filter(
-                    boolQueryBuilder.mustNot(boolQuery()
-                            .should(existsQuery("deleteUser"))
-                            .should(termQuery("direction", "out"))
-                    ));
-            context.ifPresent(ctx -> boolQueryBuilder.must(termQuery("context", ctx)));
+                    boolQueryBuilder
+                            .mustNot(boolQuery()
+                                    .should(existsQuery("deleteUser"))
+                                    .should(termQuery("direction", "out"))
+                            ));
+            context.ifPresent(ctx->boolQueryBuilder.must(termsQuery("context", arrayOf("global", context))));
 
             SearchResponse scrollResp = client.prepareSearch(indices)
                     .setFetchSource(fields.toArray(new String[fields.size()]), null)
@@ -171,7 +172,7 @@ public class GraphBuilder {
                             if (g.getNode(entityId) == null)
                                 g.addNode(entityId);
 
-                            if(g.getEdge(id + "->" + entityId)==null) {
+                            if (g.getEdge(id + "->" + entityId) == null) {
                                 Edge edge = g.addEdge(id + "->" + entityId, id, entityId);
                                 edge.setAttribute("ui.color", LIGHTGREEN);
                             }
@@ -199,5 +200,12 @@ public class GraphBuilder {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private static List<String> arrayOf(String global, Optional<String> context) {
+        List<String> array = new ArrayList<>();
+        array.add(global);
+        context.ifPresent(array::add);
+        return array;
     }
 }

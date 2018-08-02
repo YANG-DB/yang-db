@@ -33,6 +33,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
     public static final String FLOAT = "float";
     public static final String STRING = "string";
 
+
     public interface MetadataFields {
         String CREATION_USER = "creationUser";
         String CREATION_TIME = "creationTime";
@@ -104,7 +105,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
         String HAS_RELATION = "hasRelation";
         String HAS_RVALUE = "hasRvalue";
         String HAS_EFILE = "hasEfile";
-
+        String RELATED_ENTITY = "relatedEntity";
     }
 
     public interface SchemaTypes {
@@ -505,6 +506,46 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.empty(),
                                 Collections.emptyList(),
                                 Stream.of(endB).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                RELATED_ENTITY,
+                                new GraphElementConstraint.Impl(__.and(__.has(T.label, E_RELATION))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList(ENTITY_A_ID),
+                                        Optional.of(ENTITY),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList(ENTITY_B_ID),
+                                        Optional.of(ENTITY))),
+                                Direction.OUT,
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(endA).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                RELATED_ENTITY,
+                                new GraphElementConstraint.Impl(__.and(__.has(T.label, E_RELATION))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList(ENTITY_A_ID),
+                                        Optional.of(ENTITY),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList(ENTITY_B_ID),
+                                        Optional.of(ENTITY))),
+                                Direction.IN,
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_IN_RELATION,
                                 new GraphElementConstraint.Impl(__.and(__.has(T.label, E_RELATION), __.has(DIRECTION, Direction.IN.toString().toLowerCase()))),

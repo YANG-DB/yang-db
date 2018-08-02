@@ -1,6 +1,7 @@
 package com.kayhut.fuse.graph.view;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.results.Assignment;
 import org.graphstream.graph.Edge;
@@ -85,24 +86,40 @@ public class AssignmentToGraph {
                     "}";
 
 
-
-    public static Node enrich(ObjectMapper mapper,Node source,Node target) {
-            switch (source.getAttribute("type").toString()) {
-                case "entity":
-                    final List<ObjectNode> collect = iteratorToStream(source.getNeighborNodeIterator(),false)
+    public static Node enrich(ObjectMapper mapper, Node source, Node target) {
+        switch (source.getAttribute("type").toString()) {
+            case "entity":
+                List<ObjectNode> collect = iteratorToStream(source.getNeighborNodeIterator(), false)
+                        .filter(p -> p.getAttribute("type").equals("e.value"))
+                        .map(q -> {
+                            target.setAttribute("value."+q.getAttribute("fieldId"),q.getAttribute("value").toString());
+                            return mapper.createObjectNode().put(q.getAttribute("fieldId").toString(), q.getAttribute("value").toString());
+                        })
+                        .collect(Collectors.toList());
+                target.setAttribute("values", mapper.createArrayNode().addAll(collect));
+                target.setAttribute("label", source.getAttribute("category").toString());
+                //populate with entity global's values
+                final String logicalId = source.getAttribute("logicalId") + ".global";
+                if (!source.getAttribute("context").equals("global") &&
+                        source.getGraph().getNode(logicalId) != null) {
+                    final Node globalEntity = source.getGraph().getNode(logicalId);
+                    collect = iteratorToStream(globalEntity.getNeighborNodeIterator(), false)
                             .filter(p -> p.getAttribute("type").equals("e.value"))
-                            .map(q -> mapper.createObjectNode().put(q.getAttribute("fieldId").toString(), q.getAttribute("value").toString()))
+                            .map(q -> {
+                                target.setAttribute("value."+q.getAttribute("fieldId"),q.getAttribute("value").toString());
+                                return mapper.createObjectNode().put(q.getAttribute("fieldId").toString(), q.getAttribute("value").toString());
+                            })
                             .collect(Collectors.toList());
-                    target.setAttribute("values", mapper.createArrayNode().addAll(collect));
-                    target.setAttribute("label", source.getAttribute("category").toString());
-                    break;
-                case "e.value":
-                    break;
-                case "insight":
-                    break;
-                case "reference":
-                    break;
-            }
+                    ((ArrayNode) target.getAttribute("values")).addAll(collect);
+                }
+                break;
+            case "e.value":
+                break;
+            case "insight":
+                break;
+            case "reference":
+                break;
+        }
         return target;
     }
 
@@ -117,7 +134,7 @@ public class AssignmentToGraph {
                         case "Entity":
                             final String category = n.getProperties().stream().filter(v -> v.getpType().equals("category"))
                                     .findAny().get().getValue().toString();
-                            final List<ObjectNode> collect = iteratorToStream(g.getNode(n.geteID()).getNeighborNodeIterator(),false)
+                            final List<ObjectNode> collect = iteratorToStream(g.getNode(n.geteID()).getNeighborNodeIterator(), false)
                                     .filter(p -> p.getAttribute("type").equals("e.value"))
                                     .map(q -> mapper.createObjectNode().put(q.getAttribute("fieldId").toString(), q.getAttribute("value").toString()))
                                     .collect(Collectors.toList());
@@ -221,8 +238,7 @@ public class AssignmentToGraph {
     }
 
     public static <T> Stream<T> iteratorToStream(final Iterator<T> iterator, final boolean parallell) {
-        Iterable<T> iterable = () -> iterator;
-        return StreamSupport.stream(iterable.spliterator(), parallell);
+        return StreamSupport.stream(((Iterable<T>) () -> iterator).spliterator(), parallell);
     }
 
     public static void populateGraph(Graph g, Assignment assignment) {

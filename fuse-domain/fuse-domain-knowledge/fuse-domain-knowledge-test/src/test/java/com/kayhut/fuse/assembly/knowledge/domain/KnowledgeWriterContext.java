@@ -3,6 +3,7 @@ package com.kayhut.fuse.assembly.knowledge.domain;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
+import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -104,20 +105,30 @@ public class KnowledgeWriterContext {
         return context;
     }
 
-
-    public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx, String index, T... builders) throws JsonProcessingException {
-        int count = 0;
-        final BulkRequestBuilder bulk = ctx.client.prepareBulk();
+    private static void populateBulk(BulkRequestBuilder bulk,String index,KnowledgeWriterContext ctx,List<KnowledgeDomainBuilder> builders) throws JsonProcessingException {
         for (KnowledgeDomainBuilder builder : builders) {
             IndexRequestBuilder request = ctx.client.prepareIndex()
                     .setIndex(index)
                     .setType(PGE)
                     .setId(builder.id())
-                    .setOpType(IndexRequest.OpType.INDEX)
+                    .setOpType(IndexRequest.OpType.CREATE)
                     .setSource(builder.toString(ctx.mapper), XContentType.JSON);
             builder.routing().ifPresent(request::setRouting);
             bulk.add(request);
         }
+    }
+
+    public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx, String index, T... builders) throws JsonProcessingException {
+        int count = 0;
+        final BulkRequestBuilder bulk = ctx.client.prepareBulk();
+            populateBulk(bulk,index,ctx,Arrays.asList(builders));
+            Arrays.asList(builders).forEach(builder -> {
+                try {
+                    populateBulk(bulk,index,ctx,builder.additional());
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            });
 
         final BulkItemResponse[] items = bulk.get().getItems();
         for (BulkItemResponse item : items) {

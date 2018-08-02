@@ -23,7 +23,6 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder._ref;
 import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
 
-@Ignore
 public class KnowledgeSimpleEntityTests {
     static KnowledgeWriterContext ctx ;
 
@@ -157,6 +156,7 @@ public class KnowledgeSimpleEntityTests {
     }
 
     @Test
+    @Ignore("TODO: fix reference logical id bug")
     public void testInsertOneSimpleEntityWithReferenceBuilder() throws IOException, InterruptedException {
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
 

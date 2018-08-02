@@ -7,6 +7,7 @@ import com.kayhut.fuse.asg.strategy.RuleBoostProvider;
 import com.kayhut.fuse.asg.strategy.constraint.*;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.*;
 import com.kayhut.fuse.asg.strategy.schema.ExactConstraintTransformationAsgStrategy;
+import com.kayhut.fuse.asg.strategy.selection.DefaultRelationSelectionAsgStrategy;
 import com.kayhut.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
 import com.kayhut.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
@@ -50,7 +51,7 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new RedundantLikeConstraintAsgStrategy(),
                 new RedundantLikeAnyConstraintAsgStrategy(),
                 new LikeToEqTransformationAsgStrategy(),
-                new ConstraintExpLowercaseTransformationAsgStrategy(Arrays.asList(STRING_VALUE,CONTENT,TITLE,DISPLAY_NAME,DIRECTION)),
+                new ConstraintExpLowercaseTransformationAsgStrategy(Arrays.asList(STRING_VALUE,CONTENT,TITLE,DISPLAY_NAME,DESCRIPTION)),
                 new ExactConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 //knowledge ranking asg strategies
                 new KnowledgeLikeCombinerStrategy(ruleBoostProvider, ontologyProvider, schemaProviderFactory),
@@ -58,7 +59,8 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new RankingPropertiesPropagationAsgStrategy(),
                 new RedundantInSetConstraintAsgStrategy(),
                 new RedundantPropGroupAsgStrategy(),
-                new DefaultSelectionAsgStrategy(this.ontologyProvider)
+                new DefaultSelectionAsgStrategy(this.ontologyProvider),
+                new DefaultRelationSelectionAsgStrategy(this.ontologyProvider)
 
         );
     }

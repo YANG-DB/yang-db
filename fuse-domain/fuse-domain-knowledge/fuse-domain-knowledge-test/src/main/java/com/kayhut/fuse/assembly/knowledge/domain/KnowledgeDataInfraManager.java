@@ -49,105 +49,15 @@ public class KnowledgeDataInfraManager  {
 
     private TransportClient client;
     private SimpleDateFormat sdf;
-    private Config conf;
-    private RawSchema schema;
+    private KnowledgeConfigManager configManager;
 
-    public KnowledgeDataInfraManager(String confPath) {
-        try {
-            File configFile = new File(confPath);
-            this.conf = ConfigFactory.parseFileAnySyntax(configFile, ConfigParseOptions.defaults().setAllowMissing(false));
-            this.schema = ((Class<? extends RawSchema>) Class.forName(conf.getString(conf.getString("assembly") + ".physical_raw_schema"))).newInstance();
 
-            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    public KnowledgeDataInfraManager(KnowledgeConfigManager configManager) {
+        this.configManager = configManager;
+        this.client = configManager.getClient();
+        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
-        }
-    }
 
-    public TransportClient getClient() {
-        return client;
-    }
-
-    public RawSchema getSchema() {
-        return schema;
-    }
-
-    public void client_connect() {
-        Settings settings = Settings.builder().put("cluster.name", conf.getConfig("elasticsearch").getString("cluster_name")).build();
-        int port = conf.getConfig("elasticsearch").getInt("port");
-        client = new PreBuiltTransportClient(settings);
-        conf.getConfig("elasticsearch").getList("hosts").unwrapped().forEach(host -> {
-            try {
-                client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host.toString()), port));
-            } catch (UnknownHostException e) {
-                logger.error(e.getMessage(), e);
-            }
-        });
-    }
-
-    public void client_close() {
-        client.close();
-    }
-
-    public long init() throws IOException {
-        String workingDir = /*"c:\\Users\\rani\\Documents\\Fuse\\fuse-assembly";*/ System.getProperty("user.dir");
-        File templates = Paths.get(workingDir, "indexTemplates").toFile();
-        File[] templateFiles = templates.listFiles();
-        if (templateFiles != null) {
-            for (File templateFile : templateFiles) {
-                String templateName = FilenameUtils.getBaseName(templateFile.getName());
-                String template = FileUtils.readFileToString(templateFile, "utf-8");
-                if (!client.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
-                    client.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet();
-                }
-                client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet();
-            }
-        }
-
-        Iterable<String> allIndices = schema.indices();
-
-        Stream.ofAll(allIndices)
-                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
-                .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-        Stream.ofAll(allIndices).forEach(index -> client.admin().indices().create(new CreateIndexRequest(index)).actionGet());
-
-        return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
-    }
-
-    public long init(TransportClient externalClient) throws IOException {
-        String workingDir = System.getProperty("user.dir");
-        File templates = Paths.get(workingDir, "resources", "assembly", "Knowledge", "indexTemplates").toFile();
-        File[] templateFiles = templates.listFiles();
-        if (templateFiles != null) {
-            for (File templateFile : templateFiles) {
-                String templateName = FilenameUtils.getBaseName(templateFile.getName());
-                String template = FileUtils.readFileToString(templateFile, "utf-8");
-                if (!externalClient.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
-                    externalClient.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet();
-                }
-                System.out.println("Creating index template "+templateName);
-                externalClient.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet();
-            }
-        }
-
-        Iterable<String> allIndices = schema.indices();
-
-        Stream.ofAll(allIndices)
-                .filter(index -> externalClient.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
-                .forEach(index -> externalClient.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-        Stream.ofAll(allIndices).forEach(index -> externalClient.admin().indices().create(new CreateIndexRequest(index)).actionGet());
-
-        return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
-    }
-
-
-    public long drop() throws IOException {
-        Iterable<String> indices = Stream.ofAll(schema.indices()).append(".idgenerator");
-        Stream.ofAll(indices)
-                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
-                .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-        return Stream.ofAll(indices).count(s -> !s.isEmpty());
     }
 
     List<String> _references;
@@ -195,7 +105,7 @@ public class KnowledgeDataInfraManager  {
         _entities = new ArrayList<String>();
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cEntity);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat(ENTITY), 1));
+        on.put("logicalId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1));
         on.put("context", "context1");
         on.put("category", "person");
         on.put("authorizationCount", 1);
@@ -205,7 +115,7 @@ public class KnowledgeDataInfraManager  {
         on.put("creationTime", "2018-03-26 12:02:40.133");
 
         ArrayNode refsNode = _mapper.createArrayNode();
-        refsNode.add("ref" + String.format(schema.getIdFormat("reference"), 1));
+        refsNode.add("ref" + String.format(configManager.getSchema().getIdFormat("reference"), 1));
         ArrayNode authNode = _mapper.createArrayNode();
         authNode.add("source1.procedure1");
         authNode.add("source2.procedure2");
@@ -217,7 +127,7 @@ public class KnowledgeDataInfraManager  {
 
         on = _mapper.createObjectNode();
         on.put("type", cEntity);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat(ENTITY), 2));
+        on.put("logicalId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 2));
         on.put("context", "context1");
         on.put("category", "person");
         on.put("authorizationCount", 1);
@@ -227,7 +137,7 @@ public class KnowledgeDataInfraManager  {
         on.put("creationTime", "2018-03-27 11:12:40.133");
 
         refsNode = _mapper.createArrayNode();
-        refsNode.add("ref" + String.format(schema.getIdFormat("reference"), 2));
+        refsNode.add("ref" + String.format(configManager.getSchema().getIdFormat("reference"), 2));
         authNode = _mapper.createArrayNode();
         authNode.add("source1.procedure1");
         authNode.add("source2.procedure2");
@@ -259,18 +169,18 @@ public class KnowledgeDataInfraManager  {
         _outRelations = new ArrayList<>();
         _relationValues = new ArrayList<>();
 
-        String p1Identity = "e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1";
-        String p2Identity = "e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1";
+        String p1Identity = "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1) + ".context1";
+        String p2Identity = "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 2) + ".context1";
 
         // Relation 1
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cRelation);
         on.put("entityAId", p1Identity);
         on.put("entityACategory", "person");
-        on.put("entityALogicalId", "e" + String.format(schema.getIdFormat(ENTITY), 1));
+        on.put("entityALogicalId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1));
         on.put("entityBId", p2Identity);
         on.put("entityBCategory", "person");
-        on.put("entityBLogicalId", "e" + String.format(schema.getIdFormat(ENTITY), 2));
+        on.put("entityBLogicalId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 2));
         on.put("context", "context1");
         on.put("category", "friendOf");
         on.put("authorizationCount", 1);
@@ -295,7 +205,7 @@ public class KnowledgeDataInfraManager  {
         on.put("entityACategory", "person");
         on.put("entityBId", p2Identity);
         on.put("entityBCategory", "person");
-        on.put("relationId", "r" + String.format(schema.getIdFormat(cRelation), 1));
+        on.put("relationId", "r" + String.format(configManager.getSchema().getIdFormat(cRelation), 1));
         on.put("direction", "out");
         on.put("context", "context1");
         on.put("category", "friendOf");
@@ -314,7 +224,7 @@ public class KnowledgeDataInfraManager  {
         on.put("entityBCategory", "person");
         on.put("entityAId", p2Identity);
         on.put("entityACategory", "person");
-        on.put("relationId", "r" + String.format(schema.getIdFormat(cRelation), 1));
+        on.put("relationId", "r" + String.format(configManager.getSchema().getIdFormat(cRelation), 1));
         on.put("direction", "in");
         on.put("context", "context1");
         on.put("category", "friendOf");
@@ -330,12 +240,12 @@ public class KnowledgeDataInfraManager  {
         // Relation 2
         on = _mapper.createObjectNode();
         on.put("type", cRelation);
-        on.put("entityAId", "e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
+        on.put("entityAId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1) + ".context1");
         on.put("entityACategory", "person");
-        on.put("entityALogicalId", "e" + String.format(schema.getIdFormat(ENTITY), 1));
-        on.put("entityBId", "e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1");
+        on.put("entityALogicalId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1));
+        on.put("entityBId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 2) + ".context1");
         on.put("entityBCategory", "person");
-        on.put("entityBLogicalId", "e" + String.format(schema.getIdFormat(ENTITY), 2));
+        on.put("entityBLogicalId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 2));
         on.put("context", "context1");
         on.put("category", "siblingOf");
         on.put("authorizationCount", 1);
@@ -346,7 +256,7 @@ public class KnowledgeDataInfraManager  {
         on.put("creationTime", "2018-01-18 11:02:40.533");
 
         ArrayNode refsNode = _mapper.createArrayNode();
-        refsNode.add("ref" + String.format(schema.getIdFormat("reference"), 1));
+        refsNode.add("ref" + String.format(configManager.getSchema().getIdFormat("reference"), 1));
 
         on.put("refs", refsNode);
 
@@ -361,7 +271,7 @@ public class KnowledgeDataInfraManager  {
         on.put("entityACategory", "person");
         on.put("entityBId", p2Identity);
         on.put("entityBCategory", "person");
-        on.put("relationId", "r" + String.format(schema.getIdFormat(cRelation), 2));
+        on.put("relationId", "r" + String.format(configManager.getSchema().getIdFormat(cRelation), 2));
         on.put("direction", "out");
         on.put("context", "context1");
         on.put("category", "friendOf");
@@ -380,7 +290,7 @@ public class KnowledgeDataInfraManager  {
         on.put("entityBCategory", "person");
         on.put("entityAId", p2Identity);
         on.put("entityACategory", "person");
-        on.put("relationId", "r" + String.format(schema.getIdFormat(cRelation), 2));
+        on.put("relationId", "r" + String.format(configManager.getSchema().getIdFormat(cRelation), 2));
         on.put("direction", "in");
         on.put("context", "context1");
         on.put("category", "friendOf");
@@ -396,7 +306,7 @@ public class KnowledgeDataInfraManager  {
         // Adding relation's values
         on = _mapper.createObjectNode();
         on.put("type", "r.value");
-        on.put("relationId", "r" + String.format(schema.getIdFormat("relation"), 1));
+        on.put("relationId", "r" + String.format(configManager.getSchema().getIdFormat("relation"), 1));
         on.put("context", "context1");
         on.put("authorization", authNode);
         on.put("authorizationCount", 1);
@@ -413,7 +323,7 @@ public class KnowledgeDataInfraManager  {
 
         on = _mapper.createObjectNode();
         on.put("type", "r.value");
-        on.put("relationId", "r" + String.format(schema.getIdFormat("relation"), 2));
+        on.put("relationId", "r" + String.format(configManager.getSchema().getIdFormat("relation"), 2));
         on.put("context", "context1");
         on.put("authorization", authNode);
         on.put("authorizationCount", 1);
@@ -437,8 +347,8 @@ public class KnowledgeDataInfraManager  {
 
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cEntityValue);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat(ENTITY), 1));
-        on.put("entityId", "e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
+        on.put("logicalId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1));
+        on.put("entityId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1) + ".context1");
         on.put("context", "context1");
         on.put("authorizationCount", 1);
         on.put("fieldId", "nicknames");
@@ -460,8 +370,8 @@ public class KnowledgeDataInfraManager  {
 
         on = _mapper.createObjectNode();
         on.put("type", cEntityValue);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat(ENTITY), 2));
-        on.put("entityId", "e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1");
+        on.put("logicalId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 2));
+        on.put("entityId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 2) + ".context1");
         on.put("context", "context1");
         on.put("authorizationCount", 1);
         on.put("fieldId", "nicknames");
@@ -482,8 +392,8 @@ public class KnowledgeDataInfraManager  {
 
         on = _mapper.createObjectNode();
         on.put("type", cEntityValue);
-        on.put("logicalId", "e" + String.format(schema.getIdFormat(ENTITY), 2));
-        on.put("entityId", "e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1");
+        on.put("logicalId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 2));
+        on.put("entityId", "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 2) + ".context1");
         on.put("context", "context1");
         on.put("authorizationCount", 1);
         on.put("fieldId", "age");
@@ -510,7 +420,7 @@ public class KnowledgeDataInfraManager  {
         _insights = new ArrayList<String>();
         _insightsEntities = new ArrayList<String>();
         int id = 1;
-        String insightId = "i" + String.format(schema.getIdFormat("insight"), id);
+        String insightId = "i" + String.format(configManager.getSchema().getIdFormat("insight"), id);
 
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cInsight);
@@ -518,7 +428,7 @@ public class KnowledgeDataInfraManager  {
         on.put("context", "context1");
 
         ArrayNode entityIds = _mapper.createArrayNode();
-        entityIds.add("e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
+        entityIds.add("e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1) + ".context1");
 
         on.put("entityIds", entityIds);
 
@@ -527,7 +437,7 @@ public class KnowledgeDataInfraManager  {
         authNode.add("source2.procedure2");
 
         ArrayNode refsNode = _mapper.createArrayNode();
-        refsNode.add("ref" + String.format(schema.getIdFormat("reference"), 1));
+        refsNode.add("ref" + String.format(configManager.getSchema().getIdFormat("reference"), 1));
 
         on.put("refs", refsNode);
         on.put("authorization", authNode);
@@ -542,7 +452,7 @@ public class KnowledgeDataInfraManager  {
         on = _mapper.createObjectNode();
         on.put("type", "e.insight");
         on.put("insightId", insightId);
-        on.put("entityId","e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
+        on.put("entityId","e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1) + ".context1");
         _insightsEntities.add(_mapper.writeValueAsString(on));
 
         on = _mapper.createObjectNode();
@@ -551,8 +461,8 @@ public class KnowledgeDataInfraManager  {
         on.put("context", "context1");
 
         entityIds = _mapper.createArrayNode();
-        entityIds.add("e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
-        entityIds.add("e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1");
+        entityIds.add("e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1) + ".context1");
+        entityIds.add("e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 2) + ".context1");
 
         on.put("entityIds", entityIds);
 
@@ -561,8 +471,8 @@ public class KnowledgeDataInfraManager  {
         authNode.add("source2.procedure2");
 
         refsNode = _mapper.createArrayNode();
-        refsNode.add("ref" + String.format(schema.getIdFormat("reference"), 1));
-        refsNode.add("ref" + String.format(schema.getIdFormat("reference"), 2));
+        refsNode.add("ref" + String.format(configManager.getSchema().getIdFormat("reference"), 1));
+        refsNode.add("ref" + String.format(configManager.getSchema().getIdFormat("reference"), 2));
 
         on.put("refs", refsNode);
         on.put("authorization", authNode);
@@ -573,16 +483,16 @@ public class KnowledgeDataInfraManager  {
         on.put("creationTime", sdf.format(new Date(System.currentTimeMillis())));
         _insights.add(_mapper.writeValueAsString(on));
 
-        insightId = "i" + String.format(schema.getIdFormat("insight"), 2);
+        insightId = "i" + String.format(configManager.getSchema().getIdFormat("insight"), 2);
         on = _mapper.createObjectNode();
         on.put("type", "e.insight");
         on.put("insightId", insightId);
-        on.put("entityId","e" + String.format(schema.getIdFormat(ENTITY), 1) + ".context1");
+        on.put("entityId","e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1) + ".context1");
         _insightsEntities.add(_mapper.writeValueAsString(on));
         on = _mapper.createObjectNode();
         on.put("type", "e.insight");
         on.put("insightId", insightId);
-        on.put("entityId","e" + String.format(schema.getIdFormat(ENTITY), 2) + ".context1");
+        on.put("entityId","e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 2) + ".context1");
         _insightsEntities.add(_mapper.writeValueAsString(on));
     }
 
@@ -593,8 +503,8 @@ public class KnowledgeDataInfraManager  {
         BulkRequestBuilder bulk = client.prepareBulk();
         // Adding insight index
         for(int i=1; i<=2; i++) {
-            String insightId = "i" + String.format(schema.getIdFormat(cInsight), i);
-            String index = Stream.ofAll(schema.getPartitions(cInsight)).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
+            String insightId = "i" + String.format(configManager.getSchema().getIdFormat(cInsight), i);
+            String index = Stream.ofAll(configManager.getSchema().getPartitions(cInsight)).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                     .filter(partition -> partition.isWithin(insightId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
             bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId(insightId)
@@ -605,10 +515,10 @@ public class KnowledgeDataInfraManager  {
         List<Integer> insightsIds = Arrays.asList(1,2,2);
         List<Integer> entityLogicalIds = Arrays.asList(1,1,2);
         for(int i=0; i<_insightsEntities.size(); i++) {
-            String logicalEntId = "e" + String.format(schema.getIdFormat(ENTITY), entityLogicalIds.get(i));
-            String insightId = "i" + String.format(schema.getIdFormat(cInsight), insightsIds.get(i));
+            String logicalEntId = "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), entityLogicalIds.get(i));
+            String insightId = "i" + String.format(configManager.getSchema().getIdFormat(cInsight), insightsIds.get(i));
             String logicalEntityIndex =
-                    Stream.ofAll(schema.getPartitions(cEntity)).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
+                    Stream.ofAll(configManager.getSchema().getPartitions(cEntity)).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                             .filter(partition -> partition.isWithin(logicalEntId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
             bulk.add(client.prepareIndex().setIndex(logicalEntityIndex).setType(cIndexType).setId(logicalEntId + "." + insightId)
@@ -621,8 +531,8 @@ public class KnowledgeDataInfraManager  {
     private void BulkLoadReferences() {
         BulkRequestBuilder bulk = client.prepareBulk();
         for(int j=1; j<=_references.size(); j++) {
-            String referenceId = "ref" + String.format(schema.getIdFormat(cReference), j);
-            String index = Stream.ofAll(schema.getPartitions(cReference)).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
+            String referenceId = "ref" + String.format(configManager.getSchema().getIdFormat(cReference), j);
+            String index = Stream.ofAll(configManager.getSchema().getPartitions(cReference)).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                     .filter(partition -> partition.isWithin(referenceId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
             bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setOpType(IndexRequest.OpType.INDEX).setId(referenceId).setSource(_references.get(j-1), XContentType.JSON)).get();
         }
@@ -648,16 +558,16 @@ public class KnowledgeDataInfraManager  {
 
     private void BulkLoadEntitiesAndEntityValues() {
         BulkRequestBuilder bulk = client.prepareBulk();
-        String index = Stream.ofAll(schema.getPartitions(ENTITY)).map(partition -> (IndexPartitions.Partition.Range) partition)
-                .filter(partition -> partition.isWithin("e" + String.format(schema.getIdFormat(ENTITY), 1)))
+        String index = Stream.ofAll(configManager.getSchema().getPartitions(ENTITY)).map(partition -> (IndexPartitions.Partition.Range) partition)
+                .filter(partition -> partition.isWithin("e" + String.format(configManager.getSchema().getIdFormat(ENTITY), 1)))
                 .map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
         List<Integer> evalues = Arrays.asList(1,2,2);
 
-        insertEntities(index,schema,client,bulk,_entities);
+        insertEntities(index,configManager.getSchema(),client,bulk,_entities);
 
         for(int i=1; i<=_entitiesValues.size(); i++) {
-            String logicalId = "e" + String.format(schema.getIdFormat(ENTITY), evalues.get(i-1));
+            String logicalId = "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), evalues.get(i-1));
             bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId("ev" + i)
                     .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                     .setSource(_entitiesValues.get(i-1), XContentType.JSON)).get();
@@ -671,17 +581,17 @@ public class KnowledgeDataInfraManager  {
     private void BulkLoadRelationsAndValues() {
         BulkRequestBuilder bulk = client.prepareBulk();
 
-        String personLogicalId1 = "e" + String.format(schema.getIdFormat(cEntity), 1);
-        String personLogicalId2 = "e" + String.format(schema.getIdFormat(cEntity), 2);
+        String personLogicalId1 = "e" + String.format(configManager.getSchema().getIdFormat(cEntity), 1);
+        String personLogicalId2 = "e" + String.format(configManager.getSchema().getIdFormat(cEntity), 2);
 
-        String personIndex1 = Stream.ofAll(schema.getPartitions(cEntity)).map(partition -> (IndexPartitions.Partition.Range) partition)
+        String personIndex1 = Stream.ofAll(configManager.getSchema().getPartitions(cEntity)).map(partition -> (IndexPartitions.Partition.Range) partition)
                 .filter(partition -> partition.isWithin(personLogicalId1)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-        String personIndex2 = Stream.ofAll(schema.getPartitions(cEntity)).map(partition -> (IndexPartitions.Partition.Range) partition)
+        String personIndex2 = Stream.ofAll(configManager.getSchema().getPartitions(cEntity)).map(partition -> (IndexPartitions.Partition.Range) partition)
                 .filter(partition -> partition.isWithin(personLogicalId2)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
         for(int i=0;i<2; i++) {
-            String relationIdString = "r" + String.format(schema.getIdFormat(cRelation), i);
-            String relationIndex = Stream.ofAll(schema.getPartitions(cRelation)).map(partition -> (IndexPartitions.Partition.Range) partition)
+            String relationIdString = "r" + String.format(configManager.getSchema().getIdFormat(cRelation), i);
+            String relationIndex = Stream.ofAll(configManager.getSchema().getPartitions(cRelation)).map(partition -> (IndexPartitions.Partition.Range) partition)
                     .filter(partition -> partition.isWithin(relationIdString)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
             bulk.add(client.prepareIndex().setIndex(personIndex1).setType(cIndexType).setId(relationIdString + ".out")

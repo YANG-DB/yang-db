@@ -182,11 +182,16 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
 
     private Relationship toRelationship(Edge edge, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
         Relationship.Builder builder = Relationship.Builder.instance();
+        List<Property> properties = Stream.ofAll(edge::properties)
+                .map(this::toProperty)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toJavaList();
         builder.withRID(edge.id().toString());
         builder.withRType(rel.getrType());
         builder.withEID1(edge.outVertex().id().toString());
         builder.withEID2(edge.inVertex().id().toString());
-
+        builder.withProperties(properties);
         switch (rel.getDir()) {
             case R:
                 builder.withETag1(prevEntity.geteTag());
@@ -201,7 +206,7 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
         return builder.build();
     }
 
-    private Optional<Property> toProperty(VertexProperty vertexProperty) {
+    private Optional<Property> toProperty(org.apache.tinkerpop.gremlin.structure.Property vertexProperty) {
         return Stream.of(vertexProperty.key())
                 .map(key -> this.ont.property(key))
                 .filter(Optional::isPresent)

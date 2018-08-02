@@ -50,7 +50,6 @@ public class RankingKnowledgeDataInfraManager {
 
     public RankingKnowledgeDataInfraManager(String confPath, Client client) throws UnknownHostException {
         this.client = client;
-
         try {
             File configFile = new File(confPath);
             this.conf = ConfigFactory.parseFileAnySyntax(configFile, ConfigParseOptions.defaults().setAllowMissing(false));

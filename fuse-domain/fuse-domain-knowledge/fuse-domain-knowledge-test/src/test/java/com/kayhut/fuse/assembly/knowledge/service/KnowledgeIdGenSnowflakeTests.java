@@ -1,5 +1,6 @@
 package com.kayhut.fuse.assembly.knowledge.service;
 
+import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
 import com.kayhut.fuse.assembly.knowledge.Setup;
 import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeDataInfraManager;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
@@ -38,12 +39,12 @@ public class KnowledgeIdGenSnowflakeTests {
         // Load fuse engine config file
         String confFilePath = Paths.get("resources", "assembly", "Knowledge", "config", "application.test.engine3.m1.dfs.knowledge.public.conf").toString();
         // Start elastic data manager
-        manager = new KnowledgeDataInfraManager(confFilePath);
+        client = elasticEmbeddedNode.getClient();
+        manager = new KnowledgeConfigManager(confFilePath, client);
         // Connect to elastic
 //        client = elasticEmbeddedNode.getClient("knowledge", 9300);
-        client = elasticEmbeddedNode.getClient();
         // Create indexes by templates
-        manager.init(client);
+        manager.init();
 
         // Start fuse app (based on Jooby app web server)
         app1 = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
@@ -66,6 +67,8 @@ public class KnowledgeIdGenSnowflakeTests {
     public static void tearDown() throws Exception {
         System.out.println("KnowledgeIdGenSnowflakeTests - teardown");
         client.admin().indices().delete(client.admin().indices().prepareDelete(Setup.IDGENERATOR_INDEX).request()).actionGet();
+        app1.stop();
+        app2.stop();
     }
 
     @Test

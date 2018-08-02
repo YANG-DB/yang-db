@@ -7,6 +7,7 @@ import com.kayhut.fuse.services.FuseRunner;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -21,9 +22,9 @@ import static com.kayhut.fuse.assembly.knowledge.Setup.manager;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        /*KnowledgeSimpleEntityWithRelationTests.class,
+        KnowledgeSimpleEntityWithRelationTests.class,
         KnowledgeSimpleEntityWithFilterTests.class,
-        KnowledgeSimpleEntityTests.class,*/
+        KnowledgeSimpleEntityTests.class,
         KnowledgeSimpleEntityWithFilterE2ETests.class,
         KnowledgeSimpleEvalueWithFilterE2ETests.class,
         KnowledgeSimpleEfileWithFilterE2ETests.class,
@@ -41,8 +42,8 @@ public class KnowledgeSimpleTestSuite {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws Exception {
         System.out.println("KnowledgeSimpleTestSuite - teardown");
-        Setup.teardown();
+        Setup.cleanup();
     }
 }

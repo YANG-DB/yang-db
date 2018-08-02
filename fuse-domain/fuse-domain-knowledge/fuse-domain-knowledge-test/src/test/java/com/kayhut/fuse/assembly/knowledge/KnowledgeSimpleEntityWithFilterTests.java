@@ -27,7 +27,6 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder._ref;
 import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
 
-@Ignore
 public class KnowledgeSimpleEntityWithFilterTests {
     static KnowledgeWriterContext ctx;
 
@@ -35,6 +34,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
     public static void setup() throws Exception {
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
+
 
     @After
     public void after() {
@@ -323,6 +323,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
     }
 
     @Test
+    @Ignore("TODO: fix reference logical id bug")
     public void testInsertOneSimpleEntityWithReferenceBuilder() throws IOException, InterruptedException {
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
 
@@ -427,8 +428,8 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
         Assert.assertEquals(1, assignments.size());
         Assert.assertEquals(2, assignments.get(0).getRelationships().size());
-        Assert.assertEquals("hasEntityReference", assignments.get(0).getRelationships().get(0).getrType());
-        Assert.assertEquals("hasEfile", assignments.get(0).getRelationships().get(1).getrType());
+        Assert.assertEquals("hasEfile", assignments.get(0).getRelationships().get(0).getrType());
+        Assert.assertEquals("hasEntityReference", assignments.get(0).getRelationships().get(1).getrType());
 
         Assert.assertEquals(3, assignments.get(0).getEntities().size());
         Assert.assertEquals("Entity", assignments.get(0).getEntities().get(1).geteType());

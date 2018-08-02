@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.results.Entity;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +38,10 @@ public abstract class KnowledgeDomainBuilder {
             refsNode.add(ref);
         }
         return refsNode;
+    }
+
+    public List<KnowledgeDomainBuilder> additional() {
+        return Collections.emptyList();
     }
 
 

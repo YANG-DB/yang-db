@@ -17,6 +17,18 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
+    public Metadata() {
+    }
+
+    public Metadata(Metadata metadata) {
+        this.lastUpdateTime = metadata.lastUpdateTime;
+        this.creationTime = metadata.creationTime;
+        this.creationUser = metadata.creationUser;
+        this.lastUpdateUser = metadata.lastUpdateUser;
+        this.authorization = metadata.authorization;
+        this.deleteTime = metadata.deleteTime;
+    }
+
     public String lastUpdateUser = "test";
     public String creationUser = "test";
     //public String creationTime = sdf.format(new Date(System.currentTimeMillis()));
