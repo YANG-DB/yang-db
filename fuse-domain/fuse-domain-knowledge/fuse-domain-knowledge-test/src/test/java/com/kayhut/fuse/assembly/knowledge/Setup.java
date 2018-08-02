@@ -6,7 +6,6 @@ import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.fuse.utils.FuseClient;
-import org.elasticsearch.ResourceAlreadyExistsException;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 
@@ -25,12 +24,19 @@ public abstract class Setup {
     public static TransportClient client = null;
 
     public static void setup() throws Exception {
-        // Start embedded ES
-        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("knowledge");
-        client = elasticEmbeddedNode.getClient();
-//        client = elasticEmbeddedNode.getClient("knowledge", 9300);
-        createIdGeneratorIndex(client);
+        setup(true);
+    }
 
+    public static void setup(boolean embedded) throws Exception {
+        // Start embedded ES
+        if(embedded) {
+            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("knowledge");
+            client = elasticEmbeddedNode.getClient();
+            createIdGeneratorIndex(client);
+        } else {
+            //use existing running ES
+            client = elasticEmbeddedNode.getClient("knowledge", 9300);
+        }
         // Load fuse engine config file
         String confFilePath = path.toString();
         // Start elastic data manager

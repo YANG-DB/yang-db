@@ -123,6 +123,7 @@ public class KnowledgeWriterContext {
         for (BulkItemResponse item : items) {
             if (!item.isFailed()) {
                 ctx.created.add(new Items(item.getIndex(), item.getType(), item.getId()));
+                System.out.println("Created element "+item.getId() + " type " +item.getType() +" index "+item.getIndex());
                 count++;
             }
 
