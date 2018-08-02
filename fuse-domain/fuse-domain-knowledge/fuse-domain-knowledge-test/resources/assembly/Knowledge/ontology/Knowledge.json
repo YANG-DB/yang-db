@@ -114,6 +114,7 @@
       "properties": [
         "logicalId",
         "entityId",
+        "context",
         "name",
         "path",
         "displayName",
