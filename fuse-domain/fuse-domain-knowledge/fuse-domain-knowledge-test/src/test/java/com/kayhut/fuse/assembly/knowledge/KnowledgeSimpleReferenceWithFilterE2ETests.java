@@ -1,7 +1,7 @@
 package com.kayhut.fuse.assembly.knowledge;
 
-import com.kayhut.fuse.assembly.knowledge.domain.RefBuilder;
 import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
+import com.kayhut.fuse.assembly.knowledge.domain.RefBuilder;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -19,13 +19,13 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.TimeZone;
-import static com.kayhut.fuse.assembly.knowledge.Setup.client;
-import static com.kayhut.fuse.assembly.knowledge.Setup.fuseClient;
-import static com.kayhut.fuse.assembly.knowledge.Setup.manager;
+
+import static com.kayhut.fuse.assembly.knowledge.Setup.*;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
@@ -41,7 +41,7 @@ public class KnowledgeSimpleReferenceWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        //Setup.setup();
+//        Setup.setup(true);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Reference entities for tests
@@ -79,6 +79,7 @@ public class KnowledgeSimpleReferenceWithFilterE2ETests {
                 .deleteTime(sdf.parse("2023-02-03 11:11:11.022"));
         // Insert Reference entities to ES
         Assert.assertEquals(8, commit(ctx, REF_INDEX, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8));
+
     }
 
     @AfterClass
@@ -135,7 +136,7 @@ public class KnowledgeSimpleReferenceWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testEqReferenceByContent() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
@@ -364,13 +365,14 @@ public class KnowledgeSimpleReferenceWithFilterE2ETests {
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
                         .withEntity(ref6.toEntity())
+                        .withEntity(ref7.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testEqReferenceByTitleContentAndDeleteTime() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
@@ -421,7 +423,7 @@ public class KnowledgeSimpleReferenceWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)  // Supposed to find r2 and r5 but doesn't find anything
+    @Test  // Supposed to find r2 and r5 but doesn't find anything
     public void testLikeReferenceStartOnTitle() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
@@ -444,7 +446,7 @@ public class KnowledgeSimpleReferenceWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)  // Supposed to find r1 and r3 but doesn't find anything
+    @Test
     public void testLikeReferenceEndOnTitle() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
@@ -467,7 +469,7 @@ public class KnowledgeSimpleReferenceWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)  // Supposed to find r6 and r7 but doesn't find anything
+    @Test
     public void testLikeReferenceContainsOnTitle() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity
@@ -651,7 +653,7 @@ public class KnowledgeSimpleReferenceWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testNeReferenceByContent() throws IOException, InterruptedException
     {
         // Create v1 query to fetch newly created entity

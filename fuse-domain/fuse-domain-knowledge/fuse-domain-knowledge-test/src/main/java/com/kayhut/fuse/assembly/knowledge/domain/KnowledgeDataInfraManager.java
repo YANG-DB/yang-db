@@ -126,6 +126,7 @@ public class KnowledgeDataInfraManager  {
                 if (!externalClient.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
                     externalClient.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet();
                 }
+                System.out.println("Creating index template "+templateName);
                 externalClient.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet();
             }
         }

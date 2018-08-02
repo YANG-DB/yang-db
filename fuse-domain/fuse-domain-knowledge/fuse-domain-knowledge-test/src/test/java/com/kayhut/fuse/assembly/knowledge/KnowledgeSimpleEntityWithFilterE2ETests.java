@@ -39,7 +39,7 @@ public class KnowledgeSimpleEntityWithFilterE2ETests {
     @BeforeClass
     public static void setup() throws Exception
     {
-        //Setup.setup();
+//        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
