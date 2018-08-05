@@ -15,6 +15,7 @@ import org.elasticsearch.search.aggregations.metrics.cardinality.Cardinality;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
@@ -62,6 +63,73 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                 Stream.ofAll(hits)
                         .groupBy(hit -> (String) hit.sourceAsMap().get("category"))
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
+
+        contextStatistics.setEntityCategoryFields(Stream.ofAll(contextStatistics.getEntityCategories().keySet())
+                .toJavaMap(category -> {
+                    List<String> categoryLogicalIds = Stream.ofAll(new SearchHitScrollIterable(
+                            this.client,
+                            client.prepareSearch().setIndices(this.schema.getEntityIndex())
+                                .setQuery(boolQuery().filter(boolQuery()
+                                    .must(termQuery("type", "entity"))
+                                    .must(termQuery("context", context))
+                                    .mustNot(existsQuery("deleteTime"))))
+                                .setFetchSource(new String[] { "logicalId" }, null),
+                            new DefaultSearchOrderProvider().build(null),
+                            1000000000, 1000, 60000))
+                            .map(hit -> (String)hit.sourceAsMap().get("logicalId"))
+                            .distinct().toJavaList();
+
+                    Set<String> categoryFields = Stream.ofAll(new SearchHitScrollIterable(
+                            this.client,
+                            client.prepareSearch().setIndices(this.schema.getEntityIndex())
+                            .setQuery(boolQuery().filter(boolQuery()
+                                .must(termQuery("type", "e.value"))
+                                .must(termQuery("context", context))
+                                .must(termsQuery("logicalId", categoryLogicalIds))
+                                .mustNot(existsQuery("deleteTime"))))
+                            .setFetchSource(new String[] { "fieldId" }, null),
+                            new DefaultSearchOrderProvider().build(null),
+                            1000000000, 1000, 60000))
+                            .map(hit -> (String)hit.sourceAsMap().get("fieldId"))
+                            .toJavaSet();
+
+                    categoryFields.add("title");
+                    categoryFields.add("nicknames");
+
+                    return new Tuple2<>(category, categoryFields);
+                }));
+
+        contextStatistics.setEntityRelationCategories(Stream.ofAll(contextStatistics.getEntityCategories().keySet())
+                .toJavaMap(category -> {
+                    List<String> categoryEntityIds = Stream.ofAll(new SearchHitScrollIterable(
+                            this.client,
+                            client.prepareSearch().setIndices(this.schema.getEntityIndex())
+                                    .setQuery(boolQuery().filter(boolQuery()
+                                            .must(termQuery("type", "entity"))
+                                            .must(termQuery("context", context))
+                                            .mustNot(existsQuery("deleteTime"))))
+                                    .setFetchSource(new String[] { "logicalId" }, null),
+                            new DefaultSearchOrderProvider().build(null),
+                            1000000000, 1000, 60000))
+                            .map(hit -> (String)hit.sourceAsMap().get("logicalId"))
+                            .distinct().map(logicalId -> logicalId + "." + context).toJavaList();
+
+                    Set<String> relationCategories = Stream.ofAll(new SearchHitScrollIterable(
+                            this.client,
+                            client.prepareSearch().setIndices(this.schema.getEntityIndex())
+                                    .setQuery(boolQuery().filter(boolQuery()
+                                            .must(termQuery("type", "e.relation"))
+                                            .must(termQuery("context", context))
+                                            .must(termsQuery("entityAId", categoryEntityIds))
+                                            .mustNot(existsQuery("deleteTime"))))
+                                    .setFetchSource(new String[] { "category" }, null),
+                            new DefaultSearchOrderProvider().build(null),
+                            1000000000, 1000, 60000))
+                            .map(hit -> (String)hit.sourceAsMap().get("category"))
+                            .toJavaSet();
+
+                    return new Tuple2<>(category, relationCategories);
+                }));
 
         contextStatistics.setEntityReferenceCounts(
             Stream.ofAll(hits)
@@ -198,6 +266,41 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                 Stream.ofAll(hits)
                         .groupBy(hit -> (String) hit.sourceAsMap().get("category"))
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
+
+        contextStatistics.setRelationCategoryFields(Stream.ofAll(contextStatistics.getRelationCategories().keySet())
+                .toJavaMap(category -> {
+                    List<String> categoryRelationIds = Stream.ofAll(new SearchHitScrollIterable(
+                            this.client,
+                            client.prepareSearch().setIndices(this.schema.getRelationIndex())
+                                    .setQuery(boolQuery().filter(boolQuery()
+                                            .must(termQuery("type", "relation"))
+                                            .must(termQuery("context", context))
+                                            .mustNot(existsQuery("deleteTime"))))
+                                    .setFetchSource(false),
+                            new DefaultSearchOrderProvider().build(null),
+                            1000000000, 1000, 60000))
+                            .map(SearchHit::id)
+                            .distinct().toJavaList();
+
+                    Set<String> categoryFields = Stream.ofAll(new SearchHitScrollIterable(
+                            this.client,
+                            client.prepareSearch().setIndices(this.schema.getRelationIndex())
+                                    .setQuery(boolQuery().filter(boolQuery()
+                                            .must(termQuery("type", "r.value"))
+                                            .must(termQuery("context", context))
+                                            .must(termsQuery("relationId", categoryRelationIds))
+                                            .mustNot(existsQuery("deleteTime"))))
+                                    .setFetchSource(new String[] { "fieldId" }, null),
+                            new DefaultSearchOrderProvider().build(null),
+                            1000000000, 1000, 60000))
+                            .map(hit -> (String)hit.sourceAsMap().get("fieldId"))
+                            .toJavaSet();
+
+                    categoryFields.add("title");
+                    categoryFields.add("nicknames");
+
+                    return new Tuple2<>(category, categoryFields);
+                }));
 
         contextStatistics.setRelationReferenceCounts(
                 Stream.ofAll(hits)

@@ -1,5 +1,6 @@
 package com.fuse.domain.knowledge.datagen;
 
+import com.fuse.domain.knowledge.datagen.model.Entity;
 import com.fuse.domain.knowledge.datagen.model.Erelation;
 import com.fuse.domain.knowledge.datagen.model.KnowledgeEntityBase;
 import com.fuse.domain.knowledge.datagen.model.Relation;
@@ -25,7 +26,7 @@ public class KnowledgeContextRelationDataGenerator implements KnowledgeGraphGene
             GenerationContext generationContext,
             Supplier<String> relationIdSupplier,
             Supplier<String> categorySupplier,
-            Supplier<String> logicalIdSupplier,
+            Supplier<Entity> entitySupplier,
             Supplier<Integer> numOutRelationsSupplier,
             Supplier<Integer> numInRelationsSupplier,
             Supplier<KnowledgeEntityBase.Metadata> metadataSupplier) {
@@ -34,7 +35,7 @@ public class KnowledgeContextRelationDataGenerator implements KnowledgeGraphGene
 
         this.relationIdSupplier = relationIdSupplier;
         this.categorySupplier = categorySupplier;
-        this.logicalIdSupplier = logicalIdSupplier;
+        this.entitySupplier = entitySupplier;
         this.metadataSupplier = metadataSupplier;
 
         this.numOutRelationsSupplier = numOutRelationsSupplier;
@@ -43,8 +44,6 @@ public class KnowledgeContextRelationDataGenerator implements KnowledgeGraphGene
         this.numToGenerate = (int) Math.floor(
                 Stream.ofAll(this.generationContext.getContextStatistics().getRelationCategories().values()).sum().intValue() *
                         this.generationContext.getContextGenerationConfiguration().getScaleFactor());
-
-        this.entityCategories = new HashMap<>();
     }
     //endregion
 
@@ -60,36 +59,41 @@ public class KnowledgeContextRelationDataGenerator implements KnowledgeGraphGene
             String context = this.generationContext.getContextGenerationConfiguration().getToContext();
             KnowledgeEntityBase.Metadata metadata = this.metadataSupplier.get();
 
-            String logicalIdA = this.logicalIdSupplier.get();
+            Entity entityA = this.entitySupplier.get();
+            String entityAId = String.format("%s.%s", entityA.getLogicalId(), context);
+            Set<String> relationCategories = this.generationContext.getContextStatistics().getEntityRelationCategories().get(entityA.getCategory());
+
             int numOutRelations = this.numOutRelationsSupplier.get();
-            List<String> logicalIdsBOut = Stream.fill(numOutRelations, this.logicalIdSupplier).filter(id -> !id.equals(logicalIdA)).toJavaList();
+            List<Relation> outRelations = new ArrayList<>();
+            while(outRelations.size() < numOutRelations) {
+                Entity entityB = this.entitySupplier.get();
+                String entityBId = String.format("%s.%s", entityB.getLogicalId(), context);
+
+                Set<String> relationCategoriesB = this.generationContext.getContextStatistics().getEntityRelationCategories().get(entityB.getCategory());
+                String category = this.categorySupplier.get();
+
+                if (relationCategories.contains(category) && relationCategoriesB.contains(category)) {
+                    outRelations.add(new Relation(context, category, entityAId, entityA.getCategory(), entityBId, entityB.getCategory()));
+                }
+            }
+
             int numInRelations = this.numInRelationsSupplier.get();
-            List<String> logicalIdsBIn = Stream.fill(numInRelations, this.logicalIdSupplier).filter(id -> !id.equals(logicalIdA)).toJavaList();
+            List<Relation> inRelations = new ArrayList<>();
+            while(outRelations.size() < numOutRelations) {
+                Entity entityB = this.entitySupplier.get();
+                String entityBId = String.format("%s.%s", entityB.getLogicalId(), context);
 
-            List<String> unknownLogicalIds =
-                    Stream.of(logicalIdA).appendAll(logicalIdsBOut).appendAll(logicalIdsBIn).distinct()
-                            .filter(id -> !this.entityCategories.containsKey(id))
-                            .toJavaList();
+                Set<String> relationCategoriesB = this.generationContext.getContextStatistics().getEntityRelationCategories().get(entityB.getCategory());
+                String category = this.categorySupplier.get();
 
-            this.entityCategories.putAll(Stream.ofAll(new SearchHitScrollIterable(
-                    client,
-                    client.prepareSearch().setIndices(this.generationContext.getElasticConfiguration().getWriteSchema().getEntityIndex())
-                            .setQuery(boolQuery().filter(boolQuery()
-                                    .must(termQuery("type", "entity"))
-                                    .must(termQuery("context", context))
-                                    .must(termsQuery("logicalId", unknownLogicalIds))
-                                    .mustNot(existsQuery("deleteTime"))))
-                            .setFetchSource(new String[]{"category", "logicalId"}, null),
-                    new DefaultSearchOrderProvider().build(null),
-                    unknownLogicalIds.size(), 1000, 60000))
-                    .toJavaMap(hit -> new Tuple2<>(
-                            (String) hit.sourceAsMap().get("logicalId"),
-                            (String) hit.sourceAsMap().get("category"))));
+                if (relationCategories.contains(category) && relationCategoriesB.contains(category)) {
+                    outRelations.add(new Relation(context, category, entityAId, entityA.getCategory(), entityBId, entityB.getCategory()));
+                }
+            }
 
-            entities.addAll(Stream.ofAll(logicalIdsBOut)
-                    .flatMap(logicalIdB -> {
+            entities.addAll(Stream.ofAll(outRelations)
+                    .flatMap(relation -> {
                         String relationId = relationIdSupplier.get();
-                        String category = this.categorySupplier.get();
 
                         return Stream.of(new ElasticDocument<KnowledgeEntityBase>(
                                 this.generationContext.getElasticConfiguration().getWriteSchema().getRelationIndex(),
@@ -98,48 +102,47 @@ public class KnowledgeContextRelationDataGenerator implements KnowledgeGraphGene
                                 null,
                                 new Relation(
                                         context,
-                                        category,
-                                        String.format("%s.%s", logicalIdA, context),
-                                        this.entityCategories.get(logicalIdA),
-                                        String.format("%s.%s", logicalIdB, context),
-                                        this.entityCategories.get(logicalIdB),
+                                        relation.getCategory(),
+                                        relation.getEntityAId(),
+                                        relation.getEntityACategory(),
+                                        relation.getEntityBId(),
+                                        relation.getEntityBCategory(),
                                         metadata)),
                                 new ElasticDocument<KnowledgeEntityBase>(
                                         this.generationContext.getElasticConfiguration().getWriteSchema().getEntityIndex(),
                                         "pge",
                                         String.format("%s.out", relationId),
-                                        logicalIdA,
+                                        entityA.getLogicalId(),
                                         new Erelation(
                                                 relationId,
                                                 context,
-                                                category,
-                                                String.format("%s.%s", logicalIdA, context),
-                                                this.entityCategories.get(logicalIdA),
-                                                String.format("%s.%s", logicalIdB, context),
-                                                this.entityCategories.get(logicalIdB),
+                                                relation.getCategory(),
+                                                relation.getEntityAId(),
+                                                relation.getEntityACategory(),
+                                                relation.getEntityBId(),
+                                                relation.getEntityBCategory(),
                                                 "out",
                                                 metadata)),
                                 new ElasticDocument<KnowledgeEntityBase>(
                                         this.generationContext.getElasticConfiguration().getWriteSchema().getRelationIndex(),
                                         "pge",
                                         String.format("%s.in", relationId),
-                                        logicalIdB,
+                                        relation.getEntityBId().split("\\.")[0],
                                         new Erelation(
                                                 relationId,
                                                 context,
-                                                category,
-                                                String.format("%s.%s", logicalIdB, context),
-                                                this.entityCategories.get(logicalIdB),
-                                                String.format("%s.%s", logicalIdA, context),
-                                                this.entityCategories.get(logicalIdA),
+                                                relation.getCategory(),
+                                                relation.getEntityBId(),
+                                                relation.getEntityBCategory(),
+                                                relation.getEntityAId(),
+                                                relation.getEntityACategory(),
                                                 "in",
                                                 metadata)));
                     }).toJavaList());
 
-            entities.addAll(Stream.ofAll(logicalIdsBIn)
-                    .flatMap(logicalIdB -> {
+            entities.addAll(Stream.ofAll(inRelations)
+                    .flatMap(relation -> {
                         String relationId = relationIdSupplier.get();
-                        String category = this.categorySupplier.get();
 
                         return Stream.of(new ElasticDocument<KnowledgeEntityBase>(
                                         this.generationContext.getElasticConfiguration().getWriteSchema().getRelationIndex(),
@@ -148,45 +151,45 @@ public class KnowledgeContextRelationDataGenerator implements KnowledgeGraphGene
                                         null,
                                         new Relation(
                                                 context,
-                                                category,
-                                                String.format("%s.%s", logicalIdB, context),
-                                                this.entityCategories.get(logicalIdB),
-                                                String.format("%s.%s", logicalIdA, context),
-                                                this.entityCategories.get(logicalIdA),
+                                                relation.getCategory(),
+                                                relation.getEntityBId(),
+                                                relation.getEntityBCategory(),
+                                                relation.getEntityAId(),
+                                                relation.getEntityACategory(),
                                                 metadata)),
                                 new ElasticDocument<KnowledgeEntityBase>(
                                         this.generationContext.getElasticConfiguration().getWriteSchema().getEntityIndex(),
                                         "pge",
                                         String.format("%s.out", relationId),
-                                        logicalIdB,
+                                        relation.getEntityBId().split("\\.")[0],
                                         new Erelation(
                                                 relationId,
                                                 context,
-                                                category,
-                                                String.format("%s.%s", logicalIdB, context),
-                                                this.entityCategories.get(logicalIdB),
-                                                String.format("%s.%s", logicalIdA, context),
-                                                this.entityCategories.get(logicalIdA),
+                                                relation.getCategory(),
+                                                relation.getEntityBId(),
+                                                relation.getEntityBCategory(),
+                                                relation.getEntityAId(),
+                                                relation.getEntityACategory(),
                                                 "out",
                                                 metadata)),
                                 new ElasticDocument<KnowledgeEntityBase>(
                                         this.generationContext.getElasticConfiguration().getWriteSchema().getRelationIndex(),
                                         "pge",
                                         String.format("%s.in", relationId),
-                                        logicalIdA,
+                                        entityA.getLogicalId(),
                                         new Erelation(
                                                 relationId,
                                                 context,
-                                                category,
-                                                String.format("%s.%s", logicalIdA, context),
-                                                this.entityCategories.get(logicalIdA),
-                                                String.format("%s.%s", logicalIdB, context),
-                                                this.entityCategories.get(logicalIdB),
+                                                relation.getCategory(),
+                                                relation.getEntityAId(),
+                                                relation.getEntityACategory(),
+                                                relation.getEntityBId(),
+                                                relation.getEntityBCategory(),
                                                 "in",
                                                 metadata)));
                     }).toJavaList());
 
-            this.numGenerated += logicalIdsBIn.size() + logicalIdsBOut.size();
+            this.numGenerated += outRelations.size() + inRelations.size();
         }
 
         return entities;
@@ -199,7 +202,7 @@ public class KnowledgeContextRelationDataGenerator implements KnowledgeGraphGene
 
     private Supplier<String> relationIdSupplier;
     private Supplier<String> categorySupplier;
-    private Supplier<String> logicalIdSupplier;
+    private Supplier<Entity> entitySupplier;
     private Supplier<KnowledgeEntityBase.Metadata> metadataSupplier;
 
     private Supplier<Integer> numOutRelationsSupplier;
@@ -207,7 +210,5 @@ public class KnowledgeContextRelationDataGenerator implements KnowledgeGraphGene
 
     private int numGenerated;
     private int numToGenerate;
-
-    private Map<String, String> entityCategories;
     //endregion
 }

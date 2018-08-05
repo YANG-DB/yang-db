@@ -74,12 +74,15 @@ public class DataGeneratorRunner {
 
         // generate entities
         generator = getContextEntityGenerator(client, elasticConfiguration, generationContext, commonMetadataSupplier);
-        List<String> logicalIdsInvolved = new ArrayList<>();
+        List<Entity> entitiesInvolved = new ArrayList<>();
         knowledgeDocuments = generator.generate(null);
         while (!Stream.ofAll(knowledgeDocuments).isEmpty()) {
-            logicalIdsInvolved.addAll(Stream.ofAll(knowledgeDocuments)
+            entitiesInvolved.addAll(Stream.ofAll(knowledgeDocuments)
                     .filter(doc -> doc.getSource() instanceof Entity)
-                    .map(doc -> ((Entity) doc.getSource()).getLogicalId()).toJavaList());
+                    .map(doc -> {
+                                Entity entity = (Entity) doc.getSource();
+                                return new Entity(entity.getLogicalId(), entity.getContext(), entity.getCategory());
+                            }).toJavaList());
 
             elasticWriter.write(knowledgeDocuments);
             knowledgeDocuments = generator.generate(null);
@@ -103,7 +106,9 @@ public class DataGeneratorRunner {
                                 .setFetchSource(new String[]{"logicalId"}, null),
                         new DefaultSearchOrderProvider().build(null),
                         1000000, 1000, 60000)).map(hit -> (String) hit.sourceAsMap().get("logicalId")).distinct().toJavaSet();
-        List<String> newLogicalIds = Stream.ofAll(logicalIdsInvolved).filter(id -> !fromContextLogicalIds.contains(id)).toJavaList();
+        List<Entity> newEntities = Stream.ofAll(entitiesInvolved)
+                .filter(entity -> !fromContextLogicalIds.contains(entity.getLogicalId()))
+                .toJavaList();
 
         Stream.ofAll(generationContext.getContextStatistics().getEntityFieldTypes().keySet())
                 .filter(field -> globalFieldNames.contains(field))
@@ -117,7 +122,7 @@ public class DataGeneratorRunner {
                                 generationContext,
                                 entityValueIdSupplier,
                                 commonEntityValueMetadataSupplier,
-                                newLogicalIds,
+                                newEntities,
                                 fromContextLogicalIds);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -143,7 +148,7 @@ public class DataGeneratorRunner {
                                 generationContext,
                                 entityValueIdSupplier,
                                 commonEntityValueMetadataSupplier,
-                                logicalIdsInvolved);
+                                entitiesInvolved);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -160,7 +165,7 @@ public class DataGeneratorRunner {
                 referenceIds);
 
         // generate context relations
-        generator = getContextRelationGenerator(client, elasticConfiguration, generationContext, commonMetadataSupplier, logicalIdsInvolved);
+        generator = getContextRelationGenerator(client, elasticConfiguration, generationContext, commonMetadataSupplier, entitiesInvolved);
         List<String> relationIds = new ArrayList<>();
         knowledgeDocuments = generator.generate(null);
         while (!Stream.ofAll(knowledgeDocuments).isEmpty()) {
@@ -207,7 +212,7 @@ public class DataGeneratorRunner {
                 referenceIds);
 
         // generate insights
-        generator = getContextInsightGenerator(client, elasticConfiguration, generationContext, commonInsightMetadataSupplier, logicalIdsInvolved);
+        generator = getContextInsightGenerator(client, elasticConfiguration, generationContext, commonInsightMetadataSupplier, entitiesInvolved);
         knowledgeDocuments = generator.generate(null);
         while (!Stream.ofAll(knowledgeDocuments).isEmpty()) {
             elasticWriter.write(knowledgeDocuments);
@@ -298,9 +303,9 @@ public class DataGeneratorRunner {
             ElasticConfiguration elasticConfiguration,
             GenerationContext generationContext,
             Supplier<KnowledgeEntityBase.Metadata> metadataSupplier,
-            List<String> logicalIds) {
+            List<Entity> entities) {
 
-        Supplier<String> logicalIdSupplier = new UnifromCachedSupplier<String>(logicalIds);
+        Supplier<Entity> entitySupplier = new UnifromCachedSupplier<>(entities);
         Supplier<String> relationIdSupplier = new FormatIdSupplier("r" + elasticConfiguration.getWriteSchema().getIdFormat(), 1000000, 2000000);
 
         Supplier<String> categorySupplier = new UnifromCachedSupplier<>(
@@ -328,7 +333,7 @@ public class DataGeneratorRunner {
                 generationContext,
                 relationIdSupplier,
                 categorySupplier,
-                logicalIdSupplier,
+                entitySupplier,
                 numOutRelationsSupplier,
                 numInRelationsSupplier,
                 metadataSupplier);
@@ -341,13 +346,13 @@ public class DataGeneratorRunner {
             GenerationContext generationContext,
             Supplier<String> entityValueIdSupplier,
             Supplier<KnowledgeEntityBase.Metadata> metadataSupplier,
-            List<String> logicalIds) throws IOException {
+            List<Entity> entities) throws IOException {
 
         String fieldType = generationContext.getContextStatistics().getEntityFieldTypes().get(fieldId);
 
         String fromContext = generationContext.getContextGenerationConfiguration().getFromContext();
 
-        Supplier<String> logicalIdSupplier = new OrderedSupplier<>(logicalIds);
+        Supplier<Entity> entitySupplier = new OrderedSupplier<>(entities);
 
         Supplier<Integer> fieldNumValuesSupplier =
                 new UnifromCachedSupplier<>(
@@ -382,7 +387,7 @@ public class DataGeneratorRunner {
                 fieldId,
                 generationContext.getContextGenerationConfiguration().getToContext(),
                 entityValueIdSupplier,
-                logicalIdSupplier,
+                entitySupplier,
                 metadataSupplier,
                 fieldNumValuesSupplier,
                 fieldValuesSupplier);
@@ -395,10 +400,10 @@ public class DataGeneratorRunner {
             GenerationContext generationContext,
             Supplier<String> entityValueIdSupplier,
             Supplier<KnowledgeEntityBase.Metadata> metadataSupplier,
-            List<String> logicalIds,
+            List<Entity> entities,
             Set<String> fromContextLogicalIds) throws IOException {
 
-        Supplier<String> logicalIdSupplier = new OrderedSupplier<>(logicalIds);
+        Supplier<Entity> entitySupplier = new OrderedSupplier<>(entities);
 
         Supplier<Integer> fieldNumValuesSupplier =
                 new UnifromCachedSupplier<>(
@@ -428,7 +433,7 @@ public class DataGeneratorRunner {
                 fieldId,
                 generationContext.getContextGenerationConfiguration().getToContext(),
                 entityValueIdSupplier,
-                logicalIdSupplier,
+                entitySupplier,
                 metadataSupplier,
                 fieldNumValuesSupplier,
                 fieldValuesSupplier);
@@ -493,9 +498,9 @@ public class DataGeneratorRunner {
             ElasticConfiguration elasticConfiguration,
             GenerationContext generationContext,
             Supplier<KnowledgeEntityBase.Metadata> metadataSupplier,
-            List<String> logicalIds) {
+            List<Entity> entities) {
 
-        Supplier<String> logicalIdSupplier = new UnifromCachedSupplier<String>(logicalIds);
+        Supplier<Entity> entitySupplier = new UnifromCachedSupplier<>(entities);
         Supplier<String> insightIdSupplier = new FormatIdSupplier("i" + elasticConfiguration.getWriteSchema().getIdFormat(), 1000000, 2000000);
 
         Supplier<String> contentSupplier = new FunctionChainSupplier<>(
@@ -521,7 +526,7 @@ public class DataGeneratorRunner {
                 generationContext,
                 insightIdSupplier,
                 contentSupplier,
-                logicalIdSupplier,
+                entitySupplier,
                 numEntitiesSupplier,
                 metadataSupplier);
     }

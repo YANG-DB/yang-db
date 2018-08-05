@@ -1,6 +1,7 @@
 package com.fuse.domain.knowledge.datagen;
 
 import com.fuse.domain.knowledge.datagen.model.Einsight;
+import com.fuse.domain.knowledge.datagen.model.Entity;
 import com.fuse.domain.knowledge.datagen.model.Insight;
 import com.fuse.domain.knowledge.datagen.model.KnowledgeEntityBase;
 import com.kayhut.fuse.unipop.controller.search.DefaultSearchOrderProvider;
@@ -27,7 +28,7 @@ public class KnowledgeContextInsightDataGenerator implements KnowledgeGraphGener
             GenerationContext generationContext,
             Supplier<String> insightIdSupplier,
             Supplier<String> contentSupplier,
-            Supplier<String> logicalIdSupplier,
+            Supplier<Entity> entitySupplier,
             Supplier<Integer> numEntitiesSupplier,
             Supplier<KnowledgeEntityBase.Metadata> metadataSupplier) {
         this.client = client;
@@ -35,7 +36,7 @@ public class KnowledgeContextInsightDataGenerator implements KnowledgeGraphGener
 
         this.insightIdSupplier = insightIdSupplier;
         this.contentSupplier = contentSupplier;
-        this.logicalIdSupplier = logicalIdSupplier;
+        this.entitySupplier = entitySupplier;
         this.numEntitiesSupplier = numEntitiesSupplier;
         this.metadataSupplier = metadataSupplier;
 
@@ -57,7 +58,7 @@ public class KnowledgeContextInsightDataGenerator implements KnowledgeGraphGener
             String context = this.generationContext.getContextGenerationConfiguration().getToContext();
             KnowledgeEntityBase.Metadata metadata = this.metadataSupplier.get();
 
-            List<String> logicalIdsInInsight = Stream.fill(this.numEntitiesSupplier.get(), this.logicalIdSupplier).toJavaList();
+            List<Entity> entitiesInInsight = Stream.fill(this.numEntitiesSupplier.get(), this.entitySupplier).toJavaList();
             String insightId = this.insightIdSupplier.get();
 
             insights.add(new ElasticDocument<>(
@@ -68,19 +69,19 @@ public class KnowledgeContextInsightDataGenerator implements KnowledgeGraphGener
                     new Insight(
                             context,
                             this.contentSupplier.get(),
-                            Stream.of(logicalIdsInInsight).map(id -> String.format("%s.%s", id, context)).toJavaList(),
+                            Stream.ofAll(entitiesInInsight).map(entity -> String.format("%s.%s", entity.getLogicalId(), context)).toJavaList(),
                             metadata)));
 
-            insights.addAll(Stream.ofAll(logicalIdsInInsight)
-                    .map(logicalId -> new ElasticDocument<KnowledgeEntityBase>(
+            insights.addAll(Stream.ofAll(entitiesInInsight)
+                    .map(entity -> new ElasticDocument<KnowledgeEntityBase>(
                             generationContext.getElasticConfiguration().getWriteSchema().getEntityIndex(),
                             "pge",
-                            String.format("%s.%s", logicalId, insightId),
-                            logicalId,
-                            new Einsight(String.format("%s.%s", logicalId, context), insightId)))
+                            String.format("%s.%s", entity.getLogicalId(), insightId),
+                            entity.getLogicalId(),
+                            new Einsight(String.format("%s.%s", entity.getLogicalId(), context), insightId)))
                     .toJavaList());
 
-            this.numGenerated += logicalIdsInInsight.size() + 1;
+            this.numGenerated += entitiesInInsight.size() + 1;
         }
 
         return insights;
@@ -93,7 +94,7 @@ public class KnowledgeContextInsightDataGenerator implements KnowledgeGraphGener
 
     private Supplier<String> insightIdSupplier;
     private Supplier<String> contentSupplier;
-    private Supplier<String> logicalIdSupplier;
+    private Supplier<Entity> entitySupplier;
     private Supplier<Integer> numEntitiesSupplier;
     private Supplier<KnowledgeEntityBase.Metadata> metadataSupplier;
 

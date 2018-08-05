@@ -8,7 +8,7 @@
       "refresh_interval": "100ms",
       "analysis": {
         "normalizer":{
-          "lowercase_norm":{
+          "lowercase_normalizer":{
             "filter":[
               "lowercase"
             ],
@@ -65,7 +65,13 @@
         "entityAId": {
           "type": "keyword"
         },
+        "entityALogicalId": {
+          "type": "keyword"
+        },
         "entityBId": {
+          "type": "keyword"
+        },
+        "entityBLogicalId": {
           "type": "keyword"
         },
         "entityACategory": {
@@ -93,7 +99,7 @@
           "search_analyzer": "knowledge_standard_analyzer",
           "fields": {
             "keyword": {
-              "normalizer":"lowercase_norm",
+              "normalizer":"lowercase_normalizer",
               "type": "keyword"
             }
           }
@@ -121,6 +127,13 @@
         "deleteTime": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
           "type": "date"
+        },
+        "systemCreationTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        },
+        "systemCreationUser": {
+          "type": "keyword"
         },
         "authorization": {
           "type": "keyword"
