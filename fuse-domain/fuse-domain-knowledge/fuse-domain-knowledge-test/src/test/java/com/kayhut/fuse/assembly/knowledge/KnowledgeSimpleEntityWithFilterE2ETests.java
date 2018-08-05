@@ -49,7 +49,7 @@ public class KnowledgeSimpleEntityWithFilterE2ETests {
                 .deleteTime(sdf.parse("2018-07-09 02:02:02.222"));
         e3 = _e(ctx.nextLogicalId()).cat("opel").ctx("context3").lastUpdateUser("Kobi Shaul")
                 .deleteTime(sdf.parse("2018-02-09 02:02:02.222"));
-        e4 = _e(ctx.nextLogicalId()).cat("reno").ctx("context1").creationUser("Dudi Frid")
+        e4 = _e(e3.logicalId).cat("reno").ctx("context1").creationUser("Dudi Frid")
                 .deleteTime(sdf.parse("2018-07-09 02:02:02.222"));
         e5 = _e(ctx.nextLogicalId()).cat("mitsubishi").ctx("context5").lastUpdateUser("Dudi Frid")
                 .creationUser("Kobi Shaul").creationTime(sdf.parse("2018-02-28 23:55:13.899"))
@@ -116,7 +116,7 @@ public class KnowledgeSimpleEntityWithFilterE2ETests {
         // Create expectedResult - for e3
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e3.toEntity())
+                        .withEntity(e3.toEntity()).withEntity(e4.toEntity())
                         .build()).build();
         // Create expectedResult - for e9
         AssignmentsQueryResult expectedResult2 = AssignmentsQueryResult.Builder.instance()

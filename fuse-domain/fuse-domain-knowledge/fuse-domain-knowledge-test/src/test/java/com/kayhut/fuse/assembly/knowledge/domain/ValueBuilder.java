@@ -105,7 +105,7 @@ public class ValueBuilder extends EntityId {
 
     @Override
     public Entity toEntity() {
-        Property value = new Property("stringValue", "raw", stringValue);;
+        Property value = new Property("stringValue", "raw", stringValue);
         if(stringValue!=null)
             value = new Property("stringValue", "raw", stringValue);
         else if(intValue!=Integer.MIN_VALUE)
