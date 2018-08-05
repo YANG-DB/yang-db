@@ -129,7 +129,13 @@
         "entityAId": {
           "type": "keyword"
         },
+        "entityALogicalId": {
+          "type": "keyword"
+        },
         "entityBId": {
+          "type": "keyword"
+        },
+        "entityBLogicalId": {
           "type": "keyword"
         },
         "entityACategory": {
@@ -157,6 +163,13 @@
         "lastUpdateTime": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
           "type": "date"
+        },
+        "systemCreationTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        },
+        "systemCreationUser": {
+          "type": "keyword"
         },
         "deleteUser": {
           "type": "keyword"
