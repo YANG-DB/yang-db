@@ -41,7 +41,7 @@ public class KnowledgeSimpleReferenceWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(true);
+        //Setup.setup(true);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Reference entities for tests

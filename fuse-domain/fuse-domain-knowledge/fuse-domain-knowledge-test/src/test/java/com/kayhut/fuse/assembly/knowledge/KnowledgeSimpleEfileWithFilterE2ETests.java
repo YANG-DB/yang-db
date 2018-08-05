@@ -45,36 +45,36 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Efile entities for tests
-        f1 = _f(ctx.nextFileId()).name("mazda").path("https://www.google.co.il").mime("string").cat("cars")
+        f1 = _f(ctx.nextFileId()).name("mazda").path("https://www.google.co.il").mime("string").cat("cars").ctx("family cars")
                 .desc("search mazda at google").creationUser("Haim Hania").creationTime(sdf.parse("2012-01-17 03:03:04.827"))
                 .lastUpdateUser("Dudi Fargon").lastUpdateTime(sdf.parse("2011-04-16 00:00:00.000"))
                 .deleteTime(sdf.parse("2018-02-02 02:02:02.222"));
-        f2 = _f(ctx.nextFileId()).name("opel").path("https://www.google.co.il").mime("string").cat("new car")
+        f2 = _f(ctx.nextFileId()).name("opel").path("https://www.google.co.il").mime("string").cat("new car").ctx("Family cars")
                 .desc("search opel at google").creationUser("Haim hania").creationTime(sdf.parse("2012-01-17 03:03:04.827"))
                 .lastUpdateUser("dudi Fargon").lastUpdateTime(sdf.parse("2017-06-01 12:34:56.789"))
                 .deleteTime(sdf.parse("2018-01-01 12:12:12.122"));
-        f3 = _f(ctx.nextFileId()).name("mazda").path("http://www.baeldung.com").mime("String").cat("cars")
+        f3 = _f(ctx.nextFileId()).name("mazda").path("http://www.baeldung.com").mime("String").cat("cars").ctx("Family Cars")
                 .desc("search for mazda").creationUser("Haim Hania").creationTime(sdf.parse("2012-01-17 03:03:04.727"))
                 .lastUpdateUser("Dudi fargon").lastUpdateTime(sdf.parse("2017-05-01 12:34:56.789"))
                 .deleteTime(sdf.parse("2018-02-02 02:02:02.222"));
         f4 = _f(ctx.nextFileId()).name("Mazda").path("http://www.baeldung.com/java-tuples").mime("Integer").cat("New Cars")
-                .desc("Mazda at google").creationUser("haim Hania").creationTime(sdf.parse("2014-03-01 01:01:01.111"))
-                .lastUpdateUser("Dudi Fargon").lastUpdateTime(sdf.parse("2016-06-01 12:34:56.789"))
-                .deleteTime(sdf.parse("2018-02-02 02:02:02.222"));
+                .ctx("family cars").desc("Mazda at google").creationUser("haim Hania")
+                .creationTime(sdf.parse("2014-03-01 01:01:01.111")).lastUpdateUser("Dudi Fargon")
+                .lastUpdateTime(sdf.parse("2016-06-01 12:34:56.789")).deleteTime(sdf.parse("2018-02-02 02:02:02.222"));
         f5 = _f(ctx.nextFileId()).name("Opel").path("https://www.google.co.il/search?source=hp&ei").mime("integer")
-                .cat("Cars").desc("Opel at google").creationUser("Haim").creationTime(sdf.parse("2014-03-01 01:01:01.111"))
-                .lastUpdateUser("Dudi").lastUpdateTime(sdf.parse("2011-04-16 00:00:00.000"))
-                .deleteTime(sdf.parse("2010-03-03 03:03:02.333"));
-        f6 = _f(ctx.nextFileId()).name("Opel").path("https://en.wikipedia.org").mime("int").cat("cars")
+                .cat("Cars").ctx("family cars").desc("Opel at google").creationUser("Haim")
+                .creationTime(sdf.parse("2014-03-01 01:01:01.111")).lastUpdateUser("Dudi")
+                .lastUpdateTime(sdf.parse("2011-04-16 00:00:00.000")).deleteTime(sdf.parse("2010-03-03 03:03:02.333"));
+        f6 = _f(ctx.nextFileId()).name("Opel").path("https://en.wikipedia.org").mime("int").cat("cars").ctx("all cars")
                 .desc("opel at google").creationUser("Hania").creationTime(sdf.parse("2015-12-11 11:05:05.543"))
                 .lastUpdateUser("Fargon").lastUpdateTime(sdf.parse("2011-04-16 00:00:00.000"))
                 .deleteTime(sdf.parse("2008-12-12 12:12:12.129"));
         f7 = _f(ctx.nextFileId()).name("citroen azda").path("https://en.wikipedia.org/wiki/Citroen").mime("Int").cat("car")
-                .desc("Citroen search").creationUser("Haim Hania").creationTime(sdf.parse("2016-11-12 12:11:10.123"))
-                .lastUpdateUser("Fargon").lastUpdateTime(sdf.parse("2009-04-16 00:00:00.000"))
-                .deleteTime(sdf.parse("2005-10-10 10:10:10.101"));
+                .ctx("All cars").desc("Citroen search").creationUser("Haim Hania")
+                .creationTime(sdf.parse("2016-11-12 12:11:10.123")).lastUpdateUser("Fargon")
+                .lastUpdateTime(sdf.parse("2009-04-16 00:00:00.000")).deleteTime(sdf.parse("2005-10-10 10:10:10.101"));
         f1.logicalId = ctx.nextLogicalId();
-        f2.logicalId = ctx.nextLogicalId();
+        f2.logicalId = f1.logicalId;
         f3.logicalId = ctx.nextLogicalId();
         f4.logicalId = ctx.nextLogicalId();
         f5.logicalId = ctx.nextLogicalId();
@@ -106,7 +106,30 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity())  //context entity
+                        .withEntity(f1.toEntity()).withEntity(f2.toEntity())  //context entity
+                        .build()).build();
+
+        // Check if expected and actual results are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
+
+    @Test
+    public void testEqEfileByContext() throws IOException, InterruptedException
+    {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Efile", 2, 0),
+                        new EProp(2, "context", Constraint.of(ConstraintOp.eq, f1.context))
+                )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        // Create expectedResult
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(f1.toEntity()).withEntity(f4.toEntity()).withEntity(f5.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -415,7 +438,7 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
                         .withEntity(f6.toEntity()).withEntity(f4.toEntity())
-                        .withEntity(f2.toEntity()).withEntity(f3.toEntity())
+                        .withEntity(f1.toEntity()).withEntity(f2.toEntity()).withEntity(f3.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal

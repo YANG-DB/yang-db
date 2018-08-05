@@ -22,9 +22,9 @@ import static com.kayhut.fuse.assembly.knowledge.Setup.manager;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        KnowledgeSimpleEntityWithRelationTests.class,
-        KnowledgeSimpleEntityWithFilterTests.class,
-        KnowledgeSimpleEntityTests.class,
+        //KnowledgeSimpleEntityWithRelationTests.class,
+        //KnowledgeSimpleEntityWithFilterTests.class,
+        //KnowledgeSimpleEntityTests.class,
         KnowledgeSimpleEntityWithFilterE2ETests.class,
         KnowledgeSimpleEvalueWithFilterE2ETests.class,
         KnowledgeSimpleEfileWithFilterE2ETests.class,

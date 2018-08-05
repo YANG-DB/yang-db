@@ -41,7 +41,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
     @BeforeClass
     public static void setup() throws Exception
     {
-//        Setup.setup();
+        //Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Evalue entities for tests
@@ -75,7 +75,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
                 .creationTime(sdf.parse("2017-07-07 17:47:27.727")).deleteTime(sdf.parse("2017-10-10 09:09:09.090"));
         // Create logicalId for Evalues
         v1.logicalId = ctx.nextLogicalId();
-        v2.logicalId = ctx.nextLogicalId();
+        v2.logicalId = v1.logicalId;
         v3.logicalId = ctx.nextLogicalId();
         v4.logicalId = ctx.nextLogicalId();
         v5.logicalId = ctx.nextLogicalId();
@@ -112,9 +112,8 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(v1.toEntity())  //context entity
-                        .build())
-                .build();
+                        .withEntity(v1.toEntity()).withEntity(v2.toEntity())  //context entity
+                        .build()).build();
 
         // Check if expected and actual results are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
@@ -887,7 +886,8 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(v10.toEntity()).withEntity(v8.toEntity()).withEntity(v2.toEntity())
+                        .withEntity(v10.toEntity()).withEntity(v8.toEntity())
+                        .withEntity(v2.toEntity()).withEntity(v1.toEntity())
                         .build()).build();
 
         // Check if expected and actual results are equal

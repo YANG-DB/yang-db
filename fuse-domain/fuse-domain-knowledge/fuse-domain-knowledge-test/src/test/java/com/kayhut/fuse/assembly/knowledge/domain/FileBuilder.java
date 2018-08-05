@@ -20,6 +20,7 @@ public class FileBuilder extends EntityId {
     public String mimeType;
     public String category;
     public String description;
+    public String context = "global";
 
     public static FileBuilder _f(String fileId) {
         final FileBuilder builder = new FileBuilder();
@@ -57,6 +58,11 @@ public class FileBuilder extends EntityId {
         return this;
     }
 
+    public FileBuilder ctx(String context) {
+        this.context = context;
+        return this;
+    }
+
     @Override
     public String getType() {
         return type;
@@ -87,6 +93,7 @@ public class FileBuilder extends EntityId {
         on.put("description", description);
         on.put("logicalId", logicalId);
         on.put("entityId", entityId);
+        on.put("context", context);
         return on;
     }
 
@@ -111,6 +118,7 @@ public class FileBuilder extends EntityId {
                         new Property("category", "raw", category),
                         new Property("description", "raw", description),
                         new Property("logicalId", "raw", logicalId),
+                        new Property("context", "raw", context),
                         new Property("entityId", "raw", entityId)
                 ))).build();
     }
