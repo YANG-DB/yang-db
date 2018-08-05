@@ -3,13 +3,20 @@ package com.fuse.domain.knowledge.datagen;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ContextStatistics {
     //region Constructors
     public ContextStatistics() {
         this.entityCategories = Collections.emptyMap();
         this.relationCategories = Collections.emptyMap();
+
+        this.entityRelationCategories = Collections.emptyMap();
+
+        this.entityCategoryFields = Collections.emptyMap();
+        this.relationCategoryFields = Collections.emptyMap();
 
         this.entityValueCounts = Collections.emptyMap();
         this.entityGlobalValueCounts = Collections.emptyMap();
@@ -41,6 +48,30 @@ public class ContextStatistics {
 
     public void setRelationCategories(Map<String, Integer> relationCategories) {
         this.relationCategories = relationCategories;
+    }
+
+    public Map<String, Set<String>> getEntityRelationCategories() {
+        return entityRelationCategories;
+    }
+
+    public void setEntityRelationCategories(Map<String, Set<String>> entityRelationCategories) {
+        this.entityRelationCategories = entityRelationCategories;
+    }
+
+    public Map<String, Set<String>> getEntityCategoryFields() {
+        return entityCategoryFields;
+    }
+
+    public void setEntityCategoryFields(Map<String, Set<String>> entityCategoryFields) {
+        this.entityCategoryFields = entityCategoryFields;
+    }
+
+    public Map<String, Set<String>> getRelationCategoryFields() {
+        return relationCategoryFields;
+    }
+
+    public void setRelationCategoryFields(Map<String, Set<String>> relationCategoryFields) {
+        this.relationCategoryFields = relationCategoryFields;
     }
 
     public Map<String, String> getEntityFieldTypes() {
@@ -160,8 +191,13 @@ public class ContextStatistics {
     private Map<String, Integer> entityCategories;
     private Map<String, Integer> relationCategories;
 
+    private Map<String, Set<String>> entityRelationCategories;
+
     private Map<String, String> entityFieldTypes;
     private Map<String, String> relationFieldTypes;
+
+    private Map<String, Set<String>> entityCategoryFields;
+    private Map<String, Set<String>> relationCategoryFields;
 
     private Map<String, Map<Integer, Integer>> entityValueCounts;
     private Map<String, Map<Integer, Integer>> entityGlobalValueCounts;

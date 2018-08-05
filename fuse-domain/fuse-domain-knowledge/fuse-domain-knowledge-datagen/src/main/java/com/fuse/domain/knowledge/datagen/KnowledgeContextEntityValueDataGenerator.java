@@ -1,9 +1,6 @@
 package com.fuse.domain.knowledge.datagen;
 
-import com.fuse.domain.knowledge.datagen.model.EvalueDate;
-import com.fuse.domain.knowledge.datagen.model.EvalueInt;
-import com.fuse.domain.knowledge.datagen.model.EvalueString;
-import com.fuse.domain.knowledge.datagen.model.KnowledgeEntityBase;
+import com.fuse.domain.knowledge.datagen.model.*;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
 
@@ -21,7 +18,7 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
             String fieldId,
             String context,
             Supplier<String> entityValueIdSupplier,
-            Supplier<String> logicalIdSupplier,
+            Supplier<Entity> entitySupplier,
             Supplier<KnowledgeEntityBase.Metadata> metadataSupplier,
             Supplier<Integer> fieldNumValuesSupplier,
             Supplier fieldValuesSupplier) {
@@ -32,7 +29,7 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
         this.context = context;
 
         this.entityValueIdSupplier = entityValueIdSupplier;
-        this.logicalIdSupplier = logicalIdSupplier;
+        this.entitySupplier = entitySupplier;
         this.metadataSupplier = metadataSupplier;
 
         this.fieldNumValuesSupplier = fieldNumValuesSupplier;
@@ -47,20 +44,24 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
 
         while(evalues.size() < 1000) {
             try {
-                String logicalId = this.logicalIdSupplier.get();
-                String entityId = String.format("%s.%s", logicalId, this.context);
-                String fieldType = this.generationContext.getContextStatistics().getEntityFieldTypes().get(this.fieldId);
+                Entity entity = this.entitySupplier.get();
+                Set<String> entityCategoryFields = this.generationContext.getContextStatistics().getEntityCategoryFields().get(entity.getCategory());
 
-                evalues.addAll(
-                        Stream.fill(
-                                this.fieldNumValuesSupplier.get(),
-                                () -> new ElasticDocument<>(
-                                        this.generationContext.getElasticConfiguration().getWriteSchema().getEntityIndex(),
-                                        "pge",
-                                        this.entityValueIdSupplier.get(),
-                                        logicalId,
-                                        createValue(logicalId, this.context, entityId, fieldId, fieldType)))
-                        .toJavaList());
+                if (entityCategoryFields != null && entityCategoryFields.contains(this.fieldId)) {
+                    String entityId = String.format("%s.%s", entity.getLogicalId(), this.context);
+                    String fieldType = this.generationContext.getContextStatistics().getEntityFieldTypes().get(this.fieldId);
+
+                    evalues.addAll(
+                            Stream.fill(
+                                    this.fieldNumValuesSupplier.get(),
+                                    () -> new ElasticDocument<>(
+                                            this.generationContext.getElasticConfiguration().getWriteSchema().getEntityIndex(),
+                                            "pge",
+                                            this.entityValueIdSupplier.get(),
+                                            entity.getLogicalId(),
+                                            createValue(entity.getLogicalId(), this.context, entityId, fieldId, fieldType)))
+                                    .toJavaList());
+                }
             } catch (NoSuchElementException ex) {
                 break;
             }
@@ -107,7 +108,7 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
     private GenerationContext generationContext;
 
     private Supplier<String> entityValueIdSupplier;
-    private Supplier<String> logicalIdSupplier;
+    private Supplier<Entity> entitySupplier;
     private Supplier<KnowledgeEntityBase.Metadata> metadataSupplier;
 
     private String fieldId;
