@@ -4,6 +4,7 @@ import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerConte
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalExactProvider;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.structure.ElementType;
@@ -42,7 +43,9 @@ public class ElementRoutingSearchAppender implements SearchAppender<CompositeCon
         Set<String> routingValues =
         Stream.ofAll(routingPropertyNames)
                 .map(propertyName -> propertyName.equals("_id") ? T.id.getAccessor() : propertyName)
-                .flatMap(propertyName -> new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), propertyName))
+                .flatMap(propertyName -> new TraversalValuesByKeyProvider().getValueByKey(
+                        new TraversalExactProvider().getValue(context.getConstraint().get().getTraversal()),
+                        propertyName))
                 .toJavaSet();
 
         searchBuilder.getRouting().addAll(routingValues);
