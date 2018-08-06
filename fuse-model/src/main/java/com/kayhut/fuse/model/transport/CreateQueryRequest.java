@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.transport;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
@@ -76,6 +77,17 @@ public class CreateQueryRequest {
         this.createCursorRequest = createCursorRequest;
     }
     //endregion
+
+
+    @Override
+    public String toString() {
+        return "CreateQueryRequest{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", query=" + QueryDescriptor.toString(query) + "\n"+
+                ", createCursorRequest=" + createCursorRequest!=null ? createCursorRequest.toString() : "None" +
+                '}';
+    }
 
     //region Fields
     private String id;

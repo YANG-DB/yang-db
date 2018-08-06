@@ -1,16 +1,18 @@
 package com.kayhut.fuse.executor.driver;
 
 import com.google.inject.Inject;
+import com.kayhut.fuse.dispatcher.driver.CursorDriver;
+import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.driver.QueryDriverBase;
 import com.kayhut.fuse.dispatcher.epb.PlanSearcher;
 import com.kayhut.fuse.dispatcher.query.QueryTransformer;
-import com.kayhut.fuse.dispatcher.validation.QueryValidator;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
-import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.dispatcher.validation.QueryValidator;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
@@ -23,13 +25,15 @@ public class StandardQueryDriver extends QueryDriverBase {
     //region Constructors
     @Inject
     public StandardQueryDriver(
+            CursorDriver cursorDriver,
+            PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
             QueryValidator<AsgQuery> queryValidator,
             QueryTransformer<AsgQuery, AsgQuery> queryRewriter,
             PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
-        super(queryTransformer, queryValidator, resourceStore, urlSupplier);
+        super(cursorDriver,pageDriver,queryTransformer, queryValidator, resourceStore, urlSupplier);
         this.queryRewriter = queryRewriter;
         this.planSearcher = planSearcher;
     }
@@ -53,5 +57,6 @@ public class StandardQueryDriver extends QueryDriverBase {
     //region Fields
     private QueryTransformer<AsgQuery, AsgQuery> queryRewriter;
     private PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
+
     //endregion
 }
