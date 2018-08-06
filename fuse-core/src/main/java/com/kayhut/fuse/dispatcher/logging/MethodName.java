@@ -22,19 +22,15 @@ public class MethodName{
 
         //region Properties
         public String getMethodName() {
-            return this.methodName;
+            return this.value;
         }
         //endregion
 
         //region Override Methods
         @Override
         public String toString() {
-            return this.methodName;
+            return this.value;
         }
-        //endregion
-
-        //region Fields
-        private String methodName;
         //endregion
     }
 

@@ -1,9 +1,9 @@
 package com.kayhut.fuse.unipop.controller.utils.idProvider;
 
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHashProvider;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.promise.TraversalPromise;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
@@ -28,10 +28,11 @@ public class HashEdgeIdProvider implements EdgeIdProvider<String> {
     @Override
     public String get(String edgeLabel, Vertex outV, Vertex inV, Map<String, Object> properties) {
         return this.traversalHashProvider.getValue(
-                 __.and(__.has(T.label, edgeLabel),
-                        __.has("outV.id", outV.id()),
-                        __.has("inV.id", inV.id()),
-                        __.has("constraintHash", constraintHash)));
+                __.start().and(
+                        __.start().has(T.label, edgeLabel),
+                        __.start().has("outV.id", outV.id()),
+                        __.start().has("inV.id", inV.id()),
+                        __.start().has("constraintHash", constraintHash)));
     }
     //endregion
 

@@ -101,7 +101,6 @@ public class FuseClient {
                     try {
                         return new Tuple2<>(entry.getKey(), (Class<? extends CreateCursorRequest>)Class.forName(entry.getValue()));
                     } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
                         return new Tuple2<>(entry.getKey(), null);
                     }
                 });
