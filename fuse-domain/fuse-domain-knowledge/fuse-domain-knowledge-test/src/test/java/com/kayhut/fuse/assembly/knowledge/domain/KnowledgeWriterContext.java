@@ -9,6 +9,7 @@ import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
@@ -31,7 +32,7 @@ public class KnowledgeWriterContext {
     private AtomicInteger relCounter = new AtomicInteger(0);
     private AtomicInteger iCounter = new AtomicInteger(0);
 
-    public TransportClient client;
+    public Client client;
     public RawSchema schema;
     public ObjectMapper mapper;
     public List<Items> created;
@@ -96,7 +97,7 @@ public class KnowledgeWriterContext {
         return "f" + String.format(this.schema.getIdFormat("e.file"), fCounter.incrementAndGet());
     }
 
-    public static KnowledgeWriterContext init(TransportClient client, RawSchema schema) {
+    public static KnowledgeWriterContext init(Client client, RawSchema schema) {
         final KnowledgeWriterContext context = new KnowledgeWriterContext();
         context.client = client;
         context.schema = schema;

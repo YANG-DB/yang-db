@@ -1,4 +1,4 @@
-package com.kayhut.fuse.executor.driver;
+package com.kayhut.fuse.core.driver;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
