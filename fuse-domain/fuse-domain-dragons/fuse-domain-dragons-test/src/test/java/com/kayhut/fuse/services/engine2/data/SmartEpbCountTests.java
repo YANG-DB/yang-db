@@ -406,6 +406,7 @@ public class SmartEpbCountTests {
     //endregion
 
     @Test
+    @Ignore
     public void testDragonOriginKingdomX2Path() throws IOException, InterruptedException, ParseException {
         Query query = getDragonOriginKingdomX2Query();
 
