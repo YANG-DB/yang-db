@@ -680,7 +680,7 @@ public class RealClusterKnowledgeRuleBaseTest {
                 new ETyped(111, "RRef", "Reference", 0, 0)
         )).build();
 
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, "1", "1",
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, "2", "2",
                 new CreateGraphHierarchyCursorRequest(
                         CreateCursorRequest.Include.entities,
                         Collections.singletonList("SE"),
