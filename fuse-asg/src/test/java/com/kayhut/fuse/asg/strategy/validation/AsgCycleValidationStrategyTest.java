@@ -1,7 +1,7 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
-import com.kayhut.fuse.asg.strategy.AsgCycleValidatorStrategy;
-import com.kayhut.fuse.asg.strategy.AsgRelPropertiesValidatorStrategy;
+import com.kayhut.fuse.asg.validation.AsgCycleValidatorStrategy;
+import com.kayhut.fuse.asg.validation.AsgRelPropertiesValidatorStrategy;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;

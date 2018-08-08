@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
-import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeDataInfraManager;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -28,7 +27,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.kayhut.fuse.asg.strategy.AsgStepsValidatorStrategy.ENTITY;
+import static com.kayhut.fuse.asg.validation.AsgStepsValidatorStrategy.ENTITY;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeDataInfraManager.PGE;
 
 

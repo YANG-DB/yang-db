@@ -11,13 +11,12 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
+import com.kayhut.fuse.model.query.ParameterizedQuery;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.*;
-import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
-import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 
@@ -26,8 +25,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.Utils.getOrCreateId;
-import static org.jooby.Status.CREATED;
-import static org.jooby.Status.SERVER_ERROR;
 
 /**
  * Created by Roman on 12/15/2017.
@@ -139,6 +136,23 @@ public abstract class QueryDriverBase implements QueryDriver {
                 urlSupplier.resourceUrl(metadata.getId()),
                 metadata.getId(),
                 urlSupplier.cursorStoreUrl(metadata.getId())));
+    }
+
+    @Override
+    public Optional<QueryResourceInfo> call(ExecuteStoredQueryRequest callRequest) {
+        if (!resourceStore.getQueryResource(callRequest.getQuery().getName()).isPresent())
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(),
+                            "Query with id[" + callRequest.getQuery().getName() + "] not found in store")));
+
+        QueryResource queryResource = resourceStore.getQueryResource(callRequest.getQuery().getName()).get();
+        Optional<QueryResourceInfo> info = createAndFetch(new CreateQueryRequest(
+                callRequest.getId(),
+                callRequest.getName(),
+                new ParameterizedQuery(queryResource.getQuery(), callRequest.getParameters())));
+
+
+        return info;
     }
 
     @Override

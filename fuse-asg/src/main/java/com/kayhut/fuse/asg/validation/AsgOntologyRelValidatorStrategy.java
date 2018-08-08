@@ -1,6 +1,6 @@
-package com.kayhut.fuse.asg.strategy;
+package com.kayhut.fuse.asg.validation;
 
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.elements;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.elements;
 import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 
 public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
