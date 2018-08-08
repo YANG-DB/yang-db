@@ -16,6 +16,7 @@ import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
+import com.kayhut.fuse.unipop.process.traversal.strategy.FuseStandardStrategyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.FuseUniGraph;
 import org.elasticsearch.client.Client;
@@ -57,7 +58,7 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
         return new FuseUniGraph(
                 this.uniGraphConfiguration,
                 controllerManagerFactory(schemaProviderFactory.get(ontology)),
-                new StandardStrategyProvider());
+                new FuseStandardStrategyProvider());
     }
 
     //region Private Methods
