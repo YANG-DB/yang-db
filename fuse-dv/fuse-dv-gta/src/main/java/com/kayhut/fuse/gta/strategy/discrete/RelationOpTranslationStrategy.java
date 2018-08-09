@@ -15,7 +15,7 @@ import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.GraphStep;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -66,7 +66,7 @@ public class RelationOpTranslationStrategy extends PlanOpTranslationStrategyBase
         }
 
         return traversal.as(label)
-                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.eq(rTypeName))));
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, P.eq(rTypeName))));
 
     }
     //endregion

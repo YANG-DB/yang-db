@@ -6,6 +6,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.TraverserGenerator;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.process.traversal.step.branch.ChooseStep;
 import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversal;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 
@@ -47,6 +49,16 @@ public class FuseGraphTraversal<S, E> extends DefaultTraversal<S, E> implements 
             this.generator = new ThinPathTraverserGeneratorFactory().getTraverserGenerator(Collections.emptySet());
         }
         return this.generator;
+    }
+
+    @Override
+    public <E2> GraphTraversal<S, E2> optional(final Traversal<?, E2> optionalTraversal) {
+        this.asAdmin().getBytecode().addStep("optional", new Object[]{optionalTraversal});
+        return this.asAdmin().addStep(new ChooseStep(
+                this.asAdmin(),
+                (org.apache.tinkerpop.gremlin.process.traversal.Traversal.Admin)optionalTraversal,
+                optionalTraversal.asAdmin().clone(),
+                (org.apache.tinkerpop.gremlin.process.traversal.Traversal.Admin)__.start().identity()));
     }
     //endregion
 

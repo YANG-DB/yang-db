@@ -27,7 +27,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.EdgeOtherVertexStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.VertexStep;
@@ -101,17 +101,17 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
 
         if (entity instanceof EConcrete) {
             traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
-                    P.eq(Constraint.by(__.and(
-                            __.has(T.id, P.eq(((EConcrete)entity).geteID())),
-                            __.has(T.label, P.eq(EntityTranslationUtil.getValidEntityNames(ont, entity).get(0)))))));
+                    P.eq(Constraint.by(__.start().and(
+                            __.start().has(T.id, P.eq(((EConcrete)entity).geteID())),
+                            __.start().has(T.label, P.eq(EntityTranslationUtil.getValidEntityNames(ont, entity).get(0)))))));
         }
         else if (entity instanceof ETyped || entity instanceof EUntyped) {
             List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ont, entity);
-            Traversal constraintTraversal = __.has(T.label, P.eq(GlobalConstants.Labels.NONE));
+            Traversal constraintTraversal = __.start().has(T.label, P.eq(GlobalConstants.Labels.NONE));
             if (eTypeNames.size() == 1) {
-                constraintTraversal = __.has(T.label, P.eq(eTypeNames.get(0)));
+                constraintTraversal = __.start().has(T.label, P.eq(eTypeNames.get(0)));
             } else if (eTypeNames.size() > 1) {
-                constraintTraversal = __.has(T.label, P.within(eTypeNames));
+                constraintTraversal = __.start().has(T.label, P.within(eTypeNames));
             }
 
             List<Traversal> epropGroupTraversals = Collections.emptyList();
@@ -121,7 +121,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
 
             if (!epropGroupTraversals.isEmpty()) {
                 List<Traversal> traversals = Stream.of(constraintTraversal).appendAll(epropGroupTraversals).toJavaList();
-                constraintTraversal = __.and(Stream.ofAll(traversals).toJavaArray(Traversal.class));
+                constraintTraversal = __.start().and(Stream.ofAll(traversals).toJavaArray(Traversal.class));
             }
 
             traversal.has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal));
@@ -153,7 +153,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
 
         Traversal constraintTraversal = traversals.size() == 1 ?
                 traversals.get(0) :
-                __.and(Stream.ofAll(traversals).toJavaArray(Traversal.class));
+                __.start().and(Stream.ofAll(traversals).toJavaArray(Traversal.class));
 
         Stream.ofAll(TraversalUtil.<Step>lastSteps(traversal, step -> step.getLabels().contains(entity.geteTag())))
                 .forEach(step -> step.removeLabel(entity.geteTag()));
@@ -166,16 +166,16 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
     private Traversal getEntityFilterTraversal(EEntityBase entity, Ontology.Accessor ont) {
         if (entity instanceof EConcrete) {
             //traversal.has(GlobalConstants.HasKeys.PROMISE, P.eq(Promise.as(((EConcrete) entity).geteID())));
-            return __.has(T.id, P.eq(((EConcrete)entity).geteID()));
+            return __.start().has(T.id, P.eq(((EConcrete)entity).geteID()));
         }
         else if (entity instanceof ETyped || entity instanceof EUntyped) {
             List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ont, entity);
             if (eTypeNames.isEmpty()) {
-                return __.has(T.label, P.eq(GlobalConstants.Labels.NONE));
+                return __.start().has(T.label, P.eq(GlobalConstants.Labels.NONE));
             } else if (eTypeNames.size() == 1) {
-                return __.has(T.label, P.eq(eTypeNames.get(0)));
+                return __.start().has(T.label, P.eq(eTypeNames.get(0)));
             } else if (eTypeNames.size() > 1) {
-                return __.has(T.label, P.within(eTypeNames));
+                return __.start().has(T.label, P.within(eTypeNames));
             }
         }
 
@@ -203,13 +203,13 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
         else {
             switch (ePropGroup.getQuantType()) {
                 case all:
-                    ret = __.and(traversals);
+                    ret = __.start().and(traversals);
                     break;
                 case some:
-                    ret = __.or(traversals);
+                    ret = __.start().or(traversals);
                     break;
                 default:
-                    ret = __.and(traversals);
+                    ret = __.start().and(traversals);
             }
         }
 
@@ -229,7 +229,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
         String actualPropertyName = SchematicEProp.class.isAssignableFrom(eProp.getClass()) ?
                 ((SchematicEProp)eProp).getSchematicName() : property.get().getName();
 
-        GraphTraversal<Object, Object> traversal = __.has(actualPropertyName, ConversionUtil.convertConstraint(eProp.getCon()));
+        GraphTraversal<Object, Object> traversal = __.start().has(actualPropertyName, ConversionUtil.convertConstraint(eProp.getCon()));
         if(eProp instanceof RankingProp){
             GraphTraversal.Admin admin = __.start().asAdmin();
             traversal = admin.addStep(new BoostingStepWrapper<>(traversal.asAdmin().getEndStep(), ((RankingProp) eProp).getBoost()));

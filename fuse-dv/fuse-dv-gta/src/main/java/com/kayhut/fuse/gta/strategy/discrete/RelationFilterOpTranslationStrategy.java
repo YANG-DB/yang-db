@@ -20,7 +20,7 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.structure.T;
 
@@ -77,12 +77,12 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
         }
 
 
-        List<Traversal> traversals = Stream.<Traversal>of(__.has(T.label, P.eq(relationTypeName)))
+        List<Traversal> traversals = Stream.<Traversal>of(__.start().has(T.label, P.eq(relationTypeName)))
                 .appendAll(relPropGroupTraversals).toJavaList();
 
         return traversals.size() == 1 ?
                 traversal.has(CONSTRAINT, Constraint.by(traversals.get(0))) :
-                traversal.has(CONSTRAINT, Constraint.by(__.and(Stream.ofAll(traversals).toJavaArray(Traversal.class))));
+                traversal.has(CONSTRAINT, Constraint.by(__.start().and(Stream.ofAll(traversals).toJavaArray(Traversal.class))));
     }
     //endregion
 
@@ -107,10 +107,10 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
                     return traversals[0];
                 }
 
-                return __.and(traversals);
-            case some: return __.or(traversals);
+                return __.start().and(traversals);
+            case some: return __.start().or(traversals);
 
-            default: return __.and(traversals);
+            default: return __.start().and(traversals);
         }
     }
 
@@ -118,9 +118,9 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
         Optional<Property> property = ont.$property(relProp.getpType());
         if (property.isPresent()) {
             if (relProp.getClass().equals(RelProp.class)) {
-                return Optional.of(__.has(property.get().getName(), ConversionUtil.convertConstraint(relProp.getCon())));
+                return Optional.of(__.start().has(property.get().getName(), ConversionUtil.convertConstraint(relProp.getCon())));
             } else if (SchematicRelProp.class.isAssignableFrom(relProp.getClass())) {
-                return Optional.of(__.has(((SchematicRelProp)relProp).getSchematicName(),
+                return Optional.of(__.start().has(((SchematicRelProp)relProp).getSchematicName(),
                         ConversionUtil.convertConstraint(relProp.getCon())));
             }
         }

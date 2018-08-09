@@ -26,6 +26,11 @@ public class LoggingTraversal<S, E> implements Traversal<S, E> {
 
     //region GraphTraversal Implementation
     @Override
+    public Traversal.Admin<S, E> asAdmin() {
+        return this.traversal.asAdmin();
+    }
+
+    @Override
     public boolean hasNext() {
         return this.traversal.hasNext();
     }
