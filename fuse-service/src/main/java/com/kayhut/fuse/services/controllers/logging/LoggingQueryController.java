@@ -16,6 +16,7 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 import com.kayhut.fuse.services.controllers.QueryController;
 import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
@@ -84,6 +85,24 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
                                 .with(this.queryDescriptor.describe(request.getQuery())).log();
                     }
                     return this.controller.createAndFetch(request);
+                }, this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<QueryResourceInfo> callAndFetch(ExecuteStoredQueryRequest request) {
+        return new LoggingSyncMethodDecorator<ContentResponse<QueryResourceInfo>>(
+                this.logger,
+                this.metricRegistry,
+                createAndFetch,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    if (request.getQuery() != null) {
+                        new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), createAndFetch)
+                                .with(this.queryDescriptor.describe(request.getQuery())).log();
+                    }
+                    return this.controller.callAndFetch(request);
                 }, this.resultHandler());
     }
 

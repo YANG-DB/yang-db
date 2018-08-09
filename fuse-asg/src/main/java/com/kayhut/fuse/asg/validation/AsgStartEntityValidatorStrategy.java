@@ -1,4 +1,4 @@
-package com.kayhut.fuse.asg.strategy;
+package com.kayhut.fuse.asg.validation;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -11,7 +11,7 @@ import com.kayhut.fuse.model.validation.ValidationResult;
 import java.util.Collections;
 import java.util.List;
 
-import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.elements;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.elements;
 import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 
 public class AsgStartEntityValidatorStrategy implements AsgValidatorStrategy {

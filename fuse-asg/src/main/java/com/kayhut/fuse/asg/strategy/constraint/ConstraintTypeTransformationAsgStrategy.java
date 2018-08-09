@@ -1,5 +1,6 @@
 package com.kayhut.fuse.asg.strategy.constraint;
 
+import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.asg.util.OntologyPropertyTypeFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -13,12 +14,14 @@ import javaslang.collection.Stream;
 
 import java.util.*;
 
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getEprops;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getRelProps;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 
 /**
  * Created by benishue on 09-May-17.
  */
-public class ConstraintTypeTransformationAsgStrategy extends ConstraintTransformationAsgStrategyBase {
+public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
     //region Constructors
     public ConstraintTypeTransformationAsgStrategy() {
         this.singleValueOps = Stream.of(eq, ne, gt, ge, lt, le, contains, startsWith, notContains, notStartsWith, notEndsWith,

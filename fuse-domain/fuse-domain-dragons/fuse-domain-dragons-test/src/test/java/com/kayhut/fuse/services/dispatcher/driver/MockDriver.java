@@ -2,7 +2,9 @@ package com.kayhut.fuse.services.dispatcher.driver;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
-import com.kayhut.fuse.dispatcher.driver.*;
+import com.kayhut.fuse.dispatcher.driver.CursorDriverBase;
+import com.kayhut.fuse.dispatcher.driver.PageDriverBase;
+import com.kayhut.fuse.dispatcher.driver.QueryDriverBase;
 import com.kayhut.fuse.dispatcher.query.QueryTransformer;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
@@ -15,6 +17,7 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.QueryMetadata;
+import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 

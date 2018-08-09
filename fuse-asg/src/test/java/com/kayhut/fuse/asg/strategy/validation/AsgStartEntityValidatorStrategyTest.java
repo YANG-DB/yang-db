@@ -1,7 +1,7 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
-import com.kayhut.fuse.asg.strategy.AsgStartEntityValidatorStrategy;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.asg.validation.AsgStartEntityValidatorStrategy;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;

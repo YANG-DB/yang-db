@@ -17,6 +17,9 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
+import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
+
+import java.util.Optional;
 
 /**
  * Created by lior on 20/02/2017.
@@ -57,6 +60,7 @@ public class StandardQueryDriver extends QueryDriverBase {
     //region Fields
     private QueryTransformer<AsgQuery, AsgQuery> queryRewriter;
     private PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
+
 
     //endregion
 }

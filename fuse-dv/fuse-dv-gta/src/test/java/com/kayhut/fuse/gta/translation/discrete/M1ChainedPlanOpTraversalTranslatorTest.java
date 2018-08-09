@@ -1,6 +1,6 @@
 package com.kayhut.fuse.gta.translation.discrete;
 
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.gta.strategy.discrete.M1PlanOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.ChainedPlanOpTraversalTranslator;
