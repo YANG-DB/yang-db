@@ -38,6 +38,11 @@ public class FileBuilder extends EntityId {
         return this;
     }
 
+    public FileBuilder logicalId(String logicalId) {
+        this.logicalId = logicalId;
+        return this;
+    }
+
     public FileBuilder display(String display) {
         this.displayName = display;
         return this;

@@ -112,7 +112,7 @@ public class KnowledgeWriterContext {
                     .setIndex(index)
                     .setType(PGE)
                     .setId(builder.id())
-                    .setOpType(IndexRequest.OpType.CREATE)
+                    .setOpType(IndexRequest.OpType.INDEX)
                     .setSource(builder.toString(ctx.mapper), XContentType.JSON);
             builder.routing().ifPresent(request::setRouting);
             bulk.add(request);
