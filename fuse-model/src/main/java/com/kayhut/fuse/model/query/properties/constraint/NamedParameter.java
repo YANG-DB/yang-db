@@ -13,6 +13,9 @@ public class NamedParameter {
         this.name = name;
         this.value = value;
     }
+    public NamedParameter(String name) {
+        this.name = name;
+    }
 
     public String getName() {
         return name;

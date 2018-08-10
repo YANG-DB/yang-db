@@ -69,7 +69,7 @@ public abstract class CreateCursorRequest {
     public String toString() {
         return "CreateCursorRequest{" +
                 "cursorType='" + cursorType + '\'' +
-                ", createPageRequest=" + createPageRequest!=null ? createPageRequest.toString() : "None" +
+                ", createPageRequest=" + (createPageRequest!=null ? createPageRequest.toString() : "None") +
                 '}';
     }
 

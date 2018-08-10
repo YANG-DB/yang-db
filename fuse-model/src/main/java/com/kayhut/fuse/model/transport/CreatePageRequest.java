@@ -44,7 +44,7 @@ public class CreatePageRequest {
     }
 
     //region Fields
-    private int pageSize;
+    private int pageSize = 1000;
     private boolean fetch;
     //endregion
 }

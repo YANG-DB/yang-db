@@ -10,6 +10,7 @@ import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.constraint.ParameterizedConstraint;
 import javaslang.collection.Stream;
 
 import java.util.*;
@@ -48,7 +49,7 @@ public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
             EProp eProp = (EProp) eBase;
             Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
             ConstraintOp op = eProp.getCon().getOp();
-            if (property.isPresent() && isSingleElementOp(op)) {
+            if (property.isPresent() && isSingleElementOp(op) && !ParameterizedConstraint.class.isAssignableFrom(eProp.getCon().getClass())) {
                 Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), eProp.getCon().getExpr()));
                 eProp.setCon(newCon);
             }
@@ -58,7 +59,7 @@ public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
             Optional<Property> property = context.getOntologyAccessor().$property(relProp.getpType());
             if(relProp.getCon() != null) {
                 ConstraintOp op = relProp.getCon().getOp();
-                if (property.isPresent() && isSingleElementOp(op)) {
+                if (property.isPresent() && isSingleElementOp(op) && !ParameterizedConstraint.class.isAssignableFrom(relProp.getCon().getClass())) {
                     Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), relProp.getCon().getExpr()));
                     relProp.setCon(newCon);
                 }

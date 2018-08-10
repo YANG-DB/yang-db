@@ -15,8 +15,11 @@ import com.kayhut.fuse.model.query.ParameterizedQuery;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.*;
+import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
+import com.kayhut.fuse.model.transport.PlanTraceOptions;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 
@@ -149,7 +152,9 @@ public abstract class QueryDriverBase implements QueryDriver {
         Optional<QueryResourceInfo> info = createAndFetch(new CreateQueryRequest(
                 callRequest.getId(),
                 callRequest.getName(),
-                new ParameterizedQuery(queryResource.getQuery(), callRequest.getParameters())));
+                new ParameterizedQuery(queryResource.getQuery(), callRequest.getParameters()),
+                new PlanTraceOptions(),
+                new CreateGraphCursorRequest(new CreatePageRequest())));
 
 
         return info;

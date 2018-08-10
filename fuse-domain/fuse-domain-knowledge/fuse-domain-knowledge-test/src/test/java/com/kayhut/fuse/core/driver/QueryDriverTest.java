@@ -16,10 +16,15 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
+import com.kayhut.fuse.model.query.properties.constraint.ParameterizedConstraint;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
+import com.kayhut.fuse.model.results.Assignment;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import org.elasticsearch.client.Client;
@@ -96,7 +101,44 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
 
         final Optional<QueryResourceInfo> info = driver.createAndFetch(createQueryRequest);
         Assert.assertTrue(info.isPresent());
-        Assert.assertTrue(info.get().getResourceUrl().endsWith("/fuse/query"));
+        Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
+        Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
+        Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
+        Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
+        Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
+        Assert.assertEquals(1,((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(),1);
+
+    }
+
+    @Test
+    public void testCallAndFetch() throws ParseException, JsonProcessingException {
+        init("config/application.test.engine3.m1.dfs.knowledge.public.conf");
+        RequestScope requestScope = setup();
+        Provider<Client> clientProvider = requestScope.scope(Key.get(Client.class), injector.getProvider(Client.class));
+        Provider<RawSchema> schemaProvider = requestScope.scope(Key.get(RawSchema.class), injector.getProvider(RawSchema.class));
+        setupData(clientProvider.get(),schemaProvider.get());
+
+        final Provider<QueryDriver> driverScope = requestScope.scope(Key.get(QueryDriver.class), injector.getProvider(QueryDriver.class));
+        final QueryDriver driver = driverScope.get();
+
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Efile", 2, 0),
+                        new EProp(2, "logicalId", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("logicalId")))
+                )).build();
+
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1","myStoredQuery",180000),query);
+        Assert.assertTrue(resourceInfo.isPresent());
+
+        Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1", Collections.singleton(new NamedParameter("logicalId", f1.logicalId))));
+
+        Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
+        Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
+        Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
+        Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
+        Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
+        Assert.assertEquals(1,((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(),1);
 
     }
 }

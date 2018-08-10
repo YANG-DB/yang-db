@@ -2,6 +2,7 @@ package com.kayhut.fuse.asg.strategy;
 
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
 import com.kayhut.fuse.model.query.properties.constraint.ParameterizedConstraint;
 
@@ -20,7 +21,7 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
                 .forEach(eProp -> {
                     String name = ((ParameterizedConstraint) eProp.getCon()).getExpr().getName();
                     Optional<NamedParameter> parameter = query.getParameters().stream().filter(p -> p.getName().equals(name)).findAny();
-                    parameter.ifPresent(namedParameter -> eProp.getCon().setExpr(namedParameter.getValue()));
+                    parameter.ifPresent(namedParameter -> eProp.setCon(Constraint.of(eProp.getCon().getOp(),namedParameter.getValue(),eProp.getCon().getiType())));
                 });
 
     }
