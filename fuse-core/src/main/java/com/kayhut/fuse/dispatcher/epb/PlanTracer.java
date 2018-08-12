@@ -302,6 +302,9 @@ public class PlanTracer {
         @Override
         public PlanWithCost<P, C> search(Q query) {
             PlanWithCost<P, C> planWithCost = this.planSearcher.search(query);
+            if(planWithCost==null)
+                throw new NoPlanFoundError("No Plan found for query["+query.toString()+"]");
+
             this.builder.withChoise(planWithCost.getPlan(), this.planSearcherName);
             return planWithCost;
         }

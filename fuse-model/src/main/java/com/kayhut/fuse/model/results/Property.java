@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import javaslang.collection.Stream;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -62,6 +63,22 @@ public class Property {
         return String.format("Property [pType = %s, value = %s]", this.pType, this.value);
     }
     //endregion
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Property)) return false;
+        Property property = (Property) o;
+        return Objects.equals(pType, property.pType) &&
+                Objects.equals(agg, property.agg) &&
+                Objects.equals(value, property.value);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(pType, agg, value);
+    }
 
     //region Fields
     private String pType;
