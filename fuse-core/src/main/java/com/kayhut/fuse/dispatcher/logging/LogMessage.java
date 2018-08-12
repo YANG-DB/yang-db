@@ -76,8 +76,8 @@ public interface LogMessage {
             //endregion
 
             //region Fields
-            private String key;
-            private String value;
+            protected String key;
+            protected String value;
             //endregion
         }
 

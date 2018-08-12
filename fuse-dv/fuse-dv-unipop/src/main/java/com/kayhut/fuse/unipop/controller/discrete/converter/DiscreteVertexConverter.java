@@ -2,6 +2,7 @@ package com.kayhut.fuse.unipop.controller.discrete.converter;
 
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
+import com.kayhut.fuse.unipop.controller.utils.elasticsearch.SearchHitUtils;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
@@ -35,7 +36,9 @@ public class DiscreteVertexConverter<E extends Element> implements ElementConver
     //region ElementConverter Implementation
     @Override
     public Iterable<E> convert(SearchHit searchHit) {
-        Map<String, Object> source = new HashMap<>(searchHit.sourceAsMap());
+        //Map<String, Object> source = new HashMap<>(searchHit.sourceAsMap());
+        Map<String, Object> source = SearchHitUtils.convertToMap(searchHit);
+
         if(searchHit.getScore() > 0){
             source.put("score", searchHit.getScore());
         }

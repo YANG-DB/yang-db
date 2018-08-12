@@ -66,7 +66,7 @@ public class ThinPathTraverser<T> extends B_O_S_SE_SL_Traverser<T> {
 
     @Override
     public int hashCode() {
-        return super.hashCode() + this.path.hashCode();
+        return this.t.hashCode() + this.path.hashCode();
     }
 
     @Override

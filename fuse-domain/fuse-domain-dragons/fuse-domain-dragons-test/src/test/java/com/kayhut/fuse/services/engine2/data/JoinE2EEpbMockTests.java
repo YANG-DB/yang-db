@@ -596,6 +596,7 @@ public class JoinE2EEpbMockTests {
     }
 
     @Test
+    @Ignore
     public void testJoinGotoPlan() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonGotoQuery();
 

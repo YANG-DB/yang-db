@@ -4,6 +4,7 @@ import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.utils.elasticsearch.SearchHitUtils;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
@@ -44,11 +45,12 @@ public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit
         Map<String, Object> contextVertexProperties =
                 Stream.ofAll(contextVertex::properties).toJavaMap(property -> new Tuple2<>(property.key(), property.value()));
 
-        contextVertexProperties.putAll(hit.sourceAsMap());
+        Map<String, Object> source = SearchHitUtils.convertToMap(hit);
+        contextVertexProperties.putAll(source);
 
         DiscreteVertex v = new DiscreteVertex(
                 hit.getId(),
-                this.typeToLabelVertexSchemas.get((String)hit.sourceAsMap().get("type")).getLabel(),
+                this.typeToLabelVertexSchemas.get((String)source.get("type")).getLabel(),
                 context.getGraph(),
                 contextVertexProperties);
 
