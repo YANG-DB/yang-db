@@ -80,6 +80,10 @@ public class KnowledgeWriterContext {
         return "ev" + String.format(this.schema.getIdFormat("entity"), evCounter.incrementAndGet());
     }
 
+    public String nextRvalueId() {
+        return "rv" + String.format(this.schema.getIdFormat("relation"), evCounter.incrementAndGet());
+    }
+
     public String nextRefId() {
         return "ref" + String.format(this.schema.getIdFormat("reference"), refCounter.incrementAndGet());
     }

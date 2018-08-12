@@ -7,11 +7,13 @@ import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
 import javaslang.collection.Stream;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 //todo - for kobi usage
 public class InsightBuilder extends EntityId {
+    public static final String INSIGHT_INDEX = "i0";
     public static final String type = "Insight";
     public static String physicalType = "insight";
 
@@ -78,7 +80,7 @@ public class InsightBuilder extends EntityId {
                 .withProperties(collect(Arrays.asList(
                         new Property("content", "raw", content),
                         new Property("context", "raw", context),
-                        new Property("entityIds", "raw", !entityIds.isEmpty() ? Arrays.asList(entityIds) : null))
+                        new Property("entityIds", "raw", !entityIds.isEmpty() ? new ArrayList<>(entityIds) : null))
                 )).build();
     }
 
