@@ -17,6 +17,7 @@ import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
@@ -35,7 +36,6 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
-import com.sun.xml.internal.bind.api.AccessorException;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
 import org.elasticsearch.client.Client;
@@ -62,7 +62,7 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 public class QueryDriverTest extends BaseModuleInjectionTest {
     static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     static KnowledgeWriterContext ctx;
-    static FileBuilder f1,f2;
+    static FileBuilder f1, f2;
 
     public void setupData(Client client, RawSchema schema) throws ParseException, JsonProcessingException {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -77,7 +77,7 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                 .desc("search mazda at google").creationUser("Haim Hania").creationTime(sdf.parse("2012-01-17 03:03:04.827"))
                 .lastUpdateUser("Dudi Fargon").lastUpdateTime(sdf.parse("2011-04-16 00:00:00.000"))
                 .deleteTime(sdf.parse("2018-02-02 02:02:02.222"));
-        Assert.assertEquals(2, commit(ctx, INDEX, f1,f2));
+        Assert.assertEquals(2, commit(ctx, INDEX, f1, f2));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
     @Test
     @Ignore
     //todo fix plan builder for this given query
-    public void testCreateAndFetchMultiValueOnRel() throws ParseException, JsonProcessingException {
+    public void testCallAndFetchMultiValueOnRel() throws ParseException, JsonProcessingException {
         init("config/application.test.engine3.m1.dfs.knowledge.public.conf");
         RequestScope requestScope = setup();
         Provider<Client> clientProvider = requestScope.scope(Key.get(Client.class), injector.getProvider(Client.class));
@@ -152,25 +152,25 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
 
 
         Assert.assertEquals(6, commit(ctx, INDEX, e1, e2));
-        Assert.assertEquals(2, commit(ctx, REL_INDEX, rel1,rel2));
+        Assert.assertEquals(2, commit(ctx, REL_INDEX, rel1, rel2));
 
         // Based on the knowledge ontology build the V1 query
         Query query = Query.Builder.instance().withName("q1").withOnt("Knowledge").withElements(Arrays.asList(
                 new Start(0, 1),
                 new EConcrete(1, "A", "Entity", e1Id, "A", 2, 0),
                 new Rel(2, "relatedEntity", Rel.Direction.L, "", 6, 3),
-                new Quant1(3, QuantType.all, Arrays.asList(4, 5 ), 0),
+                new Quant1(3, QuantType.all, Arrays.asList(4, 5), 0),
                 new RelProp(4, "creationTime", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("creationTime")), 0),
                 new RelProp(5, "category", ParameterizedConstraint.of(ConstraintOp.inSet, new NamedParameter("category")), 0),
                 new ETyped(6, "B", "Entity", 0, 0)
-                )).build();
+        )).build();
 
-        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", 180000), query);
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, 180000), query);
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
-                Arrays.asList(new NamedParameter("creationTime",  creationTime),
-                        new NamedParameter("category", Arrays.asList("bell","dell")))));
+                Arrays.asList(new NamedParameter("creationTime", creationTime),
+                        new NamedParameter("category", Arrays.asList("bell", "dell")))));
 
         // Read Entity (with V1 query)
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
@@ -203,18 +203,18 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
         final Provider<QueryDriver> driverScope = requestScope.scope(Key.get(QueryDriver.class), injector.getProvider(QueryDriver.class));
         final QueryDriver driver = driverScope.get();
 
-        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+        Query query = Query.Builder.instance().withName("q1").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Efile", 2, 0),
                         new EProp(2, "name", ParameterizedConstraint.of(ConstraintOp.inSet, new NamedParameter("name")))
                 )).build();
 
-        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", 180000), query);
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, 180000), query);
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
-                Collections.singleton(new NamedParameter("name", Arrays.asList("mazda","subaru")))));
+                Collections.singleton(new NamedParameter("name", Arrays.asList("mazda", "subaru")))));
 
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
@@ -222,6 +222,39 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
         Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
         Assert.assertEquals(2, ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
+    }
+
+    @Test
+    public void testCallAndFetchSingleParamInGroupConstraint() throws ParseException, JsonProcessingException {
+        init("config/application.test.engine3.m1.dfs.knowledge.public.conf");
+        RequestScope requestScope = setup();
+        Provider<Client> clientProvider = requestScope.scope(Key.get(Client.class), injector.getProvider(Client.class));
+        Provider<RawSchema> schemaProvider = requestScope.scope(Key.get(RawSchema.class), injector.getProvider(RawSchema.class));
+        setupData(clientProvider.get(), schemaProvider.get());
+
+        final Provider<QueryDriver> driverScope = requestScope.scope(Key.get(QueryDriver.class), injector.getProvider(QueryDriver.class));
+        final QueryDriver driver = driverScope.get();
+
+        Query query = Query.Builder.instance().withName("q1").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Efile", 2, 0),
+                        new EPropGroup(2, new EProp(3, "name",
+                                ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name"))))
+                )).build();
+
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, 180000), query);
+        Assert.assertTrue(resourceInfo.isPresent());
+
+        Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
+                Collections.singleton(new NamedParameter("name", "mazda"))));
+
+        Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
+        Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
+        Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
+        Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
+        Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
+        Assert.assertEquals(1, ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
     }
 
     @Test
@@ -239,16 +272,16 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Efile", 2, 0),
-                        new Quant1(2, QuantType.all, Arrays.asList(3, 4 ), 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
                         new EProp(3, "logicalId", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("logicalId"))),
                         new EProp(4, "name", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name")))
                 )).build();
 
-        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", 180000), query);
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, 180000), query);
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
-                Arrays.asList(new NamedParameter("logicalId", f1.logicalId),new NamedParameter("name", "mazda"))));
+                Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda"))));
 
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
@@ -256,7 +289,7 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
         Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
         Assert.assertEquals(1, ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
-        Assert.assertTrue(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().get(0).getProperties().contains(new Property("name","raw","mazda")));
+        Assert.assertTrue(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().get(0).getProperties().contains(new Property("name", "raw", "mazda")));
 
     }
 }

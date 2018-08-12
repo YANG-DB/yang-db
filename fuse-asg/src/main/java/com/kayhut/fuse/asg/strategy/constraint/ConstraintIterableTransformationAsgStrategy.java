@@ -36,13 +36,13 @@ public class ConstraintIterableTransformationAsgStrategy implements AsgStrategy 
     //region ConstraintTransformationAsgStrategyBase implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        getEprops(query).forEach(eProp -> {
-            applyArrayTransformation(eProp, context);
-        });
+        getEprops(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .forEach(eProp -> applyArrayTransformation(eProp, context));
 
-        getRelProps(query).forEach(relProp -> {
-            applyArrayTransformation(relProp, context);
-        });
+        getRelProps(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .forEach(relProp -> applyArrayTransformation(relProp, context));
     }
     //endregion
 

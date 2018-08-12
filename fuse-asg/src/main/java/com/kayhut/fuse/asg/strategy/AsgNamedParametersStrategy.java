@@ -17,6 +17,7 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
             return;
 
         getEprops(query).stream()
+                .filter(prop -> prop.getCon()!=null)
                 .filter(prop -> ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
                 .forEach(eProp -> {
                     String name = ((ParameterizedConstraint) eProp.getCon()).getExpr().getName();

@@ -27,6 +27,7 @@ public class RedundantLikeConstraintAsgStrategy extends ConstraintTransformation
 
         AsgQueryUtil.elements(query, EPropGroup.class).forEach(ePropGroupAsgEBase -> {
             List<EProp> eProps = Stream.ofAll(ePropGroupAsgEBase.geteBase().getProps())
+                    .filter(prop -> prop.getCon()!=null)
                     .filter(prop -> !ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
                     .filter(eProp -> (
                             eProp.getCon().getOp().equals(ConstraintOp.like) &&

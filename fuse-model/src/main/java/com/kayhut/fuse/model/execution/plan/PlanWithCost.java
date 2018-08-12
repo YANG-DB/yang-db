@@ -8,6 +8,14 @@ import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
  */
 
 public class PlanWithCost<P, C> implements IPlan {
+    public static EmptyPlanWithCost EMPTY_PLAN =  new EmptyPlanWithCost();
+
+    public final static class EmptyPlanWithCost extends PlanWithCost {
+        private EmptyPlanWithCost() {
+            super(null    , null);
+        }
+    }
+
     //region Constructors
     public PlanWithCost(P plan, C cost) {
         this.plan = plan;

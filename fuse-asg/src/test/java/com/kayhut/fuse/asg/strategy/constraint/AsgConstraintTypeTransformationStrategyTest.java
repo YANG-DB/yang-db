@@ -139,7 +139,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //endregion
 
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query,new NextEbaseFactory(), new BNextFactory());
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query);
         AsgQuery asgQuery = asgSupplier.get();
         return asgQuery;
     }

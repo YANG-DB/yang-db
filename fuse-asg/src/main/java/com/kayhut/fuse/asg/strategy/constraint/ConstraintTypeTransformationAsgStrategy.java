@@ -32,14 +32,13 @@ public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
 
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
+        getEprops(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .forEach(eProp -> applyExpressionTransformation(context, eProp, EProp.class));
 
-        getEprops(query).forEach(eProp -> {
-            applyExpressionTransformation(context, eProp, EProp.class);
-        });
-
-        getRelProps(query).forEach(relProp -> {
-            applyExpressionTransformation(context, relProp, RelProp.class);
-        });
+        getRelProps(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .forEach(relProp -> applyExpressionTransformation(context, relProp, RelProp.class));
     }
 
     //region Private Methods
@@ -48,6 +47,7 @@ public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
         if (klass == EProp.class){
             EProp eProp = (EProp) eBase;
             Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
+
             ConstraintOp op = eProp.getCon().getOp();
             if (property.isPresent() && isSingleElementOp(op) && !ParameterizedConstraint.class.isAssignableFrom(eProp.getCon().getClass())) {
                 Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), eProp.getCon().getExpr()));

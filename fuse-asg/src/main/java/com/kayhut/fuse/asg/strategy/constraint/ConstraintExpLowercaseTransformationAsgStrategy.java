@@ -27,10 +27,14 @@ public class ConstraintExpLowercaseTransformationAsgStrategy implements AsgStrat
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
 
-        getEprops(query).stream().filter(prop -> fields.contains(prop.getpType()))
+        getEprops(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .filter(prop -> fields.contains(prop.getpType()))
                 .forEach(eProp -> applyExpressionTransformation(context, eProp, BaseProp.class));
 
-        getRelProps(query).stream().filter(prop -> fields.contains(prop.getpType()))
+        getRelProps(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .filter(prop -> fields.contains(prop.getpType()))
                 .forEach(relProp -> applyExpressionTransformation(context, relProp, BaseProp.class));
     }
 

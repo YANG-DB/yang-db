@@ -31,13 +31,13 @@ public class ConstraintExpCharEscapeTransformationAsgStrategy implements AsgStra
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
 
-        getEprops(query).forEach(eProp -> {
-            applyExpressionTransformation(context, eProp, EProp.class);
-        });
+        getEprops(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .forEach(eProp -> applyExpressionTransformation(context, eProp, EProp.class));
 
-        getRelProps(query).forEach(relProp -> {
-            applyExpressionTransformation(context, relProp, RelProp.class);
-        });
+        getRelProps(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .forEach(relProp -> applyExpressionTransformation(context, relProp, RelProp.class));
     }
 
     //region Private Methods

@@ -66,7 +66,7 @@ public class ExactConstraintTransformationAsgStrategy implements AsgStrategy {
 
     private void transformEPropGroup(Ontology.Accessor ont, GraphElementSchemaProvider schemaProvider, EPropGroup ePropGroup, AsgEBase<ETyped> eTypedAsgEBase) {
         for (EProp eProp : new ArrayList<>(ePropGroup.getProps())) {
-            if (!this.includedOps.contains(eProp.getCon().getOp())) {
+            if (eProp.getCon()!=null && !this.includedOps.contains(eProp.getCon().getOp())) {
                 continue;
             }
 

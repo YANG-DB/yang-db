@@ -17,9 +17,6 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
-import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-
-import java.util.Optional;
 
 /**
  * Created by lior on 20/02/2017.
@@ -36,7 +33,7 @@ public class StandardQueryDriver extends QueryDriverBase {
             PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
-        super(cursorDriver,pageDriver,queryTransformer, queryValidator, resourceStore, urlSupplier);
+        super(cursorDriver, pageDriver, queryTransformer, queryValidator, resourceStore, urlSupplier);
         this.queryRewriter = queryRewriter;
         this.planSearcher = planSearcher;
     }
@@ -47,10 +44,14 @@ public class StandardQueryDriver extends QueryDriverBase {
     protected QueryResource createResource(Query query, AsgQuery asgQuery, QueryMetadata metadata) {
         AsgQuery newAsgQuery = this.queryRewriter.transform(asgQuery);
 
-        PlanWithCost<Plan, PlanDetailedCost> planWithCost = this.planSearcher.search(newAsgQuery);
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = PlanWithCost.EMPTY_PLAN;
 
-        if (planWithCost == null) {
-            throw new IllegalStateException("No valid plan was found for query " + (AsgQueryDescriptor.toString(asgQuery)));
+        if (metadata.isSearchPlan()) {
+            planWithCost = this.planSearcher.search(newAsgQuery);
+
+            if (planWithCost == null) {
+                throw new IllegalStateException("No valid plan was found for query " + (AsgQueryDescriptor.toString(asgQuery)));
+            }
         }
 
         return new QueryResource(query, newAsgQuery, metadata, planWithCost, null);

@@ -34,6 +34,7 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
             return false;
 
         if (!Stream.ofAll(ePropGroup.getProps())
+                .filter(prop -> prop.getCon()!=null)
                 .find(eProp -> eProp.getCon().getOp() == ConstraintOp.likeAny)
                 .isEmpty()) {
             return true;
