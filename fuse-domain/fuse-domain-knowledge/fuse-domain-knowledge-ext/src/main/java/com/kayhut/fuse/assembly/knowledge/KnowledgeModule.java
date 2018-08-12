@@ -4,12 +4,10 @@ import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import com.kayhut.fuse.assembly.knowledge.cursor.KnowledgeGraphHierarchyTraversalCursor;
-import com.kayhut.fuse.assembly.knowledge.logical.cursor.KnowledgeLogicalModelTraversalCursor;
 import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.model.Range;
-import com.kayhut.fuse.model.transport.cursor.CreateLogicalGraphHierarchyCursorRequest;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 
@@ -32,11 +30,6 @@ public class KnowledgeModule extends ModuleBase {
                 KnowledgeGraphHierarchyCursorRequest.CursorType,
                 KnowledgeGraphHierarchyCursorRequest.class,
                 new KnowledgeGraphHierarchyTraversalCursor.Factory()));
-        //KnowledgeLogicalModelTraversalCursor
-        bindingMultibinder.addBinding().toInstance(new CompositeCursorFactory.Binding(
-                CreateLogicalGraphHierarchyCursorRequest.CursorType,
-                CreateLogicalGraphHierarchyCursorRequest.class,
-                new KnowledgeLogicalModelTraversalCursor.Factory()));
     }
     //endregion
 }
