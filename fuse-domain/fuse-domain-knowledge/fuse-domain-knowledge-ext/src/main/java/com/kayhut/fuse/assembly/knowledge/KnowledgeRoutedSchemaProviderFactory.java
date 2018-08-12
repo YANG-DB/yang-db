@@ -202,6 +202,26 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                 new GraphRedundantPropertySchema.Impl(CATEGORY, CATEGORY, STRING)))
                 .appendAll(redundantMetadataProperties).toJavaList();
 
+        Iterable<GraphRedundantPropertySchema> relationOutDualRedundantProperties = Stream.<GraphRedundantPropertySchema>ofAll(Arrays.asList(
+                new GraphRedundantPropertySchema.Impl(LOGICAL_ID, LOGICAL_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(CONTEXT, CONTEXT, STRING),
+                new GraphRedundantPropertySchema.Impl(CATEGORY, CATEGORY, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_A_ID, ENTITY_A_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_A_CATEGORY, ENTITY_A_CATEGORY, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_B_ID, ENTITY_B_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_B_CATEGORY, ENTITY_B_CATEGORY, STRING)))
+                .appendAll(redundantMetadataProperties).toJavaList();
+
+        Iterable<GraphRedundantPropertySchema> relationInDualRedundantProperties = Stream.<GraphRedundantPropertySchema>ofAll(Arrays.asList(
+                new GraphRedundantPropertySchema.Impl(LOGICAL_ID, LOGICAL_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(CONTEXT, CONTEXT, STRING),
+                new GraphRedundantPropertySchema.Impl(CATEGORY, CATEGORY, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_A_ID, ENTITY_B_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_A_CATEGORY, ENTITY_B_CATEGORY, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_B_ID, ENTITY_A_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_B_CATEGORY, ENTITY_A_CATEGORY, STRING)))
+                .appendAll(redundantMetadataProperties).toJavaList();
+
 
         Iterable<GraphRedundantPropertySchema> relationEntityARedundantProperties = Arrays.asList(
                 new GraphRedundantPropertySchema.Impl(CATEGORY, ENTITY_A_CATEGORY, STRING),
@@ -479,7 +499,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(RELATION_ID),
                                         Optional.of(RELATION),
-                                        relationDualRedundantProperties)),
+                                        relationOutDualRedundantProperties)),
                                 Direction.OUT,
                                 Optional.empty(),
                                 Optional.empty(),
@@ -560,7 +580,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(RELATION_ID),
                                         Optional.of(RELATION),
-                                        relationDualRedundantProperties)),
+                                        relationInDualRedundantProperties)),
                                 Direction.OUT,
                                 Optional.empty(),
                                 Optional.empty(),
@@ -577,7 +597,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ID),
                                         Optional.of(RELATION),
-                                        relationDualRedundantProperties,
+                                        relationInDualRedundantProperties,
                                         Optional.of(new GraphElementRouting.Impl(
                                                 new GraphElementPropertySchema.Impl(ID, STRING))),
                                         Optional.of(relationPartitions))),
