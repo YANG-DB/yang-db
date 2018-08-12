@@ -4,6 +4,7 @@ import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Start;
+import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
@@ -47,7 +48,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         // Evalue entities for tests
         v1 = _v(ctx.nextValueId()).field("Car sale").value("Chevrolet").bdt("identifier").ctx("sale")
                 .creationUser("kobi Shaul").lastUpdateUser("Dudu peretz").creationTime(sdf.parse("2018-07-12 09:01:03.763"))
-                .deleteTime(sdf.parse("2017-10-10 09:09:09.090"));//System.currentTimeMillis()
+                .deleteTime(sdf.parse("2017-10-10 09:09:09.090"));
         v2 = _v(ctx.nextValueId()).field("garage").value("Zion and his sons").bdt("identifier").ctx("fixing cars")
                 .creationUser("kobi Shaul").lastUpdateUser("Dudu Peretz").creationTime(new Date(System.currentTimeMillis()));
         v3 = _v(ctx.nextValueId()).field("Car sales").value("chevrolet").bdt("California").ctx("Sale cars")
@@ -127,8 +128,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "A", "Evalue", 2, 0),
-                        new EProp(2, "id", Constraint.of(ConstraintOp.eq, v1.id()))
+                        new EConcrete(1, "A", "Evalue", v1.id(), "", 0, 0)
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
