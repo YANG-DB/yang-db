@@ -56,7 +56,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<QueryResourceInfo> createAndFetch(CreateQueryRequest request) {
         try {
             String queryId = getOrCreateId(request.getId());
-            QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis());
+            QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis(),request.getTtl());
             Optional<QueryResourceInfo> queryResourceInfo = this.create(metadata, request.getQuery());
             if (!queryResourceInfo.isPresent()) {
                 return Optional.of(new QueryResourceInfo().error(
