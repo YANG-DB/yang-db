@@ -5,7 +5,7 @@
     <parent>
         <artifactId>fuse-domain-knowledge</artifactId>
         <groupId>com.kayhut</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -62,6 +62,10 @@
         </dependency>
         <dependency>
             <groupId>com.kayhut</groupId>
+            <artifactId>fuse-domain-knowledge-ext</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-geojson</artifactId>
         </dependency>
         <dependency>
@@ -108,10 +112,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.kayhut</groupId>
-            <artifactId>fuse-domain-knowledge-ext</artifactId>
         </dependency>
     </dependencies>
 

@@ -6,7 +6,7 @@
     <groupId>com.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
 
     <modules>
         <module>fuse-model</module>
@@ -176,6 +176,26 @@
             <dependency>
                 <groupId>com.kayhut</groupId>
                 <artifactId>fuse-geojson</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-ext</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-datagen</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-test</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-poc</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <!-- fuse -->
@@ -477,6 +497,13 @@
             <dependency>
                 <groupId>com.kayhut</groupId>
                 <artifactId>fuse-asg</artifactId>
+                <version>${fuse.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-test</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
