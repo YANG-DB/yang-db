@@ -9,16 +9,16 @@ public final class QueryMetadata {
         QueryMetadata getQueryMetadata();
     }
 
-    private String id;
-    private String name;
-    private long time;
-
-    public QueryMetadata(String id, String name, long time) {
+    //region Constructors
+    public QueryMetadata(String id, String name, long creationTime, long ttl) {
         this.id = id;
         this.name = name;
-        this.time = time;
+        this.creationTime = creationTime;
+        this.ttl = ttl;
     }
+    //endregion
 
+    //region Properties
     public String getId() {
         return id;
     }
@@ -27,7 +27,19 @@ public final class QueryMetadata {
         return name;
     }
 
-    public long getTime() {
-        return time;
+    public long getCreationTime() {
+        return creationTime;
     }
+
+    public long getTtl() {
+        return ttl;
+    }
+    //endregion
+
+    //region Fields
+    private String id;
+    private String name;
+    private long creationTime;
+    private long ttl;
+    //endregion
 }

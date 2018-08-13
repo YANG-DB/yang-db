@@ -3,8 +3,10 @@ package com.kayhut.fuse.dispatcher.resource.store;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
+import javaslang.collection.Stream;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -15,17 +17,21 @@ public class InMemoryResourceStore implements ResourceStore {
     //region Constructors
     public InMemoryResourceStore() {
         this.queryResources = new HashMap<>();
+        this.sync = new Object();
+        this.lastQueryRemovalTime = System.currentTimeMillis();
     }
     //endregion
 
     //region ResourceStore Implementation
     @Override
     public Iterable<QueryResource> getQueryResources() {
+        this.removeOldQueries();
         return this.queryResources.values();
     }
 
     @Override
     public Optional<QueryResource> getQueryResource(String id) {
+        this.removeOldQueries();
         return Optional.ofNullable(this.queryResources.get(id));
     }
 
@@ -94,7 +100,31 @@ public class InMemoryResourceStore implements ResourceStore {
     }
     //endregion
 
+    //region Private Methods
+    private void removeOldQueries() {
+        final long currentTime = System.currentTimeMillis();
+
+        if (currentTime - this.lastQueryRemovalTime >= 300000) {
+            synchronized (this.sync) {
+                List<String> queryKeysToDelete =
+                        Stream.ofAll(this.queryResources.entrySet())
+                        .filter(entry -> (currentTime - entry.getValue().getQueryMetadata().getCreationTime()) >
+                                entry.getValue().getQueryMetadata().getTtl())
+                        .map(Map.Entry::getKey)
+                        .toJavaList();
+
+                Stream.ofAll(queryKeysToDelete).forEach(this::deleteQueryResource);
+
+                this.lastQueryRemovalTime = currentTime;
+            }
+        }
+    }
+    //endregion
+
     //region Fields
     private Map<String, QueryResource> queryResources;
+
+    private long lastQueryRemovalTime;
+    private final Object sync;
     //endregion
 }
