@@ -77,7 +77,7 @@
         <vividsolutions.version>1.13</vividsolutions.version>
 
         <!-- tinkerpop -->
-        <tinkerpop.version>fuse-3.2.5.1</tinkerpop.version>
+        <tinkerpop.version>3.2.5</tinkerpop.version>
 
         <!-- unipop -->
         <unipop.version>0.2</unipop.version>

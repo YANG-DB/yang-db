@@ -101,7 +101,7 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
 
     @Override
     protected Boolean visitHasStep(HasStep<?> hasStep) {
-        PredicateQueryTranslator queryTranslator = new M1QueryTranslator();
+        PredicateQueryTranslator queryTranslator = M1QueryTranslator.instance;
 
         if (hasStep.getHasContainers().size() == 1) {
             queryBuilder = queryTranslator.translate(queryBuilder,
