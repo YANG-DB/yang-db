@@ -101,9 +101,10 @@ public class ExecutorModule extends ModuleBase {
 
                     this.bind(RawSchema.class)
                             .annotatedWith(named(CachedRawSchema.rawSchemaParameter))
-                            .to(PartitionFilteredRawSchema.class);
+                            .to(PartitionFilteredRawSchema.class)
+                            .asEagerSingleton();
 
-                    this.bind(RawSchema.class).to(CachedRawSchema.class);
+                    this.bind(RawSchema.class).to(CachedRawSchema.class).asEagerSingleton();
 
                     this.expose(RawSchema.class);
                 } catch (ClassNotFoundException e) {

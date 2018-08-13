@@ -48,7 +48,7 @@ public class StandardQueryController implements QueryController {
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
         String queryId = getOrCreateId(request.getId());
-        QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis());
+        QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis(), request.getTtl());
 
         return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
                 .data(driver.create(metadata, request.getQuery()))

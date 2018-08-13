@@ -11,18 +11,16 @@ public final class QueryMetadata {
         QueryMetadata getQueryMetadata();
     }
 
-    private Type type;
-    private String id;
-    private String name;
-    private long time;
-    private boolean searchPlan = true;
-
-    public QueryMetadata(String id, String name, long time) {
+    //region Constructors
+    public QueryMetadata(String id, String name, long creationTime, long ttl) {
         this.id = id;
         this.name = name;
-        this.time = time;
+        this.creationTime = creationTime;
+        this.ttl = ttl;
     }
+    //endregion
 
+    //region Properties
     public QueryMetadata(Type type,String id, String name, boolean searchPlan ,long time) {
         this.type = type;
         this.id = id;
@@ -47,7 +45,22 @@ public final class QueryMetadata {
         return name;
     }
 
-    public long getTime() {
-        return time;
+    public long getCreationTime() {
+        return creationTime;
     }
+
+    public long getTtl() {
+        return ttl;
+    }
+    //endregion
+
+    //region Fields
+    private long creationTime;
+    private long ttl;
+    private Type type;
+    private String id;
+    private String name;
+    private long time;
+    private boolean searchPlan = true;
+    //endregion
 }

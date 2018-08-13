@@ -14,7 +14,7 @@ import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.AndStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.structure.Element;
@@ -35,7 +35,7 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
 
         Traversal newConstraint = context.getConstraint().isPresent() ?
                 context.getConstraint().get().getTraversal().asAdmin().clone() :
-                __.has(T.label, P.within(labels));
+                __.start().has(T.label, P.within(labels));
 
         List<GraphElementConstraint> elementConstraints =
                     context.getElementType().equals(ElementType.vertex) ?
@@ -59,17 +59,17 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
             }
 
             Traversal elementConstraintsTraversal = elementConstraints.size() > 1 ?
-                    __.or(Stream.ofAll(elementConstraints).map(GraphElementConstraint::getTraversalConstraint).toJavaArray(Traversal.class)) :
+                    __.start().or(Stream.ofAll(elementConstraints).map(GraphElementConstraint::getTraversalConstraint).toJavaArray(Traversal.class)) :
                     elementConstraints.get(0).getTraversalConstraint();
 
             newConstraint = Stream.ofAll(new TraversalHasStepFinder(step -> true).getValue(newConstraint)).isEmpty() ?
                     elementConstraintsTraversal :
-                    __.and(elementConstraintsTraversal, newConstraint);
+                    __.start().and(elementConstraintsTraversal, newConstraint);
 
         }
 
         if (!(newConstraint.asAdmin().getSteps().get(0) instanceof AndStep)) {
-            newConstraint = __.and(newConstraint);
+            newConstraint = __.start().and(newConstraint);
         }
 
         QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query();//.filtered().filter();

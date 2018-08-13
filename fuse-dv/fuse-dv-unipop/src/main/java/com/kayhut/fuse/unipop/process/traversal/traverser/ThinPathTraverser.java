@@ -64,12 +64,13 @@ public class ThinPathTraverser<T> extends B_O_S_SE_SL_Traverser<T> {
         this.path = this.path.extend(labels);
     }
 
-    @Override
+    /*@Override
     public int hashCode() {
         return this.t.hashCode() + this.path.hashCode();
-    }
+    }*/
 
-    @Override
+
+    /*@Override
     public boolean equals(Object object) {
         return object instanceof B_O_S_SE_SL_Traverser
                 && ((ThinPathTraverser) object).t.equals(this.t)
@@ -77,7 +78,7 @@ public class ThinPathTraverser<T> extends B_O_S_SE_SL_Traverser<T> {
                 && ((ThinPathTraverser) object).loops == this.loops
                 && ((ThinPathTraverser) object).path.equals(this.path)
                 && (null == this.sack || (null != this.sideEffects && null != this.sideEffects.getSackMerger()));
-    }
+    }*/
     //endregion
 
     //region Fields

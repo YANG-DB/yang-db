@@ -18,28 +18,32 @@ import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.Start;
-import com.kayhut.fuse.model.query.entity.EConcrete;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.entity.EUntyped;
+
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.FuseGraphTraversalSource;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
+import com.kayhut.fuse.unipop.structure.FuseUniGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversalStrategies;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.unipop.process.strategyregistrar.StrategyProvider;
+import org.unipop.query.controller.ControllerManager;
+import org.unipop.query.controller.ControllerManagerFactory;
+import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collections;
+import java.util.Set;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static org.mockito.Matchers.any;
@@ -56,8 +60,18 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     @Before
     public void setUp() throws Exception {
         translator = new ChainedPlanOpTraversalTranslator(new M1PlanOpTranslationStrategy());
-        UniGraph uniGraph = mock(UniGraph.class);
-        when(uniGraph.traversal()).thenReturn(new GraphTraversalSource(uniGraph));
+        UniGraph uniGraph = new FuseUniGraph(null, graph -> new ControllerManager() {
+            @Override
+            public Set<UniQueryController> getControllers() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public void close() {
+
+            }
+        }, DefaultTraversalStrategies::new);
+
         this.uniGraphProvider = mock(UniGraphProvider.class);
         when(uniGraphProvider.getGraph(any())).thenReturn(uniGraph);
     }
@@ -66,15 +80,15 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     public void test_concrete_rel_untyped() throws Exception {
         Plan plan = create_Con_Rel_Unt_PathQuery();
         Ontology.Accessor ont = getOntologyAccessor();
-        Traversal actualTraversal = translator.translate(new PlanWithCost<>(plan, null), new TranslationContext(ont, new PromiseGraph().traversal()));
+        Traversal actualTraversal = translator.translate(new PlanWithCost<>(plan, null), new TranslationContext(ont, this.uniGraphProvider.getGraph(ont.get()).traversal()));
 
         Traversal expectedTraversal =
                 __.start().V().as("A")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
-                                __.has(T.id, "12345678"),
-                                __.has(T.label, "Person"))))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().and(
+                                __.start().has(T.id, "12345678"),
+                                __.start().has(T.label, "Person"))))
                         .outE().as("A-->B")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
                         .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -88,11 +102,11 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("A")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
-                                __.has(T.id, "12345678"),
-                                __.has(T.label, "Person"))))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().and(
+                                __.start().has(T.id, "12345678"),
+                                __.start().has(T.label, "Person"))))
                         .outE().as("A-->B")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
                         .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -106,9 +120,9 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("B")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Dragon")))
                         .outE().as("B-->A")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
                         .otherV().as("A");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -122,9 +136,9 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("A")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Person")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Person")))
                         .outE().as("A-->B")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
                         .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -138,14 +152,14 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("A")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
-                                __.has(T.id, "12345678"),
-                                __.has(T.label, "Person"))))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().and(
+                                __.start().has(T.id, "12345678"),
+                                __.start().has(T.label, "Person"))))
                         .outE().as("A-->B")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
                         .otherV().as("B")
                         .outE().as("B-->C")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
                         .otherV().as("C");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);

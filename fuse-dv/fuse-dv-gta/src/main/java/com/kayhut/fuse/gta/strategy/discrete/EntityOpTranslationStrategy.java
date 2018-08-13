@@ -20,8 +20,8 @@ import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 
 import java.util.List;
 import java.util.Optional;
@@ -72,21 +72,21 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
 
         if (entity instanceof EConcrete) {
             traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
-                    P.eq(Constraint.by(__.and(
-                            __.has(T.id, P.eq(((EConcrete)entity).geteID())),
-                            __.has(T.label, P.eq(EntityTranslationUtil.getValidEntityNames(ont, entity).get(0)))))));
+                    P.eq(Constraint.by(__.start().and(
+                            __.start().has(T.id, P.eq(((EConcrete)entity).geteID())),
+                            __.start().has(T.label, P.eq(EntityTranslationUtil.getValidEntityNames(ont, entity).get(0)))))));
         }
         else if (entity instanceof ETyped || entity instanceof EUntyped) {
             List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ont, entity);
             if (eTypeNames.isEmpty()) {
                 traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.has(T.label, P.eq(GlobalConstants.Labels.NONE))));
+                        Constraint.by(__.start().has(T.label, P.eq(GlobalConstants.Labels.NONE))));
             } else if (eTypeNames.size() == 1) {
                 traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.has(T.label, P.eq(eTypeNames.get(0)))));
+                        Constraint.by(__.start().has(T.label, P.eq(eTypeNames.get(0)))));
             } else if (eTypeNames.size() > 1) {
                 traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.has(T.label, P.within(eTypeNames))));
+                        Constraint.by(__.start().has(T.label, P.within(eTypeNames))));
             }
         }
 

@@ -20,7 +20,8 @@ import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
+
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
@@ -101,10 +102,10 @@ public class EntityFilterOpTranslationStrategyTest {
 
         GraphTraversal expectedTraversal = __.start()
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.and(
-                                __.has(T.label, "Person"),
-                                __.and(__.has("name", "value1"),
-                                       __.has("age", 30)))));
+                        Constraint.by(__.start().and(
+                                __.start().has(T.label, "Person"),
+                                __.start().and(__.start().has("name", "value1"),
+                                       __.start().has("age", 30)))));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -151,9 +152,9 @@ public class EntityFilterOpTranslationStrategyTest {
         GraphTraversal expectedTraversal = __.start()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.and(
-                                __.has("name", "value1"),
-                                __.has("age", 30))))
+                        Constraint.by(__.start().and(
+                                __.start().has("name", "value1"),
+                                __.start().has("age", 30))))
                 .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);

@@ -16,7 +16,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,7 +59,7 @@ public class RelationOpTranslationStrategyTest {
 
         GraphTraversal expectedTraversal = __.start().outE().as("A-->B")
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.has(T.label, FIRE.getName())));
+                        Constraint.by(__.start().has(T.label, FIRE.getName())));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -81,7 +81,7 @@ public class RelationOpTranslationStrategyTest {
 
         GraphTraversal expectedTraversal = __.start().inE().as("B<--A")
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.has(T.label, FIRE.getName())));
+                        Constraint.by(__.start().has(T.label, FIRE.getName())));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

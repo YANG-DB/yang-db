@@ -20,6 +20,8 @@ public class CreateQueryRequest {
     public CreateQueryRequest() {
         this.planTraceOptions = new PlanTraceOptions();
         this.planTraceOptions.setLevel(PlanTraceOptions.Level.none);
+
+        this.ttl = 300000;
     }
 
     public CreateQueryRequest(String id, String name, Query query) {
@@ -86,6 +88,15 @@ public class CreateQueryRequest {
     public void setCreateCursorRequest(CreateCursorRequest createCursorRequest) {
         this.createCursorRequest = createCursorRequest;
     }
+
+    public long getTtl() {
+        return ttl;
+    }
+
+    public void setTtl(long ttl) {
+        this.ttl = ttl;
+    }
+
     //endregion
 
 
@@ -105,6 +116,7 @@ public class CreateQueryRequest {
     private Type type = Type._volatile;
     private String name;
     private Query query;
+    private long ttl;
     private PlanTraceOptions planTraceOptions;
 
     private CreateCursorRequest createCursorRequest;

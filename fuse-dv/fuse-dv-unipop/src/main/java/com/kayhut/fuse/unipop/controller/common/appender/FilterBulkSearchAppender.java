@@ -8,7 +8,7 @@ import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslato
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -32,7 +32,7 @@ public class FilterBulkSearchAppender implements SearchAppender<VertexController
 
     //region Private Methods
     private Traversal buildStartVerticesConstraint(Iterable<Vertex> vertices) {
-        return __.has(T.id, P.within(Stream.ofAll(vertices).map(Element::id).toJavaList()));
+        return __.start().has(T.id, P.within(Stream.ofAll(vertices).map(Element::id).toJavaList()));
     }
     //endregion
 }
