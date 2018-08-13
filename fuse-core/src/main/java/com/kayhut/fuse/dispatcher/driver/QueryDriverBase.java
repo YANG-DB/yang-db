@@ -64,7 +64,7 @@ public abstract class QueryDriverBase  implements QueryDriver {
     @Override
     public Optional<StoreResourceInfo> getInfo() {
         Iterable<String> resourceUrls = Stream.ofAll(this.resourceStore.getQueryResources())
-                .sortBy(queryResource -> queryResource.getQueryMetadata().getTime())
+                .sortBy(queryResource -> queryResource.getQueryMetadata().getCreationTime())
                 .map(queryResource -> queryResource.getQueryMetadata().getId())
                 .map(this.urlSupplier::resourceUrl)
                 .toJavaList();
