@@ -32,7 +32,7 @@
             "type": "nGram",
             "min_gram": "1",
             "max_gram": "10",
-            "token_chars": [ "letter", "digit", "punctuation" ]
+            "token_chars": [ "letter", "digit", "punctuation", "symbol" ]
           }
         },
         "filter": {

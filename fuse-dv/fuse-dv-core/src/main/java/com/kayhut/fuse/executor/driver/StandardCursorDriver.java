@@ -19,6 +19,7 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.unipop.process.Profiler;
 
 /**
  * Created by lior on 20/02/2017.
@@ -57,6 +58,8 @@ public class StandardCursorDriver extends CursorDriverBase {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+
+        traversal.asAdmin().getSideEffects().register("profiler", Profiler.Impl::new, null);
 
         Cursor cursor = this.cursorFactory.createCursor(
                 new TraversalCursorContext(
