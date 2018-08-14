@@ -7,7 +7,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "resultType")
 @JsonSubTypes({
         @JsonSubTypes.Type(name = "assignments", value = AssignmentsQueryResult.class),
-        @JsonSubTypes.Type(name = "csv", value = CsvQueryResult.class)
+        @JsonSubTypes.Type(name = "csv", value = CsvQueryResult.class),
+        @JsonSubTypes.Type(name = "ids", value = IdsQueryResult.class)
 })
 public abstract class QueryResultBase {
     @JsonIgnore

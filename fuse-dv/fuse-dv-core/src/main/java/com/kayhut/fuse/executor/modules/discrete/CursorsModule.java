@@ -42,6 +42,11 @@ public class CursorsModule extends ModuleBase {
                 CreateCsvCursorRequest.CursorType,
                 CreateCsvCursorRequest.class,
                 new CsvTraversalCursor.Factory()));
+
+        Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
+                CreateIdsCursorRequest.CursorType,
+                CreateIdsCursorRequest.class,
+                new IdsTraversalCursor.Factory()));
     }
     //endregion
 }
