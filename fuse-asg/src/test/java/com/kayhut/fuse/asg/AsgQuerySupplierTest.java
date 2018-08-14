@@ -56,7 +56,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery1ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q1Obj,new NextEbaseFactory(), new BNextFactory());
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q1Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -81,7 +81,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery5ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q5Obj,new NextEbaseFactory(), new BNextFactory() );
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q5Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -106,7 +106,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery9ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q9Obj,new NextEbaseFactory(), new BNextFactory());
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q9Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -136,7 +136,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery187ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q187Obj,new NextEbaseFactory(), new BNextFactory() );
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q187Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -180,7 +180,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery3_1ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q3_1Obj,new NextEbaseFactory(), new BNextFactory() );
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q3_1Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -204,7 +204,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery11ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q11Obj,new NextEbaseFactory(), new BNextFactory());
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q11Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
         System.out.println(AsgQueryDescriptor.print(asgQuery));

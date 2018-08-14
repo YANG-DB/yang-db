@@ -1,6 +1,6 @@
 package com.kayhut.fuse.asg.strategy.constraint;
 
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -9,6 +9,7 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.ParameterizedConstraint;
 import javaslang.collection.Stream;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public class RedundantLikeConstraintAsgStrategy extends ConstraintTransformation
 
         AsgQueryUtil.elements(query, EPropGroup.class).forEach(ePropGroupAsgEBase -> {
             List<EProp> eProps = Stream.ofAll(ePropGroupAsgEBase.geteBase().getProps())
+                    .filter(prop -> prop.getCon()!=null)
+                    .filter(prop -> !ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
                     .filter(eProp -> (
                             eProp.getCon().getOp().equals(ConstraintOp.like) &&
                                     eProp.getCon().getExpr().toString().matches("[*]+")) ||

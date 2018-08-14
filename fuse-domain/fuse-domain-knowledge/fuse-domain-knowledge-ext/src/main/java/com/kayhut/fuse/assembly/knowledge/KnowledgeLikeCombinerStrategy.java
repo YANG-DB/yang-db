@@ -5,7 +5,7 @@ import com.kayhut.fuse.asg.strategy.RuleBoostProvider;
 import com.kayhut.fuse.asg.strategy.schema.LikeAnyConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.asg.strategy.schema.LikeConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
@@ -34,6 +34,7 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
             return false;
 
         if (!Stream.ofAll(ePropGroup.getProps())
+                .filter(prop -> prop.getCon()!=null)
                 .find(eProp -> eProp.getCon().getOp() == ConstraintOp.likeAny)
                 .isEmpty()) {
             return true;

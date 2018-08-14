@@ -139,7 +139,7 @@ public class AsgQueryStore {
         query.setElements(elements);
 
 
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query,new NextEbaseFactory(), new BNextFactory() );
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query);
         AsgQuery asgQuery = asgSupplier.get();
         return asgQuery;
     }
@@ -210,7 +210,7 @@ public class AsgQueryStore {
         query.setElements(elements);
 
 
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query,new NextEbaseFactory(), new BNextFactory() );
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query);
         AsgQuery asgQuery = asgSupplier.get();
         return asgQuery;
     }

@@ -1,7 +1,7 @@
 package com.kayhut.fuse.asg.strategy.constraint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;

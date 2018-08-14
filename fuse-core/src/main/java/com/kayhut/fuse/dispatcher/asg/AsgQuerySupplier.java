@@ -1,6 +1,8 @@
 package com.kayhut.fuse.dispatcher.asg;
 
 import com.google.common.base.Supplier;
+import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
+import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
@@ -17,6 +19,10 @@ import java.util.Map;
 public class AsgQuerySupplier implements Supplier<AsgQuery> {
 
     //region Constructor
+    public AsgQuerySupplier(Query query) {
+        this(query,new NextEbaseFactory(), new BNextFactory());
+    }
+
     public AsgQuerySupplier(Query query, NextFactory nextFactory, BellowFactory bellowFactory) {
         this.query = query;
         this.factory = nextFactory;

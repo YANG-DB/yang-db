@@ -9,6 +9,7 @@ import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -35,7 +36,7 @@ public class LoggingResourceStore implements ResourceStore {
 
     //region ResourceStore Implementation
     @Override
-    public Iterable<QueryResource> getQueryResources() {
+    public Collection<QueryResource> getQueryResources() {
         return this.innerResourceStore.getQueryResources();
     }
 
@@ -55,51 +56,56 @@ public class LoggingResourceStore implements ResourceStore {
     }
 
     @Override
-    public void addQueryResource(QueryResource queryResource) {
-        this.innerResourceStore.addQueryResource(queryResource);
+    public boolean addQueryResource(QueryResource queryResource) {
+        boolean b = this.innerResourceStore.addQueryResource(queryResource);
         this.logger.info("QueryResource was added: {}", this.queryResourceDescriptor.describe(queryResource));
+        return b;
     }
 
     @Override
-    public void deleteQueryResource(String queryId) {
+    public boolean deleteQueryResource(String queryId) {
         Optional<QueryResource> queryResourceToDelete = this.innerResourceStore.getQueryResource(queryId);
-        this.innerResourceStore.deleteQueryResource(queryId);
+        boolean b = this.innerResourceStore.deleteQueryResource(queryId);
 
         if (queryResourceToDelete.isPresent()) {
             this.logger.debug("QueryResource was deleted: {}", this.queryResourceDescriptor.describe(queryResourceToDelete.get()));
         }
+        return b;
     }
 
     @Override
-    public void addCursorResource(String queryId, CursorResource cursorResource) {
+    public boolean addCursorResource(String queryId, CursorResource cursorResource) {
         Optional<QueryResource> queryResource = this.innerResourceStore.getQueryResource(queryId);
-        this.innerResourceStore.addCursorResource(queryId, cursorResource);
+        boolean b = this.innerResourceStore.addCursorResource(queryId, cursorResource);
 
         if (queryResource.isPresent()) {
             this.logger.debug("CursorResource was added: {} {}",
                     this.queryResourceDescriptor.describe(queryResource.get()),
                     this.cursorResourceDescriptor.describe(cursorResource));
         }
+        return b;
     }
 
     @Override
-    public void deleteCursorResource(String queryId, String cursorId) {
+    public boolean deleteCursorResource(String queryId, String cursorId) {
         Optional<QueryResource> queryResource = this.innerResourceStore.getQueryResource(queryId);
         Optional<CursorResource> cursorResourceToDelete = queryResource.flatMap(queryResource1 -> queryResource1.getCursorResource(cursorId));
+        boolean b = this.innerResourceStore.deleteCursorResource(queryId, cursorId);
 
         if (queryResource.isPresent() && cursorResourceToDelete.isPresent()) {
             this.logger.debug("CursorResource was deleted: {} {}",
                     this.queryResourceDescriptor.describe(queryResource.get()),
                     this.cursorResourceDescriptor.describe(cursorResourceToDelete.get()));
         }
+        return b;
     }
 
     @Override
-    public void addPageResource(String queryId, String cursorId, PageResource pageResource) {
+    public boolean addPageResource(String queryId, String cursorId, PageResource pageResource) {
         Optional<QueryResource> queryResource = this.innerResourceStore.getQueryResource(queryId);
         Optional<CursorResource> cursorResource = queryResource.flatMap(queryResource1 -> queryResource1.getCursorResource(cursorId));
 
-        this.innerResourceStore.addPageResource(queryId, cursorId, pageResource);
+        boolean b = this.innerResourceStore.addPageResource(queryId, cursorId, pageResource);
 
         if (queryResource.isPresent() && cursorResource.isPresent()) {
             if (pageResource.isAvailable()) {
@@ -114,15 +120,16 @@ public class LoggingResourceStore implements ResourceStore {
                         this.pageResourceDescriptor.describe(pageResource));
             }
         }
+        return b;
     }
 
     @Override
-    public void deletePageResource(String queryId, String cursorId, String pageId) {
+    public boolean deletePageResource(String queryId, String cursorId, String pageId) {
         Optional<QueryResource> queryResource = this.innerResourceStore.getQueryResource(queryId);
         Optional<CursorResource> cursorResource = queryResource.flatMap(queryResource1 -> queryResource1.getCursorResource(cursorId));
         Optional<PageResource> pageResourceToDelete = cursorResource.flatMap(cursorResource1 -> cursorResource1.getPageResource(pageId));
 
-        this.innerResourceStore.deletePageResource(queryId, cursorId, pageId);
+        boolean b = this.innerResourceStore.deletePageResource(queryId, cursorId, pageId);
 
         if (queryResource.isPresent() && cursorResource.isPresent() && pageResourceToDelete.isPresent()) {
             this.logger.debug("PageResource was deleted: {} {} {}",
@@ -130,6 +137,7 @@ public class LoggingResourceStore implements ResourceStore {
                     this.cursorResourceDescriptor.describe(cursorResource.get()),
                     this.pageResourceDescriptor.describe(pageResourceToDelete.get()));
         }
+        return b;
     }
     //endregion
 

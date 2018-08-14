@@ -1,6 +1,5 @@
 package com.kayhut.fuse.dispatcher.driver;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -10,6 +9,8 @@ import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 
 import java.util.Optional;
 
@@ -18,6 +19,10 @@ import java.util.Optional;
  */
 public interface QueryDriver {
     Optional<QueryResourceInfo> create(QueryMetadata metadata, Query input);
+
+    Optional<QueryResourceInfo> call(ExecuteStoredQueryRequest queryRequest);
+
+    Optional<QueryResourceInfo> createAndFetch(CreateQueryRequest queryRequest);
 
     Optional<StoreResourceInfo> getInfo();
 

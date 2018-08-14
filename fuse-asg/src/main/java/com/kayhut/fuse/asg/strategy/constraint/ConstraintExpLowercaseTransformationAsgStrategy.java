@@ -1,5 +1,6 @@
 package com.kayhut.fuse.asg.strategy.constraint;
 
+import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Property;
@@ -10,10 +11,13 @@ import javaslang.collection.Stream;
 
 import java.util.*;
 
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getEprops;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getRelProps;
+
 /**
  * transforms all e.value string expressions to lower case
  */
-public class ConstraintExpLowercaseTransformationAsgStrategy extends ConstraintTransformationAsgStrategyBase {
+public class ConstraintExpLowercaseTransformationAsgStrategy implements AsgStrategy {
     private final Set<String> fields;
 
     public ConstraintExpLowercaseTransformationAsgStrategy(Collection<String> fields) {
@@ -23,10 +27,14 @@ public class ConstraintExpLowercaseTransformationAsgStrategy extends ConstraintT
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
 
-        getEprops(query).stream().filter(prop -> fields.contains(prop.getpType()))
+        getEprops(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .filter(prop -> fields.contains(prop.getpType()))
                 .forEach(eProp -> applyExpressionTransformation(context, eProp, BaseProp.class));
 
-        getRelProps(query).stream().filter(prop -> fields.contains(prop.getpType()))
+        getRelProps(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .filter(prop -> fields.contains(prop.getpType()))
                 .forEach(relProp -> applyExpressionTransformation(context, relProp, BaseProp.class));
     }
 

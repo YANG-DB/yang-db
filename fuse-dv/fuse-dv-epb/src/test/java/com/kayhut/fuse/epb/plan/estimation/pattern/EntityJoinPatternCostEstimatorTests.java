@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern;
 
 import com.kayhut.fuse.dispatcher.epb.CostEstimator;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.EntityJoinPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;

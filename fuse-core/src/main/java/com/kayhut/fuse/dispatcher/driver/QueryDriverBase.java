@@ -1,6 +1,5 @@
 package com.kayhut.fuse.dispatcher.driver;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.query.QueryTransformer;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
@@ -12,28 +11,39 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
+import com.kayhut.fuse.model.query.ParameterizedQuery;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
-import com.kayhut.fuse.model.resourceInfo.FuseError;
-import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.*;
+import com.kayhut.fuse.model.transport.CreatePageRequest;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
+import com.kayhut.fuse.model.transport.PlanTraceOptions;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
+
+import static com.kayhut.fuse.model.Utils.getOrCreateId;
 
 /**
  * Created by Roman on 12/15/2017.
  */
-public abstract class QueryDriverBase  implements QueryDriver {
+public abstract class QueryDriverBase implements QueryDriver {
     //region Constructors
     @Inject
     public QueryDriverBase(
+            CursorDriver cursorDriver,
+            PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
             QueryValidator<AsgQuery> queryValidator,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
+        this.cursorDriver = cursorDriver;
+        this.pageDriver = pageDriver;
         this.queryTransformer = queryTransformer;
         this.queryValidator = queryValidator;
         this.resourceStore = resourceStore;
@@ -43,22 +53,130 @@ public abstract class QueryDriverBase  implements QueryDriver {
 
     //region QueryDriver Implementation
     @Override
-    public Optional<QueryResourceInfo> create(QueryMetadata metadata, Query query) {
-        AsgQuery asgQuery = this.queryTransformer.transform(query);
+    public Optional<QueryResourceInfo> createAndFetch(CreateQueryRequest request) {
+        try {
+            String queryId = getOrCreateId(request.getId());
+            QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis(),request.getTtl());
+            Optional<QueryResourceInfo> queryResourceInfo = this.create(metadata, request.getQuery());
+            if (!queryResourceInfo.isPresent()) {
+                return Optional.of(new QueryResourceInfo().error(
+                        new FuseError(Query.class.getSimpleName(), "Failed creating query resource from given request: \n" + request.toString())));
+            }
 
-        ValidationResult validationResult = this.queryValidator.validate(asgQuery);
-        if (!validationResult.valid()) {
+            if (request.getCreateCursorRequest() == null) {
+                return queryResourceInfo;
+            }
+
+            Optional<CursorResourceInfo> cursorResourceInfo = this.cursorDriver.create(queryResourceInfo.get().getResourceId(), request.getCreateCursorRequest());
+            if (!cursorResourceInfo.isPresent()) {
+                return Optional.of(new QueryResourceInfo().error(
+                        new FuseError(Query.class.getSimpleName(), "Failed creating cursor resource from given request: \n" + request.toString())));
+            }
+
+            if (request.getCreateCursorRequest().getCreatePageRequest() == null) {
+                return Optional.of(new QueryResourceInfo(
+                        queryResourceInfo.get().getResourceUrl(),
+                        queryResourceInfo.get().getResourceId(),
+                        cursorResourceInfo.get().getPageStoreUrl(),
+                        cursorResourceInfo.get()));
+            }
+
+            Optional<PageResourceInfo> pageResourceInfo = this.pageDriver.create(
+                    queryResourceInfo.get().getResourceId(),
+                    cursorResourceInfo.get().getResourceId(),
+                    request.getCreateCursorRequest().getCreatePageRequest().getPageSize());
+
+            if (!pageResourceInfo.isPresent()) {
+                return Optional.of(
+                        new QueryResourceInfo(
+                                queryResourceInfo.get().getResourceUrl(),
+                                queryResourceInfo.get().getResourceId(),
+                                cursorResourceInfo.get().getPageStoreUrl(),
+                                cursorResourceInfo.get()
+                        ).error(new FuseError(Query.class.getSimpleName(), "Failed creating page resource from given request: \n" + request.toString())));
+            }
+
+            cursorResourceInfo.get().setPageResourceInfos(Collections.singletonList(pageResourceInfo.get()));
+
+            Optional<Object> pageDataResponse = pageDriver.getData(queryResourceInfo.get().getResourceId(),
+                    cursorResourceInfo.get().getResourceId(),
+                    pageResourceInfo.get().getResourceId());
+
+            if (!pageDataResponse.isPresent()) {
+                return Optional.of(
+                        new QueryResourceInfo(
+                                queryResourceInfo.get().getResourceUrl(),
+                                queryResourceInfo.get().getResourceId(),
+                                cursorResourceInfo.get().getPageStoreUrl(),
+                                cursorResourceInfo.get()
+                        ).error(new FuseError(Query.class.getSimpleName(), "Failed fetching page data from given request: \n" + request.toString())));
+            }
+
+            pageResourceInfo.get().setData(pageDataResponse.get());
+
+            return Optional.of(
+                    new QueryResourceInfo(
+                            queryResourceInfo.get().getResourceUrl(),
+                            queryResourceInfo.get().getResourceId(),
+                            cursorResourceInfo.get().getPageStoreUrl(),
+                            cursorResourceInfo.get()
+                    ));
+        } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(),
-                            Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
+                            err.getMessage())));
+
         }
+    }
 
-        this.resourceStore.addQueryResource(createResource(query, asgQuery, metadata));
+    @Override
+    public Optional<QueryResourceInfo> create(QueryMetadata metadata, Query query) {
+        try {
+            AsgQuery asgQuery = this.queryTransformer.transform(query);
 
-        return Optional.of(new QueryResourceInfo(
-                urlSupplier.resourceUrl(metadata.getId()),
-                metadata.getId(),
-                urlSupplier.cursorStoreUrl(metadata.getId())));
+            ValidationResult validationResult = this.queryValidator.validate(asgQuery);
+            if (!validationResult.valid()) {
+                return Optional.of(new QueryResourceInfo().error(
+                        new FuseError(Query.class.getSimpleName(),
+                                Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
+            }
+
+            this.resourceStore.addQueryResource(createResource(query, asgQuery, metadata));
+
+            return Optional.of(new QueryResourceInfo(
+                    urlSupplier.resourceUrl(metadata.getId()),
+                    metadata.getId(),
+                    urlSupplier.cursorStoreUrl(metadata.getId())));
+        } catch (Exception err) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(),
+                            err.getMessage())));
+        }
+    }
+
+    @Override
+    public Optional<QueryResourceInfo> call(ExecuteStoredQueryRequest callRequest) {
+        try {
+            if (!resourceStore.getQueryResource(callRequest.getQuery().getName()).isPresent())
+                return Optional.of(new QueryResourceInfo().error(
+                        new FuseError(Query.class.getSimpleName(),
+                                "Query with id[" + callRequest.getQuery().getName() + "] not found in store")));
+
+            QueryResource queryResource = resourceStore.getQueryResource(callRequest.getQuery().getName()).get();
+            Optional<QueryResourceInfo> info = createAndFetch(new CreateQueryRequest(
+                    callRequest.getId(),
+                    callRequest.getName(),
+                    new ParameterizedQuery(queryResource.getQuery(), callRequest.getParameters()),
+                    new PlanTraceOptions(),
+                    new CreateGraphCursorRequest(new CreatePageRequest())));
+
+
+            return info;
+        } catch (Exception err) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(),
+                            err.getMessage())));
+        }
     }
 
     @Override
@@ -135,6 +253,8 @@ public abstract class QueryDriverBase  implements QueryDriver {
     //endregion
 
     //region Fields
+    private final CursorDriver cursorDriver;
+    private final PageDriver pageDriver;
     private QueryTransformer<Query, AsgQuery> queryTransformer;
     private QueryValidator<AsgQuery> queryValidator;
     private ResourceStore resourceStore;

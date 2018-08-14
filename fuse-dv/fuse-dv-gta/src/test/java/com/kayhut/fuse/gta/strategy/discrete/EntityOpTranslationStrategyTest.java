@@ -1,6 +1,6 @@
 package com.kayhut.fuse.gta.strategy.discrete;
 
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;

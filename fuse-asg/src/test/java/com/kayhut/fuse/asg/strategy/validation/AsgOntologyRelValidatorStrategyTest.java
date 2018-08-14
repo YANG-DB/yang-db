@@ -1,6 +1,6 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
-import com.kayhut.fuse.asg.strategy.AsgOntologyRelValidatorStrategy;
+import com.kayhut.fuse.asg.validation.AsgOntologyRelValidatorStrategy;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;

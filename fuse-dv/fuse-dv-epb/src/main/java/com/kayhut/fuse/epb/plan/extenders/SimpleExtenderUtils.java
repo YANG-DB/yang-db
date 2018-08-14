@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -42,7 +42,7 @@ public interface SimpleExtenderUtils {
                 allElements.put(element.geteNum(), element);
             }
 
-            if (shouldAdvanceToNext(element) && element.getNext() != null) {
+            if (element.getNext() != null) {
                 element.getNext().forEach(e -> flattenQueryRecursive((AsgEBase) e, allElements));
             }
 
@@ -54,10 +54,6 @@ public interface SimpleExtenderUtils {
 
     static boolean shouldAdvanceToBs(AsgEBase element) {
         return element.getB() != null;
-    }
-
-    static boolean shouldAdvanceToNext(AsgEBase element) {
-        return element.getNext() != null;
     }
 
     static boolean shouldAddElement(AsgEBase element) {
@@ -120,7 +116,8 @@ public interface SimpleExtenderUtils {
                 EConcrete.class, EUntyped.class, ETyped.class, Rel.class, EProp.class,
                 EPropGroup.class, RelProp.class, RelPropGroup.class));
 
-        return Stream.ofAll(partsTuple._2().values()).filter(asgEBase -> handledClasses.contains(asgEBase.geteBase().getClass()))
+        return Stream.ofAll(partsTuple._2().values())
+                .filter(asgEBase -> handledClasses.contains(asgEBase.geteBase().getClass()))
                 .isEmpty();
     }
 

@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.transport;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
@@ -10,6 +11,11 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
  * Mutable structure due to json reflective builder needs...
  */
 public class CreateQueryRequest {
+    public enum Type {
+        _stored,
+        _volatile;
+    }
+
     //region Constructors
     public CreateQueryRequest() {
         this.planTraceOptions = new PlanTraceOptions();
@@ -37,6 +43,11 @@ public class CreateQueryRequest {
     //endregion
 
     //region Properties
+    public CreateQueryRequest type(Type type) {
+        this.type = type;
+        return this;
+    }
+
     public String getId() {
         return id;
     }
@@ -88,8 +99,21 @@ public class CreateQueryRequest {
 
     //endregion
 
+
+    @Override
+    public String toString() {
+        return "CreateQueryRequest{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", query=" + QueryDescriptor.toString(query) + "\n"+
+                ", createCursorRequest=" + createCursorRequest!=null ? createCursorRequest.toString() : "None" +
+                '}';
+    }
+
     //region Fields
     private String id;
+    //default type is volatile
+    private Type type = Type._volatile;
     private String name;
     private Query query;
     private long ttl;

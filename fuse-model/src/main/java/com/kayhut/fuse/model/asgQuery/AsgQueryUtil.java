@@ -5,7 +5,9 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
+import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import javaslang.Tuple2;
@@ -15,6 +17,7 @@ import javax.management.relation.Relation;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by Roman on 15/05/2017.
@@ -129,7 +132,6 @@ public class AsgQueryUtil {
     public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextDescendantsSingleHop(AsgEBase<T> asgEBase, Class<?> klass) {
         return nextDescendants(asgEBase, (asgEBase1 -> classPredicateFunction.apply(klass).test(asgEBase1) && asgEBase1 != asgEBase), (asgEBase1 -> asgEBase1 == asgEBase || !classPredicateFunction.apply(klass).test(asgEBase1)) );
     }
-
 
 
     public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextAdjacentDescendants(AsgEBase<T> asgEBase, Class<?> klass) {
@@ -529,6 +531,29 @@ public class AsgQueryUtil {
 
 
         }
+    }
+
+
+    //region Protected Methods
+    public static List<EProp> getEprops(AsgQuery query) {
+        List<EProp> eProps = Stream.ofAll(AsgQueryUtil.elements(query, EProp.class))
+                .map(AsgEBase::geteBase).toJavaList();
+
+        List<EPropGroup> ePropsGroup = Stream.ofAll(AsgQueryUtil.elements(query, EPropGroup.class))
+                .map(AsgEBase::geteBase).toJavaList();
+        List<EProp> eProps2 = Stream.ofAll(ePropsGroup).flatMap(EPropGroup::getProps).toJavaList();
+
+        return java.util.stream.Stream.concat(eProps.stream(), eProps2.stream()).collect(Collectors.toList());
+    }
+
+    public static List<RelProp> getRelProps(AsgQuery query) {
+        List<RelProp> relProps = Stream.ofAll(AsgQueryUtil.elements(query, RelProp.class))
+                .map(AsgEBase::geteBase).toJavaList();
+        List<RelPropGroup> relPropsGroup = Stream.ofAll(AsgQueryUtil.elements(query, RelPropGroup.class))
+                .map(AsgEBase::geteBase).toJavaList();
+        List<RelProp> relProps2 = Stream.ofAll(relPropsGroup).flatMap(RelPropGroup::getProps).toJavaList();
+
+        return java.util.stream.Stream.concat(relProps.stream(), relProps2.stream()).collect(Collectors.toList());
     }
     //endregion
 }

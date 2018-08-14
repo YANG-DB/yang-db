@@ -65,6 +65,14 @@ public abstract class CreateCursorRequest {
 
     //endregions
 
+    @Override
+    public String toString() {
+        return "CreateCursorRequest{" +
+                "cursorType='" + cursorType + '\'' +
+                ", createPageRequest=" + (createPageRequest!=null ? createPageRequest.toString() : "None") +
+                '}';
+    }
+
     //region Fields
     private String cursorType;
     private CreatePageRequest createPageRequest;

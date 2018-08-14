@@ -51,7 +51,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
 
     private Collection<Plan> extendPart(AsgEBase<? extends EBase> handledPartToExtend, Map<Integer, AsgEBase> queryPartsNotHandled, Plan originalPlan) {
         List<Plan> plans = new ArrayList<>();
-        if(SimpleExtenderUtils.shouldAdvanceToNext(handledPartToExtend)){
+        if(((AsgEBase) handledPartToExtend).getNext() != null){
             for(AsgEBase<? extends EBase> next : handledPartToExtend.getNext()){
                 if(SimpleExtenderUtils.shouldAddElement(next) && queryPartsNotHandled.containsKey(next.geteNum())){
                     PlanOp op = createOpForElement(next);

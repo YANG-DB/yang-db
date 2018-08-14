@@ -1,6 +1,7 @@
 package com.kayhut.fuse.assembly.knowledge;
 
 import com.google.inject.Inject;
+import com.kayhut.fuse.asg.strategy.AsgNamedParametersStrategy;
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.asg.strategy.AsgStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.RuleBoostProvider;
@@ -41,6 +42,7 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
     @Override
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
+                new AsgNamedParametersStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
                 new EntityPropertiesGroupingAsgStrategy(),
                 new HQuantifierPropertiesGroupingAsgStrategy(),

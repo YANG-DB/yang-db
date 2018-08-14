@@ -104,6 +104,12 @@
         </dependency>
         <dependency>
             <groupId>com.kayhut</groupId>
+            <artifactId>fuse-dv-core</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
             <type>test-jar</type>
             <scope>test</scope>

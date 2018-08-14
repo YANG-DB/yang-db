@@ -1,7 +1,7 @@
 package com.kayhut.fuse.asg.strategy.propertyGrouping;
 
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.query.properties.EPropGroup;

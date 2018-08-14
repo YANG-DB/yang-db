@@ -3,8 +3,6 @@ package com.kayhut.fuse.services.suppliers;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.model.Range;
-import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.services.controllers.IdGeneratorController;
 import com.twitter.snowflake.sequence.IdSequence;
 import com.twitter.snowflake.support.IdSequenceFactory;
 
