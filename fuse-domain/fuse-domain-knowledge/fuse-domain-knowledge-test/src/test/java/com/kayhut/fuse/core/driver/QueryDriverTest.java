@@ -35,6 +35,7 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
@@ -165,10 +166,11 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                 new ETyped(6, "B", "Entity", 0, 0)
         )).build();
 
-        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false,System.currentTimeMillis(), 180000), query);
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, System.currentTimeMillis(), 180000), query);
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
+                new CreateGraphCursorRequest(new CreatePageRequest()),
                 Arrays.asList(new NamedParameter("creationTime", creationTime),
                         new NamedParameter("category", Arrays.asList("bell", "dell")))));
 
@@ -210,10 +212,11 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                         new EProp(2, "name", ParameterizedConstraint.of(ConstraintOp.inSet, new NamedParameter("name")))
                 )).build();
 
-        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false,System.currentTimeMillis(), 180000), query);
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, System.currentTimeMillis(), 180000), query);
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
+                new CreateGraphCursorRequest(new CreatePageRequest()),
                 Collections.singleton(new NamedParameter("name", Arrays.asList("mazda", "subaru")))));
 
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
@@ -243,10 +246,11 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                                 ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name"))))
                 )).build();
 
-        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false,System.currentTimeMillis(), 180000), query);
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, System.currentTimeMillis(), 180000), query);
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
+                new CreateGraphCursorRequest(new CreatePageRequest()),
                 Collections.singleton(new NamedParameter("name", "mazda"))));
 
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
@@ -272,16 +276,17 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Efile", 2, 0),
-                        new Quant1(2, QuantType.all, Arrays.asList(3, 4,5), 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                         new EProp(3, "logicalId", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("logicalId"))),
                         new EProp(4, "context", Constraint.of(ConstraintOp.eq, "family cars")),
                         new EProp(5, "name", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name")))
                 )).build();
 
-        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false,System.currentTimeMillis(), 180000), query);
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, System.currentTimeMillis(), 180000), query);
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
+                new CreateGraphCursorRequest(new CreatePageRequest()),
                 Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda"))));
 
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
