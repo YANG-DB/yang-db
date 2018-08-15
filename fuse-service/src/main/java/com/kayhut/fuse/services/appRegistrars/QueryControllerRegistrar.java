@@ -67,7 +67,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                 });
 
         /** create a query */
-        app.use(appUrlSupplier.queryStoreUrl())
+        app.use(appUrlSupplier.queryStoreUrl()+"/call")
                 .post(req -> {
                     Route.of("callQuery").write();
 
