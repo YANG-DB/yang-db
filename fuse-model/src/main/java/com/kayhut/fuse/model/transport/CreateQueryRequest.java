@@ -72,6 +72,10 @@ public class CreateQueryRequest {
         return query;
     }
 
+    public Type getType() {
+        return type;
+    }
+
     public PlanTraceOptions getPlanTraceOptions() {
         return planTraceOptions;
     }

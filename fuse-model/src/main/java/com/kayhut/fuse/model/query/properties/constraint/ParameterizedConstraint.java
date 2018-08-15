@@ -10,12 +10,6 @@ public class ParameterizedConstraint extends Constraint {
         super(op,parameter);
     }
 
-    @Override
-    public NamedParameter getExpr() {
-        return (NamedParameter) super.getExpr();
-    }
-
-
     public static ParameterizedConstraint of(ConstraintOp op) {
         return of(op, null, "[]");
     }

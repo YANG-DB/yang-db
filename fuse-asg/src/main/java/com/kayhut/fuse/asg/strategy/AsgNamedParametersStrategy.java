@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
 import com.kayhut.fuse.model.query.properties.constraint.ParameterizedConstraint;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getEprops;
@@ -20,7 +21,7 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
                 .filter(prop -> prop.getCon()!=null)
                 .filter(prop -> ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
                 .forEach(eProp -> {
-                    String name = ((ParameterizedConstraint) eProp.getCon()).getExpr().getName();
+                    String name = ((Map<String,Object>) eProp.getCon().getExpr()).values().iterator().next().toString();
                     Optional<NamedParameter> parameter = query.getParameters().stream().filter(p -> p.getName().equals(name)).findAny();
                     parameter.ifPresent(namedParameter -> eProp.setCon(Constraint.of(eProp.getCon().getOp(),namedParameter.getValue(),eProp.getCon().getiType())));
                 });

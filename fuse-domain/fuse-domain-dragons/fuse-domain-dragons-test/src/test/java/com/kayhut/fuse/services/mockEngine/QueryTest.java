@@ -550,19 +550,6 @@ public class QueryTest {
                 .assertThat()
                 .statusCode(202)
                 .contentType("application/json;charset=UTF-8");
-
-        //validate resource deleted
-        given()
-                .contentType("application/json")
-                .header(new Header("fuse-external-id", "test"))
-                .with().port(8888)
-                .get("/fuse/query/1")
-                .then()
-                .assertThat()
-                .statusCode(404)
-                .contentType("application/json;charset=UTF-8");
-
-
     }
 
 }

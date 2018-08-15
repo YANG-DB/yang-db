@@ -21,12 +21,13 @@ public final class QueryMetadata {
     //endregion
 
     //region Properties
-    public QueryMetadata(Type type,String id, String name, boolean searchPlan ,long time) {
+    public QueryMetadata(Type type,String id, String name, boolean searchPlan ,long creationTime,long ttl) {
         this.type = type;
         this.id = id;
         this.name = name;
         this.searchPlan = searchPlan;
-        this.time = time;
+        this.creationTime = creationTime;
+        this.ttl = ttl;
     }
 
     public boolean isSearchPlan() {
@@ -57,10 +58,9 @@ public final class QueryMetadata {
     //region Fields
     private long creationTime;
     private long ttl;
-    private Type type;
     private String id;
     private String name;
-    private long time;
     private boolean searchPlan = true;
+    private Type type = Type._volatile;
     //endregion
 }

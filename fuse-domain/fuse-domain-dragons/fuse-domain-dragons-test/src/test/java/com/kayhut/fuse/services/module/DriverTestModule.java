@@ -7,6 +7,8 @@ import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.dispatcher.resource.store.InMemoryResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.executor.cursor.discrete.GraphTraversalCursor;
 import com.kayhut.fuse.executor.cursor.discrete.PathsTraversalCursor;
 import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
@@ -24,6 +26,7 @@ import com.typesafe.config.Config;
 import org.elasticsearch.client.Client;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
+import org.mockito.Mockito;
 
 /**
  * Created by Roman on 04/04/2017.
@@ -31,6 +34,7 @@ import org.jooby.scope.RequestScoped;
 public class DriverTestModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
+        binder.bind(ResourceStore.class).toInstance(new InMemoryResourceStore());
         binder.bind(QueryDriver.class).to(MockDriver.Query.class).in(RequestScoped.class);
         binder.bind(CursorDriver.class).to(MockDriver.Cursor.class).in(RequestScoped.class);
         binder.bind(PageDriver.class).to(MockDriver.Page.class).in(RequestScoped.class);

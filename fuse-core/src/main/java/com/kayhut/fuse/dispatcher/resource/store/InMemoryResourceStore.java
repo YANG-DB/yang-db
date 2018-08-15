@@ -3,6 +3,7 @@ package com.kayhut.fuse.dispatcher.resource.store;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import javaslang.collection.Stream;
 
 import java.util.Collection;
@@ -54,8 +55,7 @@ public class InMemoryResourceStore implements ResourceStore {
 
     @Override
     public boolean deleteQueryResource(String queryId) {
-        this.queryResources.remove(queryId);
-        return true;
+        return this.queryResources.remove(queryId)!=null;
     }
 
     @Override
@@ -126,7 +126,13 @@ public class InMemoryResourceStore implements ResourceStore {
             }
         }
     }
-    //endregion
+
+    @Override
+    public boolean test(CreateQueryRequest.Type type) {
+        return type.equals(CreateQueryRequest.Type._volatile);
+    }
+
+//endregion
 
     //region Fields
     private Map<String, QueryResource> queryResources;

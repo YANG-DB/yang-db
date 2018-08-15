@@ -2,6 +2,8 @@ package com.kayhut.fuse.executor;
 
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
+import com.google.inject.internal.SingletonScope;
+import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
@@ -12,6 +14,10 @@ import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.core.driver.StandardCursorDriver;
 import com.kayhut.fuse.core.driver.StandardPageDriver;
 import com.kayhut.fuse.core.driver.StandardQueryDriver;
+import com.kayhut.fuse.dispatcher.resource.store.InMemoryResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.LoggingResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStoreFactory;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
 import com.kayhut.fuse.executor.elasticsearch.TimeoutClientAdvisor;
 import com.kayhut.fuse.executor.elasticsearch.logging.LoggingClient;
@@ -21,6 +27,7 @@ import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.executor.ontology.schema.*;
+import com.kayhut.fuse.executor.resource.PersistantResourceStore;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -47,6 +54,7 @@ public class ExecutorModule extends ModuleBase {
     //region Jooby.Module Implementation
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
+        bindResourceManager(env, conf, binder);
         bindInitialDataLoader(env, conf, binder);
         bindCursorFactory(env, conf, binder);
         bindElasticClient(env, conf, binder);
@@ -63,6 +71,22 @@ public class ExecutorModule extends ModuleBase {
     //endregion
 
     //region Private Methods
+
+    protected void bindResourceManager(Env env, Config conf, Binder binder) {
+        // resource store and persist processor
+        binder.bind(ResourceStore.class)
+                .annotatedWith(Names.named(ResourceStoreFactory.injectionName))
+                .to(PersistantResourceStore.class)
+                .in(new SingletonScope());
+        binder.bind(ResourceStore.class)
+                .annotatedWith(Names.named(LoggingResourceStore.injectionName))
+                .to(ResourceStoreFactory.class)
+                .in(new SingletonScope());
+        binder.bind(ResourceStore.class)
+                .to(LoggingResourceStore.class)
+                .in(new SingletonScope());
+
+    }
 
     protected void bindInitialDataLoader(Env env, Config conf, Binder binder) {
         binder.install(new PrivateModule() {

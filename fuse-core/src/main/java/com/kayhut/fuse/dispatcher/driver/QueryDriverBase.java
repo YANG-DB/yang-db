@@ -169,8 +169,8 @@ public abstract class QueryDriverBase implements QueryDriver {
                     new ParameterizedQuery(queryResource.getQuery(), callRequest.getParameters()),
                     new PlanTraceOptions(),
                     new CreateGraphCursorRequest(new CreatePageRequest())));
-
-
+            //remove volatile query after execution returns result - should this be done right away since more pages can be requested ...
+            //resourceStore.deleteQueryResource(callRequest.getId());
             return info;
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
@@ -243,8 +243,7 @@ public abstract class QueryDriverBase implements QueryDriver {
 
     @Override
     public Optional<Boolean> delete(String queryId) {
-        resourceStore.deleteQueryResource(queryId);
-        return Optional.of(true);
+        return Optional.of(resourceStore.deleteQueryResource(queryId));
     }
     //endregion
 

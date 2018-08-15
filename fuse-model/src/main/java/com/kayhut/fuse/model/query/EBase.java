@@ -10,13 +10,11 @@ import com.kayhut.fuse.model.query.combiner.EComb;
 import com.kayhut.fuse.model.query.combiner.RComb;
 import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.quant.HQuant;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
+
 
 /**
  * Created by User on 16/02/2017.
@@ -49,7 +47,10 @@ import com.kayhut.fuse.model.query.quant.Quant2;
         @JsonSubTypes.Type(name = "AggM3", value = AggM3.class),
         @JsonSubTypes.Type(name = "AggM4", value = AggM4.class),
         @JsonSubTypes.Type(name = "AggM5", value = AggM5.class),
-        @JsonSubTypes.Type(name = "OptionalComp", value = OptionalComp.class)
+        @JsonSubTypes.Type(name = "OptionalComp", value = OptionalComp.class),
+        @JsonSubTypes.Type(name = "SchematicEProp", value = SchematicEProp.class),
+        @JsonSubTypes.Type(name = "SchematicRankedEProp", value = SchematicRankedEProp.class),
+        @JsonSubTypes.Type(name = "ScoreEProp", value = ScoreEProp.class)
 })
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)

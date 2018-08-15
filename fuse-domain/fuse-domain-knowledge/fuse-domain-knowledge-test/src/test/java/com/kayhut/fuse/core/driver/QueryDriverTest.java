@@ -165,7 +165,7 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                 new ETyped(6, "B", "Entity", 0, 0)
         )).build();
 
-        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, 180000), query);
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false,System.currentTimeMillis(), 180000), query);
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
@@ -210,7 +210,7 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                         new EProp(2, "name", ParameterizedConstraint.of(ConstraintOp.inSet, new NamedParameter("name")))
                 )).build();
 
-        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, 180000), query);
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false,System.currentTimeMillis(), 180000), query);
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
@@ -243,7 +243,7 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                                 ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name"))))
                 )).build();
 
-        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, 180000), query);
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false,System.currentTimeMillis(), 180000), query);
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
@@ -272,12 +272,13 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Efile", 2, 0),
-                        new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(3, 4,5), 0),
                         new EProp(3, "logicalId", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("logicalId"))),
-                        new EProp(4, "name", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name")))
+                        new EProp(4, "context", Constraint.of(ConstraintOp.eq, "family cars")),
+                        new EProp(5, "name", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name")))
                 )).build();
 
-        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false, 180000), query);
+        final Optional<QueryResourceInfo> resourceInfo = driver.create(new QueryMetadata(CreateQueryRequest.Type._stored, "q1", "myStoredQuery", false,System.currentTimeMillis(), 180000), query);
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
@@ -290,6 +291,16 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
         Assert.assertEquals(1, ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
         Assert.assertTrue(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().get(0).getProperties().contains(new Property("name", "raw", "mazda")));
+
+        Optional<Boolean> deleted = driver.delete("callQ1");
+        Assert.assertTrue(deleted.get());
+        deleted = driver.delete("callQ1");
+        Assert.assertFalse(deleted.get());
+
+        deleted = driver.delete("q1");
+        Assert.assertTrue(deleted.get());
+        deleted = driver.delete("q1");
+        Assert.assertFalse(deleted.get());
 
     }
 }

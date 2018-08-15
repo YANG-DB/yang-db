@@ -83,7 +83,9 @@ public class KnowledgeIdGenerator implements IdGeneratorDriver<Range> {
     }
 
     private void generateIndex(String genName) {
-        this.client.admin().indices().create(new CreateIndexRequest().index(this.indexName)).actionGet();
+        this.client.admin().indices()
+                .create(new CreateIndexRequest()
+                        .index(this.indexName)).actionGet();
         addFirstSequenceId(genName);
     }
 

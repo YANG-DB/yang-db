@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,5 +150,10 @@ public class LoggingResourceStore implements ResourceStore {
     private Descriptor<QueryResource> queryResourceDescriptor;
     private Descriptor<CursorResource> cursorResourceDescriptor;
     private Descriptor<PageResource> pageResourceDescriptor;
+
+    @Override
+    public boolean test(CreateQueryRequest.Type type) {
+        return this.innerResourceStore.test(type);
+    }
     //endregion
 }
