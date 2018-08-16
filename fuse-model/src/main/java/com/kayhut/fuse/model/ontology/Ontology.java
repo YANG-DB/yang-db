@@ -282,6 +282,10 @@ public class Ontology {
             return pType(propertyName).get();
         }
 
+        public Iterable<String> pTypes() {
+            return Stream.ofAll(ontology.getProperties()).map(Property::getpType).toJavaList();
+        }
+
         public Iterable<EntityType> entities() {
             return Stream.ofAll(ontology.getEntityTypes()).toJavaList();
         }

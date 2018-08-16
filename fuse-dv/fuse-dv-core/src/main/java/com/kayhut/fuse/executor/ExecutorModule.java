@@ -18,6 +18,7 @@ import com.kayhut.fuse.executor.elasticsearch.TimeoutClientAdvisor;
 import com.kayhut.fuse.executor.elasticsearch.logging.LoggingClient;
 import com.kayhut.fuse.executor.logging.LoggingCursorFactory;
 import com.kayhut.fuse.executor.logging.LoggingGraphElementSchemaProviderFactory;
+import com.kayhut.fuse.executor.ontology.CachedGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
@@ -186,16 +187,20 @@ public class ExecutorModule extends ModuleBase {
                             .annotatedWith(named(OntologyGraphElementSchemaProviderFactory.schemaProviderFactoryParameter))
                             .to(getSchemaProviderFactoryClass(conf));
                     this.bind(GraphElementSchemaProviderFactory.class)
-                            .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.schemaProviderFactoryParameter))
+                            .annotatedWith(named(CachedGraphElementSchemaProviderFactory.schemaProviderFactoryParameter))
                             .to(OntologyGraphElementSchemaProviderFactory.class);
-                    this.bind(Logger.class)
+                    /*this.bind(Logger.class)
                             .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.warnLoggerParameter))
                             .toInstance(LoggerFactory.getLogger(GraphElementSchemaProvider.class));
                     this.bind(Logger.class)
                             .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.verboseLoggerParameter))
                             .toInstance(LoggerFactory.getLogger(GraphElementSchemaProvider.class.getName() + ".Verbose"));
                     this.bind(GraphElementSchemaProviderFactory.class)
-                            .to(LoggingGraphElementSchemaProviderFactory.class);
+                            .to(LoggingGraphElementSchemaProviderFactory.class);*/
+
+                    this.bind(GraphElementSchemaProviderFactory.class)
+                            .to(CachedGraphElementSchemaProviderFactory.class)
+                            .asEagerSingleton();
 
                     this.expose(GraphElementSchemaProviderFactory.class);
                 } catch (ClassNotFoundException e) {

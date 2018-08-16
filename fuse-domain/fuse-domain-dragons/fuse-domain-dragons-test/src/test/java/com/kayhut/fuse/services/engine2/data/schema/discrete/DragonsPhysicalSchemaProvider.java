@@ -111,17 +111,17 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
 
     @Override
     public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -142,6 +142,11 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
     @Override
     public Iterable<String> getEdgeLabels() {
         return Collections.singletonList(OWN.getName());
+    }
+
+    @Override
+    public Iterable<String> getPropertyNames() {
+        return Collections.emptyList();
     }
     //endregion
 }

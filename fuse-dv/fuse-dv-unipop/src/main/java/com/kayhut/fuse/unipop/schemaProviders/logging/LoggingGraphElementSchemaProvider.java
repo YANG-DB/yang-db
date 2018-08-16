@@ -224,7 +224,7 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
             Iterable<String> vertexLabels = this.schemaProvider.getEdgeLabels();
             if (Stream.ofAll(vertexLabels).isEmpty()) {
                 new LogMessage.Impl(this.warnLogger, warn, "no edge labels found",
-                        sequence, LogType.of(log), getVertexLabels, ElapsedFrom.now()).log();
+                        sequence, LogType.of(log), getEdgeLabels, ElapsedFrom.now()).log();
             }
             return vertexLabels;
         } catch (Exception ex) {
@@ -235,6 +235,30 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
         } finally {
             if (!thrownException) {
                 new LogMessage.Impl(this.verboseLogger, trace, "finish getEdgeLabels", sequence, LogType.of(success), getEdgeLabels, ElapsedFrom.now()).log();
+            }
+        }
+    }
+
+    @Override
+    public Iterable<String> getPropertyNames() {
+        boolean thrownException = false;
+
+        try {
+            new LogMessage.Impl(this.verboseLogger, trace, "start getPropertyNames", sequence, LogType.of(start), getPropertyNames, ElapsedFrom.now()).log();
+            Iterable<String> propertyNames = this.schemaProvider.getPropertyNames();
+            if (Stream.ofAll(propertyNames).isEmpty()) {
+                new LogMessage.Impl(this.warnLogger, warn, "no property names found",
+                        sequence, LogType.of(log), getPropertyNames, ElapsedFrom.now()).log();
+            }
+            return propertyNames;
+        } catch (Exception ex) {
+            thrownException = true;
+            new LogMessage.Impl(this.verboseLogger, error, "failed getPropertyNames", sequence, LogType.of(failure), getPropertyNames, ElapsedFrom.now())
+                    .with(ex).log();
+            throw ex;
+        } finally {
+            if (!thrownException) {
+                new LogMessage.Impl(this.verboseLogger, trace, "finish getPropertyNames", sequence, LogType.of(success), getPropertyNames, ElapsedFrom.now()).log();
             }
         }
     }
@@ -250,6 +274,7 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
     private static MethodName.MDCWriter getPropertySchema = MethodName.of("getPropertySchema");
     private static MethodName.MDCWriter getVertexLabels = MethodName.of("getVertexLabels");
     private static MethodName.MDCWriter getEdgeLabels = MethodName.of("getEdgeLabels");
+    private static MethodName.MDCWriter getPropertyNames = MethodName.of("getPropertyNames");
 
     private static LogMessage.MDCWriter sequence = Sequence.incr();
     //endregion
