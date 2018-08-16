@@ -9,7 +9,6 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
@@ -22,7 +21,6 @@ import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.kayhut.fuse.model.Utils.getOrCreateId;
 import static org.jooby.Status.*;
 
 /**
@@ -47,11 +45,8 @@ public class StandardQueryController implements QueryController {
     //region QueryController Implementation
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
-        String queryId = getOrCreateId(request.getId());
-        QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis(), request.getTtl());
-
         return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
-                .data(driver.create(metadata, request.getQuery()))
+                .data(driver.create(request))
                 .successPredicate(response -> response.getData() != null && response.getData().getError() == null)
                 .compose();
     }

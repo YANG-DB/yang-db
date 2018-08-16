@@ -15,9 +15,10 @@ import com.kayhut.fuse.model.query.ParameterizedQuery;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.*;
+import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
-import com.kayhut.fuse.model.transport.PlanTraceOptions;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 
@@ -51,11 +52,49 @@ public abstract class QueryDriverBase implements QueryDriver {
 
     //region QueryDriver Implementation
     @Override
+    @Deprecated()
     public Optional<QueryResourceInfo> createAndFetch(CreateQueryRequest request) {
+        return create(request);
+    }
+
+    /**
+     * internal api
+     *
+     * @param request
+     * @param metadata
+     * @param query
+     * @return
+     */
+    private Optional<QueryResourceInfo> create(CreateQueryRequest request, QueryMetadata metadata, Query query) {
+        try {
+            AsgQuery asgQuery = this.queryTransformer.transform(query);
+
+            ValidationResult validationResult = this.queryValidator.validate(asgQuery);
+            if (!validationResult.valid()) {
+                return Optional.of(new QueryResourceInfo().error(
+                        new FuseError(Query.class.getSimpleName(),
+                                Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
+            }
+
+            this.resourceStore.addQueryResource(createResource(request, query, asgQuery, metadata));
+
+            return Optional.of(new QueryResourceInfo(
+                    urlSupplier.resourceUrl(metadata.getId()),
+                    metadata.getId(),
+                    urlSupplier.cursorStoreUrl(metadata.getId())));
+        } catch (Exception err) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(),
+                            err.getMessage())));
+        }
+    }
+
+    @Override
+    public Optional<QueryResourceInfo> create(CreateQueryRequest request) {
         try {
             String queryId = getOrCreateId(request.getId());
-            QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis(),request.getTtl());
-            Optional<QueryResourceInfo> queryResourceInfo = this.create(metadata, request.getQuery());
+            QueryMetadata metadata = new QueryMetadata(request.getType(), queryId, request.getName(), request.isSearchPlan(), System.currentTimeMillis(), request.getTtl());
+            Optional<QueryResourceInfo> queryResourceInfo = this.create(request, metadata, request.getQuery());
             if (!queryResourceInfo.isPresent()) {
                 return Optional.of(new QueryResourceInfo().error(
                         new FuseError(Query.class.getSimpleName(), "Failed creating query resource from given request: \n" + request.toString())));
@@ -125,31 +164,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                             err.getMessage())));
 
         }
-    }
 
-    @Override
-    public Optional<QueryResourceInfo> create(QueryMetadata metadata, Query query) {
-        try {
-            AsgQuery asgQuery = this.queryTransformer.transform(query);
-
-            ValidationResult validationResult = this.queryValidator.validate(asgQuery);
-            if (!validationResult.valid()) {
-                return Optional.of(new QueryResourceInfo().error(
-                        new FuseError(Query.class.getSimpleName(),
-                                Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
-            }
-
-            this.resourceStore.addQueryResource(createResource(query, asgQuery, metadata));
-
-            return Optional.of(new QueryResourceInfo(
-                    urlSupplier.resourceUrl(metadata.getId()),
-                    metadata.getId(),
-                    urlSupplier.cursorStoreUrl(metadata.getId())));
-        } catch (Exception err) {
-            return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(),
-                            err.getMessage())));
-        }
     }
 
     @Override
@@ -161,12 +176,27 @@ public abstract class QueryDriverBase implements QueryDriver {
                                 "Query with id[" + callRequest.getQuery().getName() + "] not found in store")));
 
             QueryResource queryResource = resourceStore.getQueryResource(callRequest.getQuery().getName()).get();
-            Optional<QueryResourceInfo> info = createAndFetch(new CreateQueryRequest(
+            final CreateQueryRequest storedRequest = queryResource.getRequest();
+
+            //get cursor request - letting the calling request override the sored page request
+            CreateCursorRequest cursorRequest = (callRequest.getCreateCursorRequest() != null
+                    ? callRequest.getCreateCursorRequest()
+                    : storedRequest.getCreateCursorRequest());
+
+            //get page request - letting the calling request override the sored page request
+            CreatePageRequest pageRequest = (callRequest.getPageCursorRequest() != null
+                    ? callRequest.getPageCursorRequest()
+                    : (storedRequest.getCreateCursorRequest() != null
+                            ? storedRequest.getCreateCursorRequest().getCreatePageRequest()
+                            : null));
+
+            //create the new volatile query
+            Optional<QueryResourceInfo> info = create(new CreateQueryRequest(
                     callRequest.getId(),
                     callRequest.getName(),
                     new ParameterizedQuery(queryResource.getQuery(), callRequest.getParameters()),
-                    new PlanTraceOptions(),
-                    callRequest.getCreateCursorRequest()));
+                    callRequest.getPlanTraceOptions(),
+                    cursorRequest.with(pageRequest)));
             //remove volatile query after execution returns result - should this be done right away since more pages can be requested ...
             //resourceStore.deleteQueryResource(callRequest.getId());
             return info;
@@ -246,7 +276,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     //endregion
 
     //region Protected Abstract Methods
-    protected abstract QueryResource createResource(Query query, AsgQuery asgQuery, QueryMetadata metadata);
+    protected abstract QueryResource createResource(CreateQueryRequest request, Query query, AsgQuery asgQuery, QueryMetadata metadata);
     //endregion
 
     //region Fields

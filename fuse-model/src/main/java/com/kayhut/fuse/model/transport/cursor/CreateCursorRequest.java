@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 
 public abstract class CreateCursorRequest {
+
     public enum Include {
         all,
         entities,
@@ -61,6 +62,10 @@ public abstract class CreateCursorRequest {
         this.include = include;
     }
 
+    public CreateCursorRequest with(CreatePageRequest createPageRequest) {
+        setCreatePageRequest(createPageRequest);
+        return this;
+    }
     //endregions
 
     @Override

@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +18,12 @@ import java.util.Optional;
  */
 public class QueryResource {
     //region Constructors
-    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan) {
-        this(query, asgQuery, queryMetadata, executionPlan, Optional.empty());
+    public QueryResource(CreateQueryRequest request, Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan) {
+        this(request, query, asgQuery, queryMetadata, executionPlan, Optional.empty());
     }
 
-    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan, Optional<PlanNode<Plan>> planNode) {
+    public QueryResource(CreateQueryRequest request, Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan, Optional<PlanNode<Plan>> planNode) {
+        this.request = request;
         this.query = query;
         this.asgQuery = asgQuery;
         this.queryMetadata = queryMetadata;
@@ -71,6 +73,10 @@ public class QueryResource {
         return this.executionPlan;
     }
 
+    public CreateQueryRequest getRequest() {
+        return request;
+    }
+
     public Optional<PlanNode<Plan>> getPlanNode() {
         return planNode;
     }
@@ -78,6 +84,7 @@ public class QueryResource {
 
     //region Fields
     private Query query;
+    private CreateQueryRequest request;
     private QueryMetadata queryMetadata;
     private PlanWithCost<Plan, PlanDetailedCost> executionPlan;
     private Optional<PlanNode<Plan>> planNode;

@@ -2,8 +2,11 @@ package com.kayhut.fuse.executor.resource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
+import com.kayhut.fuse.dispatcher.cursor.CreateCursorRequestDeserializer;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
@@ -13,6 +16,7 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
@@ -29,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.transport.CreateQueryRequest.Type._stored;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 public class PersistantResourceStore implements ResourceStore {
@@ -40,15 +45,19 @@ public class PersistantResourceStore implements ResourceStore {
     public static final String CREATION_TIME = "creationTime";
     public static final String QUERY = "query";
     public static final String ASG = "asg";
+    public static final String REQUEST = "request";
     public static final String TYPE = "type";
     public static final String RESOURCE = "resource";
     private Client client;
     private ObjectMapper mapper;
 
     @Inject
-    public PersistantResourceStore(Provider<Client> client) {
+    public PersistantResourceStore(Provider<Client> client,ObjectMapper mapper, Set<CompositeCursorFactory.Binding> cursorBindings) {
         this.client = client.get();
-        this.mapper = new ObjectMapper();
+        this.mapper = mapper;
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(CreateCursorRequest.class, new CreateCursorRequestDeserializer(cursorBindings));
+        mapper.registerModules(module);
     }
 
     @Override
@@ -56,7 +65,7 @@ public class PersistantResourceStore implements ResourceStore {
         while (true) {
             try {
                 final SearchRequestBuilder search = client.prepareSearch(SYSTEM);
-                final SearchResponse response = search.setQuery(termQuery(TYPE, QUERY)).get();
+                final SearchResponse response = search.setQuery(matchAllQuery()).get();
                 return Arrays.asList(response.getHits().getHits()).stream()
                         .map(hit -> {
                             try {
@@ -81,8 +90,9 @@ public class PersistantResourceStore implements ResourceStore {
         final String creationTime = hit.get(CREATION_TIME).toString();
         final Query query = mapper.readValue(hit.getOrDefault(QUERY, "{}").toString(), Query.class);
         final AsgQuery asgQuery = mapper.readValue(hit.getOrDefault(ASG, "{}").toString(), AsgQuery.class);
-        final QueryMetadata queryMetadata = new QueryMetadata(_stored, id, name, false, Long.valueOf(creationTime), Long.valueOf(ttl));
-        return new QueryResource(query, asgQuery, queryMetadata, PlanWithCost.EMPTY_PLAN);
+        final CreateQueryRequest request = mapper.readValue(hit.getOrDefault(REQUEST,"{}").toString(),CreateQueryRequest.class);
+        final QueryMetadata queryMetadata = new QueryMetadata(_stored, id, name, request.isSearchPlan(), Long.valueOf(creationTime), Long.valueOf(ttl));
+        return new QueryResource(request, query, asgQuery, queryMetadata, PlanWithCost.EMPTY_PLAN);
     }
 
     @Override
@@ -106,6 +116,7 @@ public class PersistantResourceStore implements ResourceStore {
                             .field(NAME, queryResource.getQueryMetadata().getName())
                             .field(TTL, queryResource.getQueryMetadata().getTtl())
                             .field(CREATION_TIME, queryResource.getQueryMetadata().getCreationTime())
+                            .field(REQUEST, mapper.writeValueAsString(queryResource.getRequest()))
                             .field(QUERY, mapper.writeValueAsString(queryResource.getQuery()))
                             .field(ASG, mapper.writeValueAsString(queryResource.getAsgQuery()))
                             .endObject()

@@ -18,7 +18,8 @@ import java.util.Optional;
  * Created by lior on 21/02/2017.
  */
 public interface QueryDriver {
-    Optional<QueryResourceInfo> create(QueryMetadata metadata, Query input);
+
+    Optional<QueryResourceInfo> create(CreateQueryRequest queryRequest);
 
     Optional<QueryResourceInfo> call(ExecuteStoredQueryRequest queryRequest);
 

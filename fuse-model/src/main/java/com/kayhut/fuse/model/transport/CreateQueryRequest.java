@@ -36,6 +36,11 @@ public class CreateQueryRequest {
         this.planTraceOptions = planTraceOptions;
     }
 
+    public CreateQueryRequest(String id, String name, Query query,  CreateCursorRequest createCursorRequest) {
+        this(id, name, query, new PlanTraceOptions());
+        this.createCursorRequest = createCursorRequest;
+    }
+
     public CreateQueryRequest(String id, String name, Query query, PlanTraceOptions planTraceOptions, CreateCursorRequest createCursorRequest) {
         this(id, name, query, planTraceOptions);
         this.createCursorRequest = createCursorRequest;
@@ -46,6 +51,15 @@ public class CreateQueryRequest {
     public CreateQueryRequest type(Type type) {
         this.type = type;
         return this;
+    }
+
+    public CreateQueryRequest searchPlan(boolean searchPlan) {
+        this.searchPlan = searchPlan;
+        return this;
+    }
+
+    public boolean isSearchPlan() {
+        return searchPlan;
     }
 
     public String getId() {
@@ -110,7 +124,7 @@ public class CreateQueryRequest {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", query=" + QueryDescriptor.toString(query) + "\n"+
-                ", createCursorRequest=" + createCursorRequest!=null ? createCursorRequest.toString() : "None" +
+                ", createCursorRequest=" + (createCursorRequest!=null ? createCursorRequest.toString() : "None" )+
                 '}';
     }
 
@@ -121,6 +135,7 @@ public class CreateQueryRequest {
     private String name;
     private Query query;
     private long ttl;
+    private boolean searchPlan = true;
     private PlanTraceOptions planTraceOptions;
 
     private CreateCursorRequest createCursorRequest;

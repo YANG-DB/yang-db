@@ -6,11 +6,16 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
+import com.google.inject.internal.SingletonScope;
+import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.cursor.CreateCursorRequestDeserializer;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStoreFactory;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
+import com.kayhut.fuse.executor.resource.PersistantResourceStore;
 import com.kayhut.fuse.model.Range;
 import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.JacksonQueryDescriptor;
@@ -86,6 +91,7 @@ public class ServiceModule extends ModuleBase {
 
         // register PostConfigurer
         binder.bind(PostConfigurer.class).asEagerSingleton();
+
     }
     //endregion
 

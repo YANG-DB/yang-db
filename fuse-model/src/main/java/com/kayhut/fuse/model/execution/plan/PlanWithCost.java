@@ -1,7 +1,12 @@
 package com.kayhut.fuse.model.execution.plan;
 
 import com.kayhut.fuse.model.descriptors.ToStringDescriptor;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
+
+import java.util.Collections;
+
+import static com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp.empty;
 
 /**
  * Created by Roman on 20/04/2017.
@@ -12,7 +17,7 @@ public class PlanWithCost<P, C> implements IPlan {
 
     public final static class EmptyPlanWithCost extends PlanWithCost {
         private EmptyPlanWithCost() {
-            super(null    , null);
+            super(new Plan(Collections.emptyList()),null);
         }
     }
 

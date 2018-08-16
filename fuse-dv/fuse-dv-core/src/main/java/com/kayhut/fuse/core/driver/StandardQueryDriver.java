@@ -17,6 +17,7 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 
 /**
  * Created by lior on 20/02/2017.
@@ -41,7 +42,7 @@ public class StandardQueryDriver extends QueryDriverBase {
 
     //region QueryDriverBase Implementation
     @Override
-    protected QueryResource createResource(Query query, AsgQuery asgQuery, QueryMetadata metadata) {
+    protected QueryResource createResource(CreateQueryRequest request, Query query, AsgQuery asgQuery, QueryMetadata metadata) {
         AsgQuery newAsgQuery = this.queryRewriter.transform(asgQuery);
 
         PlanWithCost<Plan, PlanDetailedCost> planWithCost = PlanWithCost.EMPTY_PLAN;
@@ -54,7 +55,7 @@ public class StandardQueryDriver extends QueryDriverBase {
             }
         }
 
-        return new QueryResource(query, newAsgQuery, metadata, planWithCost, null);
+        return new QueryResource(request, query, newAsgQuery, metadata, planWithCost, null);
     }
     //endregion
 

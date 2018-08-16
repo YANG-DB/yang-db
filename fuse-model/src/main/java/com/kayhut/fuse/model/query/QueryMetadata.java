@@ -11,15 +11,6 @@ public final class QueryMetadata {
         QueryMetadata getQueryMetadata();
     }
 
-    //region Constructors
-    public QueryMetadata(String id, String name, long creationTime, long ttl) {
-        this.id = id;
-        this.name = name;
-        this.creationTime = creationTime;
-        this.ttl = ttl;
-    }
-    //endregion
-
     //region Properties
     public QueryMetadata(Type type,String id, String name, boolean searchPlan ,long creationTime,long ttl) {
         this.type = type;

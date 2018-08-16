@@ -6,7 +6,7 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 import java.util.Collection;
 
-public class ExecuteStoredQueryRequest extends CreateQueryRequest{
+public class ExecuteStoredQueryRequest extends CreateQueryRequest {
 
     private final Collection<NamedParameter> parameters;
 
@@ -22,5 +22,9 @@ public class ExecuteStoredQueryRequest extends CreateQueryRequest{
 
     public Collection<NamedParameter> getParameters() {
         return parameters;
+    }
+
+    public CreatePageRequest getPageCursorRequest() {
+        return (getCreateCursorRequest() != null ? getCreateCursorRequest().getCreatePageRequest() : null);
     }
 }

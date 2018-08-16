@@ -19,8 +19,8 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.QueryMetadata;
-import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResultBase;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 import java.util.Optional;
@@ -45,8 +45,8 @@ public class MockDriver {
 
         //region QueryDriverBase Implementation
         @Override
-        protected QueryResource createResource(com.kayhut.fuse.model.query.Query query, AsgQuery asgQuery, QueryMetadata metadata) {
-            return new QueryResource(query, asgQuery, metadata, new PlanWithCost<>(new Plan(), new PlanDetailedCost()), Optional.empty());
+        protected QueryResource createResource(CreateQueryRequest request, com.kayhut.fuse.model.query.Query query, AsgQuery asgQuery, QueryMetadata metadata) {
+            return new QueryResource(request, query, asgQuery, metadata, new PlanWithCost<>(new Plan(), new PlanDetailedCost()), Optional.empty());
         }
         //endregion
     }
