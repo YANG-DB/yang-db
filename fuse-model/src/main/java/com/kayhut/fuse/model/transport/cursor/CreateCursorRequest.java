@@ -5,8 +5,6 @@ package com.kayhut.fuse.model.transport.cursor;
  */
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 
 public abstract class CreateCursorRequest {
