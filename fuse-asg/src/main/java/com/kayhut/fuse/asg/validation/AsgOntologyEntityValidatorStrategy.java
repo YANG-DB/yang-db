@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.elements;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.nextDescendants;
 import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 
 public class AsgOntologyEntityValidatorStrategy implements AsgValidatorStrategy {
@@ -25,9 +26,10 @@ public class AsgOntologyEntityValidatorStrategy implements AsgValidatorStrategy 
     public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {
         List<String> errors = new ArrayList<>();
         Ontology.Accessor accessor = context.getOntologyAccessor();
-        List<AsgEBase<EBase>> list = elements(query.getStart(), (asgEBase -> Collections.emptyList()), AsgEBase::getNext,
+
+        List<AsgEBase<EBase>> list = nextDescendants(query.getStart(),
                 e -> EEntityBase.class.isAssignableFrom(e.geteBase().getClass()) || e.geteBase() instanceof Rel,
-                asgEBase -> true, Collections.emptyList());
+                asgEBase -> true);
 
         list.forEach(e-> {
             EBase eBase = e.geteBase();
