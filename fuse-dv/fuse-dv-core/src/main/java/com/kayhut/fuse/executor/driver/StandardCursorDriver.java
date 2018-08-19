@@ -59,7 +59,7 @@ public class StandardCursorDriver extends CursorDriverBase {
             throw new RuntimeException(ex);
         }
 
-        traversal.asAdmin().getSideEffects().register("profiler", Profiler.Impl::new, null);
+        //traversal.asAdmin().getSideEffects().register("profiler", Profiler.Impl::new, null);
 
         Cursor cursor = this.cursorFactory.createCursor(
                 new TraversalCursorContext(
