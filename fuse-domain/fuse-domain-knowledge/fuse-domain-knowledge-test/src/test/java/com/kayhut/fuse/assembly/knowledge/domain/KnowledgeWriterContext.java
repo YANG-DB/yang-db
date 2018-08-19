@@ -3,6 +3,7 @@ package com.kayhut.fuse.assembly.knowledge.domain;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
+import javaslang.collection.Stream;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -15,6 +16,7 @@ import org.elasticsearch.rest.RestStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -120,6 +122,10 @@ public class KnowledgeWriterContext {
             builder.routing().ifPresent(request::setRouting);
             bulk.add(request);
         }
+    }
+
+    public static long countEntitiesAndAdditionals(EntityBuilder... builders) {
+        return builders.length+Arrays.stream(builders).mapToInt(b->b.additional().size()).sum();
     }
 
     public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx, String index, T... builders) throws JsonProcessingException {

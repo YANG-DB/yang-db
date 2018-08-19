@@ -322,10 +322,10 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.of(insightPartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
                                         new GraphElementPropertySchema.Impl(CONTEXT, STRING),
-                                        new GraphElementPropertySchema.Impl(VALUE, STRING,
+                                        new GraphElementPropertySchema.Impl(CONTENT, STRING,
                                                 Arrays.asList(
-                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl(VALUE + "." + KEYWORD),
-                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl(VALUE, 10)))))
+                                                        new GraphElementPropertySchema.ExactIndexingSchema.Impl(CONTENT + "." + KEYWORD),
+                                                        new GraphElementPropertySchema.NgramsIndexingSchema.Impl(CONTENT, 10)))))
                                         .appendAll(metadataProperties).toJavaList())),
                 Arrays.asList(
                         new GraphEdgeSchema.Impl(
