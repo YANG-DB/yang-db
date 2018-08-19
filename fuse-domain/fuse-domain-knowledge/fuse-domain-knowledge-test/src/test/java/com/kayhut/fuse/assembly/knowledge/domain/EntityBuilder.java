@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 //todo - for kobi usage
 public class EntityBuilder extends EntityId {
@@ -53,7 +54,7 @@ public class EntityBuilder extends EntityId {
     }
 
     public void rel(RelationBuilder relationBuilder, String dir) {
-        additional.add(new RelationBuilder.EntityRelationBuilder(this.id(), relationBuilder,dir));
+        additional.add(new RelationBuilder.EntityRelationBuilder(this.id(), relationBuilder, dir));
         //add as entities sub resource
         subEntities.add(relationBuilder.toEntity());
 
@@ -123,7 +124,7 @@ public class EntityBuilder extends EntityId {
         return this;
     }
 
-    public EntityBuilder value(ValueBuilder ... value) {
+    public EntityBuilder value(ValueBuilder... value) {
         Arrays.asList(value).forEach(this::value);
         return this;
     }
@@ -150,7 +151,7 @@ public class EntityBuilder extends EntityId {
     }
 
     public EntityBuilder insight(InsightBuilder insight) {
-        additional.add(new InsightBuilder.EntityInsightBuilder(logicalId,context,insight.id()));
+        additional.add(new InsightBuilder.EntityInsightBuilder(logicalId, context, insight.id()));
         //add as entities sub resource
         subEntities.add(insight.toEntity());
         //add a relation
@@ -207,7 +208,7 @@ public class EntityBuilder extends EntityId {
         on.put("logicalId", logicalId);
         on.put("context", context);
         on.put("category", category);
-        on.put("refs", collectRefs(mapper,refs));
+        on.put("refs", collectRefs(mapper, refs));
         return on;
     }
 
@@ -231,12 +232,21 @@ public class EntityBuilder extends EntityId {
     }
 
     public List<Relationship> withRelations() {
+        return withRelations(o -> true);
+    }
+
+    public List<Relationship> withRelations(String relationType, String... outSideId) {
+        return withRelations(p -> p.getrType().equals(relationType) && Arrays.asList(outSideId).contains(p.geteID2()));
+    }
+
+    public List<Relationship> withRelations(Predicate<Relationship> filter) {
         return Stream.ofAll(hasGlobal)
                 .appendAll(hasValues)
                 .appendAll(hasRefs)
                 .appendAll(hasRel)
                 .appendAll(hasInsights)
                 .appendAll(hasFiles)
+                .filter(filter)
                 .toJavaList();
     }
 

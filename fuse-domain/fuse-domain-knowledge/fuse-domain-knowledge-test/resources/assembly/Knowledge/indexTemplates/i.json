@@ -56,7 +56,7 @@
         "context": {
           "type": "keyword"
         },
-        "value": {
+        "content": {
           "type": "text",
           "analyzer": "knowledge_ngram_analyzer",
           "search_analyzer": "knowledge_standard_analyzer",
