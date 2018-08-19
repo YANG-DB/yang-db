@@ -6,7 +6,7 @@
     <groupId>com.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.45-SNAPSHOT</version>
 
     <modules>
         <module>fuse-model</module>
@@ -18,11 +18,6 @@
         <module>fuse-domain</module>
         <module>fuse-geojson</module>
     </modules>
-
-    <scm>
-        <developerConnection>scm:git:http://gita.westeurope.cloudapp.azure.com/fuse/Fuse.git</developerConnection>
-        <tag>1.0</tag>
-    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -181,6 +176,26 @@
             <dependency>
                 <groupId>com.kayhut</groupId>
                 <artifactId>fuse-geojson</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-ext</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-datagen</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-test</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-poc</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <!-- fuse -->
@@ -484,6 +499,20 @@
                 <artifactId>fuse-asg</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-test</artifactId>
+                <version>${fuse.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-dv-core</artifactId>
+                <type>test-jar</type>
+                <version>${fuse.version}</version>
                 <scope>test</scope>
             </dependency>
             <!-- fuse -->

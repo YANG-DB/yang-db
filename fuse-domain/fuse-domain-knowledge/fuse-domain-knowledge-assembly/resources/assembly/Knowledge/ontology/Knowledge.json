@@ -28,7 +28,6 @@
       "eType": "Evalue",
       "name": "Evalue",
       "properties": [
-        "entityId",
         "logicalId",
         "context",
         "authorization",
@@ -113,7 +112,6 @@
       "name": "Efile",
       "properties": [
         "logicalId",
-        "entityId",
         "context",
         "name",
         "path",

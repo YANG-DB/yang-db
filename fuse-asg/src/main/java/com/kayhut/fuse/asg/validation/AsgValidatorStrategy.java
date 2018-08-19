@@ -1,4 +1,4 @@
-package com.kayhut.fuse.asg.strategy;
+package com.kayhut.fuse.asg.validation;
 
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;

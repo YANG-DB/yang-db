@@ -1,4 +1,4 @@
-package com.kayhut.fuse.executor.driver;
+package com.kayhut.fuse.core.driver;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.driver.PageDriverBase;
@@ -7,7 +7,6 @@ import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
-import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.QueryResultBase;
 
 /**

@@ -1,6 +1,6 @@
 package com.kayhut.fuse.gta.strategy.discrete;
 
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -20,16 +20,26 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.FuseGraphTraversalSource;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
+import com.kayhut.fuse.unipop.structure.FuseUniGraph;
+import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversalStrategies;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.unipop.process.strategyregistrar.StrategyProvider;
+import org.unipop.query.controller.ControllerManager;
+import org.unipop.query.controller.ControllerManagerFactory;
+import org.unipop.query.controller.UniQueryController;
+import org.unipop.structure.UniGraph;
 
 import java.util.Collections;
+import java.util.Set;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
@@ -123,11 +133,21 @@ public class EntityOpTranslationStrategyTest {
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOnt()).thenReturn(new Ontology.Accessor(ontology));
-        when(context.getGraphTraversalSource()).thenReturn(new PromiseGraph().traversal());
+        when(context.getGraphTraversalSource()).thenReturn(new FuseGraphTraversalSource(new FuseUniGraph(null, graph -> new ControllerManager() {
+            @Override
+            public Set<UniQueryController> getControllers() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public void close() {
+
+            }
+        }, DefaultTraversalStrategies::new)));
 
         GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(0), context);
         GraphTraversal expectedTraversal = __.start().V().as("A")
-                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Person")));
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Person")));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -171,7 +191,7 @@ public class EntityOpTranslationStrategyTest {
         GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(2), context);
         GraphTraversal expectedTraversal = __.start().otherV()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
-                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Person")))
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Person")))
                 .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);

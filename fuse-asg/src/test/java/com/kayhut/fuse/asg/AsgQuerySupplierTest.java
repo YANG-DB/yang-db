@@ -56,7 +56,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery1ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q1Obj,new NextEbaseFactory(), new BNextFactory());
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q1Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -81,7 +81,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery5ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q5Obj,new NextEbaseFactory(), new BNextFactory() );
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q5Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -106,7 +106,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery9ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q9Obj,new NextEbaseFactory(), new BNextFactory());
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q9Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -136,7 +136,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery187ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q187Obj,new NextEbaseFactory(), new BNextFactory() );
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q187Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -180,7 +180,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery3_1ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q3_1Obj,new NextEbaseFactory(), new BNextFactory() );
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q3_1Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -204,7 +204,7 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void transformQuery11ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q11Obj,new NextEbaseFactory(), new BNextFactory());
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q11Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
         System.out.println(AsgQueryDescriptor.print(asgQuery));
@@ -294,7 +294,7 @@ public class AsgQuerySupplierTest {
 
     private static void createQ9(){
         try {
-            q9Obj = new ObjectMapper().readValue("{\"ont\":\"Dragons\",\"name\":\"Q9\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":2,\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,6]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":3,\"dir\":\"R\",\"next\":4,\"b\":5},{\"eNum\":4,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2},{\"eNum\":5,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"1\",\"con\":{\"op\":\"in range\",\"expr\":[\"980-01-01T00:00:00.000Z\",\"981-01-01T00:00:00.000Z\"],\"iType\":\"[]\"}},{\"eNum\":6,\"type\":\"Rel\",\"rType\":3,\"dir\":\"R\",\"next\":7,\"b\":8},{\"eNum\":7,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2},{\"eNum\":8,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"2\",\"con\":{\"op\":\"in range\",\"expr\":[\"984-01-01T00:00:00.000\",\"985-01-01T00:00:00.000\"],\"iType\":\"[]\"}}]}", Query.class);
+            q9Obj = new ObjectMapper().readValue("{\"ont\":\"Dragons\",\"name\":\"Q9\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":2,\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,6]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":3,\"dir\":\"R\",\"next\":4,\"b\":5},{\"eNum\":4,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2},{\"eNum\":5,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"1\",\"con\":{\"type\":\"Constraint\",\"op\":\"in range\",\"expr\":[\"980-01-01T00:00:00.000Z\",\"981-01-01T00:00:00.000Z\"],\"iType\":\"[]\"}},{\"eNum\":6,\"type\":\"Rel\",\"rType\":3,\"dir\":\"R\",\"next\":7,\"b\":8},{\"eNum\":7,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2},{\"eNum\":8,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"2\",\"con\":{\"type\":\"Constraint\",\"op\":\"in range\",\"expr\":[\"984-01-01T00:00:00.000\",\"985-01-01T00:00:00.000\"],\"iType\":\"[]\"}}]}", Query.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -302,7 +302,7 @@ public class AsgQuerySupplierTest {
 
     private static void createQ187(){
         try {
-            q187Obj = new ObjectMapper().readValue("{\"ont\":\"Dragons\",\"name\":\"Q187\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"EConcrete\",\"eTag\":\"A\",\"eID\":\"1234\",\"eType\":2,\"eName\":\"Balerion\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":3,\"dir\":\"R\",\"next\":4,\"b\":5},{\"eNum\":4,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2},{\"eNum\":5,\"type\":\"HQuant\",\"qType\":\"all\",\"b\":[6,7]},{\"eNum\":6,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"1\",\"con\":{\"op\":\"gt\",\"expr\":\"1010-01-01T00:00:00.000\"}},{\"eNum\":7,\"type\":\"RelProp\",\"pType\":\"2\",\"pTag\":\"2\",\"con\":{\"op\":\"lt\",\"expr\":\"10\"}}]}", Query.class);
+            q187Obj = new ObjectMapper().readValue("{\"ont\":\"Dragons\",\"name\":\"Q187\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"EConcrete\",\"eTag\":\"A\",\"eID\":\"1234\",\"eType\":2,\"eName\":\"Balerion\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":3,\"dir\":\"R\",\"next\":4,\"b\":5},{\"eNum\":4,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2},{\"eNum\":5,\"type\":\"HQuant\",\"qType\":\"all\",\"b\":[6,7]},{\"eNum\":6,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"1\",\"con\":{\"type\":\"Constraint\",\"op\":\"gt\",\"expr\":\"1010-01-01T00:00:00.000\"}},{\"eNum\":7,\"type\":\"RelProp\",\"pType\":\"2\",\"pTag\":\"2\",\"con\":{\"type\":\"Constraint\",\"op\":\"lt\",\"expr\":\"10\"}}]}", Query.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -310,7 +310,7 @@ public class AsgQuerySupplierTest {
 
     private static void createQ3_1() {
         try {
-            q3_1Obj = new ObjectMapper().readValue("{\"ont\":\"Dragons\",\"name\":\"Q3-1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":2,\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":1,\"dir\":\"L\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":1,\"next\":4},{\"eNum\":4,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}}]}", Query.class);
+            q3_1Obj = new ObjectMapper().readValue("{\"ont\":\"Dragons\",\"name\":\"Q3-1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":2,\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":1,\"dir\":\"L\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":1,\"next\":4},{\"eNum\":4,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"type\":\"Constraint\",\"op\":\"eq\",\"expr\":\"Brandon\"}}]}", Query.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -318,7 +318,7 @@ public class AsgQuerySupplierTest {
 
     private static void createQ11() {
         try {
-            q11Obj = new ObjectMapper().readValue("{\"ont\":\"Dragons\",\"name\":\"Q11\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":1,\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,6]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":6,\"dir\":\"R\",\"next\":5,\"b\":4},{\"eNum\":4,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"1\",\"con\":{\"op\":\"empty\"}},{\"eNum\":5,\"type\":\"EConcrete\",\"eTag\":\"B\",\"eID\":\"22345670\",\"eType\":4,\"eName\":\"Masons\"},{\"eNum\":6,\"type\":\"Rel\",\"rType\":5,\"dir\":\"R\",\"next\":8,\"b\":7},{\"eNum\":7,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"2\",\"con\":{\"op\":\"ge\",\"expr\":\"1011-01-01T00:00:00.000\"}},{\"eNum\":8,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":1,\"next\":9},{\"eNum\":9,\"type\":\"Rel\",\"rType\":6,\"dir\":\"R\",\"next\":11,\"b\":10},{\"eNum\":10,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"3\",\"con\":{\"op\":\"ge\",\"expr\":\"1010-06-01T00:00:00.000\"}},{\"eNum\":11,\"type\":\"Quant2\",\"qType\":\"some\",\"next\":[12,13]},{\"eNum\":12,\"type\":\"EConcrete\",\"eTag\":\"D\",\"eID\":\"22345671\",\"eType\":4,\"eName\":\"Saddlers\"},{\"eNum\":13,\"type\":\"EConcrete\",\"eTag\":\"E\",\"eID\":\"22345672\",\"eType\":4,\"eName\":\"Blacksmiths\"}]}", Query.class);
+            q11Obj = new ObjectMapper().readValue("{\"ont\":\"Dragons\",\"name\":\"Q11\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":1,\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,6]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":6,\"dir\":\"R\",\"next\":5,\"b\":4},{\"eNum\":4,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"1\",\"con\":{\"type\":\"Constraint\",\"op\":\"empty\"}},{\"eNum\":5,\"type\":\"EConcrete\",\"eTag\":\"B\",\"eID\":\"22345670\",\"eType\":4,\"eName\":\"Masons\"},{\"eNum\":6,\"type\":\"Rel\",\"rType\":5,\"dir\":\"R\",\"next\":8,\"b\":7},{\"eNum\":7,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"2\",\"con\":{\"type\":\"Constraint\",\"op\":\"ge\",\"expr\":\"1011-01-01T00:00:00.000\"}},{\"eNum\":8,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":1,\"next\":9},{\"eNum\":9,\"type\":\"Rel\",\"rType\":6,\"dir\":\"R\",\"next\":11,\"b\":10},{\"eNum\":10,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"3\",\"con\":{\"type\":\"Constraint\",\"op\":\"ge\",\"expr\":\"1010-06-01T00:00:00.000\"}},{\"eNum\":11,\"type\":\"Quant2\",\"qType\":\"some\",\"next\":[12,13]},{\"eNum\":12,\"type\":\"EConcrete\",\"eTag\":\"D\",\"eID\":\"22345671\",\"eType\":4,\"eName\":\"Saddlers\"},{\"eNum\":13,\"type\":\"EConcrete\",\"eTag\":\"E\",\"eID\":\"22345672\",\"eType\":4,\"eName\":\"Blacksmiths\"}]}", Query.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

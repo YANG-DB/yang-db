@@ -1,11 +1,15 @@
 package com.kayhut.fuse.model.query.properties.constraint;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-/**
- * Created by benishue on 17/02/2017.
- */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(name = "ParameterizedConstraint", value = ParameterizedConstraint.class)})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Constraint {
 
     //region Ctrs
@@ -31,7 +35,7 @@ public class Constraint {
             return false;
         }
 
-        Constraint other = (Constraint)o;
+        Constraint other = (Constraint) o;
 
         if (this.op == null) {
             if (other.op != null) {

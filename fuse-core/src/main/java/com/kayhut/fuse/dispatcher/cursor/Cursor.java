@@ -1,6 +1,5 @@
 package com.kayhut.fuse.dispatcher.cursor;
 
-import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.QueryResultBase;
 
 /**

@@ -1,6 +1,6 @@
 package com.kayhut.fuse.gta.strategy.discrete;
 
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -18,7 +18,7 @@ import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
@@ -111,9 +111,9 @@ public class RelationFilterOpTranslationStrategyTest {
 
         GraphTraversal expectedTraversal = __.start()
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.and(
-                                __.has(T.label, "Fire"),
-                                __.has("timestamp", P.gt(10)))));
+                        Constraint.by(__.start().and(
+                                __.start().has(T.label, "Fire"),
+                                __.start().has("timestamp", P.gt(10)))));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -123,9 +123,9 @@ public class RelationFilterOpTranslationStrategyTest {
     public void test_rel_or(){
         GraphTraversal expectedTraversal = __.start()
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.and(
-                                __.has(T.label, "Fire"),
-                                __.or(__.has("timestamp", P.gt(10)), __.has("hour", P.gt(10)))
+                        Constraint.by(__.start().and(
+                                __.start().has(T.label, "Fire"),
+                                __.start().or(__.start().has("timestamp", P.gt(10)), __.start().has("hour", P.gt(10)))
                         )));
         test_rel_group_inner(simpleQueryOr("name", "ontName"), expectedTraversal);
     }
@@ -134,9 +134,9 @@ public class RelationFilterOpTranslationStrategyTest {
     public void test_rel_and(){
         GraphTraversal expectedTraversal = __.start()
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.and(
-                                __.has(T.label, "Fire"),
-                                __.and(__.has("timestamp", P.gt(10)), __.has("hour", P.gt(10)))
+                        Constraint.by(__.start().and(
+                                __.start().has(T.label, "Fire"),
+                                __.start().and(__.start().has("timestamp", P.gt(10)), __.start().has("hour", P.gt(10)))
                         )));
         test_rel_group_inner(simpleQueryAnd("name", "ontName"), expectedTraversal);
     }
@@ -229,9 +229,9 @@ public class RelationFilterOpTranslationStrategyTest {
 
         GraphTraversal expectedTraversal = __.start()
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
-                        Constraint.by(__.and(
-                                __.has(T.label, "Fire"),
-                                __.has("timestamp", P.gt(10)))));
+                        Constraint.by(__.start().and(
+                                __.start().has(T.label, "Fire"),
+                                __.start().has("timestamp", P.gt(10)))));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

@@ -1,25 +1,26 @@
 package com.kayhut.fuse.services.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.query.QueryMetadata;
-import com.kayhut.fuse.model.resourceInfo.*;
+import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.kayhut.fuse.model.Utils.getOrCreateId;
 import static org.jooby.Status.*;
 
 /**
@@ -44,11 +45,8 @@ public class StandardQueryController implements QueryController {
     //region QueryController Implementation
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
-        String queryId = getOrCreateId(request.getId());
-        QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis());
-
         return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
-                .data(driver.create(metadata, request.getQuery()))
+                .data(driver.create(request))
                 .successPredicate(response -> response.getData() != null && response.getData().getError() == null)
                 .compose();
     }
@@ -134,6 +132,14 @@ public class StandardQueryController implements QueryController {
                         queryResourceInfoResponse.getData().getResourceId(),
                         queryResourceInfoResponse.getData().getCursorStoreUrl(),
                         cursorResourceInfoResponse.getData())))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<QueryResourceInfo> callAndFetch(ExecuteStoredQueryRequest request) {
+        Optional<QueryResourceInfo> queryResourceInfoResponse = driver.call(request);
+        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
+                .data(queryResourceInfoResponse)
                 .compose();
     }
 

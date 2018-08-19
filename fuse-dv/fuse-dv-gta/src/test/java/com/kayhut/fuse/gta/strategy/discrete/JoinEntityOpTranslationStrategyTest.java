@@ -2,7 +2,7 @@ package com.kayhut.fuse.gta.strategy.discrete;
 
 import com.kayhut.fuse.dispatcher.gta.PlanTraversalTranslator;
 import com.kayhut.fuse.dispatcher.gta.TranslationContext;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.gta.strategy.common.JoinEntityOpTranslationStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;

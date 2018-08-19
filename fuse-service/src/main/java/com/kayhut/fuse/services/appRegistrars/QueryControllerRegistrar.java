@@ -17,6 +17,7 @@ import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.services.controllers.QueryController;
 import org.jooby.Jooby;
@@ -61,6 +62,20 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
                             this.getController(app).create(createQueryRequest) :
                             this.getController(app).createAndFetch(createQueryRequest);
+
+                    return Results.with(response, response.status());
+                });
+
+        /** create a query */
+        app.use(appUrlSupplier.queryStoreUrl()+"/call")
+                .post(req -> {
+                    Route.of("callQuery").write();
+
+                    ExecuteStoredQueryRequest callQueryRequest = req.body(ExecuteStoredQueryRequest.class);
+                    req.set(ExecuteStoredQueryRequest.class, callQueryRequest);
+                    req.set(PlanTraceOptions.class, callQueryRequest.getPlanTraceOptions());
+
+                    ContentResponse<QueryResourceInfo> response = this.getController(app).callAndFetch(callQueryRequest);
 
                     return Results.with(response, response.status());
                 });

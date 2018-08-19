@@ -35,8 +35,16 @@ public class CreatePageRequest {
     }
     //endregion
 
+    @Override
+    public String toString() {
+        return "CreatePageRequest{" +
+                "pageSize=" + pageSize +
+                ", fetch=" + fetch +
+                '}';
+    }
+
     //region Fields
-    private int pageSize;
+    private int pageSize = 1000;
     private boolean fetch;
     //endregion
 }

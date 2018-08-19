@@ -4,8 +4,7 @@ package com.kayhut.fuse.unipop.schemaProviders;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.process.traversal.util.AndP;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Collections;
@@ -34,7 +33,7 @@ public interface GraphElementSchema {
         //region Constructors
         public Impl(String label, GraphElementRouting routing) {
             this(label,
-                    new GraphElementConstraint.Impl(__.has(T.label, label)),
+                    new GraphElementConstraint.Impl(__.start().has(T.label, label)),
                     Optional.of(routing),
                     Optional.empty(),
                     Collections.emptyList());
@@ -42,7 +41,7 @@ public interface GraphElementSchema {
 
         public Impl(String label, IndexPartitions indexPartitions) {
             this(label,
-                    new GraphElementConstraint.Impl(__.has(T.label, label)),
+                    new GraphElementConstraint.Impl(__.start().has(T.label, label)),
                     Optional.empty(),
                     Optional.of(indexPartitions),
                     Collections.emptyList());
@@ -51,7 +50,7 @@ public interface GraphElementSchema {
         public Impl(String label,
                     Optional<GraphElementRouting> routing,
                     Optional<IndexPartitions> indexPartitions) {
-            this(label, new GraphElementConstraint.Impl(__.has(T.label, label)), routing, indexPartitions, Collections.emptyList());
+            this(label, new GraphElementConstraint.Impl(__.start().has(T.label, label)), routing, indexPartitions, Collections.emptyList());
         }
 
         public Impl(String label,

@@ -1,6 +1,5 @@
 package com.kayhut.fuse.services.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
@@ -28,7 +27,7 @@ public class StandardPageController implements PageController {
     //region PageController Implementation
     @Override
     public ContentResponse<PageResourceInfo> create(String queryId, String cursorId, CreatePageRequest createPageRequest) {
-        return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR )
+        return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR)
                 .data(this.driver.create(queryId, cursorId, createPageRequest.getPageSize()))
                 .compose();
     }

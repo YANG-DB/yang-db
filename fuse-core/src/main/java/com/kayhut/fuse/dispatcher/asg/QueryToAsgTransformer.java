@@ -7,6 +7,7 @@ import com.kayhut.fuse.dispatcher.query.QueryTransformer;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.ParameterizedQuery;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Start;
 import javaslang.collection.Stream;
@@ -42,13 +43,16 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
         queryAsgElements.put(asgEBaseStart.geteNum(),asgEBaseStart);
         buildSubGraphRec(asgEBaseStart, queryElements);
 
-        AsgQuery asgQuery = AsgQuery.AsgQueryBuilder.anAsgQuery()
+        AsgQuery.AsgQueryBuilder builder = AsgQuery.AsgQueryBuilder.anAsgQuery()
                 .withName(query.getName())
                 .withOnt(query.getOnt())
                 .withStart(asgEBaseStart)
-                .withElements(queryAsgElements.values())
-                .build();
-        return asgQuery;
+                .withElements(queryAsgElements.values());
+
+        if(query instanceof ParameterizedQuery) {
+            builder.withParams(((ParameterizedQuery) query).getParams());
+        }
+        return builder.build();
     }
     //endregion
 

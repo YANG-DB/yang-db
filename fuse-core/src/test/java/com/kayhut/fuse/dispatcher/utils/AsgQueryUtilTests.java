@@ -16,10 +16,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.*;
+import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.gt;
-import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
 public class AsgQueryUtilTests {
@@ -87,8 +88,8 @@ public class AsgQueryUtilTests {
     @Test
     public void nextDescendantsSingleHopSimpleTest(){
         AsgQuery query = simpleQuery1("query", "ont");
-        AsgEBase<EBase> e1 = AsgQueryUtil.element$(query, 1);
-        List<AsgEBase<EBase>> descendantsSingleHop = AsgQueryUtil.nextDescendantsSingleHop(e1, EEntityBase.class);
+        AsgEBase<EBase> e1 = element$(query, 1);
+        List<AsgEBase<EBase>> descendantsSingleHop = nextDescendantsSingleHop(e1, EEntityBase.class);
         Assert.assertEquals(1, descendantsSingleHop.size());
         Assert.assertTrue(descendantsSingleHop.get(0).geteBase() instanceof EEntityBase);
         Assert.assertEquals(3,descendantsSingleHop.get(0).geteNum());
@@ -97,8 +98,8 @@ public class AsgQueryUtilTests {
     @Test
     public void nextDescendantsSingleHopQuantTest(){
         AsgQuery query = simpleQuery2("q","ont");
-        AsgEBase<EBase> e3 = AsgQueryUtil.element$(query, 3);
-        List<AsgEBase<EBase>> descendantsSingleHop = AsgQueryUtil.nextDescendantsSingleHop(e3, EEntityBase.class);
+        AsgEBase<EBase> e3 = element$(query, 3);
+        List<AsgEBase<EBase>> descendantsSingleHop = nextDescendantsSingleHop(e3, EEntityBase.class);
         Assert.assertEquals(2, descendantsSingleHop.size());
         Assert.assertTrue(descendantsSingleHop.stream().anyMatch(e -> e.geteNum() == 6));
         Assert.assertTrue(descendantsSingleHop.stream().anyMatch(e -> e.geteNum() == 8));
@@ -107,8 +108,8 @@ public class AsgQueryUtilTests {
     @Test
     public void testAncestorSingleHop(){
         AsgQuery query = simpleQuery2("q","ont");
-        AsgEBase<EBase> e3 = AsgQueryUtil.element$(query, 6);
-        Optional<AsgEBase<EBase>> ancestor = AsgQueryUtil.ancestor(e3, EEntityBase.class);
+        AsgEBase<EBase> e3 = element$(query, 6);
+        Optional<AsgEBase<EBase>> ancestor = ancestor(e3, EEntityBase.class);
         Assert.assertTrue(ancestor.isPresent());
         Assert.assertEquals(3, ancestor.get().geteNum());
     }

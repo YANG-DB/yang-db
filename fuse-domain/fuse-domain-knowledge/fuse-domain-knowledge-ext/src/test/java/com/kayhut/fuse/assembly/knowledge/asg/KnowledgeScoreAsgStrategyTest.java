@@ -5,7 +5,7 @@ import com.kayhut.fuse.asg.strategy.RuleBoostProvider;
 import com.kayhut.fuse.assembly.knowledge.KnowledgeRankingAsgStrategy;
 import com.kayhut.fuse.assembly.knowledge.KnowledgeRuleBoostProvider;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;

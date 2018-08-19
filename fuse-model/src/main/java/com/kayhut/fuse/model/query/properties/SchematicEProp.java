@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.query.properties;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 
 /**
@@ -7,6 +8,7 @@ import com.kayhut.fuse.model.query.properties.constraint.Constraint;
  *
  * Translates pType to a schematic name such as "stringValue.keyword"
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class SchematicEProp extends EProp {
     //region Constructors
     public SchematicEProp() {

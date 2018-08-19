@@ -2,7 +2,7 @@ package com.kayhut.fuse.asg.strategy.schema;
 
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -66,7 +66,7 @@ public class ExactConstraintTransformationAsgStrategy implements AsgStrategy {
 
     private void transformEPropGroup(Ontology.Accessor ont, GraphElementSchemaProvider schemaProvider, EPropGroup ePropGroup, AsgEBase<ETyped> eTypedAsgEBase) {
         for (EProp eProp : new ArrayList<>(ePropGroup.getProps())) {
-            if (!this.includedOps.contains(eProp.getCon().getOp())) {
+            if (eProp.getCon()!=null && !this.includedOps.contains(eProp.getCon().getOp())) {
                 continue;
             }
 

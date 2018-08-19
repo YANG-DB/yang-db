@@ -2,7 +2,7 @@ package com.kayhut.fuse.asg.strategy.propertyGrouping;
 
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
@@ -30,8 +30,8 @@ public class EntityPropertiesGroupingAsgStrategy implements AsgStrategy {
     public void apply(AsgQuery query, AsgStrategyContext context) {
         Stream.ofAll(AsgQueryUtil.elements(query, EEntityBase.class))
                 .filter(asgEBase -> !AsgQueryUtil.nextAdjacentDescendant(asgEBase, Quant1.class).isPresent())
+                .filter(asgEBase -> !AsgQueryUtil.nextAdjacentDescendant(asgEBase, EPropGroup.class).isPresent())
                 .forEach(entityBase -> {
-
                     Optional<AsgEBase<EProp>> asgEProp = AsgQueryUtil.nextAdjacentDescendant(entityBase, EProp.class);
                     if (asgEProp.isPresent()) {
                         EPropGroup ePropGroup = new EPropGroup(Arrays.asList(asgEProp.get().geteBase()));

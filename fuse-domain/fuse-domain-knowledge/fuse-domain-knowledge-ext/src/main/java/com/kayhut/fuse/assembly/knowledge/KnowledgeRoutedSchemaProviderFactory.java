@@ -7,7 +7,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 
@@ -202,6 +202,26 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                 new GraphRedundantPropertySchema.Impl(CATEGORY, CATEGORY, STRING)))
                 .appendAll(redundantMetadataProperties).toJavaList();
 
+        Iterable<GraphRedundantPropertySchema> relationOutDualRedundantProperties = Stream.<GraphRedundantPropertySchema>ofAll(Arrays.asList(
+                new GraphRedundantPropertySchema.Impl(LOGICAL_ID, LOGICAL_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(CONTEXT, CONTEXT, STRING),
+                new GraphRedundantPropertySchema.Impl(CATEGORY, CATEGORY, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_A_ID, ENTITY_A_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_A_CATEGORY, ENTITY_A_CATEGORY, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_B_ID, ENTITY_B_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_B_CATEGORY, ENTITY_B_CATEGORY, STRING)))
+                .appendAll(redundantMetadataProperties).toJavaList();
+
+        Iterable<GraphRedundantPropertySchema> relationInDualRedundantProperties = Stream.<GraphRedundantPropertySchema>ofAll(Arrays.asList(
+                new GraphRedundantPropertySchema.Impl(LOGICAL_ID, LOGICAL_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(CONTEXT, CONTEXT, STRING),
+                new GraphRedundantPropertySchema.Impl(CATEGORY, CATEGORY, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_A_ID, ENTITY_B_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_A_CATEGORY, ENTITY_B_CATEGORY, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_B_ID, ENTITY_A_ID, STRING),
+                new GraphRedundantPropertySchema.Impl(ENTITY_B_CATEGORY, ENTITY_A_CATEGORY, STRING)))
+                .appendAll(redundantMetadataProperties).toJavaList();
+
 
         Iterable<GraphRedundantPropertySchema> relationEntityARedundantProperties = Arrays.asList(
                 new GraphRedundantPropertySchema.Impl(CATEGORY, ENTITY_A_CATEGORY, STRING),
@@ -218,7 +238,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                         new GraphVirtualVertexSchema.Impl(LOGICAL_ENTITY),
                         new GraphVertexSchema.Impl(
                                 LogicalTypes.ENTITY,
-                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_ENTITY)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, SchemaTypes.S_ENTITY)),
                                 Optional.of(new GraphElementRouting.Impl(
                                         new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
                                 )),
@@ -230,7 +250,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
                                 EFILE,
-                                new GraphElementConstraint.Impl(__.has(T.label, E_FILE)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, E_FILE)),
                                 Optional.empty(),
                                 Optional.of(entityFilePartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
@@ -249,7 +269,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
                                 EVALUE,
-                                new GraphElementConstraint.Impl(__.has(T.label, E_VALUE)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, E_VALUE)),
                                 Optional.empty(),
                                 Optional.of(entityValuePartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
@@ -266,7 +286,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
                                 RELATION,
-                                new GraphElementConstraint.Impl(__.has(T.label, S_RELATION)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, S_RELATION)),
                                 Optional.empty(),
                                 Optional.of(relationPartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
@@ -275,7 +295,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
                                 RVALUE,
-                                new GraphElementConstraint.Impl(__.has(T.label, R_VALUE)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, R_VALUE)),
                                 Optional.of(new GraphElementRouting.Impl(
                                         new GraphElementPropertySchema.Impl(RELATION_ID, STRING)
                                 )),
@@ -293,7 +313,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
                                 LogicalTypes.REFERENCE,
-                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_REFERENCE)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, SchemaTypes.S_REFERENCE)),
                                 Optional.empty(),
                                 Optional.of(referencePartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
@@ -317,7 +337,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
                                 LogicalTypes.INSIGHT,
-                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_INSIGHT)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, SchemaTypes.S_INSIGHT)),
                                 Optional.empty(),
                                 Optional.of(insightPartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
@@ -330,7 +350,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                 Arrays.asList(
                         new GraphEdgeSchema.Impl(
                                 HAS_ENTITY,
-                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_ENTITY)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, SchemaTypes.S_ENTITY)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(LOGICAL_ID),
                                         Optional.of(LOGICAL_ENTITY),
@@ -354,7 +374,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
                                 HAS_EVALUE,
-                                new GraphElementConstraint.Impl(__.has(T.label, E_VALUE)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, E_VALUE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ENTITY_ID),
                                         Optional.of(LogicalTypes.ENTITY),
@@ -378,7 +398,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
                                 HAS_EFILE,
-                                new GraphElementConstraint.Impl(__.has(T.label, E_FILE)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, E_FILE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ENTITY_ID),
                                         Optional.of(LogicalTypes.ENTITY),
@@ -402,7 +422,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
                                 HAS_RVALUE,
-                                new GraphElementConstraint.Impl(__.has(T.label, R_VALUE)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, R_VALUE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(RELATION_ID),
                                         Optional.of(RELATION),
@@ -426,7 +446,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
                                 HAS_RELATION,
-                                new GraphElementConstraint.Impl(__.has(T.label, E_RELATION)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, E_RELATION)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Arrays.asList(ENTITY_A_ID, ENTITY_B_ID),
                                         Optional.of(LogicalTypes.ENTITY),
@@ -447,7 +467,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_RELATION,
-                                new GraphElementConstraint.Impl(__.has(T.label, S_RELATION)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, S_RELATION)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Arrays.asList(ENTITY_A_ID, ENTITY_B_ID),
                                         Optional.of(LogicalTypes.ENTITY),
@@ -467,7 +487,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_OUT_RELATION,
-                                new GraphElementConstraint.Impl(__.and(__.has(T.label, E_RELATION), __.has(DIRECTION, Direction.OUT.toString().toLowerCase()))),
+                                new GraphElementConstraint.Impl(__.start().and(__.start().has(T.label, E_RELATION), __.start().has(DIRECTION, Direction.OUT.toString().toLowerCase()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ENTITY_A_ID),
                                         Optional.of(LogicalTypes.ENTITY),
@@ -479,7 +499,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(RELATION_ID),
                                         Optional.of(RELATION),
-                                        relationDualRedundantProperties)),
+                                        relationOutDualRedundantProperties)),
                                 Direction.OUT,
                                 Optional.empty(),
                                 Optional.empty(),
@@ -488,7 +508,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_OUT_RELATION,
-                                new GraphElementConstraint.Impl(__.has(T.label, S_RELATION)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, S_RELATION)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ENTITY_A_ID),
                                         Optional.of(LogicalTypes.ENTITY),
@@ -508,7 +528,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 RELATED_ENTITY,
-                                new GraphElementConstraint.Impl(__.and(__.has(T.label, E_RELATION))),
+                                new GraphElementConstraint.Impl(__.start().and(__.start().has(T.label, E_RELATION))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ENTITY_A_ID),
                                         Optional.of(ENTITY),
@@ -528,7 +548,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 RELATED_ENTITY,
-                                new GraphElementConstraint.Impl(__.and(__.has(T.label, E_RELATION))),
+                                new GraphElementConstraint.Impl(__.start().and(__.start().has(T.label, E_RELATION))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ENTITY_A_ID),
                                         Optional.of(ENTITY),
@@ -548,7 +568,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_IN_RELATION,
-                                new GraphElementConstraint.Impl(__.and(__.has(T.label, E_RELATION), __.has(DIRECTION, Direction.IN.toString().toLowerCase()))),
+                                new GraphElementConstraint.Impl(__.start().and(__.start().has(T.label, E_RELATION), __.start().has(DIRECTION, Direction.IN.toString().toLowerCase()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ENTITY_A_ID),
                                         Optional.of(LogicalTypes.ENTITY),
@@ -560,7 +580,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(RELATION_ID),
                                         Optional.of(RELATION),
-                                        relationDualRedundantProperties)),
+                                        relationInDualRedundantProperties)),
                                 Direction.OUT,
                                 Optional.empty(),
                                 Optional.empty(),
@@ -569,7 +589,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_IN_RELATION,
-                                new GraphElementConstraint.Impl(__.has(T.label, S_RELATION)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, S_RELATION)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ENTITY_B_ID),
                                         Optional.of(LogicalTypes.ENTITY),
@@ -577,7 +597,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ID),
                                         Optional.of(RELATION),
-                                        relationDualRedundantProperties,
+                                        relationInDualRedundantProperties,
                                         Optional.of(new GraphElementRouting.Impl(
                                                 new GraphElementPropertySchema.Impl(ID, STRING))),
                                         Optional.of(relationPartitions))),
@@ -589,7 +609,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_ENTITY_REFERENCE,
-                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_ENTITY)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, SchemaTypes.S_ENTITY)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ID),
                                         Optional.of(LogicalTypes.ENTITY),
@@ -612,7 +632,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_EVALUE_REFERENCE,
-                                new GraphElementConstraint.Impl(__.has(T.label, E_VALUE)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, E_VALUE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ID),
                                         Optional.of(EVALUE),
@@ -635,7 +655,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_EFILE_REFERENCE,
-                                new GraphElementConstraint.Impl(__.has(T.label, E_FILE)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, E_FILE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ID),
                                         Optional.of(EFILE),
@@ -658,7 +678,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_RELATION_REFERENCE,
-                                new GraphElementConstraint.Impl(__.has(T.label, S_RELATION)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, S_RELATION)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ID),
                                         Optional.of(RELATION),
@@ -681,7 +701,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_RVALUE_REFERENCE,
-                                new GraphElementConstraint.Impl(__.has(T.label, R_VALUE)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, R_VALUE)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ID),
                                         Optional.of(RVALUE),
@@ -704,7 +724,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_INSIGHT_REFERENCE,
-                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_INSIGHT)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, SchemaTypes.S_INSIGHT)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ID),
                                         Optional.of(LogicalTypes.INSIGHT),
@@ -725,7 +745,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_INSIGHT,
-                                new GraphElementConstraint.Impl(__.has(T.label, E_INSIGHT)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, E_INSIGHT)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ENTITY_ID),
                                         Optional.of(LogicalTypes.ENTITY),
@@ -746,7 +766,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_INSIGHT,
-                                new GraphElementConstraint.Impl(__.has(T.label, SchemaTypes.S_INSIGHT)),
+                                new GraphElementConstraint.Impl(__.start().has(T.label, SchemaTypes.S_INSIGHT)),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(ENTITY_IDS),
                                         Optional.of(LogicalTypes.ENTITY),

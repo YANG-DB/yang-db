@@ -1,10 +1,11 @@
 package com.kayhut.fuse.executor.elasticsearch;
 
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.executor.BaseModuleInjectionTest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.Client;
+import org.jooby.internal.RequestScope;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.TimeoutException;
