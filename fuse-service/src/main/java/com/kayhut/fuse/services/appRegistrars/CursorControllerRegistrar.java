@@ -39,8 +39,7 @@ public class CursorControllerRegistrar extends AppControllerRegistrarBase<Cursor
                 .post(req -> {
                     Route.of("postCursor").write();
                     CreateCursorRequest cursorRequest = req.body(CreateCursorRequest.class);
-
-                    req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
+                    req.set(ExecutionScope.class, new ExecutionScope(Math.max(cursorRequest.getMaxExecutionTime(),1000 * 60 * 10)));
                     ContentResponse response = this.getController(app).create(req.param("queryId").value(), cursorRequest);
 
                     return Results.with(response, response.status());

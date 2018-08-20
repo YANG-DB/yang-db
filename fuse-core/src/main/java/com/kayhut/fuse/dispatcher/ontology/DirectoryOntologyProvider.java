@@ -9,6 +9,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -17,12 +18,15 @@ import java.util.*;
  */
 public class DirectoryOntologyProvider implements OntologyProvider {
     //region Constructors
-    public DirectoryOntologyProvider(String dirName) {
+    public DirectoryOntologyProvider(String dirName) throws URISyntaxException {
         this.ontologies = new HashMap<>();
         String currentDir = System.getProperty("user.dir");
         ObjectMapper mapper = new ObjectMapper();
 
         File dir = new File(Paths.get(currentDir, dirName).toString());
+        if(!dir.exists()) {
+            dir = new File(Thread.currentThread().getContextClassLoader().getResource(dirName).toURI());
+        }
         if (dir.exists()) {
             this.ontologies =
                     Stream.of(dir.listFiles() == null ? new File[0] : dir.listFiles())

@@ -33,9 +33,19 @@ public abstract class CreateCursorRequest {
         this.include = include;
         this.createPageRequest = createPageRequest;
     }
+
+    public CreateCursorRequest maxExecutionTime(long time) {
+        this.maxExecutionTime = time;
+        return this;
+    }
     //endregion
 
     //region Properties
+
+    public long getMaxExecutionTime() {
+        return maxExecutionTime;
+    }
+
     public String getCursorType() {
         return cursorType;
     }
@@ -77,6 +87,7 @@ public abstract class CreateCursorRequest {
     }
 
     //region Fields
+    private long maxExecutionTime = 10* 60 * 1000;
     private String cursorType;
     private CreatePageRequest createPageRequest;
     private Include include;
