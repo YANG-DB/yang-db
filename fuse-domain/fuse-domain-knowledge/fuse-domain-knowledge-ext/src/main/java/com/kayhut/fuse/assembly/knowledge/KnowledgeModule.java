@@ -1,13 +1,24 @@
 package com.kayhut.fuse.assembly.knowledge;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Binder;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import com.kayhut.fuse.assembly.knowledge.cursor.KnowledgeGraphHierarchyTraversalCursor;
 import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.kayhut.fuse.dispatcher.epb.LoggingPlanSearcher;
+import com.kayhut.fuse.dispatcher.epb.PlanSearcher;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.epb.plan.BottomUpPlanSearcher;
+import com.kayhut.fuse.epb.plan.statistics.NoStatsProvider;
+import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.Range;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 
@@ -30,6 +41,12 @@ public class KnowledgeModule extends ModuleBase {
                 KnowledgeGraphHierarchyCursorRequest.CursorType,
                 KnowledgeGraphHierarchyCursorRequest.class,
                 new KnowledgeGraphHierarchyTraversalCursor.Factory()));
+
+
+        binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>() {})
+                .toProvider(KnowledgePlanSearcherProvider.class);
+
+        binder.bind(StatisticsProviderFactory.class).to(NoStatsProvider.class);
     }
     //endregion
 }
