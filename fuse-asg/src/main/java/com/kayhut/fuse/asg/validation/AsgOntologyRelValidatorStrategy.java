@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.elements;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.nextDescendants;
 import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 
 public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
@@ -31,10 +32,8 @@ public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
     public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {
         List<String> errors = new ArrayList<>();
         Ontology.Accessor accessor = context.getOntologyAccessor();
-        List<AsgEBase<Rel>> list = elements(query.getStart(),
-                (asgEBase -> Collections.emptyList()), AsgEBase::getNext,
-                e -> e.geteBase() instanceof Rel,
-                asgEBase -> true, Collections.emptyList());
+
+        List<AsgEBase<Rel>> list = nextDescendants(query.getStart(), Rel.class);
 
         list.forEach(rel -> {
             Rel.Direction dir = rel.geteBase().getDir();
