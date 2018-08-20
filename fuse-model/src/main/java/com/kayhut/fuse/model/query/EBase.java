@@ -92,6 +92,11 @@ public class EBase {
     public String toString() {
         return this.getClass().getSimpleName() + "(" + this.geteNum() + ")";
     }
+
+    @Override
+    public int hashCode() {
+        return this.eNum;
+    }
     //endregion
 
     //region Fields

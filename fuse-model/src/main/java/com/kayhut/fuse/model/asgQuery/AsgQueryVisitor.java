@@ -11,60 +11,61 @@ import java.util.function.Predicate;
 /**
  * Created by Roman on 8/18/2018.
  */
-public class AsgQueryVisitor<TOut> {
+public class AsgQueryVisitor<T> {
     //region Constructors
     public AsgQueryVisitor(
             Predicate<AsgEBase> elementPredicate,
-            Predicate<AsgEBase> dfsPredicate,
+            Function<AsgEBase<? extends EBase>, T> elementValueFunction,
+            Predicate<AsgEBase<? extends EBase>> dfsPredicate,
             Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> vElementProvider,
             Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> hElementProvider,
-            Function<AsgEBase<? extends EBase>, TOut> vElementInvocation,
-            Function<AsgEBase<? extends EBase>, TOut> hElementInvocation,
-            Function<AsgEBase<? extends EBase>, TOut> elementValueFunction,
-            BiFunction<TOut, TOut, TOut> elementConsolidate) {
+            Function<AsgEBase<? extends EBase>, T> vElementInvocation,
+            Function<AsgEBase<? extends EBase>, T> hElementInvocation,
+            BiFunction<T, T, T> vElementConsolidate,
+            BiFunction<T, T, T> hElementConsolidate) {
 
         this.elementPredicate = elementPredicate;
+        this.elementValueFunction = elementValueFunction;
+
         this.dfsPredicate = dfsPredicate;
+
         this.vElementProvider = vElementProvider;
         this.hElementProvider = hElementProvider;
+
         this.vElementInvocation = vElementInvocation;
         this.hElementInvocation = hElementInvocation;
-        this.elementValueFunction = elementValueFunction;
-        this.elementConsolidate = elementConsolidate;
+
+        this.vElementConsolidate = vElementConsolidate;
+        this.hElementConsolidate = hElementConsolidate;
     }
     //endregion
 
-    public TOut visit(AsgEBase<? extends EBase> asgEBase) {
-        TOut currentValue = null;
-
-        if (elementPredicate.test(asgEBase)) {
-            currentValue = this.elementValueFunction.apply(asgEBase);
-        }
-
-        if (dfsPredicate.test(asgEBase)) {
-            for (AsgEBase<? extends EBase> elementAsgEBase : vElementProvider.apply(asgEBase)) {
-                currentValue = this.elementConsolidate.apply(currentValue, this.vElementInvocation.apply(elementAsgEBase));
-            }
-
-            for (AsgEBase<? extends EBase> elementAsgEBase : hElementProvider.apply(asgEBase)) {
-                currentValue = this.elementConsolidate.apply(currentValue, this.hElementInvocation.apply(elementAsgEBase));
-            }
-        }
-
-        return currentValue;
+    public T visit(AsgEBase<? extends EBase> asgEBase) {
+        return AsgQueryUtil.visit(
+                asgEBase,
+                this.elementPredicate,
+                this.elementValueFunction,
+                this.dfsPredicate,
+                this.vElementProvider,
+                this.hElementProvider,
+                this.vElementInvocation,
+                this.hElementInvocation,
+                this.vElementConsolidate,
+                this.hElementConsolidate);
     }
 
     //region Fields
     protected Predicate<AsgEBase> elementPredicate;
-    protected Predicate<AsgEBase> dfsPredicate;
+    protected Predicate<AsgEBase<? extends EBase>> dfsPredicate;
 
     protected Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> vElementProvider;
     protected Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> hElementProvider;
 
-    protected Function<AsgEBase<? extends EBase>, TOut> vElementInvocation;
-    protected Function<AsgEBase<? extends EBase>, TOut> hElementInvocation;
+    protected Function<AsgEBase<? extends EBase>, T> vElementInvocation;
+    protected Function<AsgEBase<? extends EBase>, T> hElementInvocation;
 
-    protected Function<AsgEBase<? extends EBase>, TOut> elementValueFunction;
-    protected BiFunction<TOut, TOut, TOut> elementConsolidate;
+    protected Function<AsgEBase<? extends EBase>, T> elementValueFunction;
+    protected BiFunction<T, T, T> vElementConsolidate;
+    protected BiFunction<T, T, T> hElementConsolidate;
     //endregion
 }
