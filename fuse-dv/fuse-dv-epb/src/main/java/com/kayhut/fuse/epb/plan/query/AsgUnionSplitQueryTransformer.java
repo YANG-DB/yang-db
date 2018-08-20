@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQueryVisitor;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
@@ -20,16 +21,26 @@ public class AsgUnionSplitQueryTransformer implements QueryTransformer<AsgQuery,
     //region QueryTransformer Implementation
     @Override
     public Iterable<AsgQuery> transform(AsgQuery query) {
-         List<AsgEBase<Quant1>> someQuants =
-                 AsgQueryUtil.elements(query, asgEBase -> asgEBase.geteBase().getClass().equals(Quant1.class) &&
-                ((Quant1)asgEBase.geteBase()).getqType().equals(QuantType.some));
-
-         return null;
+         return Stream.ofAll(new PermutationVisitor(Collections.emptyMap()).visit(query.getStart()))
+                 .map(permutation -> AsgQueryUtil.deepClone(
+                         query.getStart(),
+                         asgEBase -> someQuantPredicate.test(asgEBase.getParents().get(0)) &&
+                                     permutation.get(asgEBase.getParents().get(0).geteNum()) == asgEBase.geteNum(),
+                         asgEBase -> true))
+                 .map(permutationQueryStart -> AsgQuery.AsgQueryBuilder.anAsgQuery()
+                         .withName(query.getName())
+                         .withOnt(query.getOnt())
+                         .withStart(permutationQueryStart)
+                         .withElements(new ArrayList<>(AsgQueryUtil.elements(permutationQueryStart)))
+                         .withParams(query.getParameters())
+                         .build())
+                 .toJavaList();
     }
     //endregion
 
+    //region PermutationVisitor
     public static class PermutationVisitor extends AsgQueryVisitor<Set<Map<Integer, Integer>>> {
-
+        //region Constructors
         public PermutationVisitor(Map<Integer, Integer> currentPermutation) {
             super(
                     asgEBase -> leafPredicate.test(asgEBase),
@@ -43,47 +54,71 @@ public class AsgUnionSplitQueryTransformer implements QueryTransformer<AsgQuery,
                             .visit(asgEBase) :
                             new PermutationVisitor(currentPermutation).visit(asgEBase),
                     asgEBase -> Collections.singleton(currentPermutation),
-                    AsgUnionSplitQueryTransformer::consolidatePermutations);
+                    PermutationVisitor::consolidatePermutations);
         }
-    }
+        //endregion
 
-    //region Private Methods
-    private static Set<Map<Integer, Integer>> consolidatePermutations(Set<Map<Integer, Integer>> permutations1, Set<Map<Integer, Integer>> permutations2) {
-        if (permutations1 == null && permutations2 != null) {
-            return permutations2;
-        }
+        //region Private Methods
+        private static Set<Map<Integer, Integer>> consolidatePermutations(Set<Map<Integer, Integer>> permutations1, Set<Map<Integer, Integer>> permutations2) {
+            if (permutations1 == null && permutations2 != null) {
+                return permutations2;
+            }
 
-        if (permutations2 == null && permutations1 != null) {
-            return permutations1;
-        }
+            if (permutations2 == null && permutations1 != null) {
+                return permutations1;
+            }
 
-        if (permutations1 == null && permutations2 == null) {
-            return Collections.emptySet();
-        }
+            if (permutations1 == null && permutations2 == null) {
+                return Collections.emptySet();
+            }
 
-        Set<Map<Integer, Integer>> consolidatedPermutations = new HashSet<>();
+            Set<Map<Integer, Integer>> consolidatedPermutations = new HashSet<>();
 
-        for(Map<Integer, Integer> permutation1 : permutations1) {
-            for(Map<Integer, Integer> permutation2 : permutations2) {
+            for(Map<Integer, Integer> permutation1 : permutations1) {
+                for(Map<Integer, Integer> permutation2 : permutations2) {
 
-                boolean areDisjoint = true;
-                for(Integer permutation2Key : permutation2.keySet()) {
-                    if (permutation1.keySet().contains(permutation2Key)) {
-                        areDisjoint = false;
-                        break;
+                    boolean areDisjoint = true;
+                    for(Integer permutation2Key : permutation2.keySet()) {
+                        if (permutation1.keySet().contains(permutation2Key)) {
+                            areDisjoint = false;
+                            break;
+                        }
+                    }
+
+                    if (areDisjoint) {
+                        consolidatedPermutations.add(new MapBuilder<>(permutation1).putAll(permutation2).get());
+                    } else {
+                        consolidatedPermutations.add(permutation1);
+                        consolidatedPermutations.add(permutation2);
                     }
                 }
-
-                if (areDisjoint) {
-                    consolidatedPermutations.add(new MapBuilder<>(permutation1).putAll(permutation2).get());
-                } else {
-                    consolidatedPermutations.add(permutation1);
-                    consolidatedPermutations.add(permutation2);
-                }
             }
-        }
 
-        return consolidatedPermutations;
+            return consolidatedPermutations;
+        }
+        //endregion
+    }
+    //endregion
+
+    //region CloneVisitor
+    public static class CloneVisitor extends AsgQueryVisitor<AsgEBase<? extends EBase>> {
+        //region Constructors
+        public CloneVisitor() {
+            super(
+                    asgEBase -> leafPredicate.test(asgEBase),
+                    asgEBase -> true,
+                    asgEBase -> Collections.emptyList(),
+                    AsgEBase::getNext,
+                    asgEBase -> Collections.emptySet(),
+                    asgEBase -> someQuantPredicate.test(asgEBase.getParents().get(0)) ?
+                            new PermutationVisitor(new MapBuilder<>(currentPermutation)
+                                    .put(asgEBase.getParents().get(0).geteNum(), asgEBase.geteNum()).get())
+                                    .visit(asgEBase) :
+                            new PermutationVisitor(currentPermutation).visit(asgEBase),
+                    asgEBase -> Collections.singleton(currentPermutation),
+                    PermutationVisitor::consolidatePermutations);
+        }
+        //endregion
     }
     //endregion
 

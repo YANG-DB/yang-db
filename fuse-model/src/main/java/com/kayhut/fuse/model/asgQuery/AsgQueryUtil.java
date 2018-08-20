@@ -347,7 +347,10 @@ public class AsgQueryUtil {
         return joiner.toString();
     }
 
-    public static <T extends EBase> AsgEBase<T> deepClone(AsgEBase<T> asgEBase, Predicate<AsgEBase> nextPredicate, Predicate<AsgEBase> bPredicate){
+    public static <T extends EBase> AsgEBase<T> deepClone(
+            AsgEBase<T> asgEBase,
+            Predicate<AsgEBase<? extends EBase>> nextPredicate,
+            Predicate<AsgEBase<? extends EBase>> bPredicate){
         AsgEBase.Builder<T> eBaseBuilder = AsgEBase.Builder.get();
         eBaseBuilder.withEBase(asgEBase.geteBase());
         Stream.ofAll(asgEBase.getNext()).filter(nextPredicate).map(elm -> deepClone(elm, nextPredicate, bPredicate)).forEach(eBaseBuilder::withNext);
