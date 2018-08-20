@@ -15,6 +15,7 @@ import javaslang.collection.Stream;
 
 import javax.management.relation.Relation;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -347,11 +348,14 @@ public class AsgQueryUtil {
         return joiner.toString();
     }
 
-    public static <T extends EBase> AsgEBase<T> deepClone(AsgEBase<T> asgEBase, Predicate<AsgEBase> elementPredicate, Predicate<AsgEBase> bPredicate){
+    public static <T extends EBase> AsgEBase<T> deepClone(
+            AsgEBase<T> asgEBase,
+            Predicate<AsgEBase<? extends EBase>> nextPredicate,
+            Predicate<AsgEBase<? extends EBase>> bPredicate){
         AsgEBase.Builder<T> eBaseBuilder = AsgEBase.Builder.get();
         eBaseBuilder.withEBase(asgEBase.geteBase());
-        Stream.ofAll(asgEBase.getNext()).filter(elementPredicate).map(elm -> deepClone(elm, elementPredicate, bPredicate)).forEach(eBaseBuilder::withNext);
-        Stream.ofAll(asgEBase.getB()).filter(bPredicate).map(elm -> deepClone(elm, elementPredicate, bPredicate)).forEach(elm -> eBaseBuilder.withB(elm));
+        Stream.ofAll(asgEBase.getNext()).filter(nextPredicate).map(elm -> deepClone(elm, nextPredicate, bPredicate)).forEach(eBaseBuilder::withNext);
+        Stream.ofAll(asgEBase.getB()).filter(bPredicate).map(elm -> deepClone(elm, nextPredicate, bPredicate)).forEach(elm -> eBaseBuilder.withB(elm));
         return  eBaseBuilder.build();
     }
 
@@ -443,6 +447,55 @@ public class AsgQueryUtil {
         List<RelProp> relProps2 = Stream.ofAll(relPropsGroup).flatMap(RelPropGroup::getProps).toJavaList();
 
         return java.util.stream.Stream.concat(relProps.stream(), relProps2.stream()).collect(Collectors.toList());
+    }
+
+    public static <T extends EBase> AsgEBase<T> transform(
+            AsgEBase<? extends EBase> asgEBase,
+            Function<AsgEBase<? extends EBase>, AsgEBase<T>> transformFunction,
+            Predicate<AsgEBase<? extends EBase>> dfsPredicate,
+            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> vElementProvider,
+            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> hElementProvider) {
+        return visit(
+                asgEBase,
+                truePredicate,
+                transformFunction,
+                dfsPredicate,
+                vElementProvider,
+                hElementProvider,
+                asgEBase1 -> transform(asgEBase1, transformFunction, dfsPredicate, vElementProvider, hElementProvider),
+                asgEBase1 -> transform(asgEBase1, transformFunction, dfsPredicate, vElementProvider, hElementProvider),
+                AsgEBase::below,
+                AsgEBase::next);
+    }
+
+    public static <T> T visit(
+            AsgEBase<? extends EBase> asgEBase,
+            Predicate<AsgEBase> elementPredicate,
+            Function<AsgEBase<? extends EBase>, T> elementValueFunction,
+            Predicate<AsgEBase<? extends EBase>> dfsPredicate,
+            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> vElementProvider,
+            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> hElementProvider,
+            Function<AsgEBase<? extends EBase>, T> vElementInvocation,
+            Function<AsgEBase<? extends EBase>, T> hElementInvocation,
+            BiFunction<T, T, T> vElementConsolidate,
+            BiFunction<T, T, T> hElementConsolidate) {
+        T currentValue = null;
+
+        if (elementPredicate.test(asgEBase)) {
+            currentValue = elementValueFunction.apply(asgEBase);
+        }
+
+        if (dfsPredicate.test(asgEBase)) {
+            for (AsgEBase<? extends EBase> elementAsgEBase : vElementProvider.apply(asgEBase)) {
+                currentValue = vElementConsolidate.apply(currentValue, vElementInvocation.apply(elementAsgEBase));
+            }
+
+            for (AsgEBase<? extends EBase> elementAsgEBase : hElementProvider.apply(asgEBase)) {
+                currentValue = hElementConsolidate.apply(currentValue, hElementInvocation.apply(elementAsgEBase));
+            }
+        }
+
+        return currentValue;
     }
     //endregion
 

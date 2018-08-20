@@ -27,6 +27,11 @@ public class MapBuilder<TKey, TValue> implements Supplier<Map<TKey, TValue>> {
         this.map.put(key, value);
         return this;
     }
+
+    public MapBuilder<TKey, TValue> putAll(Map<TKey, TValue> map) {
+        this.map.putAll(map);
+        return this;
+    }
     //endregion
 
     //region Supplier Implementation

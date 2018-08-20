@@ -75,6 +75,36 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AsgQuery other = (AsgQuery)o;
+
+        if (!this.ont.equals(other.ont)) {
+            return false;
+        }
+
+        if (!this.name.equals(other.name)) {
+            return false;
+        }
+
+        if (!this.start.equals(other.start)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.ont.hashCode();
+        result = 31 * result + this.name.hashCode();
+        result = 31 * result + start.hashCode();
+        return result;
+    }
+
     //region Fields
     private String ont;
     private String name;
