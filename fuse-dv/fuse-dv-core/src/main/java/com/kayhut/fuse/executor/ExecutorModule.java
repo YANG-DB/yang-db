@@ -258,9 +258,11 @@ public class ExecutorModule extends ModuleBase {
 
     private UniGraphConfiguration createUniGraphConfiguration(Config conf) {
         UniGraphConfiguration configuration = new UniGraphConfiguration();
-        configuration.setBulkMax(conf.getInt("unipop.bulk.max"));
-        configuration.setBulkStart(conf.getInt("unipop.bulk.start"));
-        configuration.setBulkMultiplier(conf.getInt("unipop.bulk.multiplier"));
+        configuration.setBulkMax(conf.hasPath("unipop.bulk.max") ? conf.getInt("unipop.bulk.max") : 1000);
+        configuration.setBulkMin(conf.hasPath("unipop.bulk.min") ? conf.getInt("unipop.bulk.min") : configuration.getBulkMax());
+        configuration.setBulkDecayInterval(conf.hasPath("unipop.bulk.decayInterval") ? conf.getLong("unipop.bulk.decayInterval") : 200L);
+        configuration.setBulkStart(conf.hasPath("unipop.bulk.start") ? conf.getInt("unipop.bulk.start") : configuration.getBulkMax());
+        configuration.setBulkMultiplier(conf.hasPath("unipop.bulk.multiplier") ? conf.getInt("unipop.bulk.multiplier") : 1);
         return configuration;
     }
 
