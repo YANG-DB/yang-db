@@ -11,13 +11,16 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Created by benishue on 23-Feb-17.
@@ -28,6 +31,10 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
 
     public String getOnt() {
         return ont;
+    }
+
+    public Collection<NamedParameter> getParameters() {
+        return parameters;
     }
 
     public void setOnt(String ont) {
@@ -50,6 +57,10 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
         this.start = start;
     }
 
+    public void setParameters(Collection<NamedParameter> parameters) {
+        this.parameters = parameters;
+    }
+
     @Override
     public Collection<AsgEBase<? extends EBase>> getElements() {
         return elements;
@@ -64,23 +75,51 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AsgQuery other = (AsgQuery)o;
+
+        if (!this.ont.equals(other.ont)) {
+            return false;
+        }
+
+        if (!this.name.equals(other.name)) {
+            return false;
+        }
+
+        if (!this.start.equals(other.start)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.ont.hashCode();
+        result = 31 * result + this.name.hashCode();
+        result = 31 * result + start.hashCode();
+        return result;
+    }
+
     //region Fields
     private String ont;
     private String name;
     private AsgEBase<Start> start;
+    private Collection<NamedParameter> parameters = new ArrayList<>();
     private Collection<AsgEBase<? extends EBase>> elements = new ArrayList<>();
 
     //endregion
 
     //region Builders
     public static final class AsgQueryBuilder {
-        private String ont;
-        private String name;
-        private AsgEBase start;
-        private Collection<AsgEBase<? extends EBase>> elements;
+        private AsgQuery asgQuery ;
 
         private AsgQueryBuilder() {
-            elements = new ArrayList<>();
+            asgQuery = new AsgQuery();
         }
 
         public static AsgQueryBuilder anAsgQuery() {
@@ -88,32 +127,31 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
         }
 
         public AsgQueryBuilder withOnt(String ont) {
-            this.ont = ont;
+            this.asgQuery.ont = ont;
             return this;
         }
 
         public AsgQueryBuilder withName(String name) {
-            this.name = name;
+            this.asgQuery.name = name;
+            return this;
+        }
+        public AsgQueryBuilder withParams(Collection<NamedParameter> params) {
+            this.asgQuery.parameters = params;
             return this;
         }
 
         public AsgQueryBuilder withStart(AsgEBase<Start> start) {
-            this.start = start;
-            this.elements.add(start);
+            this.asgQuery.start = start;
+            this.asgQuery.elements.add(start);
             return this;
         }
 
         public AsgQueryBuilder withElements(Collection<AsgEBase<? extends EBase>> values) {
-            this.elements = values;
+            this.asgQuery.elements = values;
             return this;
         }
 
         public AsgQuery build() {
-            AsgQuery asgQuery = new AsgQuery();
-            asgQuery.setOnt(ont);
-            asgQuery.setName(name);
-            asgQuery.setStart(start);
-            asgQuery.elements = elements;
             return asgQuery;
         }
 

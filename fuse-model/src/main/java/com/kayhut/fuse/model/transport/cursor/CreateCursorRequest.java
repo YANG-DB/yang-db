@@ -5,11 +5,10 @@ package com.kayhut.fuse.model.transport.cursor;
  */
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 
 public abstract class CreateCursorRequest {
+
     public enum Include {
         all,
         entities,
@@ -34,9 +33,19 @@ public abstract class CreateCursorRequest {
         this.include = include;
         this.createPageRequest = createPageRequest;
     }
+
+    public CreateCursorRequest maxExecutionTime(long time) {
+        this.maxExecutionTime = time;
+        return this;
+    }
     //endregion
 
     //region Properties
+
+    public long getMaxExecutionTime() {
+        return maxExecutionTime;
+    }
+
     public String getCursorType() {
         return cursorType;
     }
@@ -63,9 +72,22 @@ public abstract class CreateCursorRequest {
         this.include = include;
     }
 
+    public CreateCursorRequest with(CreatePageRequest createPageRequest) {
+        setCreatePageRequest(createPageRequest);
+        return this;
+    }
     //endregions
 
+    @Override
+    public String toString() {
+        return "CreateCursorRequest{" +
+                "cursorType='" + cursorType + '\'' +
+                ", createPageRequest=" + (createPageRequest!=null ? createPageRequest.toString() : "None") +
+                '}';
+    }
+
     //region Fields
+    private long maxExecutionTime = 10* 60 * 1000;
     private String cursorType;
     private CreatePageRequest createPageRequest;
     private Include include;

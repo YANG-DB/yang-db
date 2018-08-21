@@ -3,7 +3,7 @@ package com.kayhut.fuse.services.mockEngine;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryAssert;
@@ -134,7 +134,7 @@ public class QueryTest {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
                         assertTrue(data.get("resourceUrl").toString().endsWith("/fuse/query/1"));
-                        assertTrue(data.get("cursorStoreUrl").toString().endsWith("/fuse/query/1/cursor"));
+                        assertTrue(data.get("cursorStoreUrl").toString().contains("/fuse/query/1/cursor"));
                         assertTrue(data.get("v1QueryUrl").toString().endsWith("/fuse/query/1/v1"));
                         assertTrue(((Map)(((List) data.get("cursorResourceInfos")).get(0))).containsKey("cursorRequest"));
                         assertTrue(((Map)(((List) data.get("cursorResourceInfos")).get(0))).containsKey("pageStoreUrl"));
@@ -550,19 +550,6 @@ public class QueryTest {
                 .assertThat()
                 .statusCode(202)
                 .contentType("application/json;charset=UTF-8");
-
-        //validate resource deleted
-        given()
-                .contentType("application/json")
-                .header(new Header("fuse-external-id", "test"))
-                .with().port(8888)
-                .get("/fuse/query/1")
-                .then()
-                .assertThat()
-                .statusCode(404)
-                .contentType("application/json;charset=UTF-8");
-
-
     }
 
 }

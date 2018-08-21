@@ -34,6 +34,7 @@
       "pType": "1",
       "pTag": "1.1",
       "con": {
+        "type":"Constraint",
         "op": "eq",
         "expr": "Brandon"
       }

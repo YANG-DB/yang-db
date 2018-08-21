@@ -1,5 +1,6 @@
 package com.kayhut.fuse.asg.strategy.constraint;
 
+import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Property;
@@ -13,6 +14,8 @@ import javaslang.collection.Stream;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getEprops;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getRelProps;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.like;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.likeAny;
 
@@ -23,18 +26,18 @@ import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.lik
  * we also need to do the expression altering only on string type properties so we need to wait for
  * the ConstraintTypeTransformationStrategy to be applied first
  */
-public class ConstraintExpCharEscapeTransformationAsgStrategy extends ConstraintTransformationAsgStrategyBase {
+public class ConstraintExpCharEscapeTransformationAsgStrategy implements AsgStrategy {
 
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
 
-        getEprops(query).forEach(eProp -> {
-            applyExpressionTransformation(context, eProp, EProp.class);
-        });
+        getEprops(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .forEach(eProp -> applyExpressionTransformation(context, eProp, EProp.class));
 
-        getRelProps(query).forEach(relProp -> {
-            applyExpressionTransformation(context, relProp, RelProp.class);
-        });
+        getRelProps(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .forEach(relProp -> applyExpressionTransformation(context, relProp, RelProp.class));
     }
 
     //region Private Methods

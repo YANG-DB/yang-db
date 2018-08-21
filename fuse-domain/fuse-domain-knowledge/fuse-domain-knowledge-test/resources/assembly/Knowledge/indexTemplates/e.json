@@ -62,6 +62,9 @@
         "category": {
           "type": "keyword"
         },
+        "parentCategory": {
+          "type": "keyword"
+        },
         "refs": {
           "type": "keyword"
         },

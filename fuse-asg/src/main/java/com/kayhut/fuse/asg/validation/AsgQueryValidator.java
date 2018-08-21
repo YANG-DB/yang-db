@@ -1,7 +1,6 @@
 package com.kayhut.fuse.asg.validation;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.asg.strategy.AsgValidatorStrategy;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.validation.QueryValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;

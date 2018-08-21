@@ -3,18 +3,21 @@ package com.kayhut.fuse.assembly.knowledge.domain;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
+import javaslang.collection.Stream;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,7 +34,7 @@ public class KnowledgeWriterContext {
     private AtomicInteger relCounter = new AtomicInteger(0);
     private AtomicInteger iCounter = new AtomicInteger(0);
 
-    public TransportClient client;
+    public Client client;
     public RawSchema schema;
     public ObjectMapper mapper;
     public List<Items> created;
@@ -100,7 +103,7 @@ public class KnowledgeWriterContext {
         return "f" + String.format(this.schema.getIdFormat("e.file"), fCounter.incrementAndGet());
     }
 
-    public static KnowledgeWriterContext init(TransportClient client, RawSchema schema) {
+    public static KnowledgeWriterContext init(Client client, RawSchema schema) {
         final KnowledgeWriterContext context = new KnowledgeWriterContext();
         context.client = client;
         context.schema = schema;
@@ -115,11 +118,15 @@ public class KnowledgeWriterContext {
                     .setIndex(index)
                     .setType(PGE)
                     .setId(builder.id())
-                    .setOpType(IndexRequest.OpType.CREATE)
+                    .setOpType(IndexRequest.OpType.INDEX)
                     .setSource(builder.toString(ctx.mapper), XContentType.JSON);
             builder.routing().ifPresent(request::setRouting);
             bulk.add(request);
         }
+    }
+
+    public static long countEntitiesAndAdditionals(EntityBuilder... builders) {
+        return builders.length+Arrays.stream(builders).mapToInt(b->b.additional().size()).sum();
     }
 
     public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx, String index, T... builders) throws JsonProcessingException {

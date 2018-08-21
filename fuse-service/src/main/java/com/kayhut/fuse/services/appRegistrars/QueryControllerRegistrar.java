@@ -1,7 +1,6 @@
 package com.kayhut.fuse.services.appRegistrars;
 
 import com.cedarsoftware.util.io.JsonWriter;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.graph.Graph;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
@@ -15,9 +14,7 @@ import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.CreateQueryRequest;
-import com.kayhut.fuse.model.transport.PlanTraceOptions;
+import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.services.controllers.QueryController;
 import org.jooby.Jooby;
 import org.jooby.Results;
@@ -57,10 +54,30 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     CreateQueryRequest createQueryRequest = req.body(CreateQueryRequest.class);
                     req.set(CreateQueryRequest.class, createQueryRequest);
                     req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
+                    final long maxExecTime = createQueryRequest.getCreateCursorRequest() != null
+                            ? createQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
+                    req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
 
                     ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
                             this.getController(app).create(createQueryRequest) :
                             this.getController(app).createAndFetch(createQueryRequest);
+
+                    return Results.with(response, response.status());
+                });
+
+        /** create a query */
+        app.use(appUrlSupplier.queryStoreUrl() + "/call")
+                .post(req -> {
+                    Route.of("callQuery").write();
+
+                    ExecuteStoredQueryRequest callQueryRequest = req.body(ExecuteStoredQueryRequest.class);
+                    req.set(ExecuteStoredQueryRequest.class, callQueryRequest);
+                    req.set(PlanTraceOptions.class, callQueryRequest.getPlanTraceOptions());
+                    final long maxExecTime = callQueryRequest.getCreateCursorRequest() != null
+                            ? callQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
+                    req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
+
+                    ContentResponse<QueryResourceInfo> response = this.getController(app).callAndFetch(callQueryRequest);
 
                     return Results.with(response, response.status());
                 });
@@ -135,7 +152,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /** view the elastic query with d3 html*/
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/elastic/view")
                 .get(req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
-                        appUrlSupplier.queryStoreUrl() +"/"+ req.param("queryId").value()+ "/elastic"));
+                        appUrlSupplier.queryStoreUrl() + "/" + req.param("queryId").value() + "/elastic"));
 
         /** get the asg query */
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg/json")

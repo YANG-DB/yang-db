@@ -27,6 +27,7 @@ public class M1AsgStrategyRegistrar implements AsgStrategyRegistrar {
     @Override
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
+                new AsgNamedParametersStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
                 new EntityPropertiesGroupingAsgStrategy(),
                 new HQuantifierPropertiesGroupingAsgStrategy(),

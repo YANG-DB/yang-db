@@ -1,4 +1,4 @@
-package com.kayhut.fuse.asg.strategy;
+package com.kayhut.fuse.asg.validation;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -11,7 +11,8 @@ import com.kayhut.fuse.model.validation.ValidationResult;
 import java.util.Collections;
 import java.util.List;
 
-import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.elements;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.elements;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.nextDescendants;
 import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 
 public class AsgStartEntityValidatorStrategy implements AsgValidatorStrategy {
@@ -29,10 +30,7 @@ public class AsgStartEntityValidatorStrategy implements AsgValidatorStrategy {
         if (!query.getOnt().equals(accessor.name()))
             return new ValidationResult(false, ERROR_1);
 
-        List<AsgEBase<EBase>> list = elements(query.getStart().getNext().get(0),
-                (asgEBase -> Collections.emptyList()), AsgEBase::getNext,
-                e -> e.geteBase() instanceof Start,
-                asgEBase -> true, Collections.emptyList());
+        List<AsgEBase<EBase>> list = nextDescendants(query.getStart().getNext().get(0), Start.class);
 
         if (!list.isEmpty())
             return new ValidationResult(false, ERROR_3);

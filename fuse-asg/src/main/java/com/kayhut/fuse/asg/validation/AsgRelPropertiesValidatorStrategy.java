@@ -1,4 +1,4 @@
-package com.kayhut.fuse.asg.strategy;
+package com.kayhut.fuse.asg.validation;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -15,7 +15,8 @@ import com.kayhut.fuse.model.validation.ValidationResult;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.elements;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.elements;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.nextDescendants;
 import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 import static com.kayhut.fuse.model.validation.ValidationResult.print;
 
@@ -28,9 +29,7 @@ public class AsgRelPropertiesValidatorStrategy implements AsgValidatorStrategy {
     public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {
         List<String> errors = new ArrayList<>();
         Ontology.Accessor accessor = context.getOntologyAccessor();
-        List<AsgEBase<Rel>> list = elements(query.getStart(), (asgEBase -> Collections.emptyList()), AsgEBase::getNext,
-                e -> e.geteBase() instanceof Rel,
-                asgEBase -> true, Collections.emptyList());
+        List<AsgEBase<Rel>> list = nextDescendants(query.getStart(), Rel.class);
 
         list.forEach(rel -> {
             if(!rel.getB().isEmpty()) {

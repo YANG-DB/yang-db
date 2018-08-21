@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.transport;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
@@ -10,6 +11,11 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
  * Mutable structure due to json reflective builder needs...
  */
 public class CreateQueryRequest {
+    public enum Type {
+        _stored,
+        _volatile;
+    }
+
     //region Constructors
     public CreateQueryRequest() {
         this.planTraceOptions = new PlanTraceOptions();
@@ -30,6 +36,11 @@ public class CreateQueryRequest {
         this.planTraceOptions = planTraceOptions;
     }
 
+    public CreateQueryRequest(String id, String name, Query query,  CreateCursorRequest createCursorRequest) {
+        this(id, name, query, new PlanTraceOptions());
+        this.createCursorRequest = createCursorRequest;
+    }
+
     public CreateQueryRequest(String id, String name, Query query, PlanTraceOptions planTraceOptions, CreateCursorRequest createCursorRequest) {
         this(id, name, query, planTraceOptions);
         this.createCursorRequest = createCursorRequest;
@@ -37,6 +48,20 @@ public class CreateQueryRequest {
     //endregion
 
     //region Properties
+    public CreateQueryRequest type(Type type) {
+        this.type = type;
+        return this;
+    }
+
+    public CreateQueryRequest searchPlan(boolean searchPlan) {
+        this.searchPlan = searchPlan;
+        return this;
+    }
+
+    public boolean isSearchPlan() {
+        return searchPlan;
+    }
+
     public String getId() {
         return id;
     }
@@ -59,6 +84,10 @@ public class CreateQueryRequest {
 
     public Query getQuery() {
         return query;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public PlanTraceOptions getPlanTraceOptions() {
@@ -88,11 +117,25 @@ public class CreateQueryRequest {
 
     //endregion
 
+
+    @Override
+    public String toString() {
+        return "CreateQueryRequest{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", query=" + QueryDescriptor.toString(query) + "\n"+
+                ", createCursorRequest=" + (createCursorRequest!=null ? createCursorRequest.toString() : "None" )+
+                '}';
+    }
+
     //region Fields
     private String id;
+    //default type is volatile
+    private Type type = Type._volatile;
     private String name;
     private Query query;
     private long ttl;
+    private boolean searchPlan = true;
     private PlanTraceOptions planTraceOptions;
 
     private CreateCursorRequest createCursorRequest;

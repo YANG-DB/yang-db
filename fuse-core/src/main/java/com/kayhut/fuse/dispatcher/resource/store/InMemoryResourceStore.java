@@ -3,8 +3,10 @@ package com.kayhut.fuse.dispatcher.resource.store;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import javaslang.collection.Stream;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,14 +26,12 @@ public class InMemoryResourceStore implements ResourceStore {
 
     //region ResourceStore Implementation
     @Override
-    public Iterable<QueryResource> getQueryResources() {
-        this.removeOldQueries();
+    public Collection<QueryResource> getQueryResources() {
         return this.queryResources.values();
     }
 
     @Override
     public Optional<QueryResource> getQueryResource(String id) {
-        this.removeOldQueries();
         return Optional.ofNullable(this.queryResources.get(id));
     }
 
@@ -48,55 +48,62 @@ public class InMemoryResourceStore implements ResourceStore {
     }
 
     @Override
-    public void addQueryResource(QueryResource queryResource) {
+    public boolean addQueryResource(QueryResource queryResource) {
         this.queryResources.put(queryResource.getQueryMetadata().getId(), queryResource);
+        return true;
     }
 
     @Override
-    public void deleteQueryResource(String queryId) {
-        this.queryResources.remove(queryId);
+    public boolean deleteQueryResource(String queryId) {
+        return this.queryResources.remove(queryId)!=null;
     }
 
     @Override
-    public void addCursorResource(String queryId, CursorResource cursorResource) {
+    public boolean addCursorResource(String queryId, CursorResource cursorResource) {
         Optional<QueryResource> queryResource = this.getQueryResource(queryId);
         if (queryResource.isPresent()) {
             queryResource.get().addCursorResource(cursorResource.getCursorId(), cursorResource);
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void deleteCursorResource(String queryId, String cursorId) {
+    public boolean deleteCursorResource(String queryId, String cursorId) {
         Optional<QueryResource> queryResource = this.getQueryResource(queryId);
         if (queryResource.isPresent()) {
             queryResource.get().deleteCursorResource(cursorId);
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void addPageResource(String queryId, String cursorId, PageResource pageResource) {
+    public boolean addPageResource(String queryId, String cursorId, PageResource pageResource) {
         Optional<QueryResource> queryResource = this.getQueryResource(queryId);
         if (!queryResource.isPresent()) {
-            return;
+            return false;
         }
 
         Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
         if (cursorResource.isPresent()) {
             cursorResource.get().addPageResource(pageResource.getPageId(), pageResource);
         }
+        return true;
     }
 
     @Override
-    public void deletePageResource(String queryId, String cursorId, String pageId) {
+    public boolean deletePageResource(String queryId, String cursorId, String pageId) {
         Optional<QueryResource> queryResource = this.getQueryResource(queryId);
         if (!queryResource.isPresent()) {
-            return;
+            return false;
         }
 
         Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
         if (cursorResource.isPresent()) {
             cursorResource.get().deletePageResource(pageId);
         }
+        return true;
     }
     //endregion
 
@@ -119,7 +126,13 @@ public class InMemoryResourceStore implements ResourceStore {
             }
         }
     }
-    //endregion
+
+    @Override
+    public boolean test(CreateQueryRequest.Type type) {
+        return type.equals(CreateQueryRequest.Type._volatile);
+    }
+
+//endregion
 
     //region Fields
     private Map<String, QueryResource> queryResources;

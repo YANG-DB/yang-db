@@ -1,20 +1,18 @@
 package com.kayhut.fuse.services.modules;
 
-import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.cursor.CreateCursorRequestDeserializer;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
-import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
 import com.kayhut.fuse.model.Range;
 import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.JacksonQueryDescriptor;
-import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
@@ -49,7 +47,7 @@ public class ServiceModule extends ModuleBase {
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
         // bind common components
         long defaultTimeout = config.hasPath("fuse.cursor.timeout") ? config.getLong("fuse.cursor.timeout") : 60*1000*3;
-
+        binder.bindConstant().annotatedWith(Names.named(ExecutionScope.clientParameter)).to(defaultTimeout);
         binder.bind(RequestIdSupplier.class)
                 .annotatedWith(named(CachedRequestIdSupplier.RequestIdSupplierParameter))
                 .to(SnowflakeRequestIdSupplier.class)
@@ -86,6 +84,7 @@ public class ServiceModule extends ModuleBase {
 
         // register PostConfigurer
         binder.bind(PostConfigurer.class).asEagerSingleton();
+
     }
     //endregion
 

@@ -1,11 +1,13 @@
 package com.kayhut.fuse.model.query.properties;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.projection.Projection;
 
 /**
  * Eprop with a boost to rank the query results according to the desired boost
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ScoreEProp extends EProp implements RankingProp {
     //region Constructors
     public ScoreEProp(EProp eProp, long boost) {

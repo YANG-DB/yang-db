@@ -1,5 +1,6 @@
 package com.kayhut.fuse.asg.strategy.constraint;
 
+import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.asg.util.OntologyPropertyTypeFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -17,12 +18,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getEprops;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getRelProps;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 
 /**
  * Created by benishue on 11-May-17.
  */
-public class ConstraintIterableTransformationAsgStrategy extends ConstraintTransformationAsgStrategyBase {
+public class ConstraintIterableTransformationAsgStrategy implements AsgStrategy {
     //region Constructors
     public ConstraintIterableTransformationAsgStrategy() {
         this.propertyTypeFactory = new OntologyPropertyTypeFactory();
@@ -33,13 +36,13 @@ public class ConstraintIterableTransformationAsgStrategy extends ConstraintTrans
     //region ConstraintTransformationAsgStrategyBase implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        getEprops(query).forEach(eProp -> {
-            applyArrayTransformation(eProp, context);
-        });
+        getEprops(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .forEach(eProp -> applyArrayTransformation(eProp, context));
 
-        getRelProps(query).forEach(relProp -> {
-            applyArrayTransformation(relProp, context);
-        });
+        getRelProps(query).stream()
+                .filter(prop -> prop.getCon()!=null)
+                .forEach(relProp -> applyArrayTransformation(relProp, context));
     }
     //endregion
 

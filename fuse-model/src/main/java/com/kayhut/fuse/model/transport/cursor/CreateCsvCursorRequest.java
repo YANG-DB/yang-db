@@ -49,6 +49,10 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
     public boolean isWithHeaders() {
         return withHeaders;
     }
+    public CreateCsvCursorRequest withHeaders(boolean withHeaders) {
+        this.withHeaders = withHeaders;
+        return this;
+    }
 
     //endregion
 

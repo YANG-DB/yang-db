@@ -29,6 +29,7 @@
       "pType": 1,
       "pTag": 1,
       "con": {
+        "type":"Constraint",
         "op": "eq",
         "expr": "Brandon"
       }
@@ -61,6 +62,7 @@
       "pType": 1,
       "pTag": 2,
       "con": {
+        "type":"Constraint",
         "op": "ge",
         "expr": "1010-01-01T00:00:00.000"
       },
@@ -72,6 +74,7 @@
       "pType": 2,
       "pTag": 3,
       "con": {
+        "type":"Constraint",
         "op": "gt",
         "expr": "100"
       }

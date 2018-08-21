@@ -15,13 +15,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.*;
+import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.gt;
-import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
 /**
