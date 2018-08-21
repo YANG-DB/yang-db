@@ -436,7 +436,7 @@ public class RankingScoreBasedE2ETests {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
                 new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
-                new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
+                new ETyped(7, "D.globalEntityValue", $ont.eType$("Evalue"), 8,0),
                 new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
                 new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
                 new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, nick))
@@ -448,7 +448,7 @@ public class RankingScoreBasedE2ETests {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
                 new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
-                new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
+                new ETyped(7, "D.globalEntityValue", $ont.eType$("Evalue"), 8,0),
                 new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
                 new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
                 new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.likeAny, names))
@@ -460,7 +460,7 @@ public class RankingScoreBasedE2ETests {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
                 new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
-                new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
+                new ETyped(7, "D.globalEntityValue", $ont.eType$("Evalue"), 8,0),
                 new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
                 new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
                 new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, nick))
@@ -473,7 +473,7 @@ public class RankingScoreBasedE2ETests {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
                 new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
-                new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
+                new ETyped(7, "D.globalEntityValue", $ont.eType$("Evalue"), 8,0),
                 new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
                 new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
                 new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, nick))
@@ -485,7 +485,7 @@ public class RankingScoreBasedE2ETests {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 6,0),
                 new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, "", 7, 0),
-                new ETyped(7, "D", $ont.eType$("Evalue"), 8,0),
+                new ETyped(7, "D.globalEntityValue", $ont.eType$("Evalue"), 8,0),
                 new Quant1(8, QuantType.all, Arrays.asList(9,10), 0),
                 new EProp(9, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "title")),
                 new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, nick))

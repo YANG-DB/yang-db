@@ -41,12 +41,6 @@ public class KnowledgeModule extends ModuleBase {
                 KnowledgeGraphHierarchyCursorRequest.CursorType,
                 KnowledgeGraphHierarchyCursorRequest.class,
                 new KnowledgeGraphHierarchyTraversalCursor.Factory()));
-
-
-        binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>() {})
-                .toProvider(KnowledgePlanSearcherProvider.class);
-
-        binder.bind(StatisticsProviderFactory.class).to(NoStatsProvider.class);
     }
     //endregion
 }
