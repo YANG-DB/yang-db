@@ -9,6 +9,8 @@ public class NamedParameter {
     private String name;
     private Object value;
 
+    public NamedParameter() {}
+
     public NamedParameter(String name, Object value) {
         this.name = name;
         this.value = value;

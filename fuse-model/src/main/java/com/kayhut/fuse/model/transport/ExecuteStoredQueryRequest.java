@@ -5,10 +5,15 @@ import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class ExecuteStoredQueryRequest extends CreateQueryRequest {
 
     private final Collection<NamedParameter> parameters;
+
+    public ExecuteStoredQueryRequest() {
+        this.parameters = Collections.EMPTY_LIST;
+    }
 
     public ExecuteStoredQueryRequest(String id, String name, Collection<NamedParameter> parameters) {
         super(id, name, new QueryRef(name));
