@@ -36,6 +36,7 @@ import com.kayhut.fuse.model.transport.cursor.CreateCsvCursorRequest.CsvElement;
 import com.kayhut.fuse.model.transport.cursor.CreateCsvCursorRequest.ElementType;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
 import org.elasticsearch.client.Client;
@@ -149,6 +150,46 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
         Assert.assertEquals(2, ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
 
+    }
+
+    @Test
+    public void testCreateAndFetchSingleValueNoParamsWithPage() throws ParseException, JsonProcessingException {
+        init("config/application.test.engine3.m1.dfs.knowledge.public.conf");
+        RequestScope requestScope = setup();
+        Provider<Client> clientProvider = requestScope.scope(Key.get(Client.class), injector.getProvider(Client.class));
+        Provider<RawSchema> schemaProvider = requestScope.scope(Key.get(RawSchema.class), injector.getProvider(RawSchema.class));
+        setupData(clientProvider.get(), schemaProvider.get());
+
+        final Provider<QueryDriver> driverScope = requestScope.scope(Key.get(QueryDriver.class), injector.getProvider(QueryDriver.class));
+        final QueryDriver driver = driverScope.get();
+
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Efile", 2, 0),
+                        new EProp(2, "logicalId", Constraint.of(ConstraintOp.eq, f1.logicalId))
+                )).build();
+
+        final CreateQueryRequest createQueryRequest = new CreateQueryRequest("q1", "MyQuery", query, new PlanTraceOptions(),
+                new CreatePathsCursorRequest(new CreatePageRequest(1)));
+
+        final Optional<QueryResourceInfo> info = driver.create(createQueryRequest);
+        Assert.assertTrue(info.isPresent());
+        Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
+        Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
+        Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
+        Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
+        Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
+        Assert.assertEquals(1, ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
+
+        Optional<Object> data = driver.getNextPageData("q1", Optional.empty(), 1, true);
+        Assert.assertTrue(data.isPresent());
+        Assert.assertFalse(((AssignmentsQueryResult) data.get()).getAssignments().isEmpty());
+        Assert.assertEquals(1, ((AssignmentsQueryResult) data.get()).getAssignments().get(0).getEntities().size(), 1);
+
+        data = driver.getNextPageData("q1", Optional.empty(), 1, true);
+        Assert.assertTrue(data.isPresent());
+        Assert.assertTrue(((AssignmentsQueryResult) data.get()).getAssignments().isEmpty());
     }
 
     @Test
