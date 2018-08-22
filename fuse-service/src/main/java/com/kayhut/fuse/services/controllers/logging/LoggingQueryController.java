@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
 import static com.kayhut.fuse.dispatcher.logging.LogType.*;
@@ -104,6 +105,18 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
                     }
                     return this.controller.callAndFetch(request);
                 }, this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<Object> fetchNextPage(String queryId, Optional<String> cursorId, int pageSize, boolean deleteCurrentPage) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                getInfo,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.fetchNextPage(queryId,cursorId,pageSize,deleteCurrentPage), this.resultHandler());
     }
 
     @Override
