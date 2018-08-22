@@ -65,7 +65,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     return Results.with(response, response.status());
                 });
 
-        /** create a query */
+        /** call a query */
         app.use(appUrlSupplier.queryStoreUrl() + "/call")
                 .post(req -> {
                     Route.of("callQuery").write();
@@ -80,6 +80,18 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     ContentResponse<QueryResourceInfo> response = this.getController(app).callAndFetch(callQueryRequest);
 
                     return Results.with(response, response.status());
+                });
+
+        /** call a query */
+        app.use(appUrlSupplier.resourceUrl(":queryId") + "/nextPageData")
+                .get(req -> {
+                    Route.of("nextPageData").write();
+                    ContentResponse<Object> page = this.getController(app)
+                            .fetchNextPage(req.param("queryId").value(),
+                                           req.param("cursorId").toOptional(String.class),
+                                           req.param("pageSize").intValue(),
+                                           req.param("deletePage").isSet() ? req.param("deletePage").booleanValue() : true);
+                    return Results.with(page, page.status());
                 });
 
         /** get the query info */
