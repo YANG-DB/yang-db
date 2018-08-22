@@ -5,7 +5,7 @@
     <parent>
         <artifactId>fuse-domain</artifactId>
         <groupId>com.kayhut</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,26 +29,26 @@
             <dependency>
                 <groupId>com.kayhut</groupId>
                 <artifactId>fuse-domain-knowledge-ext</artifactId>
-                <version>0.4-SNAPSHOT</version>
+                <version>0.4</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>com.kayhut</groupId>
                 <artifactId>fuse-domain-knowledge-poc</artifactId>
-                <version>0.4-SNAPSHOT</version>
+                <version>0.4</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>com.kayhut</groupId>
                 <artifactId>fuse-domain-knowledge-test</artifactId>
-                <version>0.4-SNAPSHOT</version>
+                <version>0.4</version>
                 <type>test-jar</type>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>com.kayhut</groupId>
                 <artifactId>fuse-domain-knowledge-datagen</artifactId>
-                <version>0.4-SNAPSHOT</version>
+                <version>0.4</version>
                 <scope>compile</scope>
             </dependency>
         </dependencies>
