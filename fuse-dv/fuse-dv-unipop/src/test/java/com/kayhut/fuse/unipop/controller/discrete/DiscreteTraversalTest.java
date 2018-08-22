@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.Mappings;
+import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
@@ -13,14 +15,12 @@ import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.FuseUniGraph;
-import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import com.kayhut.fuse.test.framework.index.Mappings;
-import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversalStrategies;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.search.SearchType;
@@ -29,16 +29,29 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.*;
 import org.unipop.configuration.UniGraphConfiguration;
-import org.unipop.process.strategyregistrar.StandardStrategyProvider;
+import org.unipop.process.coalesce.UniGraphCoalesceStepStrategy;
+import org.unipop.process.edge.EdgeStepsStrategy;
+import org.unipop.process.optional.UniGraphOptionalStepStrategy;
+import org.unipop.process.order.UniGraphOrderStrategy;
+import org.unipop.process.properties.UniGraphPropertiesStrategy;
+import org.unipop.process.repeat.UniGraphRepeatStepStrategy;
+import org.unipop.process.start.UniGraphStartCountStepStrategy;
+import org.unipop.process.start.UniGraphStartEdgeCountStepStrategy;
+import org.unipop.process.start.UniGraphStartStepStrategy;
+import org.unipop.process.strategy.CompositeStrategy;
+import org.unipop.process.strategyregistrar.StrategyProvider;
+import org.unipop.process.union.UniGraphUnionStepNewStrategy;
+import org.unipop.process.vertex.UniGraphVertexStepStrategy;
+import org.unipop.process.where.UniGraphWhereStepStrategy;
 import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
+import static com.kayhut.fuse.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 import static com.kayhut.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
 import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
-import static com.kayhut.fuse.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 
 /**
  * Created by roman.margolis on 14/09/2017.
@@ -101,11 +114,8 @@ public class DiscreteTraversalTest {
                     }
 
                     @Override
-                    public void close() {
-
-                    }
-                },
-                new StandardStrategyProvider());
+                    public void close() {}
+                }, new NewStandardStrategyProvider());
 
         TransportClient client = elasticEmbeddedNode.getClient();
         client.admin().indices().preparePutTemplate("all")
@@ -735,11 +745,35 @@ public class DiscreteTraversalTest {
     }
 
     @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX__hasOutFire__inVX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .union(__.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
+                        __.outE("hasOutFire").inV())
+                .toList();
+
+        Assert.assertEquals(10, vertices.size());
+        Assert.assertEquals(10, Stream.ofAll(vertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX_outVX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .outV().toList();
+
+        Assert.assertEquals(8, vertices.size());
+        Assert.assertEquals(8, Stream.ofAll(vertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+    }
+
+    @Test
     public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_optionalXoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX_outVX() throws InterruptedException {
         List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                 .optional(__.outE("hasCoin")
-                            .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
-                            .outV()).toList();
+                        .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                        .outV()).toList();
 
         Assert.assertEquals(10, vertices.size());
         Assert.assertEquals(10, Stream.ofAll(vertices).map(Element::id).distinct().size());
@@ -1090,4 +1124,30 @@ public class DiscreteTraversalTest {
     //region Fields
     private GraphTraversalSource g;
     //endregion
+
+    public static class NewStandardStrategyProvider implements StrategyProvider {
+        @Override
+        public TraversalStrategies get() {
+            DefaultTraversalStrategies traversalStrategies = new DefaultTraversalStrategies();
+            traversalStrategies.addStrategies(
+                    new CompositeStrategy(Stream.of(
+                            new UniGraphStartStepStrategy(),
+                            new UniGraphStartCountStepStrategy(),
+                            new UniGraphVertexStepStrategy(),
+                            new UniGraphStartEdgeCountStepStrategy(),
+                            new EdgeStepsStrategy(),
+                            new UniGraphPropertiesStrategy(),
+                            new UniGraphCoalesceStepStrategy(),
+                            new UniGraphWhereStepStrategy(),
+                            new UniGraphUnionStepNewStrategy(),
+                            new UniGraphRepeatStepStrategy(),
+                            new UniGraphOrderStrategy(),
+                            new UniGraphOptionalStepStrategy()).toJavaList()
+                    ));
+            TraversalStrategies.GlobalCache.getStrategies(Graph.class).toList().forEach(traversalStrategies::addStrategies);
+            return traversalStrategies;
+        }
+
+
+    }
 }

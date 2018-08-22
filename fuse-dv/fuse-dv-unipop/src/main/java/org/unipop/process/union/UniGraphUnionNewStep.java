@@ -14,10 +14,13 @@ import java.util.*;
 /**
  * Created by roman.margolis on 28/11/2017.
  */
-public class UnipopGraphUnionStep<S, E> extends UniBulkStep<S, E> implements TraversalParent {
+public class UniGraphUnionNewStep<S, E> extends UniBulkStep<S, E> implements TraversalParent {
+    private final List<Traversal.Admin> unionTraversals;
+
     //region Constructors
-    public UnipopGraphUnionStep(Traversal.Admin traversal, UniGraph graph) {
+    public UniGraphUnionNewStep(Traversal.Admin traversal, UniGraph graph, List<Traversal.Admin> unionTraversals) {
         super(traversal, graph);
+        this.unionTraversals = unionTraversals;
     }
     //endregion
 
@@ -34,32 +37,32 @@ public class UnipopGraphUnionStep<S, E> extends UniBulkStep<S, E> implements Tra
         Stream.ofAll(traversers)
                 .forEach(traverser -> traverser.<Map<String, Object>>sack().put(this.getId(), traverser));
 
-        this.optionalTraversal.reset();
-        this.optionalTraversal.addStarts(Stream.ofAll(traversers).map(Traverser.Admin::split).iterator());
+        this.branches.reset();
+        this.branches.addStarts(Stream.ofAll(traversers).map(Traverser.Admin::split).iterator());
 
-        return new OptionalIterator<>(traversers, this.optionalTraversal.getEndStep(), this.getId());
+        return new OptionalIterator<>(traversers, this.branches.getEndStep(), this.getId());
     }
 
     @Override
     public void reset() {
         super.reset();
-        this.optionalTraversal.reset();
+        this.branches.reset();
     }
     //endregion
 
     //region TraversalParent Implementation
     @Override
     public List<Traversal.Admin<S, E>> getGlobalChildren() {
-        return Collections.singletonList(this.optionalTraversal);
+        return Collections.singletonList(this.branches);
     }
 
     @Override
     public void addGlobalChild(Traversal.Admin<?, ?> globalChildTraversal) {
-        if (this.optionalTraversal != null) {
+        if (this.branches != null) {
             throw new IllegalStateException("Only one global child traversal is allowed: " + this.getClass().getCanonicalName());
         }
 
-        this.optionalTraversal = this.integrateChild(globalChildTraversal);
+        this.branches = this.integrateChild(globalChildTraversal);
     }
 
     @Override
@@ -80,12 +83,12 @@ public class UnipopGraphUnionStep<S, E> extends UniBulkStep<S, E> implements Tra
 
     //region Object Implementation
     @Override
-    public UnipopGraphUnionStep<S, E> clone() {
-        UnipopGraphUnionStep<S, E> clone = (UnipopGraphUnionStep<S, E>) super.clone();
-        clone.optionalTraversal = null;
+    public UniGraphUnionNewStep<S, E> clone() {
+        UniGraphUnionNewStep<S, E> clone = (UniGraphUnionNewStep<S, E>) super.clone();
+        clone.branches = null;
 
-        if (this.optionalTraversal != null) {
-            clone.addGlobalChild(this.optionalTraversal.clone());
+        if (this.branches != null) {
+            clone.addGlobalChild(this.branches.clone());
         }
 
         return clone;
@@ -93,7 +96,7 @@ public class UnipopGraphUnionStep<S, E> extends UniBulkStep<S, E> implements Tra
     //endregion
 
     //region Fields
-    private Traversal.Admin<S, E> optionalTraversal;
+    private Traversal.Admin<S, E> branches;
     //endregion
 
     //region OptionalIterator
