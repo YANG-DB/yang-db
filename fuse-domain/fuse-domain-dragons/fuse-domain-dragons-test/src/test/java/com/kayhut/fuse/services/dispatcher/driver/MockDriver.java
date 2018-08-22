@@ -92,6 +92,7 @@ public class MockDriver {
             QueryResultBase assignmentsQueryResult = cursorResource.getCursor().getNextResults(pageSize);
             return new PageResource<>(pageId, assignmentsQueryResult, pageSize, 0);
         }
+
         //endregion
     }
 }

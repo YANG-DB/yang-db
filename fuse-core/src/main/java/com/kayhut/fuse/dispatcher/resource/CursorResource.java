@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by User on 06/03/2017.
@@ -49,7 +50,15 @@ public class CursorResource {
     }
 
     public String getNextPageId() {
-        return String.valueOf(this.pageSequence++);
+        return String.valueOf(this.pageSequence.incrementAndGet());
+    }
+
+    public String getCurrentPageId() {
+        return String.valueOf(this.pageSequence.get());
+    }
+
+    public String getPriorPageId() {
+        return String.valueOf(this.pageSequence.get() > 0 ? this.pageSequence.get()-1 : 0);
     }
 
     public Cursor getCursor() {
@@ -68,6 +77,6 @@ public class CursorResource {
     private Date timeCreated;
 
     private Map<String, PageResource> pageResources;
-    private int pageSequence;
+    private AtomicInteger pageSequence = new AtomicInteger();
     //endregion
 }

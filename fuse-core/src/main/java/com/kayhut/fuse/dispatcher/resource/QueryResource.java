@@ -12,6 +12,7 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by User on 06/03/2017.
@@ -53,7 +54,11 @@ public class QueryResource {
     }
 
     public String getNextCursorId() {
-        return String.valueOf(this.cursorSequence++);
+        return String.valueOf(this.cursorSequence.incrementAndGet());
+    }
+
+    public String getCurrentCursorId() {
+        return String.valueOf(this.cursorSequence.get());
     }
 
     //region Properties
@@ -90,6 +95,6 @@ public class QueryResource {
     private Optional<PlanNode<Plan>> planNode;
     private AsgQuery asgQuery;
     private Map<String, CursorResource> cursorResources;
-    private int cursorSequence;
+    private AtomicInteger cursorSequence = new AtomicInteger();
     //endregion
 }

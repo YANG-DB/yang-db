@@ -57,6 +57,36 @@ public abstract class QueryDriverBase implements QueryDriver {
         return create(request);
     }
 
+
+    @Override
+    public Optional<Object> getNextPageData(String queryId, Optional<String> cursorId, int pageSize, boolean deleteCurrentPage) {
+        try {
+            if (!resourceStore.getQueryResource(queryId).isPresent())
+                return Optional.of(new QueryResourceInfo().error(
+                        new FuseError(Query.class.getSimpleName(),
+                                "Query with id[" + queryId + "] not found in store")));
+
+            QueryResource queryResource = resourceStore.getQueryResource(queryId).get();
+            final String cursorID = cursorId.orElse(queryResource.getCurrentCursorId());
+            final Optional<PageResourceInfo> info = pageDriver.create(queryId, cursorID, pageSize);
+            if (!info.isPresent())
+                return Optional.of(new QueryResourceInfo().error(
+                        new FuseError(Query.class.getSimpleName(), "failed fetching next page for query " + queryId)));
+
+            final PageResourceInfo pageResourceInfo = info.get();
+
+            if (deleteCurrentPage) {
+                final String priorPageId = resourceStore.getCursorResource(queryId, cursorID).get().getPriorPageId();
+                pageDriver.delete(queryId, cursorID, priorPageId);
+            }
+            return pageDriver.getData(queryId,cursorID,pageResourceInfo.getResourceId());
+        } catch (Exception err) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(),
+                            err.getMessage())));
+        }
+    }
+
     /**
      * internal api
      *
@@ -187,8 +217,8 @@ public abstract class QueryDriverBase implements QueryDriver {
             CreatePageRequest pageRequest = (callRequest.getPageCursorRequest() != null
                     ? callRequest.getPageCursorRequest()
                     : (storedRequest.getCreateCursorRequest() != null
-                            ? storedRequest.getCreateCursorRequest().getCreatePageRequest()
-                            : null));
+                    ? storedRequest.getCreateCursorRequest().getCreatePageRequest()
+                    : null));
 
             //create the new volatile query
             Optional<QueryResourceInfo> info = create(new CreateQueryRequest(
