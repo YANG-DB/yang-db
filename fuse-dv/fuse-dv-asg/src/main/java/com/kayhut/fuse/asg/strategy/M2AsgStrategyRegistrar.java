@@ -2,10 +2,10 @@ package com.kayhut.fuse.asg.strategy;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.asg.strategy.constraint.*;
-import com.kayhut.fuse.asg.strategy.propertyGrouping.EntityPropertiesGroupingAsgStrategy;
-import com.kayhut.fuse.asg.strategy.propertyGrouping.HQuantifierPropertiesGroupingAsgStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.EPropGroupingAsgStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.HQuantPropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.Quant1PropertiesGroupingAsgStrategy;
-import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropertiesGroupingAsgStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.schema.ExactConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.asg.strategy.schema.LikeAnyConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.asg.strategy.schema.LikeConstraintTransformationAsgStrategy;
@@ -36,10 +36,10 @@ public class M2AsgStrategyRegistrar  implements AsgStrategyRegistrar {
         return Arrays.asList(
                 new AsgNamedParametersStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
-                new EntityPropertiesGroupingAsgStrategy(),
-                new HQuantifierPropertiesGroupingAsgStrategy(),
+                new EPropGroupingAsgStrategy(),
+                new HQuantPropertiesGroupingAsgStrategy(),
                 new Quant1PropertiesGroupingAsgStrategy(),
-                new RelPropertiesGroupingAsgStrategy(),
+                new RelPropGroupingAsgStrategy(),
                 new ConstraintTypeTransformationAsgStrategy(),
                 new ConstraintIterableTransformationAsgStrategy(),
                 new RedundantLikeConstraintAsgStrategy(),

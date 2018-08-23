@@ -14,8 +14,11 @@ import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,19 +47,40 @@ public class DefaultSelectionAsgStrategy implements AsgStrategy {
                             .filter(eProp -> eProp.getProj() != null).isEmpty()) {
 
                         Optional<AsgEBase<ETyped>> eTypedAsgEBase = AsgQueryUtil.ancestor(ePropGroupAsgEBase, ETyped.class);
-                        if (eTypedAsgEBase.isPresent()) {
-                            Stream.ofAll(ont.$entity$(eTypedAsgEBase.get().geteBase().geteType()).getProperties())
+                        List<EProp> projectionProps = Collections.emptyList();
+
+                         if (eTypedAsgEBase.isPresent()) {
+                            projectionProps =
+                                    Stream.ofAll(ont.$entity$(eTypedAsgEBase.get().geteBase().geteType()).getProperties())
                                     .filter(pType -> !this.nonSelectablePTypes.contains(pType))
-                                    .forEach(pType -> ePropGroupAsgEBase.geteBase().getProps().add(
-                                            new EProp(0, pType, new IdentityProjection())));
+                                    .map(pType -> new EProp(0, pType, new IdentityProjection()))
+                                    .toJavaList();
                         } else {
                             Optional<AsgEBase<EUntyped>> eUntypedAsgEBase = AsgQueryUtil.ancestor(ePropGroupAsgEBase, EUntyped.class);
-                            eUntypedAsgEBase.ifPresent(eUntypedAsgEBase1 ->
-                                    Stream.ofAll(ont.entities())
-                                            .flatMap(EntityType::getProperties)
-                                            .filter(pType -> !this.nonSelectablePTypes.contains(pType))
-                                            .forEach(pType -> ePropGroupAsgEBase.geteBase().getProps().add(
-                                                    new EProp(0, pType, new IdentityProjection()))));
+                            if (eUntypedAsgEBase.isPresent()) {
+                                projectionProps =
+                                        Stream.ofAll(ont.entities())
+                                        .flatMap(EntityType::getProperties)
+                                        .filter(pType -> !this.nonSelectablePTypes.contains(pType))
+                                        .map(pType -> new EProp(0, pType, new IdentityProjection()))
+                                        .toJavaList();
+                            }
+                        }
+
+                        if (ePropGroupAsgEBase.geteBase().getQuantType().equals(QuantType.all)) {
+                            ePropGroupAsgEBase.geteBase().getProps().addAll(projectionProps);
+                        } else if (ePropGroupAsgEBase.geteBase().getQuantType().equals(QuantType.some)) {
+                             EPropGroup clone = new EPropGroup(
+                                     0,
+                                     QuantType.some,
+                                     ePropGroupAsgEBase.geteBase().getProps(),
+                                     ePropGroupAsgEBase.geteBase().getGroups());
+
+                             ePropGroupAsgEBase.geteBase().getProps().clear();
+                             ePropGroupAsgEBase.geteBase().getGroups().clear();
+                             ePropGroupAsgEBase.geteBase().setQuantType(QuantType.all);
+                             ePropGroupAsgEBase.geteBase().getGroups().add(clone);
+                             ePropGroupAsgEBase.geteBase().getProps().addAll(projectionProps);
                         }
                     }
                 }

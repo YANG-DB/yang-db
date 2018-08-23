@@ -16,19 +16,19 @@ import java.util.List;
 /**
  * Created by benishue on 19-Apr-17.
  */
-public class RelPropertiesGroupingAsgStrategy implements AsgStrategy {
+public class RelPropGroupingAsgStrategy implements AsgStrategy {
     // Rel with RelProps e.g., Q190, Q10 on V1
     // AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        Stream.ofAll(AsgQueryUtil.<Rel>elements(query, Rel.class))
+        Stream.ofAll(AsgQueryUtil.elements(query, Rel.class))
                 .filter(asgEBase -> !AsgQueryUtil.bDescendant(asgEBase, HQuant.class).isPresent())
-                .forEach(asgEBase -> groupRelProps(query, asgEBase));
+                .forEach(this::groupRelProps);
     }
     //endregion
 
     //region Private Methods
-    private void groupRelProps(AsgQuery query, AsgEBase<Rel> asgEBase) {
+    private void groupRelProps(AsgEBase<Rel> asgEBase) {
         RelPropGroup rPropGroup;
 
         List<AsgEBase<RelProp>> relPropsAsgBChildren = AsgQueryUtil.bDescendants(

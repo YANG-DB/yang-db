@@ -18,12 +18,13 @@ import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getRelProps;
  * transforms all e.value string expressions to lower case
  */
 public class ConstraintExpLowercaseTransformationAsgStrategy implements AsgStrategy {
-    private final Set<String> fields;
-
+    //region Constructors
     public ConstraintExpLowercaseTransformationAsgStrategy(Collection<String> fields) {
         this.fields = new HashSet<>(fields);
     }
+    //endregion
 
+    //region AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
 
@@ -37,9 +38,9 @@ public class ConstraintExpLowercaseTransformationAsgStrategy implements AsgStrat
                 .filter(prop -> fields.contains(prop.getpType()))
                 .forEach(relProp -> applyExpressionTransformation(context, relProp, BaseProp.class));
     }
+    //endregion
 
     //region Private Methods
-
     private void applyExpressionTransformation(AsgStrategyContext context, EBase eBase, Class klass) {
         if (BaseProp.class.isAssignableFrom(klass)) {
             BaseProp eProp = (BaseProp) eBase;
@@ -54,9 +55,11 @@ public class ConstraintExpLowercaseTransformationAsgStrategy implements AsgStrat
             }
         }
     }
-
     //endregion
 
+    //region Fields
+    private final Set<String> fields;
+    //endregion
 }
 
 

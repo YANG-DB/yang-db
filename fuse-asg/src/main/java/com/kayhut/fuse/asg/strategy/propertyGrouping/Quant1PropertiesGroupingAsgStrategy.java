@@ -21,11 +21,12 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
     // Vertical AND Quantifier with EProps e.g., Q3-2, Q27-2 on V1
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
+        // phase 1 - group all Eprops to EPropGroups
         AsgQueryUtil.<Quant1>elements(query, Quant1.class).forEach(quant -> {
                 List<AsgEBase<EProp>> ePropsAsgChildren = AsgQueryUtil.nextAdjacentDescendants(quant, EProp.class);
                 List<EProp> eProps = Stream.ofAll(ePropsAsgChildren).map(AsgEBase::geteBase).toJavaList();
 
-                if (eProps.size() > 0) {
+                if (!eProps.isEmpty()) {
                     EPropGroup ePropGroup = new EPropGroup(
                             Stream.ofAll(eProps).map(EProp::geteNum).min().get(),
                             quant.geteBase().getqType(),
@@ -43,6 +44,8 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
                 }
             }
         );
+
+        // phase 2 - group all EpropGroups to other EpropGroups
     }
     //endregion
 }

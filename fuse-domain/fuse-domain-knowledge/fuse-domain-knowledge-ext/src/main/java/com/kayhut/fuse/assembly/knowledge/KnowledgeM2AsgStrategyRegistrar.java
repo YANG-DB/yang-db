@@ -44,10 +44,10 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
         return Arrays.asList(
                 new AsgNamedParametersStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
-                new EntityPropertiesGroupingAsgStrategy(),
-                new HQuantifierPropertiesGroupingAsgStrategy(),
+                new EPropGroupingAsgStrategy(),
+                new HQuantPropertiesGroupingAsgStrategy(),
                 new Quant1PropertiesGroupingAsgStrategy(),
-                new RelPropertiesGroupingAsgStrategy(),
+                new RelPropGroupingAsgStrategy(),
                 new ConstraintTypeTransformationAsgStrategy(),
                 new ConstraintIterableTransformationAsgStrategy(),
                 new RedundantLikeConstraintAsgStrategy(),

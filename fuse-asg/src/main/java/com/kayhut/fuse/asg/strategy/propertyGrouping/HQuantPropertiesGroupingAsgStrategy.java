@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by benishue on 19-Apr-17.
  */
-public class HQuantifierPropertiesGroupingAsgStrategy implements AsgStrategy {
+public class HQuantPropertiesGroupingAsgStrategy implements AsgStrategy {
     // Horizontal Quantifier with Bs below
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
