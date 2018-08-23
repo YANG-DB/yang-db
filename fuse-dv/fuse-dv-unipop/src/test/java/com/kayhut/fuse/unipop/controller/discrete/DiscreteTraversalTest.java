@@ -41,6 +41,7 @@ import org.unipop.process.start.UniGraphStartStepStrategy;
 import org.unipop.process.strategy.CompositeStrategy;
 import org.unipop.process.strategyregistrar.StrategyProvider;
 import org.unipop.process.union.UniGraphUnionStepNewStrategy;
+import org.unipop.process.union.UniGraphUnionStepStrategy;
 import org.unipop.process.vertex.UniGraphVertexStepStrategy;
 import org.unipop.process.where.UniGraphWhereStepStrategy;
 import org.unipop.query.controller.ControllerManager;
@@ -49,6 +50,7 @@ import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
+import static com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode.getClient;
 import static com.kayhut.fuse.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 import static com.kayhut.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
 import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
@@ -58,6 +60,8 @@ import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application
  */
 public class DiscreteTraversalTest {
     //region Static Fields
+    public static final boolean EMBEDDED = false;
+    public static final String CLUSTER_NAME = "knowledge";
     public static ElasticEmbeddedNode elasticEmbeddedNode;
     public static ElasticGraphConfiguration elasticGraphConfiguration;
     public static UniGraphConfiguration uniGraphConfiguration;
@@ -65,15 +69,18 @@ public class DiscreteTraversalTest {
     public static GraphElementSchemaProvider schemaProvider;
     public static SearchOrderProviderFactory orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
 
+    private static TransportClient client;
+
     //endregion
 
     //region Setup
     @BeforeClass
     public static void setup() throws Exception {
-        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+        if (EMBEDDED)
+            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
 
         elasticGraphConfiguration = new ElasticGraphConfiguration();
-        elasticGraphConfiguration.setClusterName("fuse.test_elastic");
+        elasticGraphConfiguration.setClusterName(CLUSTER_NAME);
         elasticGraphConfiguration.setElasticGraphScrollSize(1000);
         elasticGraphConfiguration.setElasticGraphMaxSearchSize(1000);
         elasticGraphConfiguration.setElasticGraphDefaultSearchSize(1000);
@@ -84,6 +91,7 @@ public class DiscreteTraversalTest {
         uniGraphConfiguration = new UniGraphConfiguration();
         uniGraphConfiguration.setBulkMax(1000);
         uniGraphConfiguration.setBulkStart(1000);
+        client = getClient(CLUSTER_NAME, 9300);
         graph = new FuseUniGraph(
                 uniGraphConfiguration,
                 uniGraph -> new ControllerManager() {
@@ -92,7 +100,7 @@ public class DiscreteTraversalTest {
                         return ImmutableSet.of(
                                 new ElementController(
                                         new DiscreteElementVertexController(
-                                                elasticEmbeddedNode.getClient(),
+                                                client,
                                                 elasticGraphConfiguration,
                                                 uniGraph,
                                                 schemaProvider,
@@ -100,13 +108,13 @@ public class DiscreteTraversalTest {
                                         null
                                 ),
                                 new DiscreteVertexController(
-                                        elasticEmbeddedNode.getClient(),
+                                        client,
                                         elasticGraphConfiguration,
                                         uniGraph,
                                         schemaProvider,
                                         orderProvider),
                                 new DiscreteElementReduceController(
-                                        elasticEmbeddedNode.getClient(),
+                                        client,
                                         elasticGraphConfiguration,
                                         uniGraph,
                                         schemaProvider)
@@ -114,10 +122,10 @@ public class DiscreteTraversalTest {
                     }
 
                     @Override
-                    public void close() {}
+                    public void close() {
+                    }
                 }, new NewStandardStrategyProvider());
 
-        TransportClient client = elasticEmbeddedNode.getClient();
         client.admin().indices().preparePutTemplate("all")
                 .setTemplate("*")
                 .setSettings(Settings.builder()
@@ -148,13 +156,13 @@ public class DiscreteTraversalTest {
         new ElasticDataPopulator(client, "fire1", "pge", "id", true, null, false, () -> createFireEventsSingular(0, 5, 10, 3)).populate();
         new ElasticDataPopulator(client, "fire2", "pge", "id", true, null, false, () -> createFireEventsSingular(5, 10, 10, 3)).populate();
 
-        elasticEmbeddedNode.getClient().admin().indices().refresh(
+        client.admin().indices().refresh(
                 new RefreshRequest("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2")).actionGet();
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        elasticEmbeddedNode.getClient().admin().indices().prepareDelete("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2").execute().actionGet();
+//        client.admin().indices().prepareDelete("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2").execute().actionGet();
     }
 
     @Before
@@ -745,15 +753,46 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX__hasOutFire__inVX() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                .union(__.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
-                        __.outE("hasOutFire").inV())
+    public void g_V_hasXconstraintXhasXandXlabel_DragonX_hasXcolor_redXXXX_inV() {
+        List<Vertex> vertices = g.V().has(CONSTRAINT,
+                Constraint.by(__.and(
+                        __.has(T.label, "Dragon"),
+                        __.has("color", "red"))))
                 .toList();
 
-        Assert.assertEquals(10, vertices.size());
-        Assert.assertEquals(10, Stream.ofAll(vertices).map(Element::id).distinct().size());
+        Assert.assertEquals(2, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.property("color").value().equals("red")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX__hasOutFire__inVX() throws InterruptedException {
+        Set<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).outV()
+                .has(CONSTRAINT, Constraint.by(__.has("color", "red")))
+                .toSet();
+
+        Set<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("weight", "30"))).outV()
+                .has(CONSTRAINT, Constraint.by(__.has("color", "red")))
+                .toSet();
+
+        Set<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .union(__.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).outV(),
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("weight", "30"))).outV())
+                .has(CONSTRAINT, Constraint.by(__.has("color", "red")))
+                .toSet();
+
+        Set<Vertex> expected = new HashSet<>();
+        expected.addAll(verticesBranch1);
+        expected.addAll(verticesBranch2);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(10, unionVertices.size());
+        Assert.assertEquals(10, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Dragon")));
     }
 
     @Test
@@ -840,7 +879,9 @@ public class DiscreteTraversalTest {
                                         new GraphElementPropertySchema.Impl("faction")
                                 )),
                                 Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)),
-                                Collections.emptyList()),
+                                Arrays.asList(
+                                        new GraphElementPropertySchema.Impl("faction", "string"),
+                                        new GraphElementPropertySchema.Impl("color", "string"))),
                         new GraphVertexSchema.Impl(
                                 "Coin",
                                 new GraphElementConstraint.Impl(__.has(T.label, "Coin")),
@@ -1139,7 +1180,7 @@ public class DiscreteTraversalTest {
                             new UniGraphPropertiesStrategy(),
                             new UniGraphCoalesceStepStrategy(),
                             new UniGraphWhereStepStrategy(),
-                            new UniGraphUnionStepNewStrategy(),
+                            new UniGraphUnionStepStrategy(),
                             new UniGraphRepeatStepStrategy(),
                             new UniGraphOrderStrategy(),
                             new UniGraphOptionalStepStrategy()).toJavaList()
