@@ -8,9 +8,11 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.branch.ChooseStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.branch.UnionStep;
 import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversal;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,6 +62,15 @@ public class FuseGraphTraversal<S, E> extends DefaultTraversal<S, E> implements 
                 optionalTraversal.asAdmin().clone(),
                 (org.apache.tinkerpop.gremlin.process.traversal.Traversal.Admin)__.start().identity()));
     }
+
+    @Override
+    public <E2> GraphTraversal<S, E2> union(Traversal<?, E2>... unionTraversals) {
+        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.union, new Object[]{unionTraversals});
+        return this.asAdmin().addStep(new UnionStep(
+                this.asAdmin(),
+                Arrays.copyOf(unionTraversals, unionTraversals.length, Traversal.Admin[].class)));
+    }
+
     //endregion
 
     //region GraphTraversal.Admin Implementation

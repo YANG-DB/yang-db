@@ -18,9 +18,11 @@ import com.kayhut.fuse.unipop.structure.FuseUniGraph;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversalStrategies;
+import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalExplanation;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.search.SearchType;
@@ -40,7 +42,6 @@ import org.unipop.process.start.UniGraphStartEdgeCountStepStrategy;
 import org.unipop.process.start.UniGraphStartStepStrategy;
 import org.unipop.process.strategy.CompositeStrategy;
 import org.unipop.process.strategyregistrar.StrategyProvider;
-import org.unipop.process.union.UniGraphUnionStepNewStrategy;
 import org.unipop.process.union.UniGraphUnionStepStrategy;
 import org.unipop.process.vertex.UniGraphVertexStepStrategy;
 import org.unipop.process.where.UniGraphWhereStepStrategy;
@@ -280,9 +281,11 @@ public class DiscreteTraversalTest {
 
     @Test
     public void g_V_hasXconstraint_byXhasXage_103XXX_hasXage_select_raw_ageX() throws InterruptedException {
-        List<Vertex> vertices = g.V()
+        final GraphTraversal<Vertex, Vertex> traversal = g.V()
                 .has(CONSTRAINT, Constraint.by(__.has("age", P.eq(103))))
-                .has("age", SelectP.raw("age")).toList();
+                .has("age", SelectP.raw("age"));
+        System.out.println(traversal.explain().prettyPrint());
+        List<Vertex> vertices = traversal.toList();
 
         Assert.assertEquals(1, vertices.size());
         Assert.assertEquals("Dragon", vertices.get(0).label());
@@ -754,34 +757,74 @@ public class DiscreteTraversalTest {
 
     @Test
     public void g_V_hasXconstraintXhasXandXlabel_DragonX_hasXcolor_redXXXX_inV() {
-        List<Vertex> vertices = g.V().has(CONSTRAINT,
+        final GraphTraversal<Vertex, Vertex> traversal = g.V().has(CONSTRAINT,
                 Constraint.by(__.and(
                         __.has(T.label, "Dragon"),
                         __.has("color", "red"))))
-                .toList();
+                .has("color", SelectP.raw("color"));
+        final TraversalExplanation explain = traversal.explain();
+        System.out.println(explain.prettyPrint());
+        List<Vertex> vertices = traversal.toList();
 
-        Assert.assertEquals(2, vertices.size());
+        Assert.assertEquals(3, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.property("color").value().equals("red")));
     }
 
     @Test
-    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX__hasOutFire__inVX() throws InterruptedException {
-        Set<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                .outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).outV()
-                .has(CONSTRAINT, Constraint.by(__.has("color", "red")))
-                .toSet();
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_Two_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX__hasOutFire__inVX() throws InterruptedException {
+        List<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                    .outE("hasCoin")
+                        .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
+                    .outV()
+                        .outE("fire")
+                    .inV()
+                .toList();
 
-        Set<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                .outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("weight", "30"))).outV()
-                .has(CONSTRAINT, Constraint.by(__.has("color", "red")))
-                .toSet();
+        List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                    .outE("hasCoin")
+                        .has(CONSTRAINT, Constraint.by(__.has("material", "silver")))
+                    .outV()
+                        .outE("fire")
+                    .inV()
+                .toList();
 
-        Set<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                .union(__.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).outV(),
-                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("weight", "30"))).outV())
-                .has(CONSTRAINT, Constraint.by(__.has("color", "red")))
-                .toSet();
+
+        List<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .union(__.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "silver"))).outV().outE("fire").inV(),
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).outV().outE("fire").inV())
+                .toList();
+
+        List<Vertex> expected = new ArrayList<>();
+        expected.addAll(verticesBranch1);
+        expected.addAll(verticesBranch2);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(45, unionVertices.size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Dragon")));
+    }
+
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_Two_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() throws InterruptedException {
+        List<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                    .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .inV()
+                .toList();
+
+        List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
+                .inV()
+                .toList();
+
+        List<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .union(__.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).inV())
+                .toList();
 
         Set<Vertex> expected = new HashSet<>();
         expected.addAll(verticesBranch1);
@@ -790,9 +833,48 @@ public class DiscreteTraversalTest {
         Assert.assertTrue(expected.containsAll(unionVertices));
 
 
-        Assert.assertEquals(10, unionVertices.size());
-        Assert.assertEquals(10, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
-        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(15, unionVertices.size());
+        Assert.assertEquals(15, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_Three_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() throws InterruptedException {
+        List<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                    .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .inV()
+                .toList();
+
+        List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
+                .inV()
+                .toList();
+
+        List<Vertex> verticesBranch3 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "silver")))
+                .inV()
+                .toList();
+
+        List<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .union(__.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).inV(),
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "silver"))).inV()
+                ).toList();
+
+        List<Vertex> expected = new ArrayList<>();
+        expected.addAll(verticesBranch1);
+        expected.addAll(verticesBranch2);
+        expected.addAll(verticesBranch3);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(23, unionVertices.size());
+        Assert.assertEquals(23, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Coin")));
     }
 
     @Test
