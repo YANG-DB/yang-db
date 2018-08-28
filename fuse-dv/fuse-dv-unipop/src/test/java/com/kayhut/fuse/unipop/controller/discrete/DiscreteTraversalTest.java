@@ -17,6 +17,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.FuseUniGraph;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -790,10 +791,12 @@ public class DiscreteTraversalTest {
                 .toList();
 
 
-        List<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+        final GraphTraversal<Vertex, Vertex> unionTraversal = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                 .union(__.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "silver"))).outV().outE("fire").inV(),
-                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).outV().outE("fire").inV())
-                .toList();
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).outV().outE("fire").inV());
+//        final List<Path> paths = unionTraversal.path().toList();
+        System.out.println(unionTraversal.explain().prettyPrint());
+        List<Vertex> unionVertices = unionTraversal.toList();
 
         List<Vertex> expected = new ArrayList<>();
         expected.addAll(verticesBranch1);
@@ -809,11 +812,12 @@ public class DiscreteTraversalTest {
 
     @Test
     public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_Two_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() throws InterruptedException {
-        List<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+        final GraphTraversal<Vertex, Vertex> traversal = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                 .outE("hasCoin")
-                    .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
-                .inV()
-                .toList();
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .inV();
+
+        List<Vertex> verticesBranch1 = traversal.toList();
 
         List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                 .outE("hasCoin")

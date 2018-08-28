@@ -139,7 +139,7 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                 )).build();
 
         final CreateQueryRequest createQueryRequest = new CreateQueryRequest("q1", "MyQuery", query, new PlanTraceOptions(),
-                new CreateGraphHierarchyCursorRequest(Collections.emptyList(), new CreatePageRequest()));
+                new CreatePathsCursorRequest(new CreatePageRequest()));
 
         final Optional<QueryResourceInfo> info = driver.create(createQueryRequest);
         Assert.assertTrue(info.isPresent());

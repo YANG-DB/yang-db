@@ -13,8 +13,6 @@ import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import javaslang.collection.Stream;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class AsgUnionSplitQueryTransformer implements QueryTransformer<AsgQuery, Iterable<AsgQuery>> {
