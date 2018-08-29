@@ -325,19 +325,19 @@ public class EpbJoinSelectionTests {
     public void testJoinPlanSelection(){
             AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                     next(typed(1, PERSON.type)).
-                    next(eProp(2, EProp.of(2, NAME.name, of(eq, "abc")))).
+                    next(ePropGroup(2, EProp.of(2, NAME.name, of(eq, "abc")))).
                     next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                     next(typed(5, DRAGON.type)).
-                    next(eProp(6)).
+                    next(ePropGroup(6)).
                     next(rel(7, SUBJECT.getrType(), Rel.Direction.R).below(relProp(8))).
                     next(typed(9, KINGDOM.type)).
-                    next(eProp(10)).
+                    next(ePropGroup(10)).
                     next(rel(11, SUBJECT.getrType(), Rel.Direction.L).below(relProp(12))).
                     next(typed(13, DRAGON.type)).
-                    next(eProp(14)).
+                    next(ePropGroup(14)).
                     next(rel(15, OWN.getrType(), Rel.Direction.L).below(relProp(16))).
                     next(typed(17, PERSON.type)).
-                    next(eProp(18,EProp.of(18, NAME.name, of(eq, "abc")))).
+                    next(ePropGroup(18,EProp.of(18, NAME.name, of(eq, "abc")))).
                     build();
 
             PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);

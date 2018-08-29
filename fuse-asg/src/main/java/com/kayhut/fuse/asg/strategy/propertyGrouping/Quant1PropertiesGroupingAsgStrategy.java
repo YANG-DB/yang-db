@@ -48,7 +48,7 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
         );
 
         // phase 2 - group all EpropGroups to other EpropGroups
-        AsgQueryUtil.<Quant1>elements(query, Quant1.class).forEach(this::groupEpropGroups);
+        AsgQueryUtil.elements(query, Quant1.class).forEach(this::groupEpropGroups);
     }
     //endregion
 
@@ -61,10 +61,12 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
         if (quant1AsgEBase.getNext().size() == epropGroups.size()) {
             if (epropGroups.size() > 1) {
                 EPropGroup groupedEPropGroup = new EPropGroup(
-                        0,
+                        Stream.ofAll(epropGroups).map(AsgEBase::geteNum).min().get(),
                         quant1AsgEBase.geteBase().getqType(),
                         Collections.emptyList(),
-                        Stream.ofAll(epropGroups).map(AsgEBase::geteBase).toJavaList());
+                        Stream.ofAll(epropGroups)
+                                .filter(asgEBase -> asgEBase.geteBase().getProps().size() > 0 || asgEBase.geteBase().getGroups().size() > 0)
+                                .map(AsgEBase::geteBase).toJavaList());
 
                 epropGroups.forEach(quant1AsgEBase::removeNextChild);
                 quant1AsgEBase.addNextChild(AsgEBase.Builder.get().withEBase(groupedEPropGroup).build());

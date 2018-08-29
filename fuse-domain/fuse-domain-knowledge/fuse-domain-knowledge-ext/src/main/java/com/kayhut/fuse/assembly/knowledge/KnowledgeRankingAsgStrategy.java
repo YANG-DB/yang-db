@@ -118,7 +118,7 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
 
             }
         }
-        //eProp.geteBase().getGroups().forEach(g -> translateGroup(new AsgEBase<>(g)));
+        //ePropGroup.geteBase().getGroups().forEach(g -> translateGroup(new AsgEBase<>(g)));
     }
 
     private Iterable<EProp> applyLikeAndEqRules(EProp eProp, AsgEBase<EPropGroup> parentGroup, AsgQuery query) {

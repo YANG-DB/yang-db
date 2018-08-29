@@ -1,15 +1,9 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
-import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
-import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
-import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
-import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import org.junit.Assert;
@@ -24,13 +18,13 @@ public class JoinBranchSameStartAndEndValidatorTests {
     public AsgQuery simpleQuery(){
         return AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, OntologyTestUtils.PERSON.type)).
-                next(eProp(2)).
+                next(ePropGroup(2)).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, OntologyTestUtils.DRAGON.type)).
-                next(eProp(6)).
+                next(ePropGroup(6)).
                 next(rel(7, OWN.getrType(), Rel.Direction.R).below(relProp(8))).
                 next(typed(9, OntologyTestUtils.DRAGON.type)).
-                next(eProp(10)).
+                next(ePropGroup(10)).
                 build();
     }
 

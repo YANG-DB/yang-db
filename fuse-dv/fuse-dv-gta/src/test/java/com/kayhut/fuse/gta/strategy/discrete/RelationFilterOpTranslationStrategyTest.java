@@ -47,7 +47,7 @@ public class RelationFilterOpTranslationStrategyTest {
                 .next(rel(2, "1", R).below(relProp(10, RelProp.of(10, "2", of(gt, 10)))))
                 .next(typed(3, "2"))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of(9, "1", of(eq, "value1")), EProp.of(9, "2", of(eq, 30)))
+                .in(ePropGroup(9, EProp.of(9, "1", of(eq, "value1")), EProp.of(9, "2", of(eq, 30)))
                         , rel(5, "4", R)
                                 .next(unTyped(6, "C"))
                         , rel(7, "5", R)

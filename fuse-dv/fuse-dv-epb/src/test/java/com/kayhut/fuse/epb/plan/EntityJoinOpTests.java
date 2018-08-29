@@ -22,13 +22,13 @@ public class EntityJoinOpTests {
     public static AsgQuery simpleQuery(){
         return AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, OntologyTestUtils.PERSON.type)).
-                next(eProp(2)).
+                next(ePropGroup(2)).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, OntologyTestUtils.DRAGON.type)).
-                next(eProp(6)).
+                next(ePropGroup(6)).
                 next(rel(7, OWN.getrType(), Rel.Direction.R).below(relProp(8))).
                 next(typed(9, OntologyTestUtils.DRAGON.type)).
-                next(eProp(10)).
+                next(ePropGroup(10)).
                 build();
     }
 

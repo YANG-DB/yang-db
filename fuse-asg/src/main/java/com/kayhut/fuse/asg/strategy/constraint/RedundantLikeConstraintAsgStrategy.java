@@ -43,7 +43,7 @@ public class RedundantLikeConstraintAsgStrategy implements AsgStrategy {
 
         if (!redundantEprops.isEmpty()) {
             if (ePropGroup.getQuantType().equals(QuantType.all)) {
-                //remove all non needed '*' eProp
+                //remove all non needed '*' ePropGroup
                 ePropGroup.getProps().removeAll(redundantEprops);
             } else if (ePropGroup.getQuantType().equals(QuantType.some)) {
                 ePropGroup.getProps().removeIf(eprop -> eprop != redundantEprops.get(0));

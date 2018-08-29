@@ -29,11 +29,11 @@ public class AsgRelPropertiesValidationStrategyTest {
 
     AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
             .next(typed(1, PERSON.type))
-            .next(eProp(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
+            .next(ePropGroup(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
             .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                     RelProp.of(10, START_DATE.type, of(eq, new Date())))))
             .next(concrete(3, "HorseWithNoName", HORSE.type,"display","eTag"))
-            .next(eProp(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
+            .next(ePropGroup(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
             .build();
 
     @Before
@@ -52,11 +52,11 @@ public class AsgRelPropertiesValidationStrategyTest {
     public void testNotValidPropEntityMismatchQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, PERSON.type))
-                .next(eProp(10, EProp.of(11, COLOR.type, of(eq, "Moshe"))))
+                .next(ePropGroup(10, EProp.of(11, COLOR.type, of(eq, "Moshe"))))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                         RelProp.of(10, FIRST_NAME.type, of(eq, new Date())))))
                 .next(concrete(3, "HorseWithNoName", HORSE.type,"display","eTag"))
-                .next(eProp(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
+                .next(ePropGroup(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
                 .build();
 
         AsgRelPropertiesValidatorStrategy strategy = new AsgRelPropertiesValidatorStrategy();
@@ -69,12 +69,12 @@ public class AsgRelPropertiesValidationStrategyTest {
     public void testNotValidPropRelMismatchQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, PERSON.type))
-                .next(eProp(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
+                .next(ePropGroup(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                         RelProp.of(10, START_DATE.type, of(eq, new Date())),
                         RelProp.of(11, NAME.type, of(eq, new Date())))))
                 .next(unTyped(3, HORSE.type, DRAGON.type))
-                .next(eProp(12, EProp.of(13, FIRST_NAME.type, of(eq, "bubu"))))
+                .next(ePropGroup(12, EProp.of(13, FIRST_NAME.type, of(eq, "bubu"))))
                 .build();
 
         AsgRelPropertiesValidatorStrategy strategy = new AsgRelPropertiesValidatorStrategy();
@@ -86,12 +86,12 @@ public class AsgRelPropertiesValidationStrategyTest {
     public void testNoIntervalTypePropRelQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, PERSON.type))
-                .next(eProp(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
+                .next(ePropGroup(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                         RelProp.of(10, START_DATE.type, of(eq, new Date(),null)),
                         RelProp.of(11, NAME.type, of(eq, new Date())))))
                 .next(unTyped(3, HORSE.type, DRAGON.type))
-                .next(eProp(12, EProp.of(13, FIRST_NAME.type, of(eq, "bubu"))))
+                .next(ePropGroup(12, EProp.of(13, FIRST_NAME.type, of(eq, "bubu"))))
                 .build();
 
         AsgRelPropertiesValidatorStrategy strategy = new AsgRelPropertiesValidatorStrategy();

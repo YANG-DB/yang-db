@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.FIRST_NAME;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.ePropGroup;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
 
 /**
@@ -87,7 +87,7 @@ public class SmartEpbTests {
     public void testSingleElement(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2,EProp.of(2, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc")))).
+                next(AsgQuery.Builder.ePropGroup(2,EProp.of(2, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);

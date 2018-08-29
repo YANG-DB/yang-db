@@ -37,7 +37,7 @@ import static com.kayhut.fuse.model.query.quant.QuantType.all;
 public class M1PlanValidatorTests {
     public static AsgQuery simpleQuery1(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .next(typed(1, OntologyTestUtils.PERSON.type, "A").next(eProp(101)))
+                .next(typed(1, OntologyTestUtils.PERSON.type, "A").next(ePropGroup(101)))
                 .next(rel(2, OWN.getrType(), R))
                 .next(typed(3, OntologyTestUtils.DRAGON.type, "B")).build();
     }
@@ -49,7 +49,7 @@ public class M1PlanValidatorTests {
                 .next(rel(2, OWN.getrType(), R).below(relProp(10, of(10, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of(9, NAME.type, Constraint.of(eq, "smith")), EProp.of(9, GENDER.type, Constraint.of(gt, MALE)))
+                .in(ePropGroup(9, EProp.of(9, NAME.type, Constraint.of(eq, "smith")), EProp.of(9, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R)
                                 .next(unTyped(6))
                         , rel(7, FIRE.getrType(), R)

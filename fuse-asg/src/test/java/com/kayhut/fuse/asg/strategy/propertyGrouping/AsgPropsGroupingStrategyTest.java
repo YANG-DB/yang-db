@@ -202,7 +202,7 @@ public class AsgPropsGroupingStrategyTest {
         //Checking that our EPropGroup Contains the original EProps
         assertTrue(((EPropGroup) newEPropGroupAsgEbase.geteBase()).getProps().contains(originalEProp1AsgEbase.geteBase()));
         assertTrue(((EPropGroup) newEPropGroupAsgEbase.geteBase()).getProps().contains(originalEProp2AsgEbase.geteBase()));
-        //eProp List of size = 2 in EPropGroup element
+        //ePropGroup List of size = 2 in EPropGroup element
 
         assertTrue(((EPropGroup) newEPropGroupAsgEbase.geteBase()).getProps().size() == 2);
         assertEquals(AsgQueryUtil.element(asgQuery, 4).get().getNext().get(0).geteNum(), newEPropGroupAsgEbase.geteNum());
@@ -270,7 +270,7 @@ public class AsgPropsGroupingStrategyTest {
         assertEquals(2, newEPropGroupAsgEbase.getParents().get(0).geteNum());
         assertEquals(0, newEPropGroupAsgEbase.getNext().size());
         assertTrue(((EPropGroup) newEPropGroupAsgEbase.geteBase()).getProps().contains(originalEPropAsgEbase.geteBase()));
-        //eProp List of size = 2 in EPropGroup
+        //ePropGroup List of size = 2 in EPropGroup
         assertTrue(((EPropGroup) newEPropGroupAsgEbase.geteBase()).getProps().size() == 1);
         //AND Quantifier eNum = 2 has 2 children: 1 Eprop and 1 ETyped(enum=5)
         List<AsgEBase<? extends EBase>> nextChildren = AsgQueryUtil.element(asgQuery, 2).get().getNext();

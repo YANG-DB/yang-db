@@ -7,9 +7,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
@@ -28,7 +26,7 @@ import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
 import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.concrete;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.ePropGroup;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
@@ -45,10 +43,10 @@ public class DefaultRelationSelectionAsgStrategyTest {
     public void testSelectionForRel() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.PERSON.type))
-                .next(eProp(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
+                .next(AsgQuery.Builder.ePropGroup(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(20,RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(concrete(3, "HorseWithNoName", OntologyTestUtils.HORSE.type,"display","eTag"))
-                .next(eProp(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
+                .next(AsgQuery.Builder.ePropGroup(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
                 .build();
 
         DefaultRelationSelectionAsgStrategy selectionAsgStrategy = new DefaultRelationSelectionAsgStrategy(new OntologyProvider() {
@@ -77,11 +75,11 @@ public class DefaultRelationSelectionAsgStrategyTest {
     public void testNoSelectionForRelationWithProj() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.PERSON.type))
-                .next(eProp(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
+                .next(AsgQuery.Builder.ePropGroup(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(20,RelProp.of(10, START_DATE.type, of(eq, new Date())),
                         RelProp.of(100, "startDate", new IdentityProjection()))))
                 .next(concrete(3, "HorseWithNoName", OntologyTestUtils.HORSE.type,"display","eTag"))
-                .next(eProp(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
+                .next(AsgQuery.Builder.ePropGroup(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
                 .build();
 
         DefaultSelectionAsgStrategy selectionAsgStrategy = new DefaultSelectionAsgStrategy(new OntologyProvider() {

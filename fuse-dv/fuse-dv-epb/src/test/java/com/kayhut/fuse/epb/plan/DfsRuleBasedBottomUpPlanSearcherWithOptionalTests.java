@@ -60,7 +60,7 @@ public class DfsRuleBasedBottomUpPlanSearcherWithOptionalTests {
         //Start[0]:EEntityBase[1]:EPropGroup[101]:==>Relation[2]:RelPropGroup[201]:==>EEntityBase[3]:Quant1[4]:{301|5|7}:EPropGroup[301]:==>Relation[5]:RelPropGroup[501]:==>EEntityBase[6]:EPropGroup[601]:OptionalComp[7]:==>Relation[8]:RelPropGroup[801]:==>EEntityBase[9]:EPropGroup[901]
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(concrete(1, "eId00001", OntologyTestUtils.PERSON.type, "entity1", "A"))
-                .next(eProp(101))
+                .next(ePropGroup(101))
                 .next(rel(2, OWN.getrType(), R)
                         .below(relProp(201, RelProp.of(2, "2", of(eq, "value2")))))
                 .next(typed(3, OntologyTestUtils.PERSON.type, "B"))
@@ -69,10 +69,10 @@ public class DfsRuleBasedBottomUpPlanSearcherWithOptionalTests {
                         ePropGroup(301, EProp.of(3, "type", of(eq, "value1")),EProp.of(3, "type", of(gt, "value3"))),
                         rel(5, OWN.getrType(), R).below(relProp(501))
                                 .next(typed(6, OntologyTestUtils.PERSON.type, "C")
-                                        .next(eProp(601))),
+                                        .next(ePropGroup(601))),
                         optional(7)
                                 .next(rel(8, OWN.getrType(), R).below(relProp(801))
-                                .next(typed(9, OntologyTestUtils.PERSON.type, "E").next(eProp(901)))))
+                                .next(typed(9, OntologyTestUtils.PERSON.type, "E").next(ePropGroup(901)))))
                 .build();
         BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
@@ -87,7 +87,7 @@ public class DfsRuleBasedBottomUpPlanSearcherWithOptionalTests {
         //Start[0]:EEntityBase[1]:EPropGroup[101]:==>Relation[2]:RelPropGroup[201]:==>EEntityBase[3]:Quant1[4]:{301|5|7}:EPropGroup[301]:==>Relation[5]:RelPropGroup[501]:==>EEntityBase[6]:EPropGroup[601]:OptionalComp[7]:==>Relation[8]:RelPropGroup[801]:==>EEntityBase[9]:EPropGroup[901]
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.PERSON.type, "E"))
-                .next(eProp(101))
+                .next(ePropGroup(101))
                 .next(rel(2, OWN.getrType(), R)
                         .below(relProp(201, RelProp.of(2, "2", of(eq, "value2")))))
                 .next(typed(3, OntologyTestUtils.PERSON.type, "B"))
@@ -96,10 +96,10 @@ public class DfsRuleBasedBottomUpPlanSearcherWithOptionalTests {
                         ePropGroup(301, EProp.of(3, "type", of(eq, "value1")),EProp.of(3, "type", of(gt, "value3"))),
                         rel(5, OWN.getrType(), R).below(relProp(501))
                                 .next(typed(6, OntologyTestUtils.PERSON.type, "C")
-                                        .next(eProp(601))),
+                                        .next(ePropGroup(601))),
                         optional(7)
                                 .next(rel(8, OWN.getrType(), R).below(relProp(801))
-                                .next(concrete(9, "eId00001", OntologyTestUtils.PERSON.type, "entity1", "A").next(eProp(901)))))
+                                .next(concrete(9, "eId00001", OntologyTestUtils.PERSON.type, "entity1", "A").next(ePropGroup(901)))))
                 .build();
         BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
@@ -114,7 +114,7 @@ public class DfsRuleBasedBottomUpPlanSearcherWithOptionalTests {
         //Start[0]:EEntityBase[1]:EPropGroup[101]:==>Relation[2]:RelPropGroup[201]:==>EEntityBase[3]:Quant1[4]:{301|5|7}:EPropGroup[301]:==>Relation[5]:RelPropGroup[501]:==>EEntityBase[6]:EPropGroup[601]:OptionalComp[7]:==>Relation[8]:RelPropGroup[801]:==>EEntityBase[9]:EPropGroup[901]
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.PERSON.type, "E"))
-                .next(eProp(101))
+                .next(ePropGroup(101))
                 .next(rel(2, OWN.getrType(), R)
                         .below(relProp(201, RelProp.of(2, "2", of(eq, "value2")))))
                 .next(typed(3, OntologyTestUtils.PERSON.type, "B"))
@@ -123,10 +123,10 @@ public class DfsRuleBasedBottomUpPlanSearcherWithOptionalTests {
                         ePropGroup(301, EProp.of(3, "type", of(eq, "value1")),EProp.of(3, "type", of(gt, "value3"))),
                         rel(5, OWN.getrType(), R).below(relProp(501))
                                 .next(concrete(6, "eId00001", OntologyTestUtils.PERSON.type, "entity1", "A")
-                                        .next(eProp(601))),
+                                        .next(ePropGroup(601))),
                         optional(7)
                                 .next(rel(8, OWN.getrType(), R).below(relProp(801))
-                                .next(concrete(9, "eId00001", OntologyTestUtils.PERSON.type, "entity1", "A").next(eProp(901)))))
+                                .next(concrete(9, "eId00001", OntologyTestUtils.PERSON.type, "entity1", "A").next(ePropGroup(901)))))
                 .build();
         BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);

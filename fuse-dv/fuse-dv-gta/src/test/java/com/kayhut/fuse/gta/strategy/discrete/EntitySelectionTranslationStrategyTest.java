@@ -127,13 +127,13 @@ public class EntitySelectionTranslationStrategyTest {
         return AsgQuery.Builder.start(queryName, ontologyName)
                 .next(typed(1, PERSON.type,"A"))
                 .next(quant1(4, QuantType.all))
-                .in(eProp(5, new EProp(5, LAST_NAME.type, Constraint.of(ConstraintOp.eq, "last")),
+                .in(ePropGroup(5, new EProp(5, LAST_NAME.type, Constraint.of(ConstraintOp.eq, "last")),
                             new EProp(5, FIRST_NAME.type, new IdentityProjection()),
                             new EProp(5, LAST_NAME.type, new IdentityProjection())))
                 .next(rel(2,FIRE.getrType(),R))
                 .next(typed(3, DRAGON.type,"B"))
                 .next(quant1(6, QuantType.all))
-                .next(eProp(7, new EProp(7, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "name")),
+                .next(ePropGroup(7, new EProp(7, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "name")),
                         new EProp(7, FIRST_NAME.type, new IdentityProjection()),
                         new EProp(7, LAST_NAME.type, new IdentityProjection())))
                 .build();

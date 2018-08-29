@@ -22,9 +22,7 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.process.traversal.dsl.graph.FuseGraphTraversalSource;
 import com.kayhut.fuse.unipop.promise.Constraint;
-import com.kayhut.fuse.unipop.promise.PromiseGraph;
 import com.kayhut.fuse.unipop.structure.FuseUniGraph;
-import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversalStrategies;
@@ -32,11 +30,8 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.unipop.process.strategyregistrar.StrategyProvider;
 import org.unipop.query.controller.ControllerManager;
-import org.unipop.query.controller.ControllerManagerFactory;
 import org.unipop.query.controller.UniQueryController;
-import org.unipop.structure.UniGraph;
 
 import java.util.Collections;
 import java.util.Set;
@@ -108,7 +103,7 @@ public class EntityOpTranslationStrategyTest {
                 .next(rel(2, "1", R).below(relProp(10, RelProp.of(10, "2", of(eq, "value2")))))
                 .next(typed(3, "2", "B"))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of(9, "1", of(eq, "value1")), EProp.of(9, "3", of(gt, "value3")))
+                .in(ePropGroup(9, EProp.of(9, "1", of(eq, "value1")), EProp.of(9, "3", of(gt, "value3")))
                         , rel(5, "4", R)
                                 .next(unTyped(6, "C"))
                         , rel(7, "5", R)

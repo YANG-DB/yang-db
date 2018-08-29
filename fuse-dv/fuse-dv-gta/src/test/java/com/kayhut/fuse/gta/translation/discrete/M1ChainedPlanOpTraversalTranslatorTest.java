@@ -6,7 +6,6 @@ import com.kayhut.fuse.gta.strategy.discrete.M1PlanOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.ChainedPlanOpTraversalTranslator;
 import com.kayhut.fuse.dispatcher.gta.PlanTraversalTranslator;
 import com.kayhut.fuse.dispatcher.gta.TranslationContext;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -21,13 +20,10 @@ import com.kayhut.fuse.model.query.Rel;
 
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
-import com.kayhut.fuse.unipop.process.traversal.dsl.graph.FuseGraphTraversalSource;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
 import com.kayhut.fuse.unipop.structure.FuseUniGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
-import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversalStrategies;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -35,9 +31,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.unipop.process.strategyregistrar.StrategyProvider;
 import org.unipop.query.controller.ControllerManager;
-import org.unipop.query.controller.ControllerManagerFactory;
 import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
@@ -170,11 +164,11 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         AsgQuery query = AsgQuery.Builder.start("name", "ont")
                 .next(typed(1, "2", "B"))
                 .next(quant1(2, QuantType.all))
-                .in(eProp(3))
+                .in(ePropGroup(3))
                 .next(rel(4, "1", Rel.Direction.R).below(relProp(5)))
                 .next(concrete(6, "12345678", "1", "Dardas Aba", "A"))
                 .next(quant1(7, QuantType.all))
-                .next(eProp(8))
+                .next(ePropGroup(8))
                 .build();
 
         return new Plan(
@@ -191,11 +185,11 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         AsgQuery query = AsgQuery.Builder.start("name", "ont")
                 .next(typed(1, "1", "A"))
                 .next(quant1(2, QuantType.all))
-                .in(eProp(3))
+                .in(ePropGroup(3))
                 .next(rel(4, "1", Rel.Direction.R).below(relProp(5)))
                 .next(typed(6, "2", "B"))
                 .next(quant1(7, QuantType.all))
-                .next(eProp(8))
+                .next(ePropGroup(8))
                 .build();
 
         return new Plan(
@@ -212,11 +206,11 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         AsgQuery query = AsgQuery.Builder.start("name", "ont")
                 .next(concrete(1, "12345678", "1", "Dardas Aba", "A"))
                 .next(quant1(2, QuantType.all))
-                .in(eProp(3))
+                .in(ePropGroup(3))
                 .next(rel(4, "1", Rel.Direction.R).below(relProp(5)))
                 .next(typed(6, "1", "B"))
                 .next(quant1(7, QuantType.all))
-                .next(eProp(8))
+                .next(ePropGroup(8))
                 .build();
 
         return new Plan(
@@ -233,11 +227,11 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         AsgQuery query = AsgQuery.Builder.start("name", "ont")
                 .next(concrete(1, "12345678", "1", "Dardas Aba", "A"))
                 .next(quant1(2, QuantType.all))
-                .in(eProp(3))
+                .in(ePropGroup(3))
                 .next(rel(4, "1", Rel.Direction.R).below(relProp(5)))
                 .next(unTyped(6, "B"))
                 .next(quant1(7, QuantType.all))
-                .next(eProp(8))
+                .next(ePropGroup(8))
                 .build();
 
         return new Plan(
@@ -255,15 +249,15 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         AsgQuery query = AsgQuery.Builder.start("name", "ont")
                 .next(concrete(1, "12345678", "1", "Dardas Aba", "A"))
                 .next(quant1(2, QuantType.all))
-                .in(eProp(3))
+                .in(ePropGroup(3))
                 .next(rel(4, "1", Rel.Direction.R).below(relProp(5)))
                 .next(typed(6, "2", "B"))
                 .next(quant1(7, QuantType.all))
-                .in(eProp(8))
+                .in(ePropGroup(8))
                 .next(rel(9, "1", Rel.Direction.R).below(relProp(10)))
                 .next(unTyped(11, "C"))
                 .next(quant1(12, QuantType.all))
-                .next(eProp(13))
+                .next(ePropGroup(13))
                 .build();
 
         return new Plan(
