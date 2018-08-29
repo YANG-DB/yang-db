@@ -12,7 +12,9 @@ import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by benishue on 19-Apr-17.
@@ -46,6 +48,36 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
         );
 
         // phase 2 - group all EpropGroups to other EpropGroups
+        AsgQueryUtil.<Quant1>elements(query, Quant1.class).forEach(this::groupEpropGroups);
+    }
+    //endregion
+
+    //region Private Methods
+    private void groupEpropGroups(AsgEBase<Quant1> quant1AsgEBase) {
+        AsgQueryUtil.<Quant1, Quant1>nextAdjacentDescendants(quant1AsgEBase, Quant1.class)
+                .forEach(this::groupEpropGroups);
+
+        List<AsgEBase<EPropGroup>> epropGroups = AsgQueryUtil.nextAdjacentDescendants(quant1AsgEBase, EPropGroup.class);
+        if (quant1AsgEBase.getNext().size() == epropGroups.size()) {
+            if (epropGroups.size() > 1) {
+                EPropGroup groupedEPropGroup = new EPropGroup(
+                        0,
+                        quant1AsgEBase.geteBase().getqType(),
+                        Collections.emptyList(),
+                        Stream.ofAll(epropGroups).map(AsgEBase::geteBase).toJavaList());
+
+                epropGroups.forEach(quant1AsgEBase::removeNextChild);
+                quant1AsgEBase.addNextChild(AsgEBase.Builder.get().withEBase(groupedEPropGroup).build());
+            }
+        }
+
+        Optional<AsgEBase<Quant1>> parentQuant = AsgQueryUtil.adjacentAncestor(quant1AsgEBase, Quant1.class);
+        if (parentQuant.isPresent() && quant1AsgEBase.getNext().size() == 1) {
+            AsgEBase<? extends EBase> child = quant1AsgEBase.getNext().get(0);
+            parentQuant.get().removeNextChild(quant1AsgEBase);
+            quant1AsgEBase.removeNextChild(child);
+            parentQuant.get().addNextChild(child);
+        }
     }
     //endregion
 }

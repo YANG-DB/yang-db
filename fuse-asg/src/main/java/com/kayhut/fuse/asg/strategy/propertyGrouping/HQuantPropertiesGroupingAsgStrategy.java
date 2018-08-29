@@ -22,29 +22,22 @@ public class HQuantPropertiesGroupingAsgStrategy implements AsgStrategy {
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
         AsgQueryUtil.elements(query, HQuant.class).forEach(hQuant -> {
-            for (AsgEBase<? extends EBase> asgEBase : new ArrayList<>(hQuant.getB())) {
+            List<AsgEBase<RelProp>> relPropsAsgBChildren = AsgQueryUtil.bAdjacentDescendants(hQuant, RelProp.class);
 
-                List<AsgEBase<RelProp>> relPropsAsgBChildren =
-                        AsgQueryUtil.bDescendants(
-                                asgEBase,
-                                (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class),
-                                (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class));
+            RelPropGroup rPropGroup;
+            List<RelProp> relProps = Stream.ofAll(relPropsAsgBChildren).map(AsgEBase::geteBase).toJavaList();
 
-                RelPropGroup rPropGroup;
-                List<RelProp> relProps = Stream.ofAll(relPropsAsgBChildren).map(AsgEBase::geteBase).toJavaList();
+            if (relProps.size() > 0) {
+                rPropGroup = new RelPropGroup(relProps);
+                rPropGroup.seteNum(Stream.ofAll(relProps).map(RelProp::geteNum).min().get());
 
-                if (relProps.size() > 0 ){
-                    rPropGroup = new RelPropGroup(relProps);
-                    rPropGroup.seteNum(Stream.ofAll(relProps).map(RelProp::geteNum).min().get());
+                relPropsAsgBChildren.forEach(hQuant::removeBChild);
+            } else {
+                rPropGroup = new RelPropGroup();
+                rPropGroup.seteNum(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get() + 1);
+            }
 
-                    relPropsAsgBChildren.forEach(hQuant::removeBChild);
-                } else {
-                    rPropGroup = new RelPropGroup();
-                    rPropGroup.seteNum(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get() + 1);
-                }
-
-                hQuant.addBChild(new AsgEBase<>(rPropGroup));
-            };
+            hQuant.addBChild(new AsgEBase<>(rPropGroup));
         });
     }
     //endregion

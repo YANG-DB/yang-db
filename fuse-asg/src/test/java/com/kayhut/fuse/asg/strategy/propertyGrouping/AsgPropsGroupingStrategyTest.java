@@ -317,19 +317,13 @@ public class AsgPropsGroupingStrategyTest {
         assertEquals(asgEBase1.geteBase().geteNum(), 1);
         //Checking the RelProps grouping mechanism
         List<AsgEBase<RelPropGroup>> relPropGroups = AsgQueryUtil.elements(asgQuery, RelPropGroup.class);
-        assertTrue(relPropGroups.size() == 2);
+        assertTrue(relPropGroups.size() == 1);
         AsgEBase<EBase> newRelPropGroup1AsgEbase = AsgQueryUtil.element(asgQuery, 5).get();
         assertNotNull(newRelPropGroup1AsgEbase);
         assertEquals(RelPropGroup.class, newRelPropGroup1AsgEbase.geteBase().getClass());
         assertEquals(4, newRelPropGroup1AsgEbase.getParents().get(0).geteNum());
         assertEquals(0, newRelPropGroup1AsgEbase.getB().size());
-        AsgEBase<EBase> newRelPropGroup2AsgEbase = AsgQueryUtil.element(asgQuery, 6).get();
-        assertNotNull(newRelPropGroup2AsgEbase);
-        assertEquals(RelPropGroup.class, newRelPropGroup2AsgEbase.geteBase().getClass());
-        assertEquals(4, newRelPropGroup2AsgEbase.getParents().get(0).geteNum());
-        assertEquals(0, newRelPropGroup2AsgEbase.getB().size());
         //Checking that our RelPropGroup Contains the original EProps
         assertTrue(((RelPropGroup) newRelPropGroup1AsgEbase.geteBase()).getProps().contains(originalRelProp1AsgEbase.geteBase()));
-        assertTrue(((RelPropGroup) newRelPropGroup2AsgEbase.geteBase()).getProps().contains(originalRelProp2AsgEbase.geteBase()));
     }
 }
