@@ -17,8 +17,10 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -46,10 +48,27 @@ public class DefaultRelationSelectionAsgStrategy implements AsgStrategy {
 
                         Optional<AsgEBase<Rel>> relAsgEBase = AsgQueryUtil.ancestor(relPropGroup, Rel.class);
                         if (relAsgEBase.isPresent()) {
-                            Stream.ofAll(ont.$relation$(relAsgEBase.get().geteBase().getrType()).getProperties())
+                            List<RelProp> projectionProps =
+                                    Stream.ofAll(ont.$relation$(relAsgEBase.get().geteBase().getrType()).getProperties())
                                     .filter(pType -> !this.nonSelectablePTypes.contains(pType))
-                                    .forEach(pType -> relPropGroup.geteBase().getProps().add(
-                                            new RelProp(0, pType, new IdentityProjection(),0)));
+                                            .map(pType -> new RelProp(0, pType, new IdentityProjection(),0))
+                                            .toJavaList();
+
+                            if (relPropGroup.geteBase().getQuantType().equals(QuantType.all)) {
+                                relPropGroup.geteBase().getProps().addAll(projectionProps);
+                            } else if (relPropGroup.geteBase().getQuantType().equals(QuantType.some)) {
+                                RelPropGroup clone = new RelPropGroup(
+                                        0,
+                                        QuantType.some,
+                                        relPropGroup.geteBase().getProps(),
+                                        relPropGroup.geteBase().getGroups());
+
+                                relPropGroup.geteBase().getProps().clear();
+                                relPropGroup.geteBase().getGroups().clear();
+                                relPropGroup.geteBase().setQuantType(QuantType.all);
+                                relPropGroup.geteBase().getGroups().add(clone);
+                                relPropGroup.geteBase().getProps().addAll(projectionProps);
+                            }
                         }
                     }
                 }

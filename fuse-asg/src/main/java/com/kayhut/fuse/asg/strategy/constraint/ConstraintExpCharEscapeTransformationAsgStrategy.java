@@ -27,7 +27,7 @@ import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.lik
  * the ConstraintTypeTransformationStrategy to be applied first
  */
 public class ConstraintExpCharEscapeTransformationAsgStrategy implements AsgStrategy {
-
+    //region AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
 
@@ -39,9 +39,9 @@ public class ConstraintExpCharEscapeTransformationAsgStrategy implements AsgStra
                 .filter(prop -> prop.getCon()!=null)
                 .forEach(relProp -> applyExpressionTransformation(context, relProp, RelProp.class));
     }
+    //endregion
 
     //region Private Methods
-
     private void applyExpressionTransformation(AsgStrategyContext context, EBase eBase, Class klass) {
         if (klass == EProp.class || klass == RelProp.class) {
             BaseProp eProp = (BaseProp) eBase;

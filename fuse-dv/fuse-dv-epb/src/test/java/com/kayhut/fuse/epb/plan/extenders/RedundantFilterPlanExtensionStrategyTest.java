@@ -17,8 +17,6 @@ import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.properties.*;
-import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
@@ -28,7 +26,6 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -79,7 +76,7 @@ public class RedundantFilterPlanExtensionStrategyTest {
 
         assertEquals(extendedPlans.size(), 1);
         assertEquals(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().size(),3);
-        //first eProp is the old eprop filter condition (non pushdown)
+        //first ePropGroup is the old eprop filter condition (non pushdown)
         assertTrue(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().get(1) instanceof RedundantRelProp);
         Optional<RelProp> idRelProp = PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().stream().
                 filter(r -> r instanceof RedundantRelProp && ((RedundantRelProp) r).getRedundantPropName().equals("entityB.id")).findFirst();
@@ -95,7 +92,7 @@ public class RedundantFilterPlanExtensionStrategyTest {
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(typed(3,  DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of(9, "firstName", of(eq, "value1")), EProp.of(9, "gender", of(gt, "value3")))
+                .in(ePropGroup(9, EProp.of(9, "firstName", of(eq, "value1")), EProp.of(9, "gender", of(gt, "value3")))
                         , rel(5, "4", R)
                                 .next(unTyped( 6))
                         , rel(7, "5", R)
@@ -120,7 +117,7 @@ public class RedundantFilterPlanExtensionStrategyTest {
         assertEquals(0,PlanUtil.first$(extendedPlans.get(0), EntityFilterOp.class).getAsgEbase().geteBase().getProps().size());
         assertEquals(4,PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().size());
 
-        //first eProp is the old eprop filter condition (non pushdown)
+        //first ePropGroup is the old eprop filter condition (non pushdown)
         assertTrue(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().get(1) instanceof RedundantRelProp);
         assertTrue(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().get(2) instanceof RedundantRelProp);
 
@@ -141,7 +138,7 @@ public class RedundantFilterPlanExtensionStrategyTest {
                         .below(relProp(10, RelProp.of(0, START_DATE.type, of(eq, new Date(1000))))))
                 .next(typed(3, DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(9, QuantType.all,
+                .in(ePropGroup(9, QuantType.all,
                         Stream.of(EProp.of(0, "name", of(eq, "value1"))),
                         Stream.of(EPropGroup.of(0, QuantType.some,
                                 EPropGroup.of(0, EProp.of(0, "gender", of(eq, "male")), EProp.of(0, "color", of(eq, "red"))),

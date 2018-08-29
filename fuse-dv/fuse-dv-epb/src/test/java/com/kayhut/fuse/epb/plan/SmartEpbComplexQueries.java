@@ -245,23 +245,23 @@ public class SmartEpbComplexQueries {
         //long time = System.currentTimeMillis();
         return AsgQuery.Builder.start(queryName, ontologyName)
                 .next(typed(1, PERSON.type)
-                        .next(eProp(2,EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189L)))))
+                        .next(ePropGroup(2,EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189L)))))
                 .next(rel(4, OWN.getrType(), R)
                         .below(relProp(5, of(6, START_DATE.type, Constraint.of(ge, new Date(startTime))))))
                 .next(typed(7, DRAGON.type))
                 .next(quant1(8, all))
-                .in(eProp(9, EProp.of(10, NAME.type, Constraint.of(ge, "smith")))
+                .in(ePropGroup(9, EProp.of(10, NAME.type, Constraint.of(ge, "smith")))
                         , rel(12, FREEZE.getrType(), R)
                                 .below(relProp(122))
                                 .next(unTyped(13)
-                                    .next(eProp(14,EProp.of(15, NAME.type, Constraint.of(ConstraintOp.notContains, "bob"))))
+                                    .next(ePropGroup(14,EProp.of(15, NAME.type, Constraint.of(ConstraintOp.notContains, "bob"))))
                                 )
                         , rel(16, FIRE.getrType(), R)
                                 .below(relProp(18, of(19, START_DATE.type,
                                         Constraint.of(ge, new Date(startTime - 1000 * 60))),
                                         of(19, END_DATE.type, Constraint.of(le, new Date(startTime + 1000 * 60)))))
                                 .next(concrete(20, "smoge", DRAGON.type, "Display:smoge", "D")
-                                    .next(eProp(21,EProp.of(22, NAME.type, Constraint.of(ConstraintOp.eq, "smoge"))))
+                                    .next(ePropGroup(21,EProp.of(22, NAME.type, Constraint.of(ConstraintOp.eq, "smoge"))))
                                 )
                 )
                 .build();

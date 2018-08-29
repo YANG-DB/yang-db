@@ -3,7 +3,7 @@
     <parent>
         <artifactId>fuse</artifactId>
         <groupId>com.kayhut</groupId>
-        <version>0.45-SNAPSHOT</version>
+        <version>0.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

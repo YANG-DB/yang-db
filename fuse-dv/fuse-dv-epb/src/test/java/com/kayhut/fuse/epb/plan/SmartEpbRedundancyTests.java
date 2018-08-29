@@ -253,12 +253,12 @@ public class SmartEpbRedundancyTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, DRAGON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(3, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))),
+                in(ePropGroup(3, EProp.of(3, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))),
                         rel(8, FIRE.getrType(), Rel.Direction.R).below(relProp(9)).
-                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(11, GENDER.type, Constraint.of(ConstraintOp.ge,new Value(1,"abc")))))),
+                                next(typed(10, DRAGON.type).next(ePropGroup(11, EProp.of(11, GENDER.type, Constraint.of(ConstraintOp.ge,new Value(1,"abc")))))),
                         rel(4, FREEZE.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(7, NAME.type, Constraint.of(ConstraintOp.ge,"abc")))))).
+                                        .next(ePropGroup(7, EProp.of(7, NAME.type, Constraint.of(ConstraintOp.ge,"abc")))))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
@@ -272,12 +272,12 @@ public class SmartEpbRedundancyTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, DRAGON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(3, NAME.type, Constraint.of(ConstraintOp.le,"abc"))),
+                in(ePropGroup(3, EProp.of(3, NAME.type, Constraint.of(ConstraintOp.le,"abc"))),
                         rel(8, FIRE.getrType(), Rel.Direction.R).below(relProp(9)).
-                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(11, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))))),
+                                next(typed(10, DRAGON.type).next(ePropGroup(11, EProp.of(11, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))))),
                         rel(4, FREEZE.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(7, NAME.type, Constraint.of(ConstraintOp.eq,"abc")))))).
+                                        .next(ePropGroup(7, EProp.of(7, NAME.type, Constraint.of(ConstraintOp.eq,"abc")))))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);

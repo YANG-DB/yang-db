@@ -21,10 +21,10 @@ public class SinglePlanOpValidatorTests {
     public static AsgQuery simpleQuery1(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
                 .next(typed(1,PERSON.type,"A"))
-                .next(eProp(101))
+                .next(ePropGroup(101))
                 .next(rel(2,OWN.getrType(),R).below(relProp(201)))
                 .next(typed(3,DRAGON.type,"B"))
-                .next(eProp(301))
+                .next(ePropGroup(301))
                 .build();
     }
 

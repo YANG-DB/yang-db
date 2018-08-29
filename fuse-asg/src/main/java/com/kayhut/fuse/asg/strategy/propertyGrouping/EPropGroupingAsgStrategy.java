@@ -19,7 +19,7 @@ import java.util.Optional;
 /**
  * Created by benishue on 19-Apr-17.
  */
-public class EntityPropertiesGroupingAsgStrategy implements AsgStrategy {
+public class EPropGroupingAsgStrategy implements AsgStrategy {
     /*
     region AsgStrategy Implementation
     The simple case - no Quantifier involved - e.g., Q142 on V1
@@ -43,7 +43,7 @@ public class EntityPropertiesGroupingAsgStrategy implements AsgStrategy {
                         int maxEnum = Stream.ofAll(AsgQueryUtil.eNums(query)).max().get();
 
                         if (entityBase.getNext().isEmpty()) {
-                            ePropGroup.seteNum(entityBase.geteNum()*100+1);
+                            ePropGroup.seteNum(entityBase.geteNum() * 100 + 1);
                             entityBase.addNextChild(new AsgEBase<>(ePropGroup));
                         } else {
                             Quant1 quant1 = new Quant1();

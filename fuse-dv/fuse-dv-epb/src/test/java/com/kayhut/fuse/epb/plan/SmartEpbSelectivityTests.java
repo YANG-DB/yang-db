@@ -50,7 +50,7 @@ import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.ePropGroup;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -255,12 +255,12 @@ public class SmartEpbSelectivityTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(AsgQuery.Builder.ePropGroup(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7))),
+                                        .next(AsgQuery.Builder.ePropGroup(7))),
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
-                                next(typed(10, GUILD.type).next(eProp(11)))).
+                                next(typed(10, GUILD.type).next(AsgQuery.Builder.ePropGroup(11)))).
                 build();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(8).relFilter(9).entity(10).entityFilter(11).goTo(1).rel(4).relFilter(5).entity(6).entityFilter(7).plan();
@@ -275,12 +275,12 @@ public class SmartEpbSelectivityTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(AsgQuery.Builder.ePropGroup(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(7, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))))),
+                                        .next(AsgQuery.Builder.ePropGroup(7, EProp.of(7, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))))),
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
-                                next(typed(10, GUILD.type).next(eProp(11)))).
+                                next(typed(10, GUILD.type).next(AsgQuery.Builder.ePropGroup(11)))).
                 build();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(4).relFilter(5).entity(6).entityFilter(7).goTo(1).rel(8).relFilter(9).entity(10).entityFilter(11).plan();

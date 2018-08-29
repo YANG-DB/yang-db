@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.plan;
 
-import com.google.common.graph.Graph;
 import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
 import com.kayhut.fuse.dispatcher.epb.PlanSelector;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
@@ -51,7 +50,7 @@ import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.ePropGroup;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.mockito.Matchers.any;
@@ -318,10 +317,10 @@ public class EpbJoinTests {
     public void testSimplePatternNoJoin(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2)).
+                next(AsgQuery.Builder.ePropGroup(2)).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6)).
+                next(AsgQuery.Builder.ePropGroup(6)).
                 build();
         PlanWithCost<Plan, PlanDetailedCost> search = planSearcher.search(query);
         PlanWithCostDescriptor.graph(search,true);
@@ -335,13 +334,13 @@ public class EpbJoinTests {
     public void test3HopsJoinCreation(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2)).
+                next(AsgQuery.Builder.ePropGroup(2)).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6)).
+                next(AsgQuery.Builder.ePropGroup(6)).
                 next(rel(7, OWN.getrType(), Rel.Direction.R).below(relProp(8))).
                 next(typed(9, DRAGON.type)).
-                next(eProp(10)).
+                next(AsgQuery.Builder.ePropGroup(10)).
                 build();
         planSearcher.search(query);
         List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
@@ -353,13 +352,13 @@ public class EpbJoinTests {
     public void test3HopsJoinCreationEConcrete(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(concrete(1,"Per", PERSON.type,PERSON.name,"P")).
-                next(eProp(2)).
+                next(AsgQuery.Builder.ePropGroup(2)).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6)).
+                next(AsgQuery.Builder.ePropGroup(6)).
                 next(rel(7, OWN.getrType(), Rel.Direction.R).below(relProp(8))).
                 next(typed(9, DRAGON.type)).
-                next(eProp(10)).
+                next(AsgQuery.Builder.ePropGroup(10)).
                 build();
         planSearcher.search(query);
         List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).sorted(Comparator.comparing(p -> p.getPlan().toString())).toJavaList();
@@ -377,16 +376,16 @@ public class EpbJoinTests {
     public void test4HopsJoinCreation(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2)).
+                next(AsgQuery.Builder.ePropGroup(2)).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6)).
+                next(AsgQuery.Builder.ePropGroup(6)).
                 next(rel(7, OWN.getrType(), Rel.Direction.R).below(relProp(8))).
                 next(typed(9, DRAGON.type)).
-                next(eProp(10)).
+                next(AsgQuery.Builder.ePropGroup(10)).
                 next(rel(11, OWN.getrType(), Rel.Direction.R).below(relProp(12))).
                 next(typed(13, DRAGON.type)).
-                next(eProp(14)).
+                next(AsgQuery.Builder.ePropGroup(14)).
                 build();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
@@ -406,16 +405,16 @@ public class EpbJoinTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, all))
-                .in(eProp(3)
+                .in(AsgQuery.Builder.ePropGroup(3)
                         , rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type).
-                                next(eProp(7)))
+                                next(AsgQuery.Builder.ePropGroup(7)))
                         , rel(8, OWN.getrType(), Rel.Direction.R).below(relProp(9)).
                             next(typed(10, DRAGON.type).
-                            next(eProp(11)))
+                            next(AsgQuery.Builder.ePropGroup(11)))
                         , rel(12, OWN.getrType(), Rel.Direction.R).below(relProp(13)).
                                 next(typed(14, DRAGON.type).
-                                next(eProp(15)))
+                                next(AsgQuery.Builder.ePropGroup(15)))
                 ).
                 build();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);

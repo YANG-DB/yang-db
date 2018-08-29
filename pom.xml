@@ -6,7 +6,7 @@
     <groupId>com.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>0.45-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
 
     <modules>
         <module>fuse-model</module>
