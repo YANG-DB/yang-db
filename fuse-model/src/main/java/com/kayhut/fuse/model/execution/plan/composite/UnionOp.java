@@ -13,14 +13,18 @@ import java.util.List;
 
 public class UnionOp extends AsgEBasePlanOp<QuantBase> {
 
-    private AsgEBase<QuantBase> unionStep;
     private List<Plan> plans;
 
     public UnionOp() {
         super(new AsgEBase<>());
     }
 
-    public UnionOp(AsgEBase<QuantBase> unionStep, List<Iterable<PlanOp>> plans) {
+    public UnionOp(List<List<PlanOp>> plans) {
+        this();
+        this.plans = Stream.ofAll(plans).map(Plan::new).toJavaList();
+    }
+
+    public UnionOp(AsgEBase<QuantBase> unionStep, List<List<PlanOp>> plans) {
         super(unionStep);
         this.plans = Stream.ofAll(plans).map(Plan::new).toJavaList();
     }

@@ -2,19 +2,11 @@ package com.kayhut.fuse.epb.query;
 
 import com.kayhut.fuse.epb.plan.query.AsgUnionSplitQueryTransformer;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import javaslang.collection.Stream;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.quant1;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.start;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static com.kayhut.fuse.model.query.quant.QuantType.some;
 
