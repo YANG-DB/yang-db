@@ -10,6 +10,7 @@ import javaslang.collection.Stream;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class UnionOp extends AsgEBasePlanOp<QuantBase> {
 
@@ -36,5 +37,18 @@ public class UnionOp extends AsgEBasePlanOp<QuantBase> {
 
     public List<Plan> getPlans() {
         return plans;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UnionOp unionOp = (UnionOp) o;
+        return Objects.equals(plans, unionOp.plans);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(plans);
     }
 }

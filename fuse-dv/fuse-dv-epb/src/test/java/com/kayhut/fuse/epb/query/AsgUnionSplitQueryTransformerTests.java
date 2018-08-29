@@ -74,9 +74,16 @@ public class AsgUnionSplitQueryTransformerTests {
 
     @Test
     public void test_2_some_quants_with_2_elements() {
-        AsgQuery query = start("q1", "ont").next(typed(1, "1")).next(quant1(2, all))
-                .in(quant1(3, some).next(typed(4, "1")).next(typed(5, "1")),
-                        quant1(6, some).next(typed(7, "1")).next(typed(8, "1")))
+        AsgQuery query = start("q1", "ont")
+                .next(typed(1, "1"))
+                .next(quant1(2, all))
+                .in(
+                        quant1(3, some)
+                                .next(typed(4, "1"))
+                                .next(typed(5, "1")),
+                        quant1(6, some)
+                                .next(typed(7, "1"))
+                                .next(typed(8, "1")))
                 .build();
 
         Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
@@ -93,7 +100,8 @@ public class AsgUnionSplitQueryTransformerTests {
 
     @Test
     public void test_2_some_quants_with_1_and_2_elements() {
-        AsgQuery query = start("q1", "ont").next(typed(1, "1")).next(quant1(2, all))
+        AsgQuery query = start("q1", "ont")
+                .next(typed(1, "1")).next(quant1(2, all))
                 .in(quant1(3, some).next(typed(4, "1")),
                         quant1(6, some).next(typed(7, "1")).next(typed(8, "1")))
                 .build();
@@ -110,9 +118,16 @@ public class AsgUnionSplitQueryTransformerTests {
 
     @Test
     public void test_2_some_quants_with_2_and_3_elements() {
-        AsgQuery query = start("q1", "ont").next(typed(1, "1")).next(quant1(2, all))
-                .in(quant1(3, some).next(typed(4, "1")).next(typed(5, "1")),
-                        quant1(6, some).next(typed(7, "1")).next(typed(8, "1")).next(typed(9, "1")))
+        AsgQuery query = start("q1", "ont")
+                .next(typed(1, "1"))
+                .next(quant1(2, all))
+                    .in(quant1(3, some)
+                                    .next(typed(4, "1"))
+                                    .next(typed(5, "1")),
+                        quant1(6, some)
+                                .next(typed(7, "1"))
+                                .next(typed(8, "1"))
+                                .next(typed(9, "1")))
                 .build();
 
         Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
