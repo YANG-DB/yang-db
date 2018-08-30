@@ -63,6 +63,7 @@ public class FuseGraphTraversal<S, E> extends DefaultTraversal<S, E> implements 
                 (org.apache.tinkerpop.gremlin.process.traversal.Traversal.Admin)__.start().identity()));
     }
 
+/*
     @Override
     public <E2> GraphTraversal<S, E2> union(Traversal<?, E2>... unionTraversals) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.union, new Object[]{unionTraversals});
@@ -70,6 +71,7 @@ public class FuseGraphTraversal<S, E> extends DefaultTraversal<S, E> implements 
                 this.asAdmin(),
                 Arrays.copyOf(unionTraversals, unionTraversals.length, Traversal.Admin[].class)));
     }
+*/
 
     //endregion
 

@@ -11,6 +11,7 @@ import com.kayhut.fuse.model.execution.plan.composite.OptionalOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.composite.UnionOp;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.FuseGraphTraversalSource;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
@@ -38,6 +39,6 @@ public class UnionOpTranslationStrategy extends PlanOpTranslationStrategyBase {
             return planTraversalTranslator.translate(new PlanWithCost<>(unionPlan, planWithCost.getCost()), context);
         }).toJavaList();
         //traversal union translated branches
-        return traversal.union(traversalList.toArray(new GraphTraversal[traversalList.size()]));
+        return ((FuseGraphTraversalSource) context.getGraphTraversalSource()).union(traversalList.toArray(new GraphTraversal[traversalList.size()]));
     }
 }

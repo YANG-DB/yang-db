@@ -9,8 +9,11 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * Created by Roman on 12/15/2017.
@@ -45,9 +48,14 @@ public class AsgQueryValidator implements QueryValidator<AsgQuery> {
                 .flatMap(queryValidation -> Stream.ofAll(queryValidation.errors()))
                 .toJavaList();
 
+        final String validators = validationResults.stream()
+                .filter(queryValidation -> !queryValidation.valid())
+                .map(ValidationResult::getValidator)
+                .collect(Collectors.joining(","));
+
         return errors.isEmpty() ?
                 ValidationResult.OK :
-                new ValidationResult(false, errors);
+                new ValidationResult(false, validators, errors);
     }
     //endregion
 

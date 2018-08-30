@@ -35,6 +35,7 @@ public class JoinOpCompositeValidator implements ChainedPlanValidator.PlanOpVali
             ValidationResult leftValidationContext = this.leftValidator.isPlanValid(joinOp.getLeftBranch(), query);
             ValidationResult rightValidationContext = this.rightValidator.isPlanValid(joinOp.getRightBranch(), query);
             return new ValidationResult(leftValidationContext.valid() && rightValidationContext.valid(),
+                    this.getClass().getSimpleName(),
                     Stream.ofAll(leftValidationContext.errors()).appendAll(rightValidationContext.errors()));
 
         }

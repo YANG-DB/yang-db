@@ -60,7 +60,7 @@ import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.c
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 
-public class QueryDriverTest extends BaseModuleInjectionTest {
+public class StoredQueryDriverTest extends BaseModuleInjectionTest {
     static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     static KnowledgeWriterContext ctx;
     static FileBuilder f1, f2;

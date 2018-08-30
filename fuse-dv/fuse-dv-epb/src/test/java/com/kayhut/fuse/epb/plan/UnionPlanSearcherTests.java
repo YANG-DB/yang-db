@@ -142,7 +142,7 @@ public class UnionPlanSearcherTests {
                         ).getOps()),
                 new DoubleCost(0));
 
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher);
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,query -> query );
         AsgQuery query = queryNoQuant();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
@@ -164,7 +164,7 @@ public class UnionPlanSearcherTests {
                         ).getOps()),
                 new DoubleCost(0));
 
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher);
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,query -> query);
         AsgQuery query = querySingleSomeQuantSingleBranch();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
@@ -176,7 +176,7 @@ public class UnionPlanSearcherTests {
     public void testOneQuantMultiBranch() {
         final BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> searcher = createBottomUpPlanSearcher();
 
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher);
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,query -> query);
         AsgQuery query = querySingleSomeQuantMultiBranch();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
@@ -196,7 +196,7 @@ public class UnionPlanSearcherTests {
     public void testTwoQuantMultiBranch() {
         final BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> searcher = createBottomUpPlanSearcher();
 
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher);
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,query -> query);
         AsgQuery query = queryMultiSomeQuantMultiBranch();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
