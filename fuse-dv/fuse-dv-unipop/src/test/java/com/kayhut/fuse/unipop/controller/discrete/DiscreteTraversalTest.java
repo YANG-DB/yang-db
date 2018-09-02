@@ -11,16 +11,15 @@ import com.kayhut.fuse.unipop.controller.common.ElementController;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.predicates.SelectP;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.FuseGraphTraversalSource;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.FuseUniGraph;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversalStrategies;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalExplanation;
@@ -43,7 +42,7 @@ import org.unipop.process.start.UniGraphStartEdgeCountStepStrategy;
 import org.unipop.process.start.UniGraphStartStepStrategy;
 import org.unipop.process.strategy.CompositeStrategy;
 import org.unipop.process.strategyregistrar.StrategyProvider;
-import org.unipop.process.union.UniGraphUnionStepStrategy;
+import org.unipop.process.union.UniGraphUnionStepNewStrategy;
 import org.unipop.process.vertex.UniGraphVertexStepStrategy;
 import org.unipop.process.where.UniGraphWhereStepStrategy;
 import org.unipop.query.controller.ControllerManager;
@@ -169,7 +168,7 @@ public class DiscreteTraversalTest {
 
     @Before
     public void before() {
-        g = graph.traversal();
+        g = (FuseGraphTraversalSource) graph.traversal();
     }
     //endregion
 
@@ -775,26 +774,26 @@ public class DiscreteTraversalTest {
     @Test
     public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_Two_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX__hasOutFire__inVX() throws InterruptedException {
         List<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                    .outE("hasCoin")
-                        .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
-                    .outV()
-                        .outE("fire")
-                    .inV()
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
+                .outV()
+                .outE("fire")
+                .inV()
                 .toList();
 
         List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                    .outE("hasCoin")
-                        .has(CONSTRAINT, Constraint.by(__.has("material", "silver")))
-                    .outV()
-                        .outE("fire")
-                    .inV()
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "silver")))
+                .outV()
+                .outE("fire")
+                .inV()
                 .toList();
 
 
-        final GraphTraversal<Vertex, Vertex> unionTraversal = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                .union(__.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "silver"))).outV().outE("fire").inV(),
-                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).outV().outE("fire").inV());
-//        final List<Path> paths = unionTraversal.path().toList();
+        final GraphTraversal<Vertex, Vertex> unionTraversal = g.union(
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "silver"))).outV().outE("fire").inV(),
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).outV().outE("fire").inV()
+        );
         System.out.println(unionTraversal.explain().prettyPrint());
         List<Vertex> unionVertices = unionTraversal.toList();
 
@@ -811,7 +810,7 @@ public class DiscreteTraversalTest {
 
 
     @Test
-    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_Two_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() throws InterruptedException {
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_start_Two_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() {
         final GraphTraversal<Vertex, Vertex> traversal = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                 .outE("hasCoin")
                 .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
@@ -825,10 +824,10 @@ public class DiscreteTraversalTest {
                 .inV()
                 .toList();
 
-        List<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                .union(__.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
-                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).inV())
-                .toList();
+        List<Vertex> unionVertices = g.union(
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).inV()
+        ).toList();
 
         Set<Vertex> expected = new HashSet<>();
         expected.addAll(verticesBranch1);
@@ -843,10 +842,107 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_Three_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() throws InterruptedException {
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_with_Union_one_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() {
+        final GraphTraversal<Vertex, Vertex> traversal = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .inV();
+
+        List<Vertex> verticesBranch1 = traversal.toList();
+
+
+        List<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).union(
+                __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV()
+        ).toList();
+
+        Set<Vertex> expected = new HashSet<>();
+        expected.addAll(verticesBranch1);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(8, unionVertices.size());
+        Assert.assertEquals(8, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_with_Union_Two_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() {
+        final GraphTraversal<Vertex, Vertex> traversal = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .inV();
+
+        List<Vertex> verticesBranch1 = traversal.toList();
+
+        List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
+                .inV()
+                .toList();
+
+        List<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .union(
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).inV()
+                ).toList();
+
+        Set<Vertex> expected = new HashSet<>();
+        expected.addAll(verticesBranch1);
+        expected.addAll(verticesBranch2);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(15, unionVertices.size());
+        Assert.assertEquals(15, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_start_Union_Three_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() throws InterruptedException {
         List<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                 .outE("hasCoin")
-                    .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .inV()
+                .toList();
+
+        List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
+                .inV()
+                .toList();
+
+        List<Vertex> verticesBranch3 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "silver")))
+                .inV()
+                .toList();
+
+        List<Vertex> unionVertices = g.union(
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).inV(),
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "silver"))).inV()
+        ).toList();
+
+        List<Vertex> expected = new ArrayList<>();
+        expected.addAll(verticesBranch1);
+        expected.addAll(verticesBranch2);
+        expected.addAll(verticesBranch3);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(23, unionVertices.size());
+        Assert.assertEquals(23, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_with_Union_Three_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() throws InterruptedException {
+        List<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
                 .inV()
                 .toList();
 
@@ -863,7 +959,8 @@ public class DiscreteTraversalTest {
                 .toList();
 
         List<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                .union(__.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
+                .union(
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
                         __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).inV(),
                         __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "silver"))).inV()
                 ).toList();
@@ -1249,7 +1346,7 @@ public class DiscreteTraversalTest {
     //endregion
 
     //region Fields
-    private GraphTraversalSource g;
+    private FuseGraphTraversalSource g;
     //endregion
 
     public static class NewStandardStrategyProvider implements StrategyProvider {
@@ -1266,7 +1363,7 @@ public class DiscreteTraversalTest {
                             new UniGraphPropertiesStrategy(),
                             new UniGraphCoalesceStepStrategy(),
                             new UniGraphWhereStepStrategy(),
-                            new UniGraphUnionStepStrategy(),
+                            new UniGraphUnionStepNewStrategy(),
                             new UniGraphRepeatStepStrategy(),
                             new UniGraphOrderStrategy(),
                             new UniGraphOptionalStepStrategy()).toJavaList()

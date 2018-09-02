@@ -39,7 +39,7 @@ public class FuseStandardStrategyProvider implements StrategyProvider {
                         new UniGraphPropertiesStrategy(),
                         new UniGraphCoalesceStepStrategy(),
                         new UniGraphWhereStepStrategy(),
-                        new UniGraphUnionStepStrategy(),
+                        new UniGraphUnionStepNewStrategy(),
                         new UniGraphRepeatStepStrategy(),
                         new UniGraphOrderStrategy(),
                         new UniGraphOptionalStepStrategy()).toJavaList()

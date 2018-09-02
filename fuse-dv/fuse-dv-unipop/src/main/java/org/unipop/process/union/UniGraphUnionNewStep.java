@@ -1,26 +1,30 @@
 package org.unipop.process.union;
 
-import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.step.TraversalParent;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.AbstractStep;
 import org.apache.tinkerpop.gremlin.process.traversal.traverser.TraverserRequirement;
-import org.unipop.process.UniBulkStep;
-import org.unipop.process.start.UniGraphOrderedTraversersInjectStep;
-import org.unipop.structure.UniGraph;
+import org.apache.tinkerpop.gremlin.process.traversal.util.FastNoSuchElementException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
-/**
- * Created by roman.margolis on 28/11/2017.
- */
-public class UniGraphUnionNewStep<S, E> extends UniBulkStep<S, E> implements TraversalParent {
-    private final List<Traversal.Admin> unionTraversals;
+public class UniGraphUnionNewStep<S, E> extends AbstractStep<S,E> implements TraversalParent {
 
     //region Constructors
-    public UniGraphUnionNewStep(Traversal.Admin traversal, UniGraph graph, List<Traversal.Admin> unionTraversals) {
-        super(traversal, graph);
+    public UniGraphUnionNewStep(Traversal.Admin traversal, List<Traversal.Admin<S,E>> unionTraversals) {
+        super(traversal);
         this.unionTraversals = unionTraversals;
+        this.currentTraversalInWork = 0;
+    }
+
+    public UniGraphUnionNewStep(Traversal.Admin traversal) {
+        super(traversal);
+        this.unionTraversals = new ArrayList<>();
+        this.currentTraversalInWork = 0;
     }
     //endregion
 
@@ -29,54 +33,46 @@ public class UniGraphUnionNewStep<S, E> extends UniBulkStep<S, E> implements Tra
     public Set<TraverserRequirement> getRequirements() {
         return this.getSelfAndChildRequirements(TraverserRequirement.PATH);
     }
-    //endregion
-
-    //region UniBulkStep Implementation
-    @Override
-    protected Iterator<Traverser.Admin<E>> process(List<Traverser.Admin<S>> traversers) {
-        Stream.ofAll(traversers)
-                .forEach(traverser -> traverser.<Map<String, Object>>sack().put(this.getId(), traverser));
-
-        this.branches.reset();
-        this.branches.addStarts(Stream.ofAll(traversers).map(Traverser.Admin::split).iterator());
-
-        return new OptionalIterator<>(traversers, this.branches.getEndStep(), this.getId());
-    }
 
     @Override
-    public void reset() {
-        super.reset();
-        this.branches.reset();
-    }
-    //endregion
-
-    //region TraversalParent Implementation
-    @Override
-    public List<Traversal.Admin<S, E>> getGlobalChildren() {
-        return Collections.singletonList(this.branches);
+    public List<Traversal.Admin<S,E>> getGlobalChildren() {
+        return this.unionTraversals;
     }
 
     @Override
     public void addGlobalChild(Traversal.Admin<?, ?> globalChildTraversal) {
-        if (this.branches != null) {
-            throw new IllegalStateException("Only one global child traversal is allowed: " + this.getClass().getCanonicalName());
-        }
+        this.unionTraversals.add((Traversal.Admin<S, E>)globalChildTraversal);
 
-        this.branches = this.integrateChild(globalChildTraversal);
     }
+//endregion
+
+    //region UniBulkStep Implementation
 
     @Override
-    public <S, E> Traversal.Admin<S, E> integrateChild(final Traversal.Admin<?, ?> childTraversal) {
-        if (null == childTraversal) {
-            return null;
-        } else {
-            childTraversal.setParent(this);
-            childTraversal.getSideEffects().mergeInto(this.asStep().getTraversal().getSideEffects());
-            childTraversal.setSideEffects(this.asStep().getTraversal().getSideEffects());
+    protected Traverser.Admin<E> processNextStart() throws NoSuchElementException {
+        if(unionTraversals==null)
+            throw FastNoSuchElementException.instance();
 
-            childTraversal.addStep(0, new UniGraphOrderedTraversersInjectStep<>(childTraversal, Collections.emptyList()));
+        Traversal.Admin<?,E> traversalInWork = null;
+        if(currentTraversalInWork >= unionTraversals.size())
+            throw FastNoSuchElementException.instance();
 
-            return (Traversal.Admin<S, E>)childTraversal;
+        traversalInWork = unionTraversals.get(currentTraversalInWork);
+
+        try {
+            return traversalInWork.nextTraverser();
+        } catch (FastNoSuchElementException e) {
+            Traverser.Admin<E> result = null;
+            while (result==null) {
+                if (++currentTraversalInWork >= unionTraversals.size())
+                    throw FastNoSuchElementException.instance();
+
+                try {
+                    traversalInWork = unionTraversals.get(currentTraversalInWork);
+                    result = traversalInWork.nextTraverser();
+                } catch (NoSuchElementException e1) {}
+            }
+            return result;
         }
     }
     //endregion
@@ -85,71 +81,14 @@ public class UniGraphUnionNewStep<S, E> extends UniBulkStep<S, E> implements Tra
     @Override
     public UniGraphUnionNewStep<S, E> clone() {
         UniGraphUnionNewStep<S, E> clone = (UniGraphUnionNewStep<S, E>) super.clone();
-        clone.branches = null;
-
-        if (this.branches != null) {
-            clone.addGlobalChild(this.branches.clone());
-        }
-
+        clone.unionTraversals = new ArrayList<>();
+        unionTraversals.stream().map(t->clone.unionTraversals.add(t.clone()));
         return clone;
     }
     //endregion
 
     //region Fields
-    private Traversal.Admin<S, E> branches;
-    //endregion
-
-    //region OptionalIterator
-    private static class OptionalIterator<S, E> implements Iterator<Traverser.Admin<E>> {
-        //region Constructors
-        public OptionalIterator(List<Traverser.Admin<S>> starts, Iterator<Traverser.Admin<E>> optionalIterator, String optionalKey) {
-            this.foundStarts = new HashSet<>();
-
-            this.starts = starts;
-            this.current =
-                    Stream.ofAll(() -> optionalIterator)
-                    .map(end -> {
-                        Map<String, Traverser.Admin<S>> sack = end.sack();
-                        this.foundStarts.add(sack.remove(optionalKey));
-                        if (sack.isEmpty()) {
-                            sack.clear();
-                        }
-                        return end;
-                    }).iterator();
-
-            this.positiveOptionalsPhase = true;
-        }
-        //endregion
-
-        //region Iterator Implementation
-        @Override
-        public boolean hasNext() {
-            boolean currentHasNext = this.current.hasNext();
-            if (!currentHasNext && this.positiveOptionalsPhase) {
-                this.positiveOptionalsPhase = false;
-                this.current = Stream.ofAll(starts)
-                        .filter(start -> !this.foundStarts.contains(start))
-                        .map(start -> (Traverser.Admin<E>)start)
-                        .iterator();
-
-                currentHasNext = this.current.hasNext();
-            }
-
-            return currentHasNext;
-        }
-
-        @Override
-        public Traverser.Admin<E> next() {
-            return this.current.next();
-        }
-        //endregion
-
-        //region Fields
-        private List<Traverser.Admin<S>> starts;
-        private Set<Traverser.Admin<S>> foundStarts;
-        private Iterator<Traverser.Admin<E>> current;
-        private boolean positiveOptionalsPhase;
-        //endregion
-    }
+    private List<Traversal.Admin<S,E>> unionTraversals;
+    private int currentTraversalInWork ;
     //endregion
 }
