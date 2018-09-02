@@ -106,12 +106,11 @@ public class UnionQueryDriverTest extends BaseModuleInjectionTest {
                         new Start(0, 1),
                         new ETyped(1, "A", "Entity", 2, 0),
                         new Quant1(2, QuantType.some, Arrays.asList(3, 4,7), 0),
-                            new EProp(3, "category", Constraint.of(ConstraintOp.eq, e1.category)),
                             new Rel(4, "hasEvalue", R, null, 5, 0),
-                                    new ETyped(5, "V", "Evalue", 6, 0),
+                                    new ETyped(5, "V1", "Evalue", 6, 0),
                                     new EProp(6, "fieldId", Constraint.of(ConstraintOp.eq, v1.fieldId)),
                             new Rel(7, "hasEvalue", R, null, 8, 0),
-                                    new ETyped(8, "V", "Evalue", 9, 0),
+                                    new ETyped(8, "V2", "Evalue", 9, 0),
                                     new EProp(9, "fieldId", Constraint.of(ConstraintOp.eq, v2.fieldId)))
                 ).build();
 
@@ -130,10 +129,8 @@ public class UnionQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
         Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
         Assignment assignment = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0);
-        com.kayhut.fuse.model.results.Entity entityA = Stream.ofAll(assignment.getEntities()).find(e -> e.geteTag().contains("A")).get();
-
-        Entity entityB = Stream.ofAll(assignment.getEntities()).find(e -> e.geteTag().contains("B")).get();
-
+        Entity entityA = Stream.ofAll(assignment.getEntities()).find(e -> e.geteTag().contains("A")).get();
+        Assert.assertNotNull(entityA);
         Assert.assertEquals(1, assignment.getRelationships().size());
         Option<Property> category = Stream.ofAll(assignment.getRelationships().get(0).getProperties()).find(p -> p.getpType().equals("category"));
         Assert.assertFalse(category.isEmpty());
