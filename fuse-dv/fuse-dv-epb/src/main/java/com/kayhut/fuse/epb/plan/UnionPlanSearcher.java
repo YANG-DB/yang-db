@@ -28,7 +28,7 @@ public class UnionPlanSearcher implements PlanSearcher<Plan, PlanDetailedCost, A
     @Inject
     public UnionPlanSearcher(@Named(planSearcherParameter) PlanSearcher<Plan, PlanDetailedCost, AsgQuery> mainPlanSearcher, OntologyProvider ontologyProvider ) {
         this.mainPlanSearcher = mainPlanSearcher;
-        final AsgQueryTransformer transformer = new AsgQueryTransformer(() -> Arrays.asList(new EPropGroupingAsgStrategy() ),ontologyProvider );
+        final AsgQueryTransformer transformer = new AsgQueryTransformer(() -> Arrays.asList(new EPropGroupingAsgStrategy(), new RelPropGroupingAsgStrategy()), ontologyProvider );
         this.splitQueryTransformer = new AsgUnionSplitQueryTransformer(transformer);
     }
 
