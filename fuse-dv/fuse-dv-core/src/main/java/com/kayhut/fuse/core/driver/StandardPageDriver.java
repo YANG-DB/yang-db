@@ -24,6 +24,7 @@ public class StandardPageDriver extends PageDriverBase {
     @Override
     protected PageResource<QueryResultBase> createResource(QueryResource queryResource, CursorResource cursorResource, String pageId, int pageSize) {
         QueryResultBase results = cursorResource.getCursor().getNextResults(pageSize);
+
         return new PageResource<>(pageId, results, pageSize, 0)
                         .withActualSize(results.getSize())
                         .available();

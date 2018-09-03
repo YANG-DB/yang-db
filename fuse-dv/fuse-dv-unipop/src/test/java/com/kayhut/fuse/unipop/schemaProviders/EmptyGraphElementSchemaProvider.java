@@ -51,5 +51,10 @@ public class EmptyGraphElementSchemaProvider implements GraphElementSchemaProvid
     public Iterable<String> getEdgeLabels() {
         return Collections.emptyList();
     }
+
+    @Override
+    public Iterable<String> getPropertyNames() {
+        return Collections.emptyList();
+    }
     //endregion
 }

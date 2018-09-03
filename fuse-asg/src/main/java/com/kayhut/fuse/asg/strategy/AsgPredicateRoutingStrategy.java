@@ -27,7 +27,7 @@ public class AsgPredicateRoutingStrategy<T extends EBase> implements AsgStrategy
         Stream.ofAll(this.elementSelector.apply(query))
                 .forEach(selectedElement -> {
                     Stream.ofAll(routings)
-                            .filter(routing -> routing.predicate.test(selectedElement.geteBase()))
+                            .filter(routing -> routing.predicate.test(selectedElement))
                             .toJavaOptional()
                             .ifPresent(routing -> routing.getStrategy().apply(query, selectedElement, context));
 
@@ -42,14 +42,14 @@ public class AsgPredicateRoutingStrategy<T extends EBase> implements AsgStrategy
 
     public static class Routing<T extends EBase> {
         //region Constructors
-        public Routing(Predicate<T> predicate, AsgElementStrategy<T> strategy) {
+        public Routing(Predicate<AsgEBase<T>> predicate, AsgElementStrategy<T> strategy) {
             this.predicate = predicate;
             this.strategy = strategy;
         }
         //endregion
 
         //region Properties
-        public Predicate<T> getPredicate() {
+        public Predicate<AsgEBase<T>> getPredicate() {
             return predicate;
         }
 
@@ -59,7 +59,7 @@ public class AsgPredicateRoutingStrategy<T extends EBase> implements AsgStrategy
         //endregion
 
         //region Fields
-        private Predicate<T> predicate;
+        private Predicate<AsgEBase<T>> predicate;
         private AsgElementStrategy<T> strategy;
         //endregion
     }

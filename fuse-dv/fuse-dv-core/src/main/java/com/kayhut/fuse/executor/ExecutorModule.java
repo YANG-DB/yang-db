@@ -23,6 +23,7 @@ import com.kayhut.fuse.executor.elasticsearch.TimeoutClientAdvisor;
 import com.kayhut.fuse.executor.elasticsearch.logging.LoggingClient;
 import com.kayhut.fuse.executor.logging.LoggingCursorFactory;
 import com.kayhut.fuse.executor.logging.LoggingGraphElementSchemaProviderFactory;
+import com.kayhut.fuse.executor.ontology.CachedGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
@@ -208,16 +209,20 @@ public class ExecutorModule extends ModuleBase {
                             .annotatedWith(named(OntologyGraphElementSchemaProviderFactory.schemaProviderFactoryParameter))
                             .to(getSchemaProviderFactoryClass(conf));
                     this.bind(GraphElementSchemaProviderFactory.class)
-                            .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.schemaProviderFactoryParameter))
+                            .annotatedWith(named(CachedGraphElementSchemaProviderFactory.schemaProviderFactoryParameter))
                             .to(OntologyGraphElementSchemaProviderFactory.class);
-                    this.bind(Logger.class)
+                    /*this.bind(Logger.class)
                             .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.warnLoggerParameter))
                             .toInstance(LoggerFactory.getLogger(GraphElementSchemaProvider.class));
                     this.bind(Logger.class)
                             .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.verboseLoggerParameter))
                             .toInstance(LoggerFactory.getLogger(GraphElementSchemaProvider.class.getName() + ".Verbose"));
                     this.bind(GraphElementSchemaProviderFactory.class)
-                            .to(LoggingGraphElementSchemaProviderFactory.class);
+                            .to(LoggingGraphElementSchemaProviderFactory.class);*/
+
+                    this.bind(GraphElementSchemaProviderFactory.class)
+                            .to(CachedGraphElementSchemaProviderFactory.class)
+                            .asEagerSingleton();
 
                     this.expose(GraphElementSchemaProviderFactory.class);
                 } catch (ClassNotFoundException e) {
@@ -275,9 +280,11 @@ public class ExecutorModule extends ModuleBase {
 
     private UniGraphConfiguration createUniGraphConfiguration(Config conf) {
         UniGraphConfiguration configuration = new UniGraphConfiguration();
-        configuration.setBulkMax(conf.getInt("unipop.bulk.max"));
-        configuration.setBulkStart(conf.getInt("unipop.bulk.start"));
-        configuration.setBulkMultiplier(conf.getInt("unipop.bulk.multiplier"));
+        configuration.setBulkMax(conf.hasPath("unipop.bulk.max") ? conf.getInt("unipop.bulk.max") : 1000);
+        configuration.setBulkMin(conf.hasPath("unipop.bulk.min") ? conf.getInt("unipop.bulk.min") : configuration.getBulkMax());
+        configuration.setBulkDecayInterval(conf.hasPath("unipop.bulk.decayInterval") ? conf.getLong("unipop.bulk.decayInterval") : 200L);
+        configuration.setBulkStart(conf.hasPath("unipop.bulk.start") ? conf.getInt("unipop.bulk.start") : configuration.getBulkMax());
+        configuration.setBulkMultiplier(conf.hasPath("unipop.bulk.multiplier") ? conf.getInt("unipop.bulk.multiplier") : 1);
         return configuration;
     }
 

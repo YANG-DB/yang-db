@@ -20,6 +20,7 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.search.SearchHit;
+import org.unipop.process.Profiler;
 
 import java.util.*;
 
@@ -28,7 +29,7 @@ import java.util.*;
  */
 public class DiscreteEdgeConverter<E extends Element> implements ElementConverter<DataItem, E> {
     //region Constructors
-    public DiscreteEdgeConverter(VertexControllerContext context) {
+    public DiscreteEdgeConverter(VertexControllerContext context, Profiler profiler) {
         this.context = context;
         try {
             this.edgeIdProvider = new HashEdgeIdProvider(context.getConstraint());
@@ -46,19 +47,23 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
         //currently assuming a single edge label
         this.contextEdgeLabel = Stream.ofAll(labels).get(0);
+
+        this.profiler = profiler;
     }
     //endregion
 
     //region ElementConverter Implementation
     @Override
     public Iterable<E> convert(DataItem dataItem) {
-        Iterable<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(this.contextVertexLabel, context.getDirection(), this.contextEdgeLabel);
-        if (Stream.ofAll(edgeSchemas).isEmpty()) {
+        Map<String, Object> dataItemProperties = dataItem.properties();
+
+        Iterator<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(this.contextVertexLabel, context.getDirection(), this.contextEdgeLabel).iterator();
+        if (!edgeSchemas.hasNext()) {
             return null;
         }
 
         //currently assuming only one relevant edge schema
-        GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
+        GraphEdgeSchema edgeSchema = edgeSchemas.next();
 
         Vertex outV = null;
         Vertex inV = null;
@@ -69,14 +74,15 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             GraphEdgeSchema.End outEndSchema = edgeSchema.getEndA().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getEndB().get();
 
-            Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, dataItem.properties());
-            Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, dataItem.properties(), inVertexProperties);
+
+            Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, dataItemProperties);
+            Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, dataItemProperties, inVertexProperties);
 
             Iterable<Object> outIds = getIdFieldValues(dataItem, outEndSchema.getIdFields());
             Iterable<Object> inIds = getIdFieldValues(dataItem, inEndSchema.getIdFields());
 
-            for(Object outId : outIds) {
-                for(Object inId : inIds) {
+            for (Object outId : outIds) {
+                for (Object inId : inIds) {
                     outV = context.getVertex(outId);
 
                     // could happen in multi value relation fields where the document contains additional values
@@ -87,7 +93,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
                     inV = new DiscreteVertex(inId, inEndSchema.getLabel().get(), context.getGraph(), inVertexProperties);
 
-                    edges.add((E)new DiscreteEdge(
+                    edges.add((E) new DiscreteEdge(
                             this.edgeIdProvider.get(edgeSchema.getLabel(), outV, inV, edgeProperties),
                             edgeSchema.getLabel(),
                             outV,
@@ -102,14 +108,14 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             GraphEdgeSchema.End outEndSchema = edgeSchema.getEndB().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getEndA().get();
 
-            Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, dataItem.properties());
-            Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, dataItem.properties(), outVertexProperties);
+            Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, dataItemProperties);
+            Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, dataItemProperties, outVertexProperties);
 
             Iterable<Object> outIds = getIdFieldValues(dataItem, outEndSchema.getIdFields());
             Iterable<Object> inIds = getIdFieldValues(dataItem, inEndSchema.getIdFields());
 
-            for(Object outId : outIds) {
-                for(Object inId : inIds) {
+            for (Object outId : outIds) {
+                for (Object inId : inIds) {
                     inV = context.getVertex(inId);
 
                     // could happen in multi value relation fields where the document contains additional values
@@ -120,7 +126,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
                     outV = new DiscreteVertex(outId, outEndSchema.getLabel().get(), context.getGraph(), outVertexProperties);
 
-                    edges.add((E)new DiscreteEdge(
+                    edges.add((E) new DiscreteEdge(
                             this.edgeIdProvider.get(edgeSchema.getLabel(), outV, inV, edgeProperties),
                             edgeSchema.getLabel(),
                             outV,
@@ -138,14 +144,32 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
     //region Private Methods
     private Iterable<Object> getIdFieldValues(DataItem dataItem, Iterable<String> idFields) {
-        return Stream.ofAll(idFields)
-                .<Object>flatMap(idField -> {
-                    if (idField.equals("_id")) {
-                        return Collections.singletonList(dataItem.id());
-                    } else {
-                        return MapHelper.values(dataItem.properties(), idField);
-                    }
-                }).toJavaList();
+        List<Object> idFieldValues = Collections.emptyList();
+        boolean isfirst = true;
+        boolean isSecond = false;
+        for(String idField : idFields) {
+            if (isfirst) {
+                idFieldValues = getIdFieldValues(dataItem, idField);
+                isfirst = false;
+                isSecond = true;
+            } else if (isSecond) {
+                idFieldValues = new ArrayList<>(idFieldValues);
+                idFieldValues.addAll(getIdFieldValues(dataItem, idField));
+                isSecond = false;
+            } else {
+                idFieldValues.addAll(getIdFieldValues(dataItem, idField));
+            }
+        }
+
+        return idFieldValues;
+    }
+
+    private List<Object> getIdFieldValues(DataItem dataItem, String idField) {
+        if (idField.equals("_id")) {
+            return Collections.singletonList(dataItem.id());
+        } else {
+            return MapHelper.values(dataItem.properties(), idField);
+        }
     }
 
     private Map<String, Object> createVertexProperties(GraphEdgeSchema.End endSchema, Map<String, Object> properties) {
@@ -163,17 +187,49 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
                         "string")) :
                 Optional.empty();
 
-        return Stream.ofAll(endSchema.getRedundantProperties())
-                .appendAll(partitionField.map(Collections::singletonList).orElseGet(Collections::emptyList))
-                .appendAll(routingField.map(Collections::singletonList).orElseGet(Collections::emptyList))
-                .filter(property -> properties.containsKey(property.getPropertyRedundantName()))
-                .toJavaMap(property -> new Tuple2<>(property.getName(), properties.get(property.getPropertyRedundantName())));
+        Map<String, Object> vertexProperties = new HashMap<>();
+        Iterable<GraphRedundantPropertySchema> redundantPropertySchemas = endSchema.getRedundantProperties();
+
+        if (partitionField.isPresent()) {
+            Object propertyValue = properties.get(partitionField.get().getPropertyRedundantName());
+            if (propertyValue != null) {
+                vertexProperties.put(partitionField.get().getName(), propertyValue);
+            }
+        }
+
+        if (routingField.isPresent()) {
+            Object propertyValue = properties.get(routingField.get().getPropertyRedundantName());
+            if (propertyValue != null) {
+                vertexProperties.put(routingField.get().getName(), propertyValue);
+            }
+        }
+
+        for (GraphRedundantPropertySchema redundantPropertySchema : redundantPropertySchemas) {
+            Object propertyValue = properties.get(redundantPropertySchema.getPropertyRedundantName());
+            if (propertyValue != null) {
+                vertexProperties.put(redundantPropertySchema.getName(), propertyValue);
+            }
+        }
+
+        return vertexProperties;
     }
 
-    private Map<String, Object> createEdgeProperties(GraphEdgeSchema.End endSchema, Map<String, Object> hitProperties, Map<String, Object> vertexProperties) {
-        return Stream.ofAll(hitProperties.entrySet())
-                .filter(entry -> !vertexProperties.containsKey(entry.getKey()))
-                .toJavaMap(entry -> new Tuple2<>(entry.getKey(), entry.getValue()));
+    private Map<String, Object> createEdgeProperties(GraphEdgeSchema.End endSchema, Map<String, Object> properties, Map<String, Object> vertexProperties) {
+        Map<String, Object> edgeProperties = Collections.emptyMap();
+        boolean isFirst = true;
+
+        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            if (!vertexProperties.containsKey(entry.getKey())) {
+                if (isFirst) {
+                    edgeProperties = new HashMap<>();
+                    isFirst = false;
+                }
+
+                edgeProperties.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return edgeProperties;
     }
     //endregion
 
@@ -183,5 +239,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
     private String contextVertexLabel;
     private String contextEdgeLabel;
+
+    private Profiler profiler;
     //endregion
 }

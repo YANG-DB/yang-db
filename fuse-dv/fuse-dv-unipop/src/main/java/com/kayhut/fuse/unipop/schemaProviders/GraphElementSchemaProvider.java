@@ -23,6 +23,7 @@ public interface GraphElementSchemaProvider {
 
     Iterable<String> getVertexLabels();
     Iterable<String> getEdgeLabels();
+    Iterable<String> getPropertyNames();
 
     default Iterable<GraphVertexSchema> getVertexSchemas() {
         return Stream.ofAll(getVertexLabels())
@@ -33,6 +34,14 @@ public interface GraphElementSchemaProvider {
     default Iterable<GraphEdgeSchema> getEdgeSchemas() {
         return Stream.ofAll(getEdgeLabels())
                 .flatMap(this::getEdgeSchemas)
+                .toJavaList();
+    }
+
+    default Iterable<GraphElementPropertySchema> getPropertySchemas() {
+        return Stream.ofAll(getPropertyNames())
+                .map(this::getPropertySchema)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .toJavaList();
     }
 
@@ -54,6 +63,23 @@ public interface GraphElementSchemaProvider {
 
             this.propertySchemas = Stream.ofAll(propertySchemas)
                     .toJavaMap(propertySchema -> new Tuple2<>(propertySchema.getName(), propertySchema));
+
+            this.vertexLabels =
+                    Stream.ofAll(this.vertexSchemas.values())
+                    .flatMap(vertexSchemas1 -> vertexSchemas1)
+                    .map(GraphElementSchema::getLabel)
+                    .toJavaSet();
+
+            this.edgeLabels =
+                    Stream.ofAll(this.edgeSchemas.values())
+                            .flatMap(edgeSchemas1 -> edgeSchemas1)
+                            .map(GraphElementSchema::getLabel)
+                            .toJavaSet();
+
+            this.propertyNames =
+                    Stream.ofAll(this.propertySchemas.values())
+                    .map(GraphElementPropertySchema::getName)
+                    .toJavaSet();
         }
         //endregion
 
@@ -90,18 +116,17 @@ public interface GraphElementSchemaProvider {
 
         @Override
         public Iterable<String> getVertexLabels() {
-            return Stream.ofAll(this.vertexSchemas.values())
-                    .flatMap(vertexSchemas ->vertexSchemas)
-                    .map(GraphElementSchema::getLabel)
-                    .toJavaSet();
+            return this.vertexLabels;
         }
 
         @Override
         public Iterable<String> getEdgeLabels() {
-            return Stream.ofAll(this.edgeSchemas.values())
-                    .flatMap(edgeSchemas -> edgeSchemas)
-                    .map(GraphElementSchema::getLabel)
-                    .toJavaSet();
+            return this.edgeLabels;
+        }
+
+        @Override
+        public Iterable<String> getPropertyNames() {
+            return this.propertyNames;
         }
         //endregion
 
@@ -198,9 +223,76 @@ public interface GraphElementSchemaProvider {
         //endregion
 
         //region Fields
-        private Map<String, List<GraphVertexSchema>> vertexSchemas;
-        private Map<String, List<GraphEdgeSchema>> edgeSchemas;
-        private Map<String, GraphElementPropertySchema> propertySchemas;
+        protected Map<String, List<GraphVertexSchema>> vertexSchemas;
+        protected Map<String, List<GraphEdgeSchema>> edgeSchemas;
+        protected Map<String, GraphElementPropertySchema> propertySchemas;
+        protected Iterable<String> vertexLabels;
+        protected Iterable<String> edgeLabels;
+        protected Iterable<String> propertyNames;
+        //endregion
+    }
+
+    class Cached extends GraphElementSchemaProvider.Impl {
+        //region Constructors
+        public Cached(GraphElementSchemaProvider schemaProvider) {
+            super(Collections.emptyList(), Collections.emptyList());
+
+            this.schemaProvider = schemaProvider;
+
+            this.vertexLabels = this.schemaProvider.getVertexLabels();
+            this.edgeLabels = this.schemaProvider.getEdgeLabels();
+            this.propertyNames = this.schemaProvider.getPropertyNames();
+
+            initializeVertexSchemas();
+            initializeEdgeSchemas();
+            initializePropertySchemas();
+        }
+        //endregion
+
+        //region Private Methods
+        private void initializeVertexSchemas() {
+            this.vertexSchemas = new HashMap<>();
+
+            for(String vertexLabel : this.vertexLabels) {
+                this.vertexSchemas.put(vertexLabel, Stream.ofAll(this.schemaProvider.getVertexSchemas(vertexLabel)).toJavaList());
+            }
+        }
+
+        private void initializeEdgeSchemas() {
+            this.edgeSchemas = new HashMap<>();
+
+            for(String edgeLabel : this.edgeLabels) {
+                this.edgeSchemas.put(this.edgeSchemaKey(edgeLabel),
+                        Stream.ofAll(this.schemaProvider.getEdgeSchemas(edgeLabel)).toJavaList());
+
+                for(String vertexLabelA : this.vertexLabels) {
+                    this.edgeSchemas.put(this.edgeSchemaKey(vertexLabelA, edgeLabel),
+                            Stream.ofAll(this.schemaProvider.getEdgeSchemas(vertexLabelA, edgeLabel)).toJavaList());
+
+                    for(Direction direction : Arrays.asList(Direction.OUT, Direction.IN)) {
+                        this.edgeSchemas.put(this.edgeSchemaKey(vertexLabelA, direction.toString(), edgeLabel),
+                                Stream.ofAll(this.schemaProvider.getEdgeSchemas(vertexLabelA, direction, edgeLabel)).toJavaList());
+
+                        for(String vertexLabelB : this.vertexLabels) {
+                            this.edgeSchemas.put(this.edgeSchemaKey(vertexLabelA, direction.toString(), edgeLabel, vertexLabelB),
+                                    Stream.ofAll(this.schemaProvider.getEdgeSchemas(vertexLabelA, direction, edgeLabel, vertexLabelB)).toJavaList());
+                        }
+                    }
+                }
+            }
+        }
+
+        private void initializePropertySchemas() {
+            this.propertySchemas = new HashMap<>();
+
+            for(String propertyName : this.propertyNames) {
+                this.propertySchemas.put(propertyName, this.schemaProvider.getPropertySchema(propertyName).get());
+            }
+        }
+        //endregion
+
+        //region Fields
+        private GraphElementSchemaProvider schemaProvider;
         //endregion
     }
 }

@@ -5,6 +5,7 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
+import org.unipop.process.Profiler;
 import org.unipop.query.search.SearchVertexQuery;
 
 import java.util.*;
@@ -39,6 +40,16 @@ public abstract class VertexControllerBase implements SearchVertexQuery.SearchVe
 
         return search(searchVertexQuery, getSupportedEdgeLabels(requestedEdgeLabels));
     }
+
+    @Override
+    public Profiler getProfiler() {
+        return this.profiler;
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.profiler = profiler;
+    }
     //endregion
 
     //region Protected Methods
@@ -69,5 +80,7 @@ public abstract class VertexControllerBase implements SearchVertexQuery.SearchVe
     //region Fields
     private Predicate<Iterable<String>> applicablePredicate;
     private Set<String> supportedEdgeLabels;
+
+    protected Profiler profiler;
     //endregion
 }

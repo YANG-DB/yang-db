@@ -121,7 +121,6 @@ public class ValueBuilder extends EntityId {
                         value,
                         new Property("context", "raw", context),
                         new Property("logicalId", "raw", logicalId),
-                        new Property("entityId", "raw", entityId),
                         new Property("bdt", "raw", bdt),
                         new Property("fieldId", "raw", fieldId),
                         new Property("refs", "raw", !refs.isEmpty() ? refs : null)

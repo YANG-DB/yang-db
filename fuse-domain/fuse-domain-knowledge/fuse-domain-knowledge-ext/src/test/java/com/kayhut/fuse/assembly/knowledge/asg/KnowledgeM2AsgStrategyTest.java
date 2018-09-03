@@ -96,7 +96,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testLikeWithoutAsterisks() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
@@ -158,7 +158,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testLikeWithoutAsterisksWithQuestionMark() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
@@ -220,7 +220,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testLikeWithAsterisksInMiddle() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
@@ -366,7 +366,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testLikeWithAsterisksAllAround() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
@@ -494,7 +494,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testLikeWithAsterisksInSides() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
@@ -615,7 +615,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testEqual() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
