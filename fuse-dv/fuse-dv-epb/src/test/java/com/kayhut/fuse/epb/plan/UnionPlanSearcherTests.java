@@ -153,23 +153,13 @@ public class UnionPlanSearcherTests {
     @Test
     public void testOneQuantSingleBranch() {
         final BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> searcher = createBottomUpPlanSearcher();
-        PlanWithCost<Plan, Cost> expectedPlan = new PlanWithCost(
-                new Plan(
-                        new Plan(
-                                new EntityOp(new AsgEBase<>(new ETyped(1, "", PERSON.type, 2, 0))),
-                                new EntityFilterOp(ePropGroup(2, EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189)))),
-                                new RelationOp(new AsgEBase<>(new Rel(12, FREEZE.getrType(), R, "", 1, 0)), R),
-                                new EntityOp(new AsgEBase<>(new EUntyped(13, "", 14, 0))),
-                                new EntityFilterOp(ePropGroup(14, EProp.of(14, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189))))
-                        ).getOps()),
-                new DoubleCost(0));
-
         UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,ontologyProvider);
         AsgQuery query = querySingleSomeQuantSingleBranch();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
         Assert.assertNotNull(planWithCost);
-        Assert.assertEquals(expectedPlan.getPlan(), planWithCost.getPlan());
+        Assert.assertEquals("[EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(2))):RelationOp(Asg(Rel(12))):RelationFilterOp(Asg(RelPropGroup(1201))):EntityOp(Asg(EUntyped(13))):EntityFilterOp(Asg(EPropGroup(14)))]",
+                getFull().describe(planWithCost.getPlan().getOps()));
     }
 
     @Test

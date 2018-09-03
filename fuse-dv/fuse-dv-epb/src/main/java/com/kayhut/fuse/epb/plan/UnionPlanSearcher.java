@@ -3,13 +3,10 @@ package com.kayhut.fuse.epb.plan;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.asg.AsgQueryTransformer;
-import com.kayhut.fuse.asg.strategy.AsgStrategy;
-import com.kayhut.fuse.asg.strategy.AsgStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.EPropGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropGroupingAsgStrategy;
 import com.kayhut.fuse.dispatcher.epb.PlanSearcher;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.dispatcher.query.QueryTransformer;
 import com.kayhut.fuse.epb.plan.query.AsgUnionSplitQueryTransformer;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -24,14 +21,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UnionPlanSearcher implements PlanSearcher<Plan, PlanDetailedCost, AsgQuery> {
-    public static final String bottomUpPlanSearcher = "UnionPlanSearcher.@bottomUpPlanSearcher";
+    public static final String planSearcherParameter = "UnionPlanSearcher.@planSearcherParameter";
     private AsgUnionSplitQueryTransformer splitQueryTransformer;
     private PlanSearcher<Plan, PlanDetailedCost, AsgQuery> mainPlanSearcher;
 
     @Inject
-    public UnionPlanSearcher(@Named(bottomUpPlanSearcher) PlanSearcher<Plan, PlanDetailedCost, AsgQuery> mainPlanSearcher,OntologyProvider ontologyProvider ) {
+    public UnionPlanSearcher(@Named(planSearcherParameter) PlanSearcher<Plan, PlanDetailedCost, AsgQuery> mainPlanSearcher, OntologyProvider ontologyProvider ) {
         this.mainPlanSearcher = mainPlanSearcher;
-        final AsgQueryTransformer transformer = new AsgQueryTransformer((AsgStrategyRegistrar) () -> Arrays.asList(new EPropGroupingAsgStrategy(), new RelPropGroupingAsgStrategy()),ontologyProvider );
+        final AsgQueryTransformer transformer = new AsgQueryTransformer(() -> Arrays.asList(new EPropGroupingAsgStrategy(), new RelPropGroupingAsgStrategy()),ontologyProvider );
         this.splitQueryTransformer = new AsgUnionSplitQueryTransformer(transformer);
     }
 
@@ -44,7 +41,7 @@ public class UnionPlanSearcher implements PlanSearcher<Plan, PlanDetailedCost, A
         final List<PlanWithCost<Plan, PlanDetailedCost>> plans = Stream.ofAll(queries).map(q -> mainPlanSearcher.search(q)).toJavaList();
 
         if (plans.size() == 1) {
-            return mainPlanSearcher.search(query);
+            return plans.get(0);
         }
 
         //use UnionOp to collect all resulted plans

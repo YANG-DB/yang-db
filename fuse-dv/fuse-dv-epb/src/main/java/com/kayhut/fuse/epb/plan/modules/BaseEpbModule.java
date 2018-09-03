@@ -47,7 +47,7 @@ public abstract class BaseEpbModule extends ModuleBase {
             @Override
             protected void configure() {
                 this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>() {})
-                        .annotatedWith(named(UnionPlanSearcher.bottomUpPlanSearcher))
+                        .annotatedWith(named(UnionPlanSearcher.planSearcherParameter))
                         .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>() {});
                 this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>() {})
                         .annotatedWith(named(LoggingPlanSearcher.planSearcherParameter))
