@@ -4,9 +4,12 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant2;
+import javaslang.Tuple2;
+import javaslang.collection.Stream;
 
 import javax.management.relation.Relation;
 import java.util.*;
@@ -409,6 +412,43 @@ public class AsgQueryUtil {
         return joiner.toString();
     }
 
+    public static <T extends EBase> AsgEBase<T> deepClone(AsgEBase<T> asgEBase, Predicate<AsgEBase> elementPredicate, Predicate<AsgEBase> bPredicate){
+        AsgEBase.Builder<T> eBaseBuilder = AsgEBase.Builder.get();
+        eBaseBuilder.withEBase(asgEBase.geteBase());
+        Stream.ofAll(asgEBase.getNext()).filter(elementPredicate).map(elm -> deepClone(elm, elementPredicate, bPredicate)).forEach(eBaseBuilder::withNext);
+        Stream.ofAll(asgEBase.getB()).filter(bPredicate).map(elm -> deepClone(elm, elementPredicate, bPredicate)).forEach(elm -> eBaseBuilder.withB(elm));
+        return  eBaseBuilder.build();
+    }
+
+    public static OptionalStrippedQuery stripOptionals(AsgQuery query){
+        List<AsgEBase<OptionalComp>> optionals = AsgQueryUtil.elements(query.getStart(),
+                AsgEBase::getB,
+                AsgEBase::getNext,
+                e -> e.geteBase() instanceof OptionalComp
+                , e -> !(e.geteBase() instanceof OptionalComp),
+                new ArrayList<>());
+
+        AsgEBase<Start> clonedStart = AsgQueryUtil.deepClone(query.getStart(), e -> ! (e.geteBase() instanceof OptionalComp), b -> true);
+        List elements = getAllElements(clonedStart);
+        AsgQuery clonedMainQuery= AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(clonedStart).withName(query.getName()).withOnt(query.getOnt()).withElements(elements).build();
+        OptionalStrippedQuery.Builder builder = OptionalStrippedQuery.Builder.get();
+        builder.withMainQuery(clonedMainQuery);
+        for (AsgEBase<OptionalComp> optionalElement : optionals) {
+            AsgEBase<? extends EBase> clonedOptional = AsgQueryUtil.deepClone(optionalElement.getNext().get(0), e -> true, e -> true);
+            AsgEBase<EBase> optionalParent = AsgQueryUtil.ancestor(optionalElement, EEntityBase.class).get();
+            AsgEBase clonedParent = AsgEBase.Builder.get().withEBase(optionalParent.geteBase()).withNext(clonedOptional).build();
+            AsgEBase<Start> startAsgEBase = AsgEBase.Builder.get().withEBase(new Start(0, clonedParent.geteNum())).withNext(clonedParent).build();
+            AsgQuery optionalQuery = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(query.getOnt()).withName(query.getName()).withStart(startAsgEBase).withElements(getAllElements(startAsgEBase)).build();
+            builder.withOptionalQuery(optionalElement, optionalQuery);
+
+        }
+        return builder.build();
+    }
+
+    private static List getAllElements(AsgEBase<Start> clonedStart) {
+        return AsgQueryUtil.elements(clonedStart, e -> e.getB(), e -> e.getNext(), e -> true, e -> true, Collections.EMPTY_LIST);
+    }
+
     private static List<AsgEBase<? extends EBase>> path(
             AsgEBase<? extends EBase> asgEBase,
             Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> elementProvider,
@@ -447,5 +487,48 @@ public class AsgQueryUtil {
     private static Predicate<AsgEBase> falsePredicate = (asgEBase -> false);
 
     private static Function<AsgEBase, Predicate<AsgEBase>> adjacentDfsPredicate = (asgEBase -> (asgEBase1 -> asgEBase == asgEBase1));
+
+    public static class OptionalStrippedQuery {
+        private AsgQuery mainQuery;
+        private List<Tuple2<AsgEBase<OptionalComp>,AsgQuery>> optionalQueries;
+
+        public AsgQuery getMainQuery() {
+            return mainQuery;
+        }
+
+        public List<Tuple2<AsgEBase<OptionalComp>,AsgQuery>> getOptionalQueries() {
+            return optionalQueries;
+        }
+
+        public OptionalStrippedQuery(AsgQuery mainQuery, List<Tuple2<AsgEBase<OptionalComp>,AsgQuery>> optionalQueries) {
+            this.mainQuery = mainQuery;
+            this.optionalQueries = optionalQueries;
+        }
+
+        public static final class Builder{
+            private AsgQuery mainQuery;
+            private List<Tuple2<AsgEBase<OptionalComp>,AsgQuery>> optionalQueries = new ArrayList<>();
+
+            public static Builder get(){
+                return new Builder();
+            }
+
+            public Builder withMainQuery(AsgQuery mainQuery){
+                this.mainQuery = mainQuery;
+                return this;
+            }
+
+            public Builder withOptionalQuery(AsgEBase<OptionalComp> optionalComp ,AsgQuery optionalQuery){
+                this.optionalQueries.add(new Tuple2<>(optionalComp, optionalQuery));
+                return this;
+            }
+
+            public OptionalStrippedQuery build(){
+                return new OptionalStrippedQuery(mainQuery, optionalQueries);
+            }
+
+
+        }
+    }
     //endregion
 }

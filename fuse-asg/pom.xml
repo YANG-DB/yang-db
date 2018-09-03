@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>fuse</artifactId>
-        <groupId>org.kayhut</groupId>
-        <version>0.3.2</version>
+        <groupId>com.kayhut</groupId>
+        <version>0.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -18,12 +18,12 @@
     <dependencies>
         <!-- runtime -->
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kayhut</groupId>
-            <artifactId>fuse-dispatcher</artifactId>
+            <groupId>com.kayhut</groupId>
+            <artifactId>fuse-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
@@ -37,7 +37,7 @@
 
         <!-- test -->
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
             <type>test-jar</type>
             <scope>test</scope>

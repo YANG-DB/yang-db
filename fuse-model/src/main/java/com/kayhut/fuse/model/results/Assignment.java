@@ -12,6 +12,12 @@ import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Assignment {
+    //region Constructors
+    public Assignment() {
+        this.entities = Collections.emptyList();
+        this.relationships = Collections.emptyList();
+    }
+    //endregion
 
     //region Properties
     public List<Relationship> getRelationships ()
@@ -64,6 +70,11 @@ public class Assignment {
         //endregion
 
         //region Public Methods
+        public Builder withEntities(List<Entity> entities) {
+            entities.forEach(this::withEntity);
+            return this;
+        }
+
         public Builder withEntity(Entity entity) {
             Entity currentEntity = this.entities.get(entity.geteID());
             if (currentEntity != null) {
@@ -80,7 +91,7 @@ public class Assignment {
         }
 
         public Builder withRelationships(List<Relationship> relationships) {
-            this.relationships = relationships;
+            this.relationships.addAll(relationships);
             return this;
         }
 
@@ -96,6 +107,7 @@ public class Assignment {
         //region Fields
         private Map<String, Entity> entities;
         private List<Relationship> relationships;
+
         //endregion
     }
 

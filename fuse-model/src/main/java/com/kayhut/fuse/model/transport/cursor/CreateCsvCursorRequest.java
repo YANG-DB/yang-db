@@ -10,6 +10,8 @@ import java.util.List;
  * Created by roman.margolis on 11/03/2018.
  */
 public class CreateCsvCursorRequest extends CreateCursorRequest {
+    public static final String CursorType = "csv";
+
     //region Constructors
     public CreateCsvCursorRequest() {
         this(null, null);
@@ -19,9 +21,19 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
         this(csvElements, null);
     }
 
+    public CreateCsvCursorRequest(CsvElement[] csvElements, boolean withHeaders) {
+        this(csvElements, null, withHeaders);
+    }
+
     public CreateCsvCursorRequest(CsvElement[] csvElements, CreatePageRequest createPageRequest) {
-        super(createPageRequest);
+        this(csvElements, createPageRequest, false);
+
+    }
+
+    public CreateCsvCursorRequest(CsvElement[] csvElements, CreatePageRequest createPageRequest, boolean withHeaders) {
+        super(CursorType, createPageRequest);
         this.csvElements = csvElements;
+        this.withHeaders = withHeaders;
     }
     //endregion
 
@@ -33,10 +45,16 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
     public void setCsvElements(CsvElement[] csvElements) {
         this.csvElements = csvElements;
     }
+
+    public boolean isWithHeaders() {
+        return withHeaders;
+    }
+
     //endregion
 
     //region Fields
     private CsvElement[] csvElements;
+    private boolean withHeaders;
     //endregion
 
     //region Builder
@@ -54,11 +72,17 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
             return this;
         }
 
+        public Builder withHeaders(){
+            this.withHeaders = true;
+            return this;
+        }
+
         public CreateCsvCursorRequest request(){
-            return new CreateCsvCursorRequest(Stream.ofAll(this.csvElements).toJavaArray(CsvElement.class));
+            return new CreateCsvCursorRequest(Stream.ofAll(this.csvElements).toJavaArray(CsvElement.class), withHeaders);
         }
 
         private List<CsvElement> csvElements;
+        private boolean withHeaders = false;
     }
     //endregion
 

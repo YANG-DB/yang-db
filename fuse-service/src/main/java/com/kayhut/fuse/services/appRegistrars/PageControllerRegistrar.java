@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.appRegistrars;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.logging.Route;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
@@ -34,12 +35,18 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                     Route.of("postPage").write();
 
                     CreatePageRequest createPageRequest = req.body(CreatePageRequest.class);
-                    req.set(CreatePageRequest.class,createPageRequest);
+                    req.set(CreatePageRequest.class, createPageRequest);
                     ContentResponse<PageResourceInfo> entity = createPageRequest.isFetch() ?
                             this.getController(app).createAndFetch(req.param("queryId").value(), req.param("cursorId").value(), createPageRequest) :
                             this.getController(app).create(req.param("queryId").value(), req.param("cursorId").value(), createPageRequest);
                     return Results.with(entity, entity.status());
                 });
+
+        /** view the elastic query with d3 html*/
+        app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/elastic/view")
+                .get(req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
+                        appUrlSupplier.pageStoreUrl(req.param("queryId").value(), req.param("cursorId").value()) + "/" + req.param("pageId").value() + "/elastic"));
+
 
         /** get page info by id */
         app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))

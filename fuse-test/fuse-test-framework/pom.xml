@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>fuse-test</artifactId>
-        <groupId>org.kayhut</groupId>
-        <version>0.3.2</version>
+        <groupId>com.kayhut</groupId>
+        <version>0.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -48,28 +48,6 @@
             <groupId>io.javaslang</groupId>
             <artifactId>javaslang</artifactId>
         </dependency>
-        <!--<dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j</artifactId>
-            <version>${neo4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-kernel</artifactId>
-            <type>test-jar</type>
-            <version>${neo4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-io</artifactId>
-            <type>test-jar</type>
-            <version>${neo4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-shell</artifactId>
-            <version>${neo4j.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -80,19 +58,22 @@
             <artifactId>log4j-api</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- runtime -->
 
         <!-- tests -->
         <dependency>
-            <groupId>org.kayhut</groupId>
+            <groupId>com.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <!-- tests -->
@@ -100,7 +81,6 @@
 
 
     <properties>
-        <neo4j.version>3.1.0</neo4j.version>
         <checkstyle.skip>true</checkstyle.skip>
     </properties>
 

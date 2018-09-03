@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;

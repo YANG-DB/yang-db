@@ -3,24 +3,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.kayhut</groupId>
+    <groupId>com.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>0.3.2</version>
+    <version>0.4</version>
 
     <modules>
-        <module>data-gen</module>
         <module>fuse-model</module>
-        <module>fuse-validator</module>
-        <module>fuse-asg</module>
-        <module>fuse-dispatcher</module>
-        <module>fuse-service</module>
-        <module>fuse-axis1</module>
-        <module>fuse-axis2</module>
         <module>fuse-test</module>
-        <module>fuse-datagen</module>
-        <module>fuse-assembly</module>
-        <module>geojson-jackson</module>
+        <module>fuse-asg</module>
+        <module>fuse-core</module>
+        <module>fuse-dv</module>
+        <module>fuse-service</module>
+        <module>fuse-domain</module>
+        <module>fuse-geojson</module>
     </modules>
 
     <properties>
@@ -32,9 +28,14 @@
         <!-- plugins -->
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-        <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
+        <maven-surefire-report-plugin.version>2.22.0</maven-surefire-report-plugin.version>
+        <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
         <maven-checkstyle-plugin.version>2.12.1</maven-checkstyle-plugin.version>
+        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+        <maven-site-plugin.version>3.7.1</maven-site-plugin.version>
+        <snapshot-replace-maven-plugin.version>1.0</snapshot-replace-maven-plugin.version>
 
         <!-- fuse -->
         <fuse.version>${project.version}</fuse.version>
@@ -66,15 +67,14 @@
         <elasticsearch.version>5.3.2</elasticsearch.version>
         <elasticsearch.client.version>5.3.2</elasticsearch.client.version>
 
+        <!-- es-plugins -->
+        <es-plugins.version>1.1</es-plugins.version>
+
         <!-- lucene -->
         <lucene.version>6.4.2</lucene.version>
 
         <!-- vividsolutions -->
         <vividsolutions.version>1.13</vividsolutions.version>
-
-        <!-- neo4j -->
-        <neo4j.version>3.1.0</neo4j.version>
-        <neo4j-java-driver.version>1.1.0</neo4j-java-driver.version>
 
         <!-- tinkerpop -->
         <tinkerpop.version>3.2.5</tinkerpop.version>
@@ -90,6 +90,9 @@
 
         <!-- javaslang -->
         <javaslang.version>2.0.4</javaslang.version>
+
+        <!-- jooq -->
+        <jooq.version>0.9.12</jooq.version>
 
         <!--jooby plugin -->
         <jooby.version>1.1.3</jooby.version>
@@ -124,73 +127,58 @@
         <dependencies>
             <!-- fuse -->
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-model</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>fuse-dispatcher</artifactId>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-asg</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>fuse-neo4j</artifactId>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-dv-epb</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>fuse-epb</artifactId>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-dv-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>fuse-executor</artifactId>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-dv-stat</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>fuse-stat</artifactId>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-dv-gta</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>fuse-gta</artifactId>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-dv-unipop</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>fuse-unipop</artifactId>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-dv-asg</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>fuse-unipop-asg</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-service</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>fuse-validator</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>geojson-jackson</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>dragons-test-framework</artifactId>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-geojson</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <!-- fuse -->
@@ -254,11 +242,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
                 <version>${commons-collections4.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-math3</artifactId>
-                <version>${commons-math3.version}</version>
             </dependency>
             <!-- commons -->
 
@@ -338,7 +321,7 @@
             <dependency>
                 <groupId>com.kayhut</groupId>
                 <artifactId>es-plugins</artifactId>
-                <version>1.1</version>
+                <version>${es-plugins.version}</version>
             </dependency>
 
             <!-- lucene -->
@@ -357,19 +340,6 @@
                 <version>${vividsolutions.version}</version>
             </dependency>
             <!-- vividsolutions -->
-
-            <!-- neo4j -->
-            <dependency>
-                <groupId>org.neo4j</groupId>
-                <artifactId>neo4j</artifactId>
-                <version>${neo4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.neo4j.driver</groupId>
-                <artifactId>neo4j-java-driver</artifactId>
-                <version>${neo4j-java-driver.version}</version>
-            </dependency>
-            <!-- neo4j -->
 
             <!-- tinkerpop -->
             <dependency>
@@ -427,6 +397,14 @@
             </dependency>
             <!-- javaslang -->
 
+            <!-- jooq -->
+            <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jool</artifactId>
+                <version>${jooq.version}</version>
+            </dependency>
+            <!-- jooq -->
+
             <dependency>
                 <groupId>it.unimi.dsi</groupId>
                 <artifactId>fastutil</artifactId>
@@ -482,34 +460,33 @@
             <!-- test -->
             <!-- fuse -->
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-test-framework</artifactId>
                 <version>${fuse.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-model</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>fuse-unipop</artifactId>
+                <groupId>com.kayhut</groupId>
+                <artifactId>fuse-dv-unipop</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-service</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.kayhut</groupId>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-asg</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
@@ -563,7 +540,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-math3</artifactId>
                 <version>${commons-math3.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
@@ -618,10 +594,19 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.0.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>stage-site</id>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>site</goal>
+                            <goal>stage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
-
         </plugins>
         <pluginManagement>
             <plugins>
@@ -654,8 +639,10 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
+                        <forkCount>1</forkCount>
                         <threadCount>1</threadCount>
                         <perCoreThreadCount>false</perCoreThreadCount>
+                        <rerunFailingTestsCount>0</rerunFailingTestsCount>
                         <includes>
                             <include>**/*.java</include>
                         </includes>
@@ -706,6 +693,26 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven-assembly-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${maven-site-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>${maven-surefire-report-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jxr-plugin</artifactId>
+                    <version>${maven-jxr-plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -718,11 +725,24 @@
     <profiles/>
 
     <distributionManagement>
+        <site>
+            <id>fuse-site</id>
+            <name>fuse-site</name>
+            <url>file://target/site</url>
+        </site>
         <repository>
-            <id>nexuss.westeurope.cloudapp.azure.com-snapshots</id>
-            <name>nexuss.westeurope.cloudapp.azure.com-snapshots</name>
-            <url>https://nexuss.westeurope.cloudapp.azure.com:8443/repository/maven-snapshots/</url>
+            <id>fuse-releases</id>
+            <name>fuse-releases</name>
+            <url>http://ec2-52-210-247-209.eu-west-1.compute.amazonaws.com:8081/repository/fuse/</url>
         </repository>
     </distributionManagement>
 
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

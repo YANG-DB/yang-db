@@ -1,0 +1,14 @@
+{
+  "default":10,
+  "originatedIn":{
+      "default":2,
+      "Dragon":{
+        "out":1,
+        "in":0
+      },
+      "Kingdom":{
+        "in":50,
+        "out":0
+      }
+    }
+}

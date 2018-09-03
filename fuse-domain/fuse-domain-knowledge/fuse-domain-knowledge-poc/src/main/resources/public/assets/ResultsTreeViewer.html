@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <meta charset="utf-8">
+
+    <title>Results Visualizer</title>
+
+    <style>
+
+        .node {
+            cursor: pointer;
+        }
+
+        .node .selection rect {
+            stroke: #e6550d;
+        }
+
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 3px;
+        }
+
+        .node rect {
+            fill: #fff;
+            stroke: #79b42f;
+            stroke-width: 5px;
+        }
+
+        .node text {
+            font: 12px sans-serif;
+        }
+
+        div.tooltip {
+            position: absolute;
+            text-align: left;
+            height: 30px;
+            padding: 2px;
+            font: 12px sans-serif;
+            background: #fff;
+            border: 1px solid #6D6D6D;
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 2px;
+        }
+
+
+    </style>
+
+</head>
+<body>
+<div style="margin-left:30px;">
+    <input type="text" class="inputUrl" size="35"/>
+    <button class="btnGetData">Get Data</button>
+</div>
+
+<div id="body"></div>
+
+
+<script type='text/javascript' src="lib/d3.v3.js"></script>
+<script type='text/javascript' src="lib/d3.tip.v0.6.3.js"></script>
+<script type='text/javascript' src="lib/jquery-1.10.2.min.js"></script>
+<script type='text/javascript' src="lib/jquery-ui.min.js"></script>
+
+<script>
+    let searchParams = new URLSearchParams(window.location.search);
+
+    if (searchParams.has('q')) {
+        let query = searchParams.get('q');
+        $('.btnGetData').value = query;
+        run(`${window.location.origin}/${query}`)
+    } else {
+        $('.btnGetData').click(function () {
+            run($('.inputUrl').val());
+        })
+    }
+
+    function run(root) {
+        d3.json(root, function (error, dataset) {
+            if (error) throw error;
+
+            var w = 2000;
+            var h = 1600;
+            var linkDistance = 50;
+
+            var colors = d3.scale.category10();
+            var dataEdges = [];
+            var dataNodes = [];
+            var svg = d3.select("body").append("svg").attr({"width": w, "height": h});
+            dataset.data.nodes
+                .filter(v => v.attributes[v.attributes.findIndex(item => item.hasOwnProperty("type"))].type === "entity")
+                .map(v => {
+                    v.name = v.attributes[v.attributes.findIndex(item => item.hasOwnProperty("label"))].label;
+                    v.type = v.attributes[v.attributes.findIndex(item => item.hasOwnProperty("type"))].type;
+                    v.label = v.name;
+                    v.value = "";
+                    dataNodes.push(v);
+                    let values = JSON.parse(v.attributes[v.attributes.findIndex(item => item.hasOwnProperty("values"))].values);
+                    values.forEach(item => {
+                        dataNodes.push({
+                            id: v.id + "." + Object.keys(item)[0] + "." + Object.values(item)[0],
+                            type: "e.value",
+                            label: Object.keys(item)[0],
+                            name: Object.values(item)[0],
+                            value: Object.values(item)[0],
+                        });
+                        dataEdges.push({
+                            from: v.id,
+                            to: v.id + "." + Object.keys(item)[0] + "." + Object.values(item)[0],
+                            source: dataNodes.findIndex(node => node.id === v.id),
+                            target: dataNodes.findIndex(node => node.id === v.id + "." + Object.keys(item)[0] + "." + Object.values(item)[0])
+                        })
+                    });
+                    return v;
+                });
+            //mark start node
+            if(dataset.data.edges.length > 0 ) {
+                dataEdges.push(dataset.data.edges.map(v => {
+                    v.from = v.source;
+                    v.source = dataNodes.findIndex(node => node.id === v.source);
+                    v.to = v.target;
+                    v.target = dataNodes.findIndex(node => node.id === v.target);
+                    return v;
+                }));
+            }
+
+            dataEdges = dataEdges.filter(item => {
+                return item.source !== -1 && item.target !== -1 ;
+            });
+            let entities = dataNodes.filter(dn=>dn.type==="entity");
+            let maxRank = Math.max(...entities.map(e=>e.attributes[e.attributes.findIndex(item => item.hasOwnProperty("PageRank"))].PageRank));
+            let minRank = Math.min(...entities.map(e=>e.attributes[e.attributes.findIndex(item => item.hasOwnProperty("PageRank"))].PageRank));
+            let factor = (maxRank-minRank)/minRank;
+            //Set up tooltip
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function (d) {
+                    return `${d.label}:${d.value}-[${d.id}]`;
+                });
+            svg.call(tip);
+
+            //setup force layout
+            var force = d3.layout.force()
+                .nodes(dataNodes)
+                .links(dataEdges)
+                .size([w, h])
+                .linkDistance([linkDistance])
+                .charge([-200])
+                .theta(0.1)
+                .gravity(0.10)
+                .start();
+
+// action to take on mouse click
+            function click() {
+                d3.select(this).select("text").transition()
+                    .duration(750)
+                    .attr("x", 22)
+                    .style("fill", "steelblue")
+                    .style("stroke", "lightsteelblue")
+                    .style("stroke-width", ".5px")
+                    .style("font", "20px sans-serif");
+                d3.select(this).select("circle").transition()
+                    .duration(750)
+                    .attr("r", 16)
+                    .style("fill", "lightsteelblue");
+            }
+
+// action to take on mouse double click
+            function dblclick() {
+                d3.select(this).select("circle").transition()
+                    .duration(750)
+                    .attr("r", 6)
+                    .style("fill", "#ccc");
+                d3.select(this).select("text").transition()
+                    .duration(750)
+                    .attr("x", 12)
+                    .style("stroke", "none")
+                    .style("fill", "black")
+                    .style("stroke", "none")
+                    .style("font", "10px sans-serif");
+            }
+
+            var node_drag = d3.behavior.drag()
+                .on("dragstart", dragstart)
+                .on("drag", dragmove)
+                .on("dragend", dragend);
+
+            function dragstart(d, i) {
+                force.stop() // stops the force auto positioning before you start dragging
+            }
+
+            function dragmove(d, i) {
+                d.px += d3.event.dx;
+                d.py += d3.event.dy;
+                d.x += d3.event.dx;
+                d.y += d3.event.dy;
+            }
+
+            function dragend(d, i) {
+                d.fixed = true; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
+                force.resume();
+            }
+
+            function releasenode(d) {
+                d.fixed = false; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
+                //force.resume();
+            }
+
+            var edges = svg.selectAll("line")
+                .data(dataEdges)
+                .enter()
+                .append("line")
+                .attr("id", function (d, i) {
+                    return 'edge' + i
+                })
+                .attr('marker-end', 'url(#arrowhead)')
+                .style("stroke", "#ccc")
+                .style("pointer-events", "none");
+
+            var nodes = svg.selectAll("circle")
+                .data(dataNodes)
+                .enter()
+                .append("circle")
+                .attr("r", function (d) {
+                    switch (d.type) {
+                        case 'entity':
+                            let rank = d.attributes[d.attributes.findIndex(item => item.hasOwnProperty("PageRank"))].PageRank;
+                            return 12 + (rank-minRank)/(maxRank-minRank)*20;
+                        case 'v.value':
+                            return 6;
+                        case 'e.insight':
+                            return 12;
+                        case 'e.reference':
+                            return 12;
+                        default:
+                            return 10;
+                    }
+                })
+                .style("fill", function (d, i) {
+                    return colors(i);
+                })
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide)
+                .on("click", click)
+                .on("dblclick", dblclick)
+                .call(node_drag);
+
+            var nodelabels = svg.selectAll(".nodelabel")
+                .data(dataNodes)
+                .enter()
+                .append("text")
+                .attr({
+                    "x": function (d) {
+                        return d.x;
+                    },
+                    "y": function (d) {
+                        return d.y;
+                    },
+                    "class": "nodelabel",
+                    "stroke": "black"
+                })
+                .text(function (d) {
+                    return `${d.label}:${d.value}`.length > 10 ? `${d.label}:${d.value}`.substr(0,9)+'...' : `${d.label}:${d.value}`  ;
+                });
+
+            var edgepaths = svg.selectAll(".edgepath")
+                .data(dataEdges)
+                .enter()
+                .append('path')
+                .attr({
+                    'd': function (d) {
+                        return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y
+                    },
+                    'class': 'edgepath',
+                    'fill-opacity': 0,
+                    'stroke-opacity': 0,
+                    'fill': 'blue',
+                    'stroke': 'red',
+                    'id': function (d, i) {
+                        return 'edgepath' + i
+                    }
+                })
+                .style("pointer-events", "none");
+
+            var edgelabels = svg.selectAll(".edgelabel")
+                .data(dataEdges)
+                .enter()
+                .append('text')
+                .style("pointer-events", "none")
+                .attr({
+                    'class': 'edgelabel',
+                    'id': function (d, i) {
+                        return 'edgelabel' + i
+                    },
+                    'dx': 80,
+                    'dy': 0,
+                    'font-size': 6,
+                    'fill': '#61aa67'
+                });
+
+            edgelabels.append('textPath')
+                .attr('xlink:href', function (d, i) {
+                    return '#edgepath' + i
+                })
+                .style("pointer-events", "none")
+                .text(function (d, i) {
+                    return d.source;
+                });
+
+
+// build the arrow.
+            svg.append("svg:defs").selectAll("marker")
+                .data(["end"])      // Different link/path types can be defined here
+                .enter().append("svg:marker")    // This section adds in the arrows
+                .attr("id", String)
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 15)
+                .attr("refY", -1.5)
+                .attr("markerWidth", 6)
+                .attr("markerHeight", 6)
+                .attr("orient", "auto")
+                .append("svg:path")
+                .attr("d", "M0,-5L10,0L0,5");
+
+            force.on("tick", function () {
+
+                edges.attr({
+                    "x1": function (d) {
+                        return d.source.x;
+                    },
+                    "y1": function (d) {
+                        return d.source.y;
+                    },
+                    "x2": function (d) {
+                        return d.target.x;
+                    },
+                    "y2": function (d) {
+                        return d.target.y;
+                    }
+                });
+
+                nodes.attr({
+                    "cx": function (d) {
+                        return d.x;
+                    },
+                    "cy": function (d) {
+                        return d.y;
+                    }
+                });
+
+                nodelabels.attr("x", function (d) {
+                    return d.x;
+                })
+                    .attr("y", function (d) {
+                        return d.y;
+                    });
+
+                edgepaths.attr('d', function (d) {
+                    var dx = d.target.x - d.source.x,
+                        dy = d.target.y - d.source.y,
+                        dr = Math.sqrt(dx * dx + dy * dy);
+                    return "M" +
+                        d.source.x + "," +
+                        d.source.y + "A" +
+                        dr + "," + dr + " 0 0,1 " +
+                        d.target.x + "," +
+                        d.target.y;
+                });
+
+                edgelabels.attr('transform', function (d, i) {
+                    if (d.target.x < d.source.x) {
+                        bbox = this.getBBox();
+                        rx = bbox.x + bbox.width / 2;
+                        ry = bbox.y + bbox.height / 2;
+                        return 'rotate(180 ' + rx + ' ' + ry + ')';
+                    }
+                    else {
+                        return 'rotate(0)';
+                    }
+                });
+            });
+        });
+    }
+
+</script>

@@ -2,6 +2,11 @@ package com.kayhut.fuse.model.results;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import javaslang.collection.Stream;
+
+import java.util.Collection;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Created by benishue on 21-Feb-17.
@@ -64,4 +69,7 @@ public class Property {
     private Object value;
     //endregion
 
+    public static Optional<Property> findAny(Collection<Property> properties, Predicate<Property> predicate) {
+        return Stream.ofAll(properties).filter(predicate).toJavaOptional();
+    }
 }

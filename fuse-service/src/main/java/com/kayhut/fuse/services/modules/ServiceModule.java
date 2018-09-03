@@ -1,11 +1,17 @@
 package com.kayhut.fuse.services.modules;
 
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
+import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
+import com.kayhut.fuse.dispatcher.cursor.CreateCursorRequestDeserializer;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
+import com.kayhut.fuse.model.Range;
 import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.JacksonQueryDescriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
@@ -27,6 +33,9 @@ import org.jooby.scope.RequestScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import java.util.Set;
+
 import static com.google.inject.name.Names.named;
 
 /**
@@ -40,9 +49,7 @@ public class ServiceModule extends ModuleBase {
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
         // bind common components
         long defaultTimeout = config.hasPath("fuse.cursor.timeout") ? config.getLong("fuse.cursor.timeout") : 60*1000*3;
-        binder.bindConstant()
-                .annotatedWith(named(CreateCursorRequest.defaultTimeout))
-                .to(defaultTimeout);
+
         binder.bind(RequestIdSupplier.class)
                 .annotatedWith(named(CachedRequestIdSupplier.RequestIdSupplierParameter))
                 .to(SnowflakeRequestIdSupplier.class)
@@ -76,6 +83,9 @@ public class ServiceModule extends ModuleBase {
 
         //bind request parameters
         binder.bind(PlanTraceOptions.class).in(RequestScoped.class);
+
+        // register PostConfigurer
+        binder.bind(PostConfigurer.class).asEagerSingleton();
     }
     //endregion
 
@@ -247,13 +257,23 @@ public class ServiceModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
-                this.bind(new TypeLiteral<IdGeneratorController<Object>>(){})
-                        .to(new TypeLiteral<StandardIdGeneratorController<Object>>(){})
-                        .in(RequestScoped.class);
 
-                this.expose(new TypeLiteral<IdGeneratorController<Object>>(){});
+                this.bind(new TypeLiteral<IdGeneratorController<Range>>(){})
+                        .to(new TypeLiteral<StandardIdGeneratorController<Range>>(){})
+                        .asEagerSingleton();
+
+                this.expose(new TypeLiteral<IdGeneratorController<Range>>(){});
             }
         });
     }
     //endregion
+
+    private static class PostConfigurer {
+        @Inject
+        public PostConfigurer(ObjectMapper mapper, Set<CompositeCursorFactory.Binding> cursorBindings) {
+            SimpleModule module = new SimpleModule();
+            module.addDeserializer(CreateCursorRequest.class, new CreateCursorRequestDeserializer(cursorBindings));
+            mapper.registerModules(module);
+        }
+    }
 }

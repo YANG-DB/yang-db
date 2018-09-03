@@ -61,13 +61,15 @@ public class ConstraintIterableTransformationAsgStrategy extends ConstraintTrans
         if (eBase instanceof RelProp) {
             RelProp relProp = (RelProp) eBase;
             Optional<Property> property = context.getOntologyAccessor().$property(relProp.getpType());
-            Object expr = relProp.getCon().getExpr();
-            if (expr != null) {
-                ConstraintOp op = relProp.getCon().getOp();
-                if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {
-                    List<Object> newList = transformToNewList(property.get(), expr);
-                    Constraint newCon = new Constraint(relProp.getCon().getOp(), newList);
-                    relProp.setCon(newCon);
+            if(relProp.getCon() != null) {
+                Object expr = relProp.getCon().getExpr();
+                if (expr != null) {
+                    ConstraintOp op = relProp.getCon().getOp();
+                    if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {
+                        List<Object> newList = transformToNewList(property.get(), expr);
+                        Constraint newCon = new Constraint(relProp.getCon().getOp(), newList);
+                        relProp.setCon(newCon);
+                    }
                 }
             }
         }

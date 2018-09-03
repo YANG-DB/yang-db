@@ -1,0 +1,50 @@
+{
+  "ont": "Dragons",
+  "name": "Q1",
+  "elements": [
+    {
+      "type": "Start",
+      "eNum": 0,
+      "next": 1
+    },
+    {
+      "type": "EConcrete",
+      "eNum": 1,
+      "eTag": "A",
+      "next": 2,
+      "reportProps": [
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "height",
+        "name"
+      ],
+      "eType": "Person",
+      "eID": "12345678",
+      "eName": "Brandon Stark"
+    },
+    {
+      "type": "Rel",
+      "eNum": 2,
+      "rType": "own",
+      "dir": "R",
+      "wrapper": null,
+      "next": 3
+    },
+    {
+      "type": "ETyped",
+      "eNum": 3,
+      "eTag": "B",
+      "reportProps": [
+        "name",
+        "birthDate",
+        "power",
+        "gender",
+        "color"
+      ],
+      "eType": "Dragon"
+    }
+  ]
+}

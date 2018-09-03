@@ -189,6 +189,69 @@ public class ConstraintIterableTransformationAsgStrategyTest {
         final EPropGroup eBase = (EPropGroup) AsgQueryUtil.element(asgQuery, 3).get().geteBase();
         Assert.assertEquals("()*\\?[&&]]|$%~!{}\\\\",eBase.getProps().get(0).getCon().getExpr());
     }
+
+    @Test
+    public void asgConstraintTransformationLikeLowecaseTest() throws Exception {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "Hello World"))))
+                .build();
+
+        //Setting The EProp expression as a date represented by Long value
+
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
+        ConstraintExpLowercaseTransformationAsgStrategy constraintIterableTransformationAsgStrategy
+                = new ConstraintExpLowercaseTransformationAsgStrategy(Arrays.asList("firstName","lastName","name"));
+
+        //Applying the Strategy on the Eprop with the Epoch time
+        constraintIterableTransformationAsgStrategy.apply(asgQuery, asgStrategyContext);
+        final EPropGroup eBase = (EPropGroup) AsgQueryUtil.element(asgQuery, 3).get().geteBase();
+        Assert.assertEquals("hello world",eBase.getProps().get(0).getCon().getExpr());
+    }
+
+    @Test
+    public void asgConstraintTransformationLikeAnyLowecaseTest() throws Exception {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, Arrays.asList("Hello","World")))))
+                .build();
+
+        //Setting The EProp expression as a date represented by Long value
+
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
+        ConstraintExpLowercaseTransformationAsgStrategy constraintIterableTransformationAsgStrategy
+                = new ConstraintExpLowercaseTransformationAsgStrategy(Arrays.asList("firstName","lastName","name"));
+
+        //Applying the Strategy on the Eprop with the Epoch time
+        constraintIterableTransformationAsgStrategy.apply(asgQuery, asgStrategyContext);
+        final EPropGroup eBase = (EPropGroup) AsgQueryUtil.element(asgQuery, 3).get().geteBase();
+        Assert.assertTrue(((List) eBase.getProps().get(0).getCon().getExpr()).contains("hello"));
+        Assert.assertTrue(((List) eBase.getProps().get(0).getCon().getExpr()).contains("world"));
+    }
+
+    @Test
+    public void asgConstraintTransformationNoChangeToLowecaseTest() throws Exception {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.likeAny, Arrays.asList("Hello","World")))))
+                .build();
+
+        //Setting The EProp expression as a date represented by Long value
+
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
+        ConstraintExpLowercaseTransformationAsgStrategy constraintIterableTransformationAsgStrategy
+                = new ConstraintExpLowercaseTransformationAsgStrategy(Arrays.asList("firstName","lastName"));
+
+        //Applying the Strategy on the Eprop with the Epoch time
+        constraintIterableTransformationAsgStrategy.apply(asgQuery, asgStrategyContext);
+        final EPropGroup eBase = (EPropGroup) AsgQueryUtil.element(asgQuery, 3).get().geteBase();
+        Assert.assertTrue(((List) eBase.getProps().get(0).getCon().getExpr()).contains("Hello"));
+        Assert.assertTrue(((List) eBase.getProps().get(0).getCon().getExpr()).contains("World"));
+    }
+
     @Test
     public void asgConstraintTransformationCharEscapeNestedTest() throws Exception {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
