@@ -11,10 +11,8 @@ import com.kayhut.fuse.model.query.entity.Typed;
 import com.kayhut.fuse.model.validation.ValidationResult;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.elements;
 import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.nextDescendants;
 import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 
@@ -42,7 +40,7 @@ public class AsgOntologyEntityValidatorStrategy implements AsgValidatorStrategy 
         if(errors.isEmpty())
             return OK;
 
-        return new ValidationResult(false,errors.toArray(new String[errors.size()]));
+        return new ValidationResult(false, this.getClass().getSimpleName(),errors.toArray(new String[errors.size()]));
     }
     //endregion
 }

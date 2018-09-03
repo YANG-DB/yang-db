@@ -41,13 +41,13 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
                     context.getElementType().equals(ElementType.vertex) ?
                             Stream.ofAll(labels)
                                     .flatMap(label -> context.getSchemaProvider().getVertexSchemas(label))
-                                    .map(GraphElementSchema::getConstraint)
+                                    .map(p->p.getConstraint())
                                     .toJavaList() :
                             Stream.ofAll(context.getSchemaProvider().getEdgeSchemas(
                                     Stream.ofAll(context.getBulkVertices()).get(0).label(),
                                     context.getDirection(),
                                     Stream.ofAll(new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor())).get(0)))
-                                    .map(GraphElementSchema::getConstraint)
+                                    .map(p->p.getConstraint())
                                     .toJavaList();
 
         if (!elementConstraints.isEmpty()) {

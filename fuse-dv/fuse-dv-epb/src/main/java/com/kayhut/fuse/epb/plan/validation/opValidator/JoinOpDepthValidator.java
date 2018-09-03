@@ -28,7 +28,7 @@ public class JoinOpDepthValidator implements ChainedPlanValidator.PlanOpValidato
     public ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         if(compositePlanOp.getOps().get(opIndex) instanceof EntityJoinOp){
             if(maxDepth <= 0){
-                return new ValidationResult(false, "Too many nested joins , " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
+                return new ValidationResult(false,this.getClass().getSimpleName(), "Too many nested joins , " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
             }
         }
         return ValidationResult.OK;

@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.UnionOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
@@ -196,6 +197,13 @@ public class PlanUtil {
                 if(compositeOpPredicate.test(entityJoinOp)){
                     flattenedPlanOps.addAll(index, entityJoinOp.getRightBranch().getOps());
                     flattenedPlanOps.addAll(index, entityJoinOp.getLeftBranch().getOps());
+                }
+            } else if(UnionOp.class.isAssignableFrom(planOp.getClass())){
+                UnionOp unionOp = (UnionOp) planOp;
+                flattenedPlanOps.remove(index);
+                if(compositeOpPredicate.test(unionOp)){
+                    int finalIndex = index;
+                    unionOp.getPlans().forEach(p->flattenedPlanOps.addAll(finalIndex, p.getOps()));
                 }
             }else{
                 index++;

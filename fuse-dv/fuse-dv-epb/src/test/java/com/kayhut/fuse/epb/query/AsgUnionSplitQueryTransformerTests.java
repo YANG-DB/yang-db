@@ -2,19 +2,11 @@ package com.kayhut.fuse.epb.query;
 
 import com.kayhut.fuse.epb.plan.query.AsgUnionSplitQueryTransformer;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import javaslang.collection.Stream;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.quant1;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.start;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static com.kayhut.fuse.model.query.quant.QuantType.some;
 
@@ -26,7 +18,7 @@ public class AsgUnionSplitQueryTransformerTests {
     public void test_1_some_quant_with_1_element() {
         AsgQuery query = start("q1", "ont").next(typed(1, "1")).next(quant1(2, some)).in(typed(3, "1")).build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -39,7 +31,7 @@ public class AsgUnionSplitQueryTransformerTests {
     public void test_1_some_quant_with_2_elements() {
         AsgQuery query = start("q1", "ont").next(typed(1, "1")).next(quant1(2, some)).in(typed(3, "1"), typed(4, "1")).build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -53,7 +45,7 @@ public class AsgUnionSplitQueryTransformerTests {
     public void test_1_some_quant_with_3_elements() {
         AsgQuery query = start("q1", "ont").next(typed(1, "1")).next(quant1(2, some)).in(typed(3, "1"), typed(4, "1"), typed(5, "1")).build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -71,7 +63,7 @@ public class AsgUnionSplitQueryTransformerTests {
                         quant1(5, some).next(typed(6, "1")))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -82,12 +74,19 @@ public class AsgUnionSplitQueryTransformerTests {
 
     @Test
     public void test_2_some_quants_with_2_elements() {
-        AsgQuery query = start("q1", "ont").next(typed(1, "1")).next(quant1(2, all))
-                .in(quant1(3, some).next(typed(4, "1")).next(typed(5, "1")),
-                        quant1(6, some).next(typed(7, "1")).next(typed(8, "1")))
+        AsgQuery query = start("q1", "ont")
+                .next(typed(1, "1"))
+                .next(quant1(2, all))
+                .in(
+                        quant1(3, some)
+                                .next(typed(4, "1"))
+                                .next(typed(5, "1")),
+                        quant1(6, some)
+                                .next(typed(7, "1"))
+                                .next(typed(8, "1")))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -101,12 +100,13 @@ public class AsgUnionSplitQueryTransformerTests {
 
     @Test
     public void test_2_some_quants_with_1_and_2_elements() {
-        AsgQuery query = start("q1", "ont").next(typed(1, "1")).next(quant1(2, all))
+        AsgQuery query = start("q1", "ont")
+                .next(typed(1, "1")).next(quant1(2, all))
                 .in(quant1(3, some).next(typed(4, "1")),
                         quant1(6, some).next(typed(7, "1")).next(typed(8, "1")))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -118,12 +118,19 @@ public class AsgUnionSplitQueryTransformerTests {
 
     @Test
     public void test_2_some_quants_with_2_and_3_elements() {
-        AsgQuery query = start("q1", "ont").next(typed(1, "1")).next(quant1(2, all))
-                .in(quant1(3, some).next(typed(4, "1")).next(typed(5, "1")),
-                        quant1(6, some).next(typed(7, "1")).next(typed(8, "1")).next(typed(9, "1")))
+        AsgQuery query = start("q1", "ont")
+                .next(typed(1, "1"))
+                .next(quant1(2, all))
+                    .in(quant1(3, some)
+                                    .next(typed(4, "1"))
+                                    .next(typed(5, "1")),
+                        quant1(6, some)
+                                .next(typed(7, "1"))
+                                .next(typed(8, "1"))
+                                .next(typed(9, "1")))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -144,7 +151,7 @@ public class AsgUnionSplitQueryTransformerTests {
                         quant1(7, some).next(typed(8, "1")).next(typed(9, "1")).next(typed(10, "1")))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -167,7 +174,7 @@ public class AsgUnionSplitQueryTransformerTests {
                 .next(quant1(2, some)).next(typed(3, "1")).next(quant1(4, some)).next(typed(5, "1"))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -184,7 +191,7 @@ public class AsgUnionSplitQueryTransformerTests {
                         typed(7, "1").next(quant1(8, some).next(typed(9, "1")).next(typed(10, "1"))))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -204,7 +211,7 @@ public class AsgUnionSplitQueryTransformerTests {
                         typed(7, "1").next(quant1(8, some).next(typed(9, "1")).next(typed(10, "1"))))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -223,7 +230,7 @@ public class AsgUnionSplitQueryTransformerTests {
                         typed(8, "1").next(quant1(9, some).next(typed(10, "1")).next(typed(11, "1")).next(typed(12, "1"))))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -245,7 +252,7 @@ public class AsgUnionSplitQueryTransformerTests {
                         typed(8, "1").next(quant1(9, some).next(typed(10, "1")).next(typed(11, "1")).next(typed(12, "1"))))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -266,7 +273,7 @@ public class AsgUnionSplitQueryTransformerTests {
                         typed(8, "1").next(quant1(9, some).next(typed(10, "1")).next(typed(11, "1")).next(typed(12, "1"))))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(
@@ -288,7 +295,7 @@ public class AsgUnionSplitQueryTransformerTests {
                                 .next(typed(12, "1")))
                 .build();
 
-        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer().transform(query)).toJavaSet();
+        Iterable<AsgQuery> queries = Stream.ofAll(new AsgUnionSplitQueryTransformer(q -> q).transform(query)).toJavaSet();
 
         Assert.assertEquals(
                 Stream.of(

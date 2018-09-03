@@ -23,6 +23,7 @@ public class RelPropGroupingAsgStrategy implements AsgStrategy {
     public void apply(AsgQuery query, AsgStrategyContext context) {
         Stream.ofAll(AsgQueryUtil.elements(query, Rel.class))
                 .filter(asgEBase -> !AsgQueryUtil.bDescendant(asgEBase, HQuant.class).isPresent())
+                .filter(asgEBase -> !AsgQueryUtil.bAdjacentDescendant(asgEBase, RelPropGroup.class).isPresent())
                 .forEach(this::groupRelProps);
     }
     //endregion

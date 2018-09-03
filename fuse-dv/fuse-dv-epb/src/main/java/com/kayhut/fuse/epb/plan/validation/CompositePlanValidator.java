@@ -44,7 +44,7 @@ public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q> {
             return ValidationResult.OK;
         }
 
-        return new ValidationResult(false,"Not all valid");
+        return new ValidationResult(false,this.getClass().getSimpleName(),"Not all valid");
     }
     //endregion
 

@@ -60,7 +60,7 @@ import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.c
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 
-public class QueryDriverTest extends BaseModuleInjectionTest {
+public class StoredQueryDriverTest extends BaseModuleInjectionTest {
     static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     static KnowledgeWriterContext ctx;
     static FileBuilder f1, f2;
@@ -139,7 +139,7 @@ public class QueryDriverTest extends BaseModuleInjectionTest {
                 )).build();
 
         final CreateQueryRequest createQueryRequest = new CreateQueryRequest("q1", "MyQuery", query, new PlanTraceOptions(),
-                new CreateGraphHierarchyCursorRequest(Collections.emptyList(), new CreatePageRequest()));
+                new CreatePathsCursorRequest(new CreatePageRequest()));
 
         final Optional<QueryResourceInfo> info = driver.create(createQueryRequest);
         Assert.assertTrue(info.isPresent());

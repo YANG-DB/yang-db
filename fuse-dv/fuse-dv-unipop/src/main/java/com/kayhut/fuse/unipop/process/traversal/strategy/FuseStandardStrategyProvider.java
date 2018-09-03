@@ -19,6 +19,7 @@ import org.unipop.process.start.UniGraphStartEdgeCountStepStrategy;
 import org.unipop.process.start.UniGraphStartStepStrategy;
 import org.unipop.process.strategy.CompositeStrategy;
 import org.unipop.process.strategyregistrar.StrategyProvider;
+import org.unipop.process.union.UniGraphUnionStepNewStrategy;
 import org.unipop.process.union.UniGraphUnionStepStrategy;
 import org.unipop.process.vertex.UniGraphVertexStepStrategy;
 import org.unipop.process.where.UniGraphWhereStepStrategy;
@@ -40,7 +41,7 @@ public class FuseStandardStrategyProvider implements StrategyProvider {
                         new UniGraphPropertiesStrategy(),
                         new UniGraphCoalesceStepStrategy(),
                         new UniGraphWhereStepStrategy(),
-                        new UniGraphUnionStepStrategy(),
+                        new UniGraphUnionStepNewStrategy(),
                         new UniGraphRepeatStepStrategy(),
                         new UniGraphOrderStrategy(),
                         new UniGraphOptionalStepStrategy()).toJavaList()

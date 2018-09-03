@@ -201,6 +201,23 @@ public class AsgQueryUtil {
         return bDescendants(asgEBase, enumPredicateFunction.apply(eNum), truePredicate);
     }
 
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> bAdjacentDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
+        return element(
+                asgEBase,
+                AsgEBase::getB,
+                asgEbase1 -> Collections.emptyList(),
+                asgEBase1 -> predicate.test(asgEBase1) && notThisPredicateFunction.apply(asgEBase).test(asgEBase1),
+                adjacentDfsPredicate.apply(asgEBase));
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> bAdjacentDescendant(AsgEBase<T> asgEBase, Class<?> klass) {
+        return bAdjacentDescendant(asgEBase, classPredicateFunction.apply(klass));
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> bAdjacentDescendant(AsgEBase<T> asgEBase, int eNum) {
+        return bAdjacentDescendant(asgEBase, enumPredicateFunction.apply(eNum));
+    }
+
     public static <T extends EBase, S extends EBase> List<AsgEBase<S>> bAdjacentDescendants(AsgEBase<T> asgEBase, Predicate<AsgEBase> elementPredicates) {
         return bDescendants(asgEBase, elementPredicates, adjacentDfsPredicate.apply(asgEBase));
     }

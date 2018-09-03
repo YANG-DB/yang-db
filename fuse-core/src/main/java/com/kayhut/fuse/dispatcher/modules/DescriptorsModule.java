@@ -14,6 +14,7 @@ import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.UnionOp;
 import com.kayhut.fuse.model.execution.plan.composite.descriptors.*;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
@@ -68,6 +69,7 @@ public class DescriptorsModule extends ModuleBase {
         Map<Class<?>, Descriptor<? extends PlanOp>> descriptors = new HashMap<>();
         descriptors.put(CompositePlanOp.class, new CompositePlanOpDescriptor(iterablePlanOpDescriptor));
         descriptors.put(EntityJoinOp.class, new EntityJoinOpDescriptor(iterablePlanOpDescriptor));
+        descriptors.put(UnionOp.class, new UnionOpDescriptor(iterablePlanOpDescriptor));
         descriptors.put(EntityOp.class, new EntityOpDescriptor());
         descriptors.put(RelationOp.class, new RelationOpDescriptor());
 

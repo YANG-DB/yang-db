@@ -80,7 +80,7 @@ public class StraightPathJoinOpValidator implements ChainedPlanValidator.PlanOpV
         if(planOp instanceof EntityJoinOp){
             EntityJoinOp join = (EntityJoinOp) planOp;
             if(opIndex == 0 && compositePlanOp.getOps().size() == 1 && !isPathAvailable(join, query)){
-                return new ValidationResult(false, "JoinOp path validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
+                return new ValidationResult(false,this.getClass().getSimpleName(), "JoinOp path validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
             }
         }
         return ValidationResult.OK;

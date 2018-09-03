@@ -4,23 +4,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
+import com.kayhut.fuse.test.framework.index.Mappings;
+import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.predicates.SelectP;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.FuseGraphTraversalSource;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.FuseUniGraph;
-import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import com.kayhut.fuse.test.framework.index.Mappings;
-import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversalStrategies;
+import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalExplanation;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.search.SearchType;
@@ -29,22 +31,38 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.*;
 import org.unipop.configuration.UniGraphConfiguration;
-import org.unipop.process.strategyregistrar.StandardStrategyProvider;
+import org.unipop.process.coalesce.UniGraphCoalesceStepStrategy;
+import org.unipop.process.edge.EdgeStepsStrategy;
+import org.unipop.process.optional.UniGraphOptionalStepStrategy;
+import org.unipop.process.order.UniGraphOrderStrategy;
+import org.unipop.process.properties.UniGraphPropertiesStrategy;
+import org.unipop.process.repeat.UniGraphRepeatStepStrategy;
+import org.unipop.process.start.UniGraphStartCountStepStrategy;
+import org.unipop.process.start.UniGraphStartEdgeCountStepStrategy;
+import org.unipop.process.start.UniGraphStartStepStrategy;
+import org.unipop.process.strategy.CompositeStrategy;
+import org.unipop.process.strategyregistrar.StrategyProvider;
+import org.unipop.process.union.UniGraphUnionStepNewStrategy;
+import org.unipop.process.vertex.UniGraphVertexStepStrategy;
+import org.unipop.process.where.UniGraphWhereStepStrategy;
 import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
+import static com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode.getClient;
+import static com.kayhut.fuse.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 import static com.kayhut.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
 import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
-import static com.kayhut.fuse.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 
 /**
  * Created by roman.margolis on 14/09/2017.
  */
 public class DiscreteTraversalTest {
     //region Static Fields
+    public static final boolean EMBEDDED = false;
+    public static final String CLUSTER_NAME = "knowledge";
     public static ElasticEmbeddedNode elasticEmbeddedNode;
     public static ElasticGraphConfiguration elasticGraphConfiguration;
     public static UniGraphConfiguration uniGraphConfiguration;
@@ -52,15 +70,18 @@ public class DiscreteTraversalTest {
     public static GraphElementSchemaProvider schemaProvider;
     public static SearchOrderProviderFactory orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
 
+    private static TransportClient client;
+
     //endregion
 
     //region Setup
     @BeforeClass
     public static void setup() throws Exception {
-        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+        if (EMBEDDED)
+            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
 
         elasticGraphConfiguration = new ElasticGraphConfiguration();
-        elasticGraphConfiguration.setClusterName("fuse.test_elastic");
+        elasticGraphConfiguration.setClusterName(CLUSTER_NAME);
         elasticGraphConfiguration.setElasticGraphScrollSize(1000);
         elasticGraphConfiguration.setElasticGraphMaxSearchSize(1000);
         elasticGraphConfiguration.setElasticGraphDefaultSearchSize(1000);
@@ -71,6 +92,7 @@ public class DiscreteTraversalTest {
         uniGraphConfiguration = new UniGraphConfiguration();
         uniGraphConfiguration.setBulkMax(1000);
         uniGraphConfiguration.setBulkStart(1000);
+        client = getClient(CLUSTER_NAME, 9300);
         graph = new FuseUniGraph(
                 uniGraphConfiguration,
                 uniGraph -> new ControllerManager() {
@@ -79,7 +101,7 @@ public class DiscreteTraversalTest {
                         return ImmutableSet.of(
                                 new ElementController(
                                         new DiscreteElementVertexController(
-                                                elasticEmbeddedNode.getClient(),
+                                                client,
                                                 elasticGraphConfiguration,
                                                 uniGraph,
                                                 schemaProvider,
@@ -87,13 +109,13 @@ public class DiscreteTraversalTest {
                                         null
                                 ),
                                 new DiscreteVertexController(
-                                        elasticEmbeddedNode.getClient(),
+                                        client,
                                         elasticGraphConfiguration,
                                         uniGraph,
                                         schemaProvider,
                                         orderProvider),
                                 new DiscreteElementReduceController(
-                                        elasticEmbeddedNode.getClient(),
+                                        client,
                                         elasticGraphConfiguration,
                                         uniGraph,
                                         schemaProvider)
@@ -102,12 +124,9 @@ public class DiscreteTraversalTest {
 
                     @Override
                     public void close() {
-
                     }
-                },
-                new StandardStrategyProvider());
+                }, new NewStandardStrategyProvider());
 
-        TransportClient client = elasticEmbeddedNode.getClient();
         client.admin().indices().preparePutTemplate("all")
                 .setTemplate("*")
                 .setSettings(Settings.builder()
@@ -138,18 +157,18 @@ public class DiscreteTraversalTest {
         new ElasticDataPopulator(client, "fire1", "pge", "id", true, null, false, () -> createFireEventsSingular(0, 5, 10, 3)).populate();
         new ElasticDataPopulator(client, "fire2", "pge", "id", true, null, false, () -> createFireEventsSingular(5, 10, 10, 3)).populate();
 
-        elasticEmbeddedNode.getClient().admin().indices().refresh(
+        client.admin().indices().refresh(
                 new RefreshRequest("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2")).actionGet();
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        elasticEmbeddedNode.getClient().admin().indices().prepareDelete("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2").execute().actionGet();
+//        client.admin().indices().prepareDelete("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2").execute().actionGet();
     }
 
     @Before
     public void before() {
-        g = graph.traversal();
+        g = (FuseGraphTraversalSource) graph.traversal();
     }
     //endregion
 
@@ -262,9 +281,11 @@ public class DiscreteTraversalTest {
 
     @Test
     public void g_V_hasXconstraint_byXhasXage_103XXX_hasXage_select_raw_ageX() throws InterruptedException {
-        List<Vertex> vertices = g.V()
+        final GraphTraversal<Vertex, Vertex> traversal = g.V()
                 .has(CONSTRAINT, Constraint.by(__.has("age", P.eq(103))))
-                .has("age", SelectP.raw("age")).toList();
+                .has("age", SelectP.raw("age"));
+        System.out.println(traversal.explain().prettyPrint());
+        List<Vertex> vertices = traversal.toList();
 
         Assert.assertEquals(1, vertices.size());
         Assert.assertEquals("Dragon", vertices.get(0).label());
@@ -735,11 +756,246 @@ public class DiscreteTraversalTest {
     }
 
     @Test
+    public void g_V_hasXconstraintXhasXandXlabel_DragonX_hasXcolor_redXXXX_inV() {
+        final GraphTraversal<Vertex, Vertex> traversal = g.V().has(CONSTRAINT,
+                Constraint.by(__.and(
+                        __.has(T.label, "Dragon"),
+                        __.has("color", "red"))))
+                .has("color", SelectP.raw("color"));
+        final TraversalExplanation explain = traversal.explain();
+        System.out.println(explain.prettyPrint());
+        List<Vertex> vertices = traversal.toList();
+
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.property("color").value().equals("red")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_Two_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX__hasOutFire__inVX() throws InterruptedException {
+        List<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
+                .outV()
+                .outE("fire")
+                .inV()
+                .toList();
+
+        List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "silver")))
+                .outV()
+                .outE("fire")
+                .inV()
+                .toList();
+
+
+        final GraphTraversal<Vertex, Vertex> unionTraversal = g.union(
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "silver"))).outV().outE("fire").inV(),
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).outV().outE("fire").inV()
+        );
+        System.out.println(unionTraversal.explain().prettyPrint());
+        List<Vertex> unionVertices = unionTraversal.toList();
+
+        List<Vertex> expected = new ArrayList<>();
+        expected.addAll(verticesBranch1);
+        expected.addAll(verticesBranch2);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(45, unionVertices.size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Dragon")));
+    }
+
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_Union_start_Two_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() {
+        final GraphTraversal<Vertex, Vertex> traversal = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .inV();
+
+        List<Vertex> verticesBranch1 = traversal.toList();
+
+        List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
+                .inV()
+                .toList();
+
+        List<Vertex> unionVertices = g.union(
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).inV()
+        ).toList();
+
+        Set<Vertex> expected = new HashSet<>();
+        expected.addAll(verticesBranch1);
+        expected.addAll(verticesBranch2);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(15, unionVertices.size());
+        Assert.assertEquals(15, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_with_Union_one_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() {
+        final GraphTraversal<Vertex, Vertex> traversal = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .inV();
+
+        List<Vertex> verticesBranch1 = traversal.toList();
+
+
+        List<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).union(
+                __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV()
+        ).toList();
+
+        Set<Vertex> expected = new HashSet<>();
+        expected.addAll(verticesBranch1);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(8, unionVertices.size());
+        Assert.assertEquals(8, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_with_Union_Two_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() {
+        final GraphTraversal<Vertex, Vertex> traversal = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .inV();
+
+        List<Vertex> verticesBranch1 = traversal.toList();
+
+        List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
+                .inV()
+                .toList();
+
+        List<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .union(
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).inV()
+                ).toList();
+
+        Set<Vertex> expected = new HashSet<>();
+        expected.addAll(verticesBranch1);
+        expected.addAll(verticesBranch2);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(15, unionVertices.size());
+        Assert.assertEquals(15, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_start_Union_Three_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() throws InterruptedException {
+        List<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .inV()
+                .toList();
+
+        List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
+                .inV()
+                .toList();
+
+        List<Vertex> verticesBranch3 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "silver")))
+                .inV()
+                .toList();
+
+        List<Vertex> unionVertices = g.union(
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).inV(),
+                g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "silver"))).inV()
+        ).toList();
+
+        List<Vertex> expected = new ArrayList<>();
+        expected.addAll(verticesBranch1);
+        expected.addAll(verticesBranch2);
+        expected.addAll(verticesBranch3);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(23, unionVertices.size());
+        Assert.assertEquals(23, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_with_Union_Three_traversals_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX() throws InterruptedException {
+        List<Vertex> verticesBranch1 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .inV()
+                .toList();
+
+        List<Vertex> verticesBranch2 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "bronze")))
+                .inV()
+                .toList();
+
+        List<Vertex> verticesBranch3 = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "silver")))
+                .inV()
+                .toList();
+
+        List<Vertex> unionVertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .union(
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold"))).inV(),
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).inV(),
+                        __.outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "silver"))).inV()
+                ).toList();
+
+        List<Vertex> expected = new ArrayList<>();
+        expected.addAll(verticesBranch1);
+        expected.addAll(verticesBranch2);
+        expected.addAll(verticesBranch3);
+        Assert.assertEquals(expected.size(), unionVertices.size());
+        Assert.assertTrue(expected.containsAll(unionVertices));
+
+
+        Assert.assertEquals(23, unionVertices.size());
+        Assert.assertEquals(23, Stream.ofAll(unionVertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(unionVertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_XoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX_outVX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin")
+                .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                .outV().toList();
+
+        Assert.assertEquals(8, vertices.size());
+        Assert.assertEquals(8, Stream.ofAll(vertices).map(Element::id).distinct().size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+    }
+
+    @Test
     public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_optionalXoutE_hasCoin_hasXconstraint_byXhasXmaterial_goldXX_outVX() throws InterruptedException {
         List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                 .optional(__.outE("hasCoin")
-                            .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
-                            .outV()).toList();
+                        .has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
+                        .outV()).toList();
 
         Assert.assertEquals(10, vertices.size());
         Assert.assertEquals(10, Stream.ofAll(vertices).map(Element::id).distinct().size());
@@ -806,7 +1062,9 @@ public class DiscreteTraversalTest {
                                         new GraphElementPropertySchema.Impl("faction")
                                 )),
                                 Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)),
-                                Collections.emptyList()),
+                                Arrays.asList(
+                                        new GraphElementPropertySchema.Impl("faction", "string"),
+                                        new GraphElementPropertySchema.Impl("color", "string"))),
                         new GraphVertexSchema.Impl(
                                 "Coin",
                                 new GraphElementConstraint.Impl(__.has(T.label, "Coin")),
@@ -1088,6 +1346,32 @@ public class DiscreteTraversalTest {
     //endregion
 
     //region Fields
-    private GraphTraversalSource g;
+    private FuseGraphTraversalSource g;
     //endregion
+
+    public static class NewStandardStrategyProvider implements StrategyProvider {
+        @Override
+        public TraversalStrategies get() {
+            DefaultTraversalStrategies traversalStrategies = new DefaultTraversalStrategies();
+            traversalStrategies.addStrategies(
+                    new CompositeStrategy(Stream.of(
+                            new UniGraphStartStepStrategy(),
+                            new UniGraphStartCountStepStrategy(),
+                            new UniGraphVertexStepStrategy(),
+                            new UniGraphStartEdgeCountStepStrategy(),
+                            new EdgeStepsStrategy(),
+                            new UniGraphPropertiesStrategy(),
+                            new UniGraphCoalesceStepStrategy(),
+                            new UniGraphWhereStepStrategy(),
+                            new UniGraphUnionStepNewStrategy(),
+                            new UniGraphRepeatStepStrategy(),
+                            new UniGraphOrderStrategy(),
+                            new UniGraphOptionalStepStrategy()).toJavaList()
+                    ));
+            TraversalStrategies.GlobalCache.getStrategies(Graph.class).toList().forEach(traversalStrategies::addStrategies);
+            return traversalStrategies;
+        }
+
+
+    }
 }

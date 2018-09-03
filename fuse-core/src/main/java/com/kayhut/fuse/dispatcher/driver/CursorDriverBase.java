@@ -5,7 +5,10 @@ import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.FuseError;
+import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import javaslang.collection.Stream;
@@ -29,7 +32,8 @@ public abstract class CursorDriverBase implements CursorDriver {
     public Optional<CursorResourceInfo> create(String queryId, CreateCursorRequest cursorRequest) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
         if (!queryResource.isPresent()) {
-            return Optional.empty();
+                return Optional.of(new CursorResourceInfo().error(
+                        new FuseError(Query.class.getSimpleName(), "failed fetching next page for query " + queryId)));
         }
 
         String cursorId = queryResource.get().getNextCursorId();

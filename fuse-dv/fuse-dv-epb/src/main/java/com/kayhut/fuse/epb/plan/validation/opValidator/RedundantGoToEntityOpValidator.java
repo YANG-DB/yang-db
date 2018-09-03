@@ -35,7 +35,7 @@ public class RedundantGoToEntityOpValidator implements ChainedPlanValidator.Plan
         if (planOp instanceof GoToEntityOp) {
             if (!this.entityEnums.contains(((AsgEBaseContainer)planOp).getAsgEbase().geteNum())) {
                 return new ValidationResult(
-                        false,
+                        false,this.getClass().getSimpleName(),
                         "GoTo:Validation failed on:" +   compositePlanOp.toString() + "<" + opIndex + ">");
             }
         }

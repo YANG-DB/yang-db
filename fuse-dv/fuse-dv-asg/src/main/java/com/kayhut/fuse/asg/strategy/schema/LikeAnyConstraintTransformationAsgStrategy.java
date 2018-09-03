@@ -70,7 +70,7 @@ public class LikeAnyConstraintTransformationAsgStrategy implements AsgStrategy ,
         }
 
         for (EProp eProp : new ArrayList<>(ePropGroupAsgEBase.geteBase().getProps())) {
-            if (!eProp.getCon().getOp().equals(ConstraintOp.likeAny)) {
+            if (eProp.getCon()==null || !eProp.getCon().getOp().equals(ConstraintOp.likeAny)) {
                 continue;
             }
 

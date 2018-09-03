@@ -32,6 +32,11 @@ public class Plan extends CompositePlanOp implements IPlan {
                 .compareTo(IterablePlanOpDescriptor.getSimple().describe(plan.getOps())) == 0;
     }
 
+    public static boolean equals(Plan plan, Plan newPlan,IterablePlanOpDescriptor descriptor) {
+        return descriptor.describe(newPlan.getOps())
+                .compareTo(descriptor.describe(plan.getOps())) == 0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

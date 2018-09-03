@@ -54,7 +54,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
         if (errors.isEmpty())
             return OK;
 
-        return new ValidationResult(false, errors.toArray(new String[errors.size()]));
+        return new ValidationResult(false, this.getClass().getSimpleName(), errors.toArray(new String[errors.size()]));
     }
     //endregion
 

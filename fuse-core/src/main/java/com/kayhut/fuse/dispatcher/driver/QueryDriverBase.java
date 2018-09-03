@@ -79,7 +79,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                 final String priorPageId = resourceStore.getCursorResource(queryId, cursorID).get().getPriorPageId();
                 pageDriver.delete(queryId, cursorID, priorPageId);
             }
-            return pageDriver.getData(queryId,cursorID,pageResourceInfo.getResourceId());
+            return pageDriver.getData(queryId, cursorID, pageResourceInfo.getResourceId());
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(),
@@ -103,7 +103,7 @@ public abstract class QueryDriverBase implements QueryDriver {
             if (!validationResult.valid()) {
                 return Optional.of(new QueryResourceInfo().error(
                         new FuseError(Query.class.getSimpleName(),
-                                Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
+                                validationResult.getValidator() + ":" + Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
             }
 
             this.resourceStore.addQueryResource(createResource(request, query, asgQuery, metadata));
@@ -125,9 +125,13 @@ public abstract class QueryDriverBase implements QueryDriver {
             String queryId = getOrCreateId(request.getId());
             QueryMetadata metadata = new QueryMetadata(request.getType(), queryId, request.getName(), request.isSearchPlan(), System.currentTimeMillis(), request.getTtl());
             Optional<QueryResourceInfo> queryResourceInfo = this.create(request, metadata, request.getQuery());
-            if (!queryResourceInfo.isPresent()) {
+            if (!queryResourceInfo.isPresent() || queryResourceInfo.get().getError() != null) {
+                if (queryResourceInfo.get().getError() != null) {
+                    return Optional.of(new QueryResourceInfo().error(queryResourceInfo.get().getError()));
+                }
                 return Optional.of(new QueryResourceInfo().error(
-                        new FuseError(Query.class.getSimpleName(), "Failed creating query resource from given request: \n" + request.toString())));
+                        new FuseError(Query.class.getSimpleName(), "Failed creating cursor resource from given request: \n" + request.toString())));
+
             }
 
             if (request.getCreateCursorRequest() == null) {
