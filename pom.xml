@@ -35,6 +35,7 @@
         <maven-checkstyle-plugin.version>2.12.1</maven-checkstyle-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-site-plugin.version>3.7.1</maven-site-plugin.version>
+        <maven-pmd-plugin.version>3.10.0</maven-pmd-plugin.version>
         <snapshot-replace-maven-plugin.version>1.0</snapshot-replace-maven-plugin.version>
 
         <!-- fuse -->
@@ -629,6 +630,10 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <executions>
                     <execution>
@@ -729,6 +734,11 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${maven-pmd-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>${maven-assembly-plugin.version}</version>
                 </plugin>
@@ -776,6 +786,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
             </plugin>
         </plugins>
     </reporting>
