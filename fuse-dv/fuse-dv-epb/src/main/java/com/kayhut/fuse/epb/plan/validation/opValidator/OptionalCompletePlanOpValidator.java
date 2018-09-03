@@ -48,7 +48,7 @@ public class OptionalCompletePlanOpValidator implements ChainedPlanValidator.Pla
 
         if (!isOptionalOpComplete((OptionalOp)currentPlanOp, query)) {
             return new ValidationResult(
-                    false,
+                    false,this.getClass().getSimpleName(),
                     "OptionalOpValidation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
         }
 

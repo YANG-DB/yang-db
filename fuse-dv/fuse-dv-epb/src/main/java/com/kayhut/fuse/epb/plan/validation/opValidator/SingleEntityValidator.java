@@ -21,11 +21,11 @@ public class SingleEntityValidator implements ChainedPlanValidator.PlanOpValidat
         if (opIndex == 0) {
             if (!(compositePlanOp.getOps().get(0) instanceof EntityOp)) {
                 return new ValidationResult(
-                        false,
+                        false,this.getClass().getSimpleName(),
                         "SingleEntity:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
             } else if (compositePlanOp.getOps().size() < 2) {
                 return new ValidationResult(
-                        false,
+                        false,this.getClass().getSimpleName(),
                         "SingleEntity:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
             } else {
                 try {
@@ -33,11 +33,11 @@ public class SingleEntityValidator implements ChainedPlanValidator.PlanOpValidat
                         return ValidationResult.OK;
                     } else
                         return new ValidationResult(
-                                false,
+                                false,this.getClass().getSimpleName(),
                                 "SingleEntity:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
                 } catch (ClassCastException cce) {
                     return new ValidationResult(
-                            false,
+                            false,this.getClass().getSimpleName(),
                             "SingleEntity:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
                 }
             }

@@ -142,7 +142,7 @@ public class UnionPlanSearcherTests {
                         ).getOps()),
                 new DoubleCost(0));
 
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,query -> query );
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,ontologyProvider);
         AsgQuery query = queryNoQuant();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
@@ -164,7 +164,7 @@ public class UnionPlanSearcherTests {
                         ).getOps()),
                 new DoubleCost(0));
 
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,query -> query);
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,ontologyProvider);
         AsgQuery query = querySingleSomeQuantSingleBranch();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
@@ -176,7 +176,7 @@ public class UnionPlanSearcherTests {
     public void testOneQuantMultiBranch() {
         final BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> searcher = createBottomUpPlanSearcher();
 
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,query -> query);
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,ontologyProvider);
         AsgQuery query = querySingleSomeQuantMultiBranch();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
@@ -185,10 +185,10 @@ public class UnionPlanSearcherTests {
         Assert.assertTrue(planWithCost.getPlan().getOps().get(0).getClass().isAssignableFrom(UnionOp.class));
         Assert.assertEquals(3, ((UnionOp) planWithCost.getPlan().getOps().get(0)).getPlans().size(), 3);
         Assert.assertEquals(
-                "[UnionOp(UnionOp())" +
-                            "[[EntityOp(Asg(ETyped(4))):EntityFilterOp(Asg(EPropGroup(104))):RelationOp(Asg(Rel(14))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]" +
-                            "[[EntityOp(Asg(ETyped(5))):EntityFilterOp(Asg(EPropGroup(105))):RelationOp(Asg(Rel(15))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]" +
-                            "[[EntityOp(Asg(ETyped(3))):EntityFilterOp(Asg(EPropGroup(103))):RelationOp(Asg(Rel(13))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]]",
+            "[UnionOp(UnionOp())" +
+                        "[[EntityOp(Asg(ETyped(4))):EntityFilterOp(Asg(EPropGroup(104))):RelationOp(Asg(Rel(14))):RelationFilterOp(Asg(RelPropGroup(1401))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]" +
+                        "[[EntityOp(Asg(ETyped(5))):EntityFilterOp(Asg(EPropGroup(105))):RelationOp(Asg(Rel(15))):RelationFilterOp(Asg(RelPropGroup(1501))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]" +
+                        "[[EntityOp(Asg(ETyped(3))):EntityFilterOp(Asg(EPropGroup(103))):RelationOp(Asg(Rel(13))):RelationFilterOp(Asg(RelPropGroup(1301))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]]",
                 getFull().describe(planWithCost.getPlan().getOps()));
     }
 
@@ -196,7 +196,7 @@ public class UnionPlanSearcherTests {
     public void testTwoQuantMultiBranch() {
         final BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> searcher = createBottomUpPlanSearcher();
 
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,query -> query);
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,ontologyProvider);
         AsgQuery query = queryMultiSomeQuantMultiBranch();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
@@ -205,11 +205,11 @@ public class UnionPlanSearcherTests {
         Assert.assertTrue(planWithCost.getPlan().getOps().get(0).getClass().isAssignableFrom(UnionOp.class));
         Assert.assertEquals(4, ((UnionOp) planWithCost.getPlan().getOps().get(0)).getPlans().size(), 0);
         Assert.assertEquals(
-                "[UnionOp(UnionOp())" +
-                            "[[EntityOp(Asg(ETyped(6))):EntityFilterOp(Asg(EPropGroup(106))):RelationOp(Asg(Rel(16))):EntityOp(Asg(ETyped(3))):EntityFilterOp(Asg(EPropGroup(103))):RelationOp(Asg(Rel(13))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]" +
-                            "[[EntityOp(Asg(ETyped(4))):EntityFilterOp(Asg(EPropGroup(104))):RelationOp(Asg(Rel(14))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]" +
-                            "[[EntityOp(Asg(ETyped(7))):EntityFilterOp(Asg(EPropGroup(107))):RelationOp(Asg(Rel(17))):EntityOp(Asg(ETyped(3))):EntityFilterOp(Asg(EPropGroup(103))):RelationOp(Asg(Rel(13))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]" +
-                            "[[EntityOp(Asg(ETyped(5))):EntityFilterOp(Asg(EPropGroup(105))):RelationOp(Asg(Rel(15))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]]",
+            "[UnionOp(UnionOp())" +
+                            "[[EntityOp(Asg(ETyped(6))):EntityFilterOp(Asg(EPropGroup(106))):RelationOp(Asg(Rel(16))):RelationFilterOp(Asg(RelPropGroup(1601))):EntityOp(Asg(ETyped(3))):EntityFilterOp(Asg(EPropGroup(103))):RelationOp(Asg(Rel(13))):RelationFilterOp(Asg(RelPropGroup(1301))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]" +
+                            "[[EntityOp(Asg(ETyped(4))):EntityFilterOp(Asg(EPropGroup(104))):RelationOp(Asg(Rel(14))):RelationFilterOp(Asg(RelPropGroup(1401))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]" +
+                            "[[EntityOp(Asg(ETyped(7))):EntityFilterOp(Asg(EPropGroup(107))):RelationOp(Asg(Rel(17))):RelationFilterOp(Asg(RelPropGroup(1701))):EntityOp(Asg(ETyped(3))):EntityFilterOp(Asg(EPropGroup(103))):RelationOp(Asg(Rel(13))):RelationFilterOp(Asg(RelPropGroup(1301))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]" +
+                            "[[EntityOp(Asg(ETyped(5))):EntityFilterOp(Asg(EPropGroup(105))):RelationOp(Asg(Rel(15))):RelationFilterOp(Asg(RelPropGroup(1501))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(101)))]]]",
                 getFull().describe(planWithCost.getPlan().getOps()));
     }
 

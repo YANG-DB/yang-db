@@ -57,7 +57,7 @@ public class JoinCompletePlanOpValidator implements ChainedPlanValidator.PlanOpV
         if(planOp instanceof EntityJoinOp) {
             EntityJoinOp joinOp = (EntityJoinOp) planOp;
             if ((compositePlanOp.getOps().size() > 1 || validateIfOnlyJoin) && !isJoinOpComplete(joinOp)) {
-                return new ValidationResult(false, "JoinOp complete validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
+                return new ValidationResult(false,this.getClass().getSimpleName(), "JoinOp complete validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
             }
         }
         return ValidationResult.OK;

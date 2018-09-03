@@ -38,7 +38,7 @@ public class NoRedundantRelationOpValidator implements ChainedPlanValidator.Plan
             }
             else{
                 return new ValidationResult(
-                        false,
+                        false,this.getClass().getSimpleName(),
                         "NoRedundant:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
             }
         }
@@ -53,7 +53,7 @@ public class NoRedundantRelationOpValidator implements ChainedPlanValidator.Plan
         }
 
         return new ValidationResult(
-                false,
+                false,this.getClass().getSimpleName(),
                 "NoRedundant:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
     }
 

@@ -26,7 +26,7 @@ public class JoinBranchSameStartAndEndValidator implements ChainedPlanValidator.
     @Override
     public ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         if(compositePlanOp.getOps().get(opIndex) instanceof EntityJoinOp && !checkJoin((EntityJoinOp) compositePlanOp.getOps().get(opIndex))){
-            return new ValidationResult(false, "A join branch cannot start and end in the same entity, " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
+            return new ValidationResult(false,this.getClass().getSimpleName(), "A join branch cannot start and end in the same entity, " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
         }
         return ValidationResult.OK;
     }

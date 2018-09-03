@@ -34,7 +34,7 @@ public class AsgQueryValidator implements QueryValidator<AsgQuery> {
     public ValidationResult validate(AsgQuery query) {
         Optional<Ontology> ontology = this.ontologyProvider.get(query.getOnt());
         if (!ontology.isPresent()) {
-            return new ValidationResult(false, "unknown ontology");
+            return new ValidationResult(false,this.getClass().getSimpleName(), "unknown ontology");
         }
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(new Ontology.Accessor(ontology.get()));

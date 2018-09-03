@@ -26,14 +26,14 @@ public class AsgStartEntityValidatorStrategy implements AsgValidatorStrategy {
         Ontology.Accessor accessor = context.getOntologyAccessor();
 
         if (query.getStart().getNext().isEmpty())
-            return new ValidationResult(false, ERROR_2);
+            return new ValidationResult(false,this.getClass().getSimpleName(), ERROR_2);
         if (!query.getOnt().equals(accessor.name()))
-            return new ValidationResult(false, ERROR_1);
+            return new ValidationResult(false,this.getClass().getSimpleName(), ERROR_1);
 
         List<AsgEBase<EBase>> list = nextDescendants(query.getStart().getNext().get(0), Start.class);
 
         if (!list.isEmpty())
-            return new ValidationResult(false, ERROR_3);
+            return new ValidationResult(false,this.getClass().getSimpleName(), ERROR_3);
 
 
         return OK;

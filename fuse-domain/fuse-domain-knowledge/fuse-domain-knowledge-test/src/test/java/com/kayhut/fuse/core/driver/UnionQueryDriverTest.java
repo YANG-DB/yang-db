@@ -48,6 +48,7 @@ import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.c
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
+import static com.kayhut.fuse.model.query.Rel.Direction.L;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 
@@ -106,6 +107,7 @@ public class UnionQueryDriverTest extends BaseModuleInjectionTest {
                         new Start(0, 1),
                         new ETyped(1, "A", "Entity", 2, 0),
                         new Quant1(2, QuantType.some, Arrays.asList(3, 4,7), 0),
+                            new EProp(3, "category", Constraint.of(ConstraintOp.eq, e1.category)),
                             new Rel(4, "hasEvalue", R, null, 5, 0),
                                     new ETyped(5, "V1", "Evalue", 6, 0),
                                     new EProp(6, "fieldId", Constraint.of(ConstraintOp.eq, v1.fieldId)),
@@ -128,13 +130,82 @@ public class UnionQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
         Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
         Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
-        Assignment assignment = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0);
-        Entity entityA = Stream.ofAll(assignment.getEntities()).find(e -> e.geteTag().contains("A")).get();
-        Assert.assertNotNull(entityA);
-        Assert.assertEquals(1, assignment.getRelationships().size());
-        Option<Property> category = Stream.ofAll(assignment.getRelationships().get(0).getProperties()).find(p -> p.getpType().equals("category"));
-        Assert.assertFalse(category.isEmpty());
-        Assert.assertEquals("rel", category.get().getValue());
+        Assert.assertEquals(3,((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().size());
+        Assignment assignment1 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0);
+        Assignment assignment2 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(1);
+        Assignment assignment3 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(2);
+        Assert.assertEquals(1,assignment1.getEntities().size());
+        Assert.assertEquals(2,assignment2.getEntities().size());
+        Assert.assertEquals(1,assignment2.getRelationships().size());
+        Assert.assertEquals(2,assignment3.getEntities().size());
+        Assert.assertEquals(1,assignment3.getRelationships().size());
+
+
+    }
+    @Test
+    public void testCallAndFetchMultiValueOnRelInnerUnion() throws ParseException, JsonProcessingException {
+        init("config/application.test.engine3.m1.dfs.knowledge.public.conf");
+        RequestScope requestScope = setup();
+        Provider<Client> clientProvider = requestScope.scope(Key.get(Client.class), injector.getProvider(Client.class));
+        Provider<RawSchema> schemaProvider = requestScope.scope(Key.get(RawSchema.class), injector.getProvider(RawSchema.class));
+        setupData(clientProvider.get(), schemaProvider.get());
+
+        final Provider<QueryDriver> driverScope = requestScope.scope(Key.get(QueryDriver.class), injector.getProvider(QueryDriver.class));
+        final QueryDriver driver = driverScope.get();
+
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Entity", 2, 0),
+                        new Quant1(2, QuantType.some, Arrays.asList(3, 4,7), 0),
+                            new EProp(3, "category", Constraint.of(ConstraintOp.eq, e1.category)),
+                            new Rel(4, "hasEvalue", R, null, 10, 0),
+                                    new ETyped(10, "V1", "Evalue", 11, 0),
+                                    new Quant1(11, QuantType.some, Arrays.asList(12, 13), 0),
+                                        new EProp(12, "fieldId", Constraint.of(ConstraintOp.eq, v1.fieldId)),
+                                        new Rel(13, "hasEvalue", L, null, 14, 0),
+                                            new ETyped(14, "A2", "Entity", 0, 0),
+                            new Rel(7, "hasEvalue", R, null, 8, 0),
+                                    new ETyped(8, "V2", "Evalue", 9, 0),
+                                    new EProp(9, "fieldId", Constraint.of(ConstraintOp.eq, v2.fieldId)))
+                ).build();
+
+
+
+        final Optional<QueryResourceInfo> info = driver.create(
+                new CreateQueryRequest("q1", "myStoredQuery", query,
+                        new CreatePathsCursorRequest(new CreatePageRequest())));
+        Assert.assertTrue(info.isPresent());
+        Assert.assertTrue(info.get().getError()==null);
+
+        // Read Entity (with V1 query)
+        Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
+        Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
+        Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
+        Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
+        Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
+        Assert.assertEquals(5,((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().size());
+
+        Assignment assignment1 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0);
+        Assignment assignment2 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(1);
+        Assignment assignment3 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(2);
+        Assignment assignment4 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(3);
+        Assignment assignment5 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(4);
+
+        Assert.assertEquals(1,assignment1.getEntities().size());
+
+        Assert.assertEquals(2,assignment2.getEntities().size());
+        Assert.assertEquals(1,assignment2.getRelationships().size());
+
+        Assert.assertEquals(2,assignment3.getEntities().size());
+        Assert.assertEquals(2,assignment3.getRelationships().size());
+
+        Assert.assertEquals(2,assignment4.getEntities().size());
+        Assert.assertEquals(2,assignment4.getRelationships().size());
+
+
+        Assert.assertEquals(2,assignment5.getEntities().size());
+        Assert.assertEquals(1,assignment5.getRelationships().size());
 
     }
 
