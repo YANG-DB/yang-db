@@ -7,6 +7,8 @@ import com.kayhut.fuse.asg.strategy.schema.LikeConstraintTransformationAsgStrate
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import javaslang.collection.Stream;
@@ -28,6 +30,10 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
     //endregion
 
     //Routing Predicates
+    private static boolean ePropGroupContainsLikeAnyField(AsgEBase<EPropGroup> asgEBase) {
+        return ePropGroupContainsLikeAnyField(asgEBase.geteBase());
+    }
+
     private static boolean ePropGroupContainsLikeAnyField(EPropGroup ePropGroup) {
         //exclusive or for e.value with fieldId[title/nickname] and condition on stringValue
         if(ePropGroupContainsLikeFieldOnRankableFields(ePropGroup))
@@ -46,6 +52,16 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
         return false;
     }
 
+    private static boolean ePropGroupContainsLikeFieldOnRankableFields(AsgEBase<EPropGroup> asgEBase) {
+        boolean isSearchableKnowledgeEntity = AsgQueryUtil.<EPropGroup, EEntityBase>ancestor(asgEBase, EEntityBase.class)
+                .get().geteBase().geteTag().endsWith("globalEntityValue");
+        if (!isSearchableKnowledgeEntity) {
+            return false;
+        }
+
+        return ePropGroupContainsLikeFieldOnRankableFields(asgEBase.geteBase());
+    }
+
     private static boolean ePropGroupContainsLikeFieldOnRankableFields(EPropGroup ePropGroup) {
         boolean fieldExists = !Stream.ofAll(ePropGroup.getProps())
                 .filter(eProp -> eProp.getCon() != null && eProp.getpType().equals("fieldId"))
@@ -61,17 +77,24 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
         }
 
         if (ePropGroup.getGroups().size() > 0) {
-            return Stream.ofAll(ePropGroup.getGroups()).map(g -> ePropGroupContainsLikeFieldOnRankableFields(g)).reduce((a, b) -> a || b);
+            return Stream.ofAll(ePropGroup.getGroups())
+                    .map(KnowledgeLikeCombinerStrategy::ePropGroupContainsLikeFieldOnRankableFields)
+                    .reduce((a, b) -> a || b);
         }
 
         return false;
     }
 
-    private static boolean ePropGroupContainsLikeField(EPropGroup ePropGroup) {
+    private static boolean ePropGroupContainsLikeField(AsgEBase<EPropGroup> asgEBase) {
         //exclusive or for e.value with fieldId[title/nickname] and condition on stringValue
-        if(ePropGroupContainsLikeFieldOnRankableFields(ePropGroup))
+        if(ePropGroupContainsLikeFieldOnRankableFields(asgEBase)) {
             return false;
+        }
 
+        return ePropGroupContainsLikeField(asgEBase.geteBase());
+    }
+
+    private static boolean ePropGroupContainsLikeField(EPropGroup ePropGroup) {
          if (!Stream.ofAll(ePropGroup.getProps())
                 .filter(eProp -> eProp.getCon() != null)
                 .filter(eProp -> !(eProp.getCon().getExpr() == null) && !eProp.getCon().getExpr().toString().isEmpty())
@@ -81,7 +104,9 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
         }
 
         if (ePropGroup.getGroups().size() > 0) {
-            return Stream.ofAll(ePropGroup.getGroups()).map(g -> ePropGroupContainsLikeField(g)).reduce((a, b) -> a || b);
+            return Stream.ofAll(ePropGroup.getGroups())
+                    .map(KnowledgeLikeCombinerStrategy::ePropGroupContainsLikeField)
+                    .reduce((a, b) -> a || b);
         }
 
         return false;

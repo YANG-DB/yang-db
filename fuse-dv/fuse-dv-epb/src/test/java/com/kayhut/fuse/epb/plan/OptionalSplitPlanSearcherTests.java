@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Collections;
 import java.util.Date;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
@@ -83,13 +84,15 @@ public class OptionalSplitPlanSearcherTests {
 
     @Test
     public void testNoOptional(){
-        PlanSearcher<Plan, Cost, AsgQuery> planSearcherMock = Mockito.mock(PlanSearcher.class);
-        PlanWithCost<Plan, Cost> expectedPlan = new PlanWithCost<>(new Plan(new EntityOp()), new DoubleCost(1));
+        PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcherMock = Mockito.mock(PlanSearcher.class);
+        PlanWithCost<Plan, PlanDetailedCost> expectedPlan = new PlanWithCost<>(
+                new Plan(new EntityOp()),
+                new PlanDetailedCost(new DoubleCost(1), Collections.emptyList()));
         Mockito.when(planSearcherMock.search(any())).thenReturn(expectedPlan);
 
         OptionalSplitPlanSearcher planSearcher = new OptionalSplitPlanSearcher(planSearcherMock, null);
         AsgQuery query = queryNoOptional();
-        PlanWithCost<Plan, Cost> planWithCost = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
         Assert.assertNotNull(planWithCost);
         Assert.assertEquals(expectedPlan, planWithCost);
@@ -98,12 +101,12 @@ public class OptionalSplitPlanSearcherTests {
     @Test
     public void testSingleOptional(){
         AsgQuery query = querySingleOptional();
-        PlanSearcher<Plan, Cost, AsgQuery> mainPlanSearcherMock = Mockito.mock(PlanSearcher.class);
+        PlanSearcher<Plan, PlanDetailedCost, AsgQuery> mainPlanSearcherMock = Mockito.mock(PlanSearcher.class);
         Plan expectedPlan = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)), new EntityFilterOp(AsgQueryUtil.element$(query, 2)));
         PlanDetailedCost planDetailedCost = new PlanDetailedCost(new DoubleCost(10), Stream.of(new PlanWithCost(expectedPlan, new CountEstimatesCost(10,10))));
         Mockito.when(mainPlanSearcherMock.search(any())).thenReturn(new PlanWithCost<>(expectedPlan, planDetailedCost));
 
-        PlanSearcher<Plan, Cost, AsgQuery> optionalPlanSearcherMock = Mockito.mock(PlanSearcher.class);
+        PlanSearcher<Plan, PlanDetailedCost, AsgQuery> optionalPlanSearcherMock = Mockito.mock(PlanSearcher.class);
         Plan expectedOptionalPlan = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)),
                 new RelationOp(AsgQueryUtil.element$(query, 12)),
                 new EntityOp(AsgQueryUtil.element$(query, 13)),
@@ -125,14 +128,14 @@ public class OptionalSplitPlanSearcherTests {
 
 
         OptionalSplitPlanSearcher planSearcher = new OptionalSplitPlanSearcher(mainPlanSearcherMock, optionalPlanSearcherMock);
-        PlanWithCost<Plan, Cost> planWithCost = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
         PlanAssert.assertEquals(expectedCompletePlan, planWithCost.getPlan());
     }
 
     @Test
     public void testMultiOptional(){
         AsgQuery query = queryMultiOptional();
-        PlanSearcher<Plan, Cost, AsgQuery> mainPlanSearcherMock = Mockito.mock(PlanSearcher.class);
+        PlanSearcher<Plan, PlanDetailedCost, AsgQuery> mainPlanSearcherMock = Mockito.mock(PlanSearcher.class);
         Plan expectedPlan = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)),
                 new EntityFilterOp(AsgQueryUtil.element$(query, 2)),
                 new RelationOp(AsgQueryUtil.element$(query, 4)),
@@ -143,7 +146,7 @@ public class OptionalSplitPlanSearcherTests {
         PlanDetailedCost planDetailedCost = new PlanDetailedCost(new DoubleCost(10), Stream.of(new PlanWithCost(expectedPlan, new CountEstimatesCost(10,10))));
         Mockito.when(mainPlanSearcherMock.search(any())).thenReturn(new PlanWithCost<>(expectedPlan, planDetailedCost));
 
-        PlanSearcher<Plan, Cost, AsgQuery> optionalPlanSearcherMock = Mockito.mock(PlanSearcher.class);
+        PlanSearcher<Plan, PlanDetailedCost, AsgQuery> optionalPlanSearcherMock = Mockito.mock(PlanSearcher.class);
         Plan expectedOptionalPlan1 = new Plan(new EntityOp(AsgQueryUtil.element$(query, 7)),
                 new RelationOp(AsgQueryUtil.element$(query, 12)),
                 new EntityOp(AsgQueryUtil.element$(query, 13)),
@@ -190,7 +193,7 @@ public class OptionalSplitPlanSearcherTests {
 
 
         OptionalSplitPlanSearcher planSearcher = new OptionalSplitPlanSearcher(mainPlanSearcherMock, optionalPlanSearcherMock);
-        PlanWithCost<Plan, Cost> planWithCost = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
         PlanAssert.assertEquals(expectedCompletePlan, planWithCost.getPlan());
     }
 

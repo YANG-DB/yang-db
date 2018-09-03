@@ -22,6 +22,7 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
+import org.unipop.process.Profiler;
 import org.unipop.query.search.SearchQuery;
 import org.unipop.structure.UniGraph;
 
@@ -111,7 +112,15 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                 .filter(Objects::nonNull).iterator();
     }
 
+    @Override
+    public Profiler getProfiler() {
+        return this.profiler;
+    }
 
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.profiler = profiler;
+    }
     //endregion
 
     //region Fields
@@ -121,5 +130,6 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
     private SearchOrderProviderFactory orderProviderFactory;
     private GraphElementSchemaProvider schemaProvider;
 
+    private Profiler profiler;
     //endregion
 }

@@ -95,7 +95,7 @@ public class DiscreteVertexController extends VertexControllerBase {
 
         if (canDoWithoutQuery(searchVertexQuery, context)) {
             ElementConverter<DataItem, Edge> elementConverter = new CompositeElementConverter<>(
-                    new DiscreteEdgeConverter<>(context));
+                    new DiscreteEdgeConverter<>(context, profiler));
 
             return Stream.ofAll(searchVertexQuery.getVertices())
                     .map(VertexDataItem::new)
@@ -133,7 +133,7 @@ public class DiscreteVertexController extends VertexControllerBase {
                 searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
 
         ElementConverter<DataItem, Edge> elementConverter = new CompositeElementConverter<>(
-                new DiscreteEdgeConverter<>(context));
+                new DiscreteEdgeConverter<>(context, this.profiler));
 
         return Stream.ofAll(searchHits)
                 .map(SearchHitDataItem::new)

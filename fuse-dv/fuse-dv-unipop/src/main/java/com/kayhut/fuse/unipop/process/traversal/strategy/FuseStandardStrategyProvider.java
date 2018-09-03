@@ -2,11 +2,13 @@ package com.kayhut.fuse.unipop.process.traversal.strategy;
 
 import com.kayhut.fuse.unipop.process.edge.FuseEdgeStepsStrategy;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategy;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.optimization.PathRetractionStrategy;
 import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversalStrategies;
 import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.unipop.process.Profiler;
 import org.unipop.process.coalesce.UniGraphCoalesceStepStrategy;
 import org.unipop.process.optional.UniGraphOptionalStepStrategy;
 import org.unipop.process.order.UniGraphOrderStrategy;
@@ -59,6 +61,4 @@ public class FuseStandardStrategyProvider implements StrategyProvider {
     //region Fields
     private static List<TraversalStrategy<?>> globalTraversalStrategies;
     //endregion
-
-
 }

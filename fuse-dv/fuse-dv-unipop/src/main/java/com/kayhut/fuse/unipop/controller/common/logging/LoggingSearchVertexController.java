@@ -8,6 +8,7 @@ import com.kayhut.fuse.dispatcher.logging.*;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.unipop.process.Profiler;
 import org.unipop.query.search.SearchVertexQuery;
 
 import java.util.Collections;
@@ -37,6 +38,16 @@ public class LoggingSearchVertexController implements SearchVertexQuery.SearchVe
     public Iterator<Edge> search(SearchVertexQuery searchVertexQuery) {
         return new LoggingSyncMethodDecorator<Iterator<Edge>>(this.logger, this.metricRegistry, search, trace)
                 .decorate(() -> this.searchVertexController.search(searchVertexQuery), new Passthrough<>((ex) -> Collections.emptyIterator()));
+    }
+
+    @Override
+    public Profiler getProfiler() {
+        return this.searchVertexController.getProfiler();
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.searchVertexController.setProfiler(profiler);
     }
     //endregion
 
