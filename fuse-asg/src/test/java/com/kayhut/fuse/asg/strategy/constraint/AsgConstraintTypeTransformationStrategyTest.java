@@ -3,10 +3,8 @@ package com.kayhut.fuse.asg.strategy.constraint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
 import com.kayhut.fuse.asg.AsgQueryStore;
-import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
-import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
-import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropertiesGroupingAsgStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropGroupingAsgStrategy;
 import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -249,8 +247,8 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //Appling First the Properties Grouping Startegy and then applying the constraint transformation strategy
         //We want to be sure that the order of strategies is not affecting the final result
-        RelPropertiesGroupingAsgStrategy relPropertiesGroupingAsgStrategy = new RelPropertiesGroupingAsgStrategy();
-        relPropertiesGroupingAsgStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext(ont));
+        RelPropGroupingAsgStrategy relPropGroupingAsgStrategy = new RelPropGroupingAsgStrategy();
+        relPropGroupingAsgStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext(ont));
 
         expr1 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(0).getCon().getExpr();
         expr2 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(1).getCon().getExpr();

@@ -106,7 +106,7 @@ public class LikeUtil {
                         .filter(word -> word.length() > 0)
                         .flatMap(word -> word.length() > ngramsIndexingSchema.get().getMaxSize() ?
                                 Stream.of(word.substring(0, ngramsIndexingSchema.get().getMaxSize()),
-                                        word.substring(word.length() - ngramsIndexingSchema.get().getMaxSize() - 1, word.length() - 1)) :
+                                        word.substring(word.length() - ngramsIndexingSchema.get().getMaxSize(), word.length())) :
                                 Stream.of(word))
                         .toJavaList();
     }

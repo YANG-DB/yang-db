@@ -25,7 +25,7 @@ import java.util.Optional;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.ePropGroup;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.le;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
@@ -36,16 +36,16 @@ public class GotoJoinExtensionStrategyTests {
     public static AsgQuery lineQuery() {
         return AsgQuery.Builder.start("q", "o")
                 .next(typed(1, OntologyTestUtils.PERSON.type))
-                .next(eProp(2))
+                .next(AsgQuery.Builder.ePropGroup(2))
                 .next(rel(3, OWN.getrType(), R).below(relProp(4)))
                 .next(typed(5, OntologyTestUtils.DRAGON.type))
-                .next(eProp(6))
+                .next(AsgQuery.Builder.ePropGroup(6))
                 .next(rel(7, FREEZE.getrType(), R).below(relProp(8)))
                 .next(unTyped(9))
-                .next(eProp(10))
+                .next(AsgQuery.Builder.ePropGroup(10))
                 .next(rel(11, FREEZE.getrType(), R).below(relProp(12)))
                 .next(unTyped(13))
-                .next(eProp(14))
+                .next(AsgQuery.Builder.ePropGroup(14))
                 .build();
     }
 
@@ -54,19 +54,19 @@ public class GotoJoinExtensionStrategyTests {
                 .next(typed(1, OntologyTestUtils.PERSON.type))
                 .next(quant1(2, all))
                 .in(
-                        eProp(3),
+                        AsgQuery.Builder.ePropGroup(3),
                         rel(4, OWN.getrType(), R).below(relProp(5))
                         .next(typed(6, OntologyTestUtils.DRAGON.type))
-                        .next(eProp(7)),
+                        .next(AsgQuery.Builder.ePropGroup(7)),
                         rel(8, FREEZE.getrType(), R).below(relProp(9))
                         .next(unTyped(10))
-                        .next(eProp(11)),
+                        .next(AsgQuery.Builder.ePropGroup(11)),
                         rel(12, FREEZE.getrType(), R).below(relProp(13))
                         .next(unTyped(14))
-                        .next(eProp(15)),
+                        .next(AsgQuery.Builder.ePropGroup(15)),
                         rel(16, FREEZE.getrType(), R).below(relProp(17))
                                 .next(unTyped(18))
-                                .next(eProp(19))
+                                .next(AsgQuery.Builder.ePropGroup(19))
                         )
                 .build();
     }
@@ -77,7 +77,7 @@ public class GotoJoinExtensionStrategyTests {
                 .next(rel(2, OWN.getrType(), R).below(relProp(10, of(10, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of(9, NAME.type, Constraint.of(eq, "Moshe")), EProp.of(9, GENDER.type, Constraint.of(gt, MALE)))
+                .in(AsgQuery.Builder.ePropGroup(9, EProp.of(9, NAME.type, Constraint.of(eq, "Moshe")), EProp.of(9, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FIRE.getrType(), R)
                                 .next(unTyped(6)
                                         .next(rel(12, REGISTERED.getrType(), R)
@@ -103,7 +103,7 @@ public class GotoJoinExtensionStrategyTests {
                 .next(rel(2, OWN.getrType(), R).below(relProp(10, of(10, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of(9, NAME.type, Constraint.of(eq, "smith")), EProp.of(9, GENDER.type, Constraint.of(gt, MALE)))
+                .in(AsgQuery.Builder.ePropGroup(9, EProp.of(9, NAME.type, Constraint.of(eq, "smith")), EProp.of(9, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R)
                                 .next(unTyped(6))
                         , rel(7, FIRE.getrType(), R)

@@ -48,7 +48,7 @@ public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpVa
         boolean result = areEntityAndRelationReversed(query, previousEntityAsg, relAsg);
         if(!result) {
             context = new ValidationResult(
-                    result,
+                    result,this.getClass().getSimpleName(),
                     "Reverse:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
         }
         return context;

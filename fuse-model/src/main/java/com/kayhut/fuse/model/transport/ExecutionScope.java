@@ -1,11 +1,15 @@
 package com.kayhut.fuse.model.transport;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 public class ExecutionScope {
+    public static final String clientParameter = "ExecutionScope.@maxExecutionTimeout";
 
-    public ExecutionScope() {
-    }
+    public ExecutionScope() {}
 
-    public ExecutionScope( long timeout) {
+    @Inject
+    public ExecutionScope(@Named(clientParameter) long timeout) {
         this.timeout = timeout;
     }
 

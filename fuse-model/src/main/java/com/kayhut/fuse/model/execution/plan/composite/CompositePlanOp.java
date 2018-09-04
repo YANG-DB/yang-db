@@ -12,6 +12,7 @@ import java.util.List;
  * Created by Roman on 24/04/2017.
  */
 public abstract class CompositePlanOp extends PlanOp implements Cloneable {
+
     //region Empty
     public static class Empty extends CompositePlanOp {
 
@@ -69,6 +70,17 @@ public abstract class CompositePlanOp extends PlanOp implements Cloneable {
         try {
             CompositePlanOp clone = (CompositePlanOp)clone();
             clone.getOps().addAll(compositePlanOp.getOps());
+            return (T)clone;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public <T extends CompositePlanOp> T  appendAll(List<T> compositePlanOps) {
+        try {
+            CompositePlanOp clone = (CompositePlanOp)clone();
+            compositePlanOps.forEach(plan -> clone.getOps().addAll(plan.getOps()));
             return (T)clone;
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();

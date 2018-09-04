@@ -20,6 +20,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
         this.vertexLabels = new HashSet<>(Stream.ofAll($ont.eNames()).toJavaList());
         this.edgeLabels = new HashSet<>(Stream.ofAll($ont.rNames()).toJavaList());
+        this.propertyNames = new HashSet<>(Stream.ofAll($ont.pTypes()).toJavaList());
     }
     //endregion
 
@@ -78,6 +79,11 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
     @Override
     public Iterable<String> getEdgeLabels() {
         return this.edgeLabels;
+    }
+
+    @Override
+    public Iterable<String> getPropertyNames() {
+        return this.propertyNames;
     }
     //endregion
 
@@ -202,5 +208,6 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     protected Set<String> vertexLabels;
     protected Set<String> edgeLabels;
+    protected Set<String> propertyNames;
     //endregion
 }

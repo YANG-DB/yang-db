@@ -6,6 +6,7 @@ import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.dispatcher.epb.*;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.epb.plan.BottomUpPlanSearcher;
+import com.kayhut.fuse.epb.plan.UnionPlanSearcher;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.dummy.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1.M1DfsRedundantPlanExtensionStrategy;
@@ -46,15 +47,18 @@ public abstract class BaseEpbModule extends ModuleBase {
             @Override
             protected void configure() {
                 this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>() {})
-                        .annotatedWith(named(LoggingPlanSearcher.planSearcherParameter))
+                        .annotatedWith(named(UnionPlanSearcher.planSearcherParameter))
                         .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>() {});
+                this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>() {})
+                        .annotatedWith(named(LoggingPlanSearcher.planSearcherParameter))
+                        .to(new TypeLiteral<UnionPlanSearcher>() {});
                 this.bind(Logger.class)
                         .annotatedWith(named(LoggingPlanSearcher.loggerParameter))
-                        .toInstance(LoggerFactory.getLogger(BottomUpPlanSearcher.class));
+                        .toInstance(LoggerFactory.getLogger(UnionPlanSearcher.class));
                 this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>() {})
                         .annotatedWith(named(PlanTracer.Searcher.Provider.planSearcherParameter))
                         .to(new TypeLiteral<LoggingPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>() {});
-                this.bindConstant().annotatedWith(named(PlanTracer.Searcher.Provider.planSearcherNameParameter)).to(BottomUpPlanSearcher.class.getSimpleName());
+                this.bindConstant().annotatedWith(named(PlanTracer.Searcher.Provider.planSearcherNameParameter)).to(UnionPlanSearcher.class.getSimpleName());
                 this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>() {})
                         .toProvider(new TypeLiteral<PlanTracer.Searcher.Provider<Plan, PlanDetailedCost, AsgQuery>>() {});
 

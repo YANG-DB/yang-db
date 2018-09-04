@@ -1,5 +1,6 @@
 package com.kayhut.fuse.asg.strategy.constraint;
 
+import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -7,14 +8,21 @@ import com.kayhut.fuse.model.query.properties.BaseProp;
 import com.kayhut.fuse.model.query.properties.BasePropGroup;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
-import java.util.List;
-
-public class RedundantPropGroupAsgStrategy extends ConstraintTransformationAsgStrategyBase  {
+/**
+ * This strategy simplifies property groups by building equivalent less complex, less nested groups.
+ * The strategy searches recursively for 'simple' groups, where a 'simple' group is defined to be a group that has either
+ * a single property or a single child group. Any 'simple' group is changed by setting it's quant type to be 'All'
+ * (because 'All' and 'Some' are equivalent in a group where there's only 1 property or child group, and 'All' is preferable
+ * to 'Some' because currently 'Some' quants will cost more in other aspects of the fuse engine.
+ *
+ * Further more, if a group is simple and it has a child group, the child groups props and groups are added to the current group
+ * the groups quant type is set to be the child groups quant type and the child group itself is discarded.
+ * This phase makes nested group structures less complex when they are redundant.
+ */
+public class RedundantPropGroupAsgStrategy implements AsgStrategy {
     //region ConstraintTransformationAsgStrategyBase Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
@@ -37,11 +45,17 @@ public class RedundantPropGroupAsgStrategy extends ConstraintTransformationAsgSt
 
             if (!propGroup.getGroups().isEmpty()) {
                 T childGroup = propGroup.getGroups().get(0);
-                if (isSimplePropGroup(childGroup)) {
+                /*if (isSimplePropGroup(childGroup)) {
                     propGroup.getGroups().remove(childGroup);
                     propGroup.getGroups().addAll(childGroup.getGroups());
                     propGroup.getProps().addAll(childGroup.getProps());
-                }
+                }*/
+
+                propGroup.getGroups().remove(childGroup);
+
+                propGroup.getGroups().addAll(childGroup.getGroups());
+                propGroup.getProps().addAll(childGroup.getProps());
+                propGroup.setQuantType(childGroup.getQuantType());
             }
         }
     }

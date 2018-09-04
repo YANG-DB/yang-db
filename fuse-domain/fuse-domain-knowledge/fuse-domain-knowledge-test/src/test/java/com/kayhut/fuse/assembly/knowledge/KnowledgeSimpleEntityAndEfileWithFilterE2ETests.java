@@ -63,35 +63,35 @@ public class KnowledgeSimpleEntityAndEfileWithFilterE2ETests {
                 .deleteTime(sdf.parse("2018-07-09 02:02:02.222")).lastUpdateTime(sdf.parse("2025-01-11 23:22:25.221"))
                 .creationTime(sdf.parse("2000-01-20 10:08:03.001"));
         // Efile entities for tests
-        f1 = _f(ctx.nextFileId()).name("mazda").path("https://www.google.co.il").mime("string").cat("cars").ctx("family cars")
+        f1 = _f(ctx.nextFileId()).name("mazda").display("mazda").path("https://www.google.co.il").mime("string").cat("cars").ctx("family cars")
                 .desc("search mazda at google").creationUser("Haim Hania").creationTime(sdf.parse("2012-01-17 03:03:04.827"))
                 .lastUpdateUser("Dudi Fargon").lastUpdateTime(sdf.parse("2011-04-16 00:00:00.000"))
                 .deleteTime(sdf.parse("2018-02-02 02:02:02.222"));
-        f2 = _f(ctx.nextFileId()).name("Opel").path("https://www.google.co.il").mime("string").cat("new car").ctx("Family cars")
+        f2 = _f(ctx.nextFileId()).name("Opel").display("Opel").path("https://www.google.co.il").mime("string").cat("new car").ctx("Family cars")
                 .desc("search opel at google").creationUser("Haim hania").creationTime(sdf.parse("2012-01-17 03:03:04.827"))
                 .lastUpdateUser("dudi Fargon").lastUpdateTime(sdf.parse("2017-06-01 12:34:56.789"))
                 .deleteTime(sdf.parse("2018-01-01 12:12:12.122"));
-        f3 = _f(ctx.nextFileId()).name("mazda").path("http://www.baeldung.com").mime("String").cat("cars").ctx("Family Cars")
+        f3 = _f(ctx.nextFileId()).name("mazda").display("mazda").path("http://www.baeldung.com").mime("String").cat("cars").ctx("Family Cars")
                 .desc("search for mazda").creationUser("Haim Hania").creationTime(sdf.parse("2012-01-17 03:03:04.727"))
                 .lastUpdateUser("Dudi Fargon").lastUpdateTime(sdf.parse("2017-05-01 12:34:56.789"))
                 .deleteTime(sdf.parse("2018-02-02 02:02:02.222"));
-        f4 = _f(ctx.nextFileId()).name("Mazda").path("http://www.baeldung.com/java-tuples").mime("Integer").cat("New Cars")
+        f4 = _f(ctx.nextFileId()).name("Mazda").display("Mazda").path("http://www.baeldung.com/java-tuples").mime("Integer").cat("New Cars")
                 .ctx("family cars").desc("Mazda at google").creationUser("haim Hania")
                 .creationTime(sdf.parse("2014-03-01 01:01:01.111")).lastUpdateUser("Dudi Fargon")
                 .lastUpdateTime(sdf.parse("2016-06-01 12:34:56.789")).deleteTime(sdf.parse("2018-02-02 02:02:02.222"));
-        f5 = _f(ctx.nextFileId()).name("Opel").path("https://www.google.co.il/search?source=hp&ei").mime("integer")
+        f5 = _f(ctx.nextFileId()).name("Opel").display("Opel").path("https://www.google.co.il/search?source=hp&ei").mime("integer")
                 .cat("Cars").ctx("family cars").desc("Opel at google").creationUser("Haim")
                 .creationTime(sdf.parse("2014-03-01 01:01:01.111")).lastUpdateUser("Dudi")
                 .lastUpdateTime(sdf.parse("2011-04-16 00:00:00.000")).deleteTime(sdf.parse("2010-03-03 03:03:02.333"));
-        f6 = _f(ctx.nextFileId()).name("Opel").path("https://en.wikipedia.org").mime("int").cat("cars").ctx("all cars")
+        f6 = _f(ctx.nextFileId()).name("Opel").display("Opel").path("https://en.wikipedia.org").mime("int").cat("cars").ctx("all cars")
                 .desc("opel at google").creationUser("Hania").creationTime(sdf.parse("2015-12-11 11:05:05.543"))
                 .lastUpdateUser("Fargon").lastUpdateTime(sdf.parse("2011-04-16 00:00:00.000"))
                 .deleteTime(sdf.parse("2008-12-12 12:12:12.129"));
-        f7 = _f(ctx.nextFileId()).name("BMW").path("https://en.wikipedia.org/wiki/Citroen").mime("Int").cat("car")
+        f7 = _f(ctx.nextFileId()).name("BMW").display("BMW").path("https://en.wikipedia.org/wiki/Citroen").mime("Int").cat("car")
                 .ctx("All cars").desc("Citroen search").creationUser("Haim Hania")
                 .creationTime(sdf.parse("2016-11-12 12:11:10.123")).lastUpdateUser("Fargon")
                 .lastUpdateTime(sdf.parse("2009-04-16 00:00:00.000")).deleteTime(sdf.parse("2005-10-10 10:10:10.101"));
-        f8 = _f(ctx.nextFileId()).name("BMW").path("https://en.wikipedia.org/wiki/Citroen").mime("Int").cat("car")
+        f8 = _f(ctx.nextFileId()).name("BMW").display("BMW").path("https://en.wikipedia.org/wiki/Citroen").mime("Int").cat("car")
                 .ctx("All cars").desc("Citroen search").creationUser("Haim Hania")
                 .creationTime(sdf.parse("2016-11-12 12:11:10.123")).lastUpdateUser("Fargon")
                 .lastUpdateTime(sdf.parse("2009-04-16 00:00:00.000")).deleteTime(sdf.parse("2005-10-10 10:10:10.101"));
@@ -149,7 +149,7 @@ public class KnowledgeSimpleEntityAndEfileWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testEqByEfileNameAndEntity() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -208,7 +208,7 @@ public class KnowledgeSimpleEntityAndEfileWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testEqByEfileNameAndEntityLastUpdateUser() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -301,7 +301,7 @@ public class KnowledgeSimpleEntityAndEfileWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testEqByEfileNameAndEntityContainsCategory() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -450,7 +450,7 @@ public class KnowledgeSimpleEntityAndEfileWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testLikeByEfileNameAndOptionalEntityCategory_PartExist() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -511,7 +511,7 @@ public class KnowledgeSimpleEntityAndEfileWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testLikeByEfileNameAndOptionalEntityCategory_AllExist() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -542,7 +542,7 @@ public class KnowledgeSimpleEntityAndEfileWithFilterE2ETests {
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testLikeByEfileNameAndOptionalEntity() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

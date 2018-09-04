@@ -30,11 +30,11 @@ public class AsgCycleValidationStrategyTest {
 
     AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
             .next(typed(1, PERSON.type))
-            .next(eProp(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
+            .next(ePropGroup(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
             .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                     RelProp.of(10, START_DATE.type, of(eq, new Date())))))
             .next(concrete(3, "HorseWithNoName", HORSE.type,"display","eTag"))
-            .next(eProp(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
+            .next(ePropGroup(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
             .build();
 
     @Before
@@ -53,7 +53,7 @@ public class AsgCycleValidationStrategyTest {
     public void testNotValidPropEntityMismatchQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, PERSON.type))
-                .next(eProp(10, EProp.of(11, COLOR.type, of(eq, "Moshe"))))
+                .next(ePropGroup(10, EProp.of(11, COLOR.type, of(eq, "Moshe"))))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                         RelProp.of(10, FIRST_NAME.type, of(eq, new Date())))))
                 .next(concrete(3, "HorseWithNoName", HORSE.type,"display","eTag"))

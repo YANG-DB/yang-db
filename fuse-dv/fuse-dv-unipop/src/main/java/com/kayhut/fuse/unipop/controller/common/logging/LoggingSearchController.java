@@ -7,6 +7,7 @@ import com.kayhut.fuse.dispatcher.logging.*;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.unipop.process.Profiler;
 import org.unipop.query.search.SearchQuery;
 
 import java.util.Collections;
@@ -33,6 +34,16 @@ public class LoggingSearchController implements SearchQuery.SearchController {
     public <E extends Element> Iterator<E> search(SearchQuery<E> searchQuery) {
         return new LoggingSyncMethodDecorator<Iterator<E>>(this.logger, this.metricRegistry, search, trace)
                 .decorate(() -> this.searchController.search(searchQuery), new Passthrough<>((ex) -> Collections.emptyIterator()));
+    }
+
+    @Override
+    public Profiler getProfiler() {
+        return this.searchController.getProfiler();
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.searchController.setProfiler(profiler);
     }
     //endregion
 

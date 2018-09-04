@@ -41,7 +41,7 @@ public class AsgQueryUtilTest {
                 .next(rel(2, "1", R).below(relProp(10, RelProp.of(10, "2", of(eq, "value2")))))
                 .next(typed(3, "2", "B"))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of(9, "1", of(eq, "value1")), EProp.of(9, "3", of(gt, "value3")))
+                .in(ePropGroup(9, EProp.of(9, "1", of(eq, "value1")), EProp.of(9, "3", of(gt, "value3")))
                         , rel(5, "4", R)
                                 .next(unTyped(6, "C"))
                         , rel(7, "5", R)

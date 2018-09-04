@@ -18,6 +18,7 @@ import org.jooby.Env;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,6 +53,8 @@ public class NewDispatcherModule extends ModuleBase {
             return new DirectoryOntologyProvider(conf.getString("fuse.ontology_provider_dir"));
         } catch (ConfigException e) {
             return (OntologyProvider) Class.forName(conf.getString("fuse.ontology_provider")).getConstructor().newInstance();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
         //no ontology provider was found
     }

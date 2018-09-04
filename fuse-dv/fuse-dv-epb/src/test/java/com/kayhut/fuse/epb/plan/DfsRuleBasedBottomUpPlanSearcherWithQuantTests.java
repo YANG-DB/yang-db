@@ -62,17 +62,17 @@ public class DfsRuleBasedBottomUpPlanSearcherWithQuantTests {
     public void TestBuilderShouldStartWithFirstStep() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(concrete(1, "eId0000123", OntologyTestUtils.PERSON.type, "Jomala", "person"))
-                .next(eProp(101))
+                .next(ePropGroup(101))
                 .next(rel(2, OWN.getrType(), R).below(relProp(201, of(201, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
+                .in(ePropGroup(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R).below(relProp(501))
-                                .next(unTyped(6).next(eProp(601)))
+                                .next(unTyped(6).next(ePropGroup(601)))
                         , rel(7, FIRE.getrType(), R)
                                 .below(relProp(701, of(701, START_DATE.type, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
                                         of(701, END_DATE.type, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
-                                .next(typed(8, OntologyTestUtils.DRAGON.type).next(eProp(801)))
+                                .next(typed(8, OntologyTestUtils.DRAGON.type).next(ePropGroup(801)))
                 ).build();
 
         BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
@@ -88,17 +88,17 @@ public class DfsRuleBasedBottomUpPlanSearcherWithQuantTests {
     public void TestBuilderShouldStartWithLastStep() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.DRAGON.type))
-                .next(eProp(101))
+                .next(ePropGroup(101))
                 .next(rel(2, OWN.getrType(), R).below(relProp(201, of(201, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
+                .in(ePropGroup(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R).below(relProp(501))
-                                .next(unTyped(6).next(eProp(601)))
+                                .next(unTyped(6).next(ePropGroup(601)))
                         , rel(7, FIRE.getrType(), R)
                                 .below(relProp(701, of(701, START_DATE.type, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
                                         of(701, END_DATE.type, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
-                                .next(concrete(8, "eId0000123", OntologyTestUtils.PERSON.type, "Jomala", "person").next(eProp(801)))
+                                .next(concrete(8, "eId0000123", OntologyTestUtils.PERSON.type, "Jomala", "person").next(ePropGroup(801)))
                 ).build();
 
         BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
@@ -114,17 +114,17 @@ public class DfsRuleBasedBottomUpPlanSearcherWithQuantTests {
     public void TestBuilderShouldStartWithMiddleUnderQuantStep() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.DRAGON.type))
-                .next(eProp(101))
+                .next(ePropGroup(101))
                 .next(rel(2, OWN.getrType(), R).below(relProp(201, of(201, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
+                .in(ePropGroup(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R).below(relProp(501))
-                                .next(concrete(6, "eId0000123", OntologyTestUtils.PERSON.type, "Jomala", "person").next(eProp(601)))
+                                .next(concrete(6, "eId0000123", OntologyTestUtils.PERSON.type, "Jomala", "person").next(ePropGroup(601)))
                         , rel(7, FIRE.getrType(), R)
                                 .below(relProp(701, of(701, START_DATE.type, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
                                         of(701, END_DATE.type, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
-                                .next(typed(8, OntologyTestUtils.DRAGON.type).next(eProp(801)))
+                                .next(typed(8, OntologyTestUtils.DRAGON.type).next(ePropGroup(801)))
                 ).build();
 
         BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
@@ -141,16 +141,16 @@ public class DfsRuleBasedBottomUpPlanSearcherWithQuantTests {
     public void TestBuilderShouldStartWithMiddleStep() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.DRAGON.type))
-                .next(eProp(101))
+                .next(ePropGroup(101))
                 .next(rel(2, OWN.getrType(), R).below(relProp(201, of(201, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(concrete(3, "eId0000123", OntologyTestUtils.PERSON.type, "Jomala", "person"))
                 .next(quant1(4, all))
-                .in(eProp(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
+                .in(ePropGroup(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R).below(relProp(501))
-                                .next(typed(6, OntologyTestUtils.DRAGON.type).next(eProp(601)))
+                                .next(typed(6, OntologyTestUtils.DRAGON.type).next(ePropGroup(601)))
                         , rel(7, FIRE.getrType(), R).below(relProp(701, of(701, START_DATE.type, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
                                 of(701, END_DATE.type, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
-                                .next(typed(8, OntologyTestUtils.DRAGON.type).next(eProp(801)))
+                                .next(typed(8, OntologyTestUtils.DRAGON.type).next(ePropGroup(801)))
                 ).build();
 
         BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();

@@ -25,7 +25,7 @@ public class SingleEntityJoinValidator implements ChainedPlanValidator.PlanOpVal
     @Override
     public ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         if(compositePlanOp.getOps().get(opIndex) instanceof EntityJoinOp && !checkJoin((EntityJoinOp) compositePlanOp.getOps().get(opIndex))){
-            return new ValidationResult(false, "A complete join cannot have a single entity in one of its branches, " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
+            return new ValidationResult(false,this.getClass().getSimpleName(), "A complete join cannot have a single entity in one of its branches, " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
         }
         return ValidationResult.OK;
     }

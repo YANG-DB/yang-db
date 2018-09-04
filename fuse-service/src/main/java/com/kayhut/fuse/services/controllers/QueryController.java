@@ -12,6 +12,8 @@ import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 
+import java.util.Optional;
+
 /**
  * Created by lior on 19/02/2017.
  */
@@ -38,6 +40,17 @@ public interface QueryController {
      * @return
      */
     ContentResponse<QueryResourceInfo> callAndFetch(ExecuteStoredQueryRequest request);
+
+
+    /**
+     *
+     * @param queryId
+     * @param cursorId
+     * @param pageSize
+     * @param deleteCurrentPage
+     * @return
+     */
+    ContentResponse<Object> fetchNextPage(String queryId, Optional<String> cursorId, int pageSize, boolean deleteCurrentPage);
 
     /**
      * get queries info

@@ -15,7 +15,7 @@ import java.util.List;
  * search for "like" constraint within a EpropGroup that does not have "*" in it, and replace with "eq"
  */
 public class LikeToEqTransformationAsgStrategy implements AsgStrategy {
-
+    //region AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
 
@@ -23,16 +23,18 @@ public class LikeToEqTransformationAsgStrategy implements AsgStrategy {
             transformGroup(ePropGroupAsgEBase.geteBase());
         });
     }
+    //endregion
 
+    //region Private Methods
     private void transformGroup(EPropGroup ePropGroup){
         Stream.ofAll(ePropGroup.getProps())
                 .filter(prop -> prop.getCon()!=null)
                 .filter(prop -> prop.getCon().getOp().equals(ConstraintOp.like) &&
                 !prop.getCon().getExpr().toString().contains("*")).forEach(eProp -> eProp.getCon().setOp(ConstraintOp.eq));
 
-        Stream.ofAll(ePropGroup.getGroups()).forEach(g -> transformGroup(g));
+        Stream.ofAll(ePropGroup.getGroups()).forEach(this::transformGroup);
     }
-
+    //endregion
 }
 
 

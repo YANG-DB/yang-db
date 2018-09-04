@@ -33,6 +33,7 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public Optional<QueryResource> getQueryResource(String queryId) {
+        if(queryId==null) return Optional.empty();
         return stores.stream().map(store -> store.getQueryResource(queryId))
                 .filter(Optional::isPresent)
                 .findFirst().orElse(Optional.empty());
@@ -40,6 +41,7 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public Optional<CursorResource> getCursorResource(String queryId, String cursorId) {
+        if(queryId==null || cursorId==null) return Optional.empty();
         return stores.stream().map(store -> store.getCursorResource(queryId, cursorId))
                 .filter(Optional::isPresent)
                 .findFirst().orElse(Optional.empty());
@@ -47,6 +49,7 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public Optional<PageResource> getPageResource(String queryId, String cursorId, String pageId) {
+        if(queryId==null || cursorId==null || pageId==null) return Optional.empty();
         return stores.stream().map(store -> store.getPageResource(queryId, cursorId, pageId))
                 .filter(Optional::isPresent)
                 .findFirst().orElse(Optional.empty());
@@ -61,11 +64,13 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public boolean deleteQueryResource(String queryId) {
+        if(queryId==null) return false;
         return stores.stream().filter(store -> store.deleteQueryResource(queryId)).findFirst().isPresent();
     }
 
     @Override
     public boolean addCursorResource(String queryId, CursorResource cursorResource) {
+        if(queryId==null ) return false;
         return stores.stream().filter(store -> store.getQueryResource(queryId).isPresent())
                 .findFirst().orElse(stores.iterator().next())
                 .addCursorResource(queryId, cursorResource);
@@ -73,11 +78,13 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public boolean deleteCursorResource(String queryId, String cursorId) {
+        if(queryId==null || cursorId==null) return false;
         return stores.stream().filter(store -> store.deleteCursorResource(queryId, cursorId)).findFirst().isPresent();
     }
 
     @Override
     public boolean addPageResource(String queryId, String cursorId, PageResource pageResource) {
+        if(queryId==null || cursorId==null) return false;
         return stores.stream().filter(store -> store.getQueryResource(queryId).isPresent())
                 .findFirst().orElse(stores.iterator().next())
                 .addPageResource(queryId, cursorId, pageResource);
@@ -85,6 +92,7 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public boolean deletePageResource(String queryId, String cursorId, String pageId) {
+        if(queryId==null || cursorId==null || pageId==null) return false;
         return stores.stream().filter(store -> store.deletePageResource(queryId, cursorId, pageId)).findFirst().isPresent();
     }
 

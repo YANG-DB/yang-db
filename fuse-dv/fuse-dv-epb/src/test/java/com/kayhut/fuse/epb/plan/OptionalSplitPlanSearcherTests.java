@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.plan;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.kayhut.fuse.dispatcher.epb.PlanSearcher;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -28,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Collections;
 import java.util.Date;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
@@ -35,7 +35,7 @@ import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.concrete;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.ePropGroup;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.RelProp.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
@@ -47,19 +47,19 @@ public class OptionalSplitPlanSearcherTests {
     private AsgQuery queryMultiOptional(){
         return AsgQuery.Builder.start("q", "O")
                 .next(typed(1, OntologyTestUtils.PERSON.type)
-                        .next(eProp(2,EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189)))))
+                        .next(AsgQuery.Builder.ePropGroup(2,EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189)))))
                 .next(rel(4, OWN.getrType(), R)
                         .below(relProp(5, of(6, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(7, OntologyTestUtils.DRAGON.type))
                 .next(quant1(8, all))
-                .in(eProp(9, EProp.of(10, NAME.type, Constraint.of(eq, "smith")), EProp.of(11, GENDER.type, Constraint.of(gt, new Value(MALE.ordinal(),MALE.name()))))
+                .in(AsgQuery.Builder.ePropGroup(9, EProp.of(10, NAME.type, Constraint.of(eq, "smith")), EProp.of(11, GENDER.type, Constraint.of(gt, new Value(MALE.ordinal(),MALE.name()))))
                         , optional(50).next(rel(12, FREEZE.getrType(), R)
                                 .next(unTyped(13)
-                                        .next(eProp(14,EProp.of(15, NAME.type, Constraint.of(ConstraintOp.notContains, "bob"))))
+                                        .next(AsgQuery.Builder.ePropGroup(14,EProp.of(15, NAME.type, Constraint.of(ConstraintOp.notContains, "bob"))))
                                 ))
                         , optional(60).next(rel(16, FIRE.getrType(), R)
                         .next(concrete(20, "smoge", DRAGON.type, "Display:smoge", "D")
-                            .next(eProp(21,EProp.of(22, NAME.type, Constraint.of(ConstraintOp.eq, "smoge"))))
+                            .next(AsgQuery.Builder.ePropGroup(21,EProp.of(22, NAME.type, Constraint.of(ConstraintOp.eq, "smoge"))))
                         ))
                 )
                 .build();
@@ -68,29 +68,31 @@ public class OptionalSplitPlanSearcherTests {
     private AsgQuery querySingleOptional(){
         return AsgQuery.Builder.start("q", "O")
                 .next(typed(1, OntologyTestUtils.PERSON.type))
-                .next(eProp(2,EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189))))
+                .next(AsgQuery.Builder.ePropGroup(2,EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189))))
                 .next(optional(50).next(rel(12, FREEZE.getrType(), R)
                                 .next(unTyped(13)
-                                        .next(eProp(14,EProp.of(15, NAME.type, Constraint.of(ConstraintOp.notContains, "bob"))))
+                                        .next(AsgQuery.Builder.ePropGroup(14,EProp.of(15, NAME.type, Constraint.of(ConstraintOp.notContains, "bob"))))
                 ))).build();
     }
 
     private AsgQuery queryNoOptional(){
         return AsgQuery.Builder.start("q", "O")
                 .next(typed(1, OntologyTestUtils.PERSON.type)
-                        .next(eProp(2,EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189)))))
+                        .next(AsgQuery.Builder.ePropGroup(2,EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189)))))
                 .build();
     }
 
     @Test
     public void testNoOptional(){
-        PlanSearcher<Plan, Cost, AsgQuery> planSearcherMock = Mockito.mock(PlanSearcher.class);
-        PlanWithCost<Plan, Cost> expectedPlan = new PlanWithCost<>(new Plan(new EntityOp()), new DoubleCost(1));
+        PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcherMock = Mockito.mock(PlanSearcher.class);
+        PlanWithCost<Plan, PlanDetailedCost> expectedPlan = new PlanWithCost<>(
+                new Plan(new EntityOp()),
+                new PlanDetailedCost(new DoubleCost(1), Collections.emptyList()));
         Mockito.when(planSearcherMock.search(any())).thenReturn(expectedPlan);
 
         OptionalSplitPlanSearcher planSearcher = new OptionalSplitPlanSearcher(planSearcherMock, null);
         AsgQuery query = queryNoOptional();
-        PlanWithCost<Plan, Cost> planWithCost = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
         Assert.assertNotNull(planWithCost);
         Assert.assertEquals(expectedPlan, planWithCost);
@@ -99,12 +101,12 @@ public class OptionalSplitPlanSearcherTests {
     @Test
     public void testSingleOptional(){
         AsgQuery query = querySingleOptional();
-        PlanSearcher<Plan, Cost, AsgQuery> mainPlanSearcherMock = Mockito.mock(PlanSearcher.class);
+        PlanSearcher<Plan, PlanDetailedCost, AsgQuery> mainPlanSearcherMock = Mockito.mock(PlanSearcher.class);
         Plan expectedPlan = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)), new EntityFilterOp(AsgQueryUtil.element$(query, 2)));
         PlanDetailedCost planDetailedCost = new PlanDetailedCost(new DoubleCost(10), Stream.of(new PlanWithCost(expectedPlan, new CountEstimatesCost(10,10))));
         Mockito.when(mainPlanSearcherMock.search(any())).thenReturn(new PlanWithCost<>(expectedPlan, planDetailedCost));
 
-        PlanSearcher<Plan, Cost, AsgQuery> optionalPlanSearcherMock = Mockito.mock(PlanSearcher.class);
+        PlanSearcher<Plan, PlanDetailedCost, AsgQuery> optionalPlanSearcherMock = Mockito.mock(PlanSearcher.class);
         Plan expectedOptionalPlan = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)),
                 new RelationOp(AsgQueryUtil.element$(query, 12)),
                 new EntityOp(AsgQueryUtil.element$(query, 13)),
@@ -126,14 +128,14 @@ public class OptionalSplitPlanSearcherTests {
 
 
         OptionalSplitPlanSearcher planSearcher = new OptionalSplitPlanSearcher(mainPlanSearcherMock, optionalPlanSearcherMock);
-        PlanWithCost<Plan, Cost> planWithCost = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
         PlanAssert.assertEquals(expectedCompletePlan, planWithCost.getPlan());
     }
 
     @Test
     public void testMultiOptional(){
         AsgQuery query = queryMultiOptional();
-        PlanSearcher<Plan, Cost, AsgQuery> mainPlanSearcherMock = Mockito.mock(PlanSearcher.class);
+        PlanSearcher<Plan, PlanDetailedCost, AsgQuery> mainPlanSearcherMock = Mockito.mock(PlanSearcher.class);
         Plan expectedPlan = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)),
                 new EntityFilterOp(AsgQueryUtil.element$(query, 2)),
                 new RelationOp(AsgQueryUtil.element$(query, 4)),
@@ -144,7 +146,7 @@ public class OptionalSplitPlanSearcherTests {
         PlanDetailedCost planDetailedCost = new PlanDetailedCost(new DoubleCost(10), Stream.of(new PlanWithCost(expectedPlan, new CountEstimatesCost(10,10))));
         Mockito.when(mainPlanSearcherMock.search(any())).thenReturn(new PlanWithCost<>(expectedPlan, planDetailedCost));
 
-        PlanSearcher<Plan, Cost, AsgQuery> optionalPlanSearcherMock = Mockito.mock(PlanSearcher.class);
+        PlanSearcher<Plan, PlanDetailedCost, AsgQuery> optionalPlanSearcherMock = Mockito.mock(PlanSearcher.class);
         Plan expectedOptionalPlan1 = new Plan(new EntityOp(AsgQueryUtil.element$(query, 7)),
                 new RelationOp(AsgQueryUtil.element$(query, 12)),
                 new EntityOp(AsgQueryUtil.element$(query, 13)),
@@ -191,7 +193,7 @@ public class OptionalSplitPlanSearcherTests {
 
 
         OptionalSplitPlanSearcher planSearcher = new OptionalSplitPlanSearcher(mainPlanSearcherMock, optionalPlanSearcherMock);
-        PlanWithCost<Plan, Cost> planWithCost = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
         PlanAssert.assertEquals(expectedCompletePlan, planWithCost.getPlan());
     }
 

@@ -65,7 +65,7 @@ public class StatisticalCostEstimatorTests {
                 .next(rel(2, OWN.getrType(), R).below(relProp(10, of(10, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of(9, NAME.type, Constraint.of(eq, "smith")), EProp.of(9, GENDER.type, Constraint.of(gt, MALE)))
+                .in(ePropGroup(9, EProp.of(9, NAME.type, Constraint.of(eq, "smith")), EProp.of(9, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R)
                                 .next(unTyped(6))
                         , rel(7, FIRE.getrType(), R)
@@ -225,7 +225,7 @@ public class StatisticalCostEstimatorTests {
     @Test
     public void estimateEntityOnlyPattern() throws Exception {
         AsgQuery query = AsgQuery.Builder.start("name", "ont").
-                next(concrete(1, "id", "4", "name", "A").next(eProp(101,EProp.of(9, "12", Constraint.of(gt, MALE))))).build();
+                next(concrete(1, "id", "4", "name", "A").next(ePropGroup(101,EProp.of(9, "12", Constraint.of(gt, MALE))))).build();
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock(query).entity(TYPED, 100, "4")
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
                 .rel(out, "1", 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, "5").entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));

@@ -37,7 +37,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
         if (opIndex == 0) {
             if (!(compositePlanOp.getOps().get(0) instanceof EntityOp)) {
                 return new ValidationResult(
-                        false,
+                        false,this.getClass().getSimpleName(),
                         "Adjacent:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
             } else
                 return ValidationResult.OK;
@@ -49,7 +49,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
         if (currentPlanOp instanceof EntityFilterOp) {
             if (!(previousPlanOp instanceof EntityOp)) {
                 return new ValidationResult(
-                        false,
+                        false,this.getClass().getSimpleName(),
                         "Adjacent:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
             }
 
@@ -62,7 +62,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
         if (currentPlanOp instanceof RelationFilterOp) {
             if (!(previousPlanOp instanceof RelationOp)) {
                 return new ValidationResult(
-                        false,
+                        false,this.getClass().getSimpleName(),
                         "Adjacent:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
 
             }
@@ -81,7 +81,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
             Optional<RelationOp> previousRelationOp = getPreviousOp(compositePlanOp, opIndex, RelationOp.class);
             if (!previousRelationOp.isPresent()) {
                 return new ValidationResult(
-                        false,
+                        false,this.getClass().getSimpleName(),
                         "Adjacent:Validation failed on:" + compositePlanOp + "<" + opIndex + ">");
             }
 
@@ -94,7 +94,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
         if (currentPlanOp instanceof RelationOp) {
             Optional<EntityOp> previousEntityOp = getPreviousOp(compositePlanOp, opIndex, EntityOp.class);
             if (!previousEntityOp.isPresent()) {
-                return new ValidationResult(false,"Adjacent:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
+                return new ValidationResult(false,this.getClass().getSimpleName(),"Adjacent:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
             }
 
             List<AsgEBase<? extends EBase>> path = AsgQueryUtil.path(query,
@@ -113,7 +113,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
                 EPropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) == 2;
         if (!b) {
             return new ValidationResult(
-                    false,
+                    false,this.getClass().getSimpleName(),
                     "Adjacent:Validation failed on:" + compositePlanOp.toString());
         }
         return ValidationResult.OK;
@@ -125,7 +125,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
                 RelPropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) == 2;
         if (!b) {
             return new ValidationResult(
-                    false,
+                    false,this.getClass().getSimpleName(),
                     "Adjacent:Validation failed on:" + compositePlanOp.toString());
 
         }
@@ -137,7 +137,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
                 Rel.class.isAssignableFrom(asgEBase.geteBase().getClass())) == 2;
         if (!b) {
             return new ValidationResult(
-                    false,
+                    false,this.getClass().getSimpleName(),
                     "Adjacent:Validation failed on:" + compositePlanOp.toString());
 
         }

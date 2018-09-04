@@ -35,7 +35,7 @@ import static com.kayhut.fuse.epb.utils.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.epb.utils.StatisticsMockUtils.build;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.concrete;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.ePropGroup;
 import static com.kayhut.fuse.model.execution.plan.Direction.out;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.gt;
 import static org.mockito.Matchers.any;
@@ -90,7 +90,7 @@ public class BasicPatternCostEstimatorTest {
 
         HashMap<RegexPatternCostEstimator.PatternPart, PlanOp> map = new HashMap<>();
         AsgQuery query = AsgQuery.Builder.start("name", "ont").
-                next(concrete(1, "id", "4", "name", "A").next(eProp(101, EProp.of(9, "12", Constraint.of(gt, MALE))))).build();
+                next(concrete(1, "id", "4", "name", "A").next(AsgQuery.Builder.ePropGroup(101, EProp.of(9, "12", Constraint.of(gt, MALE))))).build();
         Plan plan = new Plan().withOp(new EntityOp(AsgQueryUtil.element$(query, 1))).withOp(new EntityFilterOp(AsgQueryUtil.element$(query, 101)));
 
 

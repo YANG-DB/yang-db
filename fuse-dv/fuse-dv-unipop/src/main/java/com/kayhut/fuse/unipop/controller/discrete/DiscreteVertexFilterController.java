@@ -120,6 +120,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                 searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
 
         ElementConverter<SearchHit, Edge> converter = new DiscreteVertexFilterConverter(context);
+
         return Stream.ofAll(searchHits)
                 .flatMap(converter::convert)
                 .filter(Objects::nonNull).iterator();

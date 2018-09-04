@@ -77,8 +77,8 @@ public class AsgPropsGroupingStrategyTest {
         Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query);
         AsgQuery asgQuery = asgSupplier.get();
         AsgEBase<EBase> originalEPropAsgEbase = AsgQueryUtil.element(asgQuery, 4).get();
-        EntityPropertiesGroupingAsgStrategy entityPropertiesGroupingAsgStrategy = new EntityPropertiesGroupingAsgStrategy();
-        entityPropertiesGroupingAsgStrategy.apply(asgQuery, new AsgStrategyContext(null));
+        EPropGroupingAsgStrategy EPropGroupingAsgStrategy = new EPropGroupingAsgStrategy();
+        EPropGroupingAsgStrategy.apply(asgQuery, new AsgStrategyContext(null));
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
         assertEquals(0,asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());
@@ -108,8 +108,8 @@ public class AsgPropsGroupingStrategyTest {
         //endregion
 
         AsgQuery asgQuery = new AsgQuerySupplier(query).get();
-        EntityPropertiesGroupingAsgStrategy entityPropertiesGroupingAsgStrategy = new EntityPropertiesGroupingAsgStrategy();
-        entityPropertiesGroupingAsgStrategy.apply(asgQuery, new AsgStrategyContext(null));
+        EPropGroupingAsgStrategy EPropGroupingAsgStrategy = new EPropGroupingAsgStrategy();
+        EPropGroupingAsgStrategy.apply(asgQuery, new AsgStrategyContext(null));
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
         assertEquals(0, asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());
@@ -202,7 +202,7 @@ public class AsgPropsGroupingStrategyTest {
         //Checking that our EPropGroup Contains the original EProps
         assertTrue(((EPropGroup) newEPropGroupAsgEbase.geteBase()).getProps().contains(originalEProp1AsgEbase.geteBase()));
         assertTrue(((EPropGroup) newEPropGroupAsgEbase.geteBase()).getProps().contains(originalEProp2AsgEbase.geteBase()));
-        //eProp List of size = 2 in EPropGroup element
+        //ePropGroup List of size = 2 in EPropGroup element
 
         assertTrue(((EPropGroup) newEPropGroupAsgEbase.geteBase()).getProps().size() == 2);
         assertEquals(AsgQueryUtil.element(asgQuery, 4).get().getNext().get(0).geteNum(), newEPropGroupAsgEbase.geteNum());
@@ -270,7 +270,7 @@ public class AsgPropsGroupingStrategyTest {
         assertEquals(2, newEPropGroupAsgEbase.getParents().get(0).geteNum());
         assertEquals(0, newEPropGroupAsgEbase.getNext().size());
         assertTrue(((EPropGroup) newEPropGroupAsgEbase.geteBase()).getProps().contains(originalEPropAsgEbase.geteBase()));
-        //eProp List of size = 2 in EPropGroup
+        //ePropGroup List of size = 2 in EPropGroup
         assertTrue(((EPropGroup) newEPropGroupAsgEbase.geteBase()).getProps().size() == 1);
         //AND Quantifier eNum = 2 has 2 children: 1 Eprop and 1 ETyped(enum=5)
         List<AsgEBase<? extends EBase>> nextChildren = AsgQueryUtil.element(asgQuery, 2).get().getNext();
@@ -284,8 +284,8 @@ public class AsgPropsGroupingStrategyTest {
         AsgQuery asgQuery = AsgQueryStore.Q188_V1();
         AsgEBase<EBase> originalRelProp1AsgEbase = AsgQueryUtil.element(asgQuery, 4).get();
         AsgEBase<EBase> originalRelProp2AsgEbase = AsgQueryUtil.element(asgQuery, 5).get();
-        RelPropertiesGroupingAsgStrategy relPropertiesGroupingAsgStrategy = new RelPropertiesGroupingAsgStrategy();
-        relPropertiesGroupingAsgStrategy.apply(asgQuery, new AsgStrategyContext(null));
+        RelPropGroupingAsgStrategy relPropGroupingAsgStrategy = new RelPropGroupingAsgStrategy();
+        relPropGroupingAsgStrategy.apply(asgQuery, new AsgStrategyContext(null));
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
         assertEquals(0, asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());
@@ -308,8 +308,8 @@ public class AsgPropsGroupingStrategyTest {
         AsgQuery asgQuery = AsgQueryStore.Q187_V1();
         AsgEBase<EBase> originalRelProp1AsgEbase = AsgQueryUtil.element(asgQuery, 5).get();
         AsgEBase<EBase> originalRelProp2AsgEbase = AsgQueryUtil.element(asgQuery, 6).get();
-        HQuantifierPropertiesGroupingAsgStrategy HQuantifierPropertiesGroupingAsgStrategy = new HQuantifierPropertiesGroupingAsgStrategy();
-        HQuantifierPropertiesGroupingAsgStrategy.apply(asgQuery, new AsgStrategyContext(null));
+        HQuantPropertiesGroupingAsgStrategy HQuantPropertiesGroupingAsgStrategy = new HQuantPropertiesGroupingAsgStrategy();
+        HQuantPropertiesGroupingAsgStrategy.apply(asgQuery, new AsgStrategyContext(null));
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
         assertEquals(0, asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());
@@ -317,19 +317,13 @@ public class AsgPropsGroupingStrategyTest {
         assertEquals(asgEBase1.geteBase().geteNum(), 1);
         //Checking the RelProps grouping mechanism
         List<AsgEBase<RelPropGroup>> relPropGroups = AsgQueryUtil.elements(asgQuery, RelPropGroup.class);
-        assertTrue(relPropGroups.size() == 2);
+        assertTrue(relPropGroups.size() == 1);
         AsgEBase<EBase> newRelPropGroup1AsgEbase = AsgQueryUtil.element(asgQuery, 5).get();
         assertNotNull(newRelPropGroup1AsgEbase);
         assertEquals(RelPropGroup.class, newRelPropGroup1AsgEbase.geteBase().getClass());
         assertEquals(4, newRelPropGroup1AsgEbase.getParents().get(0).geteNum());
         assertEquals(0, newRelPropGroup1AsgEbase.getB().size());
-        AsgEBase<EBase> newRelPropGroup2AsgEbase = AsgQueryUtil.element(asgQuery, 6).get();
-        assertNotNull(newRelPropGroup2AsgEbase);
-        assertEquals(RelPropGroup.class, newRelPropGroup2AsgEbase.geteBase().getClass());
-        assertEquals(4, newRelPropGroup2AsgEbase.getParents().get(0).geteNum());
-        assertEquals(0, newRelPropGroup2AsgEbase.getB().size());
         //Checking that our RelPropGroup Contains the original EProps
         assertTrue(((RelPropGroup) newRelPropGroup1AsgEbase.geteBase()).getProps().contains(originalRelProp1AsgEbase.geteBase()));
-        assertTrue(((RelPropGroup) newRelPropGroup2AsgEbase.geteBase()).getProps().contains(originalRelProp2AsgEbase.geteBase()));
     }
 }

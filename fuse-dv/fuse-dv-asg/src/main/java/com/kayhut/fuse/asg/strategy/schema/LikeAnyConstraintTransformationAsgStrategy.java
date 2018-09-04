@@ -70,7 +70,7 @@ public class LikeAnyConstraintTransformationAsgStrategy implements AsgStrategy ,
         }
 
         for (EProp eProp : new ArrayList<>(ePropGroupAsgEBase.geteBase().getProps())) {
-            if (!eProp.getCon().getOp().equals(ConstraintOp.likeAny)) {
+            if (eProp.getCon()==null || !eProp.getCon().getOp().equals(ConstraintOp.likeAny)) {
                 continue;
             }
 
@@ -106,9 +106,7 @@ public class LikeAnyConstraintTransformationAsgStrategy implements AsgStrategy ,
             List<String> ngramWords =
                     Stream.ofAll(wildcardRuleGroup.getGroups())
                             .flatMap(BasePropGroup::getProps)
-                            .flatMap(prop -> prop.getCon().getOp().equals(ConstraintOp.eq) ?
-                                    Stream.of(prop.getCon().getExpr().toString()) :
-                                    Stream.ofAll(LikeUtil.getWildcardNgrams(propertySchema.get(), prop.getCon().getExpr().toString())))
+                            .flatMap(prop -> Stream.ofAll(LikeUtil.getWildcardNgrams(propertySchema.get(), prop.getCon().getExpr().toString())))
                             .distinct()
                             .toJavaList();
 

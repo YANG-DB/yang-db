@@ -25,6 +25,8 @@ public interface QueryDriver {
 
     Optional<QueryResourceInfo> createAndFetch(CreateQueryRequest queryRequest);
 
+    Optional<Object> getNextPageData(String queryId, Optional<String> cursorId,int pageSize, boolean deleteCurrentPage);
+
     Optional<StoreResourceInfo> getInfo();
 
     Optional<QueryResourceInfo> getInfo(String queryId);

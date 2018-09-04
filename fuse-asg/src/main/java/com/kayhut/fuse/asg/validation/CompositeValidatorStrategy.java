@@ -39,7 +39,7 @@ public class CompositeValidatorStrategy implements AsgValidatorStrategy {
                 .flatMap(validationContext -> Stream.ofAll(validationContext.errors()))
                 .toJavaList();
 
-        return new ValidationResult(errors.isEmpty(), errors);
+        return new ValidationResult(errors.isEmpty(), this.getClass().getSimpleName(), errors);
     }
     //endregion
 

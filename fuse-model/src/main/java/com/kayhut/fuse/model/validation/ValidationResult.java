@@ -9,21 +9,22 @@ import java.util.StringJoiner;
  * Created by liorp on 5/29/2017.
  */
 public class ValidationResult {
-    public static ValidationResult OK = new ValidationResult(true);
+    public static ValidationResult OK = new ValidationResult(true, "none");
 
-    public static String print(Object ... elements) {
-        StringJoiner joiner = new StringJoiner(":","[","]");
+    public static String print(Object... elements) {
+        StringJoiner joiner = new StringJoiner(":", "[", "]");
         Arrays.asList(elements).forEach(element -> joiner.add(element.toString()));
         return joiner.toString();
     }
 
     //region Constructors
-    public ValidationResult(boolean valid, String ... errors) {
-        this(valid, Stream.of(errors));
+    public ValidationResult(boolean valid, String validator, String... errors) {
+        this(valid, validator, Stream.of(errors));
     }
 
-    public ValidationResult(boolean valid, Iterable<String> errors) {
+    public ValidationResult(boolean valid, String validator, Iterable<String> errors) {
         this.valid = valid;
+        this.validator = validator;
         this.errors = Stream.ofAll(errors).toJavaList();
     }
     //endregion
@@ -41,13 +42,18 @@ public class ValidationResult {
     //region Override Methods
     @Override
     public String toString() {
-        if(valid())
+        if (valid())
             return "valid";
-        return print(errors);
+        return print(errors + ":" + validator);
     }
-    //endregion
+
+    public String getValidator() {
+        return validator;
+    }
+//endregion
 
     //region Fields
+    private final String validator;
     private boolean valid;
     private Iterable<String> errors;
     //endregion

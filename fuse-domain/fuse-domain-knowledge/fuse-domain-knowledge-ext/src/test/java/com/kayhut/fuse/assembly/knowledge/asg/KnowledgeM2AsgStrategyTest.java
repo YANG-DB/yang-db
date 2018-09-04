@@ -96,7 +96,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testLikeWithoutAsterisks() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
@@ -106,7 +106,7 @@ public class KnowledgeM2AsgStrategyTest {
         asgStrategy.transform(asgQuery);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
-        //verify original field filter was added with ranking eProp groups + title field added
+        //verify original field filter was added with ranking ePropGroup groups + title field added
         Assert.assertEquals(actual.getProps().size(), 3);
         Assert.assertEquals(actual.getProps().get(1).getpType(), "stringValue");
         Assert.assertEquals(actual.getProps().get(1).getCon(), Constraint.of(ConstraintOp.eq, sherley + " " + windzor));
@@ -158,7 +158,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testLikeWithoutAsterisksWithQuestionMark() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
@@ -168,7 +168,7 @@ public class KnowledgeM2AsgStrategyTest {
         asgStrategy.transform(asgQuery);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
-        //verify original field filter was added with ranking eProp groups + title field added
+        //verify original field filter was added with ranking ePropGroup groups + title field added
         Assert.assertEquals(actual.getProps().size(), 3);
         Assert.assertEquals(actual.getProps().get(1).getpType(), "stringValue");
         Assert.assertEquals(actual.getProps().get(1).getCon(), Constraint.of(ConstraintOp.eq, SHERLEY_WINDZOR));
@@ -220,7 +220,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testLikeWithAsterisksInMiddle() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
@@ -230,7 +230,7 @@ public class KnowledgeM2AsgStrategyTest {
         asgStrategy.transform(asgQuery);
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
-        //verify original field filter was added with ranking eProp groups
+        //verify original field filter was added with ranking ePropGroup groups
         Assert.assertEquals(actual.getQuantType(), all);
         Assert.assertEquals(actual.getProps().size(), 3);
         Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
@@ -366,7 +366,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testLikeWithAsterisksAllAround() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
@@ -377,7 +377,7 @@ public class KnowledgeM2AsgStrategyTest {
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
         Assert.assertEquals(actual.getQuantType(), all);
-        //verify original field filter was added with ranking eProp groups
+        //verify original field filter was added with ranking ePropGroup groups
         Assert.assertEquals(actual.getProps().size(), 3);
         Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
         //1 root group for with 'some' operator
@@ -494,7 +494,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testLikeWithAsterisksInSides() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
@@ -505,7 +505,7 @@ public class KnowledgeM2AsgStrategyTest {
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
         Assert.assertEquals(actual.getQuantType(), all);
-        //verify original field filter was added with ranking eProp groups
+        //verify original field filter was added with ranking ePropGroup groups
         Assert.assertEquals(actual.getProps().size(), 3);
         Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
         //1 root group for with 'some' operator
@@ -615,7 +615,7 @@ public class KnowledgeM2AsgStrategyTest {
     @Test
     public void testEqual() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
-                .next(typed(1, "Person", "A"))
+                .next(typed(1, "Person", "A.globalEntityValue"))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
                         EProp.of(31, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
@@ -627,7 +627,7 @@ public class KnowledgeM2AsgStrategyTest {
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
         Assert.assertEquals(actual.getQuantType(), all);
-        //verify original field filter was added with ranking eProp groups
+        //verify original field filter was added with ranking ePropGroup groups
         Assert.assertEquals(actual.getProps().size(), 3);
         Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
         //1 root group for with 'some' operator
@@ -684,7 +684,7 @@ public class KnowledgeM2AsgStrategyTest {
 
 
         EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
-        //verify original field filter was added with ranking eProp groups
+        //verify original field filter was added with ranking ePropGroup groups
         Assert.assertEquals(actual.getProps().size(), 2);
         Assert.assertEquals(actual.getProps().get(0).getpType(), "fieldId");
         //1 root group for with 'some' operator

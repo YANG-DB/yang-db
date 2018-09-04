@@ -1,15 +1,17 @@
 package com.kayhut.fuse.unipop.controller.discrete;
 
 import javaslang.collection.Stream;
+import org.jooq.lambda.Seq;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class StamTest {
     @Test
+    @Ignore
     public void test1() {
         Iterator<Integer> iterator = Stream.ofAll(() -> new MyIterator())
                 .flatMap(bulk -> Stream.ofAll(() -> process(bulk)))
@@ -18,6 +20,61 @@ public class StamTest {
         while(iterator.hasNext()) {
             int a = iterator.next();
             int x = 5;
+        }
+    }
+
+    @Test
+    @Ignore
+    public void test2() {
+        Iterator<Integer> iterator = Seq.seq(new MyIterator())
+                .flatMap(bulk -> Seq.seq(process(bulk)))
+                .iterator();
+
+        while(iterator.hasNext()) {
+            int a = iterator.next();
+            int x = 5;
+        }
+    }
+
+    @Test
+    @Ignore
+    public void test3() {
+        List<Integer> a = Arrays.asList(1, 2, 3);
+        Set<Integer> b = new HashSet<>();
+
+        long start = System.currentTimeMillis();
+        for(int i = 0 ; i < 1000000 ; i++) {
+            Stream<Integer> stream = Stream.ofAll(a);
+            stream.forEach(b::add);
+        }
+        long elapsed = System.currentTimeMillis() - start;
+
+        b.clear();
+        start = System.currentTimeMillis();
+        for(int i = 0 ; i < 1000000 ; i++) {
+            Seq<Integer> seq = Seq.seq(a);
+            seq.forEach(b::add);
+        }
+        elapsed = System.currentTimeMillis() - start;
+
+        for(int j = 0 ; j < 10 ; j++) {
+            b.clear();
+            start = System.currentTimeMillis();
+            for (int i = 0; i < 10000000; i++) {
+                Stream<Integer> stream = Stream.ofAll(a);
+                stream.forEach(b::add);
+            }
+            long elapsedJavaslang = System.currentTimeMillis() - start;
+
+            b.clear();
+            start = System.currentTimeMillis();
+            for (int i = 0; i < 10000000; i++) {
+                Seq<Integer> seq = Seq.seq(a);
+                seq.forEach(b::add);
+            }
+            long elapsedSeq = System.currentTimeMillis() - start;
+
+            System.out.println("elapsedJavaslang: " + elapsedJavaslang + ",   elapsedSeq: " + elapsedSeq);
         }
     }
 

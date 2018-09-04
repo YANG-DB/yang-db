@@ -18,11 +18,13 @@ import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.ActiveShardCount;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.rest.RestStatus;
@@ -78,6 +80,7 @@ public class PersistantResourceStore implements ResourceStore {
             } catch (IndexNotFoundException e) {
                 this.client.admin().indices()
                         .create(new CreateIndexRequest()
+                                .waitForActiveShards(ActiveShardCount.ALL)
                                 .index(SYSTEM)).actionGet();
 
             }
@@ -97,12 +100,26 @@ public class PersistantResourceStore implements ResourceStore {
 
     @Override
     public Optional<QueryResource> getQueryResource(String queryId) {
-        final GetResponse response = client.prepareGet(SYSTEM, RESOURCE, queryId).get();
         try {
+            final GetResponse response = client.prepareGet(SYSTEM, RESOURCE, queryId).get();
             if (response.isExists())
                 return Optional.of(buildQueryResource(queryId, response.getSource()));
+        } catch (IndexNotFoundException e) {
+            final CreateIndexResponse response = this.client.admin().indices()
+                    .create(new CreateIndexRequest()
+                            .waitForActiveShards(ActiveShardCount.ALL)
+                            .index(SYSTEM)).actionGet();
+            if(response.isShardsAcked()) {
+                if (client.prepareGet(SYSTEM, RESOURCE, queryId).get().isExists()) {
+                    try {
+                        return Optional.of(buildQueryResource(queryId, client.prepareGet(SYSTEM, RESOURCE, queryId).get().getSource()));
+                    } catch (IOException e1) {
+                        throw new RuntimeException(e1);
+                    }
+                }
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return Optional.empty();
     }
@@ -122,10 +139,14 @@ public class PersistantResourceStore implements ResourceStore {
                             .endObject()
                     ).execute().actionGet();
             return response.status() == RestStatus.CREATED || response.status() == RestStatus.OK;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IndexNotFoundException e) {
+            this.client.admin().indices()
+                    .create(new CreateIndexRequest()
+                            .waitForActiveShards(ActiveShardCount.ALL)
+                            .index(SYSTEM)).actionGet();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return false;
     }

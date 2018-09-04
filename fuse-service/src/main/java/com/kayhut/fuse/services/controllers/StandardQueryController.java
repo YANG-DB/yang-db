@@ -144,6 +144,13 @@ public class StandardQueryController implements QueryController {
     }
 
     @Override
+    public ContentResponse<Object> fetchNextPage(String queryId, Optional<String> cursorId, int pageSize, boolean deleteCurrentPage) {
+        return Builder.builder(OK, NOT_FOUND)
+                .data(this.driver.getNextPageData(queryId,cursorId,pageSize,deleteCurrentPage))
+                .compose();
+    }
+
+    @Override
     public ContentResponse<StoreResourceInfo> getInfo() {
         return Builder.<StoreResourceInfo>builder(OK, NOT_FOUND)
                 .data(this.driver.getInfo())

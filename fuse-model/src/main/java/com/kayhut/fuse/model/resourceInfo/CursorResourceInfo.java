@@ -61,9 +61,27 @@ public class CursorResourceInfo extends ResourceInfoBase {
         this.pageResourceInfos = pageResourceInfos;
     }
 
+    public FuseError getError() {
+        return error;
+    }
+
+    public CursorResourceInfo error(FuseError error) {
+        CursorResourceInfo clone  = new CursorResourceInfo(
+                this.getResourceUrl(),
+                this.getResourceId(),
+                this.cursorRequest,
+                this.pageStoreUrl,
+                this.pageResourceInfos);
+
+        clone.error = error;
+        return clone ;
+    }
+
+
     //endregion
 
     //region Fields
+    private FuseError error;
     private CreateCursorRequest cursorRequest;
     private String pageStoreUrl;
     private List<PageResourceInfo> pageResourceInfos;

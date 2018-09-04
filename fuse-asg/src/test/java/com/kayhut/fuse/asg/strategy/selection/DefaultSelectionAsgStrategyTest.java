@@ -10,7 +10,6 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
 import javaslang.collection.Stream;
 import org.junit.Assert;
@@ -40,10 +39,10 @@ public class DefaultSelectionAsgStrategyTest {
     public void testSelectionForTypedEntity() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.PERSON.type))
-                .next(eProp(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
+                .next(ePropGroup(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(20,RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(concrete(3, "HorseWithNoName", OntologyTestUtils.HORSE.type,"display","eTag"))
-                .next(eProp(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
+                .next(ePropGroup(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
                 .build();
 
         DefaultSelectionAsgStrategy selectionAsgStrategy = new DefaultSelectionAsgStrategy(new OntologyProvider() {
@@ -72,10 +71,10 @@ public class DefaultSelectionAsgStrategyTest {
     public void testNoSelectionForTypedEntityWithProj() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.PERSON.type))
-                .next(eProp(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe")), EProp.of(100, "firstName", new IdentityProjection())))
+                .next(ePropGroup(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe")), EProp.of(100, "firstName", new IdentityProjection())))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(20,RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(concrete(3, "HorseWithNoName", OntologyTestUtils.HORSE.type,"display","eTag"))
-                .next(eProp(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
+                .next(ePropGroup(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
                 .build();
 
         DefaultSelectionAsgStrategy selectionAsgStrategy = new DefaultSelectionAsgStrategy(new OntologyProvider() {

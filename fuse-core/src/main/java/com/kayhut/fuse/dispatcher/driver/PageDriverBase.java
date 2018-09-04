@@ -1,13 +1,15 @@
 package com.kayhut.fuse.dispatcher.driver;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.resourceInfo.FuseError;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import javaslang.collection.Stream;

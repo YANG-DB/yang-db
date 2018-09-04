@@ -3,7 +3,7 @@
     <parent>
         <artifactId>fuse-dv</artifactId>
         <groupId>com.kayhut</groupId>
-        <version>0.45-SNAPSHOT</version>
+        <version>0.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -55,6 +55,10 @@
         <dependency>
             <groupId>io.javaslang</groupId>
             <artifactId>javaslang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jool</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
