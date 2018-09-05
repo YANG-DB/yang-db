@@ -7,24 +7,32 @@
       "number_of_replicas": "0",
       "refresh_interval": "100ms",
       "analysis": {
-        "normalizer":{
-          "lowercase_normalizer":{
-            "filter":[
+        "normalizer": {
+          "lowercase_normalizer": {
+            "filter": [
               "lowercase"
             ],
-            "type":"custom"
+            "type": "custom"
           }
         },
         "analyzer": {
           "knowledge_ngram_analyzer": {
             "type": "custom",
             "tokenizer": "knowledge_ngram_tokenizer",
-            "filter": [ "standard", "knowledge_stopwords" ,"lowercase"]
+            "filter": [
+              "standard",
+              "knowledge_stopwords",
+              "lowercase"
+            ]
           },
           "knowledge_standard_analyzer": {
             "type": "custom",
             "tokenizer": "standard",
-            "filter": [ "standard", "knowledge_stopwords","lowercase" ]
+            "filter": [
+              "standard",
+              "knowledge_stopwords",
+              "lowercase"
+            ]
           }
         },
         "tokenizer": {
@@ -32,7 +40,12 @@
             "type": "nGram",
             "min_gram": "1",
             "max_gram": "10",
-            "token_chars": [ "letter", "digit", "punctuation", "symbol" ]
+            "token_chars": [
+              "letter",
+              "digit",
+              "punctuation",
+              "symbol"
+            ]
           }
         },
         "filter": {
@@ -99,7 +112,7 @@
           "search_analyzer": "knowledge_standard_analyzer",
           "fields": {
             "keyword": {
-              "normalizer":"lowercase_normalizer",
+              "normalizer": "lowercase_normalizer",
               "type": "keyword"
             }
           }
@@ -110,7 +123,7 @@
           "search_analyzer": "knowledge_standard_analyzer",
           "fields": {
             "keyword": {
-              "normalizer":"lowercase_normalizer",
+              "normalizer": "lowercase_normalizer",
               "type": "keyword"
             }
           }
@@ -121,7 +134,7 @@
           "search_analyzer": "knowledge_standard_analyzer",
           "fields": {
             "keyword": {
-              "normalizer":"lowercase_normalizer",
+              "normalizer": "lowercase_normalizer",
               "type": "keyword"
             }
           }
@@ -186,6 +199,9 @@
         },
         "authorizationCount": {
           "type": "integer"
+        },
+        "isExternal": {
+          "type": "keyword"
         }
       }
     }
