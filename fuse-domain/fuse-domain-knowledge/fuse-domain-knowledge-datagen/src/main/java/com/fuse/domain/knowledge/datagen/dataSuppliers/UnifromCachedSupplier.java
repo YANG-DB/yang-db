@@ -2,9 +2,7 @@ package com.fuse.domain.knowledge.datagen.dataSuppliers;
 
 import javaslang.collection.Stream;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -21,6 +19,7 @@ public class UnifromCachedSupplier<T> extends RandomDataSupplier<T> {
         this.supplier = supplier;
         this.maxCacheSize = maxCacheSize;
         this.cacheSet = new HashSet<>();
+        this.cacheList = new ArrayList<>();
     }
 
     public UnifromCachedSupplier(Iterable<T> cache) {
@@ -29,25 +28,29 @@ public class UnifromCachedSupplier<T> extends RandomDataSupplier<T> {
 
     public UnifromCachedSupplier(Iterable<T> cache, long seed) {
         super(seed);
-        this.cacheSet = Stream.ofAll(cache).toJavaSet();
-        this.maxCacheSize = this.cacheSet.size();
+        this.cacheList = Stream.ofAll(cache).toJavaList();
     }
     //endregion
 
     //region RandomDataSupplier Implementation
     @Override
     public T get() {
-        if (this.cacheSet.size() == maxCacheSize) {
-            this.cacheList = Stream.ofAll(this.cacheSet).toJavaList();
-            this.cacheSet = null;
+        if (this.cacheSet != null) {
+            if (this.cacheSet.size() == maxCacheSize) {
+                this.cacheSet = null;
+            }
         }
 
-        if (this.cacheList != null) {
+        if (this.cacheList != null && this.cacheSet == null) {
+            if (this.cacheList.isEmpty()) {
+                throw new NoSuchElementException();
+            }
             return this.cacheList.get(this.random.nextInt(this.cacheList.size()));
         }
 
         T item = this.supplier.get();
         this.cacheSet.add(item);
+        this.cacheList.add(item);
 
         return item;
     }

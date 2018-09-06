@@ -1,5 +1,6 @@
 package com.fuse.domain.knowledge.datagen.dataSuppliers;
 
+import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 /**
@@ -22,9 +23,15 @@ public class ProbabilisticCompositeSupplier<T> extends RandomDataSupplier<T> {
     //region Supplier Implementation
     @Override
     public T get() {
-        return this.random.nextDouble() < pSupplier1 ?
-                this.supplier1.get() :
-                this.supplier2.get();
+        double p = this.random.nextDouble();
+        Supplier<T> supplier = p < pSupplier1 ? this.supplier1 : this.supplier2;
+
+        try {
+            return supplier.get();
+        } catch (NoSuchElementException e) {
+            supplier = supplier == this.supplier1 ? this.supplier2 : this.supplier1;
+            return supplier.get();
+        }
     }
     //endregion
 

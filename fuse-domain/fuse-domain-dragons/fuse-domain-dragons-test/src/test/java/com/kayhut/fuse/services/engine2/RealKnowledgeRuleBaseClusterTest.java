@@ -1669,7 +1669,8 @@ public class RealKnowledgeRuleBaseClusterTest {
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
 
         String workingDir = System.getProperty("user.dir");
-        String templatesPath = Paths.get(workingDir, "../", "fuse-assembly", "resources", "indexTemplates").toString();
+        String templatesPath = Paths.get(workingDir, "../../", "fuse-domain-knowledge", "fuse-domain-knowledge-assembly",
+                "resources", "assembly", "Knowledge", "indexTemplates").toString();
 
         File[] templateFiles = new File(templatesPath).listFiles();
         if (templateFiles != null) {
@@ -1850,7 +1851,7 @@ public class RealKnowledgeRuleBaseClusterTest {
                             .put("type", "reference")
                             .put("title", "Title of - " + referenceId)
                             .put("url", "http://" + UUID.randomUUID().toString() + "." + domains.get(random.nextInt(domains.size())))
-                            .put("value", contents.get(random.nextInt(contents.size())))
+                            .put("content", contents.get(random.nextInt(contents.size())))
                             .put("system", "system" + random.nextInt(10))
                             .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
                             .put("authorizationCount", 1)

@@ -4,46 +4,35 @@ import com.kayhut.fuse.unipop.controller.search.DefaultSearchOrderProvider;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Supplier;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-/**
- * Created by Roman on 6/23/2018.
- */
-public class UniformDataTextSupplier extends RandomDataSupplier<String> {
+public class OrderedDataTextSupplier implements Supplier<String> {
     //region Constructors
-    public UniformDataTextSupplier(Client client, String type, String fieldName, String index, int maxNumWords) {
-        this(client, type, fieldName, null, index, maxNumWords, 0);
+    public OrderedDataTextSupplier(Client client, String type, String fieldName, String index, int maxNumWords) {
+        this(client, type, fieldName, null, index, maxNumWords);
     }
 
-    public UniformDataTextSupplier(Client client, String type, String fieldName, String index, int maxNumWords, long seed) {
-        this(client, type, fieldName, null, index, maxNumWords, seed);
-    }
-
-    public UniformDataTextSupplier(Client client, String type, String fieldName, String context, String index, int maxNumWords) {
-        this(client, type, fieldName, index, maxNumWords, 0);
-    }
-
-    public UniformDataTextSupplier(Client client, String type, String fieldName, String context, String index, int maxNumWords, long seed) {
-        super(seed);
+    public OrderedDataTextSupplier(Client client, String type, String fieldName, String context, String index, int maxNumWords) {
         SearchHitScrollIterable hits = new SearchHitScrollIterable(
                 client,
                 context == null ?
                         client.prepareSearch().setIndices(index)
-                        .setQuery(boolQuery().filter(
-                                boolQuery()
-                                        .must(termQuery("type", type))
-                                        .must(existsQuery(fieldName))
-                                        .mustNot(existsQuery("deleteTime"))))
-                        .setFetchSource(fieldName, null) :
+                                .setQuery(boolQuery().filter(
+                                        boolQuery()
+                                                .must(termQuery("type", type))
+                                                .must(existsQuery(fieldName))
+                                                .mustNot(existsQuery("deleteTime"))))
+                                .setFetchSource(fieldName, null) :
                         client.prepareSearch().setIndices(index)
                                 .setQuery(boolQuery().filter(
                                         boolQuery()
@@ -75,17 +64,23 @@ public class UniformDataTextSupplier extends RandomDataSupplier<String> {
         }
 
         this.words = Stream.ofAll(wordSet).toJavaList();
+        this.currentIndex = 0;
     }
     //endregion
 
     //region RandomDataSupplier Implementation
     @Override
     public String get() {
-        return this.words.get(this.random.nextInt(this.words.size()));
+        if (this.currentIndex < this.words.size()) {
+            return this.words.get(this.currentIndex++);
+        }
+
+        throw new NoSuchElementException();
     }
     //endregion
 
     //region Fields
     private List<String> words;
+    private int currentIndex;
     //endregion
 }

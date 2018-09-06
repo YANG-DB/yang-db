@@ -63,7 +63,7 @@ public abstract class KnowledgeEntityBase {
             this.deleteTime = deleteTime;
             this.refs = refs;
             this.authorization = authorization;
-            this.authorizationCount = Stream.ofAll(authorization).size();
+            this.authorizationCount = authorization == null ? 0 : Stream.ofAll(authorization).size();
         }
         //endregion
 
@@ -146,10 +146,12 @@ public abstract class KnowledgeEntityBase {
     //endregion
 
     //region Properties
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     public String getType() {
         return type;
     }
 
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     public void setType(String type) {
         this.type = type;
     }

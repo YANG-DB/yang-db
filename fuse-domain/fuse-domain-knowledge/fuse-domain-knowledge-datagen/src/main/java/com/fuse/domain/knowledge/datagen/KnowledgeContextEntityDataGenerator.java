@@ -15,13 +15,13 @@ public class KnowledgeContextEntityDataGenerator implements KnowledgeGraphGenera
     public KnowledgeContextEntityDataGenerator(
             Client client,
             GenerationContext generationContext,
-            Supplier<String> logicalIdSuppliers,
+            Supplier<Entity> entitySupplier,
             Supplier<String> categorySupplier,
             Supplier<KnowledgeEntityBase.Metadata> metadataSupplier) {
         this.client = client;
         this.generationContext = generationContext;
 
-        this.logicalIdSupplier = logicalIdSuppliers;
+        this.entitySupplier = entitySupplier;
         this.categorySupplier = categorySupplier;
         this.metadataSupplier = metadataSupplier;
 
@@ -40,19 +40,27 @@ public class KnowledgeContextEntityDataGenerator implements KnowledgeGraphGenera
 
         List<ElasticDocument<KnowledgeEntityBase>> entities = new ArrayList<>();
         while(this.numGenerated < this.numToGenerate && entities.size() < 1000) {
-            String logicalId = this.logicalIdSupplier.get();
-            String context = this.generationContext.getContextGenerationConfiguration().getToContext();
+            Entity entity = this.entitySupplier.get();
+            String logicalId = entity.getLogicalId();
+            String context = entity.getContext();
+            String category = this.categorySupplier.get();
+            KnowledgeEntityBase.Metadata metadata = this.metadataSupplier.get();
 
             entities.add(new ElasticDocument<>(
                     this.generationContext.getElasticConfiguration().getWriteSchema().getEntityIndex(),
                     "pge",
                     String.format("%s.%s", logicalId, context),
                     logicalId,
-                    new Entity(
-                            logicalId,
-                            context,
-                            this.categorySupplier.get(),
-                            this.metadataSupplier.get())));
+                    new Entity(logicalId, context, category, metadata)));
+
+            if (context.equals("global")) {
+                entities.add(new ElasticDocument<>(
+                        this.generationContext.getElasticConfiguration().getWriteSchema().getEntityIndex(),
+                        "pge",
+                        String.format("%s.%s", logicalId, this.generationContext.getContextGenerationConfiguration().getToContext()),
+                        logicalId,
+                        new Entity(logicalId, this.generationContext.getContextGenerationConfiguration().getToContext(), category, metadata)));
+            }
 
             this.numGenerated++;
         }
@@ -65,7 +73,7 @@ public class KnowledgeContextEntityDataGenerator implements KnowledgeGraphGenera
     private Client client;
     private GenerationContext generationContext;
 
-    private Supplier<String> logicalIdSupplier;
+    private Supplier<Entity> entitySupplier;
     private Supplier<String> categorySupplier;
     private Supplier<KnowledgeEntityBase.Metadata> metadataSupplier;
 

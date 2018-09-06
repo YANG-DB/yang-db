@@ -51,7 +51,7 @@ public class KnowledgeContextRelationValueDataGenerator implements KnowledgeGrap
         while(rvalues.size() < 1000) {
             try {
                 String relationId = this.relationIdSupplier.get();
-                String fieldType = this.generationContext.getContextStatistics().getEntityFieldTypes().get(this.fieldId);
+                String fieldType = this.generationContext.getContextStatistics().getRelationFieldTypes().get(this.fieldId);
 
                 rvalues.addAll(
                         Stream.fill(
@@ -94,7 +94,7 @@ public class KnowledgeContextRelationValueDataGenerator implements KnowledgeGrap
                         relationId,
                         context,
                         fieldId,
-                        (Date)this.fieldValuesSupplier.get(),
+                        this.fieldValuesSupplier.get().toString(),
                         metadataSupplier.get());
             default: throw new RuntimeException("unsupported field type: " + fieldType);
         }

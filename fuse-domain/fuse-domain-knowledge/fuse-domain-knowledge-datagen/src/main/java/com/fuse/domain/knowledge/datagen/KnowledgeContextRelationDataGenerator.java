@@ -124,7 +124,7 @@ public class KnowledgeContextRelationDataGenerator implements KnowledgeGraphGene
                                                 "out",
                                                 metadata)),
                                 new ElasticDocument<KnowledgeEntityBase>(
-                                        this.generationContext.getElasticConfiguration().getWriteSchema().getRelationIndex(),
+                                        this.generationContext.getElasticConfiguration().getWriteSchema().getEntityIndex(),
                                         "pge",
                                         String.format("%s.in", relationId),
                                         relation.getEntityBId().split("\\.")[0],
@@ -173,7 +173,7 @@ public class KnowledgeContextRelationDataGenerator implements KnowledgeGraphGene
                                                 "out",
                                                 metadata)),
                                 new ElasticDocument<KnowledgeEntityBase>(
-                                        this.generationContext.getElasticConfiguration().getWriteSchema().getRelationIndex(),
+                                        this.generationContext.getElasticConfiguration().getWriteSchema().getEntityIndex(),
                                         "pge",
                                         String.format("%s.in", relationId),
                                         entityA.getLogicalId(),

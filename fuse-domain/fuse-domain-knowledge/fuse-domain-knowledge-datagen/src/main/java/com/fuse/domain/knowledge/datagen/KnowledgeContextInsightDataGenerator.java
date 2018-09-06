@@ -41,7 +41,7 @@ public class KnowledgeContextInsightDataGenerator implements KnowledgeGraphGener
         this.metadataSupplier = metadataSupplier;
 
         this.numToGenerate = (int) Math.floor(
-                this.generationContext.getContextStatistics().getInsightEntityCounts().size() *
+                Stream.ofAll(this.generationContext.getContextStatistics().getInsightEntityCounts().values()).sum().intValue() *
                         this.generationContext.getContextGenerationConfiguration().getScaleFactor());
     }
     //endregion
@@ -81,7 +81,7 @@ public class KnowledgeContextInsightDataGenerator implements KnowledgeGraphGener
                             new Einsight(String.format("%s.%s", entity.getLogicalId(), context), insightId)))
                     .toJavaList());
 
-            this.numGenerated += entitiesInInsight.size() + 1;
+            this.numGenerated++;
         }
 
         return insights;

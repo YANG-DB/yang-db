@@ -1,10 +1,13 @@
 package com.fuse.domain.knowledge.datagen;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuse.domain.knowledge.datagen.model.KnowledgeEntityBase;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentType;
 
 import java.io.InvalidObjectException;
 import java.util.Set;
@@ -19,17 +22,18 @@ public class ElasticWriter {
         this.client = client;
         this.elasticConfiguration = elasticConfiguration;
         this.bulkSize = bulkSize;
+        this.mapper = new ObjectMapper();
     }
     //endregion
 
     //region Public Methods
-    public void write(Iterable<ElasticDocument<KnowledgeEntityBase>> knowledgeDocuments) {
+    public void write(Iterable<ElasticDocument<KnowledgeEntityBase>> knowledgeDocuments) throws JsonProcessingException {
         BulkRequestBuilder bulkRequestBuilder = this.client.prepareBulk();
         int bulk = 0;
         for(ElasticDocument<KnowledgeEntityBase> knowledgeDocument : knowledgeDocuments) {
             bulkRequestBuilder.add(new IndexRequest(knowledgeDocument.getIndex(), knowledgeDocument.getType(), knowledgeDocument.getId())
                     .routing(knowledgeDocument.getRouting())
-                    .source(knowledgeDocument.getSource()));
+                    .source(this.mapper.writeValueAsBytes(knowledgeDocument.getSource()), XContentType.JSON));
 
             bulk++;
 
@@ -57,5 +61,6 @@ public class ElasticWriter {
     private Client client;
     private ElasticConfiguration elasticConfiguration;
     private int bulkSize;
+    private ObjectMapper mapper;
     //endregion
 }

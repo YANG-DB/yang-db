@@ -12,10 +12,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.metrics.cardinality.Cardinality;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
@@ -24,6 +21,8 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
     public SchemaKnowledgeGraphContextStatisticsProvider(Client client, LightSchema schema) {
         this.client = client;
         this.schema = schema;
+
+        this.globalFieldIds = Stream.of("title", "nicknames").toJavaSet();
     }
     //endregion
 
@@ -189,7 +188,8 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
         // add zero field counts
         int numEntitiesInContext = Stream.ofAll(contextStatistics.getEntityCategories().values()).sum().intValue();
         Stream.ofAll(contextStatistics.getEntityFieldTypes().keySet())
-                .map(fieldId -> new Tuple2<>(fieldId, contextStatistics.getEntityValueCounts().get(fieldId).size()))
+                .filter(key -> !this.globalFieldIds.contains(key))
+                .map(fieldId -> new Tuple2<>(fieldId, Stream.ofAll(contextStatistics.getEntityValueCounts().get(fieldId).values()).sum().intValue()))
                 .forEach(tuple -> contextStatistics.getEntityValueCounts().get(tuple._1()).put(0, numEntitiesInContext - tuple._2()));
 
         List<String> logicalIds = Stream.ofAll(hits).map(hit -> (String)hit.sourceAsMap().get("logicalId")).distinct().toJavaList();
@@ -242,7 +242,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                     .groupBy(hit -> (String)hit.sourceAsMap().get("direction"))
                     .map(grouping -> new Tuple2<>(grouping._1(),
                             grouping._2()
-                                    .groupBy(hit -> (String)hit.sourceAsMap().get("logicalId"))
+                                    .groupBy(hit -> (String)hit.sourceAsMap().get("entityAId"))
                                     .map(grouping1 -> grouping1._2().size())
                                     .groupBy(numValues -> numValues)
                                     .toJavaMap(grouping1 -> new Tuple2<>(grouping1._1(), grouping1._2().size()))))
@@ -382,7 +382,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
     private long getDistintcNumReferences(String context) {
         SearchResponse response = this.client.prepareSearch()
-                .setIndices(String.join(",", this.schema.getEntityIndex(), this.schema.getRelationIndex(), this.schema.getInsightIndex()))
+                .setIndices(this.schema.getEntityIndex(), this.schema.getRelationIndex(), this.schema.getInsightIndex())
                 .setQuery(boolQuery().filter(boolQuery()
                         .must(termsQuery("type", Arrays.asList("entity", "e.value", "relation", "r.value", "insight")))
                         .must(termQuery("context", context))
@@ -390,7 +390,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                 .addAggregation(AggregationBuilders.cardinality("countDistinctRefs").field("refs").precisionThreshold(40000))
                 .execute().actionGet();
 
-        Cardinality cardinality = response.getAggregations().get("a");
+        Cardinality cardinality = response.getAggregations().get("countDistinctRefs");
         return cardinality.getValue();
     }
     //endregion
@@ -398,5 +398,6 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
     //region Fields
     private Client client;
     private LightSchema schema;
+    private Set<String> globalFieldIds;
     //endregion
 }

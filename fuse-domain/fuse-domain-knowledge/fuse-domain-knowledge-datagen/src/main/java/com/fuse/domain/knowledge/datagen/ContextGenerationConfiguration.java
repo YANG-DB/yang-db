@@ -12,7 +12,12 @@ public class ContextGenerationConfiguration {
             String toContext,
             double scaleFactor,
             double entityOverlapFactor,
-            double entityValueOverlapFactor) {
+            double entityValueOverlapFactor,
+            int entityValueIdFrom,
+            int relationValueIdFrom,
+            int relationIdFrom,
+            int insightIdFrom,
+            int referenceIdFrom) {
 
         this.fromContext = fromContext;
         this.toContext = toContext;
@@ -20,6 +25,12 @@ public class ContextGenerationConfiguration {
         this.scaleFactor = scaleFactor;
         this.entityOverlapFactor = entityOverlapFactor;
         this.entityValueOverlapFactor = entityValueOverlapFactor;
+
+        this.entityValueIdFrom = entityValueIdFrom;
+        this.relationValueIdFrom = relationValueIdFrom;
+        this.relationIdFrom = relationIdFrom;
+        this.insightIdFrom = insightIdFrom;
+        this.referenceIdFrom = referenceIdFrom;
     }
     //endregion
 
@@ -63,6 +74,47 @@ public class ContextGenerationConfiguration {
     public void setEntityValueOverlapFactor(double entityValueOverlapFactor) {
         this.entityValueOverlapFactor = entityValueOverlapFactor;
     }
+
+    public int getEntityValueIdFrom() {
+        return entityValueIdFrom;
+    }
+
+    public void setEntityValueIdFrom(int entityValueIdFrom) {
+        this.entityValueIdFrom = entityValueIdFrom;
+    }
+
+    public int getRelationValueIdFrom() {
+        return relationValueIdFrom;
+    }
+
+    public void setRelationValueIdFrom(int relationValueIdFrom) {
+        this.relationValueIdFrom = relationValueIdFrom;
+    }
+
+    public int getRelationIdFrom() {
+        return relationIdFrom;
+    }
+
+    public void setRelationIdFrom(int relationIdFrom) {
+        this.relationIdFrom = relationIdFrom;
+    }
+
+    public int getReferenceIdFrom() {
+        return referenceIdFrom;
+    }
+
+    public void setReferenceIdFrom(int referenceIdFrom) {
+        this.referenceIdFrom = referenceIdFrom;
+    }
+
+    public int getInsightIdFrom() {
+        return insightIdFrom;
+    }
+
+    public void setInsightIdFrom(int insightIdFrom) {
+        this.insightIdFrom = insightIdFrom;
+    }
+
     //endregion
 
     //region Fields
@@ -72,5 +124,11 @@ public class ContextGenerationConfiguration {
     private double scaleFactor;
     private double entityOverlapFactor;
     private double entityValueOverlapFactor;
+
+    private int entityValueIdFrom;
+    private int relationValueIdFrom;
+    private int relationIdFrom;
+    private int referenceIdFrom;
+    private int insightIdFrom;
     //endregion
 }
