@@ -96,7 +96,7 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
                         context,
                         entityId,
                         fieldId,
-                        (Date)this.fieldValuesSupplier.get(),
+                        this.fieldValuesSupplier.get().toString(),
                         metadataSupplier.get());
             default: throw new RuntimeException("unsupported field type: " + fieldType);
         }
