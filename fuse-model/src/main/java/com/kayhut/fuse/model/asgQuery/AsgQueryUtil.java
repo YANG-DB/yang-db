@@ -242,16 +242,16 @@ public class AsgQueryUtil {
         return pathToBDescendant(asgEBase, enumPredicateFunction.apply(eNum));
     }
 
-    public static <T extends EBase> List<AsgEBase<? extends EBase>> pathToAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate, List<AsgEBase<? extends EBase>> path) {
-        return path(asgEBase, AsgEBase::getParents, predicate, path);
+    public static <T extends EBase> List<AsgEBase<? extends EBase>> pathToAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
+        return path(asgEBase, AsgEBase::getParents, predicate, Collections.emptyList());
     }
 
     public static <T extends EBase> List<AsgEBase<? extends EBase>> pathToAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
-        return pathToAncestor(asgEBase, classPredicateFunction.apply(klass), Collections.emptyList());
+        return pathToAncestor(asgEBase, classPredicateFunction.apply(klass));
     }
 
     public static <T extends EBase> List<AsgEBase<? extends EBase>> pathToAncestor(AsgEBase<T> asgEBase, int eNum) {
-        return pathToAncestor(asgEBase, enumPredicateFunction.apply(eNum), Collections.emptyList());
+        return pathToAncestor(asgEBase, enumPredicateFunction.apply(eNum));
     }
 
     public static <T extends EBase, S extends EBase> List<AsgEBase<? extends EBase>> path(AsgEBase<T> sourceAsgEBase, AsgEBase<S> destinationAsgEBase) {

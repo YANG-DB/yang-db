@@ -20,6 +20,7 @@ public interface GraphElementPropertySchema {
     interface IndexingSchema {
         enum Type {
             exact,
+            words,
             ngrams,
             edgeNgrams
         }
@@ -59,6 +60,16 @@ public interface GraphElementPropertySchema {
             //region Constructors
             public Impl(String name) {
                 super(Type.exact, name);
+            }
+            //endregion
+        }
+    }
+
+    interface WordsIndexingSchema extends IndexingSchema {
+        class Impl extends IndexingSchema.Impl implements WordsIndexingSchema {
+            //region Constructors
+            public Impl(String name) {
+                super(Type.words, name);
             }
             //endregion
         }

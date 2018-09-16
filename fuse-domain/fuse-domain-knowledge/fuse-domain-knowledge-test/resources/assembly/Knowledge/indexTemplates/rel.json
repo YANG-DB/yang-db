@@ -101,6 +101,10 @@
             "keyword": {
               "normalizer":"lowercase_normalizer",
               "type": "keyword"
+            },
+            "standard": {
+              "analyzer": "knowledge_standard_analyzer",
+              "type": "text"
             }
           }
         },

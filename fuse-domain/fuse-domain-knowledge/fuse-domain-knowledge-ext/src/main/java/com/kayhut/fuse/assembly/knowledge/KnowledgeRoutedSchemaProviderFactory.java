@@ -122,6 +122,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
     }
 
     public static final String KEYWORD = "keyword";
+    public static final String STANDARD = "standard";
     public static final String ID = "_id";
 
     private RawSchema schema;
@@ -177,6 +178,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                 new GraphRedundantPropertySchema.Impl(STRING_VALUE, STRING_VALUE, STRING,
                         Arrays.asList(
                                 new GraphElementPropertySchema.ExactIndexingSchema.Impl(STRING_VALUE + "." + KEYWORD),
+                                new GraphElementPropertySchema.WordsIndexingSchema.Impl(STRING_VALUE + "." + STANDARD),
                                 new GraphElementPropertySchema.NgramsIndexingSchema.Impl(STRING_VALUE, 10))),
                 new GraphRedundantPropertySchema.Impl(INT_VALUE, INT_VALUE, INT),
                 new GraphRedundantPropertySchema.Impl(DATE_VALUE, DATE_VALUE, DATE)))
@@ -251,7 +253,9 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                         new GraphVertexSchema.Impl(
                                 EFILE,
                                 new GraphElementConstraint.Impl(__.start().has(T.label, E_FILE)),
-                                Optional.empty(),
+                                Optional.of(new GraphElementRouting.Impl(
+                                        new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
+                                )),
                                 Optional.of(entityFilePartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
                                         new GraphElementPropertySchema.Impl(ENTITY_ID, STRING),
@@ -270,7 +274,9 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                         new GraphVertexSchema.Impl(
                                 EVALUE,
                                 new GraphElementConstraint.Impl(__.start().has(T.label, E_VALUE)),
-                                Optional.empty(),
+                                Optional.of(new GraphElementRouting.Impl(
+                                        new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
+                                )),
                                 Optional.of(entityValuePartitions),
                                 Stream.<GraphElementPropertySchema>ofAll(Arrays.asList(
                                         new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING),
@@ -282,6 +288,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                         new GraphElementPropertySchema.Impl(STRING_VALUE, STRING,
                                                 Arrays.asList(
                                                         new GraphElementPropertySchema.ExactIndexingSchema.Impl(STRING_VALUE + "." + KEYWORD),
+                                                        new GraphElementPropertySchema.WordsIndexingSchema.Impl(STRING_VALUE + "." + STANDARD),
                                                         new GraphElementPropertySchema.NgramsIndexingSchema.Impl(STRING_VALUE, 10)))))
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(
@@ -309,6 +316,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                         new GraphElementPropertySchema.Impl(STRING_VALUE, STRING,
                                                 Arrays.asList(
                                                         new GraphElementPropertySchema.ExactIndexingSchema.Impl(STRING_VALUE + "." + KEYWORD),
+                                                        new GraphElementPropertySchema.WordsIndexingSchema.Impl(STRING_VALUE + "." + STANDARD),
                                                         new GraphElementPropertySchema.NgramsIndexingSchema.Impl(STRING_VALUE, 10)))))
                                         .appendAll(metadataProperties).toJavaList()),
                         new GraphVertexSchema.Impl(

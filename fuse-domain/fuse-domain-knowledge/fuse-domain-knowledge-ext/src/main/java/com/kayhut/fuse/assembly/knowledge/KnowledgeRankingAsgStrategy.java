@@ -27,6 +27,8 @@ import javaslang.control.Option;
 import java.util.*;
 
 import static com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema.IndexingSchema.Type.exact;
+import static com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema.IndexingSchema.Type.ngrams;
+import static com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema.IndexingSchema.Type.words;
 
 /**
  * asg strategy that takes EPropGroups and searches within the next Eprops:
@@ -150,14 +152,30 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
                         exactIndexingSchema.get().getName(),
                         Constraint.of(ConstraintOp.eq, eProp.getCon().getExpr())));
             } else {
-                return Collections.singletonList(new SchematicEProp(
-                        0,
-                        eProp.getpType(),
-                        exactIndexingSchema.get().getName(),
-                        Constraint.of(ConstraintOp.like,
-                                (expr.startsWith("*") ? "" : "*")
-                                        + expr +
-                                        (expr.endsWith("*") ? "" : "*"))));
+                String[] words = Stream.of(expr.split("\\*")).filter(word -> !word.equals("")).toJavaArray(String.class);
+                words = Stream.of(words)
+                        .flatMap(word -> Stream.of(word.split(" ")))
+                        .filter(word -> !word.equals(""))
+                        .toJavaArray(String.class);
+
+                if (words.length == 1 && words[0].length() <= propertySchema.get()
+                        .<GraphElementPropertySchema.NgramsIndexingSchema>getIndexingSchema(ngrams).get().getMaxSize()) {
+                    return Collections.singletonList(
+                            new SchematicEProp(
+                                    0,
+                                    eProp.getpType(),
+                                    propertySchema.get().getIndexingSchema(ngrams).get().getName(),
+                                    Constraint.of(ConstraintOp.eq, words[0])));
+                } else {
+                    return Collections.singletonList(new SchematicEProp(
+                            0,
+                            eProp.getpType(),
+                            exactIndexingSchema.get().getName(),
+                            Constraint.of(ConstraintOp.like,
+                                    (expr.startsWith("*") ? "" : "*")
+                                            + expr +
+                                            (expr.endsWith("*") ? "" : "*"))));
+                }
 
             }
         }
@@ -186,22 +204,45 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
         totalGroups.setQuantType(QuantType.some);
         // Rule 1
         EPropGroup r1Group = translateEquals(query, EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.eq, stringValue.getCon().getExpr())), fieldProp, parentGroup);
+        totalGroups.getGroups().add(r1Group);
+
+        if (!stringValue.getCon().getExpr().toString().contains("*")) {
+            return totalGroups;
+        }
 
         // Rule 2
         EPropGroup r2Group = translateRule2(query, parentGroup, stringValue, fieldProp, " ", 2);
+        totalGroups.getGroups().add(r2Group);
 
         // Rule 3
-        String newExpression = stringValue.getCon().getExpr().toString().trim().replace(" ", "*");
-        EPropGroup r3Group = translateRule3(query, parentGroup, EProp.of(stringValue.geteNum(), stringValue.getpType(), new Constraint(ConstraintOp.eq, newExpression)), fieldProp, " ", 3);
+        String[] words = Stream.of(stringValue.getCon().getExpr().toString().split("\\*"))
+                .filter(word -> !word.equals(""))
+                .toJavaArray(String.class);
+        if (words.length > 1) {
+            EPropGroup r3Group = translateRule3(
+                    query,
+                    parentGroup,
+                    EProp.of(
+                            stringValue.geteNum(),
+                            stringValue.getpType(),
+                            new Constraint(ConstraintOp.eq, stringValue.getCon().getExpr().toString().trim().replace(" ", "*"))),
+                    fieldProp,
+                    " ",
+                    3);
+            totalGroups.getGroups().add(r3Group);
+        }
 
         // Rule 4
-        newExpression = stringValue.getCon().getExpr().toString().trim().replace(" ", "*");
-        EPropGroup r4Group = translateRule4(query, parentGroup, EProp.of(stringValue.geteNum(), stringValue.getpType(), new Constraint(ConstraintOp.eq, newExpression)), fieldProp);
-
-        totalGroups.getGroups().add(r1Group);
-        totalGroups.getGroups().add(r2Group);
-        totalGroups.getGroups().add(r3Group);
+        EPropGroup r4Group = translateRule4(
+                query,
+                parentGroup,
+                EProp.of(
+                        stringValue.geteNum(),
+                        stringValue.getpType(),
+                        new Constraint(ConstraintOp.eq, stringValue.getCon().getExpr().toString().trim().replace(" ", "*"))),
+                fieldProp);
         totalGroups.getGroups().add(r4Group);
+
         return totalGroups;
     }
 
@@ -215,20 +256,37 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(ont.get());
 
         StringJoiner joiner = new StringJoiner("*", "*", "*");
-        String[] words = stringValue.getCon().getExpr().toString().split("\\*");
+        String[] words = Stream.of(stringValue.getCon().getExpr().toString().split("\\*"))
+                .filter(word -> !word.equals("")).toJavaArray(String.class);
         for (String word : words) {
-            if (!word.equals("")) {
-                joiner.add(word);
-            }
+            joiner.add(word);
         }
 
+        Optional<AsgEBase<ETyped>> eTypedAsgEBase = AsgQueryUtil.ancestor(parentGroup, EEntityBase.class);
+
+        Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(eTypedAsgEBase.get().geteBase().geteType());
 
         // currently supports a single vertex schema
-        EProp completeLikeFieldProp = EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, joiner.toString()));
+        GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
+        Optional<Property> property = ont.$property(stringValue.getpType());
+        Optional<GraphElementPropertySchema> propertySchema = vertexSchema.getProperty(property.get().getName());
 
-        String equalsField = equalsField(parentGroup, schemaProvider, ont, stringValue.getpType());
-        if (equalsField != null) {
-            completeLikeFieldProp = new SchematicEProp(completeLikeFieldProp.geteNum(), completeLikeFieldProp.getpType(), equalsField, completeLikeFieldProp.getCon());
+
+        EProp completeLikeFieldProp = null;
+        // if there's only 1 word and it's within ngrams length
+        if (words.length == 1 && words[0].length() <=
+                propertySchema.get().<GraphElementPropertySchema.NgramsIndexingSchema>getIndexingSchema(ngrams).get().getMaxSize()) {
+            completeLikeFieldProp = new SchematicEProp(
+                    stringValue.geteNum(),
+                    stringValue.getpType(),
+                    propertySchema.get().getIndexingSchema(ngrams).get().getName(),
+                    Constraint.of(ConstraintOp.eq, words[0]));
+        } else {
+            completeLikeFieldProp = EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, joiner.toString()));
+            String equalsField = equalsField(parentGroup, schemaProvider, ont, stringValue.getpType());
+            if (equalsField != null) {
+                completeLikeFieldProp = new SchematicEProp(completeLikeFieldProp.geteNum(), completeLikeFieldProp.getpType(), equalsField, completeLikeFieldProp.getCon());
+            }
         }
 
         ePropGroup.getProps().add(completeLikeFieldProp);
@@ -327,14 +385,22 @@ public class KnowledgeRankingAsgStrategy implements AsgStrategy, AsgElementStrat
 
         List<EProp> newEprops = new ArrayList<>();
 
-        newEprops.add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, "*" + seperator + word)));
-        newEprops.add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, word + seperator + "*")));
-        newEprops.add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, "*" + seperator + word + seperator + "*")));
-
-
-        newEprops.forEach(eProp -> {
-            LikeUtil.applyWildcardRules(eProp, propertySchema.get()).forEach(eProp1 -> enclosingWordsGroup.getProps().add(eProp1));
-        });
+        // if there's only 1 word, search for 1 word
+        if (word.indexOf(" ") < 0) {
+            newEprops.add(new SchematicEProp(
+                    stringValue.geteNum(),
+                    stringValue.getpType(),
+                    propertySchema.get().getIndexingSchema(GraphElementPropertySchema.IndexingSchema.Type.words).get().getName(),
+                    Constraint.of(ConstraintOp.eq, word)));
+            newEprops.forEach(eProp -> enclosingWordsGroup.getProps().add(eProp));
+        } else {
+            newEprops.add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, "*" + seperator + word)));
+            newEprops.add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, word + seperator + "*")));
+            newEprops.add(EProp.of(stringValue.geteNum(), stringValue.getpType(), Constraint.of(ConstraintOp.like, "*" + seperator + word + seperator + "*")));
+            newEprops.forEach(eProp -> {
+                LikeUtil.applyWildcardRules(eProp, propertySchema.get()).forEach(eProp1 -> enclosingWordsGroup.getProps().add(eProp1));
+            });
+        }
 
         ruleGroup.getGroups().add(enclosingWordsGroup);
 

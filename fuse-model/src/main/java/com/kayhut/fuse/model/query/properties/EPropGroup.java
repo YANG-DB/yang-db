@@ -48,6 +48,12 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
     }
     //endregion
 
+    //region Public Methods
+    public List<EProp> findAll(Predicate<EProp> propPredicate) {
+        return this.findAll(propPredicate, this);
+    }
+    //endregion
+
     //region Override Methods
     @Override
     public EPropGroup clone() {
@@ -110,5 +116,11 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
         return result;
     }
 
+    private List<EProp> findAll(Predicate<EProp> propPredicate, EPropGroup group) {
+        return Stream.ofAll(group.getProps())
+                .appendAll(Stream.ofAll(group.getGroups()).flatMap(childGroup -> findAll(propPredicate, childGroup)))
+                .filter(propPredicate)
+                .toJavaList();
+    }
     //endregion
 }
