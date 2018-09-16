@@ -151,7 +151,6 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
                         .withEntity(e1.toEntity())
                         .withEntity(rel1.toEntity())
                         .withEntity(e2.toEntity())
-                        .withEntity(rel1.toEntity())
                         .withRelationships(e1.withRelations("hasRelation", rel1.id()))
                         .withRelationships(e2.withRelations("hasRelation", rel1.id()))
                         .build())

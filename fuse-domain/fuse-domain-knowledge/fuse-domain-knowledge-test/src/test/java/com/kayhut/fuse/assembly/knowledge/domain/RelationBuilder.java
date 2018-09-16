@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
+import com.kayhut.fuse.model.results.Relationship;
 import javaslang.collection.Stream;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+
 
 //todo - for kobi usage
 public class RelationBuilder extends Metadata {
@@ -26,6 +28,11 @@ public class RelationBuilder extends Metadata {
     public String entityBCategory;
     private String relId;
     public List<String> refs = new ArrayList<>();
+
+    public List<Entity> subEntities = new ArrayList<>();
+    public List<Relationship> hasValues = new ArrayList<>();
+    public List<Relationship> hasRefs = new ArrayList<>();
+
 
     public RelationBuilder(RelationBuilder builder) {
         super(builder);
@@ -93,6 +100,67 @@ public class RelationBuilder extends Metadata {
     public RelationBuilder ref(String... ref) {
         this.refs = Arrays.asList(ref);
         return this;
+    }
+
+    public RelationBuilder reference(RefBuilder ref) {
+        refs.add(ref.id());
+        //add as entities sub resource
+        subEntities.add(ref.toEntity());
+        //add a relation
+        hasRefs.add(Relationship.Builder.instance()
+                .withAgg(false)
+                .withDirectional(false)
+                .withEID1(id())
+                .withEID2(ref.id())
+                .withETag1(getETag())
+                .withETag2(ref.getETag())
+                .withRType("hasRelationReference")
+                .build());
+        return this;
+    }
+
+    public RelationBuilder value(RvalueBuilder... value) {
+        Arrays.asList(value).forEach(this::value);
+        return this;
+    }
+
+    public RelationBuilder value(RvalueBuilder value) {
+        value.relationId = this.id();
+        value.context = this.context;
+
+        //add as entities sub resource
+        subEntities.add(value.toEntity());
+        //add a relation
+        hasValues.add(Relationship.Builder.instance()
+                .withAgg(false)
+                .withDirectional(false)
+                .withEID1(id())
+                .withEID2(value.id())
+                .withETag1(getETag())
+                .withETag2(value.getETag())
+                .withRType("hasRvalue")
+                .build());
+
+        return this;
+    }
+
+    public List<Relationship> withRelations() {
+        return withRelations(o -> true);
+    }
+
+    public List<Relationship> withRelations(String relationType, String... outSideId) {
+        return withRelations(p -> p.getrType().equals(relationType) && Arrays.asList(outSideId).contains(p.geteID2()));
+    }
+
+    public List<Relationship> withRelations(Predicate<Relationship> filter) {
+        return Stream.ofAll(hasValues)
+                //.appendAll(hasValues)
+                .appendAll(hasRefs)
+                //.appendAll(hasRel)
+                //.appendAll(hasInsights)
+                //.appendAll(hasFiles)
+                .filter(filter)
+                .toJavaList();
     }
 
     @Override

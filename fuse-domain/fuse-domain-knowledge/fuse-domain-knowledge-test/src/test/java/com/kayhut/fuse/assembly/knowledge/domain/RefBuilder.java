@@ -73,7 +73,8 @@ public class RefBuilder extends Metadata {
     }
 
     @Override
-    public Entity toEntity() {
+    public Entity
+    toEntity() {
         return Entity.Builder.instance()
                 .withEID(id())
                 .withETag(Stream.of(getETag()).toJavaSet())
