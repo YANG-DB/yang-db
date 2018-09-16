@@ -21,7 +21,8 @@
         "deleteTime",
         "deleteUser",
         "refs",
-        "score"
+        "score",
+        "isExternal"
       ]
     },
     {
@@ -305,13 +306,13 @@
       ]
     },
     {
-      "rType" : "relatedEntity",
-      "name" : "relatedEntity",
-      "directional" : true,
-      "ePairs":[
+      "rType": "relatedEntity",
+      "name": "relatedEntity",
+      "directional": true,
+      "ePairs": [
         {
-          "eTypeA" : "Entity",
-          "eTypeB" : "Entity"
+          "eTypeA": "Entity",
+          "eTypeB": "Entity"
         }
       ],
       "properties": [
@@ -496,9 +497,9 @@
       "type": "string"
     },
     {
-      "pType":"score",
-      "name":"score",
-      "type":"float"
+      "pType": "score",
+      "name": "score",
+      "type": "float"
     },
     {
       "pType": "refs",
@@ -513,6 +514,11 @@
     {
       "pType": "type",
       "name": "type",
+      "type": "string"
+    },
+    {
+      "pType": "isExternal",
+      "name": "isExternal",
       "type": "string"
     }
   ]
