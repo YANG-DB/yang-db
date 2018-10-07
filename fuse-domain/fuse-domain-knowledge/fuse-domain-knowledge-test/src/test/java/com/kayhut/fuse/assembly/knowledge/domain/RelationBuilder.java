@@ -154,11 +154,7 @@ public class RelationBuilder extends Metadata {
 
     public List<Relationship> withRelations(Predicate<Relationship> filter) {
         return Stream.ofAll(hasValues)
-                //.appendAll(hasValues)
                 .appendAll(hasRefs)
-                //.appendAll(hasRel)
-                //.appendAll(hasInsights)
-                //.appendAll(hasFiles)
                 .filter(filter)
                 .toJavaList();
     }

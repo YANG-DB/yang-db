@@ -54,7 +54,7 @@ public class KnowledgeSimpleEntityRelationAndRvalueWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
+        //Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -821,7 +821,7 @@ public class KnowledgeSimpleEntityRelationAndRvalueWithFilterE2ETests {
 
 
     @Test
-    public void tesLikeByEntityContainsCategoryAndRelationContainsCategoryAndOptionalRvalueFieldId_Tree() throws IOException, InterruptedException {
+    public void tesLikeByEntityContainsCategoryAndRelationContainsCategoryAndOptionalRvalueFieldId() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
@@ -860,7 +860,7 @@ public class KnowledgeSimpleEntityRelationAndRvalueWithFilterE2ETests {
 
 
     @Test
-    public void tesLikeByOptionalEntityAndRelationContainsCategoryAndOptionalRvalue_Tree() throws IOException, InterruptedException {
+    public void tesLikeByOptionalEntityAndRelationContainsCategoryAndOptionalRvalue() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)

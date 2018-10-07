@@ -4,14 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
+import com.kayhut.fuse.model.results.Relationship;
 import javaslang.collection.Stream;
-
 import java.util.*;
+import java.util.function.Predicate;
+
 
 //todo - for kobi usage
 public class ValueBuilder extends EntityId {
     public static String physicalType = "e.value";
     public static String type = "Evalue";
+
+    public List<Relationship> hasRefs = new ArrayList<>();
+    public List<Entity> subEntities = new ArrayList<>();
 
     public List<String> refs = new ArrayList<>();
     public String context;
@@ -45,6 +50,23 @@ public class ValueBuilder extends EntityId {
 
     public ValueBuilder value(int value) {
         this.intValue = value;
+        return this;
+    }
+
+    public ValueBuilder reference(RefBuilder ref) {
+        refs.add(ref.id());
+        //add as entities sub resource
+        subEntities.add(ref.toEntity());
+        //add a relation
+        hasRefs.add(Relationship.Builder.instance()
+                .withAgg(false)
+                .withDirectional(false)
+                .withEID1(id())
+                .withEID2(ref.id())
+                .withETag1(getETag())
+                .withETag2(ref.getETag())
+                .withRType("hasEvalueReference")
+                .build());
         return this;
     }
 
@@ -125,6 +147,21 @@ public class ValueBuilder extends EntityId {
                         new Property("fieldId", "raw", fieldId),
                         new Property("refs", "raw", !refs.isEmpty() ? refs : null)
                 ))).build();
+    }
+
+
+    public List<Relationship> withRelations() {
+        return withRelations(o -> true);
+    }
+
+    public List<Relationship> withRelations(String relationType, String... outSideId) {
+        return withRelations(p -> p.getrType().equals(relationType) && Arrays.asList(outSideId).contains(p.geteID2()));
+    }
+
+    public List<Relationship> withRelations(Predicate<Relationship> filter) {
+        return Stream.ofAll(hasRefs)
+                .filter(filter)
+                .toJavaList();
     }
 
     @Override
