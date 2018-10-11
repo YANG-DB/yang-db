@@ -241,7 +241,8 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
                 new CreateGraphCursorRequest(new CreatePageRequest()),
                 Arrays.asList(new NamedParameter("creationTime", creationTime),
-                        new NamedParameter("category", Arrays.asList("bell", "dell")))));
+                        new NamedParameter("category", Arrays.asList("bell", "dell"))),
+                Collections.EMPTY_LIST));
 
         // Read Entity (with V1 query)
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
@@ -288,7 +289,8 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
                 new CreateGraphCursorRequest(new CreatePageRequest()),
-                Collections.singleton(new NamedParameter("name", Arrays.asList("mazda", "subaru")))));
+                Collections.singleton(new NamedParameter("name", Arrays.asList("mazda", "subaru"))),
+                Collections.EMPTY_LIST));
 
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
@@ -324,7 +326,8 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
                 new CreateGraphCursorRequest(new CreatePageRequest()),
-                Collections.singleton(new NamedParameter("name", "mazda"))));
+                Collections.singleton(new NamedParameter("name", "mazda")),
+                Collections.EMPTY_LIST));
 
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
@@ -366,7 +369,8 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
-                Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda"))));
+                Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda")),
+                Collections.EMPTY_LIST));
 
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
@@ -419,7 +423,8 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
                         new CsvElement("A", "context", ElementType.Entity),
                         new CsvElement("A", "name", ElementType.Entity)
                 }).withHeaders(true).with(new CreatePageRequest()),
-                Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda"))));
+                Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda")),
+                Collections.EMPTY_LIST));
 
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
@@ -472,7 +477,8 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
                         new CsvElement("A", "context", ElementType.Entity),
                         new CsvElement("A", "name", ElementType.Entity)
                 }).withHeaders(true).with(new CreatePageRequest()),
-                Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda"))));
+                Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda")),
+                Collections.EMPTY_LIST));
 
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
@@ -521,7 +527,8 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
                 new CreateGraphCursorRequest(new CreatePageRequest()),
-                Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda"))));
+                Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda")),
+                Collections.EMPTY_LIST));
 
         Assert.assertFalse(info.get().getCursorResourceInfos().isEmpty());
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());

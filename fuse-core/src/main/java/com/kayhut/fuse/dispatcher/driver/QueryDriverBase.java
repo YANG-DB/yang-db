@@ -222,7 +222,11 @@ public abstract class QueryDriverBase implements QueryDriver {
                     ? callRequest.getPageCursorRequest()
                     : (storedRequest.getCreateCursorRequest() != null
                     ? storedRequest.getCreateCursorRequest().getCreatePageRequest()
-                    : null));
+                    : new CreatePageRequest()));
+
+            //set pageSize atribute on PageCursorRequest using the given execution params
+            callRequest.getExecutionParams().stream().filter(p->p.getName().equals("pageSize")).findAny()
+                    .ifPresent(v->pageRequest.setPageSize((Integer) v.getValue()));
 
             //create the new volatile query
             Optional<QueryResourceInfo> info = create(new CreateQueryRequest(

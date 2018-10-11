@@ -76,7 +76,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     final long maxExecTime = callQueryRequest.getCreateCursorRequest() != null
                             ? callQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
                     req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
-
                     ContentResponse<QueryResourceInfo> response = this.getController(app).callAndFetch(callQueryRequest);
 
                     return Results.with(response, response.status());
