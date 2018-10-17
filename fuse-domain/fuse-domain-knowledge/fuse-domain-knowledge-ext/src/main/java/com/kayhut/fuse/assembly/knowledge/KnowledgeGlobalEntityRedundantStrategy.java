@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -61,7 +62,25 @@ public class KnowledgeGlobalEntityRedundantStrategy implements AsgStrategy {
             EPropGroup globalProps = getAdjacentEPropGroup(globalEntity).get().geteBase();
             Stream.ofAll(contextProps).forEach(prop -> globalProps.getProps().add(EProp.of(0, "subContext", prop.getCon())));
             Stream.ofAll(categoryProps).forEach(prop -> globalProps.getProps().add(EProp.of(0, "subCategory", prop.getCon())));
-        }
+
+            Stream.ofAll(AsgQueryUtil.nextAdjacentDescendants(
+                    AsgQueryUtil.nextAdjacentDescendant(globalEntity, Quant1.class).get(),
+                    Rel.class)).filter(asgEBase -> ((Rel)asgEBase.geteBase()).getrType().equals("hasEvalue"))
+                    .forEach(asgEBase -> {
+                        EPropGroup globalValueProps = getAdjacentEPropGroup(asgEBase.getNext(0)).get().geteBase();
+                        Stream.ofAll(contextProps).forEach(prop -> globalValueProps.getProps().add(EProp.of(0, "subContext", prop.getCon())));
+                        Stream.ofAll(categoryProps).forEach(prop -> globalValueProps.getProps().add(EProp.of(0, "subCategory", prop.getCon())));
+                    });
+
+            AsgQueryUtil.adjacentAncestor(
+                    AsgQueryUtil.ancestor(globalEntity, Quant1.class).get(),
+                    ETyped.class).ifPresent(asgEBase -> {
+                if (((ETyped)asgEBase.geteBase()).geteType().equals("Evalue")) {
+                    EPropGroup globalValueProps = getAdjacentEPropGroup(asgEBase.getNext(0)).get().geteBase();
+                    Stream.ofAll(contextProps).forEach(prop -> globalValueProps.getProps().add(EProp.of(0, "subContext", prop.getCon())));
+                    Stream.ofAll(categoryProps).forEach(prop -> globalValueProps.getProps().add(EProp.of(0, "subCategory", prop.getCon())));
+                }});
+            }
     }
     //endregion
 
