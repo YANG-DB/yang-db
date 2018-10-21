@@ -38,7 +38,7 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
                     quant.addNextChild(new AsgEBase<>(ePropGroup));
                 } else {
                     List<AsgEBase<EPropGroup>> ePropsGroupAsgChildren = AsgQueryUtil.nextAdjacentDescendants(quant, EPropGroup.class);
-                    if (ePropsGroupAsgChildren.isEmpty()) {
+                    if (ePropsGroupAsgChildren.isEmpty() && quant.geteBase().getqType().equals(QuantType.all)) {
                         EPropGroup ePropGroup = new EPropGroup(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get() + 1);
                         AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
                         quant.addNextChild(ePropGroupAsgEbase);

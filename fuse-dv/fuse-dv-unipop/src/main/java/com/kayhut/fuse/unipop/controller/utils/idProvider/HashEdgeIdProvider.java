@@ -27,7 +27,11 @@ public class HashEdgeIdProvider implements EdgeIdProvider<String> {
     //region EdgeIdProvider Implementation
     @Override
     public String get(String edgeLabel, Vertex outV, Vertex inV, Map<String, Object> properties) {
-        return new StringBuilder(edgeLabel).append(outV.id()).append(inV.id()).append(this.constraintHash).toString();
+        return new StringBuilder(edgeLabel)
+                .append(outV.id())
+                .append(inV.id())
+                //.append(this.constraintHash)
+                .toString();
 
         /*return this.traversalHashProvider.getValue(
                 __.start().and(

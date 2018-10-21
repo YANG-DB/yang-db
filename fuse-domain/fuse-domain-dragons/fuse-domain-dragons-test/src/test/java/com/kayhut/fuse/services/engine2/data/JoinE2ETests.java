@@ -61,6 +61,7 @@ import static com.kayhut.test.data.DragonsOntology.TIMESTAMP;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
+@Ignore
 public class JoinE2ETests {
     @BeforeClass
     public static void setup() throws Exception {
