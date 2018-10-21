@@ -38,7 +38,7 @@ import static com.kayhut.fuse.model.query.Rel.Direction.L;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
 
-@Ignore // TODO: fix BUG of adding logicalId to reference query results
+//@Ignore // TODO: fix BUG of adding logicalId to reference query results
 public class KnowledgeSimpleEntityEvalueAndReferenceWithFilterE2ETests {
 
     static KnowledgeWriterContext ctx;
@@ -770,7 +770,7 @@ public class KnowledgeSimpleEntityEvalueAndReferenceWithFilterE2ETests {
                         .withEntity(ev1.toEntity()).withEntity(ev3.toEntity())
                         .withEntity(ref1.toEntity()).withEntity(ref6.toEntity())
                         .withRelationships(e1.withRelations("hasEvalue", ev1.id()))
-                        .withRelationships(e2.withRelations("hasEvalue", ev3.id()))
+                        .withRelationships(e3.withRelations("hasEvalue", ev3.id()))
                         .withRelationships(ev1.withRelations("hasEvalueReference", ref1.id()))
                         .withRelationships(ev3.withRelations("hasEvalueReference", ref6.id()))
                         .build())

@@ -37,7 +37,7 @@ import static com.kayhut.fuse.model.query.Rel.Direction.L;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
 
-@Ignore // TODO: fix BUG of adding logicalId to reference query results
+//@Ignore // TODO: fix BUG of adding logicalId to reference query results
 public class KnowledgeSimpleEntityAndReferenceWithFilterE2ETests {
 
     static KnowledgeWriterContext ctx;

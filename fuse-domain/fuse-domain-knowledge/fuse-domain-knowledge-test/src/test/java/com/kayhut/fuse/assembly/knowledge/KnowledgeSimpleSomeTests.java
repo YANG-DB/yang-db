@@ -52,7 +52,7 @@ public class KnowledgeSimpleSomeTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
+        //Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -202,7 +202,7 @@ public class KnowledgeSimpleSomeTests {
                 .withAssignment(Assignment.Builder.instance()
                         .withEntity(e3.toEntity()).withEntity(ev3.toEntity())
                         .withEntity(ref4.toEntity()).withEntity(ref5.toEntity())
-                        .withRelationships(e3.withRelations("hasEvalue", ev3.id()))
+                        .withRelationships(e3.withRelations("hasEvalue", ev3.id()))  // BUG: Get e3 twice
                         //.withRelationships(e3.withRelations("hasEvalue", ev3.id()))
                         .withRelationships(ev3.withRelations("hasEvalueReference", ref4.id()))
                         .withRelationships(ev3.withRelations("hasEvalueReference", ref5.id()))
@@ -257,7 +257,7 @@ public class KnowledgeSimpleSomeTests {
     }
 
     @Test
-    public void testTwoSomeWithPropAndRel() throws IOException, InterruptedException {
+    public void testTwoSomeWithProps() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
@@ -271,7 +271,7 @@ public class KnowledgeSimpleSomeTests {
                         new Quant1(6, QuantType.some, Arrays.asList(7, 8), 0),
                         new EProp(7, "fieldId", Constraint.of(ConstraintOp.eq, ev1.fieldId)), // ev1,3
                         new Rel(8, "hasEvalueReference", R, null, 9, 0),
-                        new ETyped(9, "R", "Reference", 10, 0), // 1,2,3
+                        new ETyped(9, "R", "Reference", 10, 0), // ev1,2,3
                         new EProp(10, "content", Constraint.of(ConstraintOp.eq, ref4.content))  // ev2,3 + ref2,4,5
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -287,6 +287,95 @@ public class KnowledgeSimpleSomeTests {
                         .withRelationships(ev2.withRelations("hasEvalueReference", ref2.id()))
                         .withRelationships(ev3.withRelations("hasEvalueReference", ref4.id()))
                         .withRelationships(ev3.withRelations("hasEvalueReference", ref5.id()))
+                        .build())
+                .build();
+
+        // Check if expected results and actual results are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
+
+    @Test
+    public void testTwoSomeWithTwoPropAndRel() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Entity", 2, 0),
+                        new Quant1(2, QuantType.some, Arrays.asList(3, 4), 0),
+                        new EProp(3, "category", Constraint.of(ConstraintOp.eq, e3.category)), // e1,2,3,3,4
+                        new Rel(4, "hasEvalue", R, null, 5, 0),
+                        new ETyped(5, "R1", "Evalue", 6, 0),
+                        new Quant1(6, QuantType.some, Arrays.asList(7, 8), 0),
+                        new EProp(7, "fieldId", Constraint.of(ConstraintOp.eq, ev3.fieldId)), // 3
+                        new Rel(8, "hasEvalueReference", R, null, 9, 0),
+                        new ETyped(9, "R", "Reference", 10, 0) // ev1,2,3,4,5 + ref1,2,3,4,5,6,7,8
+                )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e1.toEntity()).withEntity(e2.toEntity())
+                        .withEntity(e3.toEntity()).withEntity(e4.toEntity()) // BUG: Doesn't return e4 instead return it as e3
+                        .withEntity(ev1.toEntity()).withEntity(ev2.toEntity()).withEntity(ev3.toEntity())
+                        .withEntity(ev4.toEntity()).withEntity(ev5.toEntity())
+                        .withEntity(ref1.toEntity()).withEntity(ref2.toEntity()).withEntity(ref3.toEntity())
+                        .withEntity(ref4.toEntity()).withEntity(ref5.toEntity()).withEntity(ref6.toEntity())
+                        .withEntity(ref7.toEntity()).withEntity(ref8.toEntity())
+                        .withRelationships(e1.withRelations("hasEvalue", ev1.id()))
+                        .withRelationships(e2.withRelations("hasEvalue", ev2.id()))
+                        .withRelationships(e3.withRelations("hasEvalue", ev3.id()))
+                        .withRelationships(e4.withRelations("hasEvalue", ev4.id()))  // BUG: Gives e3 to ev4
+                        .withRelationships(e4.withRelations("hasEvalue", ev5.id()))  // BUG: Gives e3 to ev5
+                        .withRelationships(ev1.withRelations("hasEvalueReference", ref1.id()))
+                        .withRelationships(ev2.withRelations("hasEvalueReference", ref2.id()))
+                        .withRelationships(ev2.withRelations("hasEvalueReference", ref3.id()))
+                        .withRelationships(ev3.withRelations("hasEvalueReference", ref4.id()))
+                        .withRelationships(ev3.withRelations("hasEvalueReference", ref5.id()))
+                        .withRelationships(ev3.withRelations("hasEvalueReference", ref6.id()))
+                        .withRelationships(ev4.withRelations("hasEvalueReference", ref7.id()))
+                        .withRelationships(ev5.withRelations("hasEvalueReference", ref8.id()))
+                        .build())
+                .build();
+
+        // Check if expected results and actual results are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
+
+    @Test
+    public void testTwoSomeWithTwoRels() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Entity", 2, 0),
+                        new Quant1(2, QuantType.some, Arrays.asList(3, 4), 0),
+
+                        new Rel(3, "hasEntityReference", R, null, 13, 0), // e4, ref9
+                        new ETyped(13, "R", "Reference", 0, 0),
+                        // OR
+                        new Rel(4, "hasEvalue", R, null, 5, 0),
+                        new ETyped(5, "R1", "Evalue", 6, 0),
+                        new Quant1(6, QuantType.some, Arrays.asList(7, 8), 0),
+                        new EProp(7, "fieldId", Constraint.of(ConstraintOp.eq, ev3.fieldId)), // e1, ev1 + e3,ev3
+                        // second OR
+                        new Rel(8, "hasEvalueReference", R, null, 9, 0),
+                        new ETyped(9, "R", "Reference", 10, 0),
+                        new EProp(10, "content", Constraint.of(ConstraintOp.eq, ref8.content))  // e4, ev5, ref8
+                )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e1.toEntity()).withEntity(e3.toEntity()).withEntity(e4.toEntity()) // Bug: Return e2 and not return e4
+                        .withEntity(ev1.toEntity()).withEntity(ev3.toEntity()).withEntity(ev5.toEntity())
+                        .withEntity(ref8.toEntity()).withEntity(ref9.toEntity())
+                        .withRelationships(e1.withRelations("hasEvalue", ev1.id()))
+                        .withRelationships(e3.withRelations("hasEvalue", ev3.id()))
+                        .withRelationships(e4.withRelations("hasEvalue", ev5.id()))  // BUG: Return e3 instead of e4
+                        .withRelationships(e4.withRelations("hasEntityReference", ref9.id()))  // BUG: Return e3 instead of e4
+                        .withRelationships(ev5.withRelations("hasEvalueReference", ref8.id()))
                         .build())
                 .build();
 
