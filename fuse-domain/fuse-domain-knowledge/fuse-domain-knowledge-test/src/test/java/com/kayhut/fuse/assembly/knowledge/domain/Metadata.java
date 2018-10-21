@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.results.Property;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 //todo - for kobi usage
 public abstract class Metadata extends KnowledgeDomainBuilder {
@@ -35,32 +36,32 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
     //public String lastUpdateTime = sdf.format(new Date(System.currentTimeMillis()));
     public Date creationTime = new Date(System.currentTimeMillis());
     public Date lastUpdateTime = new Date(System.currentTimeMillis());
-    public Date deleteTime = new Date(System.currentTimeMillis());
+    public Date deleteTime;
     public String[] authorization = new String[]{"procedure.1", "procedure.2"};
 
     public <T extends Metadata> T lastUpdateUser(String lastUpdateUser) {
         this.lastUpdateUser = lastUpdateUser;
-        return (T)this;
+        return (T) this;
     }
 
     public <T extends Metadata> T creationUser(String creationUser) {
         this.creationUser = creationUser;
-        return (T)this;
+        return (T) this;
     }
 
     public <T extends Metadata> T creationTime(Date creationTime) {
         this.creationTime = creationTime;
-        return (T)this;
+        return (T) this;
     }
 
     public <T extends Metadata> T lastUpdateTime(Date lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
-        return (T)this;
+        return (T) this;
     }
 
     public <T extends Metadata> T deleteTime(Date deleteTime) {
         this.deleteTime = deleteTime;
-        return (T)this;
+        return (T) this;
     }
 
 //        public Metadata creationTime(String creationTime) {
@@ -74,10 +75,13 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
         list.addAll(Arrays.asList(
                 new Property("lastUpdateUser", "raw", lastUpdateUser),
                 new Property("creationUser", "raw", creationUser),
-                new Property("lastUpdateTime", "raw", sdf.format(lastUpdateTime)),
-                new Property("creationTime", "raw", sdf.format(creationTime)),
-                new Property("deleteTime", "raw", sdf.format(deleteTime)),
-                new Property("authorization", "raw", Arrays.asList(authorization))));
+                new Property("lastUpdateTime", "raw", lastUpdateTime != null ? sdf.format(lastUpdateTime) : null),
+                new Property("creationTime", "raw", creationTime != null ? sdf.format(creationTime) : null),
+                new Property("deleteTime", "raw", deleteTime != null ? sdf.format(deleteTime) : null),
+                new Property("authorization", "raw", Arrays.asList(authorization)))
+                .stream()
+                .filter(p -> p.getValue() != null)
+                .collect(Collectors.toList()));
         return list;
     }
 
@@ -90,11 +94,12 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
 
         node.put("authorizationCount", authNode.size());
         node.put("authorization", authNode); // Authorization = Clearance
+        node.put("creationUser", creationUser);
+        node.put("creationTime", sdf.format(creationTime));
         node.put("lastUpdateUser", lastUpdateUser);
         node.put("lastUpdateTime", sdf.format(lastUpdateTime));
-        node.put("creationUser", creationUser);
-        node.put("deleteTime", sdf.format(deleteTime));
-        node.put("creationTime", sdf.format(creationTime));
+        //delete time is not mandatory
+        if (deleteTime != null) node.put("deleteTime", sdf.format(deleteTime));
         return node;
     }
 }
