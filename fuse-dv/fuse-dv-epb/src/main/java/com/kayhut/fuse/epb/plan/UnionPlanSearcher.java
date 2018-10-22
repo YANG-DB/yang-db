@@ -5,6 +5,8 @@ import com.google.inject.name.Named;
 import com.kayhut.fuse.asg.AsgQueryTransformer;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.EPropGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropGroupingAsgStrategy;
+import com.kayhut.fuse.asg.strategy.selection.DefaultRelationSelectionAsgStrategy;
+import com.kayhut.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
 import com.kayhut.fuse.dispatcher.epb.PlanSearcher;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.epb.plan.query.AsgUnionSplitQueryTransformer;
@@ -28,7 +30,12 @@ public class UnionPlanSearcher implements PlanSearcher<Plan, PlanDetailedCost, A
     @Inject
     public UnionPlanSearcher(@Named(planSearcherParameter) PlanSearcher<Plan, PlanDetailedCost, AsgQuery> mainPlanSearcher, OntologyProvider ontologyProvider ) {
         this.mainPlanSearcher = mainPlanSearcher;
-        final AsgQueryTransformer transformer = new AsgQueryTransformer(() -> Arrays.asList(new EPropGroupingAsgStrategy(), new RelPropGroupingAsgStrategy()), ontologyProvider );
+        final AsgQueryTransformer transformer = new AsgQueryTransformer(() -> Arrays.asList(
+                new EPropGroupingAsgStrategy(),
+                new RelPropGroupingAsgStrategy(),
+                new DefaultSelectionAsgStrategy(ontologyProvider),
+                new DefaultRelationSelectionAsgStrategy(ontologyProvider)),
+                ontologyProvider );
         this.splitQueryTransformer = new AsgUnionSplitQueryTransformer(transformer);
     }
 

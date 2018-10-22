@@ -40,7 +40,7 @@ import static com.kayhut.fuse.model.query.Rel.Direction.R;
 public class KnowledgeSimpleEntityAndEvalueWithFilterE2ETests {
 
     static KnowledgeWriterContext ctx;
-    static EntityBuilder e1, e2, e3, e4; //, e5, e6, e7, e8, e9, e10;
+    static EntityBuilder e1, e2, e3, e4;
     static ValueBuilder v1, v2, v3, v4, v5, v6, v7, v8, v9, v10;
     static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 

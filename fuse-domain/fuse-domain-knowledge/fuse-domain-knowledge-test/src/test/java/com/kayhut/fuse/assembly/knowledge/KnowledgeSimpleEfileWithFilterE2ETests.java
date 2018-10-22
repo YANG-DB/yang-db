@@ -41,7 +41,7 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false);
+        //Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Efile entities for tests
