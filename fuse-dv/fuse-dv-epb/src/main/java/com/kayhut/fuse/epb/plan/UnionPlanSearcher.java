@@ -21,6 +21,7 @@ import javaslang.collection.Stream;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class UnionPlanSearcher implements PlanSearcher<Plan, PlanDetailedCost, AsgQuery> {
     public static final String planSearcherParameter = "UnionPlanSearcher.@planSearcherParameter";
@@ -53,15 +54,19 @@ public class UnionPlanSearcher implements PlanSearcher<Plan, PlanDetailedCost, A
 
         //use UnionOp to collect all resulted plans
 
-        final double sumCosts = (double) Stream.ofAll(plans).map(p -> p.getCost().getGlobalCost().getCost()).sum();
-        final List<PlanWithCost<Plan, CountEstimatesCost>> costs = Stream.ofAll(plans)
+        final Stream<PlanWithCost<Plan, PlanDetailedCost>> stream = Stream.ofAll(plans)
+                .filter(Objects::nonNull)
+                .filter(p->p.getCost()!=null && p.getCost().getGlobalCost()!=null);
+
+        final double sumCosts = (double) stream.map(p -> p.getCost().getGlobalCost().getCost()).sum();
+        final List<PlanWithCost<Plan, CountEstimatesCost>> costs = stream
                 .map(p -> new PlanWithCost<>(p.getPlan(), new CountEstimatesCost(p.getCost().getGlobalCost().getCost(), 0)))
                 .toJavaList();
 
         final PlanDetailedCost planDetailedCost = new PlanDetailedCost(new DoubleCost(sumCosts), costs);
         final PlanWithCost<Plan, PlanDetailedCost> unionPlan = new PlanWithCost<>(new Plan(), planDetailedCost);
         //add unionOp to union plan
-        unionPlan.getPlan().getOps().add(new UnionOp(Stream.ofAll(plans).map(p -> p.getPlan().getOps()).toJavaList()));
+        unionPlan.getPlan().getOps().add(new UnionOp(stream.map(p -> p.getPlan().getOps()).toJavaList()));
 
         return unionPlan;
     }
