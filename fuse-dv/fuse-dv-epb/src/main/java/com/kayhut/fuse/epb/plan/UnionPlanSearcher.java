@@ -19,6 +19,7 @@ import com.kayhut.fuse.model.execution.plan.composite.UnionOp;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.resourceInfo.FuseError;
 import javaslang.collection.Stream;
 
 import java.util.Arrays;
@@ -51,6 +52,10 @@ public class UnionPlanSearcher implements PlanSearcher<Plan, PlanDetailedCost, A
 
         //plan main query
         final List<PlanWithCost<Plan, PlanDetailedCost>> plans = Stream.ofAll(queries).map(q -> mainPlanSearcher.search(q)).toJavaList();
+
+        if (!Stream.ofAll(plans).filter(Objects::isNull).isEmpty()) {
+            throw new IllegalStateException("UnionPlanSearcher - One of the plans is empty");
+        }
 
         if (plans.size() == 1) {
             return plans.get(0);
