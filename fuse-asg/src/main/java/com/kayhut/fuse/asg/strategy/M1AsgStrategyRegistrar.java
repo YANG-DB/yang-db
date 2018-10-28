@@ -2,10 +2,7 @@ package com.kayhut.fuse.asg.strategy;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.asg.strategy.constraint.*;
-import com.kayhut.fuse.asg.strategy.propertyGrouping.EPropGroupingAsgStrategy;
-import com.kayhut.fuse.asg.strategy.propertyGrouping.HQuantPropertiesGroupingAsgStrategy;
-import com.kayhut.fuse.asg.strategy.propertyGrouping.Quant1PropertiesGroupingAsgStrategy;
-import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropGroupingAsgStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.*;
 import com.kayhut.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
 import com.kayhut.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
@@ -29,6 +26,7 @@ public class M1AsgStrategyRegistrar implements AsgStrategyRegistrar {
         return Arrays.asList(
                 new AsgNamedParametersStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
+                new Quant1AllQuantGroupingAsgStrategy(),
                 new EPropGroupingAsgStrategy(),
                 new HQuantPropertiesGroupingAsgStrategy(),
                 new Quant1PropertiesGroupingAsgStrategy(),

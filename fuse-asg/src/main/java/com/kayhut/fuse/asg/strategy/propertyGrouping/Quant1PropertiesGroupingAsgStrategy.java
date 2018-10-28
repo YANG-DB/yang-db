@@ -58,7 +58,7 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
                 .forEach(this::groupEpropGroups);
 
         List<AsgEBase<EPropGroup>> epropGroups = AsgQueryUtil.nextAdjacentDescendants(quant1AsgEBase, EPropGroup.class);
-        if (quant1AsgEBase.getNext().size() == epropGroups.size()) {
+        //if (quant1AsgEBase.getNext().size() == epropGroups.size()) {
             if (epropGroups.size() > 1) {
                 EPropGroup groupedEPropGroup = new EPropGroup(
                         Stream.ofAll(epropGroups).map(AsgEBase::geteNum).min().get(),
@@ -71,7 +71,7 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
                 epropGroups.forEach(quant1AsgEBase::removeNextChild);
                 quant1AsgEBase.addNextChild(AsgEBase.Builder.get().withEBase(groupedEPropGroup).build());
             }
-        }
+        //}
 
         Optional<AsgEBase<Quant1>> parentQuant = AsgQueryUtil.adjacentAncestor(quant1AsgEBase, Quant1.class);
         if (parentQuant.isPresent() && quant1AsgEBase.getNext().size() == 1) {
