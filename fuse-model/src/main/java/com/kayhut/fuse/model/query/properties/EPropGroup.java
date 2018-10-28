@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -45,6 +48,16 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
 
     public EPropGroup(int eNum, QuantType quantType, Iterable<EProp> props, Iterable<EPropGroup> groups) {
         super(eNum, quantType, props, groups);
+    }
+    //endregion
+
+    //region Public Methods
+    public List<EProp> findAll(Predicate<EProp> propPredicate) {
+        return this.findAll(propPredicate, this);
+    }
+
+    public void consumeAll(Predicate<EProp> propPredicate, BiConsumer<EPropGroup, EProp> consumer) {
+        this.consumeAll(propPredicate, this, consumer);
     }
     //endregion
 
@@ -110,5 +123,16 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
         return result;
     }
 
+    private List<EProp> findAll(Predicate<EProp> propPredicate, EPropGroup group) {
+        return Stream.ofAll(group.getProps())
+                .appendAll(Stream.ofAll(group.getGroups()).flatMap(childGroup -> findAll(propPredicate, childGroup)))
+                .filter(propPredicate)
+                .toJavaList();
+    }
+
+    private void consumeAll(Predicate<EProp> propPredicate, EPropGroup group, BiConsumer<EPropGroup, EProp> consumer) {
+        Stream.ofAll(group.getProps()).filter(propPredicate::test).toJavaList().forEach(eprop -> consumer.accept(group, eprop));
+        Stream.ofAll(group.getGroups()).forEach(childGroup -> consumeAll(propPredicate, childGroup, consumer));
+    }
     //endregion
 }

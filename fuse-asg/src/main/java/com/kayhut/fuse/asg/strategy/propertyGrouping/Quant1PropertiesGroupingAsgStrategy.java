@@ -70,6 +70,10 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
 
                 epropGroups.forEach(quant1AsgEBase::removeNextChild);
                 quant1AsgEBase.addNextChild(AsgEBase.Builder.get().withEBase(groupedEPropGroup).build());
+
+                List<EProp> projectionProps = groupedEPropGroup.findAll(eProp -> eProp.getProj() != null);
+                groupedEPropGroup.consumeAll(eProp -> eProp.getProj() != null, (group, eprop) -> group.getProps().remove(eprop));
+                groupedEPropGroup.getProps().addAll(projectionProps);
             }
         //}
 

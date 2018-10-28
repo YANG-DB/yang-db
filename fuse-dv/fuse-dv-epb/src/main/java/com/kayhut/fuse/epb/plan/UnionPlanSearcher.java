@@ -5,6 +5,7 @@ import com.google.inject.name.Named;
 import com.kayhut.fuse.asg.AsgQueryTransformer;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.EPropGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.Quant1AllQuantGroupingAsgStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.Quant1PropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.selection.DefaultRelationSelectionAsgStrategy;
 import com.kayhut.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
@@ -35,6 +36,7 @@ public class UnionPlanSearcher implements PlanSearcher<Plan, PlanDetailedCost, A
         final AsgQueryTransformer transformer = new AsgQueryTransformer(() -> Arrays.asList(
                 new Quant1AllQuantGroupingAsgStrategy(),
                 new EPropGroupingAsgStrategy(),
+                new Quant1PropertiesGroupingAsgStrategy(),
                 new RelPropGroupingAsgStrategy(),
                 new DefaultSelectionAsgStrategy(ontologyProvider),
                 new DefaultRelationSelectionAsgStrategy(ontologyProvider)),
