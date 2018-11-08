@@ -13,9 +13,9 @@ public class CsvQueryResult extends QueryResultBase implements TextContent{
         this.csvLines = csvLines;
     }
 
-    public CsvQueryResult(String[] csvLines, String[] header) {
+    public CsvQueryResult(String[] csvLines, String[] headers) {
         this.csvLines = csvLines;
-        this.header = header;
+        this.headers = headers;
     }
 
     public void setCsvLines(String[] csvLines) {
@@ -30,12 +30,12 @@ public class CsvQueryResult extends QueryResultBase implements TextContent{
         return "csv";
     }
 
-    public String[] getHeader() {
-        return header;
+    public String[] getHeaders() {
+        return headers;
     }
 
-    public void setHeader(String[] header) {
-        this.header = header;
+    public void setHeaders(String[] headers) {
+        this.headers = headers;
     }
 
     @Override
@@ -44,13 +44,13 @@ public class CsvQueryResult extends QueryResultBase implements TextContent{
     }
 
     private String[] csvLines;
-    private String[] header;
+    private String[] headers;
 
     @Override
     public String content() {
         StringBuilder builder = new StringBuilder();
-        if(this.header != null) {
-            builder.append(String.join(",", header));
+        if(this.headers != null) {
+            builder.append(String.join(",", headers));
             builder.append('\n');
         }
         for (int i = 0; i < csvLines.length; i++) {
@@ -76,19 +76,19 @@ public class CsvQueryResult extends QueryResultBase implements TextContent{
         }
 
         public Builder withHeader(String[] header){
-            this.header = header;
+            this.headers = header;
             return this;
         }
 
         public CsvQueryResult build(){
-            if(this.header != null) {
-                return new CsvQueryResult(Stream.ofAll(this.lines).toJavaArray(String.class), this.header);
+            if(this.headers != null) {
+                return new CsvQueryResult(Stream.ofAll(this.lines).toJavaArray(String.class), this.headers);
             }else{
                 return new CsvQueryResult(Stream.ofAll(this.lines).toJavaArray(String.class));
             }
         }
 
         private List<String> lines;
-        private String[] header;
+        private String[] headers;
     }
 }
