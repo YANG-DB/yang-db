@@ -478,7 +478,7 @@ It allows us to state what we want to select, insert, update or delete
 from our graph data without requiring us to describe exactly how to do
 it.
 
-<img src="https://s3.amazonaws.com/dev.assets.neo4j.com/wp-content/uploads/cypher_pattern_simple.png" alt="cypher pattern simple" style="width:6.5in;height:1.33403in" />
+![alt text](https://s3.amazonaws.com/dev.assets.neo4j.com/wp-content/uploads/cypher_pattern_simple.png)
 
 Vertices
 --------
