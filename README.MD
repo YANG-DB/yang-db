@@ -2,15 +2,15 @@ From Graph to Elastic
 =========================================================================================
 ##### Authors:
 
-* [Lior Perry](https://www.linkedin.com/in/lior-perry-62135314/)
+* [Lior Perry](https://www.linkedin.com/in/lior-perry-62135314/) 
 
 * [Roman Margolis](https://www.linkedin.com/in/roman-margolis-2b181531/)
 
-* [Moti Cohen](https://www.linkedin.com/in/moti-cohen-8815a577/)
+* [Moti Cohen](https://www.linkedin.com/in/moti-cohen-8815a577/) 
 
-* [Elad Wies](https://www.linkedin.com/in/elad-weiss-0b588525/)
+* [Elad Wies](https://www.linkedin.com/in/elad-weiss-0b588525/) 
 
-* [Shimon Benoshti](https://www.linkedin.com/in/benishue/)
+* [Shimon Benoshti](https://www.linkedin.com/in/benishue/) 
 
 
 ##### License:
