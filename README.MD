@@ -266,30 +266,30 @@ top of it. Let’s review the schema (simplified for this article)
 #### Domain entities
 
 ####Person
-<li>name</li>
-<li>age</li>
-<li>gender</li>
-<li>birthdate</li>
-<li>Joined</li>
-<li>status</li>
-<li>email</li>
+ * name 
+ * age 
+ * gender 
+ * birthdate 
+ * Joined 
+ * status 
+ * email 
 
 ####Post
-<li>content</li>
-<li>language</li>
-<li>imageFile</li>
+ * content 
+ * language 
+ * imageFile 
 
 ####Location
-<li>coordination</li>
-<li>country</li>
-<li>type (city/village)</li>
+ * coordination 
+ * country 
+ * type (city/village) 
 
 ####Forum
-<li>title</li>
-<li>creationDate</li>
+ * title 
+ * creationDate 
 
 ####Tag
-<li>type</li>
+ * type 
 
 #### Domain Relations
 * Person -[**Tagged**]->Location
@@ -403,9 +403,8 @@ other people. 
 
 In this highly connected graph the amount of the edges far outstands the
 amount of vertices; Facebook statistics page
-(<https://www.omnicoreagency.com/facebook-statistics/>) claims an
-Average Facebook user has [155
-friends](http://www.telegraph.co.uk/news/science/science-news/12108412/Facebook-users-have-155-friends-but-would-trust-just-four-in-a-crisis.html)
+[facebook-statistics](<https://www.omnicoreagency.com/facebook-statistics/>) claims an
+Average Facebook user has [155 friends](http://www.telegraph.co.uk/news/science/science-news/12108412/Facebook-users-have-155-friends-but-would-trust-just-four-in-a-crisis.html)
 (two orders of magnitude).
 
 This has a tremendous effect on our planning of the physical storage
@@ -478,6 +477,7 @@ describing patterns in graphs visually using an ascii-art syntax.
 It allows us to state what we want to select, insert, update or delete
 from our graph data without requiring us to describe exactly how to do
 it.
+
 <img src="https://s3.amazonaws.com/dev.assets.neo4j.com/wp-content/uploads/cypher_pattern_simple.png" alt="cypher pattern simple" style="width:6.5in;height:1.33403in" />
 
 Vertices
