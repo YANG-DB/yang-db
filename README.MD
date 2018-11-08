@@ -2,20 +2,27 @@ From Graph to Elastic
 =========================================================================================
 ##### Authors:
 
-[Lior Perry](https://www.linkedin.com/in/lior-perry-62135314/)
+* [Lior Perry](https://www.linkedin.com/in/lior-perry-62135314/)
 
-[Roman Margolis](https://www.linkedin.com/in/roman-margolis-2b181531/)
+* [Roman Margolis](https://www.linkedin.com/in/roman-margolis-2b181531/)
 
-[Moti Cohen](https://www.linkedin.com/in/moti-cohen-8815a577/)
+* [Moti Cohen](https://www.linkedin.com/in/moti-cohen-8815a577/)
 
-[Elad Wies](https://www.linkedin.com/in/elad-weiss-0b588525/)
+* [Elad Wies](https://www.linkedin.com/in/elad-weiss-0b588525/)
 
-[Shimon Benoshti](https://www.linkedin.com/in/benishue/)
+* [Shimon Benoshti](https://www.linkedin.com/in/benishue/)
 
 
 ##### License:
 
 [Apache License 2](http://www.apache.org/licenses/LICENSE-2.0.html)
+
+Infrastructure Technologies  
+-----------------------------------------------------------------------------------------------
+
+* [elasticsearch](https://www.elastic.co/)
+* [jooby](https://jooby.org/)
+* [tinkerpop](http://tinkerpop.apache.org/)
 
 Introduction
 ------------
@@ -95,7 +102,6 @@ serve metadata over graph elements.
 Nodes are often used to represent *entities* but depending on the domain
 relationships may be used for that purpose as well.
 
-### 
 
 ### Relationships 
 
@@ -784,3 +790,4 @@ path is unique in the chain of graph elements it has traversed.
 
 The Traversal  
 --
+....
