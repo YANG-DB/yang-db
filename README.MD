@@ -1,6 +1,21 @@
 From Graph to Elastic
 =========================================================================================
+##### Authors:
 
+[Lior Perry](https://www.linkedin.com/in/lior-perry-62135314/)
+
+[Roman Margolis](https://www.linkedin.com/in/roman-margolis-2b181531/)
+
+[Moti Cohen](https://www.linkedin.com/in/moti-cohen-8815a577/)
+
+[Elad Wies](https://www.linkedin.com/in/elad-weiss-0b588525/)
+
+[Shimon Benoshti](https://www.linkedin.com/in/benishue/)
+
+
+##### License:
+
+[Apache License 2](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 Introduction
 ------------
@@ -587,7 +602,7 @@ help us:
         email: string
      }
 }
-````
+```
 
 In our example the indices are monthly time base, each index contains
 entities created on that specific month.
@@ -606,7 +621,7 @@ entities created on that specific month.
         imageFile: integer
      }
 }
-````
+```
 
 #### Own relation schema definition:
 ```javascript
@@ -683,7 +698,7 @@ Example results:
 [(n1:{name:Dana}),(own:{date:2015/16/1}), content:”really ?can you …”}),(n2:{title:Pastrama})]
 [(n1:{name:Abe}),(own:{date:2018/13/01}), content:”just think…”}),(n2:{title:Vine})]
 [(n1:{name:Charls}),(own:{date:2017/5/5}), content:”sowarm”}),(n2:{title:Summer})]
-````
+```
 Each row represents a different path along the sub-graph complying with
 the query.
 
@@ -709,7 +724,7 @@ GET p*/_search
     "match_all": {}
     }
 }
-````
+```
 Returns:
 
 'hits':
@@ -718,7 +733,7 @@ Returns:
  { "_index": "p2017_Sep ", "_type": "person", "_id": "p0001",…,"_source": { "name": "jon" } },
  { "_index": " p2017_Sep", "_type": "person", ", "_id": "p0002",…,"_source": { "name": "dana" } }, …
 ]
-````
+```
 The next step will take the id’s that result from the returned hits and
 push them down to elastic query
 
