@@ -132,7 +132,7 @@ public class KnowledgeDataInfraManager  {
         on.put("category", "person");
         on.put("authorizationCount", 1);
         on.put("lastUpdateUser", "Mark");
-        on.put("creationUser", "Muhamad");
+        on.put("creationUser", "Jhon");
         on.put("lastUpdateTime", "2018-03-24 14:02:40.533");
         on.put("creationTime", "2018-03-27 11:12:40.133");
 

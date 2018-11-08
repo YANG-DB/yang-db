@@ -762,8 +762,10 @@ GET post*/_search
                 }
             }
 }
-
+```
 All the results from the 3 steps are collected into a path object, each
 path is unique in the chain of graph elements it has traversed.
 
 
+The Traversal  
+--
