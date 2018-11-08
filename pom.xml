@@ -9,6 +9,7 @@
     <version>0.5-SNAPSHOT</version>
 
     <modules>
+        <module>unipop-core</module>
         <module>fuse-model</module>
         <module>fuse-test</module>
         <module>fuse-asg</module>
@@ -80,9 +81,6 @@
 
         <!-- tinkerpop -->
         <tinkerpop.version>3.2.5</tinkerpop.version>
-
-        <!-- unipop -->
-        <unipop.version>0.2</unipop.version>
 
         <!-- com.eaio.uuid -->
         <com.eaio.uuid.version>3.2</com.eaio.uuid.version>
@@ -176,6 +174,11 @@
             <dependency>
                 <groupId>com.kayhut</groupId>
                 <artifactId>fuse-service</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
+                <artifactId>unipop-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
@@ -370,30 +373,6 @@
                 <version>${tinkerpop.version}</version>
             </dependency>
             <!-- tinkerpop -->
-
-            <!-- unipop -->
-            <dependency>
-                <groupId>unipop</groupId>
-                <artifactId>unipop-core</artifactId>
-                <version>${unipop.version}</version>
-                <!--This is needed to avoid bringing log4j because it interferes with slf4j logback setup, which is the default for jooby-->
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-log4j12</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>unipop</groupId>
-                <artifactId>unipop-elastic</artifactId>
-                <version>${unipop.version}</version>
-            </dependency>
-            <!-- unipop -->
 
             <!-- com.eaio.uuid -->
             <dependency>
@@ -796,11 +775,6 @@
             <name>fuse-site</name>
             <url>file://target/site</url>
         </site>
-        <repository>
-            <id>fuse-releases</id>
-            <name>fuse-releases</name>
-            <url>http://ec2-52-210-247-209.eu-west-1.compute.amazonaws.com:8081/repository/fuse/</url>
-        </repository>
     </distributionManagement>
 
     <reporting>

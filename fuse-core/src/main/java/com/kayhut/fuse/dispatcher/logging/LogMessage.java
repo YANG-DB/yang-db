@@ -71,7 +71,7 @@ public interface LogMessage {
             //region MDCWriter Implementation
             @Override
             public void write() {
-                MDC.put(this.key, this.value);
+                MDC.put(this.key, this.value!=null ? this.value : "?");
             }
             //endregion
 
