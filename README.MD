@@ -265,47 +265,48 @@ top of it. Let’s review the schema (simplified for this article)
 
 #### Domain entities
 
-<table>
-<thead>
-<tr class="header">
-<th><strong>person</strong></th>
-<th><strong>post</strong></th>
-<th><strong>location</strong></th>
-<th><strong>forum</strong></th>
-<th><strong>Tag</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><ul>
-<li><p>name</p></li>
-<li><p>age</p></li>
-<li><p>gender</p></li>
-<li><p>birthdate</p></li>
-<li><p>Joined</p></li>
-<li><p>status</p></li>
-<li><p>email</p></li>
-</ul></td>
-<td><ul>
-<li><p>content</p></li>
-<li><p>language</p></li>
-<li><p>imageFile</p></li>
-</ul></td>
-<td><ul>
-<li><p>coordination</p></li>
-<li><p>country</p></li>
-<li><p>type (city/village)</p></li>
-</ul></td>
-<td><ul>
-<li><p>title</p></li>
-<li><p>creationDate</p></li>
-</ul></td>
-<td><ul>
-<li><p>name</p></li>
-</ul></td>
-</tr>
-</tbody>
-</table>
+####Person
+<li>name</li>
+<li>age</li>
+<li>gender</li>
+<li>birthdate</li>
+<li>Joined</li>
+<li>status</li>
+<li>email</li>
+
+####Post
+<li>content</li>
+<li>language</li>
+<li>imageFile</li>
+
+####Location
+<li>coordination</li>
+<li>country</li>
+<li>type (city/village)</li>
+
+####Forum
+<li>title</li>
+<li>creationDate</li>
+
+####Tag
+<li>type</li>
+
+#### Domain Relations
+* Person -[**Tagged**]->Location
+    * _Date_
+    * _Content_   
+* Person -[**Friend**]->Person
+    * _Date_
+* Person -[**Member**]->Forum
+    * _Since_
+* Person -[**Comment | write **]->Post
+    * _Date_
+    * _Content_
+* Person -[**View**]->Post
+    * _Date_
+* Post -[**in**]->Forum
+    * _Date_
+* Forum -[**Has**]->Tag
 
 
 Questions we need to Ask…
