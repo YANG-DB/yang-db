@@ -32,6 +32,7 @@ Introduction
 >
 > The First Post is about saving history updates in a json document using
 Json Patch.
+>
 > <https://www.linkedin.com/pulse/maintaining-document-history-inside-elasticsearch-lior-perry>
 
  
