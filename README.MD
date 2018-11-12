@@ -837,13 +837,16 @@ Funneling
 ---------------
 The process in which each step is buffering the result until it reaches the required bulk size is called ‘step buffering’. This process is recursive in the sense that when a middle step needs more vertices from the
 former step it calls the former step which in turn can call its former step until possible reaching the first step or exhausting the data (no more elements found matching the query).
+
 Each step maintains a state (scroll) over the data it already fetched (position) so it can continue bulking data when it is required.
 In some sense each step is a funnel of graph elements, there may be cased where some steps will funnel out almost the entire graph.
- 
+
 ![alt text](https://blogs.sas.com/content/graphicallyspeaking/files/2017/03/Funnel_Poly_Range.png)
 
 
-One advantage of this bulking approach is that it is not required to fetch the entire neighborhood of each vertex before it returns. This graph traversal approach is called DFS – depth first search.
+One advantage of this bulking approach is that it is not required to fetch the entire neighborhood of each vertex before it returns.
+This graph traversal approach is called DFS – depth first search.
+
 Another advantage in the DB layer is that instead of huge queries running against the db (such in step 1 without the size limit)
 we are running many bulked steps which ease the contention on the db and allow higher throughput.
 The state of the traversal execution is also detachable from the DB and is stored on the traversing path itself.
@@ -863,10 +866,19 @@ The state of the traversal execution is also detachable from the DB and is store
     *	For Former-Results fetch posts
     *	results += new results
 
-This pseudo code describes the compilation of the 3 steps into execution logic – the execution will start from the last step backwards until reaching a step that actually fetches data from the DB – the first step.
+This pseudo code describes the compilation of the 3 steps into execution logic – the execution will start from the last 
+step backwards until reaching a step that actually fetches data from the DB – (the first step).
 
-We can assume the third step will execute 2 queries against elastic until its buffer is filled, the second step will run 5 times until its buffer is reached and as a consequence the first step will run 12 times until its buffer is reached
-resulting in 19 separate calls to elasticsearch (in oppose to only 3 calls without bulking).
+**Estimated execution**
+
+We can assume:
+
+* The **Third step** will execute 2 queries against elastic until its buffer is filled
+* The **Second step** will run 5 times until its buffer is reached and as a consequence
+* The **First step** will run 12 times until its buffer is reached
+
+Resulting in 19 separate calls to elasticsearch (in oppose to only 3 calls without bulking).
+
 
 Conclusion
 ---------------
