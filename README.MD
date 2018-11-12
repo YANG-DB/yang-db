@@ -1,6 +1,6 @@
 From Graph to Elastic
 =========================================================================================
-##### Authors:
+##### Contributors:
 
 * [Lior Perry](https://www.linkedin.com/in/lior-perry-62135314/) 
 
@@ -11,6 +11,8 @@ From Graph to Elastic
 * [Elad Wies](https://www.linkedin.com/in/elad-weiss-0b588525/) 
 
 * [Shimon Benoshti](https://www.linkedin.com/in/benishue/) 
+
+* [Lior Kogan](https://www.linkedin.com/in/liorkogan/) 
 
 
 ##### License:
@@ -26,24 +28,25 @@ Infrastructure Technologies
 
 Introduction
 ------------
+> This is the second post in the series of Graph DB over Elastic Search.
+>
+> The First Post is about saving history updates in a json document using
+Json Patch.
+> <https://www.linkedin.com/pulse/maintaining-document-history-inside-elasticsearch-lior-perry>
 
-The world of graph databases has had a tremendous impact over the last
-few years in particularity with relation to social networks and their
+<br>
+
+The world of graph databases has had a tremendous impact during the last
+few years, in particularity relating to social networks and their
 effect of our everyday activity.
 
-The once mighty RDBMS is now obliged to make room for an emerging and
+The once mighty (and lonely) RDBMS is now obliged to make room for an emerging and
 increasingly important partner in the data center: the graph database.
 
-Twitter’s doing it, Facebook’s doing it, even online dating sites are
-doing it; what they are doing is relationship graphs. After all, social
-is social, and ultimately, it’s all about relationships.
+Twitter’s using it, Facebook’s using it, even online dating sites are
+using it; what they are using a relationship graphs.
+After all, social is social, and ultimately, it’s all about relationships.
 
-This is the second post in the series of Graph DB over Elastic Search
-
-The First Post is about saving history updates in a json document using
-Json Patch.
-
-<https://www.linkedin.com/pulse/maintaining-document-history-inside-elasticsearch-lior-perry>
 
 There are two main elements that distinguish graph technology: storage
 and processing. 
@@ -734,9 +737,9 @@ GET p*/_search
 ```
 Returns:
 
-'hits':
+
 ```javascript
-[
+'hits':[
  { "_index": "p2017_Sep ", "_type": "person", "_id": "p0001",…,"_source": { "name": "jon" } },
  { "_index": " p2017_Sep", "_type": "person", ", "_id": "p0002",…,"_source": { "name": "dana" } }, …
 ]
@@ -786,9 +789,98 @@ GET post*/_search
 }
 ```
 All the results from the 3 steps are collected into a path object, each
-path is unique in the chain of graph elements it has traversed.
+path is unique in the chain of graph elements it has visitede.
+
+Size of Path’s
+---------------
+
+It is important to remember that the amount of path’s returned from a traversal is the
+cartesian product of the results each step returns; the nature of the path representation is to show all possible ways of traversing the graph.
+In a graph of 20 people each having 50 friends will produce 20*50 paths.
+In some cases, the memory footprint of the resulting paths can be larger than the graph itself, for this reason, we would like to add a bulk mechanism
+that will enable us to limit the resulting paths and help us fetch them in pages.
+
+Traversing strategies
+---------------
+In our example we will need to bulk the result to a size of 1000 path’s each. Currently the first step issues a complete scan of the person 
+vertices – this can potentially be exhaustive and therefor we will add ‘from & limit’ to the query…
 
 
-The Traversal  
---
-....
+
+```javascript
+GET p*/_search
+{
+    "_source": ["name"],
+   "from": 0, "size": 1000,
+    "query": {
+        "match_all": {}
+    }
+}
+```
+
+Step Buffering
+---------------
+This will allow us to scroll over the results in a bulk of 1000 elements.
+In the second step, we will also add the ‘from & limit’ to the query
+ – that will result in an additional scroll over the second step and so on.
+
+One can see that in case where a filter exists the results of the middle steps can be smaller than the bulk size
+ – due to the input vertices from the former step.
+
+In step 2 (get comments step with date predicate) we pushdown the 1000 initial vertices from the first step – this step may return less than 1000 comment edges.
+In such cases we would like to call the former step to fetch an additional bulk of 1000 elements (person vertices) 
+and run an additional comments query until the limit of 1000 comments is reached.
+
+
+Funneling
+---------------
+The process in which each step is buffering the result until it reaches the required bulk size is called ‘step buffering’. This process is recursive in the sense that when a middle step needs more vertices from the
+former step it calls the former step which in turn can call its former step until possible reaching the first step or exhausting the data (no more elements found matching the query).
+Each step maintains a state (scroll) over the data it already fetched (position) so it can continue bulking data when it is required.
+In some sense each step is a funnel of graph elements, there may be cased where some steps will funnel out almost the entire graph.
+ 
+![alt text](https://blogs.sas.com/content/graphicallyspeaking/files/2017/03/Funnel_Poly_Range.png)
+
+
+One advantage of this bulking approach is that it is not required to fetch the entire neighborhood of each vertex before it returns. This graph traversal approach is called DFS – depth first search.
+Another advantage in the DB layer is that instead of huge queries running against the db (such in step 1 without the size limit)
+we are running many bulked steps which ease the contention on the db and allow higher throughput.
+The state of the traversal execution is also detachable from the DB and is stored on the traversing path itself.
+
+<br>
+
+**_Example:_**
+*   Fetch 1000 people **[1]**
+*   While (result < 1000) **[2]**
+    *	Former-Results = call(former-step)
+    *	For Former-Results fetch comments where date > predicate
+    *	results += new results
+
+*   While (result < 1000) **[3]**
+    *	Former-Results = call(former-step)
+    *	For Former-Results fetch posts
+    *	results += new results
+
+<br>
+This pseudo code describes the compilation of the 3 steps into execution logic – the execution will start from the last step backwards until reaching a step that actually fetches data from the DB – the first step.
+
+<br>
+<br>
+We can assume the third step will execute 2 queries against elastic until its buffer is filled, the second step will run 5 times until its buffer is reached and as a consequence the first step will run 12 times until its buffer is reached
+resulting in 19 separate calls to elasticsearch (in oppose to only 3 calls without bulking).
+
+Conclusion
+---------------
+We started with discussing the purpose of graphs DB in today’s business use cases and reviewed different models for representing a graph.
+Understanding the fundamental logical building blocks that a potential graph DB should consist and discussed an existing NoSql candidate to fulfill the storage layer requirements.
+
+Once we selected elasticsearch as the storage layer we took the LDBC Social Network Benchmark graph model and simplified it to be optimized in that specific storage.
+We discussed the actual storage schema with the redundant properties and reviewed cypher language to query the storage in an sql-like graph pattern language.
+
+We continued to see the actual transformation of the cypher query into a physical execution query that will run by Elasticsearch.
+
+In the last section we took a simple graph query and drilled down into the details of the execution strategies and the bulking mechanism.
+In the next post I will review what are the challenges that queries may cause and how we can use a cost-based optimizer to select the best execution plan.
+
+*   https://www.linkedin.com/in/lior-perry-62135314/ 
+*   https://bitbucket.org/liordana/fuse/src/develop/
