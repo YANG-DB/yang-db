@@ -34,7 +34,7 @@ Introduction
 Json Patch.
 > <https://www.linkedin.com/pulse/maintaining-document-history-inside-elasticsearch-lior-perry>
 
-<br>
+ 
 
 The world of graph databases has had a tremendous impact during the last
 few years, in particularity relating to social networks and their
@@ -847,9 +847,10 @@ Another advantage in the DB layer is that instead of huge queries running agains
 we are running many bulked steps which ease the contention on the db and allow higher throughput.
 The state of the traversal execution is also detachable from the DB and is stored on the traversing path itself.
 
-<br>
+
 
 **_Example:_**
+
 *   Fetch 1000 people **[1]**
 *   While (result < 1000) **[2]**
     *	Former-Results = call(former-step)
@@ -861,11 +862,8 @@ The state of the traversal execution is also detachable from the DB and is store
     *	For Former-Results fetch posts
     *	results += new results
 
-<br>
 This pseudo code describes the compilation of the 3 steps into execution logic – the execution will start from the last step backwards until reaching a step that actually fetches data from the DB – the first step.
 
-<br>
-<br>
 We can assume the third step will execute 2 queries against elastic until its buffer is filled, the second step will run 5 times until its buffer is reached and as a consequence the first step will run 12 times until its buffer is reached
 resulting in 19 separate calls to elasticsearch (in oppose to only 3 calls without bulking).
 
