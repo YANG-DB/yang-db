@@ -17,7 +17,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by liorp on 4/26/2017.
+ * Created by lior.perry on 4/26/2017.
  */
 public class StatisticsMockUtils {
 

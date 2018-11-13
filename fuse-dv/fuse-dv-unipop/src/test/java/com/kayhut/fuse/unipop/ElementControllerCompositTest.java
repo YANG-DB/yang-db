@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by User on 19/03/2017.
+ * Created by lior.perry on 19/03/2017.
  */
 public class ElementControllerCompositTest {
     Client client;

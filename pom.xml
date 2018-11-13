@@ -26,6 +26,9 @@
         <version.major>1</version.major>
         <version.minor>11</version.minor>
 
+        <project.inceptionYear>2016</project.inceptionYear>
+        <project.organization.name>kayhut</project.organization.name>
+        <license.licenseName>apache_v2</license.licenseName>
         <!-- plugins -->
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
@@ -613,6 +616,10 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
             </plugin>
@@ -670,7 +677,8 @@
                             <include>**/*.java</include>
                         </includes>
                         <parallel>methods</parallel>
-                        <argLine>${surefireArgLine} -Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}</argLine>
+                        <argLine>${surefireArgLine} -Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}
+                        </argLine>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -687,6 +695,35 @@
                                 <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
                                 <propertyName>surefireArgLine</propertyName>
                             </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>1.16</version>
+                    <configuration>
+                        <verbose>false</verbose>
+                        <addSvnKeyWords>false</addSvnKeyWords>
+                        <licenseName>apache_v2</licenseName>
+                        <roots>
+                            <root>src/main/java</root>
+                        </roots>
+                        <excludes>
+                            <exclude>*.png</exclude>
+                            <exclude>*.txt</exclude>
+                            <exclude>*.json</exclude>
+                            <exclude>*.conf</exclude>
+                            <exclude>*.xml</exclude>
+                        </excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>first</id>
+                            <goals>
+                                <goal>update-file-header</goal>
+                            </goals>
+                            <phase>process-sources</phase>
                         </execution>
                     </executions>
                 </plugin>

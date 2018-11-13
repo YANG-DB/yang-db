@@ -34,7 +34,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by liorp on 4/27/2017.
+ * Created by lior.perry on 4/27/2017.
  */
 public class EBaseStatisticsProviderBasicTests {
     @Before

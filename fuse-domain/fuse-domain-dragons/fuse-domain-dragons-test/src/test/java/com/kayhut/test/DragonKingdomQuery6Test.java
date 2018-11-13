@@ -18,7 +18,7 @@ import java.util.Arrays;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 
 /**
- * Created by lior on 27/02/2018.
+ * Created by lior.perry on 27/02/2018.
  */
 public class DragonKingdomQuery6Test extends TestCase{
     public void run(FuseClient fuseClient) throws Exception {

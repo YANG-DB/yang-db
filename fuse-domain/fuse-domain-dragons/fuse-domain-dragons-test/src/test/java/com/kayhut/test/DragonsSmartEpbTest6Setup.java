@@ -25,7 +25,7 @@ import static com.kayhut.fuse.model.OntologyTestUtils.BIRTH_DATE;
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
 
 /**
- * Created by lior on 27/02/2018.
+ * Created by lior.perry on 27/02/2018.
  */
 public class DragonsSmartEpbTest6Setup extends TestSetupBase  {
     public static void main(String[] args) throws Exception {

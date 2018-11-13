@@ -16,7 +16,7 @@ import static com.kayhut.fuse.model.ontology.Property.Builder.get;
 import static java.util.Collections.emptyList;
 
 /**
- * Created by liorp on 4/27/2017.
+ * Created by lior.perry on 4/27/2017.
  */
 public class OntologyTestUtils {
 

@@ -368,7 +368,21 @@ questions that relay of traversing between vertices according to
 constraints and both aggregative filters based on for example
 accumulating amount of relations (based on some predicate).
 
-
+#### Modeling the vertices
+The next json document will represent the vertex data for person entity:
+```json
+{
+	Type: person,
+	Id: e0000000001,
+	name: ‘James Jones’
+	age: 45
+	gender: M
+	birthDate: 01/01/1980
+	status: Single
+	joined: 01/10/2005
+	email: jamjon@gmail.com
+}
+```
 In elastic we can create an index for this entity, the index can be
 partitioned into a predefined number of partitions that will spread and
 moderate the load, the partition key can be according to the vertex id.
@@ -384,6 +398,29 @@ to the id routing.
 Apart from the edge properties and id attributes, we introducing data
 redundancy to help reduce the need to fetch all the vertices on the
 other side (given some filter exists on their properties).
+
+####Modeling the edge
+Friend Edge document:
+```json
+{
+	Type: friend,
+	Source_Id: e0000000001,
+	Target_Id: e0000000001,
+	becameFriend: 01/10/2010
+
+	Source_name: ‘…’
+	Source_age: 45
+	Source_gender: M
+	Source_birthDate: 01/01/1980
+	Source_status: Single
+	Target_name: ‘…’
+	Target _age: 35
+	Target _gender:F
+	Target _birthDate: 01/01/1990
+	Target _status: Married
+}
+```
+
 
 ### Modeling the physical data with redundancy 
 

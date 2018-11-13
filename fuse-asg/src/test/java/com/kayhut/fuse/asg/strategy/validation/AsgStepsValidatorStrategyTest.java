@@ -27,7 +27,7 @@ import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
 /**
- * Created by liorp on 6/6/2017.
+ * Created by lior.perry on 6/6/2017.
  */
 public class AsgStepsValidatorStrategyTest {
     Ontology ontology;

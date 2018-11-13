@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Created by User on 29/03/2017.
+ * Created by lior.perry on 29/03/2017.
  */
 public class EmptyGraphElementSchemaProvider implements GraphElementSchemaProvider {
     public static EmptyGraphElementSchemaProvider instance = new EmptyGraphElementSchemaProvider();

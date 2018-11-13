@@ -12,7 +12,7 @@ import java.util.Optional;
 import static com.kayhut.fuse.model.OntologyTestUtils.createDragonsOntologyLong;
 
 /**
- * Created by liorp on 6/4/2017.
+ * Created by lior.perry on 6/4/2017.
  */
 public class DragonsOntologyGraphLayoutProviderFactoryTest {
 

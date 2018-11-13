@@ -36,7 +36,7 @@ import java.util.Set;
 import static org.mockito.Mockito.mock;
 
 /**
- * Created by User on 19/03/2017.
+ * Created by lior.perry on 19/03/2017.
  */
 public class TraversalTest {
     Client client;

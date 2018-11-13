@@ -26,7 +26,7 @@ import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 
 /**
- * Created by liorp on 6/6/2017.
+ * Created by lior.perry on 6/6/2017.
  */
 public class AsgOntologyRelValidatorStrategyTest {
     Ontology ontology;

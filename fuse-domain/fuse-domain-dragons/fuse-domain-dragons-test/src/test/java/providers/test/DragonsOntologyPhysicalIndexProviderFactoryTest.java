@@ -20,7 +20,7 @@ import java.util.HashSet;
 import static com.kayhut.fuse.model.OntologyTestUtils.createDragonsOntologyLong;
 
 /**
- * Created by liorp on 6/5/2017.
+ * Created by lior.perry on 6/5/2017.
  */
 public class DragonsOntologyPhysicalIndexProviderFactoryTest {
 

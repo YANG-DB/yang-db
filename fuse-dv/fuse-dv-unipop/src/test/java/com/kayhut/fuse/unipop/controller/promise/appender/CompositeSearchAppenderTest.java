@@ -11,7 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by User on 29/03/2017.
+ * Created by lior.perry on 29/03/2017.
  */
 public class CompositeSearchAppenderTest {
     public class Context {
