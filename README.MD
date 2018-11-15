@@ -1,5 +1,7 @@
 From Graph to Elastic
 =========================================================================================
+This project was kindly contributed back to the community by Kayhut.com 
+
 ####Project Fuse
 
 * [wiki](https://bitbucket.org/liordana/fuse/wiki/Home)
