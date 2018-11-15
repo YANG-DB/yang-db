@@ -37,96 +37,64 @@ Json Patch.
 
  
 
-The world of graph databases has had a tremendous impact during the last
-few years, in particularity relating to social networks and their
-effect of our everyday activity.
+The world of graph databases has had a tremendous impact during the last few years, in particularity relating to social networks and their effect of our everyday activity.
 
-The once mighty (and lonely) RDBMS is now obliged to make room for an emerging and
-increasingly important partner in the data center: the graph database.
+The once mighty (and lonely) RDBMS is now obliged to make room for an emerging and increasingly important partner in the data center: the graph database.
 
-Twitter’s using it, Facebook’s using it, even online dating sites are
-using it; what they are using a relationship graphs.
-After all, social is social, and ultimately, it’s all about relationships.
+Twitter’s using it, Facebook’s using it, even online dating sites are using it; they are using a relationship graphs. After all, social is social, and ultimately, it’s all about relationships.
 
-
-There are two main elements that distinguish graph technology: storage
-and processing. 
+There are two main elements that distinguish graph technology: storage and processing. 
 
 Graph DB - Storage
 ------------------
 
-Graph storage commonly refers to the structure of the database that
-contains graph data.
+Graph storage commonly refers to the structure of the database that contains graph data.
 
-Such graph storage is optimized for graphs in many aspects, ensuring
-that data is stored efficiently, keeping nodes and relationships close
-to each other in the actual physical layer.
+Such graph storage is optimized for graphs in many aspects, ensuring that data is stored efficiently, keeping nodes and relationships close to each other in the actual physical layer.
 
-Graph storage is classified as *non-native* when the storage comes from
-an outside source, such as a relational, columnar or any other type of
-database (most cases a NoSQL store is preferable) 
+Graph storage is classified as non-native when the storage comes from an outside source, such as a relational, columnar or any other type of database (most cases a NoSQL store is preferable) 
 
-Non-native graph databases usually comprise of existing relational,
-document and key value stores, adapted for the graph data model query
-scenarios.
+Non-native graph databases usually comprise of existing relational, document and key value stores, adapted for the graph data model query scenarios.
 
 Graph DB - Processing
 ---------------------
 
-Graph Processing includes accessing the graph, traversing the vertices &
-edges and collecting the results.
+Graph Processing includes accessing the graph, traversing the vertices & edges and collecting the results.
 
-A traversal is how you query a graph, navigating from starting nodes to
-related nodes, finding answers to questions like "what music do my
-friends like that I don’t yet own?"
+A traversal is how you query a graph, navigating from starting nodes to related nodes, following relationships according to some rules.
 
-Traversing a graph means visiting its nodes, following relationships
-according to some rules. In most cases only a subgraph is visited.
+finding answers to questions like "what music do my friends like that I don’t yet own?"
 
 Graph Models
 ------------
 
-One of the more popular models for representing a graph is the Property
-Model.
+One of the more popular models for representing a graph is the Property Model.
+
+![](https://media.licdn.com/dms/image/C4E12AQH552USMnUS1Q/article-inline_image-shrink_1000_1488/0?e=1547683200&v=beta&t=R78C65in40IFykehY0OCTILpNQLGdGe82kd0yRQFUJ8)
 
 ### Property model
 
-This model contains connected entities (the *nodes*) which can hold any
-number of attributes (key-value-pairs).
-
+This model contains connected entities (the nodes) which can hold any number of attributes (key-value-pairs).
 ### Nodes 
 
-Nodes have a unique id and list of attributes represent their features
-and content.
+Nodes have a unique id and list of attributes represent their features and content.
 
-Nodes can be marked with labels representing their different roles in
-your domain. In addition to relationship properties, labels can also
-serve metadata over graph elements.
+Nodes can be marked with labels representing their different roles in your domain. In addition to relationship properties, labels can also serve metadata over graph elements.
 
-Nodes are often used to represent *entities* but depending on the domain
-relationships may be used for that purpose as well.
+Nodes are often used to represent entities but depending on the domain relationships may be used for that purpose as well.
 
 
 ### Relationships 
 
-Relationship is represented by the source and target node they are
-connecting and in case of multiple connections between the same vertices
-– additional label of property to distinguish (type of relationship)
+Relationship is represented by the source and target node they are connecting and in case of multiple connections between the same vertices – additional label of property to distinguish (type of relationship)
 
-Relationships organize nodes into arbitrary structures, allowing a graph
-to resemble a list, a tree, a map, or a compound entity — any of which
-may be combined into yet more complex structures.
+Relationships organize nodes into arbitrary structures, allowing a graph to resemble a list, a tree, a map, or a compound entity — any of which may be combined into yet more complex structures.
 
-Very much like foreign keys between tables in relational DB model
-represent table relations, In the graph model relationship describes the
-relations between the vertices.
+Very much like foreign keys between tables in relational DB model, In the graph model relationship describes the relations between the vertices.
 
-One major difference in this model (compared to the strict relational
-schema) is that this schema-less structure enables adding / removing
-relationship between vertices without any constraints.
+One major difference in this model (compared to the strict relational schema) is that this schema-less structure enables adding / removing relationship between vertices without any constraints.
 
-Additional graph model is the Resource Description Framework (RDF)
-model.
+Additional graph model is the Resource Description Framework (RDF) model.
 
 ### RDF model
 
@@ -157,34 +125,27 @@ attributes to reside on the graph elements themselves.
 Traversal
 =========
 
-A traversal is how you query a graph, navigating from starting nodes to
-related nodes, finding answers to questions like "what music do my
-friends like that I don’t yet own?"
+A traversal is how you query a graph, navigating from starting nodes to related nodes, finding answers to questions like "what music do my friends like that I don’t yet own?"
 
-Traversing a graph means visiting its nodes, following relationships
-according to some rules. In most cases only a subgraph is visited.
+Traversing a graph means visiting its nodes, following relationships according to some rules. In most cases only a subgraph is visited.
 
-The result of this traversing is the projection of the resulted
-sub-graph. The results can take a tabular form, a sub-graph form, a list
-of paths - vertices and edges.
+The result of traversing is a projection of the resulted sub-graph. The results can take a tabular form, a sub-graph form or a list of paths - (list of graph elements).
 
 Query 
 ======
 
-Most of the time graph searching involve some type of filter on property
-values – whether edge property or relation property.
+Most of the time, graph searching involve some type of filter on property values – whether edge property or relation property.
 
-To enable an efficient search on a large-scale graph, an index must be
-created for each property type.
+To enable an efficient search on a large-scale graph, an index must be created for each property type.
+
 
 ##### Possible property types are:
 
-*Strings, Numbers (Integers, Floats), Date, Complex-Fields:
-(Geo-Location) *
+*Strings, Numbers (Integers, Floats), Date, Complex-Fields:(Geo-Location)* 
 
 ##### Possible filter Criteria:
 
-*Equal(=), LTE (&gt;=), STE(&lt;=), In Set , In-Rage (Geo-Search),
+*Equal(=), LTE (>;=), STE(&lt;=), In Set , In-Rage (Geo-Search),
 contains (\*), fuzzy (~=)*
 
 When we need to filter nodes using text / Date / Range / Geo search we
@@ -197,6 +158,7 @@ filter order for executing the query.
 
 Why Elastic
 ===========
+![](https://media.licdn.com/dms/image/C4E12AQFR7RVJvIIVxA/article-inline_image-shrink_1000_1488/0?e=1547683200&v=beta&t=thjzxR2XgRNw1ldZCaRXzn4K7Nuc-giG0zAdtUIW7XU)
 
 Our use-case is in the domain of the social networks. A very large
 social graph that must be frequently updated and available for both:
@@ -212,8 +174,8 @@ The first requirement was fulfilled using Elasticsearch – a well
 known and established NoSql document search and storage engine capable
 of containing very large volume of data.
 
-For the second requirement we decided that our best solution would be to
-use elasticsearch as the non-native graph-DB storage layer.
+For the second requirement **we decided that our best solution would be to
+use elasticsearch as the non-native graph-DB storage layer**.
 
 As mentioned before, a graph-DB storage layer can be implemented using a
 non-native storage such as NoSql storage.
@@ -226,11 +188,9 @@ community alternative for graph-DB – Neo4J, could not fit our needs.*
 Modeling data as graph
 ----------------------
 
-The first issue on our plate is to design the data model representing
-the graph, as a set of vertices and edges.
+The first issue on our plate is to design the data model representing the graph, as a set of vertices and edges.
 
-With elastic we can utilize its powerful search abilities to efficiently
-fetch node & relation documents according to the query filters.
+With elastic we can utilize its powerful search abilities to efficiently fetch node & relation documents according to the query filters.
 
 ##### Elastic Index
 
@@ -251,13 +211,6 @@ The vertices index will contain the vertices documents with the
 properties, the edges index will contain the edges documents with their
 properties.
 
-Dynamic structure
------------------
-
-Since the property graph model allow for dynamic adding of properties
-and labels we must support this dynamic behavior by adding general
-purpose fields in the document allowing to add new attributes.
-
 LDBC Social Network Benchmark
 -----------------------------
 
@@ -268,32 +221,23 @@ This graph models a social graph, and three different workloads based on
 top of it. Let’s review the schema (simplified for this article)
 
 #### Domain entities
+![](https://media.licdn.com/dms/image/C4E12AQEYjHioWmFiZQ/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=QxczQsdb6HOxjAkZNfzYfvCMQ-cJvzd7KMRk8offa9o)
 
-####Person
- * name 
- * age 
- * gender 
- * birthdate 
- * Joined 
- * status 
- * email 
 
-####Post
- * content 
- * language 
- * imageFile 
+#####Person
+ * [name ,age ,gender ,birthdate ,Joined ,status ,email ]
 
-####Location
- * coordination 
- * country 
- * type (city/village) 
+#####Post
+ * [ content ,language , imageFile ]
+
+#####Location
+ * [coordination,country ,type (city/village) ] 
 
 ####Forum
- * title 
- * creationDate 
+ * [title ,creationDate ] 
 
 ####Tag
- * type 
+ * [type ]
 
 #### Domain Relations
 * Person -[**Tagged**]->Location
@@ -333,19 +277,17 @@ For example:
 These Sort of questions mix both classical graph traversal queries with
 aggregative type filters and grouping.
 
-In addition, we have the more classical type of graph-based algorithms
-such as recommendations based on my friends behavior and what people
-like me prefer to see…
+In addition, we have the more classical type of graph-based algorithms such as recommendations …
 
 Why Are these questions hard to answer?
 ---------------------------------------
 
 In a native graph store, we have an index-free adjacency access that
-gives us fast traversing over the graph, but in many cased the fastest
+gives us fast traversing over the graph, but in many cases the fastest
 way to reach the vertices that answer our question is first filtering
 out vertices and only after start traversing from the remaining.
 
-In other cased it would be more efficient first to start from a small
+In other cases it would be more efficient first to start from a small
 vertices group and filter out as we go along.
 
 We need a physical model that can support both heavy indexing based
@@ -359,14 +301,11 @@ that will allow us to minimize the fetching of the data per hop.
 
 ### Modeling the physical data layer
 
-Since we are in the elasticsearch realm we can and will use its
-fantastic abilities to index documents for later be fetched by search
-and aggregative filters.
+Remember we need to answer questions that are both:
 
-Remember we need to answer questions that have both graph-based
-questions that relay of traversing between vertices according to
-constraints and both aggregative filters based on for example
-accumulating amount of relations (based on some predicate).
+* Graph-based questions that relay of traversing between vertices according to constraints
+
+* Aggregative questions such as counting relations types cardinality (based on predicate).
 
 #### Modeling the vertices
 The next json document will represent the vertex data for person entity:
@@ -383,55 +322,42 @@ The next json document will represent the vertex data for person entity:
 	email: jamjon@gmail.com
 }
 ```
-In elastic we can create an index for this entity, the index can be
-partitioned into a predefined number of partitions that will spread and
-moderate the load, the partition key can be according to the vertex id.
+In elastic we can create an index for this entity, the index can be partitioned into a predefined number of partitions that will spread and moderate the load, the partition key can be according to the vertex id.
 
-Since we assume our social graph will grow over time we can plan the
-capacity of each index ahead and limit its size by giving each
-person-index a time frame – month / quarter / year based in join time.
+Since we assume our social graph will grow over time we can plan the capacity of each index ahead and limit its size by giving each person-index a time frame – month / quarter / year based in join time.
 
-Searching for a particular id in the people indices will search over all
-the time-based indices but will only access the specific shard according
-to the id routing.
-
-Apart from the edge properties and id attributes, we introducing data
-redundancy to help reduce the need to fetch all the vertices on the
-other side (given some filter exists on their properties).
+Apart from the edge properties and id attributes, we introducing data redundancy to help reduce the need to fetch all the vertices on the other side (given some filter exists on their properties).
 
 ####Modeling the edge
+![](https://media.licdn.com/dms/image/C4E12AQGcDT2vo15FDw/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=525ERGd9LnUIBQ-lyTPPZqmrkX3BB8Duo6cFC4dvQv8)
+
 Friend Edge document:
 ```json
 {
-	Type: friend,
-	Source_Id: e0000000001,
-	Target_Id: e0000000001,
-	becameFriend: 01/10/2010
-
-	Source_name: ‘…’
-	Source_age: 45
-	Source_gender: M
-	Source_birthDate: 01/01/1980
-	Source_status: Single
-	Target_name: ‘…’
-	Target _age: 35
-	Target _gender:F
-	Target _birthDate: 01/01/1990
-	Target _status: Married
+	Type: "friend",
+    	Source_Id: "e0000000001",
+    	Target_Id: "e0000000001",
+    	becameFriend: "01/10/2010"
+    
+    	Source_name: ‘…’
+    	Source_age: 45
+    	Source_gender: 'M'
+    	Source_birthDate: "01/01/1980"
+    	Source_status: "Single"
+    	Target_name: ‘…’
+    	Target _age: '35'
+    	Target _gender:'F'
+    	Target _birthDate: "01/01/1990"
+    	Target _status: "Married"
 }
 ```
 
 
 ### Modeling the physical data with redundancy 
 
-This redundancy allows us for example in the case of friend of friend
-with filter on age to push-down the age filter into elastic itself and
-significantly reducing the amount of target vertices need to be fetched
-for traversing.
+Redundancy allows us in the case of 'friend-of-friend' query given a filter on age, to push-down the age filter into elastic itself and significantly reducing the amount of target vertices need to be fetched during the traversing.
 
-This type of performance technic has a cost in terms of non-normalized
-data that must be constantly updated in both edge and vertices indexes,
-and in storage cost.
+This type of performance Technic has a cost in terms of storing non-normalized data structure that must be constantly updated in both edge and vertices indexes.
 
 Vertices Vs. Edges in large Social Graphs
 -----------------------------------------
@@ -537,28 +463,28 @@ parentheses ().
 Relationships
 -------------
 
-Relationships are basically an arrow --&gt; between two nodes.
+Relationships are basically an arrow -->; between two nodes.
 Additional information can be placed in square brackets inside of the
 arrow.
 
--   relationship-types like -[:KNOWS|:LIKE]-&gt;
+-   relationship-types like -[:KNOWS|:LIKE]->;
 
--   a variable name -[rel:KNOWS]-&gt; before the colon
+-   a variable name -[rel:KNOWS]->; before the colon
 
--   additional properties -[{since:2010}]-&gt;
+-   additional properties -[{since:2010}]->;
 
--   structural information for paths of variable
-    length -[:KNOWS\*..4]-&gt;
+-   For paths of variable length -[:KNOWS\*..4]->;
     
 
-> MATCH (n1:Person)-[rel:Comment]-&gt;(n2:Post)
+> MATCH (n1:Person)-[rel:Comment]->;(n2:Post)
 >
-> WHERE rel.date &gt; {value}
+> WHERE rel.date >; {value}
 >
 > RETURN rel, type(rel)
 
 
-The above query describes the next pattern:
+
+#####The above query describes the next pattern:
 
 Find a Person - we will tag him as ‘*n1*’
 
@@ -566,12 +492,11 @@ Find a Person - we will tag him as ‘*n1*’
 
 > \- a Post – we will tag it as *‘n2’*
 
-The relation tagged as ‘*rel’* must follow the constrains *<span
-class="underline">date</span>* &gt; {some date value} meaning the person
-commenting on a post must have done it after some date.
 
-This cypher example shows the simplicity of using such declarative
-traversing language and we will use it though our post.
+The relation tagged as ‘*rel’* must follow the constrains *date* > {some date value} 
+meaning the person commenting on a post must have done it after some date.
+
+This cypher example shows the simplicity of using such declarative traversing language and we will use it though our examples.
 
 From logical to physical
 ------------------------
@@ -607,9 +532,9 @@ execution plan in a fully blown query engine (Spark's Catalyst).
 
 This specific pipeline involves:
 
-1.  Parsing the Query text to an abstract cypher syntax tree (AST)
+1.  Parsing the Query text to an abstract syntax tree (AST)
 
-2.  Validating and resolving the AST against the logical graph schema (the catalog)
+2.  Validating and resolving the AST against the logical schema catalog
 
 3.  Creating a logical execution plan based on the AST steps
 
@@ -624,9 +549,9 @@ properties the index contains, including the redundant properties.
 
 Let’s take the next example:
 
-> MATCH (n1:Person)-[rel:Comment]-&gt;(n2:Post)
+> MATCH (n1:Person)-[rel:Comment]->;(n2:Post)
 >
-> WHERE rel.date &gt; 2010/01/01
+> WHERE rel.date >; 2010/01/01
 >
 > RETURN n1.name, rel.content, n2.title
 
@@ -636,18 +561,18 @@ help us:
 #### Person schema definition:
 ```javascript
 {
-    Label: person,
-    Type: vertex
-    Indices: [p2017_Oct, p2017_Nov, p2017_Sep]
+ Label: "person",
+    Type: "vertex"
+    Indices: ["p2017_Oct", "p2017_Nov", "p2017_Sep"]
     Properties: {
-        Id: keyword,
-        name: string,
-        age: integer,
-        gender: enum[F,M],
-        birthDate: date,
-        status: enum[S,M,D],
-        joined: date,
-        email: string
+        Id: "keyword",
+        name: "string",
+        age: "integer",
+        gender: "enum[F,M]",
+        birthDate: "date",
+        status: "enum[S,M,D]",
+        joined: "date",
+        email: "string"
      }
 }
 ```
@@ -659,19 +584,19 @@ entities created on that specific month.
 
 ```javascript
 {
-    Label: POST,
-    Type: vertex
-    Indices: [post2017_Oct, post2017_Nov, post2017_Sep]
+    Label: "POST",
+    Type: "vertex"
+    Indices: ["post2017_Oct", "post2017_Nov", "post2017_Sep"]
     Properties: {
-        Id: keyword,
-        content: string,
-        language: string
-        imageFile: integer
+        Id: "keyword",
+        content: "string",
+        language: "string"
+        imageFile: "integer"
      }
 }
 ```
 
-#### Own relation schema definition:
+#### Comment relation schema definition:
 ```javascript
 {
   Label: "Comment",
@@ -689,7 +614,7 @@ entities created on that specific month.
 
   SideAProperties: {
     name: "string",
-    age: "integer,
+    age: "integer",
     gender: "enum['F','M']",
     birthDate: "date",
     status: "enum['S','M','D']",
@@ -715,37 +640,33 @@ queries:
 
 2.  get all the comment relationship that
 
-    1.  bought value &gt; 2010/01/01
+    1.  date value >; 2010/01/01
 
-    2.  *sideA_Id* in set that returned from the first query a.
+    2.  *sideA_Id* in set that returned from the first query 1.
 
-3.  For all retuned document in query b, take *sideB_Id* and fetch them
+3.  For all returned document in query b, take *sideB_Id* and fetch them
     from post indices
 
 Pipelining the query 
 ---------------------
 
-We can see that each step translates to a physical step that may return
-some results that are input of the following step producing a pipeline.
+We see that each logical step translates to a physical step, the step return some results that can be input of the following step thous producing a pipeline.
 
-We can also see that each step may receive as input a list of id’s from
-the former step it can use to push down to elastic.
+Each middle step can accept as input a list of id’s (from the former step) it will use to push down to elastic as predicate.
 
-The result of this process is a set of graph elements path’s
-([vertice-edge-vertice-edge…]) that fulfill the query.
+The result of this traversal process is a set of graph elements path’s *([vertice-edge-vertice-edge…])* that fulfill the query.
 
-We project the results in the form we are instructed in the query; each
-step is tagged (explicitly or implicitly) and when a property is
-projected we use the tag to find the path step to take the property
-from.
+We project the results as the query defined; each step is tagged (explicitly or implicitly) and when a property is projected we use the tag to find the path step to take the property from.
+
+![](https://media.licdn.com/dms/image/C4E12AQGluIArnwB-aA/article-inline_image-shrink_1000_1488/0?e=1547683200&v=beta&t=tsEy4zxfkm4MlfATi203SlSB-65_6p3SLUBiA3AJljA)
 
 Example results:
 ```javascript
-[(n1:{name:Jon}),(own:{date:2012/01/02,content:”BS…”}),(n2:{title:Inflation})]
-[(n1:{name:Jon}),(own:{date:2014/11/02, content:”and I can aprove it “ }),(n2:{title:Inflation})]
-[(n1:{name:Dana}),(own:{date:2015/16/1}), content:”really ?can you …”}),(n2:{title:Pastrama})]
-[(n1:{name:Abe}),(own:{date:2018/13/01}), content:”just think…”}),(n2:{title:Vine})]
-[(n1:{name:Charls}),(own:{date:2017/5/5}), content:”sowarm”}),(n2:{title:Summer})]
+[(n1:{name:Jon}),(comment:{date:2012/01/02,content:”BS…”}),                   (n2:{title:Inflation})]
+[(n1:{name:Jon}),(comment:{date:2014/11/02, content:”and I can approve it “ }),(n2:{title:Inflation})]
+[(n1:{name:Dana}),(comment:{date:2015/16/1}), content:”really ?can you …”}),(n2:{title:Pastrama})]
+[(n1:{name:Abe}), (comment:{date:2018/13/01}), content:”just think…”}),     (n2:{title:Vine})]
+[(n1:{name:Charles}),(comment:{date:2017/5/5}), content:”sowarm”}),          (n2:{title:Summer})]
 ```
 Each row represents a different path along the sub-graph complying with
 the query.
@@ -832,17 +753,14 @@ path is unique in the chain of graph elements it has visitede.
 Size of Path’s
 ---------------
 
-It is important to remember that the amount of path’s returned from a traversal is the
-cartesian product of the results each step returns; the nature of the path representation is to show all possible ways of traversing the graph.
-In a graph of 20 people each having 50 friends will produce 20*50 paths.
-In some cases, the memory footprint of the resulting paths can be larger than the graph itself, for this reason, we would like to add a bulk mechanism
-that will enable us to limit the resulting paths and help us fetch them in pages.
+It is important to remember that the amount of path’s returned from a traversal is the Cartesian product of the results each step returns; The nature of the path representation is to show all possible ways of traversing the graph.
+
+In a graph of 20 people each having 50 friends will produce 20*50 paths. In some cases, the memory footprint of the resulting paths can be larger than the graph itself, for this reason, we would like to add a bulk mechanism that will limit the resulting paths and fetch them in pages.
 
 Traversing strategies
 ---------------
-In our example we will need to bulk the result to a size of 1000 path’s each. Currently the first step issues a complete scan of the person 
-vertices – this can potentially be exhaustive and therefor we will add ‘from & limit’ to the query…
 
+In our example we will need to bulk the result to a size of 1000 path’s each. Currently the first step issues a complete scan of the person vertices – this can potentially be exhaustive and therefore we will add ‘from & limit’ to the query…
 
 
 ```javascript
@@ -855,37 +773,40 @@ GET p*/_search
     }
 }
 ```
+This will allow us to scroll over the results in a bulk of 1000 elements. During the second step, we will also add the ‘from & limit’ to the query – that will result in an additional scroll over the second step and so on ...
+
+Scroll is used as much the same way as you would use a cursor on a traditional database.
 
 Step Buffering
 ---------------
-This will allow us to scroll over the results in a bulk of 1000 elements.
-In the second step, we will also add the ‘from & limit’ to the query
- – that will result in an additional scroll over the second step and so on.
+In a middle step, having a filter can produce less results than the bulk size – due to the input vertices being filtered out .
 
-One can see that in case where a filter exists the results of the middle steps can be smaller than the bulk size
- – due to the input vertices from the former step.
+In step 2 (get comments step with date predicate) we pushed-down the 1000 initial vertices from the first step, this new step may return less than 1000 comment edges (due to the date predicate).
 
-In step 2 (get comments step with date predicate) we pushdown the 1000 initial vertices from the first step – this step may return less than 1000 comment edges.
-In such cases we would like to call the former step to fetch an additional bulk of 1000 elements (person vertices) 
-and run an additional comments query until the limit of 1000 comments is reached.
+In such cases we would like to continue fetching results from the datastore until the bulk size is reached.
 
+For this reason a call to the former step is needed to fetch an additional bulk of 1000 elements (person vertices) and an additional fetch comments query until the limit of 1000 comments is reached.
 
 Funneling
 ---------------
-The process in which each step is buffering the result until it reaches the required bulk size is called ‘step buffering’. This process is recursive in the sense that when a middle step needs more vertices from the
-former step it calls the former step which in turn can call its former step until possible reaching the first step or exhausting the data (no more elements found matching the query).
+The process in which each step is buffering the result until it reaches the required bulk size is called ‘step buffering’.
+
+This process is recursive in the sense that when a middle step needs more vertices from the former step it calls the former step which in turn can call its former step until possibly reaching the first step or exhausting the data (no more elements found matching the query).
+
+![alt text](https://media.licdn.com/dms/image/C4E12AQHwIKRIdmeyog/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=Wm39J09DkIOb9mzG1YRagxiZeOiFxaGQIwza6eSmunA)
 
 Each step maintains a state (scroll) over the data it already fetched (position) so it can continue bulking data when it is required.
+
 In some sense each step is a funnel of graph elements, there may be cased where some steps will funnel out almost the entire graph.
 
-![alt text](https://blogs.sas.com/content/graphicallyspeaking/files/2017/03/Funnel_Poly_Range.png)
-
+![](https://media.licdn.com/dms/image/C4E12AQH_EY1iap7JWg/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=xonaiyKWuFFdC5tU-PdF4qr2g0gD7M7t_0TxXzLTg0c)
 
 One advantage of this bulking approach is that it is not required to fetch the entire neighborhood of each vertex before it returns.
 This graph traversal approach is called DFS – depth first search.
 
 Another advantage in the DB layer is that instead of huge queries running against the db (such in step 1 without the size limit)
 we are running many bulked steps which ease the contention on the db and allow higher throughput.
+
 The state of the traversal execution is also detachable from the DB and is stored on the traversing path itself.
 
 
@@ -919,16 +840,19 @@ Resulting in 19 separate calls to elasticsearch (in oppose to only 3 calls witho
 
 Conclusion
 ---------------
-We started with discussing the purpose of graphs DB in today’s business use cases and reviewed different models for representing a graph.
-Understanding the fundamental logical building blocks that a potential graph DB should consist and discussed an existing NoSql candidate to fulfill the storage layer requirements.
+We started with discussing the purpose of graphs DB in today’s business use cases and reviewed different models for representing a graph. Understanding the fundamental logical building blocks that a potential graph DB should consist and discussed an existing NoSql candidate to fulfill the storage layer requirements.
 
-Once we selected elasticsearch as the storage layer we took the LDBC Social Network Benchmark graph model and simplified it to be optimized in that specific storage.
-We discussed the actual storage schema with the redundant properties and reviewed cypher language to query the storage in an sql-like graph pattern language.
+Once we selected elasticsearch as the storage layer we took the LDBC Social Network Benchmark graph model and simplified it to be optimized in that specific storage. We discussed the actual storage schema with the redundant properties and reviewed cypher language to query the storage in an sql-like graph pattern language.
 
 We continued to see the actual transformation of the cypher query into a physical execution query that will run by Elasticsearch.
 
 In the last section we took a simple graph query and drilled down into the details of the execution strategies and the bulking mechanism.
-In the next post I will review what are the challenges that queries may cause and how we can use a cost-based optimizer to select the best execution plan.
+
+Whats next ?
+---------------
+
+In the next post I will review what are the challenges that more complex queries may cause and how we can use a cost-based optimizer to select the best execution plan.
+
+The simulation of the LDBC Social Network Benchmark over elasticsearch using the described graph layer will follow - stay tuned...
 
 *   https://www.linkedin.com/in/lior-perry-62135314/ 
-*   https://bitbucket.org/liordana/fuse/src/develop/
