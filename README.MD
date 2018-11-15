@@ -708,7 +708,6 @@ push them down to elastic query
 
 ```javascript
 GET comment*/_search
-
 {
     "query":{
         "bool":{
@@ -728,7 +727,7 @@ GET comment*/_search
             }
         }
 }
-````
+```
 
 The final step will take the side_B id’s that result from the former
 step and push them down to elastic query
