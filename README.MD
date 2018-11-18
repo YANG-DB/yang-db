@@ -40,6 +40,8 @@ Introduction
 Json Patch.
 >
 > <https://www.linkedin.com/pulse/maintaining-document-history-inside-elasticsearch-lior-perry>
+
+> A Post introducing our new Open source initiative for building a Scalable Distributed Graph DB Over Elasticsearch
 > <https://www.linkedin.com/pulse/making-db-lior-perry/>
  
 
