@@ -40,7 +40,7 @@ Introduction
 Json Patch.
 >
 > <https://www.linkedin.com/pulse/maintaining-document-history-inside-elasticsearch-lior-perry>
-
+> <https://www.linkedin.com/pulse/making-db-lior-perry/>
  
 
 The world of graph databases has had a tremendous impact during the last few years, in particularity relating to social networks and their effect of our everyday activity.
