@@ -6,7 +6,7 @@ From Graph to Elastic
 
 * [wiki](https://bitbucket.org/liordana/fuse/wiki/Home)
 
-##### Contributors:
+##### Members:
 
 * [Lior Perry](https://www.linkedin.com/in/lior-perry-62135314/) 
 
@@ -18,9 +18,13 @@ From Graph to Elastic
 
 * [Shimon Benoshti](https://www.linkedin.com/in/benishue/) 
 
+##### Contributors:
+
 * [Lior Kogan](https://www.linkedin.com/in/liorkogan/) 
 
-
+##### Dev/Ops
+ 
+* [Yaniv Eliash](https://www.linkedin.com/in/yaniv-eliash-4039a951)
 ##### License:
 
 [Apache License 2](http://www.apache.org/licenses/LICENSE-2.0.html)
