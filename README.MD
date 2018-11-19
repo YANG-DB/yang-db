@@ -6,7 +6,7 @@ From Graph to Elastic
 
 * [wiki](https://bitbucket.org/liordana/fuse/wiki/Home)
 
-##### Contributors:
+##### Members:
 
 * [Lior Perry](https://www.linkedin.com/in/lior-perry-62135314/) 
 
@@ -18,9 +18,13 @@ From Graph to Elastic
 
 * [Shimon Benoshti](https://www.linkedin.com/in/benishue/) 
 
+##### Contributors:
+
 * [Lior Kogan](https://www.linkedin.com/in/liorkogan/) 
 
-
+##### Dev/Ops
+ 
+* [Yaniv Eliash](https://www.linkedin.com/in/yaniv-eliash-4039a951)
 ##### License:
 
 [Apache License 2](http://www.apache.org/licenses/LICENSE-2.0.html)
@@ -41,6 +45,8 @@ Json Patch.
 >
 > <https://www.linkedin.com/pulse/maintaining-document-history-inside-elasticsearch-lior-perry>
 
+> A Post introducing our new Open source initiative for building a Scalable Distributed Graph DB Over Elasticsearch
+> <https://www.linkedin.com/pulse/making-db-lior-perry/>
  
 
 The world of graph databases has had a tremendous impact during the last few years, in particularity relating to social networks and their effect of our everyday activity.
