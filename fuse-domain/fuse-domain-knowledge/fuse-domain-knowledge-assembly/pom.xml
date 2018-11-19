@@ -151,28 +151,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>com.kayhut</groupId>
-                <artifactId>snapshot-replace-maven-plugin</artifactId>
-                <version>${snapshot-replace-maven-plugin.version}</version>
-                <configuration>
-                    <directories>
-                        <param>fuse-domain-knowledge-assembly/target/fuse-assembly-packages/fuse-test-service-engine2-knowledge/lib</param>
-                    </directories>
-                    <filterRegex>fuse.*|geojson.*|dragons.*</filterRegex>
-                    <timestampFormat>yyyyMMdd-HHmmss</timestampFormat>
-                    <timestampTimeZone>Asia/Jerusalem</timestampTimeZone>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>fuse-assembly-snapshot-restore</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
 
         <!--<resources>

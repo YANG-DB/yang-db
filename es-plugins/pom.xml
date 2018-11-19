@@ -87,27 +87,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>com.kayhut</groupId>
-                <artifactId>snapshot-replace-maven-plugin</artifactId>
-                <configuration>
-                    <directories>
-                        <param>target/es-plugins-packages/CommonScriptPlugin</param>
-                    </directories>
-                    <filterRegex>es-plugins.*</filterRegex>
-                    <timestampFormat>yyyyMMdd-HHmmss</timestampFormat>
-                    <timestampTimeZone>Asia/Jerusalem</timestampTimeZone>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>es-plugins-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
 
     </build>
