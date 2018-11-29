@@ -12,9 +12,9 @@ package com.kayhut.fuse.model.query;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,8 +38,8 @@ import java.util.stream.Collectors;
  * Created by lior.perry on 19-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonDeserialize(builder=Query.Builder.class)
-public class Query implements IQuery<EBase>{
+@JsonDeserialize(builder = Query.Builder.class)
+public class Query implements IQuery<EBase> {
 
     public String getOnt() {
         return ont;
@@ -76,8 +76,8 @@ public class Query implements IQuery<EBase>{
     //region Fields
     private String ont;
     private String name;
-    private List<EBase> elements;
     private List<List<String>> nonidentical;
+    private List<EBase> elements = new ArrayList<>();
     //endregion
 
     @JsonPOJOBuilder(buildMethodName = "build", withPrefix = "with")
@@ -118,8 +118,10 @@ public class Query implements IQuery<EBase>{
             Query query = new Query();
             query.setOnt(ont);
             query.setName(name);
-            query.setElements(elements);
-            query.setNonidentical(nonidentical);
+            if (elements != null)
+                query.setElements(elements);
+            if (nonidentical != null)
+                query.setNonidentical(nonidentical);
             return query;
         }
     }

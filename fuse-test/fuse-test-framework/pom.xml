@@ -10,6 +10,11 @@
     <artifactId>fuse-test-framework</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j</artifactId>
+            <version>3.5.0</version>
+        </dependency>
         <!-- runtime -->
         <dependency>
             <groupId>com.kayhut</groupId>

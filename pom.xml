@@ -8,6 +8,30 @@
     <packaging>pom</packaging>
     <version>0.5-SNAPSHOT</version>
 
+    <organization>
+        <name>The Fuse Graph Database Project</name>
+    </organization>
+
+    <scm>
+        <connection>scm:git:git://bitbucket.org/liordana/fuse.git</connection>
+        <url>git clone https://liordana@bitbucket.org/liordana/fuse.git</url>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>The 2.0 version of the Apache License was approved by the ASF in 2004.</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>fuse</id>
+            <name>The fuse Team</name>
+            <organization>Kayhut.com</organization>
+        </developer>
+    </developers>
+
     <modules>
         <module>es-plugins</module>
         <module>unipop-core</module>
@@ -55,6 +79,9 @@
 
         <!-- jansi -->
         <jansi.version>1.16</jansi.version>
+
+        <!-- cypher -->
+        <openCypher.frontend.version>9.0.20181012</openCypher.frontend.version>
 
         <!-- commons -->
         <commons-io.version>2.5</commons-io.version>
@@ -215,6 +242,13 @@
                 <version>${fuse.version}</version>
             </dependency>
             <!-- fuse -->
+
+            <!-- cypher -->
+            <dependency>
+                <groupId>org.opencypher</groupId>
+                <artifactId>front-end-9.0</artifactId>
+                <version>${openCypher.frontend.version}</version>
+            </dependency>
 
             <!-- jackson -->
             <dependency>

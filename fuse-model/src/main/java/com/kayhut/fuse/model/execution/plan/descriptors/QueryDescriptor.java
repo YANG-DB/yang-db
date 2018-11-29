@@ -187,8 +187,11 @@ public class QueryDescriptor implements Descriptor<Query> {
         List<String> builder = new LinkedList<>();
         builder.add("└── " + "Start");
         Iterator<EBase> iterator = query.getElements().iterator();
-        iterator.next();
-        print(builder, query, Optional.of(iterator.next()), false, true, 1, 0);
+        if(iterator.hasNext()) {
+            iterator.next();
+            if(iterator.hasNext())
+                print(builder, query, Optional.ofNullable(iterator.next()), false, true, 1, 0);
+        }
         return builder.toString();
     }
 
