@@ -25,9 +25,9 @@ import static com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor.p
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by benishue on 09-May-17.
+ * Created by lior.perry
  */
-public class CypherTranslatorTest {
+public class CypherMatchOnlyTranslatorTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
@@ -84,6 +84,22 @@ public class CypherTranslatorTest {
     }
 
     @Test
+    public void testMatch_Directional_NodeA_NodeB_Return_A() {
+        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
+        final Query query = translator.translate("MATCH (a)-->(b) RETURN a,b");
+        Query expected = Query.Builder.instance()
+                .withName("cypher_").withOnt("Dragons")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new EUntyped(1, "a", 2, 0),
+                        new Rel(2, null,Rel.Direction.R, null,3, 0),
+                        new EUntyped(3, "b", 4, 0)))
+                .build();
+        assertEquals(print(expected), print(query));
+    }
+
+
+    @Test
     public void testMatch_A_ofType_Dragon_B_ofType_Person_Return_A() {
         AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
         final Query query = translator.translate("MATCH (a:Dragon)--(b:Person) RETURN a,b");
@@ -98,31 +114,49 @@ public class CypherTranslatorTest {
         assertEquals(print(expected), print(query));
     }
 
-    @Test
-    @Ignore
-    public void testMatch_Directional_NodeA_NodeB_Return_A() {
-        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
-        final Query query = translator.translate("MATCH (a)-->(b) RETURN a,b");
-        Query expeced = null;
-        assertEquals(print(expeced), print(query));
-    }
-
-    @Test
-    @Ignore
+     @Test
     public void testMatch_NodeA_RelR_NodeB_Return_A() {
         AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
-        final Query query = translator.translate("MATCH (a)-[c]-(b) RETURN a,b,c");
-        Query expeced = null;
-        assertEquals(print(expeced), print(query));
+        final Query query = translator.translate("MATCH (a:Dragon)-[c]-(b:Person) RETURN a,b,c");
+         Query expected = Query.Builder.instance()
+                 .withName("cypher_").withOnt("Dragons")
+                 .withElements(Arrays.asList(
+                         new Start(0, 1),
+                         new ETyped(1, "a","Dragon", 2, 0),
+                         new Rel(2, null,Rel.Direction.RL, "c",3, 0),
+                         new ETyped(3, "b","Person", 4, 0)))
+                 .build();
+         assertEquals(print(expected), print(query));
     }
 
     @Test
-    @Ignore
     public void testMatch_Directional_NodeA_RelR_NodeB_Return_A() {
         AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
         final Query query = translator.translate("MATCH (a)-[c]->(b) RETURN a,b,c");
-        Query expeced = null;
-        assertEquals(print(expeced), print(query));
+        Query expected = Query.Builder.instance()
+                .withName("cypher_").withOnt("Dragons")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new EUntyped(1, "a", 2, 0),
+                        new Rel(2, null,Rel.Direction.R, "c",3, 0),
+                        new EUntyped(3, "b", 4, 0)))
+                .build();
+        assertEquals(print(expected), print(query));
+    }
+
+    @Test
+    public void testMatch_Labeled_NodeA_RelR_NodeB_Return_A() {
+        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
+        final Query query = translator.translate("MATCH (a:Dragon)-[c:Fire]-(b:Person) RETURN a,b,c");
+        Query expected = Query.Builder.instance()
+                .withName("cypher_").withOnt("Dragons")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "a","Dragon", 2, 0),
+                        new Rel(2, "Fire",Rel.Direction.RL, "c",3, 0),
+                        new ETyped(3, "b","Person", 4, 0)))
+                .build();
+        assertEquals(print(expected), print(query));
     }
     //endregion
 

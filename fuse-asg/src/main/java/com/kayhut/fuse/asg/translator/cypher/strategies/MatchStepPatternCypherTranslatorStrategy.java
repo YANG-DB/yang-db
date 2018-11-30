@@ -62,24 +62,28 @@ public class MatchStepPatternCypherTranslatorStrategy extends MatchCypherTransla
             name = logicalVariable.name();
         }
 
+        if(!element.types().isEmpty()) {
+
+        }
         final SemanticDirection direction = element.direction();
         //build node and update query, mutate new current scope
         //labels
-//        final Collection<LabelName> labels = asJavaCollectionConverter(((NodePattern) element).labels()).asJavaCollection();
-//        final List<String> collect = labels.stream().map(l -> l.name()).collect(Collectors.toList());
+        Collection<RelTypeName> labels = asJavaCollectionConverter((element).types()).asJavaCollection();
+        final List<String> collect = labels.stream().map(l -> l.name()).collect(Collectors.toList());
         Rel rel = new Rel(current, null, resolve(direction), name, current + 1, 0);
-//        if(!collect.isEmpty()) {
-//            rel = new Rel(current, null, resolve(direction), name, current + 1, 0);
-//        }
+        if(!collect.isEmpty()) {
+            //todo add solution for multi-type labels
+            rel = new Rel(current, collect.get(0), resolve(direction), name, current + 1, 0);
+        }
         query.getElements().add(rel);
         context.scope(rel);
     }
 
     private Rel.Direction resolve(SemanticDirection direction) {
         if(direction instanceof SemanticDirection.INCOMING$)
-            return Rel.Direction.R;
-        if(direction instanceof SemanticDirection.OUTGOING$)
             return Rel.Direction.L;
+        if(direction instanceof SemanticDirection.OUTGOING$)
+            return Rel.Direction.R;
         return Rel.Direction.RL;
     }
 
