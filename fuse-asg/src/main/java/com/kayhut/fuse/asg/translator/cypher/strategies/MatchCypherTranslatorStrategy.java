@@ -20,6 +20,7 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * #L%
  */
 
+import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.WhereClauseNodeCypherTranslator;
 import org.opencypher.v9_0.ast.*;
 import org.opencypher.v9_0.expressions.PatternElement;
 import org.opencypher.v9_0.expressions.PatternPart;
@@ -30,7 +31,12 @@ import java.util.Optional;
 
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
-public abstract class MatchCypherTranslatorStrategy implements CypherTranslatorStrategy {
+public class MatchCypherTranslatorStrategy implements CypherTranslatorStrategy {
+
+    public MatchCypherTranslatorStrategy(Iterable<CypherElementTranslatorStrategy> strategies, WhereClauseNodeCypherTranslator whereClause) {
+        this.strategies = strategies;
+        this.whereClause = whereClause;
+    }
 
     @Override
     public void apply(com.kayhut.fuse.model.query.Query query, CypherStrategyContext context) {
@@ -45,12 +51,23 @@ public abstract class MatchCypherTranslatorStrategy implements CypherTranslatorS
                     .stream().filter(c -> c.getClass().isAssignableFrom(Match.class)).findAny();
 
             if (!matchClause.isPresent()) return;
-
+            //manage patterns
             final Match match = (Match) matchClause.get();
             final Collection<PatternPart> patternParts = asJavaCollectionConverter(match.pattern().patternParts()).asJavaCollection();
             patternParts.forEach(p->applyPattern(p.element(),context,query));
+
+            //manage where clause
+            if(!match.where().isEmpty()) {
+                Where where = match.where().get();
+                whereClause.apply(where,query,context);
+            }
         }
     }
 
-    abstract void applyPattern(PatternElement patternPart, CypherStrategyContext context, com.kayhut.fuse.model.query.Query query);
+    protected void applyPattern(PatternElement patternPart, CypherStrategyContext context, com.kayhut.fuse.model.query.Query query) {
+        strategies.forEach(s->s.apply(patternPart,query,context));
+    }
+
+    private Iterable<CypherElementTranslatorStrategy> strategies;
+    private WhereClauseNodeCypherTranslator whereClause;
 }

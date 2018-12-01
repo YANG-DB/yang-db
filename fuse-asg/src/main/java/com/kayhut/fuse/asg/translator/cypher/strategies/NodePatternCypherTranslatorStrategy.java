@@ -37,10 +37,10 @@ import java.util.stream.Collectors;
 
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
-public class MatchNodePatternCypherTranslatorStrategy extends MatchCypherTranslatorStrategy {
+public class NodePatternCypherTranslatorStrategy implements CypherElementTranslatorStrategy<PatternElement>  {
 
     @Override
-    void applyPattern(PatternElement element, CypherStrategyContext context, Query query) {
+    public void apply(PatternElement element, Query query, CypherStrategyContext context) {
         if(element instanceof NodePattern) {
             final Option<LogicalVariable> variable = element.variable();
             final int current = context.getScope().getNext();
@@ -65,4 +65,5 @@ public class MatchNodePatternCypherTranslatorStrategy extends MatchCypherTransla
             context.scope(node);
         }
     }
+
 }

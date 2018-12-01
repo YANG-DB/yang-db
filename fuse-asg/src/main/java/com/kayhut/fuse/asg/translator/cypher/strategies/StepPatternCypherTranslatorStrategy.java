@@ -31,22 +31,22 @@ import java.util.stream.Collectors;
 
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
-public class MatchStepPatternCypherTranslatorStrategy extends MatchCypherTranslatorStrategy {
+public class StepPatternCypherTranslatorStrategy implements CypherElementTranslatorStrategy<PatternElement>   {
 
 
-    public MatchStepPatternCypherTranslatorStrategy(MatchNodePatternCypherTranslatorStrategy nodePattern) {
+    public StepPatternCypherTranslatorStrategy(NodePatternCypherTranslatorStrategy nodePattern) {
         this.nodePattern = nodePattern;
     }
 
     @Override
-    void applyPattern(PatternElement element, CypherStrategyContext context, Query query) {
+    public void apply(PatternElement element, com.kayhut.fuse.model.query.Query query,CypherStrategyContext context) {
         if(element instanceof RelationshipChain) {
             final PatternElement left = ((RelationshipChain) element).element();
-            nodePattern.applyPattern(left,context,query);
+            nodePattern.apply(left,query,context);
             final RelationshipPattern relationship = ((RelationshipChain) element).relationship();
             applyPattern(relationship,context,query);
             final NodePattern right = ((RelationshipChain) element).rightNode();
-            this.nodePattern.applyPattern(right,context,query);
+            this.nodePattern.apply(right,query,context);
         }
     }
 
@@ -87,6 +87,6 @@ public class MatchStepPatternCypherTranslatorStrategy extends MatchCypherTransla
         return Rel.Direction.RL;
     }
 
-    private MatchNodePatternCypherTranslatorStrategy nodePattern;
+    private NodePatternCypherTranslatorStrategy nodePattern;
 
 }

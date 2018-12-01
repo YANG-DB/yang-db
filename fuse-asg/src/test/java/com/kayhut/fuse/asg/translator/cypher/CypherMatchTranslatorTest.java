@@ -2,9 +2,11 @@ package com.kayhut.fuse.asg.translator.cypher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.asg.translator.AsgTranslator;
-import com.kayhut.fuse.asg.translator.cypher.strategies.CypherTranslatorStrategy;
-import com.kayhut.fuse.asg.translator.cypher.strategies.MatchNodePatternCypherTranslatorStrategy;
-import com.kayhut.fuse.asg.translator.cypher.strategies.MatchStepPatternCypherTranslatorStrategy;
+import com.kayhut.fuse.asg.translator.cypher.strategies.*;
+import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.HasLabelExpression;
+import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.OrExpression;
+import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.WhereClauseNodeCypherTranslator;
+import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.ExpressionStrategies;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor.print;
@@ -28,16 +31,11 @@ import static org.junit.Assert.assertEquals;
  * Created by lior.perry
  */
 @Ignore
-public class CypherMatchWhereTranslatorTest {
+public class CypherMatchTranslatorTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
-        String ontologyExpectedJson = readJsonToString("src/test/resources/Dragons_Ontology.json");
-        ont = new Ontology.Accessor(new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class));
-        strategy = Arrays.asList(new MatchNodePatternCypherTranslatorStrategy(),
-                new MatchStepPatternCypherTranslatorStrategy(
-                        new MatchNodePatternCypherTranslatorStrategy()
-                ));
+        match = new CypherTestUtils().setUp(readJsonToString("src/test/resources/Dragons_Ontology.json")).match;
     }
     //endregion
 
@@ -45,7 +43,7 @@ public class CypherMatchWhereTranslatorTest {
     //region Test Methods
     @Test
     public void testMatch_A_Return_A() {
-        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
+        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final Query query = translator.translate("MATCH (a) RETURN a");
         Query expected = Query.Builder.instance()
                 .withName("cypher_").withOnt("Dragons")
@@ -58,27 +56,27 @@ public class CypherMatchWhereTranslatorTest {
 
     @Test
     public void testMatch_A_ofType_Dragon_Return_A() {
-        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
+        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final Query query = translator.translate("MATCH (a:Dragon) RETURN a");
         Query expected = Query.Builder.instance()
                 .withName("cypher_").withOnt("Dragons")
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "a","Dragon", 3, 0)))
+                        new ETyped(1, "a", "Dragon", 3, 0)))
                 .build();
         assertEquals(print(expected), print(query));
     }
 
     @Test
     public void testMatch_NodeA_NodeB_Return_A() {
-        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
+        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final Query query = translator.translate("MATCH (a)--(b) RETURN a,b");
         Query expected = Query.Builder.instance()
                 .withName("cypher_").withOnt("Dragons")
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new EUntyped(1, "a", 2, 0),
-                        new Rel(2, null,Rel.Direction.RL, null,3, 0),
+                        new Rel(2, null, Rel.Direction.RL, null, 3, 0),
                         new EUntyped(3, "b", 4, 0)))
                 .build();
         assertEquals(print(expected), print(query));
@@ -86,14 +84,14 @@ public class CypherMatchWhereTranslatorTest {
 
     @Test
     public void testMatch_Directional_NodeA_NodeB_Return_A() {
-        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
+        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final Query query = translator.translate("MATCH (a)-->(b) RETURN a,b");
         Query expected = Query.Builder.instance()
                 .withName("cypher_").withOnt("Dragons")
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new EUntyped(1, "a", 2, 0),
-                        new Rel(2, null,Rel.Direction.R, null,3, 0),
+                        new Rel(2, null, Rel.Direction.R, null, 3, 0),
                         new EUntyped(3, "b", 4, 0)))
                 .build();
         assertEquals(print(expected), print(query));
@@ -102,44 +100,44 @@ public class CypherMatchWhereTranslatorTest {
 
     @Test
     public void testMatch_A_ofType_Dragon_B_ofType_Person_Return_A() {
-        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
+        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final Query query = translator.translate("MATCH (a:Dragon)--(b:Person) RETURN a,b");
         Query expected = Query.Builder.instance()
                 .withName("cypher_").withOnt("Dragons")
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "a","Dragon", 2, 0),
-                        new Rel(2, null,Rel.Direction.RL, null,3, 0),
-                        new ETyped(3, "b","Person", 4, 0)))
+                        new ETyped(1, "a", "Dragon", 2, 0),
+                        new Rel(2, null, Rel.Direction.RL, null, 3, 0),
+                        new ETyped(3, "b", "Person", 4, 0)))
                 .build();
         assertEquals(print(expected), print(query));
     }
 
-     @Test
+    @Test
     public void testMatch_NodeA_RelR_NodeB_Return_A() {
-        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
+        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final Query query = translator.translate("MATCH (a:Dragon)-[c]-(b:Person) RETURN a,b,c");
-         Query expected = Query.Builder.instance()
-                 .withName("cypher_").withOnt("Dragons")
-                 .withElements(Arrays.asList(
-                         new Start(0, 1),
-                         new ETyped(1, "a","Dragon", 2, 0),
-                         new Rel(2, null,Rel.Direction.RL, "c",3, 0),
-                         new ETyped(3, "b","Person", 4, 0)))
-                 .build();
-         assertEquals(print(expected), print(query));
+        Query expected = Query.Builder.instance()
+                .withName("cypher_").withOnt("Dragons")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "a", "Dragon", 2, 0),
+                        new Rel(2, null, Rel.Direction.RL, "c", 3, 0),
+                        new ETyped(3, "b", "Person", 4, 0)))
+                .build();
+        assertEquals(print(expected), print(query));
     }
 
     @Test
     public void testMatch_Directional_NodeA_RelR_NodeB_Return_A() {
-        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
+        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final Query query = translator.translate("MATCH (a)-[c]->(b) RETURN a,b,c");
         Query expected = Query.Builder.instance()
                 .withName("cypher_").withOnt("Dragons")
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new EUntyped(1, "a", 2, 0),
-                        new Rel(2, null,Rel.Direction.R, "c",3, 0),
+                        new Rel(2, null, Rel.Direction.R, "c", 3, 0),
                         new EUntyped(3, "b", 4, 0)))
                 .build();
         assertEquals(print(expected), print(query));
@@ -147,15 +145,15 @@ public class CypherMatchWhereTranslatorTest {
 
     @Test
     public void testMatch_Labeled_NodeA_RelR_NodeB_Return_A() {
-        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", strategy);
+        AsgTranslator<String, Query> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final Query query = translator.translate("MATCH (a:Dragon)-[c:Fire]-(b:Person) RETURN a,b,c");
         Query expected = Query.Builder.instance()
                 .withName("cypher_").withOnt("Dragons")
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "a","Dragon", 2, 0),
-                        new Rel(2, "Fire",Rel.Direction.RL, "c",3, 0),
-                        new ETyped(3, "b","Person", 4, 0)))
+                        new ETyped(1, "a", "Dragon", 2, 0),
+                        new Rel(2, "Fire", Rel.Direction.RL, "c", 3, 0),
+                        new ETyped(3, "b", "Person", 4, 0)))
                 .build();
         assertEquals(print(expected), print(query));
     }
@@ -173,10 +171,6 @@ public class CypherMatchWhereTranslatorTest {
     }
     //endregion
 
-    //region Fields
-    private Ontology.Accessor ont;
-    private List<CypherTranslatorStrategy> strategy;
-
-    //endregion
+    private MatchCypherTranslatorStrategy match;
 
 }
