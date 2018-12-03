@@ -21,6 +21,7 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  */
 
 import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.WhereClauseNodeCypherTranslator;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import org.opencypher.v9_0.ast.*;
 import org.opencypher.v9_0.expressions.PatternElement;
 import org.opencypher.v9_0.expressions.PatternPart;
@@ -39,7 +40,7 @@ public class MatchCypherTranslatorStrategy implements CypherTranslatorStrategy {
     }
 
     @Override
-    public void apply(com.kayhut.fuse.model.query.Query query, CypherStrategyContext context) {
+    public void apply(AsgQuery query, CypherStrategyContext context) {
         final Statement statement = context.getStatement();
         if (!(statement instanceof Query)) return;
 
@@ -64,7 +65,7 @@ public class MatchCypherTranslatorStrategy implements CypherTranslatorStrategy {
         }
     }
 
-    protected void applyPattern(PatternElement patternPart, CypherStrategyContext context, com.kayhut.fuse.model.query.Query query) {
+    protected void applyPattern(PatternElement patternPart, CypherStrategyContext context, AsgQuery query) {
         strategies.forEach(s->s.apply(patternPart,query,context));
     }
 

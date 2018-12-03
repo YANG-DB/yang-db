@@ -5,10 +5,7 @@ import com.kayhut.fuse.asg.translator.cypher.strategies.CypherElementTranslatorS
 import com.kayhut.fuse.asg.translator.cypher.strategies.MatchCypherTranslatorStrategy;
 import com.kayhut.fuse.asg.translator.cypher.strategies.NodePatternCypherTranslatorStrategy;
 import com.kayhut.fuse.asg.translator.cypher.strategies.StepPatternCypherTranslatorStrategy;
-import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.ExpressionStrategies;
-import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.HasLabelExpression;
-import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.OrExpression;
-import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.WhereClauseNodeCypherTranslator;
+import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.*;
 import com.kayhut.fuse.model.ontology.Ontology;
 import org.junit.Before;
 
@@ -31,6 +28,7 @@ class CypherTestUtils {
         //expressions
         whereExpressionStrategies = new ArrayList<>();
         whereExpressionStrategies.add(new OrExpression(whereExpressionStrategies));
+        whereExpressionStrategies.add(new AndExpression(whereExpressionStrategies));
         whereExpressionStrategies.add(new HasLabelExpression());
 
         whereClause = new WhereClauseNodeCypherTranslator(whereExpressionStrategies);

@@ -330,6 +330,15 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return new AsgEBase<>(rel);
         }
 
+        public static AsgEBase<Rel> rel(int eNum, String rType, Rel.Direction direction,String wrapper) {
+            Rel rel = new Rel();
+            rel.setDir(direction);
+            rel.setrType(rType);
+            rel.seteNum(eNum);
+            rel.setWrapper(wrapper);
+            return new AsgEBase<>(rel);
+        }
+
         public static AsgEBase<EProp> eProp(int eNum, String pType, Constraint constraint) {
             return new AsgEBase<>(EProp.of(eNum, pType, constraint));
         }

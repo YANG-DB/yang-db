@@ -21,28 +21,34 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
  */
 
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
-import com.kayhut.fuse.model.Next;
-import com.kayhut.fuse.model.query.Query;
-import org.opencypher.v9_0.expressions.Expression;
-import org.opencypher.v9_0.expressions.HasLabels;
-import org.opencypher.v9_0.expressions.LabelName;
-import org.opencypher.v9_0.expressions.Variable;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import org.opencypher.v9_0.expressions.*;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
 public class AndExpression implements ExpressionStrategies {
 
-    @Override
-    public void apply(Expression expression, Query query, CypherStrategyContext context) {
-        if(expression instanceof HasLabels) {
-            HasLabels hasLabels = ((HasLabels) expression);
-            Collection<LabelName> labelNames = asJavaCollectionConverter(hasLabels.labels()).asJavaCollection();
-            Variable variable = (Variable) hasLabels.expression();
+    public AndExpression(Iterable<ExpressionStrategies> strategies) {
+        this.strategies = strategies;
+    }
 
-            Next<Integer> scope = context.getScope();
+    @Override
+    public void apply(Optional<OperatorExpression> operation, Expression expression, AsgQuery query, CypherStrategyContext context) {
+        if(expression instanceof And) {
+            if(operation.isPresent()) {
+                //todo something
+            }
+            And and = (And) expression;
+            context.cypherScope(and);
+            Expression lhs = and.lhs();
+            strategies.forEach(s->s.apply(Optional.of(and), lhs, query, context));
+            Expression rhs = and.rhs();
+            strategies.forEach(s->s.apply(Optional.of(and), rhs, query, context));
         }
     }
+    private Iterable<ExpressionStrategies> strategies;
 
 }

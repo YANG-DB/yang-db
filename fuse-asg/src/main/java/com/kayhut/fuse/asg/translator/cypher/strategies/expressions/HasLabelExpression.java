@@ -21,25 +21,48 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
  */
 
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
-import com.kayhut.fuse.model.Next;
-import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
+import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.QuantBase;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import org.opencypher.v9_0.expressions.*;
 
-import java.util.Collection;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
 public class HasLabelExpression implements ExpressionStrategies {
 
     @Override
-    public void apply(Expression expression, Query query, CypherStrategyContext context) {
+    public void apply(Optional<OperatorExpression> operation, Expression expression, AsgQuery query, CypherStrategyContext context) {
         if(expression instanceof HasLabels) {
             HasLabels hasLabels = ((HasLabels) expression);
             Collection<LabelName> labelNames = asJavaCollectionConverter(hasLabels.labels()).asJavaCollection();
             Variable variable = (Variable) hasLabels.expression();
 
-            Next<Integer> scope = context.getScope();
+            //first find the node element by its var name in the query
+
+            final Optional<AsgEBase<? extends EBase>> byTag = AsgQueryUtil.getByEtag(query, variable.name());
+            if(!byTag.isPresent()) {
+                throw new IllegalArgumentException("Tag "+variable.name()+" was found in label expression while not defined in match phrase");
+            }
+            //update the scope
+            context.scope(byTag.get());
+            //change scope to quant
+            final AsgEBase<EBase> quantAsg = CypherUtils.quant(byTag.get(),operation,query,context);
+            //add the label eProp constraint
+            final int current = Math.max(quantAsg.getNext().stream().mapToInt(p->p.geteNum()).max().orElse(0),quantAsg.geteNum());
+            quantAsg.addNext(new AsgEBase<>(new EProp(current+1,"type",of(inSet, labelNames.stream().map(l->l.name()).collect(Collectors.toList())))));
         }
     }
+
 
 }

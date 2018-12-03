@@ -38,7 +38,8 @@ public class Quant1PropertiesGroupingAsgStrategyTest {
 
     @Test
     public void test_quant_with_2_eProps() {
-        AsgQuery query = start("q1", "ont").next(typed(1, "1")).next(quant1(2, all))
+        AsgQuery query = start("q1", "ont").next(typed(1, "1"))
+                .next(quant1(2, all))
                 .in(
                         eProp(3, "p1", of(eq, "abc" )),
                         eProp(4, "p2", of(eq, 1)))

@@ -22,9 +22,11 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
 
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherElementTranslatorStrategy;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
-import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import org.opencypher.v9_0.ast.Where;
 import org.opencypher.v9_0.expressions.Expression;
+
+import java.util.Optional;
 
 public class WhereClauseNodeCypherTranslator implements CypherElementTranslatorStrategy<Where> {
 
@@ -32,9 +34,9 @@ public class WhereClauseNodeCypherTranslator implements CypherElementTranslatorS
         this.strategies = strategies;
     }
 
-    public void apply(Where where, Query query, CypherStrategyContext context) {
+    public void apply(Where where, AsgQuery query, CypherStrategyContext context) {
         Expression expression = where.expression();
-        strategies.forEach(s->s.apply(expression,query,context));
+        strategies.forEach(s->s.apply(Optional.empty(), expression, query, context));
     }
 
     private Iterable<ExpressionStrategies> strategies;

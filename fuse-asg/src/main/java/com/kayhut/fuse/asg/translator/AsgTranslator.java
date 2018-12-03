@@ -20,8 +20,8 @@ package com.kayhut.fuse.asg.translator;
  * #L%
  */
 
-import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 
-public interface AsgTranslator<S,T extends Query> {
+public interface AsgTranslator<S,T extends AsgQuery> {
     T translate(S source);
 }

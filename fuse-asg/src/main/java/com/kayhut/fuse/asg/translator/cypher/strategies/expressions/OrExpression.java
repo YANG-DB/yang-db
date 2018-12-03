@@ -21,13 +21,10 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
  */
 
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
-import com.kayhut.fuse.model.Next;
-import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import org.opencypher.v9_0.expressions.*;
 
-import java.util.Collection;
-
-import static scala.collection.JavaConverters.asJavaCollectionConverter;
+import java.util.Optional;
 
 public class OrExpression implements ExpressionStrategies {
 
@@ -36,13 +33,17 @@ public class OrExpression implements ExpressionStrategies {
     }
 
     @Override
-    public void apply(Expression expression, Query query, CypherStrategyContext context) {
+    public void apply(Optional<OperatorExpression> operation, Expression expression, AsgQuery query, CypherStrategyContext context) {
         if(expression instanceof Or) {
+            if(operation.isPresent()) {
+                //todo something
+            }
             Or or = (Or) expression;
+            context.cypherScope(or);
             Expression lhs = or.lhs();
-            strategies.forEach(s->s.apply(lhs,query,context));
+            strategies.forEach(s->s.apply(Optional.of(or), lhs, query, context));
             Expression rhs = or.rhs();
-            strategies.forEach(s->s.apply(rhs,query,context));
+            strategies.forEach(s->s.apply(Optional.of(or), rhs, query, context));
         }
     }
 

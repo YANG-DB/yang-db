@@ -115,6 +115,11 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
         return Collections.unmodifiableList(this.next);
     }
 
+    public AsgEBase<? extends EBase> addNext(AsgEBase<? extends EBase> node) {
+        this.next.add(node);
+        return this;
+    }
+
     @Override
     public boolean hasNext() {
         return !this.next.isEmpty();

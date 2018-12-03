@@ -12,9 +12,9 @@ package com.kayhut.fuse.model.asgQuery;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,7 +49,15 @@ import java.util.stream.Collectors;
 public class AsgQueryUtil {
     //region Public Methods
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> get(AsgEBase<T> asgEBase, int eNum) {
-        return element(asgEBase, emptyIterableFunction, AsgEBase::getNext, p->p.geteBase().geteNum()==eNum, truePredicate);
+        return element(asgEBase, emptyIterableFunction, AsgEBase::getNext, p -> p.geteBase().geteNum() == eNum, truePredicate);
+    }
+
+    public static Optional<AsgEBase<? extends EBase>> getByEtag(AsgQuery query, String eTag) {
+        final Optional<AsgEBase<? extends EBase>> first = query.getElements().stream()
+                .filter(p -> EEntityBase.class.isAssignableFrom(p.geteBase().getClass()))
+                .filter(p -> ((EEntityBase) p.geteBase()).geteTag().equals(eTag))
+                .findFirst();
+        return first;
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
@@ -129,20 +137,21 @@ public class AsgQueryUtil {
     /**
      * A leaf is:
      * a node that has no next element OR has no parents and next descendant is not a quant
+     *
      * @param asgEBase
      * @param <T>
      * @return
      */
-    public static <T extends EBase>  Optional<Boolean> isLeaf(AsgEBase<T> asgEBase) {
-        if(!EEntityBase.class.isAssignableFrom(asgEBase.geteBase().getClass()))
+    public static <T extends EBase> Optional<Boolean> isLeaf(AsgEBase<T> asgEBase) {
+        if (!EEntityBase.class.isAssignableFrom(asgEBase.geteBase().getClass()))
             return Optional.empty();
         return Optional.of(!asgEBase.hasNext() || (isFirst(asgEBase) && !nextDescendant(asgEBase, Quant2.class).isPresent()));
     }
 
     public static <T extends EBase> boolean isFirst(AsgEBase<T> asgEBase) {
         return ((asgEBase.geteBase().getClass().equals(Start.class)) ||
-            asgEBase.getParents().isEmpty() ||
-            asgEBase.getParents().get(0).geteBase().getClass().equals(Start.class));
+                asgEBase.getParents().isEmpty() ||
+                asgEBase.getParents().get(0).geteBase().getClass().equals(Start.class));
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> nextAdjacentDescendant(AsgEBase<T> asgEBase, Class<?> klass, int hopes) {
@@ -181,7 +190,7 @@ public class AsgQueryUtil {
     }
 
     public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextDescendantsSingleHop(AsgEBase<T> asgEBase, Class<?> klass) {
-        return nextDescendants(asgEBase, (asgEBase1 -> classPredicateFunction.apply(klass).test(asgEBase1) && asgEBase1 != asgEBase), (asgEBase1 -> asgEBase1 == asgEBase || !classPredicateFunction.apply(klass).test(asgEBase1)) );
+        return nextDescendants(asgEBase, (asgEBase1 -> classPredicateFunction.apply(klass).test(asgEBase1) && asgEBase1 != asgEBase), (asgEBase1 -> asgEBase1 == asgEBase || !classPredicateFunction.apply(klass).test(asgEBase1)));
     }
 
 
@@ -249,11 +258,11 @@ public class AsgQueryUtil {
         return bDescendants(asgEBase, classPredicateFunction.apply(klass), adjacentDfsPredicate.apply(asgEBase));
     }
 
-    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> bAdjacentDescendants(AsgEBase<T> asgEBase,  int eNum) {
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> bAdjacentDescendants(AsgEBase<T> asgEBase, int eNum) {
         return bDescendants(asgEBase, enumPredicateFunction.apply(eNum), adjacentDfsPredicate.apply(asgEBase));
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> descendantBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate){
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> descendantBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
         return element(
                 asgEBase,
                 AsgEBase::getB,
@@ -262,15 +271,15 @@ public class AsgQueryUtil {
                 truePredicate);
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> descendantBDescendant(AsgEBase<T> asgEBase, Class<?> klass){
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> descendantBDescendant(AsgEBase<T> asgEBase, Class<?> klass) {
         return descendantBDescendant(asgEBase, classPredicateFunction.apply(klass));
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> descendantBDescendant(AsgEBase<T> asgEBase, int eNum){
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> descendantBDescendant(AsgEBase<T> asgEBase, int eNum) {
         return descendantBDescendant(asgEBase, enumPredicateFunction.apply(eNum));
     }
 
-    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> descendantBDescendants(AsgEBase<T> asgEBase, Predicate<AsgEBase> elementPredicate, Predicate<AsgEBase> dfsPredicate){
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> descendantBDescendants(AsgEBase<T> asgEBase, Predicate<AsgEBase> elementPredicate, Predicate<AsgEBase> dfsPredicate) {
         return elements(
                 asgEBase,
                 AsgEBase::getB,
@@ -280,7 +289,7 @@ public class AsgQueryUtil {
                 Collections.emptyList());
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestorBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate){
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestorBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
         return element(
                 asgEBase,
                 AsgEBase::getB,
@@ -289,11 +298,11 @@ public class AsgQueryUtil {
                 truePredicate);
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestorBDescendant(AsgEBase<T> asgEBase, Class<?> klass){
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestorBDescendant(AsgEBase<T> asgEBase, Class<?> klass) {
         return ancestorBDescendant(asgEBase, classPredicateFunction.apply(klass));
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestorBDescendant(AsgEBase<T> asgEBase, int eNum){
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestorBDescendant(AsgEBase<T> asgEBase, int eNum) {
         return ancestorBDescendant(asgEBase, enumPredicateFunction.apply(eNum));
     }
 
@@ -398,13 +407,13 @@ public class AsgQueryUtil {
         return path;
     }
 
-    public static <T extends EBase, S extends EBase,Z extends EBase> Optional<AsgEBase<Z>> findFirstInPath(AsgEBase<T> sourceAsgEBase, AsgEBase<S> destinationAsgEBase, Predicate<AsgEBase> predicate) {
+    public static <T extends EBase, S extends EBase, Z extends EBase> Optional<AsgEBase<Z>> findFirstInPath(AsgEBase<T> sourceAsgEBase, AsgEBase<S> destinationAsgEBase, Predicate<AsgEBase> predicate) {
         List<AsgEBase<? extends EBase>> path = pathToNextDescendant(sourceAsgEBase, destinationAsgEBase.geteNum());
         if (path.isEmpty()) {
             path = pathToAncestor(sourceAsgEBase, destinationAsgEBase.geteNum());
         }
         Optional<AsgEBase<? extends EBase>> first = path.stream().filter(p -> predicate.test(p)).findFirst();
-        if(first.isPresent())
+        if (first.isPresent())
             return Optional.of((AsgEBase<Z>) first.get());
 
         return Optional.empty();
@@ -443,16 +452,16 @@ public class AsgQueryUtil {
     }
 
     public static String pattern(AsgQuery query) {
-        List<AsgEBase<EBase>> elements = elements(query) ;
-        StringJoiner joiner = new StringJoiner(":","","");
-        elements.forEach(e-> {
-            if(e.geteBase() instanceof EEntityBase)
+        List<AsgEBase<EBase>> elements = elements(query);
+        StringJoiner joiner = new StringJoiner(":", "", "");
+        elements.forEach(e -> {
+            if (e.geteBase() instanceof EEntityBase)
                 joiner.add(EEntityBase.class.getSimpleName());
-            else if(e.geteBase() instanceof Rel)
+            else if (e.geteBase() instanceof Rel)
                 joiner.add(Relation.class.getSimpleName());
-            else if(e.geteBase() instanceof EPropGroup)
+            else if (e.geteBase() instanceof EPropGroup)
                 joiner.add(EPropGroup.class.getSimpleName());
-            else if(e.geteBase() instanceof RelPropGroup)
+            else if (e.geteBase() instanceof RelPropGroup)
                 joiner.add(RelPropGroup.class.getSimpleName());
             else
                 joiner.add(e.geteBase().getClass().getSimpleName());
@@ -463,15 +472,15 @@ public class AsgQueryUtil {
     public static <T extends EBase> AsgEBase<T> deepClone(
             AsgEBase<T> asgEBase,
             Predicate<AsgEBase<? extends EBase>> nextPredicate,
-            Predicate<AsgEBase<? extends EBase>> bPredicate){
+            Predicate<AsgEBase<? extends EBase>> bPredicate) {
         AsgEBase.Builder<T> eBaseBuilder = AsgEBase.Builder.get();
         eBaseBuilder.withEBase(asgEBase.geteBase());
         Stream.ofAll(asgEBase.getNext()).filter(nextPredicate).map(elm -> deepClone(elm, nextPredicate, bPredicate)).forEach(eBaseBuilder::withNext);
         Stream.ofAll(asgEBase.getB()).filter(bPredicate).map(elm -> deepClone(elm, nextPredicate, bPredicate)).forEach(elm -> eBaseBuilder.withB(elm));
-        return  eBaseBuilder.build();
+        return eBaseBuilder.build();
     }
 
-    public static OptionalStrippedQuery stripOptionals(AsgQuery query){
+    public static OptionalStrippedQuery stripOptionals(AsgQuery query) {
         List<AsgEBase<OptionalComp>> optionals = AsgQueryUtil.elements(query.getStart(),
                 AsgEBase::getB,
                 AsgEBase::getNext,
@@ -479,10 +488,10 @@ public class AsgQueryUtil {
                 , e -> !(e.geteBase() instanceof OptionalComp),
                 new ArrayList<>());
 
-        AsgEBase<Start> clonedStart = AsgQueryUtil.deepClone(query.getStart(), e -> ! (e.geteBase() instanceof OptionalComp), b -> true);
+        AsgEBase<Start> clonedStart = AsgQueryUtil.deepClone(query.getStart(), e -> !(e.geteBase() instanceof OptionalComp), b -> true);
 
         List elements = elements(clonedStart);
-        AsgQuery clonedMainQuery= AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(clonedStart).withName(query.getName()).withOnt(query.getOnt()).withElements(elements).build();
+        AsgQuery clonedMainQuery = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(clonedStart).withName(query.getName()).withOnt(query.getOnt()).withElements(elements).build();
         OptionalStrippedQuery.Builder builder = OptionalStrippedQuery.Builder.get();
         builder.withMainQuery(clonedMainQuery);
         for (AsgEBase<OptionalComp> optionalElement : optionals) {
@@ -499,40 +508,40 @@ public class AsgQueryUtil {
 
     public static class OptionalStrippedQuery {
         private AsgQuery mainQuery;
-        private List<Tuple2<AsgEBase<OptionalComp>,AsgQuery>> optionalQueries;
+        private List<Tuple2<AsgEBase<OptionalComp>, AsgQuery>> optionalQueries;
 
         public AsgQuery getMainQuery() {
             return mainQuery;
         }
 
-        public List<Tuple2<AsgEBase<OptionalComp>,AsgQuery>> getOptionalQueries() {
+        public List<Tuple2<AsgEBase<OptionalComp>, AsgQuery>> getOptionalQueries() {
             return optionalQueries;
         }
 
-        public OptionalStrippedQuery(AsgQuery mainQuery, List<Tuple2<AsgEBase<OptionalComp>,AsgQuery>> optionalQueries) {
+        public OptionalStrippedQuery(AsgQuery mainQuery, List<Tuple2<AsgEBase<OptionalComp>, AsgQuery>> optionalQueries) {
             this.mainQuery = mainQuery;
             this.optionalQueries = optionalQueries;
         }
 
-        public static final class Builder{
+        public static final class Builder {
             private AsgQuery mainQuery;
-            private List<Tuple2<AsgEBase<OptionalComp>,AsgQuery>> optionalQueries = new ArrayList<>();
+            private List<Tuple2<AsgEBase<OptionalComp>, AsgQuery>> optionalQueries = new ArrayList<>();
 
-            public static Builder get(){
+            public static Builder get() {
                 return new Builder();
             }
 
-            public Builder withMainQuery(AsgQuery mainQuery){
+            public Builder withMainQuery(AsgQuery mainQuery) {
                 this.mainQuery = mainQuery;
                 return this;
             }
 
-            public Builder withOptionalQuery(AsgEBase<OptionalComp> optionalComp ,AsgQuery optionalQuery){
+            public Builder withOptionalQuery(AsgEBase<OptionalComp> optionalComp, AsgQuery optionalQuery) {
                 this.optionalQueries.add(new Tuple2<>(optionalComp, optionalQuery));
                 return this;
             }
 
-            public OptionalStrippedQuery build(){
+            public OptionalStrippedQuery build() {
                 return new OptionalStrippedQuery(mainQuery, optionalQueries);
             }
 
@@ -646,8 +655,8 @@ public class AsgQueryUtil {
 
     private static <T extends EBase> List<AsgEBase<T>> elements(
             AsgEBase<? extends EBase> asgEBase,
-            Function<AsgEBase<? extends EBase>,Iterable<AsgEBase<? extends EBase>>> vElementProvider,
-            Function<AsgEBase<? extends EBase>,Iterable<AsgEBase<? extends EBase>>> hElementProvider,
+            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> vElementProvider,
+            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> hElementProvider,
             Predicate<AsgEBase> elementPredicate,
             Predicate<AsgEBase> dfsPredicate,
             List<AsgEBase<T>> elements) {
@@ -656,7 +665,7 @@ public class AsgQueryUtil {
                 asgEBase,
                 vElementProvider,
                 hElementProvider,
-                asgEBase1 -> (AsgEBase<T>)asgEBase1,
+                asgEBase1 -> (AsgEBase<T>) asgEBase1,
                 elementPredicate,
                 dfsPredicate,
                 elements);

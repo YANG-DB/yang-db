@@ -20,10 +20,10 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * #L%
  */
 
-import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import org.opencypher.v9_0.util.ASTNode;
 
 public interface CypherElementTranslatorStrategy<T extends ASTNode> {
-    void apply(T element, Query query, CypherStrategyContext context);
+    void apply(T element, AsgQuery query, CypherStrategyContext context);
 
 }

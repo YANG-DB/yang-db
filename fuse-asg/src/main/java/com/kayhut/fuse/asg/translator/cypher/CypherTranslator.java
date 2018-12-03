@@ -24,18 +24,14 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.asg.translator.AsgTranslator;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherTranslatorStrategy;
-import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.query.Start;
 import org.opencypher.v9_0.ast.Statement;
 import org.opencypher.v9_0.parser.CypherParser;
 import scala.Option;
 
 import java.util.Collection;
 
-public class CypherTranslator implements AsgTranslator<String,Query> {
+public class CypherTranslator implements AsgTranslator<String,AsgQuery> {
 
     //region Constructors
     @Inject
@@ -47,24 +43,17 @@ public class CypherTranslator implements AsgTranslator<String,Query> {
 
 
     @Override
-    public Query translate(String source) {
-        final Query.Builder builder = Query.Builder.instance();
-        builder.withOnt(ontology).withName("cypher_");
-        final Query v1Query = builder.build();
+    public AsgQuery translate(String source) {
 
-        //Working with the first element
-        Start start = new Start(0,1);
-
-        //add start element
-        v1Query.getElements().add(0,start);
+        final AsgQuery query = AsgQuery.Builder.start("cypher_", ontology).build();
 
         //translate cypher asci into cypher AST
         final Statement statement = new CypherParser().parse(source,Option.empty());
-        final CypherStrategyContext context = new CypherStrategyContext(statement,start);
+        final CypherStrategyContext context = new CypherStrategyContext(statement,query.getStart());
 
         //apply strategies
-        strategies.iterator().forEachRemaining(cypherTranslatorStrategy -> cypherTranslatorStrategy.apply(v1Query, context));
-        return v1Query;
+        strategies.iterator().forEachRemaining(cypherTranslatorStrategy -> cypherTranslatorStrategy.apply(query, context));
+        return query;
     }
 
     private String ontology;

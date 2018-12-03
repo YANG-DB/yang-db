@@ -1,4 +1,4 @@
-package com.kayhut.fuse.asg.translator.cypher.strategies;
+package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
 
 /*-
  * #%L
@@ -20,9 +20,16 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * #L%
  */
 
+import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import org.opencypher.v9_0.expressions.Expression;
+import org.opencypher.v9_0.expressions.OperatorExpression;
 
-public interface CypherTranslatorStrategy {
-    void apply(AsgQuery query, CypherStrategyContext context);
+import java.util.Optional;
 
+public abstract class BinaryExpression implements ExpressionStrategies {
+    @Override
+    public void apply(Optional<OperatorExpression> operation, Expression expression, AsgQuery query, CypherStrategyContext context) {
+        //todo
+    }
 }

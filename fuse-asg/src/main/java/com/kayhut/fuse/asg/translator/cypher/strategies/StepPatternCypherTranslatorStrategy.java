@@ -20,6 +20,9 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * #L%
  */
 
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import org.opencypher.v9_0.expressions.*;
@@ -27,6 +30,7 @@ import scala.Option;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
@@ -39,7 +43,7 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
     }
 
     @Override
-    public void apply(PatternElement element, com.kayhut.fuse.model.query.Query query,CypherStrategyContext context) {
+    public void apply(PatternElement element, AsgQuery query, CypherStrategyContext context) {
         if(element instanceof RelationshipChain) {
             final PatternElement left = ((RelationshipChain) element).element();
             nodePattern.apply(left,query,context);
@@ -51,9 +55,13 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
     }
 
 
-    void applyPattern(RelationshipPattern element, CypherStrategyContext context, Query query) {
+    void applyPattern(RelationshipPattern element, CypherStrategyContext context, AsgQuery query) {
         final Option<LogicalVariable> variable = element.variable();
-        final int current = context.getScope().getNext();
+
+        int current = context.getScope().geteNum() + 1;
+        if (!context.getScope().getNext().isEmpty()) {
+            current = context.getScope().getNext().get(0).geteNum();
+        }
         String name = "Rel_#" + current;
 
         if (!variable.isEmpty()) {
@@ -63,19 +71,25 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
         }
 
         if(!element.types().isEmpty()) {
-
+            //todo
         }
         final SemanticDirection direction = element.direction();
+
         //build node and update query, mutate new current scope
+        CypherUtils.quant(context.getScope(), Optional.empty(), query, context);
+
         //labels
         Collection<RelTypeName> labels = asJavaCollectionConverter((element).types()).asJavaCollection();
-        final List<String> collect = labels.stream().map(l -> l.name()).collect(Collectors.toList());
-        Rel rel = new Rel(current, null, resolve(direction), name, current + 1, 0);
-        if(!collect.isEmpty()) {
+        final List<String> rTypes = labels.stream().map(l -> l.name()).collect(Collectors.toList());
+
+        AsgEBase<Rel> rel = new AsgEBase<>(new Rel(current, null, resolve(direction), name, current + 1, 0));
+        if(!rTypes.isEmpty()) {
             //todo add solution for multi-type labels
-            rel = new Rel(current, collect.get(0), resolve(direction), name, current + 1, 0);
+            rel = new AsgEBase<>(new Rel(current, rTypes.get(0), resolve(direction), name, current + 1, 0));
         }
+
         query.getElements().add(rel);
+        context.getScope().addNext(rel);
         context.scope(rel);
     }
 

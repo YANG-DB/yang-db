@@ -9,9 +9,9 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,8 +20,9 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * #L%
  */
 
-import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import org.opencypher.v9_0.expressions.LabelName;
@@ -37,14 +38,19 @@ import java.util.stream.Collectors;
 
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
-public class NodePatternCypherTranslatorStrategy implements CypherElementTranslatorStrategy<PatternElement>  {
+public class NodePatternCypherTranslatorStrategy implements CypherElementTranslatorStrategy<PatternElement> {
 
     @Override
-    public void apply(PatternElement element, Query query, CypherStrategyContext context) {
-        if(element instanceof NodePattern) {
+    public void apply(PatternElement element, AsgQuery query, CypherStrategyContext context) {
+        if (element instanceof NodePattern) {
             final Option<LogicalVariable> variable = element.variable();
-            final int current = context.getScope().getNext();
-            String name = "Node_#"+ current;
+
+            int current = context.getScope().geteNum() + 1;
+            if (!context.getScope().getNext().isEmpty()) {
+                current = context.getScope().getNext().get(0).geteNum();
+            }
+
+            String name = "Node_#" + current;
 
             if (!variable.isEmpty()) {
                 //get scope and calculate next enum
@@ -56,12 +62,15 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
             final Collection<LabelName> labels = asJavaCollectionConverter(((NodePattern) element).labels()).asJavaCollection();
             //labels
             final List<String> collect = labels.stream().map(l -> l.name()).collect(Collectors.toList());
-            EEntityBase node = new EUntyped(current, name,collect, Collections.emptyList(), current + 1, 0);
+            //create node
+            AsgEBase<? extends EBase> node = new AsgEBase<>(new EUntyped(current, name, collect, Collections.emptyList(), current + 1, 0));
             //is single label - use EType node (specific typed node)
-            if(labels.size() == 1) {
-                node = new ETyped(current,name,labels.iterator().next().name(),current+1,0);
+            if (labels.size() == 1) {
+                node = new AsgEBase<>(new ETyped(current, name, labels.iterator().next().name(), current + 1, 0));
             }
+
             query.getElements().add(node);
+            context.getScope().addNext(node);
             context.scope(node);
         }
     }

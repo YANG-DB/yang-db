@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.kayhut.fuse.model.asgQuery.IQuery;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -144,6 +145,19 @@ public class Query implements IQuery<EBase> {
          */
         public static <T extends EBase> List<EBase> findByClass(IQuery<EBase> query, Class<T> klass) {
             return query.getElements().stream().filter(p -> klass.isAssignableFrom(p.getClass())).collect(Collectors.toList());
+        }
+
+        /**
+         * find element by tag name
+         * @param query
+         * @param tag
+         * @return
+         */
+        public static Optional<? extends EBase> findByTag(IQuery<EBase> query, String tag) {
+            return query.getElements().stream()
+                    .filter(p -> p.getClass().isAssignableFrom(EEntityBase.class))
+                    .filter(p -> ((EEntityBase)p).geteTag().equals(tag))
+                    .findFirst();
         }
     }
 }

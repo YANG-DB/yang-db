@@ -20,17 +20,19 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * #L%
  */
 
-import com.kayhut.fuse.model.Next;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.query.EBase;
 import org.opencypher.v9_0.ast.Statement;
+import org.opencypher.v9_0.util.ASTNode;
 
 public class CypherStrategyContext {
 
-    public CypherStrategyContext(Statement statement, Next<Integer> scope) {
+    public CypherStrategyContext(Statement statement, AsgEBase<? extends EBase> scope) {
         this.statement = statement;
         this.scope = scope;
     }
 
-    public Next<Integer> getScope() {
+    public AsgEBase<? extends EBase> getScope() {
         return scope;
     }
 
@@ -38,13 +40,23 @@ public class CypherStrategyContext {
         return statement;
     }
 
-    public CypherStrategyContext scope(Next<Integer> scope) {
+    public CypherStrategyContext scope(AsgEBase<? extends EBase> scope) {
         this.scope = scope;
         return this;
     }
 
+    public CypherStrategyContext cypherScope(ASTNode cypherScope) {
+        this.cypherScope = cypherScope;
+        return this;
+    }
+
+    public ASTNode getCypherScope() {
+        return cypherScope;
+    }
+
     //region Fields
     private Statement statement;
-    private Next<Integer> scope;
+    private AsgEBase<? extends EBase> scope;
+    private ASTNode cypherScope;
     //endregion
 }

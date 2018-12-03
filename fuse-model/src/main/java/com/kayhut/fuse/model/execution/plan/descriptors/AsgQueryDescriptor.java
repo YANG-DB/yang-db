@@ -165,8 +165,11 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
         List<String> builder = new LinkedList<>();
         builder.add("└── " + "Start");
         Iterator<AsgEBase<? extends EBase>> iterator = query.getElements().iterator();
-        iterator.next();
-        print(builder, Optional.of(iterator.next()), false, true, 1, 0);
+        if(iterator.hasNext()) {
+            iterator.next();
+            if(iterator.hasNext())
+                print(builder, Optional.of(iterator.next()), false, true, 1, 0);
+        }
         return builder.toString();
     }
 
