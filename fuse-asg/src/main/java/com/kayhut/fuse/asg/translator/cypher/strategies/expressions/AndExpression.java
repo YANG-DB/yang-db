@@ -24,10 +24,7 @@ import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import org.opencypher.v9_0.expressions.*;
 
-import java.util.Collection;
 import java.util.Optional;
-
-import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
 public class AndExpression implements ExpressionStrategies {
 
@@ -42,11 +39,12 @@ public class AndExpression implements ExpressionStrategies {
                 //todo something
             }
             And and = (And) expression;
-            context.cypherScope(and);
+            context.pushCyScope(and);
             Expression lhs = and.lhs();
             strategies.forEach(s->s.apply(Optional.of(and), lhs, query, context));
             Expression rhs = and.rhs();
             strategies.forEach(s->s.apply(Optional.of(and), rhs, query, context));
+            context.popCyScope();
         }
     }
     private Iterable<ExpressionStrategies> strategies;

@@ -26,47 +26,53 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.quant.Quant1;
-import com.kayhut.fuse.model.query.quant.QuantBase;
-import com.kayhut.fuse.model.query.quant.QuantType;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import org.opencypher.v9_0.expressions.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
-public class HasLabelExpression implements ExpressionStrategies {
+public class HasRelationLabelExpression implements ExpressionStrategies {
 
     @Override
     public void apply(Optional<OperatorExpression> operation, Expression expression, AsgQuery query, CypherStrategyContext context) {
         if(expression instanceof HasLabels) {
             HasLabels hasLabels = ((HasLabels) expression);
-            Collection<LabelName> labelNames = asJavaCollectionConverter(hasLabels.labels()).asJavaCollection();
+            Collection<LabelName> labels = asJavaCollectionConverter(hasLabels.labels()).asJavaCollection();
             Variable variable = (Variable) hasLabels.expression();
 
             //first find the node element by its var name in the query
-            final Optional<AsgEBase<? extends EBase>> byTag = AsgQueryUtil.getByEtag(query, variable.name());
-            if(!byTag.isPresent()) return;
+
+            final Optional<AsgEBase<? extends EBase>> first = query.getElements().stream()
+                    .filter(p -> Rel.class.isAssignableFrom(p.geteBase().getClass()))
+                    .filter(p -> ((Rel) p.geteBase()).getWrapper().equals(variable.name()))
+                    .findFirst();
+
+            if(!first.isPresent()) return;
+
 
             //update the scope
-            context.scope(byTag.get());
-            //change scope to quant
-            final AsgEBase<EBase> quantAsg = CypherUtils.quant(byTag.get(),operation,query,context);
+            context.scope(first.get());
             //add the label eProp constraint
-            final int current = Math.max(quantAsg.getNext().stream().mapToInt(p->p.geteNum()).max().orElse(0),quantAsg.geteNum());
-            final List<String> labels = labelNames.stream().map(l -> l.name()).collect(Collectors.toList());
+            final int current = Math.max(first.get().getB().stream().mapToInt(p->p.geteNum()).max().orElse(0),100*first.get().geteNum());
 
-            if(!AsgQueryUtil.nextDescendant(quantAsg, EPropGroup.class).isPresent()) {
-                quantAsg.addNext(new AsgEBase<>(new EPropGroup(current + 1 ,CypherUtils.type(operation))));
-            }
+            first.get().addBChild(new AsgEBase<>(new RelPropGroup(current,CypherUtils.type(operation))));
 
-            ((EPropGroup) AsgQueryUtil.nextDescendant(quantAsg, EPropGroup.class).get().geteBase())
-                    .getProps().add(new EProp(current + 1, "type", of(inSet, labels)));
+            final List<String> labelNames = labels.stream().map(l -> l.name()).collect(Collectors.toList());
+            ((RelPropGroup) first.get().geteBase())
+                    .getProps().add(new RelProp(100*(current + 1), "type", of(inSet, labelNames),0));
+
         }
     }
 

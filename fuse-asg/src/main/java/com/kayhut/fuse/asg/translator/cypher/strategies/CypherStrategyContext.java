@@ -25,11 +25,14 @@ import com.kayhut.fuse.model.query.EBase;
 import org.opencypher.v9_0.ast.Statement;
 import org.opencypher.v9_0.util.ASTNode;
 
+import java.util.Stack;
+
 public class CypherStrategyContext {
 
     public CypherStrategyContext(Statement statement, AsgEBase<? extends EBase> scope) {
         this.statement = statement;
         this.scope = scope;
+        this.cypherScope = new Stack<>();
     }
 
     public AsgEBase<? extends EBase> getScope() {
@@ -45,18 +48,23 @@ public class CypherStrategyContext {
         return this;
     }
 
-    public CypherStrategyContext cypherScope(ASTNode cypherScope) {
-        this.cypherScope = cypherScope;
+    public CypherStrategyContext pushCyScope(ASTNode cypherScope) {
+        this.cypherScope.push(cypherScope);
         return this;
     }
 
-    public ASTNode getCypherScope() {
-        return cypherScope;
+    public CypherStrategyContext popCyScope() {
+        this.cypherScope.pop();
+        return this;
+    }
+
+    public ASTNode getCyScope() {
+        return cypherScope.peek();
     }
 
     //region Fields
     private Statement statement;
     private AsgEBase<? extends EBase> scope;
-    private ASTNode cypherScope;
+    private Stack<ASTNode> cypherScope;
     //endregion
 }

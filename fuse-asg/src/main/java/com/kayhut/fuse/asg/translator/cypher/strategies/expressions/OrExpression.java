@@ -39,11 +39,12 @@ public class OrExpression implements ExpressionStrategies {
                 //todo something
             }
             Or or = (Or) expression;
-            context.cypherScope(or);
+            context.pushCyScope(or);
             Expression lhs = or.lhs();
             strategies.forEach(s->s.apply(Optional.of(or), lhs, query, context));
             Expression rhs = or.rhs();
             strategies.forEach(s->s.apply(Optional.of(or), rhs, query, context));
+            context.popCyScope();
         }
     }
 

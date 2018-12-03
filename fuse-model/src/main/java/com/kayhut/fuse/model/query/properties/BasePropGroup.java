@@ -28,6 +28,7 @@ import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,6 +63,10 @@ public abstract class BasePropGroup<T extends BaseProp, S extends BasePropGroup<
 
     public BasePropGroup(int eNum, QuantType quantType, Iterable<T> props) {
         this(eNum, quantType, props, Collections.emptyList());
+    }
+
+    public BasePropGroup(int eNum, QuantType quantType, T ... props) {
+        this(eNum, quantType, Arrays.asList(props), Collections.emptyList());
     }
 
     public BasePropGroup(int eNum, QuantType quantType, Iterable<T> props, Iterable<S> groups) {

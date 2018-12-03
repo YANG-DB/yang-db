@@ -69,6 +69,10 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
         super(eNum, quantType, props, Collections.emptyList());
     }
 
+    public EPropGroup(int eNum, QuantType quantType, EProp... props) {
+        super(eNum, quantType, props);
+    }
+
     public EPropGroup(int eNum, QuantType quantType, Iterable<EProp> props, Iterable<EPropGroup> groups) {
         super(eNum, quantType, props, groups);
     }

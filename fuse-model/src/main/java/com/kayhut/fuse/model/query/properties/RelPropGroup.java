@@ -63,6 +63,10 @@ public class RelPropGroup extends BasePropGroup<RelProp, RelPropGroup> {
         super(eNum, quantType, props, Collections.emptyList());
     }
 
+    public RelPropGroup(int eNum, QuantType quantType, RelProp ... props) {
+        super(eNum, quantType, props);
+    }
+
     public RelPropGroup(int eNum, QuantType quantType, Iterable<RelProp> props, Iterable<RelPropGroup> groups) {
         super(eNum, quantType, props, groups);
     }
