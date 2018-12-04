@@ -26,6 +26,7 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.properties.BasePropGroup;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
@@ -43,7 +44,7 @@ import static scala.collection.JavaConverters.asJavaCollectionConverter;
 public class HasLabelExpression implements ExpressionStrategies {
 
     @Override
-    public void apply(Optional<OperatorExpression> operation, Expression expression, AsgQuery query, CypherStrategyContext context) {
+    public void apply(Optional<OperatorExpression> operation, Expression expression, AsgQuery query,  CypherStrategyContext context) {
         if(expression instanceof HasLabels) {
             HasLabels hasLabels = ((HasLabels) expression);
             Collection<LabelName> labelNames = asJavaCollectionConverter(hasLabels.labels()).asJavaCollection();

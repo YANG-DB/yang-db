@@ -22,6 +22,7 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
 
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.query.properties.BasePropGroup;
 import org.opencypher.v9_0.expressions.Expression;
 import org.opencypher.v9_0.expressions.OperatorExpression;
 

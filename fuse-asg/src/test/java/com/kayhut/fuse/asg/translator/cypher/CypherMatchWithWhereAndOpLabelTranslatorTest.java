@@ -19,6 +19,7 @@ import java.util.Collections;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
+import static com.kayhut.fuse.model.query.properties.EProp.of;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
@@ -29,7 +30,7 @@ import static org.junit.Assert.assertEquals;
  * Created by lior.perry
  */
 @Ignore
-public class CypherMatchWithWhereLabelTranslatorTest {
+public class CypherMatchWithWhereAndOpLabelTranslatorTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
@@ -45,9 +46,7 @@ public class CypherMatchWithWhereLabelTranslatorTest {
                 .start("cypher_", "Dragons")
                 .next(unTyped(1, "a"))
                 .next(quant1(100, some))
-                .in(
-                        eProp(101, "type", of(inSet, Arrays.asList("Dragon")))
-                )
+                .in(ePropGroup(101,all,of(101, "type", of(inSet, Arrays.asList("Dragon")))))
                 .build();
         assertEquals(print(expected), print(query));
     }
@@ -55,14 +54,15 @@ public class CypherMatchWithWhereLabelTranslatorTest {
     @Test
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a) where a:Dragon OR a:Hours RETURN a");
+        final AsgQuery query = translator.translate("MATCH (a) where a:Dragon AND a:Hours RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
                 .next(unTyped(1, "a"))
                 .next(quant1(100, some))
                 .in(
-                        eProp(101, "type", of(inSet, Arrays.asList("Dragon"))),
-                        eProp(102, "type", of(inSet, Arrays.asList("Hours")))
+                        ePropGroup(101,all,
+                                of(101, "type", of(inSet, Arrays.asList("Dragon"))),
+                                of(102, "type", of(inSet, Arrays.asList("Hours"))))
                 )
                 .build();
         assertEquals(print(expected), print(query));
@@ -77,8 +77,9 @@ public class CypherMatchWithWhereLabelTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quant1(100, all))
                 .in(
-                        eProp(101, "type", of(inSet, Arrays.asList("Dragon"))),
-                        eProp(102, "type", of(inSet, Arrays.asList("Hours")))
+                        ePropGroup(101,all,
+                            of(101, "type", of(inSet, Arrays.asList("Dragon"))),
+                            of(102, "type", of(inSet, Arrays.asList("Hours"))))
                 )
                 .build();
         assertEquals(print(expected), print(query));
@@ -95,11 +96,14 @@ public class CypherMatchWithWhereLabelTranslatorTest {
         quantA.addNext(rel(2, null, Rel.Direction.RL)
                 .addNext(unTyped(3, "b")
                         .next(quant1(300, all)
-                                .addNext(eProp(301, "type", of(inSet, Arrays.asList("Person"))))
+                                .addNext(
+                                        ePropGroup(301,all,
+                                            of(301, "type", of(inSet, Arrays.asList("Person"))))
                         )
-
-                ));
-        quantA.addNext(eProp(101, "type", of(inSet, Arrays.asList("Dragon"))));
+                )));
+        quantA.addNext(
+                ePropGroup(101,all,
+                    of(101, "type", of(inSet, Arrays.asList("Dragon")))));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -117,14 +121,19 @@ public class CypherMatchWithWhereLabelTranslatorTest {
 
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, null, Rel.Direction.RL,"c")
-                .below(relProp(201,new RelProp(201,"type",of(inSet, Arrays.asList("Fire")),0)))
+                .below(relPropGroup(201,
+                        new RelProp(201,"type",of(inSet, Arrays.asList("Fire")),0)))
                 .addNext(unTyped(3, "b")
                         .next(quant1(300, all)
-                                .addNext(eProp(301, "type", of(inSet, Arrays.asList("Person"))))
+                                .addNext(
+                                        ePropGroup(301,all,
+                                            of(301, "type", of(inSet, Arrays.asList("Person")))))
                         )
 
                 ));
-        quantA.addNext(eProp(101, "type", of(inSet, Arrays.asList("Dragon"))));
+        quantA.addNext(
+                ePropGroup(101,all,
+                    of(101, "type", of(inSet, Arrays.asList("Dragon")))));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -134,31 +143,6 @@ public class CypherMatchWithWhereLabelTranslatorTest {
         assertEquals(print(expected), print(query));
     }
 
-    @Test
-    public void testMatch_A_where_OpenBracket_A_OfType_testMatch_A_where_A_OfType_CloseBracket_AND_A_OfType_Return_A() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where (a:Dragon OR a:Person) AND a:Hours RETURN a,b,c");
-
-        //region Test Methods
-
-        final AsgEBase<Quant1> quantA = quant1(100, all);
-        quantA.addNext(rel(2, null, Rel.Direction.RL,"c")
-                .below(relProp(201,new RelProp(201,"type",of(inSet, Arrays.asList("Fire")),0)))
-                .addNext(unTyped(3, "b")
-                        .next(quant1(300, all)
-                                .addNext(eProp(301, "type", of(inSet, Arrays.asList("Person"))))
-                        )
-
-                ));
-        quantA.addNext(eProp(101, "type", of(inSet, Arrays.asList("Dragon"))));
-
-        AsgQuery expected = AsgQuery.Builder
-                .start("cypher_", "Dragons")
-                .next(unTyped(1, "a"))
-                .next(quantA)
-                .build();
-        assertEquals(print(expected), print(query));
-    }
 
     //region Private Methods
     private static String readJsonToString(String jsonRelativePath) {
