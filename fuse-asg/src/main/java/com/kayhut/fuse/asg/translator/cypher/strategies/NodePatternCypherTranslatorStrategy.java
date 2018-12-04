@@ -58,13 +58,13 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
                 name = logicalVariable.name();
             }
 
-            //build node and update query, mutate new current scope
+            //build label and update query, mutate new current scope
             final Collection<LabelName> labels = asJavaCollectionConverter(((NodePattern) element).labels()).asJavaCollection();
             //labels
             final List<String> collect = labels.stream().map(l -> l.name()).collect(Collectors.toList());
-            //create node
+            //create label
             AsgEBase<? extends EBase> node = new AsgEBase<>(new EUntyped(current, name, collect, Collections.emptyList(), current + 1, 0));
-            //is single label - use EType node (specific typed node)
+            //is single label - use EType label (specific typed label)
             if (labels.size() == 1) {
                 node = new AsgEBase<>(new ETyped(current, name, labels.iterator().next().name(), current + 1, 0));
             }

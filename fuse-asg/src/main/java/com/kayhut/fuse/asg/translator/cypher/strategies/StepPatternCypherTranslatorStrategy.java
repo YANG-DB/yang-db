@@ -75,7 +75,7 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
         }
         final SemanticDirection direction = element.direction();
 
-        //build node and update query, mutate new current scope
+        //build label and update query, mutate new current scope
         CypherUtils.quant(context.getScope(), Optional.empty(), query, context);
 
         //labels

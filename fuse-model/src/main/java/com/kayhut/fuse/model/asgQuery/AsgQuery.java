@@ -395,6 +395,10 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return new AsgEBase<>(optionalComp);
         }
 
+        public AsgEBase _() {
+            return current;
+        }
+
         public AsgQuery build() {
             return query;
         }
