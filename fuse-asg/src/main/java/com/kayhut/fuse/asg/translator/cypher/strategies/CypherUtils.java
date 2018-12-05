@@ -20,6 +20,9 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * #L%
  */
 
+import com.bpodgursky.jbool_expressions.NExpression;
+import com.bpodgursky.jbool_expressions.Variable;
+import com.bpodgursky.jbool_expressions.rules.RuleSet;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
@@ -27,30 +30,34 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.query.quant.QuantType;
-import org.opencypher.v9_0.expressions.*;
+import org.opencypher.v9_0.expressions.And;
+import org.opencypher.v9_0.expressions.Not;
+import org.opencypher.v9_0.expressions.Or;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
+
+//import org.opencypher.v9_0.expressions.*;
 
 
 public interface CypherUtils {
-    static QuantType type(Optional<OperatorExpression> operation) {
+    static QuantType type(Optional<org.opencypher.v9_0.expressions.OperatorExpression> operation) {
         if (!operation.isPresent())
             return QuantType.all;
 
-        final OperatorExpression expression = operation.get();
-        if (expression instanceof Or) {
+        org.opencypher.v9_0.expressions.OperatorExpression expression = operation.get();
+        if (expression instanceof org.opencypher.v9_0.expressions.Or) {
             return QuantType.some;
         }
-        if (expression instanceof And) {
+        if (expression instanceof org.opencypher.v9_0.expressions.And) {
             return QuantType.all;
         }
 
         return QuantType.all;
     }
 
-    static AsgEBase<EBase> quant(AsgEBase<? extends EBase> byTag, Optional<OperatorExpression> operation, AsgQuery query, CypherStrategyContext context) {
+    static AsgEBase<EBase> quant(AsgEBase<? extends EBase> byTag, Optional<org.opencypher.v9_0.expressions.OperatorExpression> operation,
+                                 AsgQuery query, CypherStrategyContext context) {
         //next find the quant associated with this element - if none found create one
         if (!AsgQueryUtil.nextDescendant(byTag, QuantBase.class).isPresent()) {
             final int current = context.getScope().geteNum();
@@ -63,50 +70,46 @@ public interface CypherUtils {
         return AsgQueryUtil.nextDescendant(byTag, QuantBase.class).get();
     }
 
-    static Expression reWrite(Expression expression) {
-        List<Expression> elements = new ArrayList<>();
-        final TreeNode root = new TreeNode(null, null);
-        new InOrder().traverse(expression, root);
-        return expression;
-
+    static com.bpodgursky.jbool_expressions.Expression reWrite(org.opencypher.v9_0.expressions.Expression expression) {
+        final com.bpodgursky.jbool_expressions.Expression traversal = Traversal.traversal(expression);
+        final com.bpodgursky.jbool_expressions.Expression simplify = RuleSet.simplify(traversal);
+        final com.bpodgursky.jbool_expressions.Expression dnf = RuleSet.toDNF(simplify);
+        System.out.println(asCanonicalStringVal(dnf));
+        return dnf;
     }
 
 
-    class InOrder {
+    static String asCanonicalStringVal(com.bpodgursky.jbool_expressions.Expression expression) {
+        StringBuilder builder = new StringBuilder();
+        if (expression instanceof NExpression) {
+            builder.append(((NExpression) expression).getChildren().stream().reduce((t, u) ->
+                    asCanonicalStringVal(((com.bpodgursky.jbool_expressions.Expression) t)) + " " + expression.getExprType()
+                            + " " + asCanonicalStringVal((com.bpodgursky.jbool_expressions.Expression) u))
+                    .get());
+        } else {
+            builder.append(expression.toLexicographicString());
+        }
+        return builder.toString();
+    }
 
-        public void traverse(Expression expression, TreeNode root) {
-            final TreeNode node = new TreeNode(expression.productPrefix(),expression.asCanonicalStringVal());
-            root.child(node);
-            if(expression instanceof BinaryOperatorExpression) {
-                traverse(((BinaryOperatorExpression) expression).lhs(), node);
-                traverse(((BinaryOperatorExpression) expression).rhs(), node);
+    class Traversal {
+
+        public static com.bpodgursky.jbool_expressions.Expression traversal(org.opencypher.v9_0.expressions.Expression expression) {
+            if (expression instanceof Not) {
+                return com.bpodgursky.jbool_expressions.Not.of(traversal(((Not) expression).rhs()));
             }
-        }
-    }
+            if (expression instanceof Or) {
+                return com.bpodgursky.jbool_expressions.Or.of(
+                        traversal(((Or) expression).lhs()),
+                        traversal(((Or) expression).rhs()));
+            }
 
-    class TreeNode {
-        boolean visited = false;
-        List<TreeNode> child = new ArrayList<>();
-        String productPrefix;
-        String asCanonicalStringVal;
-        TreeNode parent;
-
-
-        public TreeNode(String productPrefix,String asCanonicalStringVal) {
-            this.productPrefix = productPrefix;
-            this.asCanonicalStringVal = asCanonicalStringVal;
-        }
-
-        TreeNode visit() {
-            visited = true;
-            return this;
-        }
-
-
-        TreeNode child(TreeNode node) {
-            this.child.add(node);
-            node.parent = this;
-            return this;
+            if (expression instanceof And) {
+                return com.bpodgursky.jbool_expressions.And.of(
+                        traversal(((And) expression).lhs()),
+                        traversal(((And) expression).rhs()));
+            }
+            return Variable.of(expression);
         }
     }
 }
