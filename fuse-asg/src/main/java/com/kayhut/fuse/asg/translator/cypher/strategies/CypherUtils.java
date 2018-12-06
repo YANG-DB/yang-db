@@ -30,12 +30,12 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.query.quant.QuantType;
-import org.opencypher.v9_0.expressions.And;
-import org.opencypher.v9_0.expressions.Not;
-import org.opencypher.v9_0.expressions.Or;
+import org.opencypher.v9_0.expressions.*;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.StringJoiner;
 
 //import org.opencypher.v9_0.expressions.*;
 
@@ -74,22 +74,24 @@ public interface CypherUtils {
         final com.bpodgursky.jbool_expressions.Expression traversal = Traversal.traversal(expression);
         final com.bpodgursky.jbool_expressions.Expression simplify = RuleSet.simplify(traversal);
         final com.bpodgursky.jbool_expressions.Expression dnf = RuleSet.toDNF(simplify);
-        System.out.println(asCanonicalStringVal(dnf));
-        return dnf;
+        final com.bpodgursky.jbool_expressions.Expression simplifyDnf = RuleSet.simplify(dnf);
+        return simplifyDnf;
     }
 
 
     static String asCanonicalStringVal(com.bpodgursky.jbool_expressions.Expression expression) {
-        StringBuilder builder = new StringBuilder();
         if (expression instanceof NExpression) {
-            builder.append(((NExpression) expression).getChildren().stream().reduce((t, u) ->
-                    asCanonicalStringVal(((com.bpodgursky.jbool_expressions.Expression) t)) + " " + expression.getExprType()
-                            + " " + asCanonicalStringVal((com.bpodgursky.jbool_expressions.Expression) u))
-                    .get());
-        } else {
-            builder.append(expression.toLexicographicString());
+            StringJoiner joiner = new StringJoiner(" "+expression.getExprType()+" ");
+            ((NExpression) expression).getChildren().forEach(e ->
+                    joiner.add(asCanonicalStringVal(((com.bpodgursky.jbool_expressions.Expression) e))));
+            return joiner.toString();
+        } else if(expression instanceof Variable){
+            final Expression value = (Expression) ((Variable) expression).getValue();
+            if(value instanceof HasLabels) {
+                return ((HasLabels) value).expression().asCanonicalStringVal();
+            }
         }
-        return builder.toString();
+        return "";
     }
 
     class Traversal {
@@ -109,7 +111,37 @@ public interface CypherUtils {
                         traversal(((And) expression).lhs()),
                         traversal(((And) expression).rhs()));
             }
-            return Variable.of(expression);
+            return Variable.of(Wrapper.of(expression));
+        }
+    }
+
+    class Wrapper {
+        org.opencypher.v9_0.expressions.Expression expression;
+
+        private Wrapper(Expression expression) {
+            this.expression = expression;
+        }
+
+        public static Wrapper of(Expression expression) {
+            return new Wrapper(expression);
+        }
+
+        @Override
+        public String toString() {
+            return expression.asCanonicalStringVal();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Wrapper wrapper = (Wrapper) o;
+            return Objects.equals(expression, wrapper.expression);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(expression);
         }
     }
 }

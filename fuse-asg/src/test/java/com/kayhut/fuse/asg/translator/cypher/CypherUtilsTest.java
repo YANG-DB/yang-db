@@ -1,5 +1,7 @@
 package com.kayhut.fuse.asg.translator.cypher;
 
+import com.bpodgursky.jbool_expressions.parsers.ExprParser;
+import com.bpodgursky.jbool_expressions.rules.RuleSet;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.kayhut.fuse.asg.translator.cypher.strategies.MatchCypherTranslatorStrategy;
 import org.junit.Assert;
@@ -26,7 +28,7 @@ public class CypherUtilsTest {
     @Test
     public void test_A_OR_B_AND_C_StripDown() {
         final String originalWhere = "(a:Dragon Or b:Person) And c ";
-        final String expectedWhere = "a:Dragon AND c OR b:Person AND c";
+        final String expectedWhere = "((a:Dragon & c) | (b:Person & c))";
 
         final Statement statement = new CypherParser().parse("MATCH (a)-[c]-(b) where "+originalWhere+" RETURN a",Option.empty());
         final QueryPart part = ((Query) statement).part();
@@ -47,8 +49,8 @@ public class CypherUtilsTest {
 
     @Test
     public void test_A_AND_B_AND_C_StripDown() {
-        final String originalWhere = "(a:Dragon AND b:Person) And c ";
-        final String expectedWhere = "a:Dragon AND c AND b:Person AND c";
+        final String originalWhere = "(a:Dragon And b:Person) And c ";
+        final String expectedWhere = "(a:Dragon & b:Person & c)";
 
         final Statement statement = new CypherParser().parse("MATCH (a)-[c]-(b) where "+originalWhere+" RETURN a",Option.empty());
         final QueryPart part = ((Query) statement).part();
@@ -68,12 +70,40 @@ public class CypherUtilsTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test_A_OR_B_AND_C_OR_D_StripDown() {
         final String originalWhere = "(a:Dragon Or b:Person) And (c:Fire Or d:Ice)";
-        final String expectedWhere = "a:Dragon AND c:Fire OR a:Dragon AND d:Ice OR b:Person AND c:Fire OR b:Person AND d:Ice";
+        final String expectedWhere = "((a:Dragon & c:Fire) | (a:Dragon & d:Ice) | (b:Person & c:Fire) | (b:Person & d:Ice))";
 
-        final Statement statement = new CypherParser().parse("MATCH (a)-[c]-(b)-[]-(d) where "+expectedWhere+" RETURN a",Option.empty());
+        final Statement statement = new CypherParser().parse("MATCH (a)-[c]-(b)-[]-(d) where "+originalWhere+" RETURN a",Option.empty());
+        final QueryPart part = ((Query) statement).part();
+        final Seq<Clause> clauses = ((SingleQuery) part).clauses();
+        final Optional<Clause> matchClause = asJavaCollectionConverter(clauses).asJavaCollection()
+                .stream().filter(c -> c.getClass().isAssignableFrom(Match.class)).findAny();
+
+        final Match match = (Match) matchClause.get();
+        Where where = match.where().get();
+
+        final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
+
+        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+        Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
+
+    }
+
+    @Test
+    public void test_A_AND_A() {
+        final com.bpodgursky.jbool_expressions.Expression<String> simplify = RuleSet.simplify(ExprParser.parse("(A | B) & (A | B)"));
+        System.out.println(simplify);
+    }
+
+    @Test
+    public void test_A_OR_B_AND_D_OR_C_OR_D_AND_B_StripDown() {
+        final String originalWhere = "( ((a:Dragon Or b:Person) And d:Ice) Or ((c:Fire Or d:Ice) And b:Person) )";
+        final String expectedWhere = "((a:Dragon & d:Ice) | (b:Person & c:Fire) | (b:Person & d:Ice))";
+
+        final Statement statement = new CypherParser().parse("MATCH (a)-[c]-(b)-[]-(d) where "+originalWhere+" RETURN a",Option.empty());
         final QueryPart part = ((Query) statement).part();
         final Seq<Clause> clauses = ((SingleQuery) part).clauses();
         final Optional<Clause> matchClause = asJavaCollectionConverter(clauses).asJavaCollection()
