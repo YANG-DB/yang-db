@@ -41,22 +41,21 @@ import java.util.StringJoiner;
 
 
 public interface CypherUtils {
-    static QuantType type(Optional<org.opencypher.v9_0.expressions.OperatorExpression> operation) {
+    static QuantType type(Optional<com.bpodgursky.jbool_expressions.Expression> operation) {
         if (!operation.isPresent())
             return QuantType.all;
 
-        org.opencypher.v9_0.expressions.OperatorExpression expression = operation.get();
-        if (expression instanceof org.opencypher.v9_0.expressions.Or) {
+        if (operation.get() instanceof com.bpodgursky.jbool_expressions.Or) {
             return QuantType.some;
         }
-        if (expression instanceof org.opencypher.v9_0.expressions.And) {
+        if (operation.get() instanceof com.bpodgursky.jbool_expressions.And) {
             return QuantType.all;
         }
 
         return QuantType.all;
     }
 
-    static AsgEBase<EBase> quant(AsgEBase<? extends EBase> byTag, Optional<org.opencypher.v9_0.expressions.OperatorExpression> operation,
+    static AsgEBase<EBase> quant(AsgEBase<? extends EBase> byTag, Optional<com.bpodgursky.jbool_expressions.Expression> operation,
                                  AsgQuery query, CypherStrategyContext context) {
         //next find the quant associated with this element - if none found create one
         if (!AsgQueryUtil.nextDescendant(byTag, QuantBase.class).isPresent()) {
@@ -116,7 +115,7 @@ public interface CypherUtils {
     }
 
     class Wrapper {
-        org.opencypher.v9_0.expressions.Expression expression;
+        private org.opencypher.v9_0.expressions.Expression expression;
 
         private Wrapper(Expression expression) {
             this.expression = expression;
@@ -124,6 +123,10 @@ public interface CypherUtils {
 
         public static Wrapper of(Expression expression) {
             return new Wrapper(expression);
+        }
+
+        public Expression getExpression() {
+            return expression;
         }
 
         @Override

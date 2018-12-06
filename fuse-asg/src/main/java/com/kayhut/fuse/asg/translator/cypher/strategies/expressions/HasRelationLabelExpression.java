@@ -27,9 +27,6 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import org.opencypher.v9_0.expressions.*;
@@ -46,9 +43,12 @@ import static scala.collection.JavaConverters.asJavaCollectionConverter;
 public class HasRelationLabelExpression implements ExpressionStrategies {
 
     @Override
-    public void apply(Optional<OperatorExpression> operation, Expression expression, AsgQuery query, CypherStrategyContext context) {
-        if(expression instanceof HasLabels) {
-            HasLabels hasLabels = ((HasLabels) expression);
+    public void apply(Optional<com.bpodgursky.jbool_expressions.Expression> parent, com.bpodgursky.jbool_expressions.Expression expression, AsgQuery query, CypherStrategyContext context) {
+        //filter only HasLabels expressions
+        if((expression instanceof com.bpodgursky.jbool_expressions.Variable) &&
+                ((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression() instanceof HasLabels){
+
+            HasLabels hasLabels = ((HasLabels) ((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression());
             Collection<LabelName> labels = asJavaCollectionConverter(hasLabels.labels()).asJavaCollection();
             Variable variable = (Variable) hasLabels.expression();
 
@@ -68,7 +68,7 @@ public class HasRelationLabelExpression implements ExpressionStrategies {
             final int current = Math.max(first.get().getB().stream().mapToInt(p->p.geteNum()).max().orElse(0),100*first.get().geteNum());
 
             if(!AsgQueryUtil.bDescendant(first.get(), RelPropGroup.class).isPresent()) {
-                first.get().addBChild(new AsgEBase<>(new RelPropGroup(current,CypherUtils.type(operation))));
+                first.get().addBChild(new AsgEBase<>(new RelPropGroup(current,CypherUtils.type(parent))));
             }
 
             final List<String> labelNames = labels.stream().map(l -> l.name()).collect(Collectors.toList());

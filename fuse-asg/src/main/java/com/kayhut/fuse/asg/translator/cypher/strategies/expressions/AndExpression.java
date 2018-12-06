@@ -20,13 +20,13 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
  * #L%
  */
 
+import com.bpodgursky.jbool_expressions.And;
+import com.bpodgursky.jbool_expressions.Expression;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
+import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.query.properties.BasePropGroup;
-import org.opencypher.v9_0.expressions.And;
-import org.opencypher.v9_0.expressions.Expression;
-import org.opencypher.v9_0.expressions.OperatorExpression;
 
+import java.util.List;
 import java.util.Optional;
 
 public class AndExpression implements ExpressionStrategies {
@@ -36,18 +36,17 @@ public class AndExpression implements ExpressionStrategies {
     }
 
     @Override
-    public void apply(Optional<OperatorExpression> operation, Expression expression, AsgQuery query,  CypherStrategyContext context) {
-        if (expression instanceof And) {
-            if (operation.isPresent()) {
-                //todo something
+    public void apply(Optional<Expression> parent, Expression expression, AsgQuery query, CypherStrategyContext context) {
+        //filter only AND expressions
+        if ((expression instanceof com.bpodgursky.jbool_expressions.And)) {
+            //todo parent is empty - create a 'all'-quant as query start
+            if(!parent.isPresent()) {
+                CypherUtils.quant(query.getStart(), Optional.of(expression), query, context);
             }
+
             And and = (And) expression;
-            context.pushCyScope(and);
-            Expression lhs = and.lhs();
-            strategies.forEach(s -> s.apply(Optional.of(and), lhs, query,  context));
-            Expression rhs = and.rhs();
-            strategies.forEach(s -> s.apply(Optional.of(and), rhs, query,  context));
-            context.popCyScope();
+            ((List<Expression>) and.getChildren())
+                    .forEach(c -> strategies.forEach(s -> s.apply(Optional.of(and), c, query, context)));
         }
     }
 

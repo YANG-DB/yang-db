@@ -22,12 +22,9 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
 
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.query.properties.BasePropGroup;
-import org.opencypher.v9_0.expressions.Expression;
-import org.opencypher.v9_0.expressions.OperatorExpression;
 
 import java.util.Optional;
 
 public interface ExpressionStrategies {
-    void apply(Optional<OperatorExpression> operation, Expression expression, AsgQuery query, CypherStrategyContext context);
+    void apply(Optional<com.bpodgursky.jbool_expressions.Expression> parent, com.bpodgursky.jbool_expressions.Expression expression, AsgQuery query, CypherStrategyContext context);
 }

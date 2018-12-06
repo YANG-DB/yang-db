@@ -20,10 +20,13 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
  * #L%
  */
 
+import com.bpodgursky.jbool_expressions.Expression;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
+import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import org.opencypher.v9_0.expressions.*;
 
+import java.util.List;
 import java.util.Optional;
 
 public class OrExpression implements ExpressionStrategies {
@@ -33,18 +36,17 @@ public class OrExpression implements ExpressionStrategies {
     }
 
     @Override
-    public void apply(Optional<OperatorExpression> operation, Expression expression, AsgQuery query, CypherStrategyContext context) {
-        if(expression instanceof Or) {
-            if(operation.isPresent()) {
-                //todo something
+    public void apply(Optional<com.bpodgursky.jbool_expressions.Expression> parent, com.bpodgursky.jbool_expressions.Expression expression, AsgQuery query, CypherStrategyContext context) {
+        //filter only AND expressions
+        if ((expression instanceof com.bpodgursky.jbool_expressions.Or)) {
+            //todo parent is empty - create a 'all'-quant as query start
+            if(!parent.isPresent()) {
+                CypherUtils.quant(query.getStart(), Optional.of(expression), query, context);
             }
-            Or or = (Or) expression;
-            context.pushCyScope(or);
-            Expression lhs = or.lhs();
-            strategies.forEach(s->s.apply(Optional.of(or), lhs, query, context));
-            Expression rhs = or.rhs();
-            strategies.forEach(s->s.apply(Optional.of(or), rhs, query, context));
-            context.popCyScope();
+
+            com.bpodgursky.jbool_expressions.Or or = (com.bpodgursky.jbool_expressions.Or) expression;
+            ((List<Expression>) or.getChildren())
+                    .forEach(c -> strategies.forEach(s -> s.apply(Optional.of(or), c, query, context)));
         }
     }
 
