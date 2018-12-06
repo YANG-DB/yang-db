@@ -26,6 +26,50 @@ public class CypherUtilsTest {
     //region Test Methods
 
     @Test
+    public void test_A_AND_B_OR_A_AND_B_StripDown() {
+        final String originalWhere = "(a:Dragon AND b:Person) OR (a:Dragon AND b:Person) ";
+        final String expectedWhere = "(a:Dragon & b:Person)";
+
+        final Statement statement = new CypherParser().parse("MATCH (a)-[c]-(b) where "+originalWhere+" RETURN a",Option.empty());
+        final QueryPart part = ((Query) statement).part();
+        final Seq<Clause> clauses = ((SingleQuery) part).clauses();
+        final Optional<Clause> matchClause = asJavaCollectionConverter(clauses).asJavaCollection()
+                .stream().filter(c -> c.getClass().isAssignableFrom(Match.class)).findAny();
+
+        final Match match = (Match) matchClause.get();
+        Where where = match.where().get();
+
+        final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
+
+        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+        Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
+
+    }
+
+    @Test
+    public void test_A_OR_B_AND_A_OR_B_StripDown() {
+        final String originalWhere = "(a:Dragon Or b:Person) And (a:Dragon Or b:Person) ";
+        final String expectedWhere = "(a:Dragon | b:Person)";
+
+        final Statement statement = new CypherParser().parse("MATCH (a)-[c]-(b) where "+originalWhere+" RETURN a",Option.empty());
+        final QueryPart part = ((Query) statement).part();
+        final Seq<Clause> clauses = ((SingleQuery) part).clauses();
+        final Optional<Clause> matchClause = asJavaCollectionConverter(clauses).asJavaCollection()
+                .stream().filter(c -> c.getClass().isAssignableFrom(Match.class)).findAny();
+
+        final Match match = (Match) matchClause.get();
+        Where where = match.where().get();
+
+        final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
+
+        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+        Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
+
+    }
+
+    @Test
     public void test_A_OR_B_AND_C_StripDown() {
         final String originalWhere = "(a:Dragon Or b:Person) And c ";
         final String expectedWhere = "((a:Dragon & c) | (b:Person & c))";
@@ -74,6 +118,28 @@ public class CypherUtilsTest {
     public void test_A_OR_B_AND_C_OR_D_StripDown() {
         final String originalWhere = "(a:Dragon Or b:Person) And (c:Fire Or d:Ice)";
         final String expectedWhere = "((a:Dragon & c:Fire) | (a:Dragon & d:Ice) | (b:Person & c:Fire) | (b:Person & d:Ice))";
+
+        final Statement statement = new CypherParser().parse("MATCH (a)-[c]-(b)-[]-(d) where "+originalWhere+" RETURN a",Option.empty());
+        final QueryPart part = ((Query) statement).part();
+        final Seq<Clause> clauses = ((SingleQuery) part).clauses();
+        final Optional<Clause> matchClause = asJavaCollectionConverter(clauses).asJavaCollection()
+                .stream().filter(c -> c.getClass().isAssignableFrom(Match.class)).findAny();
+
+        final Match match = (Match) matchClause.get();
+        Where where = match.where().get();
+
+        final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
+
+        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+        Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
+
+    }
+    @Test
+//    @Ignore
+    public void test_A_AND_B_OR_C_AND_D_StripDown() {
+        final String originalWhere = "(a:Dragon And b:Person) OR (c:Fire AND d:Ice)";
+        final String expectedWhere = "((a:Dragon & b:Person) | (c:Fire & d:Ice))";
 
         final Statement statement = new CypherParser().parse("MATCH (a)-[c]-(b)-[]-(d) where "+originalWhere+" RETURN a",Option.empty());
         final QueryPart part = ((Query) statement).part();
