@@ -29,6 +29,7 @@ import com.kayhut.fuse.model.Next;
 import com.kayhut.fuse.model.query.EBase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -117,6 +118,11 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
 
     public AsgEBase<? extends EBase> addNext(AsgEBase<? extends EBase> node) {
         this.next.add(node);
+        return this;
+    }
+
+    public AsgEBase<? extends EBase> addNext(List<AsgEBase<? extends EBase>> nodes) {
+        this.next.addAll(nodes);
         return this;
     }
 

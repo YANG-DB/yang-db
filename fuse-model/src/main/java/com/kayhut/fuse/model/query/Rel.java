@@ -112,6 +112,11 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
     public Rel clone() {
         return new Rel(geteNum(),getrType(),getDir(),getWrapper(),getNext(),getB());
     }
+
+    @Override
+    public Rel clone(int eNum) {
+        return new Rel(eNum,getrType(),getDir(),getWrapper(),getNext(),getB());
+    }
     //endregion
 
     //region Fields

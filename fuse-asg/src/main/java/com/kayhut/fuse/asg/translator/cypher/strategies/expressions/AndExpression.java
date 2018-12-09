@@ -44,12 +44,15 @@ public class AndExpression implements ExpressionStrategies {
         if ((expression instanceof com.bpodgursky.jbool_expressions.And)) {
             //todo parent is empty - create a 'all'-quant as query start
             if(!parent.isPresent()) {
-                CypherUtils.quant(query.getStart(), Optional.of(expression), query, context);
+                CypherUtils.quant(query.getStart().getNext().isEmpty() ? query.getStart() : query.getStart().getNext().get(0), Optional.of(expression), query, context);
             }
 
             And and = (And) expression;
             reverse(((List<Expression>) and.getChildren()))
-                    .forEach(c -> strategies.forEach(s -> s.apply(Optional.of(and), c, query, context)));
+                    .forEach(c -> {
+                        context.scope(query.getStart());
+                        strategies.forEach(s -> s.apply(Optional.of(and), c, query, context));
+                    });
         }
     }
 

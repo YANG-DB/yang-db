@@ -52,12 +52,10 @@ public class AsgQueryUtil {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext, p -> p.geteBase().geteNum() == eNum, truePredicate);
     }
 
-    public static Optional<AsgEBase<? extends EBase>> getByEtag(AsgQuery query, String eTag) {
-        final Optional<AsgEBase<? extends EBase>> first = query.getElements().stream()
-                .filter(p -> EEntityBase.class.isAssignableFrom(p.geteBase().getClass()))
-                .filter(p -> ((EEntityBase) p.geteBase()).geteTag().equals(eTag))
-                .findFirst();
-        return first;
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getByTag(AsgEBase<T> asgEBase, String eTag) {
+        return element(asgEBase, emptyIterableFunction, AsgEBase::getNext,
+                p -> EEntityBase.class.isAssignableFrom(p.geteBase().getClass()) &&
+                    ((EEntityBase) p.geteBase()).geteTag().equals(eTag), truePredicate);
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
@@ -442,6 +440,11 @@ public class AsgQueryUtil {
                 truePredicate, truePredicate, Collections.emptyList());
     }
 
+    public static List<Integer> eNums(AsgQuery query, Predicate<AsgEBase> elementPredicate) {
+        return values(query.getStart(), AsgEBase::getB, AsgEBase::getNext, AsgEBase::geteNum,
+                elementPredicate, truePredicate, Collections.emptyList());
+    }
+
     public static AsgEBase<Rel> reverse(AsgEBase<Rel> relAsgEBase) {
         Rel reversedRel = new Rel();
         reversedRel.seteNum(relAsgEBase.geteNum());
@@ -477,6 +480,23 @@ public class AsgQueryUtil {
         eBaseBuilder.withEBase(asgEBase.geteBase());
         Stream.ofAll(asgEBase.getNext()).filter(nextPredicate).map(elm -> deepClone(elm, nextPredicate, bPredicate)).forEach(eBaseBuilder::withNext);
         Stream.ofAll(asgEBase.getB()).filter(bPredicate).map(elm -> deepClone(elm, nextPredicate, bPredicate)).forEach(elm -> eBaseBuilder.withB(elm));
+        return eBaseBuilder.build();
+    }
+
+    public static <T extends EBase> AsgEBase<T> deepCloneWithEnums(
+            int max,
+            AsgEBase<T> asgEBase,
+            Predicate<AsgEBase<? extends EBase>> nextPredicate,
+            Predicate<AsgEBase<? extends EBase>> bPredicate) {
+        AsgEBase.Builder<T> eBaseBuilder = AsgEBase.Builder.get();
+        final T clone = (T) asgEBase.geteBase().clone(max + 1);
+        eBaseBuilder.withEBase(clone);
+        Stream.ofAll(asgEBase.getNext()).filter(nextPredicate)
+                .map(elm -> deepCloneWithEnums(max + 1, elm, nextPredicate, bPredicate))
+                .forEach(eBaseBuilder::withNext);
+        Stream.ofAll(asgEBase.getB()).filter(bPredicate)
+                .map(elm -> deepCloneWithEnums(max + 1, elm, nextPredicate, bPredicate))
+                .forEach(elm -> eBaseBuilder.withB(elm));
         return eBaseBuilder.build();
     }
 

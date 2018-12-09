@@ -111,6 +111,10 @@ public class EBase {
         return new EBase(eNum);
     }
 
+    public EBase clone(int eNum) {
+        return new EBase(eNum);
+    }
+
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "(" + this.geteNum() + ")";

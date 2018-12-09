@@ -82,6 +82,16 @@ public class RelPropGroup extends BasePropGroup<RelProp, RelPropGroup> {
         return propGroup;
 
     }
+
+    @Override
+    public RelPropGroup clone(int eNum) {
+        RelPropGroup propGroup = new RelPropGroup();
+        propGroup.seteNum(eNum);
+        propGroup.props = new ArrayList<>(getProps());
+        propGroup.groups = new ArrayList<>(getGroups());
+        return propGroup;
+
+    }
     //endregion
 
     public static RelPropGroup of(List<RelProp> props) {

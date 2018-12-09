@@ -25,6 +25,7 @@ package com.kayhut.fuse.model.query.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.query.EBase;
 
 import java.util.Collections;
 import java.util.List;
@@ -79,6 +80,21 @@ public class EConcrete extends ETyped implements Typed.eTyped{
 
     public void seteName(String eName) {
         this.eName = eName;
+    }
+
+    @Override
+    public EBase clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public EConcrete clone(int eNum) {
+        final EConcrete clone = new EConcrete();
+        clone.seteNum(eNum);
+        clone.seteTag(geteTag());
+        clone.eID = eID;
+        clone.eName = eName;
+        return clone;
     }
     //endregion
 

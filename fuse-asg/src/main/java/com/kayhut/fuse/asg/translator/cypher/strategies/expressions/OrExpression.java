@@ -23,9 +23,18 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
 import com.bpodgursky.jbool_expressions.Expression;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
+import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.QuantBase;
+import com.kayhut.fuse.model.query.quant.QuantType;
+import javaslang.collection.Stream;
 import org.opencypher.v9_0.expressions.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,13 +51,51 @@ public class OrExpression implements ExpressionStrategies {
         //filter only AND expressions
         if ((expression instanceof com.bpodgursky.jbool_expressions.Or)) {
             //todo parent is empty - create a 'all'-quant as query start
+            //rechain elements after start for new root quant
+            List<AsgEBase<? extends EBase>> chain = context.getScope().getNext();
+            int maxEnum = Stream.ofAll(AsgQueryUtil.eNums(query,
+                    asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())))
+                    .max().get();
+
             if(!parent.isPresent()) {
-                CypherUtils.quant(query.getStart(), Optional.of(expression), query, context);
+                context.scope(query.getStart());
+                chain = context.getScope().getNext();
+                //next find the quant associated with this element - if none found create one
+                if (!AsgQueryUtil.nextAdjacentDescendant(context.getScope(), QuantBase.class).isPresent()) {
+                    final int current = Stream.ofAll(AsgQueryUtil.eNums(query)).max().get();
+                    //quants will get enum according to the next formula = scopeElement.enum * 100
+                    final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(current * 100, QuantType.some, new ArrayList<>(), 0));
+                    context.getScope().setNext(Arrays.asList(quantAsg));
+                }
+
+                //set root quant at scope
+                context.scope(AsgQueryUtil.nextAdjacentDescendant(context.getScope(), QuantBase.class).get());
             }
 
             com.bpodgursky.jbool_expressions.Or or = (com.bpodgursky.jbool_expressions.Or) expression;
+            //max enum
+
+
+            List<AsgEBase<? extends EBase>> finalChain = chain;
             reverse(((List<Expression>) or.getChildren()))
-                    .forEach(c -> strategies.forEach(s -> s.apply(Optional.of(or), c, query, context)));
+                    .forEach(c -> {
+                        //todo count distinct variables
+                        int newMaxEnum = Math.max(maxEnum,Stream.ofAll(AsgQueryUtil.eNums(query,
+                                asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())))
+                                .max().get());
+
+                        //base quant to add onto
+                        final AsgEBase<? extends EBase> base = context.getScope();
+                        //duplicate query from scope to end
+                        final AsgEBase<? extends EBase> clone = AsgQueryUtil.deepCloneWithEnums(newMaxEnum,finalChain.get(0), e -> true, e -> true);
+                        //add duplication to scope
+                        context.getScope().addNext(clone);
+                        //run strategies on current scope
+                        context.scope(clone);
+                        strategies.forEach(s -> s.apply(Optional.of(or), c, query, context));
+                        context.scope(base);
+
+                    });
         }
     }
 

@@ -77,6 +77,16 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
         result = 31 * result + (eTag != null ? eTag.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public EBase clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public EBase clone(int eNum) {
+        return super.clone(eNum);
+    }
     //endregion
 
     //region Properties

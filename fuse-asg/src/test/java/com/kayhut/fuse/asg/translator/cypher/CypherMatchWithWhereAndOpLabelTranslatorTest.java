@@ -75,10 +75,10 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, null, Rel.Direction.RL)
                 .addNext(unTyped(3, "b")
-                        .next(quant1(300, all)
+                        .next(quant1(10000, all)
                                 .addNext(
-                                        ePropGroup(301,all,
-                                                of(301, "type", of(inSet, Arrays.asList("Person"))))
+                                        ePropGroup(10001,all,
+                                                of(10001, "type", of(inSet, Arrays.asList("Person"))))
                                 )
                         )));
         quantA.addNext(
@@ -104,10 +104,10 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, null, Rel.Direction.RL)
                 .addNext(unTyped(3, "b")
-                        .next(quant1(300, all)
+                        .next(quant1(10000, all)
                                 .addNext(
-                                        ePropGroup(301,all,
-                                            of(301, "type", of(inSet, Arrays.asList("Person"))))
+                                        ePropGroup(10001,all,
+                                            of(10001, "type", of(inSet, Arrays.asList("Person"))))
                         )
                 )));
         quantA.addNext(
@@ -134,10 +134,10 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
                         new RelProp(20100,"type",of(inSet, Arrays.asList("Freeze")),0),
                         new RelProp(20100,"type",of(inSet, Arrays.asList("Fire")),0)))
                 .addNext(unTyped(3, "b")
-                        .next(quant1(300, all)
+                        .next(quant1(20000, all)
                                 .addNext(
-                                        ePropGroup(301,all,
-                                            of(301, "type", of(inSet, Arrays.asList("Person")))))
+                                        ePropGroup(20001,all,
+                                            of(20001, "type", of(inSet, Arrays.asList("Person")))))
                         )
 
                 ));

@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by lior.perry
  */
-@Ignore
 public class CypherMatchTranslatorTest {
     //region Setup
     @Before

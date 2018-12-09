@@ -50,7 +50,7 @@ public class HasLabelExpression implements ExpressionStrategies {
             Variable variable = (Variable) hasLabels.expression();
 
             //first find the node element by its var name in the query
-            final Optional<AsgEBase<? extends EBase>> byTag = AsgQueryUtil.getByEtag(query, variable.name());
+            final Optional<AsgEBase<EBase>> byTag = AsgQueryUtil.getByTag(context.getScope(), variable.name());
             if(!byTag.isPresent()) return;
 
             //update the scope

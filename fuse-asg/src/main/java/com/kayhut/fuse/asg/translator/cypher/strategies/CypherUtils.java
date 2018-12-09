@@ -27,9 +27,11 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.query.quant.QuantType;
+import javaslang.collection.Stream;
 import org.opencypher.v9_0.expressions.*;
 
 import java.util.*;
@@ -60,18 +62,19 @@ public interface CypherUtils {
         return QuantType.all;
     }
 
-    static AsgEBase<EBase> quant(AsgEBase<? extends EBase> byTag, Optional<com.bpodgursky.jbool_expressions.Expression> operation,
+    static AsgEBase<EBase> quant(AsgEBase<? extends EBase> byTag,
+                                 Optional<com.bpodgursky.jbool_expressions.Expression> operation,
                                  AsgQuery query, CypherStrategyContext context) {
         //next find the quant associated with this element - if none found create one
-        if (!AsgQueryUtil.nextDescendant(byTag, QuantBase.class).isPresent()) {
-            final int current = context.getScope().geteNum();
+        if (!AsgQueryUtil.nextAdjacentDescendant(byTag, QuantBase.class).isPresent()) {
+            final int current = Stream.ofAll(AsgQueryUtil.eNums(query)).max().get();
             //quants will get enum according to the next formula = scopeElement.enum * 100
             final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(current * 100, CypherUtils.type(operation), new ArrayList<>(), 0));
             query.getElements().add(quantAsg);
             context.getScope().addNext(quantAsg);
             context.scope(quantAsg);
         }
-        return AsgQueryUtil.nextDescendant(byTag, QuantBase.class).get();
+        return AsgQueryUtil.nextAdjacentDescendant(byTag, QuantBase.class).get();
     }
 
     static com.bpodgursky.jbool_expressions.Expression reWrite(org.opencypher.v9_0.expressions.Expression expression) {
@@ -97,6 +100,7 @@ public interface CypherUtils {
         }
         return "";
     }
+
 
     class Traversal {
 

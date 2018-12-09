@@ -25,6 +25,7 @@ package com.kayhut.fuse.model.query.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.query.EBase;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
@@ -73,7 +74,23 @@ public class EUntyped extends EEntityBase {
         result = 31 * result + (nvTypes != null ? nvTypes.hashCode() : 0);
         return result;
     }
-    //endregion
+
+    @Override
+    public EBase clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public EUntyped clone(int eNum) {
+        final EUntyped clone = new EUntyped();
+        clone.seteTag(geteTag());
+        clone.seteNum(eNum);
+        clone.nvTypes = new ArrayList<>(nvTypes);
+        clone.vTypes = new ArrayList<>(vTypes);
+        return clone;
+    }
+
+//endregion
 
     //region Properties
     public List<String> getvTypes() {

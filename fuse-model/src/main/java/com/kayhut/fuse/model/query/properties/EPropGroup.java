@@ -97,6 +97,15 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
                 this.getProps(),
                 this.getGroups());
     }
+
+    @Override
+    public EPropGroup clone(int eNum) {
+        return new EPropGroup(
+                eNum,
+                this.getQuantType(),
+                this.getProps(),
+                this.getGroups());
+    }
     //endregion
 
     //region Static

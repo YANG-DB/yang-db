@@ -26,7 +26,9 @@ package com.kayhut.fuse.model.query.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.Below;
+import com.kayhut.fuse.model.query.EBase;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,6 +71,21 @@ public class ETyped extends EEntityBase implements Typed.eTyped {
         int result = super.hashCode();
         result = 31 * result + eType.hashCode();
         return result;
+    }
+
+
+    @Override
+    public EBase clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public ETyped clone(int eNum) {
+        final ETyped clone = new ETyped();
+        clone.seteNum(eNum);
+        clone.seteTag(geteTag());
+        clone.eType = eType;
+        return clone;
     }
     //endregion
 
