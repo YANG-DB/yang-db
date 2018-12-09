@@ -32,15 +32,20 @@ import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import org.opencypher.v9_0.expressions.*;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.StringJoiner;
+import java.util.*;
 
 //import org.opencypher.v9_0.expressions.*;
 
 
 public interface CypherUtils {
+
+    static <T> List<T> reverse(List<T> list) {
+        List<T> target = new ArrayList<>(list);
+        Collections.reverse(target);
+        return target;
+
+    }
+
     static QuantType type(Optional<com.bpodgursky.jbool_expressions.Expression> operation) {
         if (!operation.isPresent())
             return QuantType.all;
@@ -113,6 +118,7 @@ public interface CypherUtils {
             return Variable.of(Wrapper.of(expression));
         }
     }
+
 
     class Wrapper {
         private org.opencypher.v9_0.expressions.Expression expression;

@@ -29,6 +29,8 @@ import org.opencypher.v9_0.expressions.*;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils.reverse;
+
 public class OrExpression implements ExpressionStrategies {
 
     public OrExpression(Iterable<ExpressionStrategies> strategies) {
@@ -45,7 +47,7 @@ public class OrExpression implements ExpressionStrategies {
             }
 
             com.bpodgursky.jbool_expressions.Or or = (com.bpodgursky.jbool_expressions.Or) expression;
-            ((List<Expression>) or.getChildren())
+            reverse(((List<Expression>) or.getChildren()))
                     .forEach(c -> strategies.forEach(s -> s.apply(Optional.of(or), c, query, context)));
         }
     }

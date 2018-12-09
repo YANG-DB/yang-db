@@ -12,9 +12,9 @@ package com.kayhut.fuse.model.execution.plan.descriptors;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -101,7 +101,9 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
             builder.set(level + currentLine, builder.get(level + currentLine) + text);
         }
 
-        if (element.hasNext() || element.geteBase() instanceof EPropGroup) {
+        if (element.hasNext()
+                || element.geteBase() instanceof BasePropGroup
+                || element.getB().stream().filter(p -> (p.geteBase() instanceof BasePropGroup)).findAny().isPresent()) {
             if (element.geteBase() instanceof QuantBase) {
                 List<AsgEBase<? extends EBase>> nexts = element.getNext();
                 level = builder.size();
@@ -111,25 +113,29 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
             } else if (element.geteBase() instanceof EEntityBase) {
                 print(builder, element.getNext().isEmpty() ? Optional.empty() : Optional.of(element.getNext().get(0)), element.getNext().isEmpty(), false, level, currentLine);
             } else if (element.geteBase() instanceof Rel) {
+                final Optional<AsgEBase<? extends EBase>> bellow = element.getB().stream().filter(p -> (p.geteBase() instanceof BasePropGroup)).findAny();
+                if (bellow.isPresent()) {
+                    print(builder, bellow.isPresent() ? Optional.of(bellow.get()) : Optional.empty(), true, true, level + 1, currentLine);
+                }
                 print(builder, element.getNext().isEmpty() ? Optional.empty() : Optional.of(element.getNext().get(0)), element.getNext().isEmpty(), false, level, currentLine);
             } else if (element.geteBase() instanceof EProp) {
                 print(builder, element.getNext().isEmpty() ? Optional.empty() : Optional.of(element.getNext().get(0)), true, true, level + 1, currentLine);
-            } else if (element.geteBase() instanceof EPropGroup) {
+            } else if (element.geteBase() instanceof RelProp) {
+                print(builder, element.getNext().isEmpty() ? Optional.empty() : Optional.of(element.getNext().get(0)), true, true, level + 1, currentLine);
+            } else if (element.geteBase() instanceof BasePropGroup) {
                 //print props
                 level = builder.size();
-                final List<EProp> props = ((EPropGroup) element.geteBase()).getProps();
+                final List<EProp> props = ((BasePropGroup) element.geteBase()).getProps();
                 for (int i = 0; i < props.size(); i++) {
                     print(builder, Optional.of(new AsgEBase<>(props.get(i))), true, true, level, i);
                 }
 
                 //print group's props
                 level = builder.size();
-                final List<EPropGroup> groups = ((EPropGroup) element.geteBase()).getGroups();
+                final List<BasePropGroup> groups = ((BasePropGroup) element.geteBase()).getGroups();
                 for (int i = 0; i < groups.size(); i++) {
                     print(builder, Optional.of(new AsgEBase<>(groups.get(i))), true, true, level, i);
                 }
-            } else if (element.geteBase() instanceof RelProp || element.geteBase() instanceof RelPropGroup) {
-                print(builder, element.getNext().isEmpty() ? Optional.empty() : Optional.of(element.getNext().get(0)), true, true, level + 1, currentLine);
             }
         }
     }
@@ -151,6 +157,9 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
         else if (eBase instanceof EPropGroup)
             joiner.add("?[..]" + "[" + e.geteNum() + "]" + ((eBase instanceof RankingProp) ?
                     "boost:" + ((RankingProp) eBase).getBoost() : ""));
+        else if (eBase instanceof RelPropGroup)
+            joiner.add("?[..]" + "[" + e.geteNum() + "]" + ((eBase instanceof RankingProp) ?
+                    "boost:" + ((RankingProp) eBase).getBoost() : ""));
         else if (eBase instanceof EProp)
             joiner.add("?" + "[" + e.geteNum() + "]" + QueryDescriptor.printProps(new EPropGroup((EProp) eBase)));
         else if (eBase instanceof RelProp)
@@ -165,9 +174,9 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
         List<String> builder = new LinkedList<>();
         builder.add("└── " + "Start");
         Iterator<AsgEBase<? extends EBase>> iterator = query.getElements().iterator();
-        if(iterator.hasNext()) {
+        if (iterator.hasNext()) {
             iterator.next();
-            if(iterator.hasNext())
+            if (iterator.hasNext())
                 print(builder, Optional.of(iterator.next()), false, true, 1, 0);
         }
         return builder.toString();

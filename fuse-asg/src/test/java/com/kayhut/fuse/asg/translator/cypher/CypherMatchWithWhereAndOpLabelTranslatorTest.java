@@ -71,16 +71,25 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a) where a:Dragon AND a:Hours RETURN a");
+        final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon AND a:Hours AND b:Person RETURN a");
+        final AsgEBase<Quant1> quantA = quant1(100, all);
+        quantA.addNext(rel(2, null, Rel.Direction.RL)
+                .addNext(unTyped(3, "b")
+                        .next(quant1(300, all)
+                                .addNext(
+                                        ePropGroup(301,all,
+                                                of(301, "type", of(inSet, Arrays.asList("Person"))))
+                                )
+                        )));
+        quantA.addNext(
+                ePropGroup(101,all,
+                        of(101, "type", of(inSet, Arrays.asList("Dragon"))),
+                        of(102, "type", of(inSet, Arrays.asList("Hours")))));
+
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
                 .next(unTyped(1, "a"))
-                .next(quant1(100, all))
-                .in(
-                        ePropGroup(101,all,
-                            of(101, "type", of(inSet, Arrays.asList("Dragon"))),
-                            of(102, "type", of(inSet, Arrays.asList("Hours"))))
-                )
+                .next(quantA)
                 .build();
         assertEquals(print(expected), print(query));
     }
@@ -115,14 +124,15 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
     @Test
     public void testMatch_A_where_A_OfType_testMatch_A_where_A_OfType_AND_C_OfType_Return_A() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where a:Dragon AND b:Person AND c:Fire RETURN a,b");
+        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where a:Dragon AND b:Person AND c:Fire AND c:Freeze RETURN a,b");
 
         //region Test Methods
 
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, null, Rel.Direction.RL,"c")
-                .below(relPropGroup(201,
-                        new RelProp(201,"type",of(inSet, Arrays.asList("Fire")),0)))
+                .below(relPropGroup(200,all,
+                        new RelProp(20100,"type",of(inSet, Arrays.asList("Freeze")),0),
+                        new RelProp(20100,"type",of(inSet, Arrays.asList("Fire")),0)))
                 .addNext(unTyped(3, "b")
                         .next(quant1(300, all)
                                 .addNext(

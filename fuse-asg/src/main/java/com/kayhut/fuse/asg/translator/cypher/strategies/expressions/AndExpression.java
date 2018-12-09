@@ -26,8 +26,11 @@ import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils.reverse;
 
 public class AndExpression implements ExpressionStrategies {
 
@@ -45,7 +48,7 @@ public class AndExpression implements ExpressionStrategies {
             }
 
             And and = (And) expression;
-            ((List<Expression>) and.getChildren())
+            reverse(((List<Expression>) and.getChildren()))
                     .forEach(c -> strategies.forEach(s -> s.apply(Optional.of(and), c, query, context)));
         }
     }

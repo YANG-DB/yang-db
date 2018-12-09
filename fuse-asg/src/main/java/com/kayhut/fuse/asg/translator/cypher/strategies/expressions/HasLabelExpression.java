@@ -61,11 +61,11 @@ public class HasLabelExpression implements ExpressionStrategies {
             final int current = Math.max(quantAsg.getNext().stream().mapToInt(p->p.geteNum()).max().orElse(0),quantAsg.geteNum());
             final List<String> labels = labelNames.stream().map(l -> l.name()).collect(Collectors.toList());
 
-            if(!AsgQueryUtil.nextDescendant(quantAsg, EPropGroup.class).isPresent()) {
+            if(!AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).isPresent()) {
                 quantAsg.addNext(new AsgEBase<>(new EPropGroup(current + 1 ,CypherUtils.type(parent))));
             }
 
-            ((EPropGroup) AsgQueryUtil.nextDescendant(quantAsg, EPropGroup.class).get().geteBase())
+            ((EPropGroup) AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).get().geteBase())
                     .getProps().add(new EProp(current + 1, "type", of(inSet, labels)));
         }
     }

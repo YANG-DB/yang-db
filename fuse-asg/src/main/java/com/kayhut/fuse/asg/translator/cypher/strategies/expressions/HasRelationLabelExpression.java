@@ -67,12 +67,12 @@ public class HasRelationLabelExpression implements ExpressionStrategies {
             //add the label eProp constraint
             final int current = Math.max(first.get().getB().stream().mapToInt(p->p.geteNum()).max().orElse(0),100*first.get().geteNum());
 
-            if(!AsgQueryUtil.bDescendant(first.get(), RelPropGroup.class).isPresent()) {
+            if(!AsgQueryUtil.bAdjacentDescendant(first.get(), RelPropGroup.class).isPresent()) {
                 first.get().addBChild(new AsgEBase<>(new RelPropGroup(current,CypherUtils.type(parent))));
             }
 
             final List<String> labelNames = labels.stream().map(l -> l.name()).collect(Collectors.toList());
-            ((RelPropGroup) AsgQueryUtil.bDescendant(first.get(), RelPropGroup.class).get().geteBase())
+            ((RelPropGroup) AsgQueryUtil.bAdjacentDescendant(first.get(), RelPropGroup.class).get().geteBase())
                     .getProps().add(new RelProp(100*(current + 1), "type", of(inSet, labelNames),0));
 
         }
