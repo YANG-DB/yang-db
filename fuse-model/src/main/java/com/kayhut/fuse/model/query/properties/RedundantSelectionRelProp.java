@@ -23,6 +23,7 @@ package com.kayhut.fuse.model.query.properties;
  * #L%
  */
 
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.projection.Projection;
 
@@ -40,6 +41,24 @@ public class RedundantSelectionRelProp extends RelProp {
         this.redundantPropName = redundantPropName;
     }
     //endregion
+
+    @Override
+    public RedundantSelectionRelProp clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public RedundantSelectionRelProp clone(int eNum) {
+        final RedundantSelectionRelProp clone = new RedundantSelectionRelProp();
+        clone.seteNum(eNum);
+        clone.setF(getF());
+        clone.setB(getB());
+        clone.setProj(getProj());
+        clone.setCon(getCon());
+        clone.setpTag(getpTag());
+        clone.setpType(getpType());
+        return clone;
+    }
 
     //region Properties
     public String getRedundantPropName() {

@@ -53,6 +53,18 @@ public class Quant2 extends QuantBase {
     private List<Integer> next = Collections.emptyList();
     //endregion
 
+    @Override
+    public Quant2 clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public Quant2 clone(int eNum) {
+        final Quant2 clone = new Quant2();
+        clone.seteNum(eNum);
+        clone.setqType(getqType());
+        return clone;
+    }
 
     @Override
     public boolean equals(Object o) {

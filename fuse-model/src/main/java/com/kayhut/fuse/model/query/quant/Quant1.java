@@ -26,6 +26,7 @@ package com.kayhut.fuse.model.query.quant;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.Next;
+import com.kayhut.fuse.model.query.EBase;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
@@ -48,6 +49,20 @@ public class Quant1 extends QuantBase {
         this.b = b;
     }
     //endregion
+
+
+    @Override
+    public Quant1 clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public Quant1 clone(int eNum) {
+        final Quant1 clone = new Quant1();
+        clone.seteNum(eNum);
+        clone.setqType(getqType());
+        return clone;
+    }
 
     //region Properties
     public int getB() {

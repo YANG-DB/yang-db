@@ -48,6 +48,24 @@ public class RelProp extends BaseProp {
     }
     //endregion
 
+    @Override
+    public RelProp clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public RelProp clone(int eNum) {
+        final RelProp clone = new RelProp();
+        clone.seteNum(eNum);
+        clone.setF(getF());
+        clone.setB(getB());
+        clone.setProj(getProj());
+        clone.setCon(getCon());
+        clone.setpTag(getpTag());
+        clone.setpType(getpType());
+        return clone;
+    }
+
     //region Properties
     public int getB() {
         return b;

@@ -54,9 +54,8 @@ public class HasRelationLabelExpression implements ExpressionStrategies {
 
             //first find the node element by its var name in the query
 
-            final Optional<AsgEBase<? extends EBase>> first = query.getElements().stream()
-                    .filter(p -> Rel.class.isAssignableFrom(p.geteBase().getClass()))
-                    .filter(p -> ((Rel) p.geteBase()).getWrapper().equals(variable.name()))
+            final Optional<AsgEBase<Rel>> first = AsgQueryUtil.elements(query,Rel.class).stream()
+                    .filter(p -> p.geteBase().getWrapper().equals(variable.name()))
                     .findFirst();
 
             if(!first.isPresent()) return;

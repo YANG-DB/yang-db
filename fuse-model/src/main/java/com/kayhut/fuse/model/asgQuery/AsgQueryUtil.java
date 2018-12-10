@@ -33,6 +33,7 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant2;
+import com.kayhut.fuse.model.query.quant.QuantBase;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
@@ -55,7 +56,7 @@ public class AsgQueryUtil {
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getByTag(AsgEBase<T> asgEBase, String eTag) {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext,
                 p -> EEntityBase.class.isAssignableFrom(p.geteBase().getClass()) &&
-                    ((EEntityBase) p.geteBase()).geteTag().equals(eTag), truePredicate);
+                        ((EEntityBase) p.geteBase()).geteTag().equals(eTag), truePredicate);
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
@@ -489,7 +490,11 @@ public class AsgQueryUtil {
             Predicate<AsgEBase<? extends EBase>> nextPredicate,
             Predicate<AsgEBase<? extends EBase>> bPredicate) {
         AsgEBase.Builder<T> eBaseBuilder = AsgEBase.Builder.get();
-        final T clone = (T) asgEBase.geteBase().clone(max + 1);
+        T clone = (T) asgEBase.geteBase().clone(max + 1);
+        //quant base has a special sequence counter
+        if (QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
+            clone = (T) asgEBase.geteBase().clone(max * 100);
+        }
         eBaseBuilder.withEBase(clone);
         Stream.ofAll(asgEBase.getNext()).filter(nextPredicate)
                 .map(elm -> deepCloneWithEnums(max + 1, elm, nextPredicate, bPredicate))

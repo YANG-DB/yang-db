@@ -47,6 +47,23 @@ public class RedundantRelProp extends SchematicRelProp {
         }
     }
     //endregion
+    @Override
+    public RedundantRelProp clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public RedundantRelProp clone(int eNum) {
+        final RedundantRelProp clone = new RedundantRelProp();
+        clone.seteNum(eNum);
+        clone.setF(getF());
+        clone.setB(getB());
+        clone.setProj(getProj());
+        clone.setCon(getCon());
+        clone.setpTag(getpTag());
+        clone.setpType(getpType());
+        return clone;
+    }
 
     //region Properties
     public String getRedundantPropName() {

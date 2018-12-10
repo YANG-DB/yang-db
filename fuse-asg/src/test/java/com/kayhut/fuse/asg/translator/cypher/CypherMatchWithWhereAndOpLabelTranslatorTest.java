@@ -29,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by lior.perry
  */
-@Ignore
 public class CypherMatchWithWhereAndOpLabelTranslatorTest {
     //region Setup
     @Before
@@ -75,10 +74,10 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, null, Rel.Direction.RL)
                 .addNext(unTyped(3, "b")
-                        .next(quant1(10000, all)
+                        .next(quant1(300, all)
                                 .addNext(
-                                        ePropGroup(10001,all,
-                                                of(10001, "type", of(inSet, Arrays.asList("Person"))))
+                                        ePropGroup(301,all,
+                                                of(301, "type", of(inSet, Arrays.asList("Person"))))
                                 )
                         )));
         quantA.addNext(
@@ -104,10 +103,10 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, null, Rel.Direction.RL)
                 .addNext(unTyped(3, "b")
-                        .next(quant1(10000, all)
+                        .next(quant1(300, all)
                                 .addNext(
-                                        ePropGroup(10001,all,
-                                            of(10001, "type", of(inSet, Arrays.asList("Person"))))
+                                        ePropGroup(301,all,
+                                            of(301, "type", of(inSet, Arrays.asList("Person"))))
                         )
                 )));
         quantA.addNext(

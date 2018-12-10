@@ -69,7 +69,6 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
                 node = new AsgEBase<>(new ETyped(current, name, labels.iterator().next().name(), current + 1, 0));
             }
 
-            query.getElements().add(node);
             context.getScope().addNext(node);
             context.scope(node);
         }

@@ -33,6 +33,9 @@ import com.kayhut.fuse.model.query.properties.projection.Projection;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ScoreEProp extends EProp implements RankingProp {
     //region Constructors
+
+    public ScoreEProp() {}
+
     public ScoreEProp(EProp eProp, long boost) {
         this(eProp.geteNum(),eProp.getpType(),eProp.getCon(),boost);
     }
@@ -46,6 +49,24 @@ public class ScoreEProp extends EProp implements RankingProp {
         super(eNum, pType, proj);
         this.boost = boost;
     }
+
+    @Override
+    public ScoreEProp clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public ScoreEProp clone(int eNum) {
+        ScoreEProp clone = new ScoreEProp();
+        clone.seteNum(eNum);
+        clone.setF(getF());
+        clone.setProj(getProj());
+        clone.setCon(getCon());
+        clone.setpTag(getpTag());
+        clone.setpType(getpType());
+        return clone;
+    }
+
     //endregion
     public long getBoost() {
         return boost;

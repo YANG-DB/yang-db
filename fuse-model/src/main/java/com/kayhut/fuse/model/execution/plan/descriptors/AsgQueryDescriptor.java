@@ -25,6 +25,7 @@ package com.kayhut.fuse.model.execution.plan.descriptors;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
@@ -173,7 +174,7 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
     public static String print(AsgQuery query) {
         List<String> builder = new LinkedList<>();
         builder.add("└── " + "Start");
-        Iterator<AsgEBase<? extends EBase>> iterator = query.getElements().iterator();
+        Iterator<AsgEBase<EBase>> iterator = AsgQueryUtil.elements(query).iterator();
         if (iterator.hasNext()) {
             iterator.next();
             if (iterator.hasNext())

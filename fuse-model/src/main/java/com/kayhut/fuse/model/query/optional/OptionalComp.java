@@ -26,6 +26,7 @@ package com.kayhut.fuse.model.query.optional;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.properties.EProp;
 
 import java.util.List;
 
@@ -43,6 +44,18 @@ public class OptionalComp extends EBase {
         this.next = next;
     }
     //endregion
+
+    @Override
+    public OptionalComp clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public OptionalComp clone(int eNum) {
+        OptionalComp clone = new OptionalComp();
+        clone.seteNum(eNum);
+        return clone;
+    }
 
     //region Properties
     public int getNext() {

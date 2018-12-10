@@ -64,6 +64,24 @@ public class SchematicEProp extends EProp {
     }
     //endregion
 
+    @Override
+    public SchematicEProp clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public SchematicEProp clone(int eNum) {
+        SchematicEProp clone = new SchematicEProp();
+        clone.seteNum(eNum);
+        clone.setF(getF());
+        clone.setProj(getProj());
+        clone.setCon(getCon());
+        clone.setpTag(getpTag());
+        clone.setpType(getpType());
+        clone.schematicName = schematicName;
+        return clone;
+    }
+
     //region Properties
     public String getSchematicName() {
         return schematicName;

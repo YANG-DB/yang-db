@@ -91,11 +91,7 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
     //region Override Methods
     @Override
     public EPropGroup clone() {
-        return new EPropGroup(
-                this.geteNum(),
-                this.getQuantType(),
-                this.getProps(),
-                this.getGroups());
+        return clone(geteNum());
     }
 
     @Override

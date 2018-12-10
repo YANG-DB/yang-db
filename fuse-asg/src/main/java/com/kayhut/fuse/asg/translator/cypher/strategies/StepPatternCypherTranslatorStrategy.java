@@ -88,7 +88,6 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
             rel = new AsgEBase<>(new Rel(current, rTypes.get(0), resolve(direction), name, current + 1, 0));
         }
 
-        query.getElements().add(rel);
         context.getScope().addNext(rel);
         context.scope(rel);
     }

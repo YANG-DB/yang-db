@@ -25,6 +25,7 @@ package com.kayhut.fuse.model.query.properties;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.projection.Projection;
 
@@ -47,6 +48,24 @@ public class EProp extends BaseProp {
         super(eNum, pType, proj);
     }
     //endregion
+
+
+    @Override
+    public EProp clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public EProp clone(int eNum) {
+        EProp clone = new EProp();
+        clone.seteNum(eNum);
+        clone.setF(getF());
+        clone.setProj(getProj());
+        clone.setCon(getCon());
+        clone.setpTag(getpTag());
+        clone.setpType(getpType());
+        return clone;
+    }
 
     //region Static
     public static EProp of(int eNum, String pType, Constraint con) {

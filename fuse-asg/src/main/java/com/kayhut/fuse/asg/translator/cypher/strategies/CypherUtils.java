@@ -27,7 +27,8 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.Start;
+import com.kayhut.fuse.model.query.properties.BaseProp;
+import com.kayhut.fuse.model.query.properties.BasePropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.query.quant.QuantType;
@@ -46,6 +47,14 @@ public interface CypherUtils {
         Collections.reverse(target);
         return target;
 
+    }
+
+    static int maxEntityNum(AsgQuery query) {
+        return Stream.ofAll(AsgQueryUtil.eNums(query,
+                asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())
+                        && !BaseProp.class.isAssignableFrom(asgEBase.geteBase().getClass())
+                        && !BasePropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())))
+                .max().get();
     }
 
     static QuantType type(Optional<com.bpodgursky.jbool_expressions.Expression> operation) {
@@ -67,10 +76,18 @@ public interface CypherUtils {
                                  AsgQuery query, CypherStrategyContext context) {
         //next find the quant associated with this element - if none found create one
         if (!AsgQueryUtil.nextAdjacentDescendant(byTag, QuantBase.class).isPresent()) {
-            final int current = Stream.ofAll(AsgQueryUtil.eNums(query)).max().get();
+            final int current = Math.max(context.getScope().geteNum(), Stream.ofAll(AsgQueryUtil.eNums(query,
+                    asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())))
+                    .max().get());
+
             //quants will get enum according to the next formula = scopeElement.enum * 100
             final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(current * 100, CypherUtils.type(operation), new ArrayList<>(), 0));
-            query.getElements().add(quantAsg);
+            //is scope already has next - add them to the newly added quant
+            if (context.getScope().hasNext()) {
+                final List<AsgEBase<? extends EBase>> next = context.getScope().getNext();
+                quantAsg.setNext(new ArrayList<>(next));
+                context.getScope().setNext(new ArrayList<>());
+            }
             context.getScope().addNext(quantAsg);
             context.scope(quantAsg);
         }
@@ -88,13 +105,13 @@ public interface CypherUtils {
 
     static String asCanonicalStringVal(com.bpodgursky.jbool_expressions.Expression expression) {
         if (expression instanceof NExpression) {
-            StringJoiner joiner = new StringJoiner(" "+expression.getExprType()+" ");
+            StringJoiner joiner = new StringJoiner(" " + expression.getExprType() + " ");
             ((NExpression) expression).getChildren().forEach(e ->
                     joiner.add(asCanonicalStringVal(((com.bpodgursky.jbool_expressions.Expression) e))));
             return joiner.toString();
-        } else if(expression instanceof Variable){
+        } else if (expression instanceof Variable) {
             final Expression value = (Expression) ((Variable) expression).getValue();
-            if(value instanceof HasLabels) {
+            if (value instanceof HasLabels) {
                 return ((HasLabels) value).expression().asCanonicalStringVal();
             }
         }

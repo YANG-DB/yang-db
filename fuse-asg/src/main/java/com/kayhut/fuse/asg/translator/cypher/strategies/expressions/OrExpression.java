@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils.maxEntityNum;
 import static com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils.reverse;
 
 public class OrExpression implements ExpressionStrategies {
@@ -53,16 +54,14 @@ public class OrExpression implements ExpressionStrategies {
             //todo parent is empty - create a 'all'-quant as query start
             //rechain elements after start for new root quant
             List<AsgEBase<? extends EBase>> chain = context.getScope().getNext();
-            int maxEnum = Stream.ofAll(AsgQueryUtil.eNums(query,
-                    asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())))
-                    .max().get();
+            int maxEnum = maxEntityNum(query);
 
             if(!parent.isPresent()) {
                 context.scope(query.getStart());
                 chain = context.getScope().getNext();
                 //next find the quant associated with this element - if none found create one
                 if (!AsgQueryUtil.nextAdjacentDescendant(context.getScope(), QuantBase.class).isPresent()) {
-                    final int current = Stream.ofAll(AsgQueryUtil.eNums(query)).max().get();
+                    final int current = Math.max(context.getScope().geteNum(), maxEntityNum(query));
                     //quants will get enum according to the next formula = scopeElement.enum * 100
                     final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(current * 100, QuantType.some, new ArrayList<>(), 0));
                     context.getScope().setNext(Arrays.asList(quantAsg));
@@ -80,9 +79,7 @@ public class OrExpression implements ExpressionStrategies {
             reverse(((List<Expression>) or.getChildren()))
                     .forEach(c -> {
                         //todo count distinct variables
-                        int newMaxEnum = Math.max(maxEnum,Stream.ofAll(AsgQueryUtil.eNums(query,
-                                asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())))
-                                .max().get());
+                        int newMaxEnum = Math.max(maxEnum,maxEntityNum(query));
 
                         //base quant to add onto
                         final AsgEBase<? extends EBase> base = context.getScope();

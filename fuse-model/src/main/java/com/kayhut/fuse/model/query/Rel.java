@@ -110,7 +110,7 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
     //region Override Methods
     @Override
     public Rel clone() {
-        return new Rel(geteNum(),getrType(),getDir(),getWrapper(),getNext(),getB());
+        return clone(geteNum());
     }
 
     @Override

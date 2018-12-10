@@ -45,6 +45,24 @@ public class SchematicRelProp extends RelProp {
     }
     //endregion
 
+    @Override
+    public SchematicRelProp clone() {
+        return clone(geteNum());
+    }
+
+    @Override
+    public SchematicRelProp clone(int eNum) {
+        final SchematicRelProp clone = new SchematicRelProp();
+        clone.seteNum(eNum);
+        clone.setF(getF());
+        clone.setB(getB());
+        clone.setProj(getProj());
+        clone.setCon(getCon());
+        clone.setpTag(getpTag());
+        clone.setpType(getpType());
+        return clone;
+    }
+
     //region Properties
     public String getSchematicName() {
         return this.schematicName;

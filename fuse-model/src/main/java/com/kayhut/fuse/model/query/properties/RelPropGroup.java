@@ -75,12 +75,7 @@ public class RelPropGroup extends BasePropGroup<RelProp, RelPropGroup> {
     //region Override Methods
     @Override
     public RelPropGroup clone() {
-        RelPropGroup propGroup = new RelPropGroup();
-        propGroup.seteNum(geteNum());
-        propGroup.props = new ArrayList<>(getProps());
-        propGroup.groups = new ArrayList<>(getGroups());
-        return propGroup;
-
+        return clone(geteNum());
     }
 
     @Override
