@@ -27,7 +27,7 @@ public class CypherUtilsTest {
 
     @Test
     public void test_A_AND_B_OR_A_AND_B_StripDown() {
-        final String originalWhere = "(a:Dragon AND b:Person) OR (a:Dragon AND b:Person) ";
+        final String originalWhere = "(a:Dragon AND b:Person) OR (b:Person AND a:Dragon) ";
         final String expectedWhere = "(a:Dragon & b:Person)";
 
         final Statement statement = new CypherParser().parse("MATCH (a)-[c]-(b) where "+originalWhere+" RETURN a",Option.empty());
