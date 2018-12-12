@@ -9,9 +9,9 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,8 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
  */
 
 import com.bpodgursky.jbool_expressions.Expression;
+import com.bpodgursky.jbool_expressions.Or;
+import com.bpodgursky.jbool_expressions.Variable;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -33,10 +35,8 @@ import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 import org.opencypher.v9_0.expressions.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils.maxEntityNum;
 import static com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils.reverse;
@@ -56,7 +56,7 @@ public class OrExpression implements ExpressionStrategies {
             List<AsgEBase<? extends EBase>> chain = context.getScope().getNext();
             int maxEnum = maxEntityNum(query);
 
-            if(!parent.isPresent()) {
+            if (!parent.isPresent()) {
                 context.scope(query.getStart());
                 chain = context.getScope().getNext();
                 //next find the quant associated with this element - if none found create one
@@ -92,10 +92,38 @@ public class OrExpression implements ExpressionStrategies {
                         strategies.forEach(s -> s.apply(Optional.of(or), c, query, context));
                         context.scope(base);
 
-                    });
+            });
         }
     }
 
+    private void groupByNameTags(int maxEnum, AsgQuery query,Or or,CypherStrategyContext context, final List<AsgEBase<? extends EBase>> chain) {
+        //group by same tag names
+        Map<Optional<String>, List<Expression>> map = ((List<Expression>) or.getChildren()).stream()
+                .filter(c -> Variable.class.isAssignableFrom(c.getClass()))
+                .collect(Collectors.groupingBy(o -> ((CypherUtils.Wrapper) ((Variable) o).getValue()).getVar()));
+
+        reverse(map.keySet()).forEach(col -> {
+            //todo count distinct variables
+            int newMaxEnum = Math.max(maxEnum, maxEntityNum(query));
+
+            //base quant to add onto
+            final AsgEBase<? extends EBase> base = context.getScope();
+            //duplicate query from scope to end
+            final AsgEBase<? extends EBase> clone = AsgQueryUtil.deepCloneWithEnums(newMaxEnum, chain.get(0), e -> true, e -> true);
+            //add duplication to scope
+            context.getScope().addNext(clone);
+
+            //run strategies on current scope
+            context.scope(clone);
+            //for each expression in same variable group do strategies
+            map.get(col)
+                    .forEach(c -> strategies
+                            .forEach(s -> s.apply(Optional.of(or), c, query, context)));
+            context.scope(base);
+
+        });
+
+    }
     private Iterable<ExpressionStrategies> strategies;
 
 }

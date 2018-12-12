@@ -289,9 +289,9 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
                                                 )
                                                 .addNext(ePropGroup(801, some,
                                                         of(801, "type",
-                                                                of(inSet, Arrays.asList("Dragon"))),
+                                                                of(inSet, Arrays.asList("Hours"))),
                                                         of(802, "type",
-                                                                of(inSet, Arrays.asList("Hours"))))
+                                                                of(inSet, Arrays.asList("Dragon"))))
                                                 )
                                 )
                 ).build();

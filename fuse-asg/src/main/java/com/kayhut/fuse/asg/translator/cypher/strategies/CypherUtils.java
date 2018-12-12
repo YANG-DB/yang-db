@@ -22,6 +22,7 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
 
 import com.bpodgursky.jbool_expressions.NExpression;
 import com.bpodgursky.jbool_expressions.Variable;
+import com.bpodgursky.jbool_expressions.rules.Rule;
 import com.bpodgursky.jbool_expressions.rules.RuleSet;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -36,13 +37,16 @@ import javaslang.collection.Stream;
 import org.opencypher.v9_0.expressions.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
 //import org.opencypher.v9_0.expressions.*;
 
 
 public interface CypherUtils {
 
-    static <T> List<T> reverse(List<T> list) {
+    static <T> Collection<T> reverse(Collection<T> list) {
         List<T> target = new ArrayList<>(list);
         Collections.reverse(target);
         return target;
@@ -61,12 +65,12 @@ public interface CypherUtils {
         if (!operation.isPresent())
             return QuantType.all;
 
-        if(operation.get() instanceof com.bpodgursky.jbool_expressions.Or) {
+        if (operation.get() instanceof com.bpodgursky.jbool_expressions.Or) {
             //if operator refers to a single operand -> accept some
             if (distinct.size() == 1)
                 return QuantType.some;
             else
-            //since other operand appear in different traversal pattern -> accept all
+                //since other operand appear in different traversal pattern -> accept all
                 return QuantType.all;
         }
         return QuantType.all;
@@ -84,7 +88,7 @@ public interface CypherUtils {
 
             final Set<Variable> distinct = distinct(operation);
             //quants will get enum according to the next formula = scopeElement.enum * 100
-            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(current * 100, CypherUtils.type(operation,distinct), new ArrayList<>(), 0));
+            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(current * 100, CypherUtils.type(operation, distinct), new ArrayList<>(), 0));
             //is scope already has next - add them to the newly added quant
             if (context.getScope().hasNext()) {
                 final List<AsgEBase<? extends EBase>> next = context.getScope().getNext();
@@ -99,12 +103,12 @@ public interface CypherUtils {
 
     static Set<Variable> distinct(Optional<com.bpodgursky.jbool_expressions.Expression> operation) {
         Set<Variable> vars = new HashSet<>();
-        if(!operation.isPresent()) return Collections.emptySet();
+        if (!operation.isPresent()) return Collections.emptySet();
 
-        if(NExpression.class.isAssignableFrom(operation.get().getClass())) {
+        if (NExpression.class.isAssignableFrom(operation.get().getClass())) {
             final List<com.bpodgursky.jbool_expressions.Expression> children = ((NExpression) operation.get()).getChildren();
-            children.forEach(c->vars.addAll(distinct(Optional.of(c))));
-        } else if(com.bpodgursky.jbool_expressions.Variable.class.isAssignableFrom(operation.get().getClass())) {
+            children.forEach(c -> vars.addAll(distinct(Optional.of(c))));
+        } else if (com.bpodgursky.jbool_expressions.Variable.class.isAssignableFrom(operation.get().getClass())) {
             return Collections.singleton(((Variable) operation.get()));
         }
 
@@ -171,6 +175,22 @@ public interface CypherUtils {
 
         public Expression getExpression() {
             return expression;
+        }
+
+        List<org.opencypher.v9_0.expressions.Variable> var() {
+            return asJavaCollectionConverter(expression.subExpressions()).asJavaCollection().stream()
+                    .filter(v -> org.opencypher.v9_0.expressions.Variable.class.isAssignableFrom(v.getClass()))
+                    .collect(Collectors.toList()).stream()
+                        .map(p-> ((org.opencypher.v9_0.expressions.Variable) p))
+                        .collect(Collectors.toList());
+        }
+
+        public boolean isVar() {
+            return var().size() > 0;
+        }
+
+        public Optional<String> getVar() {
+            return isVar() ? Optional.of(var().get(0).name()) : Optional.empty();
         }
 
         @Override
