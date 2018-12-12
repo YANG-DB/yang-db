@@ -24,7 +24,9 @@ import com.bpodgursky.jbool_expressions.And;
 import com.bpodgursky.jbool_expressions.Expression;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.query.EBase;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,13 +47,15 @@ public class AndExpression implements ExpressionStrategies {
             //todo parent is empty - create a 'all'-quant as query start
             if(!parent.isPresent()) {
                 CypherUtils.quant(query.getStart().getNext().isEmpty() ? query.getStart() : query.getStart().getNext().get(0), Optional.of(expression), query, context);
+                context.scope(query.getStart());
             }
 
             And and = (And) expression;
             reverse(((List<Expression>) and.getChildren()))
                     .forEach(c -> {
-                        context.scope(query.getStart());
+                        final AsgEBase<? extends EBase> base = context.getScope();
                         strategies.forEach(s -> s.apply(Optional.of(and), c, query, context));
+                        context.scope(base);
                     });
         }
     }
