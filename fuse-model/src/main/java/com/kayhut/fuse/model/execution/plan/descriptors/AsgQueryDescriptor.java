@@ -146,15 +146,15 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
         if (eBase instanceof QuantBase) {
             List<AsgEBase<? extends EBase>> next = e.getNext();
             String join = next.stream().map(p -> Integer.toString(p.geteNum())).collect(Collectors.joining("|"));
-            joiner.add("Q" + "[" + e.geteNum() +":"+ ((QuantBase) eBase).getqType()+ "]").add("{" + join + "}");
+            joiner.add("Q" + "[" + e.geteNum() + ":" + ((QuantBase) eBase).getqType() + "]").add("{" + join + "}");
         } else if (eBase instanceof EUntyped)
-            joiner.add("UnTyp" + "[" + ":"+ ((EUntyped) eBase).getvTypes() +" "+((EUntyped) eBase).geteTag() +"#"+ e.geteNum() +  "]");
+            joiner.add("UnTyp" + "[" + ":" + ((EUntyped) eBase).getvTypes() + " " + ((EUntyped) eBase).geteTag() + "#" + e.geteNum() + "]");
         else if (eBase instanceof EConcrete)
-            joiner.add("Conc" + "[" + ":"+ ((EConcrete) eBase).geteType() +" "+((EConcrete) eBase).geteTag() + "#" + e.geteNum() + "]");
+            joiner.add("Conc" + "[" + ":" + ((EConcrete) eBase).geteType() + " " + ((EConcrete) eBase).geteTag() + "#" + e.geteNum() + "]");
         else if (eBase instanceof ETyped)
-            joiner.add("Typ" + "[" + ":"+ ((ETyped) eBase).geteType() +" "+((ETyped) eBase).geteTag() + "#" + e.geteNum() + "]");
+            joiner.add("Typ" + "[" + ":" + ((ETyped) eBase).geteType() + " " + ((ETyped) eBase).geteTag() + "#" + e.geteNum() + "]");
         else if (eBase instanceof Rel)
-            joiner.add("Rel" + "(" + ":"+ ((Rel) eBase).getrType()  +" "+ ((Rel) eBase).getWrapper()+ "#" + e.geteNum() + ")");
+            joiner.add("Rel" + "(" + ":" + ((Rel) eBase).getrType() + " " + ((Rel) eBase).getWrapper() + "#" + e.geteNum() + ")");
         else if (eBase instanceof EPropGroup)
             joiner.add("?[..]" + "[" + e.geteNum() + "]" + ((eBase instanceof RankingProp) ?
                     "boost:" + ((RankingProp) eBase).getBoost() : ""));
@@ -180,6 +180,13 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
             if (iterator.hasNext())
                 print(builder, Optional.of(iterator.next()), false, true, 1, 0);
         }
+        return builder.toString();
+    }
+
+    public static String print(AsgEBase<? extends EBase> element) {
+        List<String> builder = new LinkedList<>();
+        builder.add("└── " );
+        print(builder, Optional.of(element), false, false, 0, 0);
         return builder.toString();
     }
 

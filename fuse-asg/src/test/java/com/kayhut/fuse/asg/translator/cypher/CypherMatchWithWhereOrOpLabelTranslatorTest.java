@@ -259,6 +259,42 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
     }
 
     @Test
+    public void testMatch_A_AND_where_A_OfType_And_OR_B_OfType_AND_b_OR_c_Return_() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where ((a:Dragon And a:Hours) Or c:Fire) And (b:Person OR b:Hours) RETURN a");
+        //expected string representation
+        String expected = "[└── Start, \n" +
+                "    ──Q[300:some]:{4|8|12|16}, \n" +
+                "                         └─UnTyp[:[] a#4]──Q[400:all]:{6|401}, \n" +
+                "                                                         └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[700:all]:{701}──Q[800:all]:{10}, \n" +
+                "                                                                                                         └─?[..][701]──Q[1200:all]:{14}, \n" +
+                "                                                                                                                 └─?[701]:[type<inSet,[Person]>]──Q[1600:all]:{18|1601}, \n" +
+                "                                                         └─?[..][401], \n" +
+                "                                                                 └─?[401]:[type<inSet,[Dragon]>], \n" +
+                "                                                                 └─?[402]:[type<inSet,[Hours]>], \n" +
+                "                         └─UnTyp[:[] a#8], \n" +
+                "                                     └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[100000:all]:{100001}, \n" +
+                "                                                    └─?[..][1000], \n" +
+                "                                                             └─?[100100]:[type<inSet,[Fire]>], \n" +
+                "                                                                                         └─?[..][100001], \n" +
+                "                                                                                                    └─?[100001]:[type<inSet,[Hours]>], \n" +
+                "                         └─UnTyp[:[] a#12], \n" +
+                "                                      └<--Rel(:null c#14)──UnTyp[:[] b#15]──Q[10000100:all]:{10000101}, \n" +
+                "                                                     └─?[..][1400], \n" +
+                "                                                              └─?[140100]:[type<inSet,[Fire]>], \n" +
+                "                                                                                          └─?[..][10000101], \n" +
+                "                                                                                                       └─?[10000101]:[type<inSet,[Person]>], \n" +
+                "                         └─UnTyp[:[] a#16], \n" +
+                "                                      └<--Rel(:null c#18)──UnTyp[:[] b#19]──Q[1000010100:all]:{1000010101}, \n" +
+                "                                                                                                      └─?[..][1000010101], \n" +
+                "                                                                                                                     └─?[1000010101]:[type<inSet,[Hours]>], \n" +
+                "                                      └─?[..][1601], \n" +
+                "                                               └─?[1601]:[type<inSet,[Dragon]>], \n" +
+                "                                               └─?[1602]:[type<inSet,[Hours]>]]";
+        assertEquals(expected, print(query));
+    }
+
+    @Test
     @Ignore
     //todo add Rule for same variable with multiple operators
     public void testMatch_A_OR_where_A_OfType_And_OR_B_OfType_AND_Return_() {
