@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -40,7 +41,7 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
     //endregion
 
     @Test
-    public void testMatch_A_where_A_OfType_Return_A() {
+    public void testMatch_A_where_A_OfType_OR_B_OfType_Return_() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon Or b:Person RETURN a");
         AsgQuery expected = AsgQuery.Builder
@@ -50,7 +51,7 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
                         unTyped(4, "a")
                                 .next(quant1(400, all)
                                         .addNext(
-                                                rel(6,null,Rel.Direction.RL)
+                                                rel(6,null,Rel.Direction.RL,"Rel_#2")
                                                     .next(
                                                             unTyped(7, "b")
                                                                     .next(quant1(700, all)
@@ -63,7 +64,7 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
                                 .addNext(
                                         quant1(800, all)
                                             .addNext(
-                                                    rel(10,null,Rel.Direction.RL)
+                                                    rel(10,null,Rel.Direction.RL,"Rel_#2")
                                                             .next(
                                                                     unTyped(11, "b")))
                                             .addNext(ePropGroup(801, all,
@@ -73,6 +74,53 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
                                 )
                 )
                 .build();
+        assertEquals(print(expected), print(query));
+    }
+
+    @Test
+    public void testMatch_A_where_A_OfType_And_OR_B_OfType_AND_Return_() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where a:Dragon Or b:Person Or c:Fire RETURN a");
+
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(quant1(300, some))
+                .in(
+                        unTyped(4, "a")
+                                .next(quant1(400, all)
+                                        .addNext(
+                                                rel(6,null,Rel.Direction.RL,"c")
+                                                    .next(
+                                                            unTyped(7, "b")
+                                                                    .next(quant1(700, all)
+                                                                            .addNext(ePropGroup(701, all,
+                                                                                    of(701, "type",
+                                                                                            of(inSet, Arrays.asList("Person")))))))
+                                                    )
+                                        ),
+                        unTyped(8, "a")
+                                .addNext(
+                                        quant1(800, all)
+                                            .addNext(
+                                                    rel(10,null,Rel.Direction.RL,"c")
+                                                            .next(
+                                                                    unTyped(11, "b")))
+                                            .addNext(ePropGroup(801, all,
+                                                    of(801, "type",
+                                                        of(inSet, Arrays.asList("Dragon"))))
+                                            )
+                                ),
+                        unTyped(12, "a")
+                                .addNext(
+                                        quant1(1200, all)
+                                            .addNext(
+                                                    rel(14,null,Rel.Direction.RL,"c")
+                                                            .below(relPropGroup(1400,all,
+                                                                    RelProp.of(140100, "type", of(inSet, Arrays.asList("Fire")))))
+                                                            .next(
+                                                                    unTyped(15, "b")))
+                                )
+                ).build();
         assertEquals(print(expected), print(query));
     }
 

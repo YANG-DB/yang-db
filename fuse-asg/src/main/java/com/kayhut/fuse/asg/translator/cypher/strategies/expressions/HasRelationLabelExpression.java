@@ -25,13 +25,13 @@ import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import org.opencypher.v9_0.expressions.*;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,7 +54,7 @@ public class HasRelationLabelExpression implements ExpressionStrategies {
 
             //first find the node element by its var name in the query
 
-            final Optional<AsgEBase<Rel>> first = AsgQueryUtil.elements(query,Rel.class).stream()
+            final Optional<AsgEBase<Rel>> first = AsgQueryUtil.elements(context.getScope() ,Rel.class).stream()
                     .filter(p -> p.geteBase().getWrapper().equals(variable.name()))
                     .findFirst();
 
@@ -67,7 +67,7 @@ public class HasRelationLabelExpression implements ExpressionStrategies {
             final int current = Math.max(first.get().getB().stream().mapToInt(p->p.geteNum()).max().orElse(0),100*first.get().geteNum());
 
             if(!AsgQueryUtil.bAdjacentDescendant(first.get(), RelPropGroup.class).isPresent()) {
-                first.get().addBChild(new AsgEBase<>(new RelPropGroup(current,CypherUtils.type(parent))));
+                first.get().addBChild(new AsgEBase<>(new RelPropGroup(current,CypherUtils.type(parent, Collections.EMPTY_SET))));
             }
 
             final List<String> labelNames = labels.stream().map(l -> l.name()).collect(Collectors.toList());

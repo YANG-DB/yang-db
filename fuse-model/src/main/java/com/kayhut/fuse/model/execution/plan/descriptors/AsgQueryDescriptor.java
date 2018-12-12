@@ -146,15 +146,15 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
         if (eBase instanceof QuantBase) {
             List<AsgEBase<? extends EBase>> next = e.getNext();
             String join = next.stream().map(p -> Integer.toString(p.geteNum())).collect(Collectors.joining("|"));
-            joiner.add("Q" + "[" + e.geteNum() + "]").add("{" + join + "}");
+            joiner.add("Q" + "[" + e.geteNum() +":"+ ((QuantBase) eBase).getqType()+ "]").add("{" + join + "}");
         } else if (eBase instanceof EUntyped)
-            joiner.add("UnTyp" + "[" + e.geteNum() + "]");
+            joiner.add("UnTyp" + "[" + ":"+ ((EUntyped) eBase).getvTypes() +" "+((EUntyped) eBase).geteTag() +"#"+ e.geteNum() +  "]");
         else if (eBase instanceof EConcrete)
-            joiner.add("Conc" + "[" + ((EConcrete) eBase).geteType() + ":" + e.geteNum() + "]");
+            joiner.add("Conc" + "[" + ":"+ ((EConcrete) eBase).geteType() +" "+((EConcrete) eBase).geteTag() + "#" + e.geteNum() + "]");
         else if (eBase instanceof ETyped)
-            joiner.add("Typ" + "[" + ((ETyped) eBase).geteType() + ":" + e.geteNum() + "]");
+            joiner.add("Typ" + "[" + ":"+ ((ETyped) eBase).geteType() +" "+((ETyped) eBase).geteTag() + "#" + e.geteNum() + "]");
         else if (eBase instanceof Rel)
-            joiner.add("Rel" + "(" + ((Rel) eBase).getrType() + ":" + e.geteNum() + ")");
+            joiner.add("Rel" + "(" + ":"+ ((Rel) eBase).getrType()  +" "+ ((Rel) eBase).getWrapper()+ "#" + e.geteNum() + ")");
         else if (eBase instanceof EPropGroup)
             joiner.add("?[..]" + "[" + e.geteNum() + "]" + ((eBase instanceof RankingProp) ?
                     "boost:" + ((RankingProp) eBase).getBoost() : ""));

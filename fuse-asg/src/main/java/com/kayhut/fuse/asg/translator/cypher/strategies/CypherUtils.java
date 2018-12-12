@@ -57,18 +57,20 @@ public interface CypherUtils {
                 .max().get();
     }
 
-    static QuantType type(Optional<com.bpodgursky.jbool_expressions.Expression> operation) {
+    static QuantType type(Optional<com.bpodgursky.jbool_expressions.Expression> operation, Set<Variable> distinct) {
         if (!operation.isPresent())
             return QuantType.all;
 
-        if (operation.get() instanceof com.bpodgursky.jbool_expressions.Or) {
-            return QuantType.some;
+        if(operation.get() instanceof com.bpodgursky.jbool_expressions.Or) {
+            //if operator refers to a single operand -> accept some
+            if (distinct.size() == 1)
+                return QuantType.some;
+            else
+            //since other operand appear in different traversal pattern -> accept all
+                return QuantType.all;
         }
-        if (operation.get() instanceof com.bpodgursky.jbool_expressions.And) {
-            return QuantType.all;
-        }
-
         return QuantType.all;
+
     }
 
     static AsgEBase<EBase> quant(AsgEBase<? extends EBase> byTag,
@@ -80,8 +82,9 @@ public interface CypherUtils {
                     asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())))
                     .max().get());
 
+            final Set<Variable> distinct = distinct(operation);
             //quants will get enum according to the next formula = scopeElement.enum * 100
-            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(current * 100, CypherUtils.type(operation), new ArrayList<>(), 0));
+            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(current * 100, CypherUtils.type(operation,distinct), new ArrayList<>(), 0));
             //is scope already has next - add them to the newly added quant
             if (context.getScope().hasNext()) {
                 final List<AsgEBase<? extends EBase>> next = context.getScope().getNext();
@@ -92,6 +95,20 @@ public interface CypherUtils {
             context.scope(quantAsg);
         }
         return AsgQueryUtil.nextAdjacentDescendant(byTag, QuantBase.class).get();
+    }
+
+    static Set<Variable> distinct(Optional<com.bpodgursky.jbool_expressions.Expression> operation) {
+        Set<Variable> vars = new HashSet<>();
+        if(!operation.isPresent()) return Collections.emptySet();
+
+        if(NExpression.class.isAssignableFrom(operation.get().getClass())) {
+            final List<com.bpodgursky.jbool_expressions.Expression> children = ((NExpression) operation.get()).getChildren();
+            children.forEach(c->vars.addAll(distinct(Optional.of(c))));
+        } else if(com.bpodgursky.jbool_expressions.Variable.class.isAssignableFrom(operation.get().getClass())) {
+            return Collections.singleton(((Variable) operation.get()));
+        }
+
+        return vars;
     }
 
     static com.bpodgursky.jbool_expressions.Expression reWrite(org.opencypher.v9_0.expressions.Expression expression) {

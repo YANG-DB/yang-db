@@ -44,7 +44,7 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
                 .next(unTyped(1, "a"))
-                .next(quant1(100, some))
+                .next(quant1(100, all))
                 .in(ePropGroup(101,all,of(101, "type", of(inSet, Arrays.asList("Dragon")))))
                 .build();
         assertEquals(print(expected), print(query));
@@ -57,7 +57,7 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
                 .next(unTyped(1, "a"))
-                .next(quant1(100, some))
+                .next(quant1(100, all))
                 .in(
                         ePropGroup(101,all,
                                 of(101, "type", of(inSet, Arrays.asList("Dragon"))),
@@ -72,7 +72,7 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon AND a:Hours AND b:Person RETURN a");
         final AsgEBase<Quant1> quantA = quant1(100, all);
-        quantA.addNext(rel(2, null, Rel.Direction.RL)
+        quantA.addNext(rel(2, null, Rel.Direction.RL,"Rel_#2")
                 .addNext(unTyped(3, "b")
                         .next(quant1(300, all)
                                 .addNext(
@@ -101,7 +101,7 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
         //region Test Methods
 
         final AsgEBase<Quant1> quantA = quant1(100, all);
-        quantA.addNext(rel(2, null, Rel.Direction.RL)
+        quantA.addNext(rel(2, null, Rel.Direction.RL,"Rel_#2")
                 .addNext(unTyped(3, "b")
                         .next(quant1(300, all)
                                 .addNext(
