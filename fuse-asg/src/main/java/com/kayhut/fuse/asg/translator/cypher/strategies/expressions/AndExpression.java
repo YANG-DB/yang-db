@@ -43,21 +43,26 @@ public class AndExpression implements ExpressionStrategies {
     @Override
     public void apply(Optional<Expression> parent, Expression expression, AsgQuery query, CypherStrategyContext context) {
         //filter only AND expressions
-        if ((expression instanceof com.bpodgursky.jbool_expressions.And)) {
-            //todo parent is empty - create a 'all'-quant as query start
-            if(!parent.isPresent()) {
-                CypherUtils.quant(query.getStart().getNext().isEmpty() ? query.getStart() : query.getStart().getNext().get(0), Optional.of(expression), query, context);
-                context.scope(query.getStart());
-            }
-
-            And and = (And) expression;
-            reverse(((List<Expression>) and.getChildren()))
-                    .forEach(c -> {
-                        final AsgEBase<? extends EBase> base = context.getScope();
-                        strategies.forEach(s -> s.apply(Optional.of(and), c, query, context));
-                        context.scope(base);
-                    });
+        //todo parent is empty - create a 'all'-quant as query start
+        if (!parent.isPresent()) {
+            CypherUtils.quant(query.getStart().getNext().isEmpty() ? query.getStart() : query.getStart().getNext().get(0), Optional.of(expression), query, context);
+            context.scope(query.getStart());
         }
+
+        And and = (And) expression;
+        reverse(((List<Expression>) and.getChildren()))
+                .forEach(c -> {
+                    final AsgEBase<? extends EBase> base = context.getScope();
+                    strategies.forEach(s -> {
+                        if(s.isApply(c)) s.apply(Optional.of(and), c, query, context);
+                    });
+                    context.scope(base);
+                });
+    }
+
+    @Override
+    public boolean isApply(Expression expression) {
+        return expression instanceof com.bpodgursky.jbool_expressions.And;
     }
 
     private Iterable<ExpressionStrategies> strategies;

@@ -25,7 +25,6 @@ import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import org.opencypher.v9_0.ast.Where;
-import org.opencypher.v9_0.expressions.Expression;
 
 import java.util.Optional;
 
@@ -36,8 +35,10 @@ public class WhereClauseNodeCypherTranslator implements CypherElementTranslatorS
     }
 
     public void apply(Where where, AsgQuery query, CypherStrategyContext context) {
-        final com.bpodgursky.jbool_expressions.Expression expression = CypherUtils.reWrite(where.expression());
-        strategies.forEach(s->s.apply(Optional.empty(), expression, query, context));
+        final com.bpodgursky.jbool_expressions.Expression c = CypherUtils.reWrite(where.expression());
+        strategies.forEach(s->{
+            if(s.isApply(c)) s.apply(Optional.empty(), c, query, context);
+        });
     }
 
     private Iterable<ExpressionStrategies> strategies;

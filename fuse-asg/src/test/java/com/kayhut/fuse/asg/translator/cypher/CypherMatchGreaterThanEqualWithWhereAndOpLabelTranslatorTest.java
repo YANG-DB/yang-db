@@ -5,10 +5,10 @@ import com.kayhut.fuse.asg.translator.cypher.strategies.MatchCypherTranslatorStr
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -21,15 +21,14 @@ import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
 import static com.kayhut.fuse.model.query.properties.EProp.of;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
-import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
-import static com.kayhut.fuse.model.query.quant.QuantType.some;
 import static org.junit.Assert.assertEquals;
 
 /**
  * Created by lior.perry
  */
-public class CypherMatchWithWhereAndOpLabelTranslatorTest {
+public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
@@ -40,12 +39,12 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
     @Test
     public void testMatch_A_where_A_OfType_Return_A() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a) where a:Dragon RETURN a");
+        final AsgQuery query = translator.translate("MATCH (a:Dragon) where a.age > 100 RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
-                .next(unTyped(1, "a"))
+                .next(typed(1,"Dragon", "a"))
                 .next(quant1(100, all))
-                .in(ePropGroup(101,all,of(101, "type", of(inSet, Arrays.asList("Dragon")))))
+                .in(ePropGroup(101,all,of(101, "age", of(gt, 100))))
                 .build();
         assertEquals(print(expected), print(query));
     }
@@ -53,15 +52,15 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
     @Test
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a) where a:Dragon AND a:Hours RETURN a");
+        final AsgQuery query = translator.translate("MATCH (a:Dragon) where (a.age < 100 AND a.birth >= '28/01/2001') RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
-                .next(unTyped(1, "a"))
+                .next(typed(1,"Dragon", "a"))
                 .next(quant1(100, all))
                 .in(
                         ePropGroup(101,all,
-                                of(101, "type", of(inSet, Arrays.asList("Dragon"))),
-                                of(102, "type", of(inSet, Arrays.asList("Hours"))))
+                                of(101, "age", of(lt, 100)),
+                                of(102, "birth", of(ge, "28/01/2001")))
                 )
                 .build();
         assertEquals(print(expected), print(query));
@@ -70,20 +69,20 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon AND a:Hours AND b:Person RETURN a");
+        final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon AND (a.age < 100 AND b.birth >= '28/01/2001')  RETURN a");
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, null, Rel.Direction.RL,"Rel_#2")
                 .addNext(unTyped(3, "b")
                         .next(quant1(300, all)
                                 .addNext(
                                         ePropGroup(301,all,
-                                                of(301, "type", of(inSet, Arrays.asList("Person"))))
+                                                of(301, "birth", of(ge, "28/01/2001")))
                                 )
                         )));
         quantA.addNext(
                 ePropGroup(101,all,
-                        of(101, "type", of(inSet, Arrays.asList("Dragon"))),
-                        of(102, "type", of(inSet, Arrays.asList("Hours")))));
+                        of(101, "age", of(lt, 100)),
+                        of(102, "type", of(inSet, Arrays.asList("Dragon")))));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -93,56 +92,29 @@ public class CypherMatchWithWhereAndOpLabelTranslatorTest {
         assertEquals(print(expected), print(query));
     }
 
-    @Test
-    public void testMatch_A_where_A_OfType_AND_B_OfType_Return_A() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon AND b:Person RETURN a,b");
-
-        //region Test Methods
-
-        final AsgEBase<Quant1> quantA = quant1(100, all);
-        quantA.addNext(rel(2, null, Rel.Direction.RL,"Rel_#2")
-                .addNext(unTyped(3, "b")
-                        .next(quant1(300, all)
-                                .addNext(
-                                        ePropGroup(301,all,
-                                            of(301, "type", of(inSet, Arrays.asList("Person"))))
-                        )
-                )));
-        quantA.addNext(
-                ePropGroup(101,all,
-                    of(101, "type", of(inSet, Arrays.asList("Dragon")))));
-
-        AsgQuery expected = AsgQuery.Builder
-                .start("cypher_", "Dragons")
-                .next(unTyped(1, "a"))
-                .next(quantA)
-                .build();
-        assertEquals(print(expected), print(query));
-    }
     @Test
     public void testMatch_A_where_A_OfType_testMatch_A_where_A_OfType_AND_C_OfType_Return_A() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where a:Dragon AND b:Person AND c:Fire AND c:Freeze RETURN a,b");
+        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where a.age < 100 AND b.birth >= '28/01/2001' AND (c:Fire AND c:Freeze) RETURN a,b");
 
         //region Test Methods
 
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, null, Rel.Direction.RL,"c")
                 .below(relPropGroup(200,all,
-                        new RelProp(20100,"type",of(inSet, Arrays.asList("Freeze")),0),
-                        new RelProp(20100,"type",of(inSet, Arrays.asList("Fire")),0)))
+                        new RelProp(201,"type",of(inSet, Arrays.asList("Freeze")),0),
+                        new RelProp(201,"type",of(inSet, Arrays.asList("Fire")),0)))
                 .addNext(unTyped(3, "b")
-                        .next(quant1(20000, all)
+                        .next(quant1(300, all)
                                 .addNext(
-                                        ePropGroup(20001,all,
-                                            of(20001, "type", of(inSet, Arrays.asList("Person")))))
+                                        ePropGroup(301,all,
+                                                of(301, "birth", of(ge, "28/01/2001"))))
                         )
 
                 ));
         quantA.addNext(
                 ePropGroup(101,all,
-                    of(101, "type", of(inSet, Arrays.asList("Dragon")))));
+                        of(101, "age", of(lt, 100))));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")

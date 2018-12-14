@@ -37,37 +37,38 @@ import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
-public class HasLabelExpression implements ExpressionStrategies {
+public class HasLabelExpression extends BaseExpressionStrategy {
 
     @Override
     public void apply(Optional<com.bpodgursky.jbool_expressions.Expression> parent, com.bpodgursky.jbool_expressions.Expression expression, AsgQuery query, CypherStrategyContext context) {
-        //filter only HasLabels expressions
-        if((expression instanceof com.bpodgursky.jbool_expressions.Variable) &&
-                ((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression() instanceof HasLabels){
+        HasLabels hasLabels = ((HasLabels) ((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression());
+        Collection<LabelName> labelNames = asJavaCollectionConverter(hasLabels.labels()).asJavaCollection();
+        Variable variable = (Variable) hasLabels.expression();
 
-            HasLabels hasLabels = ((HasLabels) ((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression());
-            Collection<LabelName> labelNames = asJavaCollectionConverter(hasLabels.labels()).asJavaCollection();
-            Variable variable = (Variable) hasLabels.expression();
+        //first find the node element by its var name in the query
+        final Optional<AsgEBase<EBase>> byTag = AsgQueryUtil.getByTag(context.getScope(), variable.name());
+        if(!byTag.isPresent()) return;
 
-            //first find the node element by its var name in the query
-            final Optional<AsgEBase<EBase>> byTag = AsgQueryUtil.getByTag(context.getScope(), variable.name());
-            if(!byTag.isPresent()) return;
+        //update the scope
+        context.scope(byTag.get());
+        //change scope to quant
+        final AsgEBase<EBase> quantAsg = CypherUtils.quant(byTag.get(),parent,query,context);
+        //add the label eProp constraint
+        final int current = Math.max(quantAsg.getNext().stream().mapToInt(p->p.geteNum()).max().orElse(0),quantAsg.geteNum());
+        final List<String> labels = labelNames.stream().map(l -> l.name()).collect(Collectors.toList());
 
-            //update the scope
-            context.scope(byTag.get());
-            //change scope to quant
-            final AsgEBase<EBase> quantAsg = CypherUtils.quant(byTag.get(),parent,query,context);
-            //add the label eProp constraint
-            final int current = Math.max(quantAsg.getNext().stream().mapToInt(p->p.geteNum()).max().orElse(0),quantAsg.geteNum());
-            final List<String> labels = labelNames.stream().map(l -> l.name()).collect(Collectors.toList());
-
-            if(!AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).isPresent()) {
-                quantAsg.addNext(new AsgEBase<>(new EPropGroup(current + 1 ,CypherUtils.type(parent, Collections.EMPTY_SET))));
-            }
-
-            ((EPropGroup) AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).get().geteBase())
-                    .getProps().add(new EProp(current + 1, "type", of(inSet, labels)));
+        if(!AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).isPresent()) {
+            quantAsg.addNext(new AsgEBase<>(new EPropGroup(current + 1 ,CypherUtils.type(parent, Collections.EMPTY_SET))));
         }
+
+        ((EPropGroup) AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).get().geteBase())
+                .getProps().add(addPredicate(current,"type", of(inSet, labels)));
+    }
+
+    @Override
+    public boolean isApply(com.bpodgursky.jbool_expressions.Expression expression) {
+        return (expression instanceof com.bpodgursky.jbool_expressions.Variable) &&
+                ((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression() instanceof HasLabels;
     }
 
 

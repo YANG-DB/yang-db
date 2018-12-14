@@ -82,9 +82,7 @@ public interface CypherUtils {
                                  AsgQuery query, CypherStrategyContext context) {
         //next find the quant associated with this element - if none found create one
         if (!AsgQueryUtil.nextAdjacentDescendant(byTag, QuantBase.class).isPresent()) {
-            final int current = Math.max(context.getScope().geteNum(), Stream.ofAll(AsgQueryUtil.eNums(query,
-                    asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())))
-                    .max().get());
+            final int current = maxEntityNum(query);
 
             final Set<Variable> distinct = distinct(operation);
             //quants will get enum according to the next formula = scopeElement.enum * 100
@@ -162,6 +160,15 @@ public interface CypherUtils {
     }
 
 
+    static List<org.opencypher.v9_0.expressions.Variable> var(org.opencypher.v9_0.expressions.Expression expression) {
+        return asJavaCollectionConverter(expression.subExpressions()).asJavaCollection().stream()
+                .filter(v -> org.opencypher.v9_0.expressions.Variable.class.isAssignableFrom(v.getClass()))
+                .collect(Collectors.toList()).stream()
+                .map(p-> ((org.opencypher.v9_0.expressions.Variable) p))
+                .collect(Collectors.toList());
+
+    }
+
     class Wrapper {
         private org.opencypher.v9_0.expressions.Expression expression;
 
@@ -178,11 +185,7 @@ public interface CypherUtils {
         }
 
         List<org.opencypher.v9_0.expressions.Variable> var() {
-            return asJavaCollectionConverter(expression.subExpressions()).asJavaCollection().stream()
-                    .filter(v -> org.opencypher.v9_0.expressions.Variable.class.isAssignableFrom(v.getClass()))
-                    .collect(Collectors.toList()).stream()
-                        .map(p-> ((org.opencypher.v9_0.expressions.Variable) p))
-                        .collect(Collectors.toList());
+            return CypherUtils.var(expression);
         }
 
         public boolean isVar() {

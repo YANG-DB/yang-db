@@ -2,13 +2,9 @@ package com.kayhut.fuse.asg.translator.cypher;
 
 import com.kayhut.fuse.asg.translator.AsgTranslator;
 import com.kayhut.fuse.asg.translator.cypher.strategies.MatchCypherTranslatorStrategy;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import com.kayhut.fuse.model.query.quant.Quant1;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -20,7 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.*;
+import static com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
 import static com.kayhut.fuse.model.query.properties.EProp.of;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
@@ -31,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by lior.perry
  */
-public class CypherMatchWithWhereOrOpLabelTranslatorTest {
+public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
@@ -116,7 +112,7 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
                                             .addNext(
                                                     rel(14,null,Rel.Direction.RL,"c")
                                                             .below(relPropGroup(1400,all,
-                                                                    RelProp.of(140100, "type", of(inSet, Arrays.asList("Fire")))))
+                                                                    RelProp.of(1401, "type", of(inSet, Arrays.asList("Fire")))))
                                                             .next(
                                                                     unTyped(15, "b")))
                                 )
@@ -139,7 +135,7 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
                                                 .addNext(
                                                         rel(6,null,Rel.Direction.RL,"c")
                                                                 .below(relPropGroup(600,all,
-                                                                        RelProp.of(60100, "type", of(inSet, Arrays.asList("Fire")))))
+                                                                        RelProp.of(601, "type", of(inSet, Arrays.asList("Fire")))))
                                                                 .next(
                                                                         unTyped(7, "b")))
                                 ),
@@ -177,7 +173,7 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
                                                 .addNext(
                                                         rel(6,null,Rel.Direction.RL,"c")
                                                                 .below(relPropGroup(600,all,
-                                                                        RelProp.of(60100, "type", of(inSet, Arrays.asList("Fire")))))
+                                                                        RelProp.of(601, "type", of(inSet, Arrays.asList("Fire")))))
                                                                 .next(
                                                                         unTyped(7, "b")
                                                                                 .next(quant1(700, all)
@@ -194,9 +190,9 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
                                                         rel(10,null,Rel.Direction.RL,"c")
                                                                 .next(
                                                                         unTyped(11, "b")
-                                                                                .next(quant1(70100, all)
-                                                                                        .addNext(ePropGroup(70101, all,
-                                                                                                of(70101, "type",
+                                                                                .next(quant1(1100, all)
+                                                                                        .addNext(ePropGroup(1101, all,
+                                                                                                of(1101, "type",
                                                                                                         of(inSet, Arrays.asList("Person"))))))
                                                                 )
                                                 )
@@ -244,12 +240,12 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
                                                 .addNext(
                                                         rel(10,null,Rel.Direction.RL,"c")
                                                                 .below(relPropGroup(1000,all,
-                                                                        RelProp.of(100100, "type", of(inSet, Arrays.asList("Fire")))))
+                                                                        RelProp.of(1001, "type", of(inSet, Arrays.asList("Fire")))))
                                                                 .next(
                                                                         unTyped(11, "b")
-                                                                                .next(quant1(70100, all)
-                                                                                        .addNext(ePropGroup(70101, all,
-                                                                                                of(70101, "type",
+                                                                                .next(quant1(1100, all)
+                                                                                        .addNext(ePropGroup(1101, all,
+                                                                                                of(1101, "type",
                                                                                                         of(inSet, Arrays.asList("Person"))))))
                                                                 )
                                                 )
@@ -273,21 +269,21 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
                 "                                                                 └─?[401]:[type<inSet,[Dragon]>], \n" +
                 "                                                                 └─?[402]:[type<inSet,[Hours]>], \n" +
                 "                         └─UnTyp[:[] a#8], \n" +
-                "                                     └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[100000:all]:{100001}, \n" +
+                "                                     └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[1100:all]:{1101}, \n" +
                 "                                                    └─?[..][1000], \n" +
-                "                                                             └─?[100100]:[type<inSet,[Fire]>], \n" +
-                "                                                                                         └─?[..][100001], \n" +
-                "                                                                                                    └─?[100001]:[type<inSet,[Hours]>], \n" +
+                "                                                             └─?[1001]:[type<inSet,[Fire]>], \n" +
+                "                                                                                       └─?[..][1101], \n" +
+                "                                                                                                └─?[1101]:[type<inSet,[Hours]>], \n" +
                 "                         └─UnTyp[:[] a#12], \n" +
-                "                                      └<--Rel(:null c#14)──UnTyp[:[] b#15]──Q[10000100:all]:{10000101}, \n" +
+                "                                      └<--Rel(:null c#14)──UnTyp[:[] b#15]──Q[1500:all]:{1501}, \n" +
                 "                                                     └─?[..][1400], \n" +
-                "                                                              └─?[140100]:[type<inSet,[Fire]>], \n" +
-                "                                                                                          └─?[..][10000101], \n" +
-                "                                                                                                       └─?[10000101]:[type<inSet,[Person]>], \n" +
+                "                                                              └─?[1401]:[type<inSet,[Fire]>], \n" +
+                "                                                                                        └─?[..][1501], \n" +
+                "                                                                                                 └─?[1501]:[type<inSet,[Person]>], \n" +
                 "                         └─UnTyp[:[] a#16], \n" +
-                "                                      └<--Rel(:null c#18)──UnTyp[:[] b#19]──Q[1000010100:all]:{1000010101}, \n" +
-                "                                                                                                      └─?[..][1000010101], \n" +
-                "                                                                                                                     └─?[1000010101]:[type<inSet,[Hours]>], \n" +
+                "                                      └<--Rel(:null c#18)──UnTyp[:[] b#19]──Q[1900:all]:{1901}, \n" +
+                "                                                                                          └─?[..][1901], \n" +
+                "                                                                                                   └─?[1901]:[type<inSet,[Hours]>], \n" +
                 "                                      └─?[..][1601], \n" +
                 "                                               └─?[1601]:[type<inSet,[Dragon]>], \n" +
                 "                                               └─?[1602]:[type<inSet,[Hours]>]]";
@@ -311,7 +307,7 @@ public class CypherMatchWithWhereOrOpLabelTranslatorTest {
                                                 .addNext(
                                                         rel(6,null,Rel.Direction.RL,"c")
                                                                 .below(relPropGroup(600,all,
-                                                                        RelProp.of(60100, "type", of(inSet, Arrays.asList("Fire")))))
+                                                                        RelProp.of(601, "type", of(inSet, Arrays.asList("Fire")))))
                                                                 .next(
                                                                         unTyped(7, "b")))
                                 ),
