@@ -19,7 +19,7 @@ import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
 import static com.kayhut.fuse.model.query.properties.EProp.of;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
-import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static com.kayhut.fuse.model.query.quant.QuantType.some;
 import static org.junit.Assert.assertEquals;
@@ -38,7 +38,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
     @Test
     public void testMatch_A_where_A_OfType_OR_B_OfType_Return_() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon Or b:Person RETURN a");
+        final AsgQuery query = translator.translate("MATCH (a)--(b) where a.age < 100 Or a.birth >= '28/01/2001' RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
                 .next(quant1(300, some))
@@ -46,26 +46,23 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                         unTyped(4, "a")
                                 .next(quant1(400, all)
                                         .addNext(
-                                                rel(6,null,Rel.Direction.RL,"Rel_#2")
-                                                    .next(
-                                                            unTyped(7, "b")
-                                                                    .next(quant1(700, all)
-                                                                            .addNext(ePropGroup(701, all,
-                                                                                    of(701, "type",
-                                                                                            of(inSet, Arrays.asList("Person")))))))
-                                                    )
-                                        ),
+                                                rel(6, null, Rel.Direction.RL, "Rel_#2")
+                                                        .next(unTyped(7, "b"))
+                                        )
+                                        .addNext(ePropGroup(401, all,
+                                                of(401, "age", of(lt, 100)))
+                                        )
+                                ),
                         unTyped(8, "a")
                                 .addNext(
                                         quant1(800, all)
-                                            .addNext(
-                                                    rel(10,null,Rel.Direction.RL,"Rel_#2")
-                                                            .next(
-                                                                    unTyped(11, "b")))
-                                            .addNext(ePropGroup(801, all,
-                                                    of(801, "type",
-                                                        of(inSet, Arrays.asList("Dragon"))))
-                                            )
+                                                .addNext(
+                                                        rel(10, null, Rel.Direction.RL, "Rel_#2")
+                                                                .next(
+                                                                        unTyped(11, "b")))
+                                                .addNext(ePropGroup(801, all,
+                                                        of(801, "birth", of(ge, "28/01/2001")))
+                                                )
                                 )
                 )
                 .build();
@@ -75,7 +72,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
     @Test
     public void testMatch_A_where_A_OfType_And_OR_B_OfType_AND_Return_() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where a:Dragon Or b:Person Or c:Fire RETURN a");
+        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where a.age < 100 Or b.birth >= '28/01/2001' Or c:Fire RETURN a");
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -84,37 +81,34 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                         unTyped(4, "a")
                                 .next(quant1(400, all)
                                         .addNext(
-                                                rel(6,null,Rel.Direction.RL,"c")
-                                                    .next(
-                                                            unTyped(7, "b")
-                                                                    .next(quant1(700, all)
-                                                                            .addNext(ePropGroup(701, all,
-                                                                                    of(701, "type",
-                                                                                            of(inSet, Arrays.asList("Person"))))))
-                                                    )
-                                                )
-                                        ),
+                                                rel(6, null, Rel.Direction.RL, "c")
+                                                        .next(unTyped(7, "b"))
+                                        )
+                                        .addNext(ePropGroup(401, all,
+                                                of(401, "age", of(lt, 100)))
+                                        )
+                                ),
                         unTyped(8, "a")
                                 .addNext(
                                         quant1(800, all)
-                                            .addNext(
-                                                    rel(10,null,Rel.Direction.RL,"c")
-                                                            .next(
-                                                                    unTyped(11, "b")))
-                                            .addNext(ePropGroup(801, all,
-                                                    of(801, "type",
-                                                        of(inSet, Arrays.asList("Dragon"))))
-                                            )
+                                                .addNext(
+                                                        rel(10, null, Rel.Direction.RL, "c")
+                                                                .below(relPropGroup(1000, all,
+                                                                        RelProp.of(1001, "type", of(inSet, Arrays.asList("Fire")))))
+                                                                .next(unTyped(11, "b"))
+                                                )
                                 ),
                         unTyped(12, "a")
                                 .addNext(
                                         quant1(1200, all)
-                                            .addNext(
-                                                    rel(14,null,Rel.Direction.RL,"c")
-                                                            .below(relPropGroup(1400,all,
-                                                                    RelProp.of(1401, "type", of(inSet, Arrays.asList("Fire")))))
-                                                            .next(
-                                                                    unTyped(15, "b")))
+                                                .addNext(
+                                                        rel(14, null, Rel.Direction.RL, "c")
+                                                                .next(unTyped(15, "b")
+                                                                        .next(quant1(1500, all)
+                                                                                .addNext(ePropGroup(1501, all,
+                                                                                        of(1501, "birth", of(ge, "28/01/2001")))
+                                                                                ))
+                                                                ))
                                 )
                 ).build();
         assertEquals(print(expected), print(query));
@@ -123,91 +117,46 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
     @Test
     public void testMatch_A_AND_where_A_OfType_And_OR_B_OfType_AND_Return_() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where (a:Dragon AND a:Hours) Or c:Fire RETURN a");
-
-        AsgQuery expected = AsgQuery.Builder
-                .start("cypher_", "Dragons")
-                .next(quant1(300, some))
-                .in(
-                        unTyped(4, "a")
-                                .addNext(
-                                        quant1(400, all)
-                                                .addNext(
-                                                        rel(6,null,Rel.Direction.RL,"c")
-                                                                .below(relPropGroup(600,all,
-                                                                        RelProp.of(601, "type", of(inSet, Arrays.asList("Fire")))))
-                                                                .next(
-                                                                        unTyped(7, "b")))
-                                ),
-                        unTyped(8, "a")
-                                .addNext(
-                                        quant1(800, all)
-                                                .addNext(
-                                                        rel(10,null,Rel.Direction.RL,"c")
-                                                                .next(
-                                                                        unTyped(11, "b"))
-                                                )
-                                                .addNext(ePropGroup(801, all,
-                                                        of(801, "type",
-                                                                of(inSet, Arrays.asList("Dragon"))),
-                                                        of(802, "type",
-                                                                of(inSet, Arrays.asList("Hours"))))
-                                                )
-                                )
-                ).build();
-        assertEquals(print(expected), print(query));
+        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where (a.age < 100 AND b.birth >= '28/01/2001' ) Or c:Fire RETURN a");
+        String expected = "[└── Start, \n" +
+                "    ──Q[300:some]:{4|8}, \n" +
+                "                   └─UnTyp[:[] a#4]──Q[400:all]:{6}, \n" +
+                "                                               └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[800:all]:{10|801}, \n" +
+                "                                                             └─?[..][600], \n" +
+                "                                                                     └─?[601]:[type<inSet,[Fire]>], \n" +
+                "                   └─UnTyp[:[] a#8], \n" +
+                "                               └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[1100:all]:{1101}, \n" +
+                "                                                                                   └─?[..][1101], \n" +
+                "                                                                                            └─?[1101]:[birth<ge,28/01/2001>], \n" +
+                "                               └─?[..][801], \n" +
+                "                                       └─?[801]:[age<lt,100>]]";
+        assertEquals(expected, print(query));
     }
 
     @Test
     public void testMatch_A_AND_where_A_OfType_And_OR_B_OfType_Return_() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where (a:Dragon Or c:Fire) And b:Person RETURN a");
-
-        AsgQuery expected = AsgQuery.Builder
-                .start("cypher_", "Dragons")
-                .next(quant1(300, some))
-                .in(
-                        unTyped(4, "a")
-                                .addNext(
-                                        quant1(400, all)
-                                                .addNext(
-                                                        rel(6,null,Rel.Direction.RL,"c")
-                                                                .below(relPropGroup(600,all,
-                                                                        RelProp.of(601, "type", of(inSet, Arrays.asList("Fire")))))
-                                                                .next(
-                                                                        unTyped(7, "b")
-                                                                                .next(quant1(700, all)
-                                                                                        .addNext(ePropGroup(701, all,
-                                                                                                of(701, "type",
-                                                                                                        of(inSet, Arrays.asList("Person"))))))
-                                                                )
-                                                )
-                                ),
-                        unTyped(8, "a")
-                                .addNext(
-                                        quant1(800, all)
-                                                .addNext(
-                                                        rel(10,null,Rel.Direction.RL,"c")
-                                                                .next(
-                                                                        unTyped(11, "b")
-                                                                                .next(quant1(1100, all)
-                                                                                        .addNext(ePropGroup(1101, all,
-                                                                                                of(1101, "type",
-                                                                                                        of(inSet, Arrays.asList("Person"))))))
-                                                                )
-                                                )
-                                                .addNext(ePropGroup(801, all,
-                                                        of(801, "type",
-                                                                of(inSet, Arrays.asList("Dragon"))))
-                                                )
-                                )
-                ).build();
-        assertEquals(print(expected), print(query));
+        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where (a.age >= 100 OR b.birth < '28/01/2001' ) And b:Person RETURN a");
+        String expected = "[└── Start, \n" +
+                           "    ──Q[300:some]:{4|8}, \n" +
+                           "                   └─UnTyp[:[] a#4]──Q[400:all]:{6|401}, \n" +
+                           "                                                   └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[700:all]:{701}──Q[800:all]:{10}, \n" +
+                           "                                                                                                   └─?[..][701], \n" +
+                           "                                                                                                           └─?[701]:[type<inSet,[Person]>], \n" +
+                           "                                                   └─?[..][401], \n" +
+                           "                                                           └─?[401]:[age<ge,100>], \n" +
+                           "                   └─UnTyp[:[] a#8], \n" +
+                           "                               └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[1100:all]:{1101}, \n" +
+                           "                                                                                   └─?[..][1101], \n" +
+                           "                                                                                            └─?[1101]:[type<inSet,[Person]>], \n" +
+                           "                                                                                            └─?[1102]:[birth<lt,28/01/2001>]]";
+        assertEquals(expected, print(query));
     }
+
     @Test
     public void testMatch_A_AND_where_A_OfType_And_OR_B_OfType_AND_b_Return_() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where ((a:Dragon And a:Hours) Or c:Fire) And b:Person RETURN a");
+        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where ((a.age < 100 AND b.birth >= '28/01/2001' ) Or c:Fire) And b.size <= 300 RETURN a");
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -217,20 +166,19 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                                 .addNext(
                                         quant1(400, all)
                                                 .addNext(
-                                                        rel(6,null,Rel.Direction.RL,"c")
+                                                        rel(6, null, Rel.Direction.RL, "c")
                                                                 .next(
                                                                         unTyped(7, "b")
                                                                                 .next(quant1(700, all)
                                                                                         .addNext(ePropGroup(701, all,
-                                                                                                of(701, "type",
-                                                                                                        of(inSet, Arrays.asList("Person"))))))
+                                                                                                of(701, "birth",of(ge, "28/01/2001")),
+                                                                                                of(702, "size",of(le, 300)))
+                                                                                        ))
                                                                 )
                                                 )
                                                 .addNext(ePropGroup(401, all,
-                                                        of(401, "type",
-                                                                of(inSet, Arrays.asList("Dragon"))),
-                                                        of(402, "type",
-                                                                of(inSet, Arrays.asList("Hours")))
+                                                        of(401, "age",
+                                                                of(lt, 100))
                                                         )
                                                 )
                                 ),
@@ -238,15 +186,15 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                                 .addNext(
                                         quant1(800, all)
                                                 .addNext(
-                                                        rel(10,null,Rel.Direction.RL,"c")
-                                                                .below(relPropGroup(1000,all,
+                                                        rel(10, null, Rel.Direction.RL, "c")
+                                                                .below(relPropGroup(1000, all,
                                                                         RelProp.of(1001, "type", of(inSet, Arrays.asList("Fire")))))
                                                                 .next(
                                                                         unTyped(11, "b")
                                                                                 .next(quant1(1100, all)
                                                                                         .addNext(ePropGroup(1101, all,
-                                                                                                of(1101, "type",
-                                                                                                        of(inSet, Arrays.asList("Person"))))))
+                                                                                                of(1101, "size",
+                                                                                                        of(le, 300)))))
                                                                 )
                                                 )
                                 )
@@ -257,36 +205,36 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
     @Test
     public void testMatch_A_AND_where_A_OfType_And_OR_B_OfType_AND_b_OR_c_Return_() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where ((a:Dragon And a:Hours) Or c:Fire) And (b:Person OR b:Hours) RETURN a");
+        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where ((a.age < 100 AND a.birth >= '28/01/2001') Or c:Fire) And (b.age < 100 OR b.birth >= '28/01/2001') RETURN a");
         //expected string representation
         String expected = "[└── Start, \n" +
                 "    ──Q[300:some]:{4|8|12|16}, \n" +
                 "                         └─UnTyp[:[] a#4]──Q[400:all]:{6|401}, \n" +
                 "                                                         └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[700:all]:{701}──Q[800:all]:{10}, \n" +
-                "                                                                                                         └─?[..][701]──Q[1200:all]:{14}, \n" +
-                "                                                                                                                 └─?[701]:[type<inSet,[Person]>]──Q[1600:all]:{18|1601}, \n" +
+                "                                                                                                         └─?[..][701]──Q[1200:all]:{14|1201}, \n" +
+                "                                                                                                                 └─?[701]:[age<lt,100>]──Q[1600:all]:{18}, \n" +
                 "                                                         └─?[..][401], \n" +
-                "                                                                 └─?[401]:[type<inSet,[Dragon]>], \n" +
-                "                                                                 └─?[402]:[type<inSet,[Hours]>], \n" +
+                "                                                                 └─?[401]:[age<lt,100>], \n" +
+                "                                                                 └─?[402]:[birth<ge,28/01/2001>], \n" +
                 "                         └─UnTyp[:[] a#8], \n" +
                 "                                     └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[1100:all]:{1101}, \n" +
                 "                                                    └─?[..][1000], \n" +
                 "                                                             └─?[1001]:[type<inSet,[Fire]>], \n" +
                 "                                                                                       └─?[..][1101], \n" +
-                "                                                                                                └─?[1101]:[type<inSet,[Hours]>], \n" +
+                "                                                                                                └─?[1101]:[birth<ge,28/01/2001>], \n" +
                 "                         └─UnTyp[:[] a#12], \n" +
                 "                                      └<--Rel(:null c#14)──UnTyp[:[] b#15]──Q[1500:all]:{1501}, \n" +
-                "                                                     └─?[..][1400], \n" +
-                "                                                              └─?[1401]:[type<inSet,[Fire]>], \n" +
-                "                                                                                        └─?[..][1501], \n" +
-                "                                                                                                 └─?[1501]:[type<inSet,[Person]>], \n" +
+                "                                                                                          └─?[..][1501], \n" +
+                "                                                                                                   └─?[1501]:[birth<ge,28/01/2001>], \n" +
+                "                                      └─?[..][1201], \n" +
+                "                                               └─?[1201]:[age<lt,100>], \n" +
+                "                                               └─?[1202]:[birth<ge,28/01/2001>], \n" +
                 "                         └─UnTyp[:[] a#16], \n" +
                 "                                      └<--Rel(:null c#18)──UnTyp[:[] b#19]──Q[1900:all]:{1901}, \n" +
-                "                                                                                          └─?[..][1901], \n" +
-                "                                                                                                   └─?[1901]:[type<inSet,[Hours]>], \n" +
-                "                                      └─?[..][1601], \n" +
-                "                                               └─?[1601]:[type<inSet,[Dragon]>], \n" +
-                "                                               └─?[1602]:[type<inSet,[Hours]>]]";
+                "                                                     └─?[..][1800], \n" +
+                "                                                              └─?[1801]:[type<inSet,[Fire]>], \n" +
+                "                                                                                        └─?[..][1901], \n" +
+                "                                                                                                 └─?[1901]:[age<lt,100>]]";
         assertEquals(expected, print(query));
     }
 
@@ -305,8 +253,8 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                                 .addNext(
                                         quant1(400, all)
                                                 .addNext(
-                                                        rel(6,null,Rel.Direction.RL,"c")
-                                                                .below(relPropGroup(600,all,
+                                                        rel(6, null, Rel.Direction.RL, "c")
+                                                                .below(relPropGroup(600, all,
                                                                         RelProp.of(601, "type", of(inSet, Arrays.asList("Fire")))))
                                                                 .next(
                                                                         unTyped(7, "b")))
@@ -315,7 +263,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                                 .addNext(
                                         quant1(800, all)
                                                 .addNext(
-                                                        rel(10,null,Rel.Direction.RL,"c")
+                                                        rel(10, null, Rel.Direction.RL, "c")
                                                                 .next(
                                                                         unTyped(11, "b"))
                                                 )
