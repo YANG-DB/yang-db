@@ -38,16 +38,11 @@ Infrastructure Technologies
 
 Introduction
 ------------
-> This is the second post in the series of Graph DB over Elastic Search.
->
-> The First Post is about saving history updates in a json document using
-Json Patch.
->
-> <https://www.linkedin.com/pulse/maintaining-document-history-inside-elasticsearch-lior-perry>
-
 > A Post introducing our new Open source initiative for building a Scalable Distributed Graph DB Over Elasticsearch
 > <https://www.linkedin.com/pulse/making-db-lior-perry/>
- 
+
+> Another usage of Elasticsearch as a graph DB
+> https://medium.com/@imriqwe/elasticsearch-as-a-graph-database-bc0eee7f7622 
 
 The world of graph databases has had a tremendous impact during the last few years, in particularity relating to social networks and their effect of our everyday activity.
 
