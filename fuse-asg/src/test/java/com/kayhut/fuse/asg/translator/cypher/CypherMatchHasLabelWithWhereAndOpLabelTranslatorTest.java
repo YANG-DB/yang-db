@@ -21,9 +21,7 @@ import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
 import static com.kayhut.fuse.model.query.properties.EProp.of;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
-import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
-import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
-import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.ne;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static com.kayhut.fuse.model.query.quant.QuantType.some;
 import static org.junit.Assert.assertEquals;
@@ -38,6 +36,41 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
         match = new CypherTestUtils().setUp(readJsonToString("src/test/resources/Dragons_Ontology.json")).match;
     }
     //endregion
+
+    @Test
+    public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_endsWith() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a) where (a.name ENDS WITH 'jh*') AND a:Horse RETURN a");
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(unTyped(1, "a"))
+                .next(quant1(100, all))
+                .in(
+                        ePropGroup(101,all,
+                                of(101, "type", of(inSet, Arrays.asList("Horse"))),
+                                of(102, "name", of(endsWith, "jh*")))
+                )
+                .build();
+        assertEquals(print(expected), print(query));
+    }
+
+    @Test
+    public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_in() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a) where (a.name STARTS WITH 'jh*')  AND a:Horse RETURN a");
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(unTyped(1, "a"))
+                .next(quant1(100, all))
+                .in(
+                        ePropGroup(101,all,
+                                of(101, "type", of(inSet, Arrays.asList("Horse"))),
+                                of(102, "name", of(startsWith, "jh*")))
+                )
+                .build();
+        assertEquals(print(expected), print(query));
+    }
+
 
     @Test
     public void testMatch_A_where_A_OfType_Return_A() {

@@ -34,6 +34,8 @@ class CypherTestUtils {
         whereExpressionStrategies.add(new InequalityExpression());
         whereExpressionStrategies.add(new EqualityExpression());
         whereExpressionStrategies.add(new NotEqualExpression());
+        whereExpressionStrategies.add(new StartsWithExpression());
+        whereExpressionStrategies.add(new EndsWithExpression());
         whereExpressionStrategies.add(new InExpression());
 
         whereClause = new WhereClauseNodeCypherTranslator(whereExpressionStrategies);

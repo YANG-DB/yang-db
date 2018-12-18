@@ -42,6 +42,35 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
     //endregion
 
     @Test
+    public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_startsWith() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a) where (a.name STARTS WITH 'jh*') OR a:Horse RETURN a");
+        String expected = "[└── Start, \n" +
+                "    ──Q[100:some]:{2|3}, \n" +
+                "                   └─UnTyp[:[] a#2]──Q[200:all]:{201}, \n" +
+                "                                                 └─?[..][201]──Q[300:all]:{301}, \n" +
+                "                                                         └─?[201]:[type<inSet,[Horse]>], \n" +
+                "                   └─UnTyp[:[] a#3], \n" +
+                "                               └─?[..][301], \n" +
+                "                                       └─?[301]:[name<startsWith,jh*>]]";
+        assertEquals(expected, print(query));
+    }
+    @Test
+    public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_endsWith() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a) where (a.name ENDS WITH 'jh*') OR a:Horse RETURN a");
+        String expected = "[└── Start, \n" +
+                "    ──Q[100:some]:{2|3}, \n" +
+                "                   └─UnTyp[:[] a#2]──Q[200:all]:{201}, \n" +
+                "                                                 └─?[..][201]──Q[300:all]:{301}, \n" +
+                "                                                         └─?[201]:[type<inSet,[Horse]>], \n" +
+                "                   └─UnTyp[:[] a#3], \n" +
+                "                               └─?[..][301], \n" +
+                "                                       └─?[301]:[name<endsWith,jh*>]]";
+        assertEquals(expected, print(query));
+    }
+
+    @Test
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_in() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where a.name in ['jhone','jane'] OR a:Horse RETURN a");
