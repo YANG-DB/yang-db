@@ -42,6 +42,20 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
     //endregion
 
     @Test
+    public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_containd() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a) where (a.name CONTAINS 'jh') OR a:Horse RETURN a");
+        String expected = "[└── Start, \n" +
+                            "    ──Q[100:some]:{2|3}, \n" +
+                            "                   └─UnTyp[:[] a#2]──Q[200:all]:{201}, \n" +
+                            "                                                 └─?[..][201]──Q[300:all]:{301}, \n" +
+                            "                                                         └─?[201]:[name<contains,jh>], \n" +
+                            "                   └─UnTyp[:[] a#3], \n" +
+                            "                               └─?[..][301], \n" +
+                            "                                       └─?[301]:[type<inSet,[Horse]>]]";
+        assertEquals(expected, print(query));
+    }
+    @Test
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_startsWith() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where (a.name STARTS WITH 'jh*') OR a:Horse RETURN a");

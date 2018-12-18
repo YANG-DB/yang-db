@@ -38,6 +38,22 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     //endregion
 
     @Test
+    public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_contains() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a) where (a.name CONTAINS 'jh') AND a:Horse RETURN a");
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(unTyped(1, "a"))
+                .next(quant1(100, all))
+                .in(
+                        ePropGroup(101,all,
+                                of(101, "name", of(contains, "jh")),
+                                of(102, "type", of(inSet, Arrays.asList("Horse")))
+                        )
+                ).build();
+        assertEquals(print(expected), print(query));
+    }
+    @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_endsWith() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where (a.name ENDS WITH 'jh*') AND a:Horse RETURN a");
