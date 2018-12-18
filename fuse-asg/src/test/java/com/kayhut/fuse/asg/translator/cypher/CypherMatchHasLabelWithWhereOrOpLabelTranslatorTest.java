@@ -23,7 +23,9 @@ import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.*;
 import static com.kayhut.fuse.model.query.properties.EProp.of;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.ne;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static com.kayhut.fuse.model.query.quant.QuantType.some;
 import static org.junit.Assert.assertEquals;
@@ -38,6 +40,52 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
         match = new CypherTestUtils().setUp(readJsonToString("src/test/resources/Dragons_Ontology.json")).match;
     }
     //endregion
+
+    @Test
+    public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_in() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a) where a.name in ['jhone','jane'] OR a:Horse RETURN a");
+        String expected = "[└── Start, \n" +
+                            "    ──Q[100:some]:{2|3}, \n" +
+                            "                   └─UnTyp[:[] a#2]──Q[200:all]:{201}, \n" +
+                            "                                                 └─?[..][201]──Q[300:all]:{301}, \n" +
+                            "                                                         └─?[201]:[type<inSet,[Horse]>], \n" +
+                            "                   └─UnTyp[:[] a#3], \n" +
+                            "                               └─?[..][301], \n" +
+                            "                                       └─?[301]:[name<inSet,[jhone, jane]>]]";
+        assertEquals(expected, print(query));
+    }
+
+    @Test
+    public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_equal() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a) where a.name = 'jhone' Or a:Horse RETURN a");
+        String expected = "[└── Start, \n" +
+                        "    ──Q[100:some]:{2|3}, \n" +
+                        "                   └─UnTyp[:[] a#2]──Q[200:all]:{201}, \n" +
+                        "                                                 └─?[..][201]──Q[300:all]:{301}, \n" +
+                        "                                                         └─?[201]:[type<inSet,[Horse]>], \n" +
+                        "                   └─UnTyp[:[] a#3], \n" +
+                        "                               └─?[..][301], \n" +
+                        "                                       └─?[301]:[name<eq,jhone>]]";
+        assertEquals(expected, print(query));
+    }
+
+    @Test
+    public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_notEqual() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a) where a.name <> 'jhone' Or a:Horse RETURN a");
+        String expected = "[└── Start, \n" +
+                            "    ──Q[100:some]:{2|3}, \n" +
+                            "                   └─UnTyp[:[] a#2]──Q[200:all]:{201}, \n" +
+                            "                                                 └─?[..][201]──Q[300:all]:{301}, \n" +
+                            "                                                         └─?[201]:[type<inSet,[Horse]>], \n" +
+                            "                   └─UnTyp[:[] a#3], \n" +
+                            "                               └─?[..][301], \n" +
+                            "                                       └─?[301]:[name<ne,jhone>]]";
+        assertEquals(expected, print(query));
+    }
+
 
     @Test
     public void testMatch_A_where_A_OfType_OR_B_OfType_Return_() {

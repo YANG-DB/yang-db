@@ -21,48 +21,40 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
  */
 
 import com.bpodgursky.jbool_expressions.Expression;
-import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
-import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import org.opencypher.v9_0.expressions.*;
+import org.opencypher.v9_0.expressions.In;
+import org.opencypher.v9_0.expressions.ListLiteral;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
-import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
-public class InequalityExpression extends BaseEqualityExpression<org.opencypher.v9_0.expressions.InequalityExpression> {
+public class InExpression extends BaseEqualityExpression<In> {
 
     @Override
-    protected org.opencypher.v9_0.expressions.InequalityExpression get(org.opencypher.v9_0.expressions.Expression expression) {
-        return (org.opencypher.v9_0.expressions.InequalityExpression) expression;
+    protected In get(org.opencypher.v9_0.expressions.Expression expression) {
+        return (In) expression;
     }
 
     protected Constraint constraint(String operator, org.opencypher.v9_0.expressions.Expression literal) {
         switch (operator) {
-            case "<": return of(lt,literal.asCanonicalStringVal());
-            case "<=":return of(le,literal.asCanonicalStringVal());
-            case ">": return of(gt,literal.asCanonicalStringVal());
-            case ">=":return of(ge,literal.asCanonicalStringVal());
+            case "IN": return of(inSet,asJavaCollectionConverter(literal.arguments()).asJavaCollection().stream().map(p->p.asCanonicalStringVal()).collect(Collectors.toList()));
         }
         throw new IllegalArgumentException("condition "+literal.asCanonicalStringVal()+" doesn't match any supported V1 constraints");
     }
 
+    @Override
+    protected org.opencypher.v9_0.expressions.Expression literal(org.opencypher.v9_0.expressions.Expression lhs, org.opencypher.v9_0.expressions.Expression rhs) {
+        return ListLiteral.class.isAssignableFrom(lhs.getClass()) ? ((ListLiteral) lhs) :
+                ListLiteral.class.isAssignableFrom(rhs.getClass()) ? ((ListLiteral) rhs) : null;
+    }
 
     @Override
     public boolean isApply(Expression expression) {
-        return (expression instanceof com.bpodgursky.jbool_expressions.Variable) &&
-                (((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression() instanceof org.opencypher.v9_0.expressions.InequalityExpression);
+        return ((expression instanceof com.bpodgursky.jbool_expressions.Variable) &&
+                ((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression() instanceof In);
     }
 }

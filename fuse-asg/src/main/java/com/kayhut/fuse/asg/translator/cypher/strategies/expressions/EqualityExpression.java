@@ -27,34 +27,26 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import org.opencypher.v9_0.expressions.*;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
-import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
-public class InequalityExpression extends BaseEqualityExpression<org.opencypher.v9_0.expressions.InequalityExpression> {
+public class EqualityExpression extends BaseEqualityExpression<Equals> {
 
     @Override
-    protected org.opencypher.v9_0.expressions.InequalityExpression get(org.opencypher.v9_0.expressions.Expression expression) {
-        return (org.opencypher.v9_0.expressions.InequalityExpression) expression;
+    protected Equals get(org.opencypher.v9_0.expressions.Expression expression) {
+        return (Equals) expression;
     }
 
     protected Constraint constraint(String operator, org.opencypher.v9_0.expressions.Expression literal) {
         switch (operator) {
-            case "<": return of(lt,literal.asCanonicalStringVal());
-            case "<=":return of(le,literal.asCanonicalStringVal());
-            case ">": return of(gt,literal.asCanonicalStringVal());
-            case ">=":return of(ge,literal.asCanonicalStringVal());
+            case "=": return of(eq,literal.asCanonicalStringVal());
         }
         throw new IllegalArgumentException("condition "+literal.asCanonicalStringVal()+" doesn't match any supported V1 constraints");
     }
@@ -62,7 +54,7 @@ public class InequalityExpression extends BaseEqualityExpression<org.opencypher.
 
     @Override
     public boolean isApply(Expression expression) {
-        return (expression instanceof com.bpodgursky.jbool_expressions.Variable) &&
-                (((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression() instanceof org.opencypher.v9_0.expressions.InequalityExpression);
+        return ((expression instanceof com.bpodgursky.jbool_expressions.Variable) &&
+                ((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression() instanceof Equals);
     }
 }
