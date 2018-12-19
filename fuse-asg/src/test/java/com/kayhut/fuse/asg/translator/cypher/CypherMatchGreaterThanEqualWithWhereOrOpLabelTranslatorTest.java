@@ -138,18 +138,18 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where (a.age >= 100 OR b.birth < '28/01/2001' ) And b:Person RETURN a");
         String expected = "[└── Start, \n" +
-                           "    ──Q[300:some]:{4|8}, \n" +
-                           "                   └─UnTyp[:[] a#4]──Q[400:all]:{6|401}, \n" +
-                           "                                                   └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[700:all]:{701}──Q[800:all]:{10}, \n" +
-                           "                                                                                                   └─?[..][701], \n" +
-                           "                                                                                                           └─?[701]:[type<inSet,[Person]>], \n" +
-                           "                                                   └─?[..][401], \n" +
-                           "                                                           └─?[401]:[age<ge,100>], \n" +
-                           "                   └─UnTyp[:[] a#8], \n" +
-                           "                               └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[1100:all]:{1101}, \n" +
-                           "                                                                                   └─?[..][1101], \n" +
-                           "                                                                                            └─?[1101]:[type<inSet,[Person]>], \n" +
-                           "                                                                                            └─?[1102]:[birth<lt,28/01/2001>]]";
+                "    ──Q[300:some]:{4|8}, \n" +
+                "                   └─UnTyp[:[] a#4]──Q[400:all]:{6|401}, \n" +
+                "                                                   └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[700:all]:{701}──Q[800:all]:{10}, \n" +
+                "                                                                                                   └─?[..][701], \n" +
+                "                                                                                                           └─?[701]:[type<inSet,[Person]>], \n" +
+                "                                                   └─?[..][401], \n" +
+                "                                                           └─?[401]:[age<ge,100>], \n" +
+                "                   └─UnTyp[:[] a#8], \n" +
+                "                               └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[1100:all]:{1101}, \n" +
+                "                                                                                   └─?[..][1101], \n" +
+                "                                                                                            └─?[1101]:[type<inSet,[Person]>], \n" +
+                "                                                                                            └─?[1102]:[birth<lt,28/01/2001>]]";
         assertEquals(expected, print(query));
     }
 

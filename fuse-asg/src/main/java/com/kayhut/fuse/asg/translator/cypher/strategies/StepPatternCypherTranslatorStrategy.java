@@ -9,9 +9,9 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,8 +22,6 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import org.opencypher.v9_0.expressions.*;
 import scala.Option;
@@ -35,7 +33,7 @@ import java.util.stream.Collectors;
 
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
-public class StepPatternCypherTranslatorStrategy implements CypherElementTranslatorStrategy<PatternElement>   {
+public class StepPatternCypherTranslatorStrategy implements CypherElementTranslatorStrategy<PatternElement> {
 
 
     public StepPatternCypherTranslatorStrategy(NodePatternCypherTranslatorStrategy nodePattern) {
@@ -44,18 +42,20 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
 
     @Override
     public void apply(PatternElement element, AsgQuery query, CypherStrategyContext context) {
-        if(element instanceof RelationshipChain) {
+        if (element instanceof RelationshipChain) {
             final PatternElement left = ((RelationshipChain) element).element();
-            nodePattern.apply(left,query,context);
+            if(left instanceof RelationshipChain) apply(left,query,context);
+            if(left instanceof NodePattern) nodePattern.apply(left,query,context);
+
             final RelationshipPattern relationship = ((RelationshipChain) element).relationship();
-            applyPattern(relationship,context,query);
+            apply(relationship,query,context);
             final NodePattern right = ((RelationshipChain) element).rightNode();
             this.nodePattern.apply(right,query,context);
         }
     }
 
 
-    void applyPattern(RelationshipPattern element, CypherStrategyContext context, AsgQuery query) {
+    public void apply(RelationshipPattern element, AsgQuery query, CypherStrategyContext context) {
         final Option<LogicalVariable> variable = element.variable();
 
         int current = context.getScope().geteNum() + 1;
@@ -70,7 +70,7 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
             name = logicalVariable.name();
         }
 
-        if(!element.types().isEmpty()) {
+        if (!element.types().isEmpty()) {
             //todo
         }
         final SemanticDirection direction = element.direction();
@@ -83,7 +83,7 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
         final List<String> rTypes = labels.stream().map(l -> l.name()).collect(Collectors.toList());
 
         AsgEBase<Rel> rel = new AsgEBase<>(new Rel(current, null, resolve(direction), name, current + 1, 0));
-        if(!rTypes.isEmpty()) {
+        if (!rTypes.isEmpty()) {
             //todo add solution for multi-type labels
             rel = new AsgEBase<>(new Rel(current, rTypes.get(0), resolve(direction), name, current + 1, 0));
         }
@@ -93,9 +93,9 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
     }
 
     private Rel.Direction resolve(SemanticDirection direction) {
-        if(direction instanceof SemanticDirection.INCOMING$)
+        if (direction instanceof SemanticDirection.INCOMING$)
             return Rel.Direction.L;
-        if(direction instanceof SemanticDirection.OUTGOING$)
+        if (direction instanceof SemanticDirection.OUTGOING$)
             return Rel.Direction.R;
         return Rel.Direction.RL;
     }

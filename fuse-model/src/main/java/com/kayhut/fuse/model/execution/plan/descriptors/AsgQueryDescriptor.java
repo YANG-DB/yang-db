@@ -106,10 +106,10 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
                 || element.geteBase() instanceof BasePropGroup
                 || element.getB().stream().filter(p -> (p.geteBase() instanceof BasePropGroup)).findAny().isPresent()) {
             if (element.geteBase() instanceof QuantBase) {
-                List<AsgEBase<? extends EBase>> nexts = element.getNext();
+                List<AsgEBase<? extends EBase>> next = element.getNext();
                 level = builder.size();
-                for (int i = 0; i < nexts.size(); i++) {
-                    print(builder, Optional.of(nexts.get(i)), true, true, level, i);
+                for (int i = 0; i < next.size(); i++) {
+                    print(builder, Optional.of(next.get(i)), true, true, level, i);
                 }
             } else if (element.geteBase() instanceof EEntityBase) {
                 print(builder, element.getNext().isEmpty() ? Optional.empty() : Optional.of(element.getNext().get(0)), element.getNext().isEmpty(), false, level, currentLine);
@@ -185,7 +185,7 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
 
     public static String print(AsgEBase<? extends EBase> element) {
         List<String> builder = new LinkedList<>();
-        builder.add("└── " );
+        builder.add("└── ");
         print(builder, Optional.of(element), false, false, 0, 0);
         return builder.toString();
     }
