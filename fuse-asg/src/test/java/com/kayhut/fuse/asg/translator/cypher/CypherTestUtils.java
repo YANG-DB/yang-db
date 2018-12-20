@@ -20,9 +20,9 @@ class CypherTestUtils {
         ont = new Ontology.Accessor(new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class));
         //translators
         translatorStrategies = Arrays.asList(
-                new NodePatternCypherTranslatorStrategy(),
+                new NodePatternCypherTranslatorStrategy(new EqualityExpression()),
                 new StepPatternCypherTranslatorStrategy(
-                        new NodePatternCypherTranslatorStrategy()
+                        new NodePatternCypherTranslatorStrategy(new EqualityExpression())
                 ));
 
         //expressions
@@ -38,6 +38,7 @@ class CypherTestUtils {
         whereExpressionStrategies.add(new EndsWithExpression());
         whereExpressionStrategies.add(new InExpression());
         whereExpressionStrategies.add(new ContainsExpression());
+        whereExpressionStrategies.add(new LikeExpression());
 
         whereClause = new WhereClauseNodeCypherTranslator(whereExpressionStrategies);
         match = new MatchCypherTranslatorStrategy(translatorStrategies, whereClause);

@@ -20,25 +20,29 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * #L%
  */
 
+import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.EqualityExpression;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
-import org.opencypher.v9_0.expressions.LabelName;
-import org.opencypher.v9_0.expressions.LogicalVariable;
-import org.opencypher.v9_0.expressions.NodePattern;
-import org.opencypher.v9_0.expressions.PatternElement;
+import org.opencypher.v9_0.expressions.*;
+import org.opencypher.v9_0.util.InputPosition;
 import scala.Option;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
 public class NodePatternCypherTranslatorStrategy implements CypherElementTranslatorStrategy<PatternElement> {
+
+    public NodePatternCypherTranslatorStrategy(EqualityExpression equalityExpression) {
+        this.equalityExpression = equalityExpression;
+    }
 
     @Override
     public void apply(PatternElement element, AsgQuery query, CypherStrategyContext context) {
@@ -58,6 +62,21 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
                 name = logicalVariable.name();
             }
 
+            final Option<Expression> properties = ((NodePattern) element).properties();
+            if(properties.nonEmpty()){
+                final List<Literal> var = CypherUtils.literal(properties.get());
+                if(var.size()>0) {
+                    var.forEach(literal->equalityExpression.apply(Optional.empty(),
+//                            new Equals(element.variable().get(),(Expression)literal,InputPosition.NONE()),
+
+                            com.bpodgursky.jbool_expressions.Variable.of(CypherUtils.Wrapper.of((Expression)literal)),
+                                query,
+                                context)
+                    );
+                }
+            }
+
+
             //build label and update query, mutate new current scope
             final Collection<LabelName> labels = asJavaCollectionConverter(((NodePattern) element).labels()).asJavaCollection();
             //labels
@@ -74,4 +93,5 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
         }
     }
 
+    private EqualityExpression equalityExpression;
 }
