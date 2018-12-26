@@ -29,6 +29,7 @@ import com.kayhut.fuse.model.query.entity.EUntyped;
 import org.opencypher.v9_0.expressions.*;
 import org.opencypher.v9_0.util.InputPosition;
 import scala.Option;
+import scala.Tuple2;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -62,21 +63,6 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
                 name = logicalVariable.name();
             }
 
-            final Option<Expression> properties = ((NodePattern) element).properties();
-            if(properties.nonEmpty()){
-                final List<Literal> var = CypherUtils.literal(properties.get());
-                if(var.size()>0) {
-                    var.forEach(literal->equalityExpression.apply(Optional.empty(),
-//                            new Equals(element.variable().get(),(Expression)literal,InputPosition.NONE()),
-
-                            com.bpodgursky.jbool_expressions.Variable.of(CypherUtils.Wrapper.of((Expression)literal)),
-                                query,
-                                context)
-                    );
-                }
-            }
-
-
             //build label and update query, mutate new current scope
             final Collection<LabelName> labels = asJavaCollectionConverter(((NodePattern) element).labels()).asJavaCollection();
             //labels
@@ -90,7 +76,19 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
 
             context.getScope().addNext(node);
             context.scope(node);
+
+            final Option<Expression> properties = ((NodePattern) element).properties();
+            if (properties.nonEmpty()) {
+                Collection<Tuple2<PropertyKeyName, Expression>> collection = asJavaCollectionConverter(((MapExpression) properties.get()).items()).asJavaCollection();
+                Property property = new Property(variable.get(), collection.iterator().next()._1, InputPosition.NONE());
+                Equals equals = new Equals(property, collection.iterator().next()._2, InputPosition.NONE());
+                CypherUtils.Wrapper wrapper = CypherUtils.Wrapper.of(equals);
+                equalityExpression.apply(Optional.empty(), com.bpodgursky.jbool_expressions.Variable.of(wrapper), query, context);
+            }
+            //return scope to original node
+            context.scope(node);
         }
+
     }
 
     private EqualityExpression equalityExpression;

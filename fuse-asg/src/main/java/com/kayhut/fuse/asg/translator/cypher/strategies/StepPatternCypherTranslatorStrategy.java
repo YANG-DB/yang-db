@@ -22,6 +22,7 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import org.opencypher.v9_0.expressions.*;
 import scala.Option;
@@ -58,10 +59,7 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
     public void apply(RelationshipPattern element, AsgQuery query, CypherStrategyContext context) {
         final Option<LogicalVariable> variable = element.variable();
 
-        int current = context.getScope().geteNum() + 1;
-        if (!context.getScope().getNext().isEmpty()) {
-            current = context.getScope().getNext().get(0).geteNum();
-        }
+        int current = CypherUtils.maxEntityNum(query)+1;
         String name = "Rel_#" + current;
 
         if (!variable.isEmpty()) {
@@ -76,7 +74,8 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
         final SemanticDirection direction = element.direction();
 
         //build label and update query, mutate new current scope
-        CypherUtils.quant(context.getScope(), Optional.empty(), query, context);
+        AsgEBase<EBase> quant = CypherUtils.quant(context.getScope(), Optional.empty(), query, context);
+        context.scope(quant);
 
         //labels
         Collection<RelTypeName> labels = asJavaCollectionConverter((element).types()).asJavaCollection();

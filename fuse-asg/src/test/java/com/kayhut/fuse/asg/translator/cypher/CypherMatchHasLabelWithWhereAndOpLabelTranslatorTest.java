@@ -38,6 +38,76 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     //endregion
 
     @Test
+    public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_pattern() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'}) where a:Horse RETURN a");
+        String expected = "[└── Start, \n" +
+                "    ──UnTyp[:[] a#1]──Q[100:all]:{101}, \n" +
+                "                                  └─?[..][101], \n" +
+                "                                          └─?[101]:[name<eq,Alice>], \n" +
+                "                                          └─?[102]:[type<inSet,[Horse]>]]";
+        assertEquals(expected, print(query));
+
+    }
+    @Test
+    public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_multi_pattern() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'})--(b {age: 30}) where a:Horse RETURN a");
+        final AsgEBase<Quant1> quantA = quant1(100, all);
+
+        quantA.addNext(
+                ePropGroup(101,all,
+                        of(101, "name", of(eq, "Alice")),
+                        of(102, "type", of(inSet, Collections.singleton("Horse")))));
+
+        quantA.addNext(
+                rel(2, null, Rel.Direction.RL,"Rel_#2")
+                    .addNext(unTyped(3, "b")
+                        .next(quant1(300, all)
+                                .addNext(
+                                        ePropGroup(301,all,
+                                                of(301, "age", of(eq, 30)))
+                                )
+                        )));
+
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(unTyped(1, "a"))
+                .next(quantA)
+                .build();
+        assertEquals(print(expected), print(query));
+    }
+    @Test
+    public void testMatch_A_where_A_OfType_AND_A_OfType_AND_B_OfType_Return_A_with_multi_pattern() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'})--(b {age: 30}) where a:Horse and b:Dragon RETURN a");
+        final AsgEBase<Quant1> quantA = quant1(100, all);
+
+        quantA.addNext(
+                ePropGroup(101,all,
+                        of(101, "name", of(eq, "Alice")),
+                        of(102, "type", of(inSet, Collections.singletonList("Horse")))));
+
+        quantA.addNext(
+                rel(2, null, Rel.Direction.RL,"Rel_#2")
+                    .addNext(unTyped(3, "b")
+                        .next(quant1(300, all)
+                                .addNext(
+                                        ePropGroup(301,all,
+                                                of(301, "age", of(eq, 30)),
+                                                of(302, "type", of(inSet, Collections.singletonList("Dragon"))))
+                                )
+                        )));
+
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(unTyped(1, "a"))
+                .next(quantA)
+                .build();
+        assertEquals(print(expected), print(query));
+    }
+
+    @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_wildcard() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where (a.name =~ 'jh.*') AND a:Horse RETURN a");

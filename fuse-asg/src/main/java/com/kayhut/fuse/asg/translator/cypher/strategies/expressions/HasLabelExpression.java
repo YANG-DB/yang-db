@@ -45,6 +45,11 @@ public class HasLabelExpression extends BaseExpressionStrategy {
         Collection<LabelName> labelNames = asJavaCollectionConverter(hasLabels.labels()).asJavaCollection();
         Variable variable = (Variable) hasLabels.expression();
 
+        if (!parent.isPresent()) {
+            CypherUtils.quant(query.getStart().getNext().isEmpty() ? query.getStart() : query.getStart().getNext().get(0), Optional.of(expression), query, context);
+            context.scope(query.getStart());
+        }
+
         //first find the node element by its var name in the query
         final Optional<AsgEBase<EBase>> byTag = AsgQueryUtil.getByTag(context.getScope(), variable.name());
         if(!byTag.isPresent()) return;

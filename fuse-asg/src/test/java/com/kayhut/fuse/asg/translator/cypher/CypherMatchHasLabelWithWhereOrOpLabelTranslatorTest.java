@@ -42,15 +42,12 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_pattern() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'})-->(c) where (c.name =~ 'jh.*') OR a:Horse RETURN a");
+        final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'})--(b) where a:Horse OR b:Person RETURN a");
         String expected = "[└── Start, \n" +
-                "    ──Q[100:some]:{2|3}, \n" +
-                "                   └─UnTyp[:[] a#2]──Q[200:all]:{201}, \n" +
-                "                                                 └─?[..][201]──Q[300:all]:{301}, \n" +
-                "                                                         └─?[201]:[type<inSet,[Horse]>], \n" +
-                "                   └─UnTyp[:[] a#3], \n" +
-                "                               └─?[..][301], \n" +
-                "                                       └─?[301]:[name<like,jh*>]]";
+                "    ──UnTyp[:[] a#1]──Q[100:all]:{101}, \n" +
+                "                                  └─?[..][101], \n" +
+                "                                          └─?[101]:[name<eq,Alice>], \n" +
+                "                                          └─?[102]:[type<inSet,[Horse]>]]";
         assertEquals(expected, print(query));
 
     }
