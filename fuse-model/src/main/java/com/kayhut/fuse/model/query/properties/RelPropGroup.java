@@ -29,6 +29,8 @@ import javaslang.collection.Stream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 25-Apr-17.
@@ -80,10 +82,12 @@ public class RelPropGroup extends BasePropGroup<RelProp, RelPropGroup> {
 
     @Override
     public RelPropGroup clone(int eNum) {
+        AtomicInteger propsNum = new AtomicInteger(eNum);
+        AtomicInteger groupsNum = new AtomicInteger(eNum);
         RelPropGroup propGroup = new RelPropGroup();
         propGroup.seteNum(eNum);
-        propGroup.props = new ArrayList<>(getProps());
-        propGroup.groups = new ArrayList<>(getGroups());
+        propGroup.props = getProps().stream().map(p -> p.clone(propsNum.incrementAndGet())).collect(Collectors.toList());
+        propGroup.groups = getGroups().stream().map(p -> p.clone(groupsNum.incrementAndGet())).collect(Collectors.toList());
         return propGroup;
 
     }

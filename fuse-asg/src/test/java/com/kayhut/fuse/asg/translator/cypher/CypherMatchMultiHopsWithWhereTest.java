@@ -52,6 +52,31 @@ public class CypherMatchMultiHopsWithWhereTest {
     }
 
     @Test
+    public void testMatch_4_hops_with_contains_and_with_pattern() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a {name: 'vlad'})-[b]->(c {size: 'large'})-[d]-(e {age: 100})-[f]->(g {weight: 250})-[h]-(i { height: 200}) where (a.name CONTAINS 'jh') AND a:Horse RETURN a");
+        String expected = "[└── Start, \n" +
+                            "    ──UnTyp[:[] a#1]──Q[100:all]:{101|2}, \n" +
+                            "                                    └─?[..][101], \n" +
+                            "                                            └─?[101]:[name<eq,vlad>]──UnTyp[:[] c#3]──Q[300:all]:{301|4}, \n" +
+                            "                                            └─?[102]:[name<contains,jh>], \n" +
+                            "                                            └─?[102]:[type<inSet,[Horse]>], \n" +
+                            "                                    └-> Rel(:null b#2), \n" +
+                            "                                                  └─?[..][301], \n" +
+                            "                                                          └─?[301]:[size<eq,large>]──UnTyp[:[] e#5]──Q[500:all]:{501|6}, \n" +
+                            "                                                  └<--Rel(:null d#4), \n" +
+                            "                                                                └─?[..][501], \n" +
+                            "                                                                        └─?[501]:[age<eq,100>]──UnTyp[:[] g#7]──Q[700:all]:{701|8}, \n" +
+                            "                                                                └-> Rel(:null f#6), \n" +
+                            "                                                                              └─?[..][701], \n" +
+                            "                                                                                      └─?[701]:[weight<eq,250>]──UnTyp[:[] i#9]──Q[900:all]:{901}, \n" +
+                            "                                                                              └<--Rel(:null h#8), \n" +
+                            "                                                                                            └─?[..][901], \n" +
+                            "                                                                                                    └─?[901]:[height<eq,200>]]";
+        assertEquals(expected, print(query));
+    }
+
+    @Test
     public void testMatch_4_hops_with_contains_or() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh') OR a:Horse RETURN a");

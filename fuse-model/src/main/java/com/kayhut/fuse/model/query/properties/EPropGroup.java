@@ -31,10 +31,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 25-Apr-17.
@@ -96,11 +96,12 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
 
     @Override
     public EPropGroup clone(int eNum) {
-        return new EPropGroup(
-                eNum,
-                this.getQuantType(),
-                this.getProps(),
-                this.getGroups());
+        AtomicInteger propsNum = new AtomicInteger(eNum);
+        AtomicInteger groupsNum = new AtomicInteger(eNum);
+        return new EPropGroup(eNum,
+        this.getQuantType(),
+                this.getProps().stream().map(p->p.clone(propsNum.incrementAndGet())).collect(Collectors.toList()),
+                this.getGroups().stream().map(p->p.clone(groupsNum.incrementAndGet())).collect(Collectors.toList()));
     }
     //endregion
 

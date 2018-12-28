@@ -28,10 +28,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantBase;
 import javaslang.Tuple2;
@@ -39,6 +36,7 @@ import javaslang.collection.Stream;
 
 import javax.management.relation.Relation;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -493,6 +491,9 @@ public class AsgQueryUtil {
         T clone = (T) asgEBase.geteBase().clone(max + 1);
         //quant base has a special sequence counter
         if (QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
+            clone = (T) asgEBase.geteBase().clone(max * 100);
+        }
+        if (BasePropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
             clone = (T) asgEBase.geteBase().clone(max * 100);
         }
         eBaseBuilder.withEBase(clone);

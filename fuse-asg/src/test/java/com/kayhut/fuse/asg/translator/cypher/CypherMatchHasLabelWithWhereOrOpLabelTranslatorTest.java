@@ -40,15 +40,135 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
     //endregion
 
     @Test
-    public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_pattern() {
+    public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_pattern() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'})--(b) where a:Horse OR b:Person RETURN a");
-        String expected = "[└── Start, \n" +
-                "    ──UnTyp[:[] a#1]──Q[100:all]:{101}, \n" +
-                "                                  └─?[..][101], \n" +
-                "                                          └─?[101]:[name<eq,Alice>], \n" +
-                "                                          └─?[102]:[type<inSet,[Horse]>]]";
-        assertEquals(expected, print(query));
+        final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'})--(b) where a:Person OR b:Dragon RETURN a");
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(quant1(300, some))
+                .in(
+                        unTyped(4, "a")
+                                .addNext(
+                                        quant1(400, all)
+                                                .addNext(ePropGroup(500, all,
+                                                        of(501, "name",of(eq,"Alice")))
+                                                )
+                                                .addNext(
+                                                        rel(6,null,Rel.Direction.RL,"Rel_#2")
+                                                                .next(unTyped(7, "b")
+                                                                        .next(quant1(700, all)
+                                                                                .addNext(ePropGroup(701, all,
+                                                                                        of(701, "type",
+                                                                                                of(inSet, Arrays.asList("Dragon")))
+                                                                                )))))
+                                ),
+                        unTyped(8, "a")
+                                .addNext(
+                                        quant1(800, all)
+                                            .addNext(ePropGroup(900, all,
+                                                    of(901, "name",of(eq,"Alice")),
+                                                    of(901, "type",of(inSet, Arrays.asList("Person")))
+                                            ))
+                                            .addNext(
+                                                    rel(10,null,Rel.Direction.RL,"Rel_#2")
+                                                            .next(unTyped(11, "b"))
+                                            ))
+                ).build();
+        assertEquals(print(expected), print(query));
+
+    }
+    @Test
+    public void testMatch_A_where_A_OfType_B_eq_dug_OR_A_OfType_Return_A_with_pattern() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'})--(b { size: 'large'}) where a:Person OR b:Dragon RETURN a");
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(quant1(300, some))
+                .in(
+                        unTyped(4, "a")
+                                .addNext(
+                                        quant1(400, all)
+                                                .addNext(ePropGroup(500, all,
+                                                        of(501, "name",of(eq,"Alice")))
+                                                )
+                                                .addNext(
+                                                        rel(6,null,Rel.Direction.RL,"Rel_#2")
+                                                                .next(unTyped(7, "b")
+                                                                        .next(quant1(700, all)
+                                                                                .addNext(ePropGroup(800, all,
+                                                                                        of(801, "size",of(eq,"large")),
+                                                                                        of(801, "type",
+                                                                                                of(inSet, Arrays.asList("Dragon")))
+                                                                                ))
+                                                                        )))
+                                ),
+                        unTyped(8, "a")
+                                .addNext(
+                                        quant1(800, all)
+                                            .addNext(ePropGroup(900, all,
+                                                    of(901, "name",of(eq,"Alice")),
+                                                    of(901, "type",of(inSet, Arrays.asList("Person")))
+                                            ))
+                                            .addNext(
+                                                    rel(10,null,Rel.Direction.RL,"Rel_#2")
+                                                            .next(
+                                                                unTyped(11, "b")
+                                                                    .next(quant1(1100, all)
+                                                                            .addNext(ePropGroup(1200, all,
+                                                                                    of(1201, "size",of(eq,"large"))
+                                                                            )))
+                                                            )
+                                            ))
+                ).build();
+        assertEquals(print(expected), print(query));
+
+    }
+
+    @Test
+    @Ignore
+    public void testMatch_A_where_A_OfType_B_eq_C_eq_dug_OR_A_OfType_Return_A_with_pattern() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'})-[c {color: 'white'}]-(b { size: 'large'}) where a:Person OR b:Dragon RETURN a");
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(quant1(300, some))
+                .in(
+                        unTyped(4, "a")
+                                .addNext(
+                                        quant1(400, all)
+                                                .addNext(ePropGroup(500, all,
+                                                        of(501, "name",of(eq,"Alice")))
+                                                )
+                                                .addNext(
+                                                        rel(6,null,Rel.Direction.RL,"Rel_#2")
+                                                                .next(unTyped(7, "b")
+                                                                        .next(quant1(700, all)
+                                                                                .addNext(ePropGroup(800, all,
+                                                                                        of(801, "size",of(eq,"large")),
+                                                                                        of(801, "type",
+                                                                                                of(inSet, Arrays.asList("Dragon")))
+                                                                                ))
+                                                                        )))
+                                ),
+                        unTyped(8, "a")
+                                .addNext(
+                                        quant1(800, all)
+                                            .addNext(ePropGroup(900, all,
+                                                    of(901, "name",of(eq,"Alice")),
+                                                    of(901, "type",of(inSet, Arrays.asList("Person")))
+                                            ))
+                                            .addNext(
+                                                    rel(10,null,Rel.Direction.RL,"Rel_#2")
+                                                            .next(
+                                                                unTyped(11, "b")
+                                                                    .next(quant1(1100, all)
+                                                                            .addNext(ePropGroup(1200, all,
+                                                                                    of(1201, "size",of(eq,"large"))
+                                                                            )))
+                                                            )
+                                            ))
+                ).build();
+        assertEquals(print(expected), print(query));
 
     }
 
