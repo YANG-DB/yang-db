@@ -34,13 +34,6 @@ import java.util.Collection;
 
 public class CypherTranslator implements AsgTranslator<String,AsgQuery> {
 
-    //region Constructors
-    @Inject
-    public CypherTranslator(String ontology, Collection<CypherTranslatorStrategy> strategies) {
-        this.ontology = ontology;
-        this.strategies = strategies;
-    }
-
     @Inject
     public CypherTranslator(String ontology, CypherAsgStrategyRegistrar strategies) {
         this.ontology = ontology;

@@ -39,7 +39,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_pattern() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'}) where a:Horse RETURN a");
         String expected = "[└── Start, \n" +
                 "    ──UnTyp[:[] a#1]──Q[100:all]:{101}, \n" +
@@ -51,7 +51,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     }
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_multi_pattern() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'})--(b {age: 30}) where a:Horse RETURN a");
         final AsgEBase<Quant1> quantA = quant1(100, all);
 
@@ -79,7 +79,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     }
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_AND_B_OfType_Return_A_with_multi_pattern() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a {name: 'Alice'})--(b {age: 30}) where a:Horse and b:Dragon RETURN a");
         final AsgEBase<Quant1> quantA = quant1(100, all);
 
@@ -109,7 +109,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_wildcard() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where (a.name =~ 'jh.*') AND a:Horse RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -125,7 +125,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     }
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_contains() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where (a.name CONTAINS 'jh') AND a:Horse RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -141,7 +141,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     }
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_endsWith() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where (a.name ENDS WITH 'jh*') AND a:Horse RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -158,7 +158,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_in() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where (a.name STARTS WITH 'jh*')  AND a:Horse RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -176,7 +176,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_Return_A() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where a:Dragon RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -189,7 +189,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where a:Dragon AND a:Hours RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -206,7 +206,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_in() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where a.name in ['jhone','jane'] AND a:Horse RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -223,7 +223,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_equal() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where a.name = 'jhone' AND a:Horse RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -240,7 +240,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_notEqual() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a) where a.name <> 'jhone' AND a:Horse RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -257,7 +257,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon AND a:Hours AND b:Person RETURN a");
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, null, Rel.Direction.RL,"Rel_#2")
@@ -283,7 +283,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_AND_B_OfType_Return_A() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon AND b:Person RETURN a,b");
 
         //region Test Methods
@@ -310,7 +310,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     }
     @Test
     public void testMatch_A_where_A_OfType_testMatch_A_where_A_OfType_AND_C_OfType_Return_A() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where a:Dragon AND b:Person AND c:Fire AND c:Freeze RETURN a,b");
 
         //region Test Methods

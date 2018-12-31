@@ -37,7 +37,7 @@ public class CypherMatchMultiHopsWithWhereTest {
 
     @Test
     public void testMatch_4_hops_with_contains_and() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh') AND a:Horse RETURN a");
         String expected = "[└── Start, \n" +
                             "    ──UnTyp[:[] a#1]──Q[100:all]:{2|101}, \n" +
@@ -53,7 +53,7 @@ public class CypherMatchMultiHopsWithWhereTest {
 
     @Test
     public void testMatch_4_hops_with_contains_and_with_pattern() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a {name: 'vlad'})-[b]->(c {size: 'large'})-[d]-(e {age: 100})-[f]->(g {weight: 250})-[h]-(i { height: 200}) where (a.name CONTAINS 'jh') AND a:Horse RETURN a");
         String expected = "[└── Start, \n" +
                             "    ──UnTyp[:[] a#1]──Q[100:all]:{101|2}, \n" +
@@ -78,7 +78,7 @@ public class CypherMatchMultiHopsWithWhereTest {
 
     @Test
     public void testMatch_4_hops_with_contains_or() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh') OR a:Horse RETURN a");
         String expected = "[└── Start, \n" +
                 "    ──Q[900:some]:{10|23}, \n" +
@@ -101,7 +101,7 @@ public class CypherMatchMultiHopsWithWhereTest {
 
     @Test
     public void testMatch_4_hops_with_contains_or_and() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh' and c.age > 100) OR (e:Horse and h:Fire) RETURN a");
         String expected = "[└── Start, \n" +
                             "    ──Q[900:some]:{10|23}, \n" +

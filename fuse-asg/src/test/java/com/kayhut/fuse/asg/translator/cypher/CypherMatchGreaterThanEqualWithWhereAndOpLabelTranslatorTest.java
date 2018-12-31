@@ -38,7 +38,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_Return_A() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a:Dragon) where a.age > 100 RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -51,7 +51,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a:Dragon) where (a.age < 100 AND a.birth >= '28/01/2001') RETURN a");
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -68,7 +68,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon AND (a.age < 100 AND b.birth >= '28/01/2001')  RETURN a");
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, null, Rel.Direction.RL,"Rel_#2")
@@ -94,7 +94,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
 
     @Test
     public void testMatch_A_where_A_OfType_testMatch_A_where_A_OfType_AND_C_OfType_Return_A() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", Collections.singleton(match));
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where a.age < 100 AND b.birth >= '28/01/2001' AND (c:Fire AND c:Freeze) RETURN a,b");
 
         //region Test Methods
