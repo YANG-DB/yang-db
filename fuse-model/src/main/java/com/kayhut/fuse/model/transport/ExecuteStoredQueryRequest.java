@@ -23,6 +23,8 @@ package com.kayhut.fuse.model.transport;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.query.QueryRef;
 import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
@@ -30,6 +32,7 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import java.util.Collection;
 import java.util.Collections;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExecuteStoredQueryRequest extends CreateQueryRequest {
 
     private final Collection<NamedParameter> parameters;
@@ -60,6 +63,7 @@ public class ExecuteStoredQueryRequest extends CreateQueryRequest {
         return parameters;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public CreatePageRequest getPageCursorRequest() {
         return (getCreateCursorRequest() != null ? getCreateCursorRequest().getCreatePageRequest() : null);
     }

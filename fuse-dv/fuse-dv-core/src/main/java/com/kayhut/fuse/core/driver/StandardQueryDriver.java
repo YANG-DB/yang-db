@@ -51,10 +51,11 @@ public class StandardQueryDriver extends QueryDriverBase {
             QueryTransformer<Query, AsgQuery> queryTransformer,
             QueryValidator<AsgQuery> queryValidator,
             QueryTransformer<AsgQuery, AsgQuery> queryRewriter,
+            QueryTransformer<String, AsgQuery> jsonQueryTransformer,
             PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
-        super(cursorDriver, pageDriver, queryTransformer, queryValidator, resourceStore, urlSupplier);
+        super(cursorDriver, pageDriver, queryTransformer, jsonQueryTransformer,queryValidator, resourceStore, urlSupplier);
         this.queryRewriter = queryRewriter;
         this.planSearcher = planSearcher;
     }

@@ -118,11 +118,13 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
 
     public AsgEBase<? extends EBase> addNext(AsgEBase<? extends EBase> node) {
         this.next.add(node);
+        node.setParent(Arrays.asList(this));
         return this;
     }
 
     public AsgEBase<? extends EBase> addNext(List<AsgEBase<? extends EBase>> nodes) {
         this.next.addAll(nodes);
+        nodes.stream().forEach(e->e.setParent(Arrays.asList(this)));
         return this;
     }
 
@@ -134,6 +136,7 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
     @Override
     public void setNext(List<AsgEBase<? extends EBase>> next) {
         this.next = next;
+        next.stream().forEach(e->e.setParent(Arrays.asList(this)));
     }
 
     public List<AsgEBase<? extends EBase>> getB() {

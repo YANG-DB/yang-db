@@ -36,10 +36,11 @@ public class MockDriver {
                 CursorDriver cursorDriver,
                 PageDriver pageDriver,
                 QueryTransformer<com.kayhut.fuse.model.query.Query, AsgQuery> queryTransformer,
+                QueryTransformer<String, AsgQuery> queryJasonTransformer,
                 QueryValidator<AsgQuery> queryValidator,
                 ResourceStore resourceStore,
                 AppUrlSupplier urlSupplier) {
-            super(cursorDriver, pageDriver, queryTransformer, queryValidator, resourceStore, urlSupplier);
+            super(cursorDriver, pageDriver, queryTransformer,queryJasonTransformer, queryValidator, resourceStore, urlSupplier);
         }
         //endregion
 

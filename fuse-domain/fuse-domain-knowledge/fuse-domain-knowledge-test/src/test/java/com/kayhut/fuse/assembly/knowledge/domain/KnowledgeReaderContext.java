@@ -198,10 +198,34 @@ public class KnowledgeReaderContext {
         return query(fuseClient, fuseResourceInfo, query, new CreateGraphCursorRequest());
     }
 
+    static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, String query,String ontology)
+            throws IOException, InterruptedException {
+        return query(fuseClient, fuseResourceInfo, query,ontology, new CreateGraphCursorRequest());
+    }
+
     static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, Query query, CreateCursorRequest createCursorRequest)
             throws IOException, InterruptedException {
         // get Query URL
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        // Press on Cursor
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), createCursorRequest);
+        // Press on page to get the relevant page
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+        // Waiting until it gets the response
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+        // return the relevant data
+        return fuseClient.getPageData(pageResourceInfo.getDataUrl());
+    }
+
+    static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, String query, String ontology, CreateCursorRequest createCursorRequest)
+            throws IOException, InterruptedException {
+        // get Query URL
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query,ontology);
         // Press on Cursor
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), createCursorRequest);
         // Press on page to get the relevant page

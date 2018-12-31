@@ -31,6 +31,8 @@ public interface CreateQueryRequestMetadata<T> {
 
     String getName();
 
+    String getOntology();
+
     T getQuery();
 
     Type getType();

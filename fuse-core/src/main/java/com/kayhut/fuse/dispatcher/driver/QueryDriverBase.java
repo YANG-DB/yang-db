@@ -56,12 +56,14 @@ public abstract class QueryDriverBase implements QueryDriver {
             CursorDriver cursorDriver,
             PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
+            QueryTransformer<String, AsgQuery> jsonQueryTransformer,
             QueryValidator<AsgQuery> queryValidator,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
         this.cursorDriver = cursorDriver;
         this.pageDriver = pageDriver;
         this.queryTransformer = queryTransformer;
+        this.jsonQueryTransformer = jsonQueryTransformer;
         this.queryValidator = queryValidator;
         this.resourceStore = resourceStore;
         this.urlSupplier = urlSupplier;
@@ -147,6 +149,8 @@ public abstract class QueryDriverBase implements QueryDriver {
     private Optional<QueryResourceInfo> create(CreateJsonQueryRequest request, QueryMetadata metadata, String query) {
         try {
             AsgQuery asgQuery = this.jsonQueryTransformer.transform(query);
+            asgQuery.setName(metadata.getName());
+            asgQuery.setOnt(request.getOntology());
 
             ValidationResult validationResult = this.queryValidator.validate(asgQuery);
             if (!validationResult.valid()) {
@@ -155,7 +159,10 @@ public abstract class QueryDriverBase implements QueryDriver {
                                 validationResult.getValidator() + ":" + Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
             }
 
-            Query build = Query.Builder.instance().withName(query).build();
+            Query build = Query.Builder.instance()
+                    .withOnt(request.getOntology())
+                    .withName(query).build();
+
             this.resourceStore.addQueryResource(createResource(
                     new CreateQueryRequest(request.getId(),request.getName(),build,request.getPlanTraceOptions(),request.getCreateCursorRequest())
                     , build

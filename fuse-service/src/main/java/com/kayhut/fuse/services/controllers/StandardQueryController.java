@@ -33,11 +33,8 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
-import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
-import com.kayhut.fuse.model.transport.CreateJsonQueryRequest;
-import com.kayhut.fuse.model.transport.CreateQueryRequest;
-import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -81,7 +78,14 @@ public class StandardQueryController implements QueryController {
 
     @Override
     public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryRequest request) {
-        ContentResponse<QueryResourceInfo> queryResourceInfoResponse = this.create(request);
+        return  createAndFetch(this.create(request),request);
+    }
+
+    public ContentResponse<QueryResourceInfo> createAndFetch(CreateJsonQueryRequest request) {
+        return  createAndFetch(this.create(request),request);
+    }
+
+    private ContentResponse<QueryResourceInfo> createAndFetch(ContentResponse<QueryResourceInfo> queryResourceInfoResponse, CreateQueryRequestMetadata request) {
         if (queryResourceInfoResponse.status() == SERVER_ERROR) {
             return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                     .data(Optional.of(queryResourceInfoResponse.getData()))
@@ -161,6 +165,7 @@ public class StandardQueryController implements QueryController {
                         queryResourceInfoResponse.getData().getCursorStoreUrl(),
                         cursorResourceInfoResponse.getData())))
                 .compose();
+
     }
 
     @Override

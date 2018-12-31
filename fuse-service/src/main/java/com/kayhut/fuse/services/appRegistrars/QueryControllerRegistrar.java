@@ -9,9 +9,9 @@ package com.kayhut.fuse.services.appRegistrars;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,10 +35,9 @@ import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.*;
+import com.kayhut.fuse.model.transport.Response;
 import com.kayhut.fuse.services.controllers.QueryController;
-import org.jooby.Jooby;
-import org.jooby.Results;
-import org.jooby.Status;
+import org.jooby.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +45,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.services.appRegistrars.QueryControllerRegistrar.API.*;
 import static org.jooby.Status.NOT_FOUND;
 import static org.jooby.Status.OK;
 
@@ -66,52 +66,26 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     return Results.with(this.getController(app).getInfo(), Status.OK);
                 });
 
-        /** create a query */
-        app.use(appUrlSupplier.queryStoreUrl())
-                .post(req -> {
-                    Route.of("postQuery").write();
+        /** create a v1 fallback url */
+        app.use(appUrlSupplier.queryStoreUrl() )
+                .post(req -> postV1(app,req,this));
 
-                    CreateQueryRequest createQueryRequest = req.body(CreateQueryRequest.class);
-                    req.set(CreateQueryRequest.class, createQueryRequest);
-                    req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
-                    final long maxExecTime = createQueryRequest.getCreateCursorRequest() != null
-                            ? createQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
-                    req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
+        /** create a v1 query */
+        app.use(appUrlSupplier.queryStoreUrl() + "/v1")
+                .post(req -> postV1(app,req,this));
 
-                    ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
-                            this.getController(app).create(createQueryRequest) :
-                            this.getController(app).createAndFetch(createQueryRequest);
+        /** create a cypher query */
+        app.use(appUrlSupplier.queryStoreUrl() + "/cypher")
+                .post(req -> postCypher(app,req,this));
 
-                    return Results.with(response, response.status());
-                });
 
         /** call a query */
         app.use(appUrlSupplier.queryStoreUrl() + "/call")
-                .post(req -> {
-                    Route.of("callQuery").write();
-
-                    ExecuteStoredQueryRequest callQueryRequest = req.body(ExecuteStoredQueryRequest.class);
-                    req.set(ExecuteStoredQueryRequest.class, callQueryRequest);
-                    req.set(PlanTraceOptions.class, callQueryRequest.getPlanTraceOptions());
-                    final long maxExecTime = callQueryRequest.getCreateCursorRequest() != null
-                            ? callQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
-                    req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
-                    ContentResponse<QueryResourceInfo> response = this.getController(app).callAndFetch(callQueryRequest);
-
-                    return Results.with(response, response.status());
-                });
+                .post(req -> API.call(app,req,this));
 
         /** call a query */
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/nextPageData")
-                .get(req -> {
-                    Route.of("nextPageData").write();
-                    ContentResponse<Object> page = this.getController(app)
-                            .fetchNextPage(req.param("queryId").value(),
-                                           req.param("cursorId").toOptional(String.class),
-                                           req.param("pageSize").intValue(),
-                                           req.param("deletePage").isSet() ? req.param("deletePage").booleanValue() : true);
-                    return Results.with(page, page.status());
-                });
+                .get(req -> API.nextPage(app,req,this));
 
         /** get the query info */
         app.use(appUrlSupplier.resourceUrl(":queryId"))
@@ -126,7 +100,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.use(appUrlSupplier.resourceUrl(":queryId"))
                 .delete(req -> {
                     Route.of("deleteQuery").write();
-
                     ContentResponse response = this.getController(app).delete(req.param("queryId").value());
                     return Results.with(response, response.status());
                 });
@@ -141,14 +114,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                 });
         /** get the print of the execution plan */
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/print")
-                .get(req -> {
-                    ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = this.getController(app).explain(req.param("queryId").value());
-                    String print = PlanWithCostDescriptor.print(response.getData());
-                    ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
-                            .data(Optional.of(print))
-                            .compose();
-                    return Results.with(compose, compose.status());
-                });
+                .get(req -> API.planPrint(app,req,this));
 
         /** get the query v1*/
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/v1")
@@ -158,14 +124,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                 });
         /** get the query v1 print*/
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/v1/print")
-                .get(req -> {
-                    ContentResponse<Query> response = this.getController(app).getV1(req.param("queryId").value());
-                    String print = QueryDescriptor.print(response.getData());
-                    ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
-                            .data(Optional.of(print))
-                            .compose();
-                    return Results.with(compose, compose.status());
-                });
+                .get(req -> API.queryPrint(app,req,this));
 
 
         /** view the asg query with d3 html*/
@@ -194,14 +153,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** get the asg query print*/
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg/print")
-                .get(req -> {
-                    ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param("queryId").value());
-                    String print = AsgQueryDescriptor.print(response.getData());
-                    ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
-                            .data(Optional.of(print))
-                            .compose();
-                    return Results.with(compose, compose.status());
-                });
+                .get(req -> API.print(app,req,this));
 
         /** get the query plan execution */
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan")
@@ -220,15 +172,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** get the query verbose plan */
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/graph")
-                .get(req -> {
-                    ContentResponse response = this.getController(app).explain(req.param("queryId").value());
-                    Boolean cycle = Boolean.valueOf(req.param("cycle").toOptional().orElse("true"));
-                    Graph<PlanWithCostDescriptor.GraphElement> graph = PlanWithCostDescriptor.graph((PlanWithCost<Plan, PlanDetailedCost>) response.getData(), cycle);
-                    Map<String, Set> map = new HashMap<>();
-                    map.put("nodes", graph.nodes());
-                    map.put("edges", graph.edges().stream().map(v -> new Object[]{v.nodeU(), v.nodeV()}).collect(Collectors.toSet()));
-                    return Results.json(map);
-                });
+                .get(req -> API.planGraph(app,req,this));
 
         app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/view")
                 .get(req -> Results.redirect("/public/assets/PlanTreeViewer.html?q=" + req.param("queryId").value()));
@@ -237,4 +181,107 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                 .get(req -> Results.redirect("/public/assets/PlanSankeyViewer.html?q=" + req.param("queryId").value()));
     }
     //endregion
+
+
+    static class API {
+        public static Result postCypher(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+            Route.of("postCypher").write();
+
+            CreateJsonQueryRequest createQueryRequest = req.body(CreateJsonQueryRequest.class);
+            req.set(CreateJsonQueryRequest.class, createQueryRequest);
+            req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
+            final long maxExecTime = createQueryRequest.getCreateCursorRequest() != null
+                    ? createQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
+            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
+
+            ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
+                    registrar.getController(app).create(createQueryRequest) :
+                    registrar.getController(app).createAndFetch(createQueryRequest);
+
+            return Results.with(response, response.status());
+
+        }
+
+        public static Result postV1(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+            Route.of("postQuery").write();
+
+            CreateQueryRequest createQueryRequest = req.body(CreateQueryRequest.class);
+            req.set(CreateQueryRequest.class, createQueryRequest);
+            req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
+            final long maxExecTime = createQueryRequest.getCreateCursorRequest() != null
+                    ? createQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
+            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
+
+            ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
+                    registrar.getController(app).create(createQueryRequest) :
+                    registrar.getController(app).createAndFetch(createQueryRequest);
+
+            return Results.with(response, response.status());
+        }
+
+        public static Result call(Jooby app, Request req, QueryControllerRegistrar registrar) throws Exception {
+            Route.of("callQuery").write();
+
+            ExecuteStoredQueryRequest callQueryRequest = req.body(ExecuteStoredQueryRequest.class);
+            req.set(ExecuteStoredQueryRequest.class, callQueryRequest);
+            req.set(PlanTraceOptions.class, callQueryRequest.getPlanTraceOptions());
+            final long maxExecTime = callQueryRequest.getCreateCursorRequest() != null
+                    ? callQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
+            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
+            ContentResponse<QueryResourceInfo> response = registrar.getController(app).callAndFetch(callQueryRequest);
+
+            return Results.with(response, response.status());
+
+        }
+
+        public static Result nextPage(Jooby app, Request req, QueryControllerRegistrar registrar) {
+            Route.of("nextPageData").write();
+            ContentResponse<Object> page = registrar.getController(app)
+                    .fetchNextPage(req.param("queryId").value(),
+                            req.param("cursorId").toOptional(String.class),
+                            req.param("pageSize").intValue(),
+                            req.param("deletePage").isSet() ? req.param("deletePage").booleanValue() : true);
+            return Results.with(page, page.status());
+
+        }
+
+        public static Result print(Jooby app, Request req, QueryControllerRegistrar registrar) {
+            ContentResponse<AsgQuery> response = registrar.getController(app).getAsg(req.param("queryId").value());
+            String print = AsgQueryDescriptor.print(response.getData());
+            ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
+                    .data(Optional.of(print))
+                    .compose();
+            return Results.with(compose, compose.status());
+
+        }
+
+        public static Result planGraph(Jooby app, Request req, QueryControllerRegistrar registrar) {
+            ContentResponse response = registrar.getController(app).explain(req.param("queryId").value());
+            Boolean cycle = Boolean.valueOf(req.param("cycle").toOptional().orElse("true"));
+            Graph<PlanWithCostDescriptor.GraphElement> graph = PlanWithCostDescriptor.graph((PlanWithCost<Plan, PlanDetailedCost>) response.getData(), cycle);
+            Map<String, Set> map = new HashMap<>();
+            map.put("nodes", graph.nodes());
+            map.put("edges", graph.edges().stream().map(v -> new Object[]{v.nodeU(), v.nodeV()}).collect(Collectors.toSet()));
+            return Results.json(map);
+        }
+
+        public static Result planPrint(Jooby app, Request req, QueryControllerRegistrar registrar) {
+            ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = registrar.getController(app).explain(req.param("queryId").value());
+            String print = PlanWithCostDescriptor.print(response.getData());
+            ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
+                    .data(Optional.of(print))
+                    .compose();
+            return Results.with(compose, compose.status());
+        }
+
+        public static Result queryPrint(Jooby app, Request req, QueryControllerRegistrar registrar) {
+            ContentResponse<Query> response = registrar.getController(app).getV1(req.param("queryId").value());
+            String print = QueryDescriptor.print(response.getData());
+            ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
+                    .data(Optional.of(print))
+                    .compose();
+            return Results.with(compose, compose.status());
+
+        }
+    }
 }

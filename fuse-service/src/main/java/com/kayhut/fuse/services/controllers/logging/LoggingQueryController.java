@@ -129,6 +129,24 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     }
 
     @Override
+    public ContentResponse<QueryResourceInfo> createAndFetch(CreateJsonQueryRequest request) {
+        return new LoggingSyncMethodDecorator<ContentResponse<QueryResourceInfo>>(
+                this.logger,
+                this.metricRegistry,
+                createAndFetch,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    if (request.getQuery() != null) {
+                        new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), createAndFetch)
+                                .with(request.getQuery()).log();
+                    }
+                    return this.controller.createAndFetch(request);
+                }, this.resultHandler());
+    }
+
+    @Override
     public ContentResponse<QueryResourceInfo> callAndFetch(ExecuteStoredQueryRequest request) {
         return new LoggingSyncMethodDecorator<ContentResponse<QueryResourceInfo>>(
                 this.logger,

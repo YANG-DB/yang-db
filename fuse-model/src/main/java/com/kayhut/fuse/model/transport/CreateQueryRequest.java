@@ -23,6 +23,7 @@ package com.kayhut.fuse.model.transport;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
@@ -33,7 +34,10 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
  * <p>
  * Mutable structure due to json reflective builder needs...
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
+    public static final String TYPE = "v1";
+
     //region Constructors
     public CreateQueryRequest() {
         this.planTraceOptions = new PlanTraceOptions();
@@ -104,6 +108,11 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
     }
 
     @Override
+    public String getOntology() {
+        return query.getOnt();
+    }
+
+    @Override
     public Query getQuery() {
         return query;
     }
@@ -121,7 +130,6 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
         this.planTraceOptions = planTraceOptions;
     }
 
-    @Override
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public CreateCursorRequest getCreateCursorRequest() {
         return createCursorRequest;

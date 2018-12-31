@@ -58,6 +58,10 @@ public class FuseClient {
         return postQuery(queryStoreUrl,query, PlanTraceOptions.of(PlanTraceOptions.Level.none));
     }
 
+    public QueryResourceInfo postQuery(String queryStoreUrl, String query,String ontology) throws IOException {
+        return postQuery(queryStoreUrl,query,ontology, PlanTraceOptions.of(PlanTraceOptions.Level.none));
+    }
+
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query, PlanTraceOptions planTraceOptions) throws IOException {
         CreateQueryRequest request = new CreateQueryRequest();
         String id = UUID.randomUUID().toString();
@@ -65,7 +69,19 @@ public class FuseClient {
         request.setName(id);
         request.setQuery(query);
         request.setPlanTraceOptions(planTraceOptions);
-        return this.objectMapper.readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
+        return this.objectMapper.readValue(unwrap(postRequest(queryStoreUrl +"/" + CreateQueryRequest.TYPE, request)), QueryResourceInfo.class);
+    }
+
+    public QueryResourceInfo postQuery(String queryStoreUrl, String query, String ontology, PlanTraceOptions planTraceOptions) throws IOException {
+        CreateJsonQueryRequest request = new CreateJsonQueryRequest();
+        String id = UUID.randomUUID().toString();
+        request.setId(id);
+        request.setName(id);
+        request.setQuery(query);
+        request.setOntology(ontology);
+        request.setPlanTraceOptions(planTraceOptions);
+        final String response = postRequest(queryStoreUrl +"/" + CreateJsonQueryRequest.TYPE, request);
+        return this.objectMapper.readValue(unwrap(response), QueryResourceInfo.class);
     }
 
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query, String id, String name) throws IOException {
@@ -73,7 +89,7 @@ public class FuseClient {
         request.setId(id);
         request.setName(name);
         request.setQuery(query);
-        return this.objectMapper.readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
+        return this.objectMapper.readValue(unwrap(postRequest(queryStoreUrl +"/" + CreateQueryRequest.TYPE, request)), QueryResourceInfo.class);
     }
 
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query, String id, String name, CreateCursorRequest createCursorRequest) throws IOException {
@@ -82,7 +98,7 @@ public class FuseClient {
         request.setName(name);
         request.setQuery(query);
         request.setCreateCursorRequest(createCursorRequest);
-        return this.objectMapper.readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
+        return this.objectMapper.readValue(unwrap(postRequest(queryStoreUrl +"/" + CreateQueryRequest.TYPE, request)), QueryResourceInfo.class);
     }
 
     public String initIndices(String catalogStoreUrl,String ontology) {

@@ -63,6 +63,14 @@ public interface QueryController {
     ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryRequest request);
 
     /**
+     * create a prepared statement, run against db and return results
+     * type may be volatile or persistent
+     * @param request
+     * @return
+     */
+    ContentResponse<QueryResourceInfo> createAndFetch(CreateJsonQueryRequest request);
+
+    /**
      * call existing statement and, run against db and return results
      * @param request
      * @return
