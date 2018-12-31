@@ -82,6 +82,7 @@
 
         <!-- cypher -->
         <openCypher.frontend.version>9.0.20181012</openCypher.frontend.version>
+        <openCypher.spark.version>0.2.3</openCypher.spark.version>
 
         <!-- commons -->
         <commons-io.version>2.5</commons-io.version>
@@ -248,6 +249,11 @@
                 <groupId>org.opencypher</groupId>
                 <artifactId>front-end-9.0</artifactId>
                 <version>${openCypher.frontend.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opencypher</groupId>
+                <artifactId>graph-ddl</artifactId>
+                <version>${openCypher.spark.version}</version>
             </dependency>
 
             <!-- jackson -->

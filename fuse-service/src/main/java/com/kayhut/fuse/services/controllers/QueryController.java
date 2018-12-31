@@ -29,6 +29,7 @@ import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.transport.CreateJsonQueryRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 
@@ -45,6 +46,13 @@ public interface QueryController {
      * @return
      */
     ContentResponse<QueryResourceInfo> create(CreateQueryRequest request);
+    /**
+     * create a prepared statement
+     * type may be volatile or persistent
+     * @param request
+     * @return
+     */
+    ContentResponse<QueryResourceInfo> create(CreateJsonQueryRequest request);
 
     /**
      * create a prepared statement, run against db and return results

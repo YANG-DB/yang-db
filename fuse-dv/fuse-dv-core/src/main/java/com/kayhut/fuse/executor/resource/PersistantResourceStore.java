@@ -20,7 +20,6 @@ package com.kayhut.fuse.executor.resource;
  * #L%
  */
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.inject.Inject;
@@ -53,10 +52,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.model.transport.CreateQueryRequest.Type._stored;
+import static com.kayhut.fuse.model.transport.CreateQueryRequestMetadata.Type._stored;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 public class PersistantResourceStore implements ResourceStore {
 

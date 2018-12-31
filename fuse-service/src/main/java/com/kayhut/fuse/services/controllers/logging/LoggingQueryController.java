@@ -35,6 +35,7 @@ import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.transport.CreateJsonQueryRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 import com.kayhut.fuse.services.controllers.QueryController;
@@ -86,6 +87,24 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
                     if (request.getQuery() != null) {
                         new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), create)
                                 .with(this.queryDescriptor.describe(request.getQuery())).log();
+                    }
+                    return this.controller.create(request);
+                }, this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<QueryResourceInfo> create(CreateJsonQueryRequest request) {
+        return new LoggingSyncMethodDecorator<ContentResponse<QueryResourceInfo>>(
+                this.logger,
+                this.metricRegistry,
+                create,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    if (request.getQuery() != null) {
+                        new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), create)
+                                .with(request.getQuery()).log();
                     }
                     return this.controller.create(request);
                 }, this.resultHandler());

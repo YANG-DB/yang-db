@@ -24,8 +24,6 @@ package com.kayhut.fuse.model.transport;
  */
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
-import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 /**
@@ -33,55 +31,54 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
  * <p>
  * Mutable structure due to json reflective builder needs...
  */
-public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
+public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String> {
+
     //region Constructors
-    public CreateQueryRequest() {
+    public CreateJsonQueryRequest() {
         this.planTraceOptions = new PlanTraceOptions();
         this.planTraceOptions.setLevel(PlanTraceOptions.Level.none);
 
         this.ttl = 300000;
     }
 
-    public CreateQueryRequest(String id, String name, Query query) {
+    public CreateJsonQueryRequest(String id, String name, String query) {
         this();
         this.id = id;
         this.name = name;
         this.query = query;
     }
 
-    public CreateQueryRequest(String id, String name, Query query, PlanTraceOptions planTraceOptions) {
+    public CreateJsonQueryRequest(String id, String name, String query, PlanTraceOptions planTraceOptions) {
         this(id, name, query);
         this.planTraceOptions = planTraceOptions;
     }
 
-    public CreateQueryRequest(String id, String name, Query query,  CreateCursorRequest createCursorRequest) {
+    public CreateJsonQueryRequest(String id, String name, String query, CreateCursorRequest createCursorRequest) {
         this(id, name, query, new PlanTraceOptions());
         this.createCursorRequest = createCursorRequest;
     }
 
-    public CreateQueryRequest(String id, String name, Query query, PlanTraceOptions planTraceOptions, CreateCursorRequest createCursorRequest) {
+    public CreateJsonQueryRequest(String id, String name, String query, PlanTraceOptions planTraceOptions, CreateCursorRequest createCursorRequest) {
         this(id, name, query, planTraceOptions);
         this.createCursorRequest = createCursorRequest;
     }
     //endregion
 
     //region Properties
-    public CreateQueryRequest type(Type type) {
+    public CreateJsonQueryRequest type(Type type) {
         this.type = type;
         return this;
     }
 
-    public CreateQueryRequest searchPlan(boolean searchPlan) {
+    public CreateJsonQueryRequest searchPlan(boolean searchPlan) {
         this.searchPlan = searchPlan;
         return this;
     }
 
-    @Override
     public boolean isSearchPlan() {
         return searchPlan;
     }
 
-    @Override
     public String getId() {
         return id;
     }
@@ -94,21 +91,18 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
         this.name = name;
     }
 
-    public void setQuery(Query query) {
+    public void setQuery(String query) {
         this.query = query;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
-    public Query getQuery() {
+    public String getQuery() {
         return query;
     }
 
-    @Override
     public Type getType() {
         return type;
     }
@@ -121,7 +115,6 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
         this.planTraceOptions = planTraceOptions;
     }
 
-    @Override
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public CreateCursorRequest getCreateCursorRequest() {
         return createCursorRequest;
@@ -131,7 +124,6 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
         this.createCursorRequest = createCursorRequest;
     }
 
-    @Override
     public long getTtl() {
         return ttl;
     }
@@ -148,7 +140,7 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
         return "CreateQueryRequest{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", query=" + QueryDescriptor.toString(query) + "\n"+
+                ", query=" + query + "\n"+
                 ", createCursorRequest=" + (createCursorRequest!=null ? createCursorRequest.toString() : "None" )+
                 '}';
     }
@@ -158,7 +150,7 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
     //default type is volatile
     private Type type = Type._volatile;
     private String name;
-    private Query query;
+    private String query;
     private long ttl;
     private boolean searchPlan = true;
     private PlanTraceOptions planTraceOptions;

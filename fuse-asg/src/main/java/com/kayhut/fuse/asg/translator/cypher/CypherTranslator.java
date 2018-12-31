@@ -21,6 +21,7 @@ package com.kayhut.fuse.asg.translator.cypher;
  */
 
 import com.google.inject.Inject;
+import com.kayhut.fuse.asg.strategy.CypherAsgStrategyRegistrar;
 import com.kayhut.fuse.asg.translator.AsgTranslator;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherTranslatorStrategy;
@@ -38,6 +39,12 @@ public class CypherTranslator implements AsgTranslator<String,AsgQuery> {
     public CypherTranslator(String ontology, Collection<CypherTranslatorStrategy> strategies) {
         this.ontology = ontology;
         this.strategies = strategies;
+    }
+
+    @Inject
+    public CypherTranslator(String ontology, CypherAsgStrategyRegistrar strategies) {
+        this.ontology = ontology;
+        this.strategies = strategies.register();
     }
     //endregion
 

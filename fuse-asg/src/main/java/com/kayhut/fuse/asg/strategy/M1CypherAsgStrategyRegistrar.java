@@ -1,0 +1,68 @@
+package com.kayhut.fuse.asg.strategy;
+
+/*-
+ * #%L
+ * fuse-asg
+ * %%
+ * Copyright (C) 2016 - 2018 The Fuse Graph Database Project
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import com.kayhut.fuse.asg.translator.cypher.strategies.*;
+import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.*;
+import org.opencypher.v9_0.expressions.PatternElement;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+public class M1CypherAsgStrategyRegistrar implements CypherAsgStrategyRegistrar {
+    @Override
+    public Iterable<CypherTranslatorStrategy> register() {
+        //translators
+        translatorStrategies = Arrays.asList(
+                new NodePatternCypherTranslatorStrategy(new EqualityExpression()),
+                new StepPatternCypherTranslatorStrategy(
+                        new NodePatternCypherTranslatorStrategy(new EqualityExpression())
+                ));
+
+        //expressions
+        whereExpressionStrategies = new ArrayList<>();
+        whereExpressionStrategies.add(new OrExpression(whereExpressionStrategies));
+        whereExpressionStrategies.add(new AndExpression(whereExpressionStrategies));
+        whereExpressionStrategies.add(new HasLabelExpression());
+        whereExpressionStrategies.add(new HasRelationLabelExpression());
+        whereExpressionStrategies.add(new InequalityExpression());
+        whereExpressionStrategies.add(new EqualityExpression());
+        whereExpressionStrategies.add(new NotEqualExpression());
+        whereExpressionStrategies.add(new StartsWithExpression());
+        whereExpressionStrategies.add(new EndsWithExpression());
+        whereExpressionStrategies.add(new InExpression());
+        whereExpressionStrategies.add(new ContainsExpression());
+        whereExpressionStrategies.add(new LikeExpression());
+
+        whereClause = new WhereClauseNodeCypherTranslator(whereExpressionStrategies);
+        match = new MatchCypherTranslatorStrategy(translatorStrategies, whereClause);
+
+        return Collections.singleton(match);
+    }
+
+    private List<CypherElementTranslatorStrategy> translatorStrategies;
+    private List<ExpressionStrategies> whereExpressionStrategies;
+
+    public MatchCypherTranslatorStrategy match;
+    private WhereClauseNodeCypherTranslator whereClause;
+}

@@ -35,6 +35,7 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
+import com.kayhut.fuse.model.transport.CreateJsonQueryRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 
@@ -65,6 +66,13 @@ public class StandardQueryController implements QueryController {
     //region QueryController Implementation
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
+        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
+                .data(driver.create(request))
+                .successPredicate(response -> response.getData() != null && response.getData().getError() == null)
+                .compose();
+    }
+    @Override
+    public ContentResponse<QueryResourceInfo> create(CreateJsonQueryRequest request) {
         return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
                 .data(driver.create(request))
                 .successPredicate(response -> response.getData() != null && response.getData().getError() == null)

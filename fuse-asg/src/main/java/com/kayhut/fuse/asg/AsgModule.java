@@ -23,11 +23,12 @@ package com.kayhut.fuse.asg;
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.asg.strategy.AsgStrategyRegistrar;
+import com.kayhut.fuse.asg.strategy.CypherAsgStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.M1AsgStrategyRegistrar;
+import com.kayhut.fuse.asg.strategy.M1CypherAsgStrategyRegistrar;
 import com.kayhut.fuse.dispatcher.asg.QueryToAsgTransformer;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.dispatcher.query.QueryTransformer;
-import com.kayhut.fuse.dispatcher.validation.QueryValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.Query;
 import com.typesafe.config.Config;
@@ -43,8 +44,16 @@ public class AsgModule extends ModuleBase {
                 .to(M1AsgStrategyRegistrar.class)
                 .asEagerSingleton();
 
+        binder.bind(CypherAsgStrategyRegistrar.class)
+                .to(M1CypherAsgStrategyRegistrar.class)
+                .asEagerSingleton();
+
         binder.bind(new TypeLiteral<QueryTransformer<Query, AsgQuery>>(){})
                 .to(QueryToAsgTransformer.class)
+                .asEagerSingleton();
+
+        binder.bind(new TypeLiteral<QueryTransformer<String, AsgQuery>>(){})
+                .to(AsgCypherTransformer.class)
                 .asEagerSingleton();
 
         binder.bind(new TypeLiteral<QueryTransformer<AsgQuery, AsgQuery>>(){})

@@ -29,6 +29,7 @@ import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
+import com.kayhut.fuse.model.transport.CreateJsonQueryRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
 
@@ -40,6 +41,8 @@ import java.util.Optional;
 public interface QueryDriver {
 
     Optional<QueryResourceInfo> create(CreateQueryRequest queryRequest);
+
+    Optional<QueryResourceInfo> create(CreateJsonQueryRequest queryRequest);
 
     Optional<QueryResourceInfo> call(ExecuteStoredQueryRequest queryRequest);
 

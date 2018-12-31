@@ -23,7 +23,7 @@ package com.kayhut.fuse.model.query;
  * #L%
  */
 
-import com.kayhut.fuse.model.transport.CreateQueryRequest.Type;
+import static com.kayhut.fuse.model.transport.CreateQueryRequestMetadata.Type;
 
 /**
  * Created by lior.perry on 21/02/2017.
@@ -35,7 +35,7 @@ public final class QueryMetadata {
     }
 
     //region Properties
-    public QueryMetadata(Type type,String id, String name, boolean searchPlan ,long creationTime,long ttl) {
+    public QueryMetadata(Type type, String id, String name, boolean searchPlan , long creationTime, long ttl) {
         this.type = type;
         this.id = id;
         this.name = name;
@@ -75,6 +75,6 @@ public final class QueryMetadata {
     private String id;
     private String name;
     private boolean searchPlan = true;
-    private Type type = Type._volatile;
+    private Type type;
     //endregion
 }
