@@ -3,21 +3,17 @@ package com.kayhut.fuse.assembly.knowledge.domain;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
-import javaslang.collection.Stream;
-import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,11 +35,33 @@ public class KnowledgeWriterContext {
     public ObjectMapper mapper;
     public List<Items> created;
     private List<EntityBuilder> entities;
+    private List<ValueBuilder> eValues;
     private List<RelationBuilder> relations;
+    private List<RvalueBuilder> rValues;
 
     public KnowledgeWriterContext() {
         entities = new ArrayList<>();
+        eValues = new ArrayList<>();
         relations = new ArrayList<>();
+        rValues = new ArrayList<>();
+    }
+
+    public ValueBuilder v(){
+        final ValueBuilder builder = ValueBuilder._v(nextValueId());
+        eValues.add(builder);
+        return builder;
+    }
+
+    public RvalueBuilder r(){
+        final RvalueBuilder builder = RvalueBuilder._r(nextRvalueId());
+        rValues.add(builder);
+        return builder;
+    }
+
+    public RelationBuilder rel(){
+        final RelationBuilder builder = RelationBuilder._rel(nextRelId());
+        relations.add(builder);
+        return builder;
     }
 
     public EntityBuilder e() {
@@ -129,17 +147,29 @@ public class KnowledgeWriterContext {
         return builders.length+Arrays.stream(builders).mapToInt(b->b.additional().size()).sum();
     }
 
+    public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx, String index, List<T> builders) throws JsonProcessingException {
+        int count = 0;
+        final BulkRequestBuilder bulk = ctx.client.prepareBulk();
+        count = process(ctx, index, count, bulk, builders);
+        return count;
+    }
+
     public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx, String index, T... builders) throws JsonProcessingException {
         int count = 0;
         final BulkRequestBuilder bulk = ctx.client.prepareBulk();
-            populateBulk(bulk,index,ctx,Arrays.asList(builders));
-            Arrays.asList(builders).forEach(builder -> {
-                try {
-                    populateBulk(bulk,index,ctx,builder.additional());
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-            });
+        count = process(ctx, index, count, bulk, Arrays.asList(builders));
+        return count;
+    }
+
+    private static <T extends KnowledgeDomainBuilder> int process(KnowledgeWriterContext ctx, String index, int count, BulkRequestBuilder bulk, List<T> builders) throws JsonProcessingException {
+        populateBulk(bulk,index,ctx, (List<KnowledgeDomainBuilder>) builders);
+        builders.forEach(builder -> {
+            try {
+                populateBulk(bulk,index,ctx,builder.additional());
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        });
 
         final BulkItemResponse[] items = bulk.get().getItems();
         for (BulkItemResponse item : items) {
@@ -152,8 +182,22 @@ public class KnowledgeWriterContext {
         }
         ctx.client.admin().indices().prepareRefresh(index).get();
         return count;
+    }
 
+    public List<EntityBuilder> getEntities() {
+        return entities;
+    }
 
+    public List<ValueBuilder> geteValues() {
+        return eValues;
+    }
+
+    public List<RelationBuilder> getRelations() {
+        return relations;
+    }
+
+    public List<RvalueBuilder> getrValues() {
+        return rValues;
     }
 
     public void clearCreated() {
