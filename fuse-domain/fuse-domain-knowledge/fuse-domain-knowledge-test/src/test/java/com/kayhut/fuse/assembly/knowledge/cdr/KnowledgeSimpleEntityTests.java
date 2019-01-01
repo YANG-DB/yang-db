@@ -36,7 +36,7 @@ public class KnowledgeSimpleEntityTests {
     public void testInsertOneSimpleEntityWithBuilder() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        final String query = "Match (phone:Entity)-[rel:hasRelation]->(any:Entity) Return phone,rel,any";
+        final String query = "Match (phone:Entity)-[rel:relatedEntity]->(any:Entity) Return phone,rel,any";
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
 
         // Check Entity Response
