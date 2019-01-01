@@ -54,13 +54,8 @@ public abstract class DataLoader {
      * @return
      */
 
-    public long load(Client client, KnowledgeWriterContext ctx, String file) throws JsonProcessingException {
+    public static long load(Client client, KnowledgeWriterContext ctx, String file) throws JsonProcessingException {
         List<String[]> strings = readCSV(file, ',');
-
-        List<EntityBuilder> entity = new ArrayList<>();
-        List<EntityBuilder> eValue = new ArrayList<>();
-        List<EntityBuilder> relation = new ArrayList<>();
-        List<EntityBuilder> relValue = new ArrayList<>();
 
         strings.forEach(line -> {
             //phone1
@@ -85,13 +80,14 @@ public abstract class DataLoader {
             rel.value(v4);
 
             //bind
+            rel.sideA(e1).sideB(e2);
             e1.rel(rel,"out");
 
             final EntityBuilder e4 = ctx.e().cat("location").ctx("cdr");
             //cast to float
-            ValueBuilder v8 = ctx.v().field("lat").value(line[8]);
+            ValueBuilder v8 = ctx.v().field("lat").value(line[7]);
             //cast to float
-            ValueBuilder v9 = ctx.v().field("long").value(line[9]);
+            ValueBuilder v9 = ctx.v().field("long").value(line[8]);
             e4.value(v8);
             e4.value(v9);
 
@@ -102,6 +98,7 @@ public abstract class DataLoader {
             //cast to date
             location.value(loc_v3);
             //bind
+            location.sideA(e1).sideB(e4);
             e1.rel(location,"out");
         });
 
@@ -116,7 +113,7 @@ public abstract class DataLoader {
     public static List<String[]> readCSV(String filePath, final char separator) {
         List<String[]> fileContents = new ArrayList<>();
         try {
-            File file = new File(filePath);
+            File file = new File(Thread.currentThread().getContextClassLoader().getResource(filePath).getFile());
             if (file.exists()) {
                 CSVReader csvReader = new CSVReader(new FileReader(file), separator);
                 String[] line;
