@@ -206,7 +206,7 @@ public class EntityBuilder extends EntityId {
         //create knowledge entity
         on.put("type", physicalType);
         on.put("logicalId", logicalId);
-        on.put("context", context);
+        on.put("ctx", context);
         on.put("category", category);
         on.put("refs", collectRefs(mapper, refs));
         return on;
@@ -226,7 +226,7 @@ public class EntityBuilder extends EntityId {
                         collect(Arrays.asList(
                                 new Property("category", "raw", category),
                                 new Property("logicalId", "raw", logicalId),
-                                new Property("context", "raw", context),
+                                new Property("ctx", "raw", context),
                                 new Property("refs", "raw", !refs.isEmpty() ? refs : null)
                         ))).build();
     }

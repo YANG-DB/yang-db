@@ -22,7 +22,7 @@ public class KnowlegdeOntology {
 //entity
     public static Property id = new Property("id", STRING, "id");
     public static Property logicalId = new Property("logicalId", STRING, "logicalId");
-    public static Property context = new Property("context", STRING, "context");
+    public static Property context = new Property("ctx", STRING, "ctx");
     public static Property category = new Property("category", TYPE_GENDER, "category");
     public static Property creationTime = new Property("creationTime", DATE_TYPE, "creationTime");
     public static Property lastUpdateTime = new Property("lastUpdateTime", DATE_TYPE, "lastUpdateTime");
@@ -64,7 +64,7 @@ public class KnowlegdeOntology {
          "entityACategory": "person",
          "entityBId": "e000.context1",
          "entityBCategory": "car",
-         "context": "context1",
+         "ctx": "context1",
          "category": "owns",
          "creationTime": "2017-01-01 00:00:00.000",
          "lastUpdateTime": "2017-01-01 00:00:00.000",
@@ -110,7 +110,7 @@ public class KnowlegdeOntology {
     /**
      {
          "logicalId": "e000",
-         "context": "context1",
+         "ctx": "context1",
          "category": "car",
          "creationTime": "2017-01-01 00:00:00.000",
          "lastUpdateTime": "2017-01-01 00:00:00.000",
@@ -134,7 +134,7 @@ public class KnowlegdeOntology {
     /*
     {
         "logicalId": "e000",
-        "context": "context1",
+        "ctx": "context1",
         "fieldId": "name",
         "bdt": "name",
         "stringValue": "Shimon", (or intValue or floatValue or dateValue),

@@ -25,7 +25,7 @@ public class KnowledgeSimpleEntityTests {
     public static void setup() throws Exception {
         Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
-        DataLoader.load(client,ctx,"./data/cdr-sample.csv");
+        DataLoader.load(client,ctx,"./data/cdr-small.csv");
     }
 
     @After
@@ -40,9 +40,16 @@ public class KnowledgeSimpleEntityTests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         final String query = "Match (phone:Entity)-[rel:relatedEntity]->(any:Entity) Return phone,rel,any";
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
+
         List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
 
         // Check Entity Response
         Assert.assertEquals(1, assignments.size());
+
+        Assert.assertFalse( assignments.get(0).getEntities().isEmpty() );
+        System.out.println("Entities fetched: "+assignments.get(0).getEntities().size());
+
+        Assert.assertFalse( assignments.get(0).getRelationships().isEmpty() );
+        System.out.println("Relationships fetched: "+assignments.get(0).getRelationships().size());
     }
 }

@@ -9,9 +9,9 @@ package com.kayhut.fuse.executor.cursor.discrete;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -54,7 +54,7 @@ public class PathsTraversalCursor implements Cursor {
         //region CursorFactory Implementation
         @Override
         public Cursor createCursor(Context context) {
-            return new PathsTraversalCursor((TraversalCursorContext)context);
+            return new PathsTraversalCursor((TraversalCursorContext) context);
         }
         //endregion
     }
@@ -132,16 +132,16 @@ public class PathsTraversalCursor implements Cursor {
 
         List<Object> pathObjects = path.objects();
         List<Set<String>> pathlabels = path.labels();
-        for(int objectIndex = 0 ; objectIndex < pathObjects.size() ; objectIndex++) {
+        for (int objectIndex = 0; objectIndex < pathObjects.size(); objectIndex++) {
             Object pathObject = pathObjects.get(objectIndex);
             String pathLabel = pathlabels.get(objectIndex).iterator().next();
 
             if (Vertex.class.isAssignableFrom(pathObject.getClass()) && this.includeEntities) {
-                builder.withEntity(toEntity((Vertex)pathObject, this.eEntityBases.get(pathLabel)));
+                builder.withEntity(toEntity((Vertex) pathObject, this.eEntityBases.get(pathLabel)));
             } else if (Edge.class.isAssignableFrom(pathObject.getClass()) && this.includeRelationships) {
                 Tuple3<EEntityBase, Rel, EEntityBase> relTuple = this.eRels.get(pathLabel);
                 builder.withRelationship(toRelationship(
-                        (Edge)pathObject,
+                        (Edge) pathObject,
                         relTuple._1(),
                         relTuple._2(),
                         relTuple._3()));
@@ -175,6 +175,10 @@ public class PathsTraversalCursor implements Cursor {
         builder.withRType(rel.getrType());
         builder.withEID1(edge.outVertex().id().toString());
         builder.withEID2(edge.inVertex().id().toString());
+        //add properties
+        builder.withProperties(Stream.ofAll(edge::properties)
+                .map(p -> new Property(p.key(), p.value()))
+                .toJavaList());
 
         switch (rel.getDir()) {
             case R:

@@ -15,8 +15,6 @@ import java.util.List;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder.*;
 import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder.*;
-import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder.*;
-import static com.kayhut.fuse.assembly.knowledge.domain.RvalueBuilder.*;
 
 /**
  * load cdr file into the DB
@@ -69,12 +67,12 @@ public abstract class DataLoader {
             e2.value(v1);
 
             //phone1->phone2 [type]
-            final RelationBuilder rel = ctx.rel().cat("type");
-            RvalueBuilder v2 = ctx.r().field("name").value(line[2]);
+            final RelationBuilder rel = ctx.rel().cat("type").ctx("cdr");
+            RvalueBuilder v2 = ctx.r().field("name").value(line[2]).ctx("cdr");
             //cast to date
-            RvalueBuilder v3 = ctx.r().field("time").value(line[3]);
+            RvalueBuilder v3 = ctx.r().field("time").value(line[3]).ctx("cdr");
             //cast to long
-            RvalueBuilder v4 = ctx.r().field("duration").value(line[4]);
+            RvalueBuilder v4 = ctx.r().field("duration").value(line[4]).ctx("cdr");
             rel.value(v2);
             rel.value(v3);
             rel.value(v4);
@@ -85,16 +83,16 @@ public abstract class DataLoader {
 
             final EntityBuilder e4 = ctx.e().cat("location").ctx("cdr");
             //cast to float
-            ValueBuilder v8 = ctx.v().field("lat").value(line[7]);
+            ValueBuilder v8 = ctx.v().field("lat").value(line[7]).ctx("cdr");
             //cast to float
-            ValueBuilder v9 = ctx.v().field("long").value(line[8]);
+            ValueBuilder v9 = ctx.v().field("long").value(line[8]).ctx("cdr");
             e4.value(v8);
             e4.value(v9);
 
 
             //phone1->location [type]
-            final RelationBuilder location = ctx.rel().cat("location");
-            RvalueBuilder loc_v3 = ctx.r().field("time").value(line[3]);
+            final RelationBuilder location = ctx.rel().cat("location").ctx("cdr");
+            RvalueBuilder loc_v3 = ctx.r().field("time").value(line[3]).ctx("cdr");
             //cast to date
             location.value(loc_v3);
             //bind

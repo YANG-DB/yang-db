@@ -230,7 +230,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//context entity
+                        .withEntity(e1.toEntity())//ctx entity
                         .withEntities(e1.subEntities())//logicalEntity
                         .withRelationships(e1.withRelations())//relationships
                         .build()).build();
@@ -269,7 +269,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//context entity
+                        .withEntity(e1.toEntity())//ctx entity
                         .withEntities(e1.subEntities())//logicalEntity
                         .withRelationships(e1.withRelations())//relationships
                         .build()).build();
@@ -307,10 +307,10 @@ public class KnowledgeSimpleEntityWithFilterTests {
 /*
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//context entity
+                        .withEntity(e1.toEntity())//ctx entity
                         .withEntities(e1.subEntities())//logicalEntity
                         .withEntity(global.toEntity())//global entity
-                        .withEntity(value.toEntity())//context entity
+                        .withEntity(value.toEntity())//ctx entity
                         .withRelationships(e1.withRelations())//relationships
                         .withRelationships(global.withRelations())//relationships (double relationships for the 2 different etags variations...
                         .build()).build();

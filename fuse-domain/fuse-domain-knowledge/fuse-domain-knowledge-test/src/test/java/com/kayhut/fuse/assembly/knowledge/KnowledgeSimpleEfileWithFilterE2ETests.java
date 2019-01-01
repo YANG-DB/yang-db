@@ -106,7 +106,7 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity()).withEntity(f2.toEntity())  //context entity
+                        .withEntity(f1.toEntity()).withEntity(f2.toEntity())  //ctx entity
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -122,7 +122,7 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Efile", 2, 0),
-                        new EProp(2, "context", Constraint.of(ConstraintOp.eq, f1.context))
+                        new EProp(2, "ctx", Constraint.of(ConstraintOp.eq, f1.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -152,7 +152,7 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(f1.toEntity())  //context entity
+                        .withEntity(f1.toEntity())  //ctx entity
                         .build()).build();
 
         // Check if expected and actual results are equal

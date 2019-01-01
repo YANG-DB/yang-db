@@ -73,7 +73,7 @@ public class KnowledgeConfigManager {
         File[] templateFiles = templates.listFiles();
         if (templateFiles != null) {
             for (File templateFile : templateFiles) {
-                String templateName = FilenameUtils.getBaseName(templateFile.getName());
+                String templateName = FilenameUtils.getBaseName(templateFile.getName()) ;
                 String template = FileUtils.readFileToString(templateFile, "utf-8");
                 if (!client.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
                     client.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet();

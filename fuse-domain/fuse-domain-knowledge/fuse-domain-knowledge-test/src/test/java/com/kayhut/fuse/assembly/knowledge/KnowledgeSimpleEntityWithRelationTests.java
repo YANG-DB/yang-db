@@ -83,9 +83,9 @@ public class KnowledgeSimpleEntityWithRelationTests {
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//context entity
-                        .withEntity(e2.toEntity())//context entity
-                        .withEntity(rel.toEntity())//context entity
+                        .withEntity(e1.toEntity())//ctx entity
+                        .withEntity(e2.toEntity())//ctx entity
+                        .withEntity(rel.toEntity())//ctx entity
                         .withRelationships(e1.withRelations())//relationships
                         .withRelationships(e2.withRelations())//relationships
                         .build()).build();
@@ -182,7 +182,7 @@ public class KnowledgeSimpleEntityWithRelationTests {
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("cat").ctx("context1");
         String e1Id = e1.id();
         final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
-        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).context("context1").cat("rel").creationTime(sdf.parse(creationTime));
+        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).ctx("context1").cat("rel").creationTime(sdf.parse(creationTime));
         e1.rel(rel,"out");
         e2.rel(rel,"in");
 
@@ -224,7 +224,7 @@ public class KnowledgeSimpleEntityWithRelationTests {
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("cat").ctx("context1");
         String e1Id = e1.id();
         final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
-        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).context("context1").cat("rel").creationTime(sdf.parse(creationTime));
+        final RelationBuilder rel = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).ctx("context1").cat("rel").creationTime(sdf.parse(creationTime));
         e1.rel(rel,"out");
         e2.rel(rel,"in");
 

@@ -49,7 +49,7 @@ public class InsightBuilder extends EntityId {
         //create knowledge entity
         on.put("type", physicalType);
         on.put("content", content);
-        on.put("context", context);
+        on.put("ctx", context);
         on.put("entityIds", entities);
 
         return on;
@@ -79,7 +79,7 @@ public class InsightBuilder extends EntityId {
                 .withEType(getType())
                 .withProperties(collect(Arrays.asList(
                         new Property("content", "raw", content),
-                        new Property("context", "raw", context),
+                        new Property("ctx", "raw", context),
                         new Property("entityIds", "raw", !entityIds.isEmpty() ? new ArrayList<>(entityIds) : null))
                 )).build();
     }

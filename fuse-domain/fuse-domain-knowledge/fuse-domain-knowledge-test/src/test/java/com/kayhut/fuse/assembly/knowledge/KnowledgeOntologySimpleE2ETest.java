@@ -85,7 +85,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(6, 7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(6, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasEntityReference"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Reference"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(10, 11), 0),
@@ -108,13 +108,13 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(6, 7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(6, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
                 new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "Nic*")),
                 new EProp(11, $ont.pType$("creationTime"), Constraint.of(ConstraintOp.gt, "2018-01-01 00:00:00.000")),
-                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
+                new EProp(12, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
 
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
@@ -132,13 +132,13 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(6, 7, 13), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(6, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
                 new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "Nic*")),
                 new EProp(11, $ont.pType$("creationTime"), Constraint.of(ConstraintOp.gt, "2018-01-01 00:00:00.000")),
-                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(12, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(13, $ont.rType$("hasEntityReference"), R, null, 14, 0),
                 new ETyped(14, "C", $ont.eType$("Reference"), 15, 0),
                 new Quant1(15, QuantType.all, Arrays.asList(16, 17), 0),
@@ -181,24 +181,24 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("LogicalEntity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(101, 3), 0),
-                new EProp(101, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(101, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(3, $ont.rType$("hasEntity"), R, null, 4, 0),
                 new ETyped(4, "B", $ont.eType$("Entity"), 5, 0),
                 new Quant1(5, QuantType.all, Arrays.asList(6), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context2")))
+                new EProp(6, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context2")))
         ).build();*/
 
         Query query = Query.Builder.instance().withName("SimpleQuery").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(6, 7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(6, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
                 new EProp(10, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.eq, "Nick1")),
                 new EProp(11, $ont.pType$("bdt"), Constraint.of(ConstraintOp.eq, "nicknames")),
-                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
+                new EProp(12, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
 
         AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
@@ -208,12 +208,12 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(6, 7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(6, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Evalue"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(11, 12), 0),
                 new EProp(11, $ont.pType$("bdt"), Constraint.of(ConstraintOp.eq, "nicknames")),
-                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
+                new EProp(12, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1"))
         )).build();
 
         pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
@@ -223,7 +223,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(6, 7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(6, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasEntityReference"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Reference"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(11, 12), 0),
@@ -238,7 +238,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(6, 7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(6, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasInsight"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Insight"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(12), 0),
@@ -252,7 +252,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(6, 7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(6, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasRelation"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Relation"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(12), 0),
@@ -266,7 +266,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(6, 7), 0),
-                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(6, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new Rel(7, $ont.rType$("hasRelation"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Relation"), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(12, 13), 0),
@@ -284,7 +284,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(4, 5, 6, 7), 0),
-                new EProp(4, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(4, $ont.pType$("ctx"), Constraint.of(ConstraintOp.eq, "context1")),
                 new EProp(5, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
                 new EProp(6, $ont.pType$("creationUser"), Constraint.of(ConstraintOp.eq, "Hassan")),
                 new Rel(7, $ont.rType$("hasRelation"), R, null, 8, 0),

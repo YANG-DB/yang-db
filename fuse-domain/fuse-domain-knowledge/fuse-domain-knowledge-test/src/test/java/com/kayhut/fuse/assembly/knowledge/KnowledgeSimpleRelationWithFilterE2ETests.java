@@ -45,28 +45,28 @@ public class KnowledgeSimpleRelationWithFilterE2ETests {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Relation entities for tests
-        rel1 = _rel(ctx.nextRelId()).context("Car companies").cat("Cars").creationUser("Liat Plesner")
+        rel1 = _rel(ctx.nextRelId()).ctx("Car companies").cat("Cars").creationUser("Liat Plesner")
                 .lastUpdateUser("Yael Pery").creationTime(sdf.parse("2010-04-31 11:04:29.089"))
                 .lastUpdateTime(sdf.parse("2018-01-01 00:39:56.000")).deleteTime(sdf.parse("2018-02-02 22:22:22.222"));
-        rel2 = _rel(ctx.nextRelId()).context("Car Companies").cat("cars").creationUser("liat plesner")
+        rel2 = _rel(ctx.nextRelId()).ctx("Car Companies").cat("cars").creationUser("liat plesner")
                 .lastUpdateUser("Yael pery").creationTime(sdf.parse("1990-00-00 00:00:00.400"))
                 .lastUpdateTime(sdf.parse("2018-01-01 00:39:56.000")).deleteTime(sdf.parse("2018-05-03 19:19:19.192"));
-        rel3 = _rel(ctx.nextRelId()).context("Number of wheels").cat("Wheels").creationUser("Liat Moshe")
+        rel3 = _rel(ctx.nextRelId()).ctx("Number of wheels").cat("Wheels").creationUser("Liat Moshe")
                 .lastUpdateUser("yael pery").creationTime(sdf.parse("2010-04-31 11:04:29.089"))
                 .lastUpdateTime(sdf.parse("2017-02-29 02:41:41.489")).deleteTime(sdf.parse("2010-09-09 19:19:11.999"));
-        rel4 = _rel(ctx.nextRelId()).context("Quantity of wheels").cat("wheels").creationUser("Yaacov Gabuy")
+        rel4 = _rel(ctx.nextRelId()).ctx("Quantity of wheels").cat("wheels").creationUser("Yaacov Gabuy")
                 .lastUpdateUser("Meir Pery").creationTime(sdf.parse("1999-01-01 00:00:00.400"))
                 .lastUpdateTime(sdf.parse("2017-02-29 02:41:42.489")).deleteTime(sdf.parse("2008-08-08 88:88:88.888"));
-        rel5 = _rel(ctx.nextRelId()).context("Quantity of Wheels").cat("Wheels").creationUser("Yaacov")
+        rel5 = _rel(ctx.nextRelId()).ctx("Quantity of Wheels").cat("Wheels").creationUser("Yaacov")
                 .lastUpdateUser("Moshe").creationTime(sdf.parse("2009-01-01 00:00:00.400"))
                 .lastUpdateTime(sdf.parse("2006-06-07 05:45:55.565")).deleteTime(sdf.parse("2004-02-03 11:11:11.022"));
-        rel6 = _rel(ctx.nextRelId()).context("spare tire").cat("alternate wheel").creationUser("Moshe David Levi")
+        rel6 = _rel(ctx.nextRelId()).ctx("spare tire").cat("alternate wheel").creationUser("Moshe David Levi")
                 .lastUpdateUser("Haim Ben Aharon").creationTime(sdf.parse("2014-12-01 12:24:36.786"))
                 .lastUpdateTime(sdf.parse("2006-06-07 05:45:55.565")).deleteTime(sdf.parse("2002-02-03 11:11:11.022"));
-        rel7 = _rel(ctx.nextRelId()).context("white car").cat("car").creationUser("Moshe Levi")
+        rel7 = _rel(ctx.nextRelId()).ctx("white car").cat("car").creationUser("Moshe Levi")
                 .lastUpdateUser("Haim Ben Aharon").creationTime(sdf.parse("2017-02-29 02:41:41.489"))
                 .lastUpdateTime(sdf.parse("2011-01-01 01:34:56.000")).deleteTime(sdf.parse("2001-02-03 11:11:11.022"));
-        rel8 = _rel(ctx.nextRelId()).context("car sales").cat("Radio").creationUser("Moshe David Levi")
+        rel8 = _rel(ctx.nextRelId()).ctx("car sales").cat("Radio").creationUser("Moshe David Levi")
                 .lastUpdateUser("Haim Aharon").creationTime(sdf.parse("2017-02-29 02:41:41.489"))
                 .lastUpdateTime(sdf.parse("2011-01-01 01:34:56.000")).deleteTime(sdf.parse("2018-02-02 22:22:22.222"));
         // Insert Relation entities to ES
@@ -90,14 +90,14 @@ public class KnowledgeSimpleRelationWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Relation", 2, 0),
-                        new EProp(2, "context", Constraint.of(ConstraintOp.eq, rel1.context))
+                        new EProp(2, "ctx", Constraint.of(ConstraintOp.eq, rel1.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(rel1.toEntity())  //context entity
+                        .withEntity(rel1.toEntity())  //ctx entity
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -275,7 +275,7 @@ public class KnowledgeSimpleRelationWithFilterE2ETests {
                         new Start(0, 1),
                         new ETyped(1, "A", "Relation", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rel5.context)),
+                        new EProp(3, "ctx", Constraint.of(ConstraintOp.eq, rel5.context)),
                         new EProp(4, "id", Constraint.of(ConstraintOp.eq, rel5.id()))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -300,7 +300,7 @@ public class KnowledgeSimpleRelationWithFilterE2ETests {
                         new Start(0, 1),
                         new ETyped(1, "A", "Relation", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rel2.context)),
+                        new EProp(3, "ctx", Constraint.of(ConstraintOp.eq, rel2.context)),
                         new EProp(4, "category", Constraint.of(ConstraintOp.eq, rel2.category))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -325,7 +325,7 @@ public class KnowledgeSimpleRelationWithFilterE2ETests {
                         new Start(0, 1),
                         new ETyped(1, "A", "Relation", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
-                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rel7.context)),
+                        new EProp(3, "ctx", Constraint.of(ConstraintOp.eq, rel7.context)),
                         new EProp(3, "deleteTime", Constraint.of(ConstraintOp.eq, rel7.deleteTime)),
                         new EProp(4, "category", Constraint.of(ConstraintOp.eq, rel7.category))
                 )).build();
@@ -564,7 +564,7 @@ public class KnowledgeSimpleRelationWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Relation", 2, 0),
-                        new EProp(2, "context", Constraint.of(ConstraintOp.ne, rel1.context))
+                        new EProp(2, "ctx", Constraint.of(ConstraintOp.ne, rel1.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 

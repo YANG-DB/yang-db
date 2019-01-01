@@ -114,7 +114,7 @@ public class ValueBuilder extends EntityId {
         on.put("entityId", entityId);
         on.put("fieldId", fieldId);
         on.put("bdt", bdt);
-        on.put("context", context);
+        on.put("ctx", context);
         on.put("refs", collectRefs(mapper,refs));
         if(stringValue!=null)
             on.put("stringValue", stringValue);
@@ -141,7 +141,7 @@ public class ValueBuilder extends EntityId {
                 .withEType(getType())
                 .withProperties(collect(Arrays.asList(
                         value,
-                        new Property("context", "raw", context),
+                        new Property("ctx", "raw", context),
                         new Property("logicalId", "raw", logicalId),
                         new Property("bdt", "raw", bdt),
                         new Property("fieldId", "raw", fieldId),

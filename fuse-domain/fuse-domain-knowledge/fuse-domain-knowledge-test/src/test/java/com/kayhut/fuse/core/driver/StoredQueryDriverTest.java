@@ -292,11 +292,11 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat("cat").ctx("context1");
         String e1Id = e1.id();
         final EntityBuilder e2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
-        final RelationBuilder rel1 = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).context("context1").cat("rel").creationTime(sdf.parse(creationTime));
+        final RelationBuilder rel1 = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).ctx("context1").cat("rel").creationTime(sdf.parse(creationTime));
         e1.rel(rel1, "out");
         e2.rel(rel1, "in");
 
-        final RelationBuilder rel2 = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).context("context1").cat("bell").creationTime(sdf.parse(creationTime));
+        final RelationBuilder rel2 = _rel(ctx.nextRelId()).sideA(e1).sideB(e2).ctx("context1").cat("bell").creationTime(sdf.parse(creationTime));
         e1.rel(rel2, "out");
         e2.rel(rel2, "in");
 
@@ -437,14 +437,14 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
                         new ETyped(1, "A", "Efile", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                         new EProp(3, "logicalId", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("logicalId"))),
-                        new EProp(4, "context", Constraint.of(ConstraintOp.eq, "family cars")),
+                        new EProp(4, "ctx", Constraint.of(ConstraintOp.eq, "family cars")),
                         new EProp(5, "name", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name")))
                 )).build();
 
         final Optional<QueryResourceInfo> resourceInfo = driver.create(new CreateQueryRequest("q1", "myStoredQuery", query,
                 new CreateCsvCursorRequest(new CsvElement[]{
                         new CsvElement("A", "logicalId", ElementType.Entity),
-                        new CsvElement("A", "context", ElementType.Entity),
+                        new CsvElement("A", "ctx", ElementType.Entity),
                         new CsvElement("A", "name", ElementType.Entity)
                 }).withHeaders(true).with(new CreatePageRequest()))
                 .type(CreateQueryRequest.Type._stored)
@@ -491,7 +491,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
                         new ETyped(1, "A", "Efile", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                         new EProp(3, "logicalId", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("logicalId"))),
-                        new EProp(4, "context", Constraint.of(ConstraintOp.eq, "family cars")),
+                        new EProp(4, "ctx", Constraint.of(ConstraintOp.eq, "family cars")),
                         new EProp(5, "name", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name")))
                 )).build();
 
@@ -503,7 +503,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
                 new CreateCsvCursorRequest(new CsvElement[]{
                         new CsvElement("A", "logicalId", ElementType.Entity),
-                        new CsvElement("A", "context", ElementType.Entity),
+                        new CsvElement("A", "ctx", ElementType.Entity),
                         new CsvElement("A", "name", ElementType.Entity)
                 }).withHeaders(true).with(new CreatePageRequest()),
                 Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda")),
@@ -545,7 +545,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
                         new ETyped(1, "A", "Efile", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                         new EProp(3, "logicalId", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("logicalId"))),
-                        new EProp(4, "context", Constraint.of(ConstraintOp.eq, "family cars")),
+                        new EProp(4, "ctx", Constraint.of(ConstraintOp.eq, "family cars")),
                         new EProp(5, "name", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name")))
                 )).build();
 
@@ -558,7 +558,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
                 new CreateCsvCursorRequest(new CsvElement[]{
                         new CsvElement("A", "logicalId", ElementType.Entity),
-                        new CsvElement("A", "context", ElementType.Entity),
+                        new CsvElement("A", "ctx", ElementType.Entity),
                         new CsvElement("A", "name", ElementType.Entity)
                 }).withHeaders(true).with(new CreatePageRequest()),
                 Arrays.asList(new NamedParameter("logicalId", f1.logicalId), new NamedParameter("name", "mazda")),
@@ -600,7 +600,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
                         new ETyped(1, "A", "Efile", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                         new EProp(3, "logicalId", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("logicalId"))),
-                        new EProp(4, "context", Constraint.of(ConstraintOp.eq, "family cars")),
+                        new EProp(4, "ctx", Constraint.of(ConstraintOp.eq, "family cars")),
                         new EProp(5, "name", ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name")))
                 )).build();
 

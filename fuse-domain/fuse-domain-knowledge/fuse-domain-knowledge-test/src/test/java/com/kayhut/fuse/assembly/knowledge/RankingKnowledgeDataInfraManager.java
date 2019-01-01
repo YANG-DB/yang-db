@@ -185,7 +185,7 @@ public class RankingKnowledgeDataInfraManager {
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cEntity);
         on.put("logicalId", logicalId);
-        on.put("context", context);
+        on.put("ctx", context);
         on.put("category", category);
         on.put("authorizationCount", authCount);
         on.put("lastUpdateUser", lastUpdateUser);
@@ -344,7 +344,7 @@ public class RankingKnowledgeDataInfraManager {
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cEntityValue);
         on.put("entityId", entityId);
-        on.put("context", context);
+        on.put("ctx", context);
         on.put("authorizationCount", authCount);
         on.put("fieldId", fieldId);
         on.put("bdt", bdt);
@@ -373,7 +373,7 @@ public class RankingKnowledgeDataInfraManager {
         ObjectNode on = _mapper.createObjectNode();
         on.put("type", cInsight);
         on.put("content", "Very important, superb insight");
-        on.put("context", "context1");
+        on.put("ctx", "context1");
 
         ArrayNode entityIds = _mapper.createArrayNode();
         entityIds.add("e" + String.format(schema.getIdFormat("entity"), 1));
@@ -400,7 +400,7 @@ public class RankingKnowledgeDataInfraManager {
         on = _mapper.createObjectNode();
         on.put("type", cInsight);
         on.put("content", "Quite poor, and mostly unuseful insight just tobe tested");
-        on.put("context", "context1");
+        on.put("ctx", "context1");
 
         entityIds = _mapper.createArrayNode();
         entityIds.add("e" + String.format(schema.getIdFormat("entity"), 1));

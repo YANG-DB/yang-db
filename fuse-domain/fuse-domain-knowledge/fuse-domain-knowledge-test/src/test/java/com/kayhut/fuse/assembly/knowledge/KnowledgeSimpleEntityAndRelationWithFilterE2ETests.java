@@ -85,19 +85,19 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
                 .creationTime(sdf.parse("2018-05-12 13:05:13.000")).lastUpdateTime(sdf.parse("2016-09-20 01:59:59.999"))
                 .deleteTime(sdf.parse("2018-07-09 02:02:02.222"));
         // Relation entities for tests
-        rel1 = _rel(ctx.nextRelId()).context("Car companies").cat("Cars").creationUser("Liat Plesner")
+        rel1 = _rel(ctx.nextRelId()).ctx("Car companies").cat("Cars").creationUser("Liat Plesner")
                 .lastUpdateUser("Yael Pery").creationTime(sdf.parse("2010-04-31 11:04:29.089"))
                 .lastUpdateTime(sdf.parse("2018-01-01 00:39:56.000")).deleteTime(sdf.parse("2018-02-02 22:22:22.222"));
-        rel2 = _rel(ctx.nextRelId()).context("Car Companies").cat("cars").creationUser("liat plesner")
+        rel2 = _rel(ctx.nextRelId()).ctx("Car Companies").cat("cars").creationUser("liat plesner")
                 .lastUpdateUser("Yael pery").creationTime(sdf.parse("1990-00-00 00:00:00.400"))
                 .lastUpdateTime(sdf.parse("2018-01-01 00:39:56.000")).deleteTime(sdf.parse("2018-05-03 19:19:19.192"));
-        rel3 = _rel(ctx.nextRelId()).context("Number of wheels").cat("Wheels").creationUser("Liat Moshe")
+        rel3 = _rel(ctx.nextRelId()).ctx("Number of wheels").cat("Wheels").creationUser("Liat Moshe")
                 .lastUpdateUser("yael pery").creationTime(sdf.parse("2010-04-31 11:04:29.089"))
                 .lastUpdateTime(sdf.parse("2017-02-29 02:41:41.489")).deleteTime(sdf.parse("2010-09-09 19:19:11.999"));
-        rel4 = _rel(ctx.nextRelId()).context("Quantity of wheels").cat("wheels").creationUser("Yaacov Gabuy")
+        rel4 = _rel(ctx.nextRelId()).ctx("Quantity of wheels").cat("wheels").creationUser("Yaacov Gabuy")
                 .lastUpdateUser("Meir Pery").creationTime(sdf.parse("1999-01-01 00:00:00.400"))
                 .lastUpdateTime(sdf.parse("2017-02-29 02:41:42.489")).deleteTime(sdf.parse("2008-08-08 88:88:88.888"));
-        rel5 = _rel(ctx.nextRelId()).context("Quantity of Wheels").cat("Wheels").creationUser("Yaacov")
+        rel5 = _rel(ctx.nextRelId()).ctx("Quantity of Wheels").cat("Wheels").creationUser("Yaacov")
                 .lastUpdateUser("Moshe").creationTime(sdf.parse("2009-01-01 00:00:00.400"))
                 .lastUpdateTime(sdf.parse("2006-06-07 05:45:55.565")).deleteTime(sdf.parse("2004-02-03 11:11:11.022"));
         // Add Relation between two Entities
