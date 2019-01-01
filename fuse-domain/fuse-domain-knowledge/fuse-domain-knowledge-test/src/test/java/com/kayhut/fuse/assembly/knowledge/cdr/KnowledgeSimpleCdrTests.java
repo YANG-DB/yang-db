@@ -6,10 +6,7 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.QueryResultBase;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,14 +15,17 @@ import static com.kayhut.fuse.assembly.knowledge.Setup.*;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
 
-public class KnowledgeSimpleEntityTests {
+@Ignore("Run on nightly builds only")
+public class KnowledgeSimpleCdrTests {
     static KnowledgeWriterContext ctx;
 
     @BeforeClass
     public static void setup() throws Exception {
         Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
-        DataLoader.load(client,ctx,"./data/cdr-small.csv");
+        long start = System.currentTimeMillis();
+        long amount = DataLoader.load(client, ctx, "./data/cdr-sample.csv");
+        System.out.println(String.format("Loaded %d rows in %s ",amount,(System.currentTimeMillis()-start)/1000));
     }
 
     @After
