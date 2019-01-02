@@ -58,21 +58,21 @@ public abstract class DataLoader {
         strings.forEach(line -> {
             //phone1
             final EntityBuilder e1 = ctx.e().cat("phone").ctx("cdr");
-            ValueBuilder v0 = ctx.v().field("phone").value(line[0]);
+            ValueBuilder v0 = ctx.v().field("phone").value(line[0]).bdt("phone");
             e1.value(v0);
 
             //phone2
             final EntityBuilder e2 = ctx.e().cat("phone").ctx("cdr");
-            ValueBuilder v1 = ctx.v().field("phone").value(line[1]);
+            ValueBuilder v1 = ctx.v().field("phone").value(line[1]).bdt("phone");
             e2.value(v1);
 
             //phone1->phone2 [type]
             final RelationBuilder rel = ctx.rel().cat("type").ctx("cdr");
-            RvalueBuilder v2 = ctx.r().field("name").value(line[2]).ctx("cdr");
+            RvalueBuilder v2 = ctx.r().field("name").value(line[2]).ctx("cdr").bdt("type");
             //cast to date
-            RvalueBuilder v3 = ctx.r().field("time").value(line[3]).ctx("cdr");
+            RvalueBuilder v3 = ctx.r().field("time").value(line[3]).ctx("cdr").bdt("time");
             //cast to long
-            RvalueBuilder v4 = ctx.r().field("duration").value(line[4]).ctx("cdr");
+            RvalueBuilder v4 = ctx.r().field("duration").value(line[4]).ctx("cdr").bdt("time");
             rel.value(v2);
             rel.value(v3);
             rel.value(v4);
@@ -83,16 +83,16 @@ public abstract class DataLoader {
 
             final EntityBuilder e4 = ctx.e().cat("location").ctx("cdr");
             //cast to float
-            ValueBuilder v8 = ctx.v().field("lat").value(line[7]).ctx("cdr");
+            ValueBuilder v8 = ctx.v().field("lat").value(line[7]).ctx("cdr").bdt("geo");
             //cast to float
-            ValueBuilder v9 = ctx.v().field("long").value(line[8]).ctx("cdr");
+            ValueBuilder v9 = ctx.v().field("long").value(line[8]).ctx("cdr").bdt("geo");
             e4.value(v8);
             e4.value(v9);
 
 
             //phone1->location [type]
             final RelationBuilder location = ctx.rel().cat("location").ctx("cdr");
-            RvalueBuilder loc_v3 = ctx.r().field("time").value(line[3]).ctx("cdr");
+            RvalueBuilder loc_v3 = ctx.r().field("time").value(line[3]).ctx("cdr").bdt("time");
             //cast to date
             location.value(loc_v3);
             //bind

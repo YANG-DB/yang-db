@@ -21,24 +21,44 @@ public class KnowledgeSimpleCdrTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
+        Setup.setup(false);
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         long start = System.currentTimeMillis();
-        long amount = DataLoader.load(client, ctx, "./data/cdr-sample.csv");
+        long amount = DataLoader.load(client, ctx, "./data/cdr-small.csv");
         System.out.println(String.format("Loaded %d rows in %s ",amount,(System.currentTimeMillis()-start)/1000));
     }
 
-    @After
+    @AfterClass
     public void after() {
         ctx.removeCreated();
         ctx.clearCreated();
     }
 
     @Test
+    public void testFetchPhoneWithProperties() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match (phone:Entity)-[rel:hasEvalue]->(value:Evalue) Return *";
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
+
+        List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+        // Check Entity Response
+        Assert.assertEquals(1, assignments.size());
+
+        Assert.assertFalse( assignments.get(0).getEntities().isEmpty() );
+        System.out.println("Entities fetched: "+(assignments.get(0).getEntities().size()-assignments.get(0).getRelationships().size()));
+
+        Assert.assertFalse( assignments.get(0).getRelationships().isEmpty() );
+        System.out.println("Values fetched: "+assignments.get(0).getRelationships().size());
+
+    }
+
+    @Test
     public void testFetchPhoneWithRelations() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        final String query = "Match (phone:Entity)-[rel:relatedEntity]->(any:Entity) Return phone,rel,any";
+        String query = "Match (phone:Entity)-[rel:relatedEntity]->(location:Entity) Return *";
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
 
         List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();

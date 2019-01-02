@@ -31,6 +31,10 @@ public abstract class Setup {
     }
 
     public static void setup(boolean embedded) throws Exception {
+        setup(embedded,true);
+    }
+
+    public static void setup(boolean embedded, boolean init) throws Exception {
         // Start embedded ES
         if(embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("knowledge");
@@ -46,7 +50,9 @@ public abstract class Setup {
         manager = new KnowledgeConfigManager(confFilePath, client);
         // Connect to elastic
         // Create indexes by templates
-        manager.init();
+        if(init) {
+            manager.init();
+        }
         // Start fuse app (based on Jooby app web server)
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(path.toFile(), "activeProfile");

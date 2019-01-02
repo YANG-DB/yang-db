@@ -80,7 +80,6 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
         //labels
         Collection<RelTypeName> labels = asJavaCollectionConverter((element).types()).asJavaCollection();
         final List<String> rTypes = labels.stream().map(l -> l.name()).collect(Collectors.toList());
-
         AsgEBase<Rel> rel = new AsgEBase<>(new Rel(current, null, resolve(direction), name, current + 1, 0));
         if (!rTypes.isEmpty()) {
             //todo add solution for multi-type labels

@@ -5,11 +5,13 @@ import com.kayhut.fuse.asg.translator.cypher.strategies.MatchCypherTranslatorStr
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.Rel;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
@@ -53,6 +55,35 @@ public class CypherMatchTranslatorTest {
                 .next(typed(1, "Dragon", "a"))
                 .build();
 
+        assertEquals(print(expected), print(query));
+    }
+
+    @Test
+    public void testMatch_A_ofType_Dragon_Person_Return_A() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a:Dragon:Person) RETURN a");
+
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(unTyped(1, "a",Arrays.asList("Dragon","Person")))
+                .build();
+
+        assertEquals(print(expected), print(query));
+    }
+
+    @Test
+    @Ignore("Not supported multi labels on edges")
+    public void testMatch_A_ofRelType_Dragon_Person_Return_A() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a:Dragon)-[c:Fire|Freeze]-(b:Person) RETURN *");
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(typed(1, "Dragon","a"))
+                .next(quant1(100, all))
+                .in(
+                        rel(2, null, Rel.Direction.RL,"c")
+                                .next(typed(3,"Person", "b"))
+                ).build();
         assertEquals(print(expected), print(query));
     }
 
