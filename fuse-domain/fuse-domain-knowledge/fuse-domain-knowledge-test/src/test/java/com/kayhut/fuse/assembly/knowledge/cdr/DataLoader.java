@@ -10,7 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder.*;
@@ -54,17 +56,25 @@ public abstract class DataLoader {
 
     public static long load(Client client, KnowledgeWriterContext ctx, String file) throws JsonProcessingException {
         List<String[]> strings = readCSV(file, ',');
-
+        Map<String,EntityBuilder> elements = new HashMap<>();
         strings.forEach(line -> {
             //phone1
-            final EntityBuilder e1 = ctx.e().cat("phone").ctx("cdr");
-            ValueBuilder v0 = ctx.v().field("phone").value(line[0]).bdt("phone");
-            e1.value(v0);
+            final String phoneA = line[0];
+            if(!elements.containsKey(phoneA)) {
+                final EntityBuilder e1 = ctx.e().cat("phone").ctx("cdr");
+                ValueBuilder v0 = ctx.v().field("phone").value(phoneA).bdt("phone");
+                e1.value(v0);
+                elements.put(phoneA,e1);
+            }
 
             //phone2
-            final EntityBuilder e2 = ctx.e().cat("phone").ctx("cdr");
-            ValueBuilder v1 = ctx.v().field("phone").value(line[1]).bdt("phone");
-            e2.value(v1);
+            final String phoneB = line[1];
+            if(!elements.containsKey(phoneB)) {
+                final EntityBuilder e2 = ctx.e().cat("phone").ctx("cdr");
+                ValueBuilder v1 = ctx.v().field("phone").value(phoneB).bdt("phone");
+                e2.value(v1);
+                elements.put(phoneB,e2);
+            }
 
             //phone1->phone2 [type]
             final RelationBuilder rel = ctx.rel().cat("type").ctx("cdr");
@@ -78,6 +88,8 @@ public abstract class DataLoader {
             rel.value(v4);
 
             //bind
+            EntityBuilder e1 = elements.get(phoneA);
+            EntityBuilder e2 = elements.get(phoneB);
             rel.sideA(e1).sideB(e2);
             e1.rel(rel,"out");
 

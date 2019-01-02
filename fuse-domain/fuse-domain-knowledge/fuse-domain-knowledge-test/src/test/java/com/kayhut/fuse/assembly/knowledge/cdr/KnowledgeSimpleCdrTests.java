@@ -21,7 +21,7 @@ public class KnowledgeSimpleCdrTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true);
+        Setup.setup(false);
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         long start = System.currentTimeMillis();
         long amount = DataLoader.load(client, ctx, "./data/cdr-small.csv");
@@ -38,7 +38,27 @@ public class KnowledgeSimpleCdrTests {
     public void testFetchPhoneWithProperties() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        String query = "Match (phone:Entity)-[rel:hasEvalue]->(value:Evalue) Return *";
+        String query = "Match (phone:Entity)-[rel:hasRelation]->(any:Entity) Return *";
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
+
+        List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+        // Check Entity Response
+        Assert.assertEquals(1, assignments.size());
+
+        Assert.assertFalse( assignments.get(0).getEntities().isEmpty() );
+        System.out.println("Entities fetched: "+(assignments.get(0).getEntities().size()-assignments.get(0).getRelationships().size()));
+
+        Assert.assertFalse( assignments.get(0).getRelationships().isEmpty() );
+        System.out.println("Values fetched: "+assignments.get(0).getRelationships().size());
+
+    }
+
+    @Test
+    public void testFetchPhoneRelToPhoneEntity() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match (phone:Entity )-[rel:hasEvalue]->(value:Evalue {stringValue:'6671870408'}) Return *";
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
 
         List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
@@ -58,7 +78,26 @@ public class KnowledgeSimpleCdrTests {
     public void testFetchPhoneWithRelations() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        String query = "Match (phone:Entity)-[rel:relatedEntity]->(location:Entity) Return *";
+        String query = "Match (phone:Entity)-[rel:relatedEntity]->(any:Entity)  Return *";
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
+
+        List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+        // Check Entity Response
+        Assert.assertEquals(1, assignments.size());
+
+        Assert.assertFalse( assignments.get(0).getEntities().isEmpty() );
+        System.out.println("Entities fetched: "+assignments.get(0).getEntities().size());
+
+        Assert.assertFalse( assignments.get(0).getRelationships().isEmpty() );
+        System.out.println("Relationships fetched: "+assignments.get(0).getRelationships().size());
+    }
+
+    @Test
+    public void testFetchPhoneWithRelationsAndCategory() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match (phone:Entity)-[rel:relatedEntity]->(any:Entity) Where (any.category = 'location') Return *";
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
 
         List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
