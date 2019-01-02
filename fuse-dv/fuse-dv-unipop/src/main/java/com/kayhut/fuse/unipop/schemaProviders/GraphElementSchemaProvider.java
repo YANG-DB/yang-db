@@ -121,6 +121,7 @@ public interface GraphElementSchemaProvider {
 
         @Override
         public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label) {
+            //this.edgeSchemas.entrySet().stream().filter(p->!p.getValue().isEmpty()).filter(p->p.getKey().contains("relatedEntity")).collect(Collectors.toList())
             return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, direction.toString(), label))).orElseGet(Collections::emptyList);
         }
 
