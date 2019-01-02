@@ -21,7 +21,7 @@ public class KnowledgeSimpleCdrTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false);
+        Setup.setup(true);
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         long start = System.currentTimeMillis();
         long amount = DataLoader.load(client, ctx, "./data/cdr-small.csv");
@@ -29,7 +29,7 @@ public class KnowledgeSimpleCdrTests {
     }
 
     @AfterClass
-    public void after() {
+    public static void after() {
         ctx.removeCreated();
         ctx.clearCreated();
     }
