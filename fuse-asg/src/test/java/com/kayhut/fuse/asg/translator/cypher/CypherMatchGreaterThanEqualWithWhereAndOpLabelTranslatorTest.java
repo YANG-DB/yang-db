@@ -123,6 +123,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
                 .build();
         assertEquals(print(expected), print(query));
     }
+
     @Test
     public void testMatch_A_where_A_OfType_testMatch_A_where_A_OfType_AND_C_Return_All() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
@@ -133,7 +134,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, null, Rel.Direction.RL,"c")
                 .below(relPropGroup(200,all,
-                        new RelProp(201,"size",of(ge, 50),0)))
+                        new RelProp(201,"size",of(gt, 50),0)))
                 .addNext(unTyped(3, "b")
                         .next(quant1(300, all)
                                 .addNext(

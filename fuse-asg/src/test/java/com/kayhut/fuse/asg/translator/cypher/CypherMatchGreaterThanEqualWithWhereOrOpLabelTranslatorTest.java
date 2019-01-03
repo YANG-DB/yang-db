@@ -2,9 +2,11 @@ package com.kayhut.fuse.asg.translator.cypher;
 
 import com.kayhut.fuse.asg.translator.AsgTranslator;
 import com.kayhut.fuse.asg.translator.cypher.strategies.MatchCypherTranslatorStrategy;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.quant.Quant1;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -278,6 +280,43 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
         assertEquals(print(expected), print(query));
     }
 
+    @Test
+    public void testMatch_A_where_A_OfType_testMatch_A_where_A_OfType_AND_C_Return_All() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where (a.age < 100 AND b.birth >= '28/01/2001') Or (c.size > 50) RETURN *");
+
+        //region Test Methods
+
+        final AsgEBase<Quant1> quantA = quant1(100, all);
+        quantA.addNext(rel(2, null, Rel.Direction.RL,"c")
+                .below(relPropGroup(200,all,
+                        new RelProp(201,"size",of(gt, 50),0)))
+                .addNext(unTyped(3, "b")
+                        .next(quant1(300, all)
+                                .addNext(
+                                        ePropGroup(301,all,
+                                                of(301, "birth", of(ge, "28/01/2001"))))
+                        )
+
+                ));
+        quantA.addNext(
+                ePropGroup(101,all,
+                        of(101, "age", of(lt, 100))));
+
+        String expected = "[└── Start, \n" +
+                            "    ──Q[300:some]:{4|8}, \n" +
+                            "                   └─UnTyp[:[] a#4]──Q[400:all]:{6|401}, \n" +
+                            "                                                   └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[700:all]:{701}──Q[800:all]:{10}, \n" +
+                            "                                                                                                   └─?[..][701], \n" +
+                            "                                                                                                           └─?[701]:[birth<ge,28/01/2001>], \n" +
+                            "                                                   └─?[..][401], \n" +
+                            "                                                           └─?[401]:[age<lt,100>], \n" +
+                            "                   └─UnTyp[:[] a#8], \n" +
+                            "                               └<--Rel(:null c#10)──UnTyp[:[] b#11], \n" +
+                            "                                              └─?[..][1000], \n" +
+                            "                                                       └─?[1001]:[size<gt,50>]]";
+        assertEquals(expected, print(query));
+    }
 
     //region Private Methods
     private static String readJsonToString(String jsonRelativePath) {

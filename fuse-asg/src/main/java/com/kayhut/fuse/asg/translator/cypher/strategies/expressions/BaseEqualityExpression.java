@@ -30,12 +30,16 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import org.opencypher.v9_0.expressions.*;
 import org.opencypher.v9_0.expressions.functions.E;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
@@ -81,7 +85,17 @@ public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression>
 
         //when tag is of entity type
         if(Rel.class.isAssignableFrom(byTag.get().geteBase().getClass())) {
-            //todo
+            //update the scope
+            context.scope(byTag.get());
+
+            if(!AsgQueryUtil.bAdjacentDescendant(byTag.get(), RelPropGroup.class).isPresent()) {
+                final int current = Math.max(byTag.get().getB().stream().mapToInt(p->p.geteNum()).max().orElse(0),byTag.get().geteNum());
+                byTag.get().addBChild(new AsgEBase<>(new RelPropGroup(100*current,CypherUtils.type(parent, Collections.EMPTY_SET))));
+            }
+
+            final int current = Math.max(byTag.get().getB().stream().mapToInt(p->p.geteNum()).max().orElse(0),byTag.get().geteNum());
+            ((RelPropGroup) AsgQueryUtil.bAdjacentDescendant(byTag.get(), RelPropGroup.class).get().geteBase())
+                    .getProps().add(new RelProp(current + 1, property.propertyKey().name(), constraint(exp.canonicalOperatorSymbol(), (org.opencypher.v9_0.expressions.Expression) literal(lhs, rhs)),0));
         }
     }
 

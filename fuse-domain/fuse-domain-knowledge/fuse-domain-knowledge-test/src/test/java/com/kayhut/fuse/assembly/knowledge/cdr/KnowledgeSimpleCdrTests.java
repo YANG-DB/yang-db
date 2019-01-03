@@ -24,7 +24,7 @@ public class KnowledgeSimpleCdrTests {
         Setup.setup(false);
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         long start = System.currentTimeMillis();
-        long amount = DataLoader.load(client, ctx, "./data/cdr-small.csv");
+        long amount = DataLoader.load( ctx, "./data/cdr-small.csv");
         System.out.println(String.format("Loaded %d rows in %s ",amount,(System.currentTimeMillis()-start)/1000));
     }
 
@@ -35,10 +35,11 @@ public class KnowledgeSimpleCdrTests {
     }
 
     @Test
-    public void testFetchPhoneWithProperties() throws IOException, InterruptedException {
+    public void testFetchPhoneRelationWithMultiVertices() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        String query = "Match (phone:Entity)-[rel:relatedEntity]->(any:Entity)-[relEvalue:hasEvalue]->(value:Evalue {stringValue:'6671870408'}) Where (rel.duration > 50) Return *";
+        String query = "Match (value:Evalue {stringValue:'6671870408'})<-[rel:hasEvalue]-(phone:Entity)-[:hasRelation]->(rel:Relation)-[:hasRvalue]->(rValue:Rvalue) " +
+                        " Where (rValue.fieldId = 'duration' AND rValue.stringValue = 58) Return *";
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
 
         List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
@@ -47,7 +48,49 @@ public class KnowledgeSimpleCdrTests {
         Assert.assertEquals(1, assignments.size());
 
         Assert.assertFalse( assignments.get(0).getEntities().isEmpty() );
-        System.out.println("Entities fetched: "+(assignments.get(0).getEntities().size()-assignments.get(0).getRelationships().size()));
+        System.out.println("Entities fetched: "+assignments.get(0).getEntities().size());
+
+        Assert.assertFalse( assignments.get(0).getRelationships().isEmpty() );
+        System.out.println("Values fetched: "+assignments.get(0).getRelationships().size());
+
+    }
+
+    @Test
+    public void testFetchPhoneRelationWithMultiAndProperties() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match (phone:Entity)-[:hasRelation]->(rel:Relation)-[:hasRvalue]->(rValue:Rvalue) " +
+                        " Where (rValue.fieldId = 'duration' AND rValue.stringValue = 58) Return *";
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
+
+        List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+        // Check Entity Response
+        Assert.assertEquals(1, assignments.size());
+
+        Assert.assertFalse( assignments.get(0).getEntities().isEmpty() );
+        System.out.println("Entities fetched: "+assignments.get(0).getEntities().size());
+
+        Assert.assertFalse( assignments.get(0).getRelationships().isEmpty() );
+        System.out.println("Values fetched: "+assignments.get(0).getRelationships().size());
+
+    }
+
+    @Test
+    public void testFetchPhoneRelationWithMultiOrProperties() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match (phone:Entity)-[:hasRelation]->(rel:Relation)-[:hasRvalue]->(rValue:Rvalue) " +
+                        " Where (rValue.fieldId = 'duration' OR rValue.stringValue = 58) Return *";
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
+
+        List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+        // Check Entity Response
+        Assert.assertEquals(1, assignments.size());
+
+        Assert.assertFalse( assignments.get(0).getEntities().isEmpty() );
+        System.out.println("Entities fetched: "+assignments.get(0).getEntities().size());
 
         Assert.assertFalse( assignments.get(0).getRelationships().isEmpty() );
         System.out.println("Values fetched: "+assignments.get(0).getRelationships().size());

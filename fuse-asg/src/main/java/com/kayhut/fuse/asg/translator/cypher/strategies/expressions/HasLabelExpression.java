@@ -30,6 +30,8 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import org.opencypher.v9_0.expressions.*;
 
 import java.util.*;
@@ -74,12 +76,6 @@ public class HasLabelExpression extends BaseExpressionStrategy {
             ((EPropGroup) AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).get().geteBase())
                     .getProps().add(addPredicate(current, "type", of(inSet, labels)));
         }
-
-        //when tag is of entity type
-        if(Rel.class.isAssignableFrom(byTag.get().geteBase().getClass())) {
-            //todo
-        }
-
     }
 
     @Override

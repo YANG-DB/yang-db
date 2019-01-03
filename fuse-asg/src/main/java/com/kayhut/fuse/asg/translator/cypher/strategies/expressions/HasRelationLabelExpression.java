@@ -9,9 +9,9 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,9 @@ import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import org.opencypher.v9_0.expressions.*;
+import org.opencypher.v9_0.expressions.HasLabels;
+import org.opencypher.v9_0.expressions.LabelName;
+import org.opencypher.v9_0.expressions.Variable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -51,27 +53,29 @@ public class HasRelationLabelExpression implements ExpressionStrategies {
 
         //first find the node element by its var name in the query
 
-        final Optional<AsgEBase<Rel>> first = AsgQueryUtil.elements(context.getScope() ,Rel.class).stream()
+        final Optional<AsgEBase<Rel>> first = AsgQueryUtil.elements(context.getScope(), Rel.class).stream()
                 .filter(p -> p.geteBase().getWrapper().equals(variable.name()))
                 .findFirst();
 
-        if(!first.isPresent()) return;
+        if (!first.isPresent()) return;
 
 
-        //update the scope
-        context.scope(first.get());
-        //add the label eProp constraint
+        //when tag is of entity type
+        if (Rel.class.isAssignableFrom(first.get().geteBase().getClass())) {
+            //update the scope
+            context.scope(first.get());
+            //add the label eProp constraint
 
-        if(!AsgQueryUtil.bAdjacentDescendant(first.get(), RelPropGroup.class).isPresent()) {
-            final int current = Math.max(first.get().getB().stream().mapToInt(p->p.geteNum()).max().orElse(0),first.get().geteNum());
-            first.get().addBChild(new AsgEBase<>(new RelPropGroup(100*current,CypherUtils.type(parent, Collections.EMPTY_SET))));
+            if (!AsgQueryUtil.bAdjacentDescendant(first.get(), RelPropGroup.class).isPresent()) {
+                final int current = Math.max(first.get().getB().stream().mapToInt(p -> p.geteNum()).max().orElse(0), first.get().geteNum());
+                first.get().addBChild(new AsgEBase<>(new RelPropGroup(100 * current, CypherUtils.type(parent, Collections.EMPTY_SET))));
+            }
+
+            final List<String> labelNames = labels.stream().map(l -> l.name()).collect(Collectors.toList());
+            final int current = Math.max(first.get().getB().stream().mapToInt(p -> p.geteNum()).max().orElse(0), first.get().geteNum());
+            ((RelPropGroup) AsgQueryUtil.bAdjacentDescendant(first.get(), RelPropGroup.class).get().geteBase())
+                    .getProps().add(new RelProp(current + 1, "type", of(inSet, labelNames), 0));
         }
-
-        final List<String> labelNames = labels.stream().map(l -> l.name()).collect(Collectors.toList());
-        final int current = Math.max(first.get().getB().stream().mapToInt(p->p.geteNum()).max().orElse(0),first.get().geteNum());
-        ((RelPropGroup) AsgQueryUtil.bAdjacentDescendant(first.get(), RelPropGroup.class).get().geteBase())
-                .getProps().add(new RelProp(current + 1, "type", of(inSet, labelNames),0));
-
     }
 
     @Override

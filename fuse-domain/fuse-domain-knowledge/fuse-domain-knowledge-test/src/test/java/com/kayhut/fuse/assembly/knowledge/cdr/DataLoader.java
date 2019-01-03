@@ -48,13 +48,12 @@ public abstract class DataLoader {
      *
      *
      *
-     * @param client
      * @param ctx
      * @param file
      * @return
      */
 
-    public static long load(Client client, KnowledgeWriterContext ctx, String file) throws JsonProcessingException {
+    public static long load(KnowledgeWriterContext ctx, String file) throws JsonProcessingException {
         List<String[]> strings = readCSV(file, ',');
         Map<String,EntityBuilder> elements = new HashMap<>();
         strings.forEach(line -> {
