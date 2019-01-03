@@ -24,11 +24,9 @@ import com.bpodgursky.jbool_expressions.Expression;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import org.opencypher.v9_0.expressions.Contains;
-import org.opencypher.v9_0.expressions.EndsWith;
 
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.contains;
-import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.endsWith;
 
 public class ContainsExpression extends BaseEqualityExpression<Contains> {
 

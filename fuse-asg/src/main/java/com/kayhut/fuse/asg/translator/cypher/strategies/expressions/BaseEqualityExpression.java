@@ -27,6 +27,8 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import org.opencypher.v9_0.expressions.*;
@@ -54,21 +56,33 @@ public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression>
         Variable variable = CypherUtils.var(property).get(0);
         //first find the node element by its var name in the query
         Optional<AsgEBase<EBase>> byTag = AsgQueryUtil.getByTag(context.getScope(), variable.name());
+        if (!byTag.isPresent())
+            byTag = AsgQueryUtil.getByTag(query.getStart(), variable.name());
+
         if (!byTag.isPresent()) return;
 
-        //update the scope
-        context.scope(byTag.get());
-        //change scope to quant
-        final AsgEBase<EBase> quantAsg = CypherUtils.quant(byTag.get(), parent, query, context);
-        //add the label eProp constraint
-        final int current = Math.max(quantAsg.getNext().stream().mapToInt(p -> p.geteNum()).max().orElse(0), quantAsg.geteNum());
+        //when tag is of entity type
+        if(EEntityBase.class.isAssignableFrom(byTag.get().geteBase().getClass())) {
 
-        if (!AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).isPresent()) {
-            quantAsg.addNext(new AsgEBase<>(new EPropGroup(current + 1, CypherUtils.type(parent, Collections.EMPTY_SET))));
+            //update the scope
+            context.scope(byTag.get());
+            //change scope to quant
+            final AsgEBase<EBase> quantAsg = CypherUtils.quant(byTag.get(), parent, query, context);
+            //add the label eProp constraint
+            final int current = Math.max(quantAsg.getNext().stream().mapToInt(p -> p.geteNum()).max().orElse(0), quantAsg.geteNum());
+
+            if (!AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).isPresent()) {
+                quantAsg.addNext(new AsgEBase<>(new EPropGroup(current + 1, CypherUtils.type(parent, Collections.EMPTY_SET))));
+            }
+
+            ((EPropGroup) AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).get().geteBase())
+                    .getProps().add(addPredicate(current, property.propertyKey().name(), constraint(exp.canonicalOperatorSymbol(), (org.opencypher.v9_0.expressions.Expression) literal(lhs, rhs))));
         }
 
-        ((EPropGroup) AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).get().geteBase())
-                .getProps().add(addPredicate(current, property.propertyKey().name(), constraint(exp.canonicalOperatorSymbol(), (org.opencypher.v9_0.expressions.Expression) literal(lhs,rhs))));
+        //when tag is of entity type
+        if(Rel.class.isAssignableFrom(byTag.get().geteBase().getClass())) {
+            //todo
+        }
     }
 
     protected Object literal(org.opencypher.v9_0.expressions.Expression lhs,

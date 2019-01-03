@@ -36,7 +36,6 @@ import javaslang.collection.Stream;
 
 import javax.management.relation.Relation;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -53,8 +52,12 @@ public class AsgQueryUtil {
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getByTag(AsgEBase<T> asgEBase, String eTag) {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext,
-                p -> EEntityBase.class.isAssignableFrom(p.geteBase().getClass()) &&
-                        ((EEntityBase) p.geteBase()).geteTag().equals(eTag), truePredicate);
+                p -> (EEntityBase.class.isAssignableFrom(p.geteBase().getClass()) &&
+                        ((EEntityBase) p.geteBase()).geteTag().equals(eTag))
+                        ||
+                        (Rel.class.isAssignableFrom(p.geteBase().getClass()) &&
+                                ((Rel) p.geteBase()).getWrapper().equals(eTag))
+                , truePredicate);
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {

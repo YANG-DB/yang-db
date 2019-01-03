@@ -123,6 +123,36 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
                 .build();
         assertEquals(print(expected), print(query));
     }
+    @Test
+    public void testMatch_A_where_A_OfType_testMatch_A_where_A_OfType_AND_C_Return_All() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where a.age < 100 AND b.birth >= '28/01/2001' AND (c.size > 50) RETURN *");
+
+        //region Test Methods
+
+        final AsgEBase<Quant1> quantA = quant1(100, all);
+        quantA.addNext(rel(2, null, Rel.Direction.RL,"c")
+                .below(relPropGroup(200,all,
+                        new RelProp(201,"size",of(ge, 50),0)))
+                .addNext(unTyped(3, "b")
+                        .next(quant1(300, all)
+                                .addNext(
+                                        ePropGroup(301,all,
+                                                of(301, "birth", of(ge, "28/01/2001"))))
+                        )
+
+                ));
+        quantA.addNext(
+                ePropGroup(101,all,
+                        of(101, "age", of(lt, 100))));
+
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(unTyped(1, "a"))
+                .next(quantA)
+                .build();
+        assertEquals(print(expected), print(query));
+    }
 
 
     //region Private Methods

@@ -21,26 +21,11 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
  */
 
 import com.bpodgursky.jbool_expressions.Expression;
-import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
-import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import org.opencypher.v9_0.expressions.*;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
-import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
 public class InequalityExpression extends BaseEqualityExpression<org.opencypher.v9_0.expressions.InequalityExpression> {
 

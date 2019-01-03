@@ -55,6 +55,26 @@ public class KnowledgeSimpleCdrTests {
     }
 
     @Test
+    public void testFetchPhoneWithMultiPropertiesFilter() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match (phone:Entity)-[rel:hasEvalue]->(value:Evalue) Where (value.stringValue = '6671870408' Or value.fieldId = 'location') Return *";
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
+
+        List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+        // Check Entity Response
+        Assert.assertEquals(1, assignments.size());
+
+        Assert.assertFalse( assignments.get(0).getEntities().isEmpty() );
+        System.out.println("Entities fetched: "+(assignments.get(0).getEntities().size()-assignments.get(0).getRelationships().size()));
+
+        Assert.assertFalse( assignments.get(0).getRelationships().isEmpty() );
+        System.out.println("Values fetched: "+assignments.get(0).getRelationships().size());
+
+    }
+
+    @Test
     public void testFetchPhoneRelToPhoneEntity() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

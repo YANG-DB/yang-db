@@ -26,6 +26,8 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import org.opencypher.v9_0.expressions.*;
@@ -54,20 +56,30 @@ public class HasLabelExpression extends BaseExpressionStrategy {
         final Optional<AsgEBase<EBase>> byTag = AsgQueryUtil.getByTag(context.getScope(), variable.name());
         if(!byTag.isPresent()) return;
 
-        //update the scope
-        context.scope(byTag.get());
-        //change scope to quant
-        final AsgEBase<EBase> quantAsg = CypherUtils.quant(byTag.get(),parent,query,context);
-        //add the label eProp constraint
-        final int current = Math.max(quantAsg.getNext().stream().mapToInt(p->p.geteNum()).max().orElse(0),quantAsg.geteNum());
-        final List<String> labels = labelNames.stream().map(l -> l.name()).collect(Collectors.toList());
+        //when tag is of entity type
+        if(EEntityBase.class.isAssignableFrom(byTag.get().geteBase().getClass())) {
 
-        if(!AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).isPresent()) {
-            quantAsg.addNext(new AsgEBase<>(new EPropGroup(current + 1 ,CypherUtils.type(parent, Collections.EMPTY_SET))));
+            //update the scope
+            context.scope(byTag.get());
+            //change scope to quant
+            final AsgEBase<EBase> quantAsg = CypherUtils.quant(byTag.get(), parent, query, context);
+            //add the label eProp constraint
+            final int current = Math.max(quantAsg.getNext().stream().mapToInt(p -> p.geteNum()).max().orElse(0), quantAsg.geteNum());
+            final List<String> labels = labelNames.stream().map(l -> l.name()).collect(Collectors.toList());
+
+            if (!AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).isPresent()) {
+                quantAsg.addNext(new AsgEBase<>(new EPropGroup(current + 1, CypherUtils.type(parent, Collections.EMPTY_SET))));
+            }
+
+            ((EPropGroup) AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).get().geteBase())
+                    .getProps().add(addPredicate(current, "type", of(inSet, labels)));
         }
 
-        ((EPropGroup) AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).get().geteBase())
-                .getProps().add(addPredicate(current,"type", of(inSet, labels)));
+        //when tag is of entity type
+        if(Rel.class.isAssignableFrom(byTag.get().geteBase().getClass())) {
+            //todo
+        }
+
     }
 
     @Override

@@ -23,11 +23,9 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
 import com.bpodgursky.jbool_expressions.Expression;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import org.opencypher.v9_0.expressions.Equals;
 import org.opencypher.v9_0.expressions.NotEquals;
 
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
-import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.ne;
 
 public class NotEqualExpression extends BaseEqualityExpression<NotEquals> {

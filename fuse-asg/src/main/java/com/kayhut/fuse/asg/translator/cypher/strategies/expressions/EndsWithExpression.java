@@ -24,11 +24,9 @@ import com.bpodgursky.jbool_expressions.Expression;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import org.opencypher.v9_0.expressions.EndsWith;
-import org.opencypher.v9_0.expressions.StartsWith;
 
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.endsWith;
-import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.startsWith;
 
 public class EndsWithExpression extends BaseEqualityExpression<EndsWith> {
 
