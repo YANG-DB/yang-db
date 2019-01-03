@@ -28,7 +28,7 @@ public class KnowledgeSimpleCdrTests {
         System.out.println(String.format("Loaded %d rows in %s ",amount,(System.currentTimeMillis()-start)/1000));
     }
 
-    @AfterClass
+//    @AfterClass
     public static void after() {
         ctx.removeCreated();
         ctx.clearCreated();
@@ -38,7 +38,7 @@ public class KnowledgeSimpleCdrTests {
     public void testFetchPhoneWithProperties() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        String query = "Match (phone:Entity)-[rel:hasRelation]->(any:Entity) Return *";
+        String query = "Match (phone:Entity)-[rel:relatedEntity]->(any:Entity)-[relEvalue:hasEvalue]->(value:Evalue {stringValue:'6671870408'}) Where (rel.duration > 50) Return *";
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
 
         List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();

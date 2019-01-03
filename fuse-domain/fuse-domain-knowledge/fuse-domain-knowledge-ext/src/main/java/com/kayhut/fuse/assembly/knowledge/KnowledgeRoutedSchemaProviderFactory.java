@@ -565,27 +565,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(endA).toJavaSet()),
-                        new GraphEdgeSchema.Impl(
-                                RELATED_ENTITY,
-                                new GraphElementConstraint.Impl(__.start().and(__.start().has(T.label, E_RELATION))),
-                                Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList(ENTITY_B_ID),
-                                        Optional.of(ENTITY),
-                                        Collections.emptyList(),
-                                        Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl(LOGICAL_ID, STRING)
-                                        )),
-                                        Optional.of(entityPartitions))),
-                                Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList(ENTITY_A_ID),
-                                        Optional.of(ENTITY))),
-                                Direction.IN,
-                                Optional.empty(),
-                                Optional.empty(),
-                                Optional.empty(),
-                                Collections.emptyList(),
-                                Stream.of(endB).toJavaSet()),
+                                Stream.of(endA, endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 HAS_IN_RELATION,
                                 new GraphElementConstraint.Impl(__.start().and(__.start().has(T.label, E_RELATION), __.start().has(DIRECTION, Direction.IN.toString().toLowerCase()))),
