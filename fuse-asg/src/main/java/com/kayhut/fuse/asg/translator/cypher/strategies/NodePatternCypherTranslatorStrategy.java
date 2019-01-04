@@ -23,6 +23,7 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
 import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.EqualityExpression;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
@@ -67,23 +68,34 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
             final Collection<LabelName> labels = asJavaCollectionConverter(((NodePattern) element).labels()).asJavaCollection();
             //labels
             final List<String> collect = labels.stream().map(l -> l.name()).collect(Collectors.toList());
-            //create label
-            AsgEBase<? extends EBase> node = new AsgEBase<>(new EUntyped(current, name, collect, Collections.emptyList(), current + 1, 0));
-            //is single label - use EType label (specific typed label)
-            if (labels.size() == 1) {
-                node = new AsgEBase<>(new ETyped(current, name, labels.iterator().next().name(), current + 1, 0));
-            }
 
-            context.getScope().addNext(node);
-            context.scope(node);
+            Optional<AsgEBase<EBase>> byTag = AsgQueryUtil.getByTag(query.getStart(), name);
 
-            final Option<Expression> properties = ((NodePattern) element).properties();
-            if (properties.nonEmpty()) {
-                Collection<Tuple2<PropertyKeyName, Expression>> collection = asJavaCollectionConverter(((MapExpression) properties.get()).items()).asJavaCollection();
-                Property property = new Property(variable.get(), collection.iterator().next()._1, InputPosition.NONE());
-                Equals equals = new Equals(property, collection.iterator().next()._2, InputPosition.NONE());
-                CypherUtils.Wrapper wrapper = CypherUtils.Wrapper.of(equals);
-                equalityExpression.apply(Optional.empty(), com.bpodgursky.jbool_expressions.Variable.of(wrapper), query, context);
+            //if no node is present - create one
+            AsgEBase<? extends EBase> node;
+
+            if(!byTag.isPresent()) {
+                //create label
+                node = new AsgEBase<>(new EUntyped(current, name, collect, Collections.emptyList(), current + 1, 0));
+                //is single label - use EType label (specific typed label)
+                if (labels.size() == 1) {
+                    node = new AsgEBase<>(new ETyped(current, name, labels.iterator().next().name(), current + 1, 0));
+                }
+
+                context.getScope().addNext(node);
+                context.scope(node);
+
+                final Option<Expression> properties = ((NodePattern) element).properties();
+                if (properties.nonEmpty()) {
+                    Collection<Tuple2<PropertyKeyName, Expression>> collection = asJavaCollectionConverter(((MapExpression) properties.get()).items()).asJavaCollection();
+                    Property property = new Property(variable.get(), collection.iterator().next()._1, InputPosition.NONE());
+                    Equals equals = new Equals(property, collection.iterator().next()._2, InputPosition.NONE());
+                    CypherUtils.Wrapper wrapper = CypherUtils.Wrapper.of(equals);
+                    equalityExpression.apply(Optional.empty(), com.bpodgursky.jbool_expressions.Variable.of(wrapper), query, context);
+                }
+            } else {
+                //todo validate same label on existing node
+                node = byTag.get();
             }
             //return scope to original node
             context.scope(node);

@@ -39,6 +39,8 @@ import org.opencypher.v9_0.expressions.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.maxEntityNum;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.maxQuantNum;
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
 //import org.opencypher.v9_0.expressions.*;
@@ -51,14 +53,6 @@ public interface CypherUtils {
         Collections.reverse(target);
         return target;
 
-    }
-
-    static int maxEntityNum(AsgQuery query) {
-        return Stream.ofAll(AsgQueryUtil.eNums(query,
-                asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())
-                        && !BaseProp.class.isAssignableFrom(asgEBase.geteBase().getClass())
-                        && !BasePropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())))
-                .max().get();
     }
 
     static QuantType type(Optional<com.bpodgursky.jbool_expressions.Expression> operation, Set<Variable> distinct) {
@@ -83,10 +77,12 @@ public interface CypherUtils {
         //next find the quant associated with this element - if none found create one
         if (!AsgQueryUtil.nextAdjacentDescendant(byTag, QuantBase.class).isPresent()) {
             final int current = maxEntityNum(query);
+            final int currentQuantMax = maxQuantNum(query);
+            final int newCurrent = current * 100 > currentQuantMax ? (current * 100) : (current+1)*100;
 
             final Set<Variable> distinct = distinct(operation);
             //quants will get enum according to the next formula = scopeElement.enum * 100
-            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(current * 100, CypherUtils.type(operation, distinct), new ArrayList<>(), 0));
+            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(newCurrent, CypherUtils.type(operation, distinct), new ArrayList<>(), 0));
             //is scope already has next - add them to the newly added quant
             if (context.getScope().hasNext()) {
                 final List<AsgEBase<? extends EBase>> next = context.getScope().getNext();

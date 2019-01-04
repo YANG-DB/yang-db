@@ -48,22 +48,22 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                         unTyped(4, "a")
                                 .next(quant1(400, all)
                                         .addNext(
-                                                rel(6, null, Rel.Direction.RL, "Rel_#2")
-                                                        .next(unTyped(7, "b"))
+                                                rel(5, null, Rel.Direction.RL, "Rel_#2")
+                                                        .next(unTyped(6, "b"))
                                         )
                                         .addNext(ePropGroup(401, all,
                                                 of(401, "age", of(lt, 100)))
                                         )
                                 ),
-                        unTyped(8, "a")
+                        unTyped(7, "a")
                                 .addNext(
-                                        quant1(800, all)
+                                        quant1(700, all)
                                                 .addNext(
-                                                        rel(10, null, Rel.Direction.RL, "Rel_#2")
+                                                        rel(8, null, Rel.Direction.RL, "Rel_#2")
                                                                 .next(
-                                                                        unTyped(11, "b")))
-                                                .addNext(ePropGroup(801, all,
-                                                        of(801, "birth", of(ge, "28/01/2001")))
+                                                                        unTyped(9, "b")))
+                                                .addNext(ePropGroup(701, all,
+                                                        of(701, "birth", of(ge, "28/01/2001")))
                                                 )
                                 )
                 )
@@ -83,32 +83,32 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                         unTyped(4, "a")
                                 .next(quant1(400, all)
                                         .addNext(
-                                                rel(6, null, Rel.Direction.RL, "c")
-                                                        .next(unTyped(7, "b"))
+                                                rel(5, null, Rel.Direction.RL, "c")
+                                                        .next(unTyped(6, "b"))
                                         )
                                         .addNext(ePropGroup(401, all,
                                                 of(401, "age", of(lt, 100)))
                                         )
                                 ),
-                        unTyped(8, "a")
+                        unTyped(7, "a")
                                 .addNext(
-                                        quant1(800, all)
+                                        quant1(700, all)
                                                 .addNext(
-                                                        rel(10, null, Rel.Direction.RL, "c")
-                                                                .below(relPropGroup(1000, all,
-                                                                        RelProp.of(1001, "type", of(inSet, Arrays.asList("Fire")))))
-                                                                .next(unTyped(11, "b"))
+                                                        rel(8, null, Rel.Direction.RL, "c")
+                                                                .below(relPropGroup(800, all,
+                                                                        RelProp.of(801, "type", of(inSet, Arrays.asList("Fire")))))
+                                                                .next(unTyped(9, "b"))
                                                 )
                                 ),
-                        unTyped(12, "a")
+                        unTyped(10, "a")
                                 .addNext(
-                                        quant1(1200, all)
+                                        quant1(1000, all)
                                                 .addNext(
-                                                        rel(14, null, Rel.Direction.RL, "c")
-                                                                .next(unTyped(15, "b")
-                                                                        .next(quant1(1500, all)
-                                                                                .addNext(ePropGroup(1501, all,
-                                                                                        of(1501, "birth", of(ge, "28/01/2001")))
+                                                        rel(11, null, Rel.Direction.RL, "c")
+                                                                .next(unTyped(12, "b")
+                                                                        .next(quant1(1200, all)
+                                                                                .addNext(ePropGroup(1201, all,
+                                                                                        of(1201, "birth", of(ge, "28/01/2001")))
                                                                                 ))
                                                                 ))
                                 )
@@ -121,17 +121,17 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where (a.age < 100 AND b.birth >= '28/01/2001' ) Or c:Fire RETURN a");
         String expected = "[└── Start, \n" +
-                "    ──Q[300:some]:{4|8}, \n" +
-                "                   └─UnTyp[:[] a#4]──Q[400:all]:{6}, \n" +
-                "                                               └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[800:all]:{10|801}, \n" +
-                "                                                             └─?[..][600], \n" +
-                "                                                                     └─?[601]:[type<inSet,[Fire]>], \n" +
-                "                   └─UnTyp[:[] a#8], \n" +
-                "                               └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[1100:all]:{1101}, \n" +
-                "                                                                                   └─?[..][1101], \n" +
-                "                                                                                            └─?[1101]:[birth<ge,28/01/2001>], \n" +
-                "                               └─?[..][801], \n" +
-                "                                       └─?[801]:[age<lt,100>]]";
+                "    ──Q[300:some]:{4|7}, \n" +
+                "                   └─UnTyp[:[] a#4]──Q[400:all]:{5}, \n" +
+                "                                               └<--Rel(:null c#5)──UnTyp[:[] b#6]──Q[700:all]:{8|701}, \n" +
+                "                                                             └─?[..][500], \n" +
+                "                                                                     └─?[501]:[type<inSet,[Fire]>], \n" +
+                "                   └─UnTyp[:[] a#7], \n" +
+                "                               └<--Rel(:null c#8)──UnTyp[:[] b#9]──Q[900:all]:{901}, \n" +
+                "                                                                               └─?[..][901], \n" +
+                "                                                                                       └─?[901]:[birth<ge,28/01/2001>], \n" +
+                "                               └─?[..][701], \n" +
+                "                                       └─?[701]:[age<lt,100>]]";
         assertEquals(expected, print(query));
     }
 
@@ -140,18 +140,18 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where (a.age >= 100 OR b.birth < '28/01/2001' ) And b:Person RETURN a");
         String expected = "[└── Start, \n" +
-                "    ──Q[300:some]:{4|8}, \n" +
-                "                   └─UnTyp[:[] a#4]──Q[400:all]:{6|401}, \n" +
-                "                                                   └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[700:all]:{701}──Q[800:all]:{10}, \n" +
-                "                                                                                                   └─?[..][701], \n" +
-                "                                                                                                           └─?[701]:[type<inSet,[Person]>], \n" +
+                "    ──Q[300:some]:{4|7}, \n" +
+                "                   └─UnTyp[:[] a#4]──Q[400:all]:{5|401}, \n" +
+                "                                                   └<--Rel(:null c#5)──UnTyp[:[] b#6]──Q[600:all]:{601}──Q[700:all]:{8}, \n" +
+                "                                                                                                   └─?[..][601], \n" +
+                "                                                                                                           └─?[601]:[type<inSet,[Person]>], \n" +
                 "                                                   └─?[..][401], \n" +
                 "                                                           └─?[401]:[age<ge,100>], \n" +
-                "                   └─UnTyp[:[] a#8], \n" +
-                "                               └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[1100:all]:{1101}, \n" +
-                "                                                                                   └─?[..][1101], \n" +
-                "                                                                                            └─?[1101]:[type<inSet,[Person]>], \n" +
-                "                                                                                            └─?[1102]:[birth<lt,28/01/2001>]]";
+                "                   └─UnTyp[:[] a#7], \n" +
+                "                               └<--Rel(:null c#8)──UnTyp[:[] b#9]──Q[900:all]:{901}, \n" +
+                "                                                                               └─?[..][901], \n" +
+                "                                                                                       └─?[901]:[type<inSet,[Person]>], \n" +
+                "                                                                                       └─?[902]:[birth<lt,28/01/2001>]]";
         assertEquals(expected, print(query));
     }
 
@@ -168,13 +168,13 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                                 .addNext(
                                         quant1(400, all)
                                                 .addNext(
-                                                        rel(6, null, Rel.Direction.RL, "c")
+                                                        rel(5, null, Rel.Direction.RL, "c")
                                                                 .next(
-                                                                        unTyped(7, "b")
-                                                                                .next(quant1(700, all)
-                                                                                        .addNext(ePropGroup(701, all,
-                                                                                                of(701, "birth",of(ge, "28/01/2001")),
-                                                                                                of(702, "size",of(le, 300)))
+                                                                        unTyped(6, "b")
+                                                                                .next(quant1(600, all)
+                                                                                        .addNext(ePropGroup(601, all,
+                                                                                                of(601, "birth",of(ge, "28/01/2001")),
+                                                                                                of(602, "size",of(le, 300)))
                                                                                         ))
                                                                 )
                                                 )
@@ -184,18 +184,18 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                                                         )
                                                 )
                                 ),
-                        unTyped(8, "a")
+                        unTyped(7, "a")
                                 .addNext(
-                                        quant1(800, all)
+                                        quant1(700, all)
                                                 .addNext(
-                                                        rel(10, null, Rel.Direction.RL, "c")
-                                                                .below(relPropGroup(1000, all,
-                                                                        RelProp.of(1001, "type", of(inSet, Arrays.asList("Fire")))))
+                                                        rel(8, null, Rel.Direction.RL, "c")
+                                                                .below(relPropGroup(800, all,
+                                                                        RelProp.of(801, "type", of(inSet, Arrays.asList("Fire")))))
                                                                 .next(
-                                                                        unTyped(11, "b")
-                                                                                .next(quant1(1100, all)
-                                                                                        .addNext(ePropGroup(1101, all,
-                                                                                                of(1101, "size",
+                                                                        unTyped(9, "b")
+                                                                                .next(quant1(900, all)
+                                                                                        .addNext(ePropGroup(901, all,
+                                                                                                of(901, "size",
                                                                                                         of(le, 300)))))
                                                                 )
                                                 )
@@ -210,33 +210,33 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
         final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where ((a.age < 100 AND a.birth >= '28/01/2001') Or c:Fire) And (b.age < 100 OR b.birth >= '28/01/2001') RETURN a");
         //expected string representation
         String expected = "[└── Start, \n" +
-                "    ──Q[300:some]:{4|8|12|16}, \n" +
-                "                         └─UnTyp[:[] a#4]──Q[400:all]:{6|401}, \n" +
-                "                                                         └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[700:all]:{701}──Q[800:all]:{10}, \n" +
-                "                                                                                                         └─?[..][701]──Q[1200:all]:{14|1201}, \n" +
-                "                                                                                                                 └─?[701]:[age<lt,100>]──Q[1600:all]:{18}, \n" +
+                "    ──Q[300:some]:{4|7|10|13}, \n" +
+                "                         └─UnTyp[:[] a#4]──Q[400:all]:{5|401}, \n" +
+                "                                                         └<--Rel(:null c#5)──UnTyp[:[] b#6]──Q[600:all]:{601}──Q[700:all]:{8}, \n" +
+                "                                                                                                         └─?[..][601]──Q[1000:all]:{11|1001}, \n" +
+                "                                                                                                                 └─?[601]:[age<lt,100>]──Q[1300:all]:{14}, \n" +
                 "                                                         └─?[..][401], \n" +
                 "                                                                 └─?[401]:[age<lt,100>], \n" +
                 "                                                                 └─?[402]:[birth<ge,28/01/2001>], \n" +
-                "                         └─UnTyp[:[] a#8], \n" +
-                "                                     └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[1100:all]:{1101}, \n" +
-                "                                                    └─?[..][1000], \n" +
-                "                                                             └─?[1001]:[type<inSet,[Fire]>], \n" +
-                "                                                                                       └─?[..][1101], \n" +
-                "                                                                                                └─?[1101]:[birth<ge,28/01/2001>], \n" +
-                "                         └─UnTyp[:[] a#12], \n" +
+                "                         └─UnTyp[:[] a#7], \n" +
+                "                                     └<--Rel(:null c#8)──UnTyp[:[] b#9]──Q[900:all]:{901}, \n" +
+                "                                                   └─?[..][800], \n" +
+                "                                                           └─?[801]:[type<inSet,[Fire]>], \n" +
+                "                                                                                    └─?[..][901], \n" +
+                "                                                                                            └─?[901]:[birth<ge,28/01/2001>], \n" +
+                "                         └─UnTyp[:[] a#10], \n" +
+                "                                      └<--Rel(:null c#11)──UnTyp[:[] b#12]──Q[1200:all]:{1201}, \n" +
+                "                                                                                          └─?[..][1201], \n" +
+                "                                                                                                   └─?[1201]:[birth<ge,28/01/2001>], \n" +
+                "                                      └─?[..][1001], \n" +
+                "                                               └─?[1001]:[age<lt,100>], \n" +
+                "                                               └─?[1002]:[birth<ge,28/01/2001>], \n" +
+                "                         └─UnTyp[:[] a#13], \n" +
                 "                                      └<--Rel(:null c#14)──UnTyp[:[] b#15]──Q[1500:all]:{1501}, \n" +
-                "                                                                                          └─?[..][1501], \n" +
-                "                                                                                                   └─?[1501]:[birth<ge,28/01/2001>], \n" +
-                "                                      └─?[..][1201], \n" +
-                "                                               └─?[1201]:[age<lt,100>], \n" +
-                "                                               └─?[1202]:[birth<ge,28/01/2001>], \n" +
-                "                         └─UnTyp[:[] a#16], \n" +
-                "                                      └<--Rel(:null c#18)──UnTyp[:[] b#19]──Q[1900:all]:{1901}, \n" +
-                "                                                     └─?[..][1800], \n" +
-                "                                                              └─?[1801]:[type<inSet,[Fire]>], \n" +
-                "                                                                                        └─?[..][1901], \n" +
-                "                                                                                                 └─?[1901]:[age<lt,100>]]";
+                "                                                     └─?[..][1400], \n" +
+                "                                                              └─?[1401]:[type<inSet,[Fire]>], \n" +
+                "                                                                                        └─?[..][1501], \n" +
+                "                                                                                                 └─?[1501]:[age<lt,100>]]";
         assertEquals(expected, print(query));
     }
 
@@ -304,17 +304,17 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                         of(101, "age", of(lt, 100))));
 
         String expected = "[└── Start, \n" +
-                            "    ──Q[300:some]:{4|8}, \n" +
-                            "                   └─UnTyp[:[] a#4]──Q[400:all]:{6|401}, \n" +
-                            "                                                   └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[700:all]:{701}──Q[800:all]:{10}, \n" +
-                            "                                                                                                   └─?[..][701], \n" +
-                            "                                                                                                           └─?[701]:[birth<ge,28/01/2001>], \n" +
-                            "                                                   └─?[..][401], \n" +
-                            "                                                           └─?[401]:[age<lt,100>], \n" +
-                            "                   └─UnTyp[:[] a#8], \n" +
-                            "                               └<--Rel(:null c#10)──UnTyp[:[] b#11], \n" +
-                            "                                              └─?[..][1000], \n" +
-                            "                                                       └─?[1001]:[size<gt,50>]]";
+                "    ──Q[300:some]:{4|7}, \n" +
+                "                   └─UnTyp[:[] a#4]──Q[400:all]:{5|401}, \n" +
+                "                                                   └<--Rel(:null c#5)──UnTyp[:[] b#6]──Q[600:all]:{601}──Q[700:all]:{8}, \n" +
+                "                                                                                                   └─?[..][601], \n" +
+                "                                                                                                           └─?[601]:[birth<ge,28/01/2001>], \n" +
+                "                                                   └─?[..][401], \n" +
+                "                                                           └─?[401]:[age<lt,100>], \n" +
+                "                   └─UnTyp[:[] a#7], \n" +
+                "                               └<--Rel(:null c#8)──UnTyp[:[] b#9], \n" +
+                "                                             └─?[..][800], \n" +
+                "                                                     └─?[801]:[size<gt,50>]]";
         assertEquals(expected, print(query));
     }
 

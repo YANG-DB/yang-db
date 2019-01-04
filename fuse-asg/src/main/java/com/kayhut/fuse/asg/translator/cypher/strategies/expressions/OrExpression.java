@@ -32,14 +32,12 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.query.quant.QuantType;
-import javaslang.collection.Stream;
-import org.opencypher.v9_0.expressions.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils.maxEntityNum;
 import static com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils.reverse;
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.maxEntityNum;
 
 public class OrExpression implements ExpressionStrategies {
 
@@ -82,7 +80,7 @@ public class OrExpression implements ExpressionStrategies {
                     //base quant to add onto
                     final AsgEBase<? extends EBase> base = context.getScope();
                     //duplicate query from scope to end
-                    final AsgEBase<? extends EBase> clone = AsgQueryUtil.deepCloneWithEnums(newMaxEnum, finalChain.get(0), e -> true, e -> true);
+                    final AsgEBase<? extends EBase> clone = AsgQueryUtil.deepCloneWithEnums(new int[] {newMaxEnum}, finalChain.get(0), e -> true, e -> true);
                     //add duplication to scope
                     context.getScope().addNext(clone);
                     //run strategies on current scope
@@ -113,7 +111,7 @@ public class OrExpression implements ExpressionStrategies {
             //base quant to add onto
             final AsgEBase<? extends EBase> base = context.getScope();
             //duplicate query from scope to end
-            final AsgEBase<? extends EBase> clone = AsgQueryUtil.deepCloneWithEnums(newMaxEnum, chain.get(0), e -> true, e -> true);
+            final AsgEBase<? extends EBase> clone = AsgQueryUtil.deepCloneWithEnums(new int[] {newMaxEnum}, chain.get(0), e -> true, e -> true);
             //add duplication to scope
             context.getScope().addNext(clone);
 

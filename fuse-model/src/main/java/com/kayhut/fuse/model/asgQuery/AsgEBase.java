@@ -80,7 +80,6 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
             return this;
         }
 
-
         public AsgEBase<T> build() {
             AsgEBase<T> asg = new AsgEBase(this.eBase);
             if (this.next != null) this.next.forEach(asg::addNextChild);

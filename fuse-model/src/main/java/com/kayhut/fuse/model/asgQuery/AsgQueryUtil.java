@@ -36,6 +36,7 @@ import javaslang.collection.Stream;
 
 import javax.management.relation.Relation;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -46,6 +47,19 @@ import java.util.stream.Collectors;
  */
 public class AsgQueryUtil {
     //region Public Methods
+    public static int maxEntityNum(AsgQuery query) {
+        return Stream.ofAll(AsgQueryUtil.eNums(query,
+                asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())
+                        && !BaseProp.class.isAssignableFrom(asgEBase.geteBase().getClass())
+                        && !BasePropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())))
+                .max().getOrElse(0);
+    }
+
+    public static int maxQuantNum(AsgQuery query) {
+        return Stream.ofAll(AsgQueryUtil.eNums(query,
+                asgEBase -> QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass()))).max().getOrElse(0);
+    }
+
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> get(AsgEBase<T> asgEBase, int eNum) {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext, p -> p.geteBase().geteNum() == eNum, truePredicate);
     }
@@ -486,26 +500,31 @@ public class AsgQueryUtil {
     }
 
     public static <T extends EBase> AsgEBase<T> deepCloneWithEnums(
-            int max,
+            int[] max,
             AsgEBase<T> asgEBase,
             Predicate<AsgEBase<? extends EBase>> nextPredicate,
             Predicate<AsgEBase<? extends EBase>> bPredicate) {
         AsgEBase.Builder<T> eBaseBuilder = AsgEBase.Builder.get();
-        T clone = (T) asgEBase.geteBase().clone(max + 1);
+        T clone;
         //quant base has a special sequence counter
         if (QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
-            clone = (T) asgEBase.geteBase().clone(max * 100);
-        }
-        if (BasePropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
-            clone = (T) asgEBase.geteBase().clone(max * 100);
+            clone = (T) asgEBase.geteBase().clone(max[0] * 100);
+        } else if (BasePropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
+            clone = (T) asgEBase.geteBase().clone(max[0] * 100);
+        } else {
+            clone = (T) asgEBase.geteBase().clone(++max[0]);
         }
         eBaseBuilder.withEBase(clone);
-        Stream.ofAll(asgEBase.getNext()).filter(nextPredicate)
-                .map(elm -> deepCloneWithEnums(max + 1, elm, nextPredicate, bPredicate))
-                .forEach(eBaseBuilder::withNext);
-        Stream.ofAll(asgEBase.getB()).filter(bPredicate)
-                .map(elm -> deepCloneWithEnums(max + 1, elm, nextPredicate, bPredicate))
-                .forEach(elm -> eBaseBuilder.withB(elm));
+
+        List<AsgEBase<? extends EBase>> next = Stream.ofAll(asgEBase.getNext()).filter(nextPredicate).toJavaList();
+        for (int i = 0; i < next.size(); i++) {
+            eBaseBuilder.withNext(deepCloneWithEnums(max, next.get(i), nextPredicate, bPredicate));
+        }
+        List<AsgEBase<? extends EBase>> bNext = Stream.ofAll(asgEBase.getB()).filter(bPredicate).toJavaList();
+
+        for (int i = 0; i < bNext.size(); i++) {
+            eBaseBuilder.withB(deepCloneWithEnums(max, next.get(i), nextPredicate, bPredicate));
+        }
         return eBaseBuilder.build();
     }
 

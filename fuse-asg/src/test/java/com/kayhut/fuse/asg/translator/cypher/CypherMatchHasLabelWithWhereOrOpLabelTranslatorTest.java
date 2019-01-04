@@ -50,28 +50,28 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                         unTyped(4, "a")
                                 .addNext(
                                         quant1(400, all)
-                                                .addNext(ePropGroup(500, all,
-                                                        of(501, "name",of(eq,"Alice")))
+                                                .addNext(ePropGroup(400, all,
+                                                        of(401, "name",of(eq,"Alice")))
                                                 )
                                                 .addNext(
-                                                        rel(6,null,Rel.Direction.RL,"Rel_#2")
-                                                                .next(unTyped(7, "b")
-                                                                        .next(quant1(700, all)
-                                                                                .addNext(ePropGroup(701, all,
-                                                                                        of(701, "type",
+                                                        rel(5,null,Rel.Direction.RL,"Rel_#2")
+                                                                .next(unTyped(6, "b")
+                                                                        .next(quant1(600, all)
+                                                                                .addNext(ePropGroup(601, all,
+                                                                                        of(601, "type",
                                                                                                 of(inSet, Arrays.asList("Dragon")))
                                                                                 )))))
                                 ),
-                        unTyped(8, "a")
+                        unTyped(7, "a")
                                 .addNext(
-                                        quant1(800, all)
-                                            .addNext(ePropGroup(900, all,
-                                                    of(901, "name",of(eq,"Alice")),
-                                                    of(901, "type",of(inSet, Arrays.asList("Person")))
+                                        quant1(700, all)
+                                            .addNext(ePropGroup(700, all,
+                                                    of(701, "name",of(eq,"Alice")),
+                                                    of(701, "type",of(inSet, Arrays.asList("Person")))
                                             ))
                                             .addNext(
-                                                    rel(10,null,Rel.Direction.RL,"Rel_#2")
-                                                            .next(unTyped(11, "b"))
+                                                    rel(8,null,Rel.Direction.RL,"Rel_#2")
+                                                            .next(unTyped(9, "b"))
                                             ))
                 ).build();
         assertEquals(print(expected), print(query));
@@ -88,34 +88,34 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                         unTyped(4, "a")
                                 .addNext(
                                         quant1(400, all)
-                                                .addNext(ePropGroup(500, all,
-                                                        of(501, "name",of(eq,"Alice")))
+                                                .addNext(ePropGroup(400, all,
+                                                        of(401, "name",of(eq,"Alice")))
                                                 )
                                                 .addNext(
-                                                        rel(6,null,Rel.Direction.RL,"Rel_#2")
-                                                                .next(unTyped(7, "b")
-                                                                        .next(quant1(700, all)
-                                                                                .addNext(ePropGroup(800, all,
-                                                                                        of(801, "size",of(eq,"large")),
-                                                                                        of(801, "type",
+                                                        rel(5,null,Rel.Direction.RL,"Rel_#2")
+                                                                .next(unTyped(6, "b")
+                                                                        .next(quant1(600, all)
+                                                                                .addNext(ePropGroup(600, all,
+                                                                                        of(601, "size",of(eq,"large")),
+                                                                                        of(601, "type",
                                                                                                 of(inSet, Arrays.asList("Dragon")))
                                                                                 ))
                                                                         )))
                                 ),
-                        unTyped(8, "a")
+                        unTyped(7, "a")
                                 .addNext(
-                                        quant1(800, all)
-                                            .addNext(ePropGroup(900, all,
-                                                    of(901, "name",of(eq,"Alice")),
-                                                    of(901, "type",of(inSet, Arrays.asList("Person")))
+                                        quant1(700, all)
+                                            .addNext(ePropGroup(700, all,
+                                                    of(701, "name",of(eq,"Alice")),
+                                                    of(701, "type",of(inSet, Arrays.asList("Person")))
                                             ))
                                             .addNext(
-                                                    rel(10,null,Rel.Direction.RL,"Rel_#2")
+                                                    rel(8,null,Rel.Direction.RL,"Rel_#2")
                                                             .next(
-                                                                unTyped(11, "b")
-                                                                    .next(quant1(1100, all)
-                                                                            .addNext(ePropGroup(1200, all,
-                                                                                    of(1201, "size",of(eq,"large"))
+                                                                unTyped(9, "b")
+                                                                    .next(quant1(900, all)
+                                                                            .addNext(ePropGroup(900, all,
+                                                                                    of(901, "size",of(eq,"large"))
                                                                             )))
                                                             )
                                             ))
@@ -287,24 +287,24 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                         unTyped(4, "a")
                                 .next(quant1(400, all)
                                         .addNext(
-                                                rel(6,null,Rel.Direction.RL,"Rel_#2")
+                                                rel(5,null,Rel.Direction.RL,"Rel_#2")
                                                     .next(
-                                                            unTyped(7, "b")
-                                                                    .next(quant1(700, all)
-                                                                            .addNext(ePropGroup(701, all,
-                                                                                    of(701, "type",
+                                                            unTyped(6, "b")
+                                                                    .next(quant1(600, all)
+                                                                            .addNext(ePropGroup(601, all,
+                                                                                    of(601, "type",
                                                                                             of(inSet, Arrays.asList("Person")))))))
                                                     )
                                         ),
-                        unTyped(8, "a")
+                        unTyped(7, "a")
                                 .addNext(
-                                        quant1(800, all)
+                                        quant1(700, all)
                                             .addNext(
-                                                    rel(10,null,Rel.Direction.RL,"Rel_#2")
+                                                    rel(8,null,Rel.Direction.RL,"Rel_#2")
                                                             .next(
-                                                                    unTyped(11, "b")))
-                                            .addNext(ePropGroup(801, all,
-                                                    of(801, "type",
+                                                                    unTyped(9, "b")))
+                                            .addNext(ePropGroup(701, all,
+                                                    of(701, "type",
                                                         of(inSet, Arrays.asList("Dragon"))))
                                             )
                                 )
@@ -325,37 +325,37 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                         unTyped(4, "a")
                                 .next(quant1(400, all)
                                         .addNext(
-                                                rel(6,null,Rel.Direction.RL,"c")
+                                                rel(5,null,Rel.Direction.RL,"c")
                                                     .next(
-                                                            unTyped(7, "b")
-                                                                    .next(quant1(700, all)
-                                                                            .addNext(ePropGroup(701, all,
-                                                                                    of(701, "type",
+                                                            unTyped(6, "b")
+                                                                    .next(quant1(600, all)
+                                                                            .addNext(ePropGroup(601, all,
+                                                                                    of(601, "type",
                                                                                             of(inSet, Arrays.asList("Person"))))))
                                                     )
                                                 )
                                         ),
-                        unTyped(8, "a")
+                        unTyped(7, "a")
                                 .addNext(
-                                        quant1(800, all)
+                                        quant1(700, all)
                                             .addNext(
-                                                    rel(10,null,Rel.Direction.RL,"c")
+                                                    rel(8,null,Rel.Direction.RL,"c")
                                                             .next(
-                                                                    unTyped(11, "b")))
-                                            .addNext(ePropGroup(801, all,
-                                                    of(801, "type",
+                                                                    unTyped(9, "b")))
+                                            .addNext(ePropGroup(701, all,
+                                                    of(701, "type",
                                                         of(inSet, Arrays.asList("Dragon"))))
                                             )
                                 ),
-                        unTyped(12, "a")
+                        unTyped(10, "a")
                                 .addNext(
-                                        quant1(1200, all)
+                                        quant1(1000, all)
                                             .addNext(
-                                                    rel(14,null,Rel.Direction.RL,"c")
-                                                            .below(relPropGroup(1400,all,
-                                                                    RelProp.of(1401, "type", of(inSet, Arrays.asList("Fire")))))
+                                                    rel(11,null,Rel.Direction.RL,"c")
+                                                            .below(relPropGroup(1100,all,
+                                                                    RelProp.of(1101, "type", of(inSet, Arrays.asList("Fire")))))
                                                             .next(
-                                                                    unTyped(15, "b")))
+                                                                    unTyped(12, "b")))
                                 )
                 ).build();
         assertEquals(print(expected), print(query));
@@ -374,24 +374,24 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                 .addNext(
                                         quant1(400, all)
                                                 .addNext(
-                                                        rel(6,null,Rel.Direction.RL,"c")
-                                                                .below(relPropGroup(600,all,
-                                                                        RelProp.of(601, "type", of(inSet, Arrays.asList("Fire")))))
+                                                        rel(5,null,Rel.Direction.RL,"c")
+                                                                .below(relPropGroup(500,all,
+                                                                        RelProp.of(501, "type", of(inSet, Arrays.asList("Fire")))))
                                                                 .next(
-                                                                        unTyped(7, "b")))
+                                                                        unTyped(6, "b")))
                                 ),
-                        unTyped(8, "a")
+                        unTyped(7, "a")
                                 .addNext(
-                                        quant1(800, all)
+                                        quant1(700, all)
                                                 .addNext(
-                                                        rel(10,null,Rel.Direction.RL,"c")
+                                                        rel(8,null,Rel.Direction.RL,"c")
                                                                 .next(
-                                                                        unTyped(11, "b"))
+                                                                        unTyped(9, "b"))
                                                 )
-                                                .addNext(ePropGroup(801, all,
-                                                        of(801, "type",
+                                                .addNext(ePropGroup(701, all,
+                                                        of(701, "type",
                                                                 of(inSet, Arrays.asList("Dragon"))),
-                                                        of(802, "type",
+                                                        of(702, "type",
                                                                 of(inSet, Arrays.asList("Hours"))))
                                                 )
                                 )
@@ -412,33 +412,33 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                 .addNext(
                                         quant1(400, all)
                                                 .addNext(
-                                                        rel(6,null,Rel.Direction.RL,"c")
-                                                                .below(relPropGroup(600,all,
-                                                                        RelProp.of(601, "type", of(inSet, Arrays.asList("Fire")))))
+                                                        rel(5,null,Rel.Direction.RL,"c")
+                                                                .below(relPropGroup(500,all,
+                                                                        RelProp.of(501, "type", of(inSet, Arrays.asList("Fire")))))
                                                                 .next(
-                                                                        unTyped(7, "b")
-                                                                                .next(quant1(700, all)
-                                                                                        .addNext(ePropGroup(701, all,
-                                                                                                of(701, "type",
+                                                                        unTyped(6, "b")
+                                                                                .next(quant1(600, all)
+                                                                                        .addNext(ePropGroup(601, all,
+                                                                                                of(601, "type",
                                                                                                         of(inSet, Arrays.asList("Person"))))))
                                                                 )
                                                 )
                                 ),
-                        unTyped(8, "a")
+                        unTyped(7, "a")
                                 .addNext(
-                                        quant1(800, all)
+                                        quant1(700, all)
                                                 .addNext(
-                                                        rel(10,null,Rel.Direction.RL,"c")
+                                                        rel(8,null,Rel.Direction.RL,"c")
                                                                 .next(
-                                                                        unTyped(11, "b")
-                                                                                .next(quant1(1100, all)
-                                                                                        .addNext(ePropGroup(1101, all,
-                                                                                                of(1101, "type",
+                                                                        unTyped(9, "b")
+                                                                                .next(quant1(900, all)
+                                                                                        .addNext(ePropGroup(901, all,
+                                                                                                of(901, "type",
                                                                                                         of(inSet, Arrays.asList("Person"))))))
                                                                 )
                                                 )
-                                                .addNext(ePropGroup(801, all,
-                                                        of(801, "type",
+                                                .addNext(ePropGroup(701, all,
+                                                        of(701, "type",
                                                                 of(inSet, Arrays.asList("Dragon"))))
                                                 )
                                 )
@@ -458,12 +458,12 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                 .addNext(
                                         quant1(400, all)
                                                 .addNext(
-                                                        rel(6,null,Rel.Direction.RL,"c")
+                                                        rel(5,null,Rel.Direction.RL,"c")
                                                                 .next(
-                                                                        unTyped(7, "b")
-                                                                                .next(quant1(700, all)
-                                                                                        .addNext(ePropGroup(701, all,
-                                                                                                of(701, "type",
+                                                                        unTyped(6, "b")
+                                                                                .next(quant1(600, all)
+                                                                                        .addNext(ePropGroup(601, all,
+                                                                                                of(601, "type",
                                                                                                         of(inSet, Arrays.asList("Person"))))))
                                                                 )
                                                 )
@@ -475,18 +475,18 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                                         )
                                                 )
                                 ),
-                        unTyped(8, "a")
+                        unTyped(7, "a")
                                 .addNext(
-                                        quant1(800, all)
+                                        quant1(700, all)
                                                 .addNext(
-                                                        rel(10,null,Rel.Direction.RL,"c")
-                                                                .below(relPropGroup(1000,all,
-                                                                        RelProp.of(1001, "type", of(inSet, Arrays.asList("Fire")))))
+                                                        rel(8,null,Rel.Direction.RL,"c")
+                                                                .below(relPropGroup(800,all,
+                                                                        RelProp.of(801, "type", of(inSet, Arrays.asList("Fire")))))
                                                                 .next(
-                                                                        unTyped(11, "b")
-                                                                                .next(quant1(1100, all)
-                                                                                        .addNext(ePropGroup(1101, all,
-                                                                                                of(1101, "type",
+                                                                        unTyped(9, "b")
+                                                                                .next(quant1(900, all)
+                                                                                        .addNext(ePropGroup(901, all,
+                                                                                                of(901, "type",
                                                                                                         of(inSet, Arrays.asList("Person"))))))
                                                                 )
                                                 )
@@ -501,33 +501,33 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
         final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where ((a:Dragon And a:Hours) Or c:Fire) And (b:Person OR b:Hours) RETURN a");
         //expected string representation
         String expected = "[└── Start, \n" +
-                "    ──Q[300:some]:{4|8|12|16}, \n" +
-                "                         └─UnTyp[:[] a#4]──Q[400:all]:{6|401}, \n" +
-                "                                                         └<--Rel(:null c#6)──UnTyp[:[] b#7]──Q[700:all]:{701}──Q[800:all]:{10}, \n" +
-                "                                                                                                         └─?[..][701]──Q[1200:all]:{14}, \n" +
-                "                                                                                                                 └─?[701]:[type<inSet,[Person]>]──Q[1600:all]:{18|1601}, \n" +
+                "    ──Q[300:some]:{4|7|10|13}, \n" +
+                "                         └─UnTyp[:[] a#4]──Q[400:all]:{5|401}, \n" +
+                "                                                         └<--Rel(:null c#5)──UnTyp[:[] b#6]──Q[600:all]:{601}──Q[700:all]:{8}, \n" +
+                "                                                                                                         └─?[..][601]──Q[1000:all]:{11}, \n" +
+                "                                                                                                                 └─?[601]:[type<inSet,[Person]>]──Q[1300:all]:{14|1301}, \n" +
                 "                                                         └─?[..][401], \n" +
                 "                                                                 └─?[401]:[type<inSet,[Dragon]>], \n" +
                 "                                                                 └─?[402]:[type<inSet,[Hours]>], \n" +
-                "                         └─UnTyp[:[] a#8], \n" +
-                "                                     └<--Rel(:null c#10)──UnTyp[:[] b#11]──Q[1100:all]:{1101}, \n" +
-                "                                                    └─?[..][1000], \n" +
-                "                                                             └─?[1001]:[type<inSet,[Fire]>], \n" +
-                "                                                                                       └─?[..][1101], \n" +
-                "                                                                                                └─?[1101]:[type<inSet,[Hours]>], \n" +
-                "                         └─UnTyp[:[] a#12], \n" +
+                "                         └─UnTyp[:[] a#7], \n" +
+                "                                     └<--Rel(:null c#8)──UnTyp[:[] b#9]──Q[900:all]:{901}, \n" +
+                "                                                   └─?[..][800], \n" +
+                "                                                           └─?[801]:[type<inSet,[Fire]>], \n" +
+                "                                                                                    └─?[..][901], \n" +
+                "                                                                                            └─?[901]:[type<inSet,[Hours]>], \n" +
+                "                         └─UnTyp[:[] a#10], \n" +
+                "                                      └<--Rel(:null c#11)──UnTyp[:[] b#12]──Q[1200:all]:{1201}, \n" +
+                "                                                     └─?[..][1100], \n" +
+                "                                                              └─?[1101]:[type<inSet,[Fire]>], \n" +
+                "                                                                                        └─?[..][1201], \n" +
+                "                                                                                                 └─?[1201]:[type<inSet,[Person]>], \n" +
+                "                         └─UnTyp[:[] a#13], \n" +
                 "                                      └<--Rel(:null c#14)──UnTyp[:[] b#15]──Q[1500:all]:{1501}, \n" +
-                "                                                     └─?[..][1400], \n" +
-                "                                                              └─?[1401]:[type<inSet,[Fire]>], \n" +
-                "                                                                                        └─?[..][1501], \n" +
-                "                                                                                                 └─?[1501]:[type<inSet,[Person]>], \n" +
-                "                         └─UnTyp[:[] a#16], \n" +
-                "                                      └<--Rel(:null c#18)──UnTyp[:[] b#19]──Q[1900:all]:{1901}, \n" +
-                "                                                                                          └─?[..][1901], \n" +
-                "                                                                                                   └─?[1901]:[type<inSet,[Hours]>], \n" +
-                "                                      └─?[..][1601], \n" +
-                "                                               └─?[1601]:[type<inSet,[Dragon]>], \n" +
-                "                                               └─?[1602]:[type<inSet,[Hours]>]]";
+                "                                                                                          └─?[..][1501], \n" +
+                "                                                                                                   └─?[1501]:[type<inSet,[Hours]>], \n" +
+                "                                      └─?[..][1301], \n" +
+                "                                               └─?[1301]:[type<inSet,[Dragon]>], \n" +
+                "                                               └─?[1302]:[type<inSet,[Hours]>]]";
         assertEquals(expected, print(query));
     }
 

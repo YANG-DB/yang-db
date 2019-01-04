@@ -81,21 +81,21 @@ public class CypherMatchMultiHopsWithWhereTest {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh') OR a:Horse RETURN a");
         String expected = "[└── Start, \n" +
-                "    ──Q[900:some]:{10|23}, \n" +
-                "                     └─UnTyp[:[] a#10]──Q[1000:all]:{12|1001}, \n" +
-                "                                                         └-> Rel(:null b#12)──UnTyp[:[] c#13]──Q[1300:all]:{15}──Q[2300:all]:{25|2301}, \n" +
-                "                                                                                                           └<--Rel(:null d#15)──UnTyp[:[] e#16]──Q[1600:all]:{18}, \n" +
-                "                                                                                                                                                             └-> Rel(:null f#18)──UnTyp[:[] g#19]──Q[1900:all]:{21}, \n" +
-                "                                                                                                                                                                                                               └<--Rel(:null h#21)──UnTyp[:[] i#22], \n" +
+                "    ──Q[900:some]:{10|19}, \n" +
+                "                     └─UnTyp[:[] a#10]──Q[1000:all]:{11|1001}, \n" +
+                "                                                         └-> Rel(:null b#11)──UnTyp[:[] c#12]──Q[1200:all]:{13}──Q[1900:all]:{20|1901}, \n" +
+                "                                                                                                           └<--Rel(:null d#13)──UnTyp[:[] e#14]──Q[1400:all]:{15}, \n" +
+                "                                                                                                                                                             └-> Rel(:null f#15)──UnTyp[:[] g#16]──Q[1600:all]:{17}, \n" +
+                "                                                                                                                                                                                                               └<--Rel(:null h#17)──UnTyp[:[] i#18], \n" +
                 "                                                         └─?[..][1001], \n" +
                 "                                                                  └─?[1001]:[name<contains,jh>], \n" +
-                "                     └─UnTyp[:[] a#23], \n" +
-                "                                  └-> Rel(:null b#25)──UnTyp[:[] c#26]──Q[2600:all]:{28}, \n" +
-                "                                                                                    └<--Rel(:null d#28)──UnTyp[:[] e#29]──Q[2900:all]:{31}, \n" +
-                "                                                                                                                                      └-> Rel(:null f#31)──UnTyp[:[] g#32]──Q[3200:all]:{34}, \n" +
-                "                                                                                                                                                                                        └<--Rel(:null h#34)──UnTyp[:[] i#35], \n" +
-                "                                  └─?[..][2301], \n" +
-                "                                           └─?[2301]:[type<inSet,[Horse]>]]";
+                "                     └─UnTyp[:[] a#19], \n" +
+                "                                  └-> Rel(:null b#20)──UnTyp[:[] c#21]──Q[2100:all]:{22}, \n" +
+                "                                                                                    └<--Rel(:null d#22)──UnTyp[:[] e#23]──Q[2300:all]:{24}, \n" +
+                "                                                                                                                                      └-> Rel(:null f#24)──UnTyp[:[] g#25]──Q[2500:all]:{26}, \n" +
+                "                                                                                                                                                                                        └<--Rel(:null h#26)──UnTyp[:[] i#27], \n" +
+                "                                  └─?[..][1901], \n" +
+                "                                           └─?[1901]:[type<inSet,[Horse]>]]";
         assertEquals(expected, print(query));
     }
 
@@ -104,25 +104,25 @@ public class CypherMatchMultiHopsWithWhereTest {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh' and c.age > 100) OR (e:Horse and h:Fire) RETURN a");
         String expected = "[└── Start, \n" +
-                            "    ──Q[900:some]:{10|23}, \n" +
-                            "                     └─UnTyp[:[] a#10]──Q[1000:all]:{12}, \n" +
-                            "                                                    └-> Rel(:null b#12)──UnTyp[:[] c#13]──Q[1300:all]:{15}──Q[2300:all]:{25|2301}, \n" +
-                            "                                                                                                      └<--Rel(:null d#15)──UnTyp[:[] e#16]──Q[1600:all]:{18|1601}, \n" +
-                            "                                                                                                                                                             └-> Rel(:null f#18)──UnTyp[:[] g#19]──Q[1900:all]:{21}, \n" +
-                            "                                                                                                                                                                                                               └<--Rel(:null h#21)──UnTyp[:[] i#22], \n" +
-                            "                                                                                                                                                                                                                              └─?[..][2100], \n" +
-                            "                                                                                                                                                                                                                                       └─?[2101]:[type<inSet,[Fire]>], \n" +
-                            "                                                                                                                                                             └─?[..][1601], \n" +
-                            "                                                                                                                                                                      └─?[1601]:[type<inSet,[Horse]>], \n" +
-                            "                     └─UnTyp[:[] a#23], \n" +
-                            "                                  └-> Rel(:null b#25)──UnTyp[:[] c#26]──Q[2600:all]:{28|2601}, \n" +
-                            "                                                                                         └<--Rel(:null d#28)──UnTyp[:[] e#29]──Q[2900:all]:{31}, \n" +
-                            "                                                                                                                                           └-> Rel(:null f#31)──UnTyp[:[] g#32]──Q[3200:all]:{34}, \n" +
-                            "                                                                                                                                                                                             └<--Rel(:null h#34)──UnTyp[:[] i#35], \n" +
-                            "                                                                                         └─?[..][2601], \n" +
-                            "                                                                                                  └─?[2601]:[age<gt,100>], \n" +
-                            "                                  └─?[..][2301], \n" +
-                            "                                           └─?[2301]:[name<contains,jh>]]";
+                            "    ──Q[900:some]:{10|19}, \n" +
+                            "                     └─UnTyp[:[] a#10]──Q[1000:all]:{11}, \n" +
+                            "                                                    └-> Rel(:null b#11)──UnTyp[:[] c#12]──Q[1200:all]:{13}──Q[1900:all]:{20|1901}, \n" +
+                            "                                                                                                      └<--Rel(:null d#13)──UnTyp[:[] e#14]──Q[1400:all]:{15|1401}, \n" +
+                            "                                                                                                                                                             └-> Rel(:null f#15)──UnTyp[:[] g#16]──Q[1600:all]:{17}, \n" +
+                            "                                                                                                                                                                                                               └<--Rel(:null h#17)──UnTyp[:[] i#18], \n" +
+                            "                                                                                                                                                                                                                              └─?[..][1700], \n" +
+                            "                                                                                                                                                                                                                                       └─?[1701]:[type<inSet,[Fire]>], \n" +
+                            "                                                                                                                                                             └─?[..][1401], \n" +
+                            "                                                                                                                                                                      └─?[1401]:[type<inSet,[Horse]>], \n" +
+                            "                     └─UnTyp[:[] a#19], \n" +
+                            "                                  └-> Rel(:null b#20)──UnTyp[:[] c#21]──Q[2100:all]:{22|2101}, \n" +
+                            "                                                                                         └<--Rel(:null d#22)──UnTyp[:[] e#23]──Q[2300:all]:{24}, \n" +
+                            "                                                                                                                                           └-> Rel(:null f#24)──UnTyp[:[] g#25]──Q[2500:all]:{26}, \n" +
+                            "                                                                                                                                                                                             └<--Rel(:null h#26)──UnTyp[:[] i#27], \n" +
+                            "                                                                                         └─?[..][2101], \n" +
+                            "                                                                                                  └─?[2101]:[age<gt,100>], \n" +
+                            "                                  └─?[..][1901], \n" +
+                            "                                           └─?[1901]:[name<contains,jh>]]";
         assertEquals(expected, print(query));
     }
 

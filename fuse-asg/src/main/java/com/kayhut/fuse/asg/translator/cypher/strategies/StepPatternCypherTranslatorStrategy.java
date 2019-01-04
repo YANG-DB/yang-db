@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.maxEntityNum;
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
 public class StepPatternCypherTranslatorStrategy implements CypherElementTranslatorStrategy<PatternElement> {
@@ -59,7 +60,7 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
     public void apply(RelationshipPattern element, AsgQuery query, CypherStrategyContext context) {
         final Option<LogicalVariable> variable = element.variable();
 
-        int current = CypherUtils.maxEntityNum(query)+1;
+        int current = maxEntityNum(query)+1;
         String name = "Rel_#" + current;
 
         if (!variable.isEmpty()) {
