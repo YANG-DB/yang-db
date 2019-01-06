@@ -71,7 +71,7 @@ public interface CypherUtils {
 
     }
 
-    static AsgEBase<EBase> quant(AsgEBase<? extends EBase> byTag,
+    static AsgEBase<? extends EBase> quant(AsgEBase<? extends EBase> byTag,
                                  Optional<com.bpodgursky.jbool_expressions.Expression> operation,
                                  AsgQuery query, CypherStrategyContext context) {
         //next find the quant associated with this element - if none found create one
@@ -157,11 +157,12 @@ public interface CypherUtils {
 
 
     static List<org.opencypher.v9_0.expressions.Variable> var(org.opencypher.v9_0.expressions.Expression expression) {
-        return asJavaCollectionConverter(expression.subExpressions()).asJavaCollection().stream()
+        return
+                expression!=null ? asJavaCollectionConverter(expression.subExpressions()).asJavaCollection().stream()
                 .filter(v -> org.opencypher.v9_0.expressions.Variable.class.isAssignableFrom(v.getClass()))
                 .collect(Collectors.toList()).stream()
                 .map(p-> ((org.opencypher.v9_0.expressions.Variable) p))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()) : Collections.emptyList();
 
     }
 

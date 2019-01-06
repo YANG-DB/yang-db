@@ -26,41 +26,73 @@ public class CypherMatchMultiStatementTest {
     //endregion
 
     @Test
+    public void testMatch_2_clausesWithMultiDirections() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
+        final AsgQuery query = translator.translate(
+          " Match " +
+                "   (person:Entity)-[:hasEvalue]->(personName:Evalue {stringValue:'Tom Hanks'}), " +
+                "   (person:Entity)-[tomActedIn:relatedEntity {category:'ACTED_IN'}]->(m1:Entity), " +
+                "   (otherPerson:Entity)-[othersActedIn:relatedEntity {category:'ACTED_IN'}]->(m2:Entity) " +
+                " Where m1.name = m2.name " +
+                " Return *");
+
+        String expected = "[└── Start, \n" +
+                            "    ──Q[100:all]:{1|6}, \n" +
+                            "                  └─Typ[:Entity person#1]──Q[200:all]:{2|4}, \n" +
+                            "                                                       └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}──Q[600:all]:{7}, \n" +
+                            "                                                                                                                            └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{801}, \n" +
+                            "                                                                                                                                    └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
+                            "                                                       └-> Rel(:relatedEntity tomActedIn#4), \n" +
+                            "                                                                                                                            └─?[..][400], \n" +
+                            "                                                                                                                                    └─?[401]:[category<eq,ACTED_IN>], \n" +
+                            "                                                                                                                                                                └─?[..][801], \n" +
+                            "                                                                                                                                                                        └─?[801]:[name<eq,m2.name>], \n" +
+                            "                  └─Typ[:Entity otherPerson#6], \n" +
+                            "                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
+                            "                                                                             └─?[..][700], \n" +
+                            "                                                                                     └─?[701]:[category<eq,ACTED_IN>]]";
+        assertEquals(expected, print(query));
+    }
+
+    @Test
     public void testMatch_2_clauses() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a:A)-[c:C]->(b:B), " +
-                                                            " (a:A)-[d:D]->(e:E)-[:F]-(g:G)" +
-                                                            " RETURN *");
+                " (a:A)-[d:D]->(e:E)-[:F]-(g:G)" +
+                " RETURN *");
         String expected = "[└── Start, \n" +
-                            "    ──Typ[:A a#1]──Q[100:all]:{2|4}, \n" +
-                            "                               └-> Rel(:C c#2)──Typ[:B b#3], \n" +
-                            "                               └-> Rel(:D d#4)──Typ[:E e#5]──Q[500:all]:{6}, \n" +
-                            "                                                                       └<--Rel(:F Rel_#6#6)──Typ[:G g#7]]";
+                "    ──Q[100:all]:{1}, \n" +
+                "                └─Typ[:A a#1]──Q[200:all]:{2|4}, \n" +
+                "                                           └-> Rel(:C c#2)──Typ[:B b#3], \n" +
+                "                                           └-> Rel(:D d#4)──Typ[:E e#5]──Q[500:all]:{6}, \n" +
+                "                                                                                   └<--Rel(:F Rel_#6#6)──Typ[:G g#7]]";
         assertEquals(expected, print(query));
     }
+
     @Test
     public void testMatch_2_clauses_with_and() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a:A)-[c:C]->(b:B), " +
-                                                            " (a:A)-[d:D]->(e:E)-[:F]-(g:G)" +
-                                                            " where (b.fieldId = 'b' and b.stringValue = 'b') AND" +
-                                                            "       (e.fieldId = 'e' and e.stringValue = 'e') AND" +
-                                                            "       (g.fieldId = 'g' and g.stringValue = 'g') " +
-                                                            " RETURN *");
+                " (a:A)-[d:D]->(e:E)-[:F]-(g:G)" +
+                " where (b.fieldId = 'b' and b.stringValue = 'b') AND" +
+                "       (e.fieldId = 'e' and e.stringValue = 'e') AND" +
+                "       (g.fieldId = 'g' and g.stringValue = 'g') " +
+                " RETURN *");
         String expected = "[└── Start, \n" +
-                            "    ──Typ[:A a#1]──Q[100:all]:{2|4}, \n" +
-                            "                               └-> Rel(:C c#2)──Typ[:B b#3]──Q[700:all]:{701}, \n" +
-                            "                                                                         └─?[..][701]──Typ[:E e#5]──Q[500:all]:{6|501}, \n" +
-                            "                                                                                 └─?[701]:[fieldId<eq,b>], \n" +
-                            "                                                                                 └─?[702]:[stringValue<eq,b>], \n" +
-                            "                               └-> Rel(:D d#4), \n" +
-                            "                                          └<--Rel(:F Rel_#6#6)──Typ[:G g#7]──Q[800:all]:{801}, \n" +
-                            "                                                                                         └─?[..][801], \n" +
-                            "                                                                                                 └─?[801]:[stringValue<eq,g>], \n" +
-                            "                                                                                                 └─?[802]:[fieldId<eq,g>], \n" +
-                            "                                          └─?[..][501], \n" +
-                            "                                                  └─?[501]:[fieldId<eq,e>], \n" +
-                            "                                                  └─?[502]:[stringValue<eq,e>]]";
+                            "    ──Q[100:all]:{1}, \n" +
+                            "                └─Typ[:A a#1]──Q[200:all]:{2|4}, \n" +
+                            "                                           └-> Rel(:C c#2)──Typ[:B b#3]──Q[700:all]:{701}, \n" +
+                            "                                                                                     └─?[..][701]──Typ[:E e#5]──Q[500:all]:{6|501}, \n" +
+                            "                                                                                             └─?[701]:[fieldId<eq,b>], \n" +
+                            "                                                                                             └─?[702]:[stringValue<eq,b>], \n" +
+                            "                                           └-> Rel(:D d#4), \n" +
+                            "                                                      └<--Rel(:F Rel_#6#6)──Typ[:G g#7]──Q[800:all]:{801}, \n" +
+                            "                                                                                                     └─?[..][801], \n" +
+                            "                                                                                                             └─?[801]:[stringValue<eq,g>], \n" +
+                            "                                                                                                             └─?[802]:[fieldId<eq,g>], \n" +
+                            "                                                      └─?[..][501], \n" +
+                            "                                                              └─?[501]:[fieldId<eq,e>], \n" +
+                            "                                                              └─?[502]:[stringValue<eq,e>]]";
         assertEquals(expected, print(query));
     }
 
@@ -68,11 +100,11 @@ public class CypherMatchMultiStatementTest {
     public void testMatch_2_clauses_with_or() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a:A)-[c:C]->(b:B), " +
-                                                            " (a:A)-[d:D]->(e:E)-[:F]-(g:G)" +
-                                                            " where (b.fieldId = 'b' and b.stringValue = 'b') OR" +
-                                                            "       (e.fieldId = 'e' and e.stringValue = 'e') OR" +
-                                                            "       (g.fieldId = 'g' and g.stringValue = 'g') " +
-                                                            " RETURN *");
+                " (a:A)-[d:D]->(e:E)-[:F]-(g:G)" +
+                " where (b.fieldId = 'b' and b.stringValue = 'b') OR" +
+                "       (e.fieldId = 'e' and e.stringValue = 'e') OR" +
+                "       (g.fieldId = 'g' and g.stringValue = 'g') " +
+                " RETURN *");
         String expected = "[└── Start, \n" +
                 "    ──Q[700:some]:{8|15|22}, \n" +
                 "                       └─Typ[:A a#8]──Q[800:all]:{9|11}, \n" +
@@ -98,7 +130,6 @@ public class CypherMatchMultiStatementTest {
                 "                                                                                                                                         └─?[2802]:[fieldId<eq,g>]]";
         assertEquals(expected, print(query));
     }
-
 
 
     //region Private Methods

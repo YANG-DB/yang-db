@@ -26,7 +26,9 @@ import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.quant.QuantBase;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +47,9 @@ public class AndExpression implements ExpressionStrategies {
         //filter only AND expressions
         //todo parent is empty - create a 'all'-quant as query start
         if (!parent.isPresent()) {
-            CypherUtils.quant(query.getStart().getNext().isEmpty() ? query.getStart() : query.getStart().getNext().get(0), Optional.of(expression), query, context);
+            if(!AsgQueryUtil.nextAdjacentDescendant(query.getStart(), QuantBase.class).isPresent()) {
+                CypherUtils.quant(query.getStart().getNext().get(0), Optional.of(expression), query, context);
+            }
             context.scope(query.getStart());
         }
 

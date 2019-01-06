@@ -93,6 +93,32 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
     }
 
     @Test
+    public void testMatch_A_where_A_OfType_AND_A_OfType_And_B_Return_All() {
+        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
+        final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon AND (a.age < b.age AND b.birth >= '28/01/2001')  RETURN a");
+        final AsgEBase<Quant1> quantA = quant1(100, all);
+        quantA.addNext(rel(2, null, Rel.Direction.RL,"Rel_#2")
+                .addNext(unTyped(3, "b")
+                        .next(quant1(300, all)
+                                .addNext(
+                                        ePropGroup(301,all,
+                                                of(301, "birth", of(ge, "28/01/2001")))
+                                )
+                        )));
+        quantA.addNext(
+                ePropGroup(101,all,
+                        of(101, "age", of(lt, "b.age")),
+                        of(102, "type", of(inSet, Arrays.asList("Dragon")))));
+
+        AsgQuery expected = AsgQuery.Builder
+                .start("cypher_", "Dragons")
+                .next(unTyped(1, "a"))
+                .next(quantA)
+                .build();
+        assertEquals(print(expected), print(query));
+    }
+
+    @Test
     public void testMatch_A_where_A_OfType_testMatch_A_where_A_OfType_AND_C_OfType_Return_A() {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)-[c]-(b) where a.age < 100 AND b.birth >= '28/01/2001' AND (c:Fire AND c:Freeze) RETURN a,b");

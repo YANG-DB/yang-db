@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.maxEntityNum;
 import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
 public class NodePatternCypherTranslatorStrategy implements CypherElementTranslatorStrategy<PatternElement> {
@@ -51,11 +52,7 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
         if (element instanceof NodePattern) {
             final Option<LogicalVariable> variable = element.variable();
 
-            int current = context.getScope().geteNum() + 1;
-            if (!context.getScope().getNext().isEmpty()) {
-                current = context.getScope().getNext().get(0).geteNum();
-            }
-
+            int current = maxEntityNum(query) + 1;
             String name = "Node_#" + current;
 
             if (!variable.isEmpty()) {
@@ -81,6 +78,12 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
                 if (labels.size() == 1) {
                     node = new AsgEBase<>(new ETyped(current, name, labels.iterator().next().name(), current + 1, 0));
                 }
+
+                //build label and update query, mutate new current scope
+/*
+                AsgEBase<EBase> quant = CypherUtils.quant(context.getScope(), Optional.empty(), query, context);
+                context.scope(quant);
+*/
 
                 context.getScope().addNext(node);
                 context.scope(node);

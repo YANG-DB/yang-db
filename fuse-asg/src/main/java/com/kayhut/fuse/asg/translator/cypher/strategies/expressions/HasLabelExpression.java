@@ -64,7 +64,7 @@ public class HasLabelExpression extends BaseExpressionStrategy {
             //update the scope
             context.scope(byTag.get());
             //change scope to quant
-            final AsgEBase<EBase> quantAsg = CypherUtils.quant(byTag.get(), parent, query, context);
+            final AsgEBase<? extends EBase> quantAsg = CypherUtils.quant(byTag.get(), parent, query, context);
             //add the label eProp constraint
             final int current = Math.max(quantAsg.getNext().stream().mapToInt(p -> p.geteNum()).max().orElse(0), quantAsg.geteNum());
             final List<String> labels = labelNames.stream().map(l -> l.name()).collect(Collectors.toList());

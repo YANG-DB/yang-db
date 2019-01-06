@@ -9,9 +9,9 @@ package com.kayhut.fuse.asg.strategy;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,6 @@ package com.kayhut.fuse.asg.strategy;
 
 import com.kayhut.fuse.asg.translator.cypher.strategies.*;
 import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.*;
-import org.opencypher.v9_0.expressions.PatternElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +35,8 @@ public class M1CypherAsgStrategyRegistrar implements CypherAsgStrategyRegistrar 
         translatorStrategies = Arrays.asList(
                 new NodePatternCypherTranslatorStrategy(new EqualityExpression()),
                 new StepPatternCypherTranslatorStrategy(
-                        new NodePatternCypherTranslatorStrategy(new EqualityExpression())
+                        new NodePatternCypherTranslatorStrategy(new EqualityExpression()),
+                        new EqualityExpression()
                 ));
 
         //expressions

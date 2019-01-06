@@ -52,8 +52,10 @@ public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression>
         org.opencypher.v9_0.expressions.Expression lhs = exp.lhs();
         org.opencypher.v9_0.expressions.Expression rhs = exp.rhs();
 
-        Property property = Property.class.isAssignableFrom(lhs.getClass()) ? ((Property) lhs) :
-                Property.class.isAssignableFrom(rhs.getClass()) ? ((Property) rhs) : null;
+        Property property = null;
+        if(Property.class.isAssignableFrom(lhs.getClass())) {
+            property = ((Property) lhs);
+        }
 
         if (CypherUtils.var(property).isEmpty()) return;
 
@@ -71,7 +73,7 @@ public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression>
             //update the scope
             context.scope(byTag.get());
             //change scope to quant
-            final AsgEBase<EBase> quantAsg = CypherUtils.quant(byTag.get(), parent, query, context);
+            final AsgEBase<? extends EBase> quantAsg = CypherUtils.quant(byTag.get(), parent, query, context);
             //add the label eProp constraint
             final int current = Math.max(quantAsg.getNext().stream().mapToInt(p -> p.geteNum()).max().orElse(0), quantAsg.geteNum());
 
@@ -80,7 +82,7 @@ public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression>
             }
 
             ((EPropGroup) AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).get().geteBase())
-                    .getProps().add(addPredicate(current, property.propertyKey().name(), constraint(exp.canonicalOperatorSymbol(), (org.opencypher.v9_0.expressions.Expression) literal(lhs, rhs))));
+                    .getProps().add(addPredicate(current, property.propertyKey().name(), constraint(exp.canonicalOperatorSymbol(), rhs)));
         }
 
         //when tag is of entity type

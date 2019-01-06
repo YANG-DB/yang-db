@@ -20,11 +20,14 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * #L%
  */
 
+import com.bpodgursky.jbool_expressions.Expression;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.EBase;
 import org.opencypher.v9_0.ast.Statement;
+import org.opencypher.v9_0.ast.Where;
 import org.opencypher.v9_0.util.ASTNode;
 
+import java.util.Optional;
 import java.util.Stack;
 
 public class CypherStrategyContext {
@@ -32,6 +35,7 @@ public class CypherStrategyContext {
     public CypherStrategyContext(Statement statement, AsgEBase<? extends EBase> scope) {
         this.statement = statement;
         this.scope = scope;
+        this.where = Optional.empty();
     }
 
     public AsgEBase<? extends EBase> getScope() {
@@ -42,13 +46,25 @@ public class CypherStrategyContext {
         return statement;
     }
 
+    public CypherStrategyContext where(Where where) {
+        this.where = Optional.of(CypherUtils.reWrite(where.expression()));
+        return this;
+    }
+
     public CypherStrategyContext scope(AsgEBase<? extends EBase> scope) {
         this.scope = scope;
         return this;
     }
 
+    public Optional<com.bpodgursky.jbool_expressions.Expression> getWhere() {
+        return where;
+    }
+
     //region Fields
     private Statement statement;
+    private Optional<com.bpodgursky.jbool_expressions.Expression> where ;
+
     private AsgEBase<? extends EBase> scope;
+
     //endregion
 }

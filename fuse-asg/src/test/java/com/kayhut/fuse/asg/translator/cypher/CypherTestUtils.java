@@ -22,7 +22,8 @@ class CypherTestUtils {
         translatorStrategies = Arrays.asList(
                 new NodePatternCypherTranslatorStrategy(new EqualityExpression()),
                 new StepPatternCypherTranslatorStrategy(
-                        new NodePatternCypherTranslatorStrategy(new EqualityExpression())
+                        new NodePatternCypherTranslatorStrategy(new EqualityExpression()),
+                        new EqualityExpression()
                 ));
 
         //expressions

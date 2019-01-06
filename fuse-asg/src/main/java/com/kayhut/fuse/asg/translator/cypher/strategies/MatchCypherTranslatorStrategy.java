@@ -9,9 +9,9 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,8 +20,11 @@ package com.kayhut.fuse.asg.translator.cypher.strategies;
  * #L%
  */
 
+import com.bpodgursky.jbool_expressions.Or;
 import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.WhereClauseNodeCypherTranslator;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.query.EBase;
 import org.opencypher.v9_0.ast.*;
 import org.opencypher.v9_0.expressions.PatternElement;
 import org.opencypher.v9_0.expressions.PatternPart;
@@ -54,19 +57,40 @@ public class MatchCypherTranslatorStrategy implements CypherTranslatorStrategy {
             if (!matchClause.isPresent()) return;
             //manage patterns
             final Match match = (Match) matchClause.get();
+
+            if (!match.where().isEmpty()) {
+                context.where(match.where().get());
+            }
+
             final Collection<PatternPart> patternParts = asJavaCollectionConverter(match.pattern().patternParts()).asJavaCollection();
-            patternParts.forEach(p->applyPattern(p.element(),context,query));
+            //for multi patterns match clause
+            AsgEBase<? extends EBase> scope = context.getScope();
+            if (patternParts.size() > 1) {
+                //create new quant only for non OR expressions
+                if (context.getWhere().isPresent()) {
+                    if (!Or.class.isAssignableFrom(context.getWhere().get().getClass())) {
+                        scope = CypherUtils.quant(context.getScope(), Optional.empty(), query, context);
+                    }
+                } else {
+                    scope = CypherUtils.quant(context.getScope(), Optional.empty(), query, context);
+                }
+            }
+            //apply patterns
+            for (PatternPart p : patternParts) {
+                applyPattern(scope, p.element(), context, query);
+            }
 
             //manage where clause
-            if(!match.where().isEmpty()) {
+            if (!match.where().isEmpty()) {
                 Where where = match.where().get();
-                whereClause.apply(where,query,context);
+                whereClause.apply(where, query, context);
             }
         }
     }
 
-    protected void applyPattern(PatternElement patternPart, CypherStrategyContext context, AsgQuery query) {
-        strategies.forEach(s->s.apply(patternPart,query,context));
+    protected void applyPattern(AsgEBase<? extends EBase> scope, PatternElement patternPart, CypherStrategyContext context, AsgQuery query) {
+        context.scope(scope);
+        strategies.forEach(s -> s.apply(patternPart, query, context));
     }
 
     private Iterable<CypherElementTranslatorStrategy> strategies;
