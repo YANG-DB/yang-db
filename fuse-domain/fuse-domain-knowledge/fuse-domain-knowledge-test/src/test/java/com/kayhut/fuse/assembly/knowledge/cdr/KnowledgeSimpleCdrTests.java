@@ -35,6 +35,60 @@ public class KnowledgeSimpleCdrTests {
     }
 
     @Test
+    public void testFetchPhonePropertiesAndRelationsWithMultiVertices() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match " +
+                        " (phone:Entity)-[hasEv1:hasEvalue]->(value1:Evalue {stringValue:'6671870408'})," +
+                        " (phone:Entity)-[hasRelEn:relatedEntity]->(loc:Entity), " +
+                                                                 " (loc:Entity)-[hasEv2:hasEvalue]->(value2:Evalue), " +
+                        " (phone:Entity)-[hasR:hasRelation]->(rel2:Relation), " +
+                                                           " (rel2:Relation)-[hasRv:hasRvalue]->(rValue:Rvalue) " +
+                        " Where " +
+                                " (rValue.fieldId = 'duration' AND rValue.stringValue = 58) AND " +
+                                " (loc.category = 'location' AND value2.fieldId = 'long' )    AND " +
+                                " (rel2.category = 'type' )  " +
+                        " Return *";
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
+
+        List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+        // Check Entity Response
+        Assert.assertEquals(1, assignments.size());
+
+        Assert.assertFalse( assignments.get(0).getEntities().isEmpty() );
+        System.out.println("Entities fetched: "+assignments.get(0).getEntities().size());
+
+        Assert.assertFalse( assignments.get(0).getRelationships().isEmpty() );
+        System.out.println("Values fetched: "+assignments.get(0).getRelationships().size());
+
+    }
+
+    @Test
+    public void testFetchPhonePropertiesWithMultiVertices() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match " +
+                        " (phone:Entity)-[hasEv:hasEvalue]->(value:Evalue {stringValue:'6671870408'})," +
+                        " (phone:Entity)-[hasR:hasRelation]->(rel2:Relation), " +
+                        " (rel2:Relation)-[hasRv:hasRvalue]->(rValue:Rvalue) " +
+                        " Where (rValue.fieldId = 'duration' AND rValue.stringValue = 58) Return *";
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
+
+        List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+        // Check Entity Response
+        Assert.assertEquals(1, assignments.size());
+
+        Assert.assertFalse( assignments.get(0).getEntities().isEmpty() );
+        System.out.println("Entities fetched: "+assignments.get(0).getEntities().size());
+
+        Assert.assertFalse( assignments.get(0).getRelationships().isEmpty() );
+        System.out.println("Values fetched: "+assignments.get(0).getRelationships().size());
+
+    }
+
+    @Test
     public void testFetchPhoneRelationWithMultiVertices() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by lior.perry
  */
-public class CypherMatchTranslatorTest {
+public class CypherMatchSimpleTranslatorTest {
     //region Setup
     @Before
     public void setUp() throws Exception {

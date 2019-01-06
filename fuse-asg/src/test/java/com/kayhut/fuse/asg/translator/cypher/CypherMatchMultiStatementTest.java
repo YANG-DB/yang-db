@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by lior.perry
  */
-public class CypherMatchStatementTest {
+public class CypherMatchMultiStatementTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
