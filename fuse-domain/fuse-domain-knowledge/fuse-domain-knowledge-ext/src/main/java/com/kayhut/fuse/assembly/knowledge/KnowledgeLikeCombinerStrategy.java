@@ -9,9 +9,9 @@ package com.kayhut.fuse.assembly.knowledge;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,6 +29,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import javaslang.collection.Stream;
@@ -56,11 +57,11 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
 
     private static boolean ePropGroupContainsLikeAnyField(EPropGroup ePropGroup) {
         //exclusive or for e.value with fieldId[title/nickname] and condition on stringValue
-        if(ePropGroupContainsLikeFieldOnRankableFields(ePropGroup))
+        if (ePropGroupContainsLikeFieldOnRankableFields(ePropGroup))
             return false;
 
         if (!Stream.ofAll(ePropGroup.getProps())
-                .filter(prop -> prop.getCon()!=null)
+                .filter(prop -> prop.getCon() != null)
                 .find(eProp -> eProp.getCon().getOp() == ConstraintOp.likeAny)
                 .isEmpty()) {
             return true;
@@ -74,7 +75,8 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
 
     private static boolean ePropGroupContainsLikeFieldOnRankableFields(AsgEBase<EPropGroup> asgEBase) {
         boolean isSearchableKnowledgeEntity = AsgQueryUtil.<EPropGroup, EEntityBase>ancestor(asgEBase, EEntityBase.class)
-                .get().geteBase().geteTag().endsWith("globalEntityValue");
+                .orElseGet(() -> new AsgEBase<>(new EUntyped(asgEBase.geteNum(), "", 0, 0)))
+                .geteBase().geteTag().endsWith("globalEntityValue");
         if (!isSearchableKnowledgeEntity) {
             return false;
         }
@@ -107,7 +109,7 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
 
     private static boolean ePropGroupContainsLikeField(AsgEBase<EPropGroup> asgEBase) {
         //exclusive or for e.value with fieldId[title/nickname] and condition on stringValue
-        if(ePropGroupContainsLikeFieldOnRankableFields(asgEBase)) {
+        if (ePropGroupContainsLikeFieldOnRankableFields(asgEBase)) {
             return false;
         }
 
@@ -115,7 +117,7 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
     }
 
     private static boolean ePropGroupContainsLikeField(EPropGroup ePropGroup) {
-         if (!Stream.ofAll(ePropGroup.getProps())
+        if (!Stream.ofAll(ePropGroup.getProps())
                 .filter(eProp -> eProp.getCon() != null)
                 .filter(eProp -> !(eProp.getCon().getExpr() == null) && !eProp.getCon().getExpr().toString().isEmpty())
                 .find(eProp -> eProp.getCon().getOp() == ConstraintOp.like)
