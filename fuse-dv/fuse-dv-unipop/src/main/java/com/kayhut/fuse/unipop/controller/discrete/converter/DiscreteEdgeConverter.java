@@ -29,6 +29,7 @@ import com.kayhut.fuse.unipop.controller.utils.idProvider.SimpleEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.map.MapHelper;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
@@ -96,7 +97,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
 
             Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, dataItemProperties);
-            Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, dataItemProperties, inVertexProperties);
+            Map<String, Object> edgeProperties = createEdgeProperties(edgeSchema, dataItemProperties);
 
             Iterable<Object> outIds = getIdFieldValues(dataItem, outEndSchema.getIdFields());
             Iterable<Object> inIds = getIdFieldValues(dataItem, inEndSchema.getIdFields());
@@ -129,7 +130,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             GraphEdgeSchema.End inEndSchema = edgeSchema.getEndA().get();
 
             Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, dataItemProperties);
-            Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, dataItemProperties, outVertexProperties);
+            Map<String, Object> edgeProperties = createEdgeProperties(edgeSchema, dataItemProperties);
 
             Iterable<Object> outIds = getIdFieldValues(dataItem, outEndSchema.getIdFields());
             Iterable<Object> inIds = getIdFieldValues(dataItem, inEndSchema.getIdFields());
@@ -234,21 +235,13 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
         return vertexProperties;
     }
 
-    private Map<String, Object> createEdgeProperties(GraphEdgeSchema.End endSchema, Map<String, Object> properties, Map<String, Object> vertexProperties) {
+    private Map<String, Object> createEdgeProperties(GraphEdgeSchema schema, Map<String, Object> properties) {
         Map<String, Object> edgeProperties = Collections.emptyMap();
-        boolean isFirst = true;
-
-        for (Map.Entry<String, Object> entry : properties.entrySet()) {
-            if (!vertexProperties.containsKey(entry.getKey())) {
-                if (isFirst) {
-                    edgeProperties = new HashMap<>();
-                    isFirst = false;
-                }
-
-                edgeProperties.put(entry.getKey(), entry.getValue());
+        for (GraphElementPropertySchema property : schema.getProperties()) {
+            if(properties.containsKey(property.getName())) {
+                edgeProperties.put(property.getName(),properties.get(property.getName()));
             }
         }
-
         return edgeProperties;
     }
     //endregion

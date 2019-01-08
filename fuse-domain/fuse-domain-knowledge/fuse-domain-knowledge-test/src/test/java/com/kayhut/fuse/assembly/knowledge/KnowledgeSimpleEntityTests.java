@@ -86,7 +86,7 @@ public class KnowledgeSimpleEntityTests {
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//ctx entity
+                        .withEntity(e1.toEntity())//context entity
                         .withEntities(e1.subEntities())//logicalEntity
                         .withRelationships(e1.withRelations())//relationships
                         .build()).build();
@@ -125,7 +125,7 @@ public class KnowledgeSimpleEntityTests {
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//ctx entity
+                        .withEntity(e1.toEntity())//context entity
                         .withEntities(e1.subEntities())//logicalEntity
                         .withRelationships(e1.withRelations())//relationships
                         .build()).build();
@@ -165,7 +165,7 @@ public class KnowledgeSimpleEntityTests {
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//ctx entity
+                        .withEntity(e1.toEntity())//context entity
                         .withEntities(e1.subEntities())//logicalEntity
                         .withRelationships(e1.withRelations())//relationships
                         .build()).build();

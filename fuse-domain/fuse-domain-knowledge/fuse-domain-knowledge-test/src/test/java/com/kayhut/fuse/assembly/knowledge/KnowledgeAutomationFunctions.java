@@ -46,7 +46,7 @@ public class KnowledgeAutomationFunctions {
         ObjectNode on = mapper.createObjectNode();
         on.put("type", type);
         on.put("logicalId", logicalId);
-        on.put("ctx", context);
+        on.put("context", context);
         on.put("category", category);
         on.put("lastUpdateUser", lastUpdateUser);
         on.put("creationUser", creationUser);

@@ -100,7 +100,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(rv1.toEntity())  //ctx entity
+                        .withEntity(rv1.toEntity())  //context entity
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -122,7 +122,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(rv1.toEntity())  //ctx entity
+                        .withEntity(rv1.toEntity())  //context entity
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -161,7 +161,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Rvalue", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.eq, rv2.context))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.eq, rv2.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -790,7 +790,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                         new Start(0, 1),
                         new ETyped(1, "A", "Rvalue", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                        new EProp(3, "ctx", Constraint.of(ConstraintOp.eq, rv3.context)),
+                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rv3.context)),
                         new EProp(4, "fieldId", Constraint.of(ConstraintOp.eq, rv3.fieldId))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -815,7 +815,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                         new Start(0, 1),
                         new ETyped(1, "A", "Rvalue", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                        new EProp(3, "ctx", Constraint.of(ConstraintOp.eq, rv3.context)),
+                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rv3.context)),
                         new EProp(4, "bdt", Constraint.of(ConstraintOp.eq, rv3.bdt))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -840,7 +840,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                         new Start(0, 1),
                         new ETyped(1, "A", "Rvalue", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                        new EProp(3, "ctx", Constraint.of(ConstraintOp.eq, rv7.context)),
+                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rv7.context)),
                         new EProp(3, "deleteTime", Constraint.of(ConstraintOp.eq, rv7.deleteTime)),
                         new EProp(4, "bdt", Constraint.of(ConstraintOp.eq, rv7.bdt))
                 )).build();
@@ -865,7 +865,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Rvalue", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.inSet,
+                        new EProp(2, "context", Constraint.of(ConstraintOp.inSet,
                                 Arrays.asList(rv1.context, rv5.context, rv6.context)))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -890,7 +890,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Rvalue", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.like, "Date *"))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.like, "Date *"))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -913,7 +913,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Rvalue", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.like, "*pany"))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.like, "*pany"))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -937,7 +937,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Rvalue", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.like, "*ar*"))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.like, "*ar*"))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -961,7 +961,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Rvalue", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.likeAny, Arrays.asList("*ype*", "*the*")))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.likeAny, Arrays.asList("*ype*", "*the*")))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -1079,7 +1079,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Rvalue", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.ne, rv3.context))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.ne, rv3.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -1104,7 +1104,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Rvalue", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.inSet,
+                        new EProp(2, "context", Constraint.of(ConstraintOp.inSet,
                                 Arrays.asList(rv3.bdt, rv2.fieldId, rv5.stringValue)))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);

@@ -83,9 +83,9 @@ public class KnowledgeSimpleEntityWithRelationTests {
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//ctx entity
-                        .withEntity(e2.toEntity())//ctx entity
-                        .withEntity(rel.toEntity())//ctx entity
+                        .withEntity(e1.toEntity())//context entity
+                        .withEntity(e2.toEntity())//context entity
+                        .withEntity(rel.toEntity())//context entity
                         .withRelationships(e1.withRelations())//relationships
                         .withRelationships(e2.withRelations())//relationships
                         .build()).build();

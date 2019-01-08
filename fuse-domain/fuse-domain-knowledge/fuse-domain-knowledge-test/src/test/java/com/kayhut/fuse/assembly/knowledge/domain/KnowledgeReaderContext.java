@@ -91,7 +91,7 @@ public class KnowledgeReaderContext {
             //add global quant
             quant();
             //add global rel + values
-            elements.add(filter().with(QuantType.all, "ctx", Constraint.of(ConstraintOp.eq, "global"))
+            elements.add(filter().with(QuantType.all, "context", Constraint.of(ConstraintOp.eq, "global"))
                     .build(currentEnum()));
             //adds to quant
             entityStack.peek().getNext().add(currentEnum());

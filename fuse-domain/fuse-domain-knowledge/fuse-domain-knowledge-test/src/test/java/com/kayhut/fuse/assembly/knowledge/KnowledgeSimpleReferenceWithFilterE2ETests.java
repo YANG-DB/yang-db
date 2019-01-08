@@ -106,7 +106,7 @@ public class KnowledgeSimpleReferenceWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(ref6.toEntity()).withEntity(ref7.toEntity())  //ctx entity
+                        .withEntity(ref6.toEntity()).withEntity(ref7.toEntity())  //context entity
                         .build()).build();
 
         // Check if expected and actual results are equal

@@ -91,7 +91,7 @@ public class RvalueBuilder extends EntityId {
         //on.put("entityId", entityId);
         on.put("fieldId", fieldId);
         on.put("bdt", bdt);
-        on.put("ctx", context);
+        on.put("context", context);
         on.put("refs", collectRefs(mapper,refs));
         if(stringValue!=null)
             on.put("stringValue", stringValue);
@@ -118,7 +118,7 @@ public class RvalueBuilder extends EntityId {
                 .withEType(getType())
                 .withProperties(collect(Arrays.asList(
                         value,
-                        new Property("ctx", "raw", context),
+                        new Property("context", "raw", context),
                         new Property("relationId", "raw", relationId),
                        //new Property("entityId", "raw", entityId),
                         new Property("bdt", "raw", bdt),

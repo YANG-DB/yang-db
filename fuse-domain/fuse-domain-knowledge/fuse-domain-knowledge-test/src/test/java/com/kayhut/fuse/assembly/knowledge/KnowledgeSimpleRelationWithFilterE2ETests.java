@@ -90,14 +90,14 @@ public class KnowledgeSimpleRelationWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Relation", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.eq, rel1.context))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.eq, rel1.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(rel1.toEntity())  //ctx entity
+                        .withEntity(rel1.toEntity())  //context entity
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -275,7 +275,7 @@ public class KnowledgeSimpleRelationWithFilterE2ETests {
                         new Start(0, 1),
                         new ETyped(1, "A", "Relation", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                        new EProp(3, "ctx", Constraint.of(ConstraintOp.eq, rel5.context)),
+                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rel5.context)),
                         new EProp(4, "id", Constraint.of(ConstraintOp.eq, rel5.id()))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -300,7 +300,7 @@ public class KnowledgeSimpleRelationWithFilterE2ETests {
                         new Start(0, 1),
                         new ETyped(1, "A", "Relation", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                        new EProp(3, "ctx", Constraint.of(ConstraintOp.eq, rel2.context)),
+                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rel2.context)),
                         new EProp(4, "category", Constraint.of(ConstraintOp.eq, rel2.category))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -325,7 +325,7 @@ public class KnowledgeSimpleRelationWithFilterE2ETests {
                         new Start(0, 1),
                         new ETyped(1, "A", "Relation", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
-                        new EProp(3, "ctx", Constraint.of(ConstraintOp.eq, rel7.context)),
+                        new EProp(3, "context", Constraint.of(ConstraintOp.eq, rel7.context)),
                         new EProp(3, "deleteTime", Constraint.of(ConstraintOp.eq, rel7.deleteTime)),
                         new EProp(4, "category", Constraint.of(ConstraintOp.eq, rel7.category))
                 )).build();
@@ -564,7 +564,7 @@ public class KnowledgeSimpleRelationWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Relation", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.ne, rel1.context))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.ne, rel1.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 

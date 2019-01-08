@@ -98,7 +98,7 @@ public class FileBuilder extends EntityId {
         on.put("description", description);
         on.put("logicalId", logicalId);
         on.put("entityId", entityId);
-        on.put("ctx", context);
+        on.put("context", context);
         return on;
     }
 
@@ -123,7 +123,7 @@ public class FileBuilder extends EntityId {
                         new Property("category", "raw", category),
                         new Property("description", "raw", description),
                         new Property("logicalId", "raw", logicalId),
-                        new Property("ctx", "raw", context)
+                        new Property("context", "raw", context)
                 ))).build();
     }
 

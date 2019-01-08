@@ -174,7 +174,7 @@ public class RelationBuilder extends Metadata {
         ObjectNode on = super.collect(mapper, node);
         //create knowledge entity
         on.put("type", physicalType);
-        on.put("ctx", context);
+        on.put("context", context);
         on.put("category", category);
         on.put("entityAId", entityAId);
         on.put("entityBId", entityBId);
@@ -192,7 +192,7 @@ public class RelationBuilder extends Metadata {
                 .withETag(Stream.of(getETag()).toJavaSet())
                 .withEType(getType())
                 .withProperties(collect(Arrays.asList(
-                        new Property("ctx", "raw", context),
+                        new Property("context", "raw", context),
                         new Property("category", "raw", category),
                         new Property("entityAId", "raw", entityAId),
                         new Property("entityBId", "raw", entityBId),

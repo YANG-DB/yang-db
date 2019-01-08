@@ -113,7 +113,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(v1.toEntity()).withEntity(v2.toEntity())  //ctx entity
+                        .withEntity(v1.toEntity()).withEntity(v2.toEntity())  //context entity
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -135,7 +135,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(v1.toEntity())  //ctx entity
+                        .withEntity(v1.toEntity())  //context entity
                         .build())
                 .build();
 
@@ -159,8 +159,8 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(v1.toEntity())  //ctx entity
-                        .withEntity(v2.toEntity())  //ctx entity
+                        .withEntity(v1.toEntity())  //context entity
+                        .withEntity(v2.toEntity())  //context entity
                         .build())
                 .build();
 
@@ -184,7 +184,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(v4.toEntity())  //ctx entity
+                        .withEntity(v4.toEntity())  //context entity
                         .build())
                 .build();
 
@@ -201,14 +201,14 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Evalue", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.eq, v4.context))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.eq, v4.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(v2.toEntity()).withEntity(v4.toEntity())  //ctx entity
+                        .withEntity(v2.toEntity()).withEntity(v4.toEntity())  //context entity
                         .build())
                 .build();
 
@@ -808,7 +808,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(v1.toEntity())  //ctx entity
+                        .withEntity(v1.toEntity())  //context entity
                         .build())
                 .build();
 
@@ -827,14 +827,14 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
                         new ETyped(1, "A", "Evalue", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
                         new EProp(3, "logicalId", Constraint.of(ConstraintOp.eq, v2.logicalId)),
-                        new EProp(4, "ctx", Constraint.of(ConstraintOp.eq, v2.context))
+                        new EProp(4, "context", Constraint.of(ConstraintOp.eq, v2.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(v2.toEntity())  //ctx entity
+                        .withEntity(v2.toEntity())  //context entity
                         .build())
                 .build();
 
@@ -853,7 +853,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
                         new ETyped(1, "A", "Evalue", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                         new EProp(3, "logicalId", Constraint.of(ConstraintOp.eq, v5.logicalId)),
-                        new EProp(4, "ctx", Constraint.of(ConstraintOp.eq, v5.context)),
+                        new EProp(4, "context", Constraint.of(ConstraintOp.eq, v5.context)),
                         new EProp(5, "creationTime", Constraint.of(ConstraintOp.eq, v5.creationTime))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -861,7 +861,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(v5.toEntity())  //ctx entity
+                        .withEntity(v5.toEntity())  //context entity
                         .build())
                 .build();
 
@@ -903,7 +903,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Evalue", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.like, "chan*"))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.like, "chan*"))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -1093,7 +1093,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Evalue", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.ne, v2.context))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.ne, v2.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -1121,7 +1121,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
                         new ETyped(1, "A", "Evalue", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
                         new EProp(3, "logicalId", Constraint.of(ConstraintOp.eq, v5.logicalId)),
-                        new EProp(4, "ctx", Constraint.of(ConstraintOp.eq, v10.context))
+                        new EProp(4, "context", Constraint.of(ConstraintOp.eq, v10.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 

@@ -110,7 +110,7 @@ public class KnowledgeSimpleInsightWithFilterE2ETests {
         // Create expectedResult
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
-                        .withEntity(i1.toEntity())  //ctx entity
+                        .withEntity(i1.toEntity())  //context entity
                         .build()).build();
 
         // Check if expected and actual results are equal
@@ -150,7 +150,7 @@ public class KnowledgeSimpleInsightWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Insight", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.eq, i5.context))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.eq, i5.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -338,7 +338,7 @@ public class KnowledgeSimpleInsightWithFilterE2ETests {
                         new ETyped(1, "A", "Insight", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
                         new EProp(3, "content", Constraint.of(ConstraintOp.eq, i6.content)),
-                        new EProp(4, "ctx", Constraint.of(ConstraintOp.eq, i6.context))
+                        new EProp(4, "context", Constraint.of(ConstraintOp.eq, i6.context))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -363,7 +363,7 @@ public class KnowledgeSimpleInsightWithFilterE2ETests {
                         new ETyped(1, "A", "Insight", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                         new EProp(3, "content", Constraint.of(ConstraintOp.eq, i6.content)),
-                        new EProp(4, "ctx", Constraint.of(ConstraintOp.eq, i6.context)),
+                        new EProp(4, "context", Constraint.of(ConstraintOp.eq, i6.context)),
                         new EProp(5, "deleteTime", Constraint.of(ConstraintOp.eq, i6.deleteTime))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -481,7 +481,7 @@ public class KnowledgeSimpleInsightWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Insight", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.like, "*ar*"))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.like, "*ar*"))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -506,7 +506,7 @@ public class KnowledgeSimpleInsightWithFilterE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Insight", 2, 0),
-                        new EProp(2, "ctx", Constraint.of(ConstraintOp.likeAny, Arrays.asList("*comp*", "*tme*")))
+                        new EProp(2, "context", Constraint.of(ConstraintOp.likeAny, Arrays.asList("*comp*", "*tme*")))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 

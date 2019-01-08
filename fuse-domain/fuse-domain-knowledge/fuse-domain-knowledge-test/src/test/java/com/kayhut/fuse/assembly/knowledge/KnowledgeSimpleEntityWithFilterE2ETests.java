@@ -153,7 +153,7 @@ public class KnowledgeSimpleEntityWithFilterE2ETests {
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Query query = start().withEntity(e6.getETag(), filter().and("ctx", Constraint.of(ConstraintOp.eq, e6.context))).build();
+        Query query = start().withEntity(e6.getETag(), filter().and("context", Constraint.of(ConstraintOp.eq, e6.context))).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
@@ -286,7 +286,7 @@ public class KnowledgeSimpleEntityWithFilterE2ETests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = start().withEntity(e6.getETag(), filter().and("category", Constraint.of(ConstraintOp.eq, e6.category))
                 .and("logicalId", Constraint.of(ConstraintOp.eq, e6.logicalId))
-                .and("ctx", Constraint.of(ConstraintOp.eq, e6.context))).build();
+                .and("context", Constraint.of(ConstraintOp.eq, e6.context))).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
@@ -305,7 +305,7 @@ public class KnowledgeSimpleEntityWithFilterE2ETests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = start().withEntity(e7.getETag(), filter().and("category", Constraint.of(ConstraintOp.eq, e7.category))
                 .and("logicalId", Constraint.of(ConstraintOp.eq, e7.logicalId))
-                .and("ctx", Constraint.of(ConstraintOp.eq, e7.context))
+                .and("context", Constraint.of(ConstraintOp.eq, e7.context))
                 .and("creationUser", Constraint.of(ConstraintOp.eq, e7.creationUser))).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -343,7 +343,7 @@ public class KnowledgeSimpleEntityWithFilterE2ETests {
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Query query = start().withEntity(e1.getETag(), filter().and("ctx", Constraint.of(ConstraintOp.like, "context1*"))).build();
+        Query query = start().withEntity(e1.getETag(), filter().and("context", Constraint.of(ConstraintOp.like, "context1*"))).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
@@ -497,7 +497,7 @@ public class KnowledgeSimpleEntityWithFilterE2ETests {
     {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Query query = start().withEntity(e6.getETag(), filter().and("ctx", Constraint.of(ConstraintOp.ne, e6.context))).build();
+        Query query = start().withEntity(e6.getETag(), filter().and("context", Constraint.of(ConstraintOp.ne, e6.context))).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
