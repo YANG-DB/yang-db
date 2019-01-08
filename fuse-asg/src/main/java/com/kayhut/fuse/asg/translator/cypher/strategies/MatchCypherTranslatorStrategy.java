@@ -64,21 +64,7 @@ public class MatchCypherTranslatorStrategy implements CypherTranslatorStrategy {
 
             final Collection<PatternPart> patternParts = asJavaCollectionConverter(match.pattern().patternParts()).asJavaCollection();
             //for multi patterns match clause
-            AsgEBase<? extends EBase> scope = context.getScope();
-            if (patternParts.size() > 1) {
-                //create new quant only for non OR expressions
-                if (context.getWhere().isPresent()) {
-                    if (!Or.class.isAssignableFrom(context.getWhere().get().getClass())) {
-                        scope = CypherUtils.quant(context.getScope(), Optional.empty(), query, context);
-                    }
-                } else {
-                    scope = CypherUtils.quant(context.getScope(), Optional.empty(), query, context);
-                }
-            }
-            //apply patterns
-            for (PatternPart p : patternParts) {
-                applyPattern(scope, p.element(), context, query);
-            }
+            patternParts.forEach(p->applyPattern(p.element(),context,query));
 
             //manage where clause
             if (!match.where().isEmpty()) {
@@ -88,8 +74,7 @@ public class MatchCypherTranslatorStrategy implements CypherTranslatorStrategy {
         }
     }
 
-    protected void applyPattern(AsgEBase<? extends EBase> scope, PatternElement patternPart, CypherStrategyContext context, AsgQuery query) {
-        context.scope(scope);
+    protected void applyPattern(PatternElement patternPart, CypherStrategyContext context, AsgQuery query) {
         strategies.forEach(s -> s.apply(patternPart, query, context));
     }
 

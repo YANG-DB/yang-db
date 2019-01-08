@@ -37,20 +37,19 @@ public class CypherMatchMultiStatementTest {
                 " Return *");
 
         String expected = "[└── Start, \n" +
-                            "    ──Q[100:all]:{1|6}, \n" +
-                            "                  └─Typ[:Entity person#1]──Q[200:all]:{2|4}, \n" +
-                            "                                                       └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}──Q[600:all]:{7}, \n" +
-                            "                                                                                                                            └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{801}, \n" +
-                            "                                                                                                                                    └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
-                            "                                                       └-> Rel(:relatedEntity tomActedIn#4), \n" +
-                            "                                                                                                                            └─?[..][400], \n" +
-                            "                                                                                                                                    └─?[401]:[category<eq,ACTED_IN>], \n" +
-                            "                                                                                                                                                                └─?[..][801], \n" +
-                            "                                                                                                                                                                        └─?[801]:[name<eq,m2.name>], \n" +
-                            "                  └─Typ[:Entity otherPerson#6], \n" +
-                            "                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
-                            "                                                                             └─?[..][700], \n" +
-                            "                                                                                     └─?[701]:[category<eq,ACTED_IN>]]";
+                            "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
+                            "                                         └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}, \n" +
+                            "                                                                                                              └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{6|801}, \n" +
+                            "                                                                                                                      └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
+                            "                                         └-> Rel(:relatedEntity tomActedIn#4), \n" +
+                            "                                                                                                              └─?[..][400], \n" +
+                            "                                                                                                                      └─?[401]:[category<eq,ACTED_IN>], \n" +
+                            "                                                                                                                                                  └─Typ[:Entity otherPerson#6]──Q[600:all]:{7}, \n" +
+                            "                                                                                                                                                                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
+                            "                                                                                                                                                                                                                             └─?[..][700], \n" +
+                            "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
+                            "                                                                                                                                                  └─?[..][801], \n" +
+                            "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
         assertEquals(expected, print(query));
     }
 
@@ -61,11 +60,10 @@ public class CypherMatchMultiStatementTest {
                 " (a:A)-[d:D]->(e:E)-[:F]-(g:G)" +
                 " RETURN *");
         String expected = "[└── Start, \n" +
-                "    ──Q[100:all]:{1}, \n" +
-                "                └─Typ[:A a#1]──Q[200:all]:{2|4}, \n" +
-                "                                           └-> Rel(:C c#2)──Typ[:B b#3], \n" +
-                "                                           └-> Rel(:D d#4)──Typ[:E e#5]──Q[500:all]:{6}, \n" +
-                "                                                                                   └<--Rel(:F Rel_#6#6)──Typ[:G g#7]]";
+                            "    ──Typ[:A a#1]──Q[100:all]:{2|4}, \n" +
+                            "                               └-> Rel(:C c#2)──Typ[:B b#3], \n" +
+                            "                               └-> Rel(:D d#4)──Typ[:E e#5]──Q[500:all]:{6}, \n" +
+                            "                                                                       └<--Rel(:F Rel_#6#6)──Typ[:G g#7]]";
         assertEquals(expected, print(query));
     }
 
@@ -79,20 +77,19 @@ public class CypherMatchMultiStatementTest {
                 "       (g.fieldId = 'g' and g.stringValue = 'g') " +
                 " RETURN *");
         String expected = "[└── Start, \n" +
-                            "    ──Q[100:all]:{1}, \n" +
-                            "                └─Typ[:A a#1]──Q[200:all]:{2|4}, \n" +
-                            "                                           └-> Rel(:C c#2)──Typ[:B b#3]──Q[700:all]:{701}, \n" +
-                            "                                                                                     └─?[..][701]──Typ[:E e#5]──Q[500:all]:{6|501}, \n" +
-                            "                                                                                             └─?[701]:[fieldId<eq,b>], \n" +
-                            "                                                                                             └─?[702]:[stringValue<eq,b>], \n" +
-                            "                                           └-> Rel(:D d#4), \n" +
-                            "                                                      └<--Rel(:F Rel_#6#6)──Typ[:G g#7]──Q[800:all]:{801}, \n" +
-                            "                                                                                                     └─?[..][801], \n" +
-                            "                                                                                                             └─?[801]:[stringValue<eq,g>], \n" +
-                            "                                                                                                             └─?[802]:[fieldId<eq,g>], \n" +
-                            "                                                      └─?[..][501], \n" +
-                            "                                                              └─?[501]:[fieldId<eq,e>], \n" +
-                            "                                                              └─?[502]:[stringValue<eq,e>]]";
+                            "    ──Typ[:A a#1]──Q[100:all]:{2|4}, \n" +
+                            "                               └-> Rel(:C c#2)──Typ[:B b#3]──Q[700:all]:{701}, \n" +
+                            "                                                                         └─?[..][701]──Typ[:E e#5]──Q[500:all]:{6|501}, \n" +
+                            "                                                                                 └─?[701]:[fieldId<eq,b>], \n" +
+                            "                                                                                 └─?[702]:[stringValue<eq,b>], \n" +
+                            "                               └-> Rel(:D d#4), \n" +
+                            "                                          └<--Rel(:F Rel_#6#6)──Typ[:G g#7]──Q[800:all]:{801}, \n" +
+                            "                                                                                         └─?[..][801], \n" +
+                            "                                                                                                 └─?[801]:[stringValue<eq,g>], \n" +
+                            "                                                                                                 └─?[802]:[fieldId<eq,g>], \n" +
+                            "                                          └─?[..][501], \n" +
+                            "                                                  └─?[501]:[fieldId<eq,e>], \n" +
+                            "                                                  └─?[502]:[stringValue<eq,e>]]";
         assertEquals(expected, print(query));
     }
 

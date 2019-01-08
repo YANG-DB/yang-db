@@ -15,7 +15,6 @@ import static com.kayhut.fuse.assembly.knowledge.Setup.*;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
 
-@Ignore("Run on nightly builds only")
 public class KnowledgeSimpleCdrTests {
     static KnowledgeWriterContext ctx;
 
@@ -92,7 +91,8 @@ public class KnowledgeSimpleCdrTests {
     public void testFetchPhoneRelationWithMultiVertices() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        String query = "Match (value:Evalue {stringValue:'6671870408'})<-[rel:hasEvalue]-(phone:Entity)-[:hasRelation]->(rel:Relation)-[:hasRvalue]->(rValue:Rvalue) " +
+        String query = "Match (phone:Entity)-[hasRel:hasRelation]->(rel:Relation)-[hasRv:hasRvalue]->(rValue:Rvalue), " +
+                        " (phone:Entity)-[rel:hasEvalue]->(value:Evalue {stringValue:'6671870408'}) " +
                         " Where (rValue.fieldId = 'duration' AND rValue.stringValue = 58) Return *";
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
 
