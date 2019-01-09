@@ -1,0 +1,25 @@
+{
+  "clause": [
+    [
+      [
+        {
+          "type": "entity",
+          "conceptId": "http://huha.com/minimal#person",
+          "properties": {
+            "http://huha.com/minimal#birthday": {
+              "matchType": "GT",
+              "value": "2019-01-08 12:26"
+            },
+            "http://huha.com#title": {
+              "matchType": "QUERY",
+              "value": "shuki"
+            }
+          }
+        }
+      ]
+    ]
+  ],
+  "aggregations": [],
+  "group_by": []
+}
+

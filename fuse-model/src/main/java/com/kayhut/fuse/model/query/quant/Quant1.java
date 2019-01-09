@@ -81,6 +81,10 @@ public class Quant1 extends QuantBase {
         this.next = next;
     }
 
+    public void addNext(int next) {
+        this.next.add(next);
+    }
+
     @Override
     public boolean hasNext() {
         return !next.isEmpty();

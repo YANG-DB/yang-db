@@ -31,6 +31,7 @@ import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -110,6 +111,14 @@ public class Query implements IQuery<EBase> {
             return this;
         }
 
+        public Builder withElement(EBase ... element) {
+            if(elements==null) {
+                this.elements = new ArrayList<>();
+            }
+            this.elements.addAll(Arrays.asList(element));
+            return this;
+        }
+
         public Builder withNonidentical(List<List<String>> nonidentical) {
             this.nonidentical = nonidentical;
             return this;
@@ -125,6 +134,7 @@ public class Query implements IQuery<EBase> {
                 query.setNonidentical(nonidentical);
             return query;
         }
+
     }
 
     public static class QueryUtils {

@@ -1,0 +1,36 @@
+{
+  "clause": [
+    [
+      [
+        {
+          "conceptId": "http://huha.com/minimal#phoneNumber",
+          "type": "entity",
+          "properties": {
+            "http://huha.com#title": {
+              "matchType": "PLAIN",
+              "value": "11111111"
+            }
+          }
+        }
+      ],
+      [
+        {
+          "conceptId": "http://huha.com/cdrs#caller",
+          "type": "link",
+          "properties": {},
+          "direction": "in"
+        }
+      ],
+      [
+        {
+          "conceptId": "http://huha.com/cdrs#cdr",
+          "type": "entity",
+          "properties": {}
+        }
+      ]
+    ]
+  ],
+  "aggregations": [],
+  "group_by": []
+}
+

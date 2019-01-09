@@ -1,0 +1,21 @@
+{
+  "clause": [
+    [
+      [
+        {
+          "type": "entity",
+          "conceptId": "http://huha.com/minimal#person",
+          "properties": {
+            "http://huha.com#title": {
+              "matchType": "PLAIN",
+              "value": "shuki"
+            }
+          }
+        }
+      ]
+    ]
+  ],
+  "aggregations": [],
+  "group_by": []
+}
+

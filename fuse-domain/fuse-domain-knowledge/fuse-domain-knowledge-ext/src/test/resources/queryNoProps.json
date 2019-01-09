@@ -1,0 +1,15 @@
+{
+  "clause": [
+    [
+      [
+        {
+          "type": "entity",
+          "conceptId": "http://huha.com/minimal#person"
+        }
+      ]
+    ]
+  ],
+  "aggregations": [],
+  "group_by": []
+}
+
