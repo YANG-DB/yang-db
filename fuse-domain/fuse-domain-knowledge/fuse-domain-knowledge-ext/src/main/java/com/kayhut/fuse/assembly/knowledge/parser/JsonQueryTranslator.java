@@ -12,6 +12,8 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.Quant1;
@@ -26,9 +28,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.kayhut.fuse.assembly.knowledge.parser.model.MatchType2Constraint.asConstraint;
+import static com.kayhut.fuse.assembly.knowledge.parser.model.TypeConstraint.asConstraint;
 
-public class Json2QueryMapper {
+public class JsonQueryTranslator {
     static private ObjectMapper mapper =
             new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -78,51 +80,62 @@ public class Json2QueryMapper {
         List<EBase> nodes = new ArrayList<>();
         final ETyped entity = new ETyped(sequence.incrementAndGet(),
                 step.getConceptId() + "_" + sequence.get(),
-                "Entity", 0, 0);
+                "Entity", -1, 0);
         addNext(context,entity);
         nodes.add(entity);
+        //context moves to entity
+        context.set(entity);
+
         //region populate eValues
         if(!step.getProperties().isEmpty()) {
-            final int qauantId = sequence.incrementAndGet();
-            entity.setNext(qauantId);
-            Quant1 quant = new Quant1(qauantId,QuantType.all, new ArrayList<>(),0 );
-            nodes.add(quant);
-            //context moves to quant
-            context.set(quant);
-            //region add eProps
-            step.getProperties().entrySet().forEach(e->{
-                final int relId = sequence.incrementAndGet();
-                quant.addNext(relId);
-
-                //add rel hasEvalue
-                final int eValue = sequence.incrementAndGet();
-                nodes.add(new Rel(relId, "hasEvalue"  , Rel.Direction.R,relId+":"+step.getConceptId()+"_hasEvalue_"+ e.getKey(), eValue, 0));
-
-                //add eValue Node
-                final int propQuantId = sequence.incrementAndGet();
-                nodes.add(new ETyped(eValue,eValue +":"+step.getConceptId()+"_eValue_"+e.getKey(),"EValue",propQuantId,0));
-
-                //add properties quant
-                final Quant1 propsQuant = new Quant1(propQuantId, QuantType.all, new ArrayList<>(), 0);
-                nodes.add(propsQuant);
-
-                //add eProp fieldId
-                final int fieldId = sequence.incrementAndGet();
-                nodes.add(new EProp(fieldId,"fieldId",
-                        Constraint.of(ConstraintOp.eq,e.getKey())));
-                propsQuant.addNext(fieldId);
-
-                //add value constraint
-                final int valueId = sequence.incrementAndGet();
-                nodes.add(new EProp(valueId,
-                        Types.byValue(e.getKey()).getFieldType(),
-                        asConstraint(e.getValue().getMatchType(), e.getValue().getValue())));
-                propsQuant.addNext(valueId);
-            });
-            //endregion
+            nodes.addAll(appendProperties(context, step, sequence, entity));
         }
         //endregion
         return nodes;
+    }
+
+    private static List<EBase> appendProperties(AtomicReference<EBase> context, Step step, AtomicInteger sequence, ETyped entity) {
+        List<EBase> nodes = new ArrayList<>();
+        final int quantId = sequence.incrementAndGet();
+        entity.setNext(quantId);
+        Quant1 quant = new Quant1(quantId,QuantType.all, new ArrayList<>(),0 );
+        nodes.add(quant);
+        //context moves to quant
+        context.set(quant);
+        //todo add metadata relProps below
+
+        //region add eProps
+        step.getProperties().forEach((key, value) -> {
+            final int relId = sequence.incrementAndGet();
+            quant.addNext(relId);
+
+            //add rel hasEvalue
+            final int eValue = sequence.incrementAndGet();
+            nodes.add(new Rel(relId, "hasEvalue", Rel.Direction.R, relId + ":" + step.getConceptId() + "_hasEvalue_" + key, eValue, 0));
+
+            //add eValue Node
+            final int propQuantId = sequence.incrementAndGet();
+            nodes.add(new ETyped(eValue, eValue + ":" + step.getConceptId() + "_eValue_" + key, "Evalue", propQuantId, 0));
+
+            //add properties quant
+            final Quant1 propsQuant = new Quant1(propQuantId, QuantType.all, new ArrayList<>(), 0);
+            nodes.add(propsQuant);
+
+            //add eProp fieldId
+            final int fieldId = sequence.incrementAndGet();
+            nodes.add(new EProp(fieldId, "fieldId",
+                    Constraint.of(ConstraintOp.eq, Types.byValue(key).getSuffix())));
+            propsQuant.addNext(fieldId);
+
+            //add value constraint
+            final int valueId = sequence.incrementAndGet();
+            nodes.add(new EProp(valueId,
+                    Types.byValue(key).getFieldType(),
+                    asConstraint(value.getMatchType(), value.getValue())));
+            propsQuant.addNext(valueId);
+        });
+        return nodes;
+        //endregion
     }
 
     /**
@@ -135,20 +148,31 @@ public class Json2QueryMapper {
     private static Collection<EBase> createEdge(AtomicReference<EBase> context, Step step, AtomicInteger sequence) {
         List<EBase> nodes = new ArrayList<>();
         //add rel hasEvalue
-        final int relId = sequence.incrementAndGet();
-        final int relEntity = sequence.incrementAndGet();
-        final Rel hasRelation = new Rel(relId, "hasRelation", step.getDirection().getDirection(), relId + ":" + step.getConceptId() + "_hasRelation_", relEntity, 0);
-        nodes.add(hasRelation);
-        addNext(context,hasRelation);
+        int relId = sequence.incrementAndGet();
+        Rel relatedEntity = new Rel(relId, "relatedEntity", step.getDirection().to(), relId + ":" + step.getConceptId() + "_hasRelation_["+step.getDirection()+"]", 0, 0);
+        nodes.add(relatedEntity);
 
-        final ETyped entity = new ETyped(relEntity,
-                step.getConceptId() + "_" + sequence.get(),
-                "Entity", 0, 0);
-        nodes.add(entity);
-        //region populate eValues
-        //todo add properties
-        //endregion
-        //todo add hasRelation to next entity
+        //todo add rValue properties
+
+        //add metadata relProps below
+        if(!step.getProperties().isEmpty()) {
+            ArrayList<RelProp> props = new ArrayList<>();
+            int relGroup = sequence.incrementAndGet();
+            relatedEntity.setB(relGroup);
+            step.getProperties().forEach((key, value) -> {
+                //add metadata constraint
+                final int valueId = sequence.incrementAndGet();
+                props.add(new RelProp(valueId,
+                        Types.byValue(key).getSuffix(),
+                        asConstraint(value.getMatchType(), value.getValue()),0));
+            });
+            //populate group
+            RelPropGroup group = new RelPropGroup(relGroup, props);
+            nodes.add(group);
+        }
+        addNext(context,relatedEntity);
+        //context moves to rel
+        context.set(relatedEntity);
         return nodes;
     }
 

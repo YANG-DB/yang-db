@@ -1,0 +1,40 @@
+{
+  "clause": [
+    [
+      [
+        {
+          "conceptId": "http://huha.com/minimal#phoneNumber",
+          "type": "entity",
+          "properties": {
+            "http://huha.com#phone": {
+              "matchType": "EXACT",
+              "value": "6672064796"
+            }
+          }
+        }
+      ],
+      [
+        {
+          "conceptId": "http://huha.com/cdrs#caller",
+          "type": "link",
+          "properties": {
+            "http://huha.com#category": {
+              "matchType": "EXACT",
+              "value": "type"
+            }
+          },
+          "direction": "out"
+        }
+      ],
+      [
+        {
+          "conceptId": "http://huha.com/cdrs#location",
+          "type": "entity",
+          "properties": {}
+        }
+      ]
+    ]
+  ],
+  "group_by": [],
+  "aggregations": []
+} 

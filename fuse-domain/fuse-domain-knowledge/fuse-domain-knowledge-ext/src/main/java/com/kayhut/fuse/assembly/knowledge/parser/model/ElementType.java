@@ -1,5 +1,5 @@
 package com.kayhut.fuse.assembly.knowledge.parser.model;
 
-public enum ElemType {
+public enum ElementType {
     entity, link
 }

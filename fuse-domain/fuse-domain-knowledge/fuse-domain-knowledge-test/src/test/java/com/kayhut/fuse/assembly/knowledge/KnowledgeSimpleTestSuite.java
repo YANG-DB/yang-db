@@ -24,7 +24,7 @@ import static com.kayhut.fuse.assembly.knowledge.Setup.manager;
 @Suite.SuiteClasses({
         //KnowledgeSimpleEntityWithRelationTests.class,
         //KnowledgeSimpleEntityWithFilterTests.class,
-        //KnowledgeSimpleCdrTests.class,
+        //KnowledgeSimpleCdrWithCypherQueryTests.class,
         KnowledgeSimpleEntityWithFilterE2ETests.class,
         KnowledgeSimpleEvalueWithFilterE2ETests.class,
         KnowledgeSimpleEfileWithFilterE2ETests.class,

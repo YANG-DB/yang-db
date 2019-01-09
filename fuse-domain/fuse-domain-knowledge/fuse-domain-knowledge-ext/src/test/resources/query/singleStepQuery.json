@@ -17,7 +17,12 @@
         {
           "conceptId": "http://huha.com/cdrs#caller",
           "type": "link",
-          "properties": {},
+          "properties": {
+            "http://huha.com#category": {
+              "matchType": "EXACT",
+              "value": "10"
+            }
+          },
           "direction": "in"
         }
       ],

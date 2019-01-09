@@ -15,7 +15,7 @@ import static com.kayhut.fuse.assembly.knowledge.Setup.*;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
 
-public class KnowledgeSimpleCdrTests {
+public class KnowledgeSimpleCdrWithCypherQueryTests {
     static KnowledgeWriterContext ctx;
 
     @BeforeClass

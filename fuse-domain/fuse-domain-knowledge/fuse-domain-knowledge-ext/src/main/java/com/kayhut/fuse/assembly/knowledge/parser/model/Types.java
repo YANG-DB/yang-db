@@ -4,9 +4,16 @@ import javaslang.collection.Stream;
 import javaslang.control.Option;
 
 public enum Types {
+    //metadata
+    CATEGORY("http://huha.com#category","stringValue"),
+    CONTEXT("http://huha.com#context","stringValue"),
+
+    //business types
+    PHONE("http://huha.com#phone","stringValue"),
     TITLE("http://huha.com#title","stringValue"),
     BIRTHDAY("http://huha.com/minimal#birthday","dateValue"),
-    STRING("String","stringValue");
+    DURATION("http://huha.com#duration","intValue"),
+    STRING("http://huha.com#stringValue","stringValue");
 
     private String value;
     private String fieldType;
@@ -30,5 +37,9 @@ public enum Types {
 
     public String getValue() {
         return value;
+    }
+
+    public String getSuffix() {
+        return getValue().split("#")[1];
     }
 }

@@ -236,7 +236,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     }
 
     private Map<String, Object> createEdgeProperties(GraphEdgeSchema schema, Map<String, Object> properties) {
-        Map<String, Object> edgeProperties = Collections.emptyMap();
+        Map<String, Object> edgeProperties = new HashMap<>();
         for (GraphElementPropertySchema property : schema.getProperties()) {
             if(properties.containsKey(property.getName())) {
                 edgeProperties.put(property.getName(),properties.get(property.getName()));

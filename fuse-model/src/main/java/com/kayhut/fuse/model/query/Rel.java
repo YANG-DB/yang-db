@@ -44,6 +44,12 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
         R,
         L,
         RL;
+
+        public Direction reverse() {
+            if (this == RL)
+                return R;
+            return L == this ? R : L;
+        }
     }
 
     //region Constructors

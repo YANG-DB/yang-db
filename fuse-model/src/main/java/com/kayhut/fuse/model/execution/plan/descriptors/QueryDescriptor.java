@@ -12,9 +12,9 @@ package com.kayhut.fuse.model.execution.plan.descriptors;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -72,8 +72,10 @@ public class QueryDescriptor implements Descriptor<Query> {
     static String shortLabel(EBase e, StringJoiner joiner) {
         if (e instanceof QuantBase) {
             List<Integer> next = ((Next<List>) e).getNext();
-            String join = next.stream().map(Object::toString).collect(Collectors.joining("|"));
-            joiner.add("Q" + "[" + e.geteNum() + "]").add("{" + join + "}");
+            if(next!=null) {
+                String join = next.stream().map(Object::toString).collect(Collectors.joining("|"));
+                joiner.add("Q" + "[" + e.geteNum() + "]").add("{" + join + "}");
+            }
         } else if (e instanceof EUntyped)
             joiner.add("UnTyp" + "[" + e.geteNum() + "]");
         else if (e instanceof EConcrete)
@@ -120,7 +122,7 @@ public class QueryDescriptor implements Descriptor<Query> {
 
     static String printProp(EProp p) {
         if (p instanceof RankingProp) {
-            return "boost:"+((RankingProp) p).getBoost() +"  " + p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
+            return "boost:" + ((RankingProp) p).getBoost() + "  " + p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
         } else if (p.getCon() != null) {
             return p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
         } else if (p.getProj() != null) {
@@ -147,29 +149,38 @@ public class QueryDescriptor implements Descriptor<Query> {
         }
 
 
-        if (Next.class.isAssignableFrom(element.get().getClass())) {
+        if (Next.class.isAssignableFrom(element.get().getClass())
+                || element.get() instanceof BasePropGroup) {
             if (element.get() instanceof QuantBase) {
                 List<Integer> next = ((QuantBase) element.get()).getNext();
-                level = builder.size();
-                for (int i = 0; i < next.size(); i++) {
-                    print(builder, query, findByEnum(query, next.get(i)), true, true, level, i);
+                if(next!=null) {
+                    level = builder.size();
+                    for (int i = 0; i < next.size(); i++) {
+                        print(builder, query, findByEnum(query, next.get(i)), true, true, level, i);
+                    }
                 }
             } else if (element.get() instanceof EEntityBase) {
                 print(builder, query, findByEnum(query, ((EEntityBase) element.get()).getNext()), !((Next) element.get()).hasNext(), false, level, currentLine);
             } else if (element.get() instanceof Rel) {
                 print(builder, query, findByEnum(query, ((Rel) element.get()).getNext()), !((Next) element.get()).hasNext(), false, level, currentLine);
-            } else if (element.get() instanceof ScoreEProp ) {
+                if(((Rel) element.get()).getB() > 0 && findByEnum(query, ((Rel) element.get()).getB()).isPresent()  )
+                    print(builder, query, findByEnum(query, ((Rel) element.get()).getB()), false, true, level+1, currentLine);
+            } else if (element.get() instanceof ScoreEProp) {
                 print(builder, query, element, true, true, level + 1, currentLine);
-            } else if (element.get() instanceof EPropGroup ) {
+            } else if (element.get() instanceof EPropGroup) {
                 level = builder.size();
                 for (int i = 0; i < ((ScoreEPropGroup) element.get()).getGroups().size(); i++) {
                     EPropGroup ePropGroup = ((ScoreEPropGroup) element.get()).getGroups().get(i);
                     print(builder, query, Optional.of(ePropGroup), true, true, level, i);
                 }
-            } else if (element.get() instanceof EProp ) {
+            } else if (element.get() instanceof EProp || element.get() instanceof RelProp) {
                 print(builder, query, element, true, true, level + 1, currentLine);
-            } else if (element.get() instanceof RelProp || element.get() instanceof RelPropGroup) {
-                print(builder, query, element, true, true, level + 1, currentLine);
+            } else if (element.get() instanceof RelPropGroup) {
+                level = builder.size();
+                for (int i = 0; i < ((RelPropGroup) element.get()).getGroups().size(); i++) {
+                    BasePropGroup rPropGroup = ((RelPropGroup) element.get()).getGroups().get(i);
+                    print(builder, query, Optional.of(rPropGroup), true, true, level, i);
+                }
             }
         }
     }
@@ -187,10 +198,12 @@ public class QueryDescriptor implements Descriptor<Query> {
         List<String> builder = new LinkedList<>();
         builder.add("└── " + "Start");
         Iterator<EBase> iterator = query.getElements().iterator();
-        if(iterator.hasNext()) {
+        if (iterator.hasNext()) {
             iterator.next();
-            if(iterator.hasNext())
-                print(builder, query, Optional.ofNullable(iterator.next()), false, true, 1, 0);
+            if (iterator.hasNext()) {
+                EBase next = iterator.next();
+                print(builder, query, Optional.ofNullable(next), false, true, 1, 0);
+            }
         }
         return builder.toString();
     }

@@ -1,5 +1,7 @@
 package com.kayhut.fuse.assembly.knowledge.parser.model;
 
+import com.kayhut.fuse.model.execution.plan.Direction;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -7,7 +9,7 @@ import java.util.Map;
 public class Step {
 
     private String conceptId;
-    private ElemType type;
+    private ElementType type;
     private Direction direction;
 //    @JsonIgnoreProperties(ignoreUnknown = true)
     private Map<String, Property> properties = Collections.emptyMap();
@@ -22,11 +24,11 @@ public class Step {
         return this;
     }
 
-    public ElemType getType() {
+    public ElementType getType() {
         return type;
     }
 
-    public Step setType(ElemType type) {
+    public Step setType(ElementType type) {
         this.type = type;
         return this;
     }
