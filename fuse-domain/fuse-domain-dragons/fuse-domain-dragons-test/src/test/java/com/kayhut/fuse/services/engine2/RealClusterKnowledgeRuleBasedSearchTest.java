@@ -18,7 +18,7 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import com.kayhut.fuse.utils.FuseClient;
+import com.kayhut.fuse.client.FuseClient;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

@@ -1,9 +1,9 @@
 package com.kayhut.fuse.utils;
 
+import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.FuseRunner;
-import com.kayhut.fuse.utils.FuseClient;
 
 import java.io.File;
 import java.nio.file.Paths;

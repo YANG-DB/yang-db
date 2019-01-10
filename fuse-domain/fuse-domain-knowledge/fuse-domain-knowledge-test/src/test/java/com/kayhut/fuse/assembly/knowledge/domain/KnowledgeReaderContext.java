@@ -1,5 +1,6 @@
 package com.kayhut.fuse.assembly.knowledge.domain;
 
+import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
@@ -19,7 +20,6 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import com.kayhut.fuse.utils.FuseClient;
 import javaslang.Tuple2;
 
 import java.io.IOException;

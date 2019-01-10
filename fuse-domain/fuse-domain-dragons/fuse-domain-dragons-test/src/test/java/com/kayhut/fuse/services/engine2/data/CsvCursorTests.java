@@ -22,7 +22,7 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateCsvCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.CsvCursorTestSuite;
-import com.kayhut.fuse.utils.FuseClient;
+import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.test.framework.index.MappingElasticConfigurer;

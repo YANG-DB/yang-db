@@ -27,7 +27,7 @@ import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.JoinE2ETestSuite;
-import com.kayhut.fuse.utils.FuseClient;
+import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.test.data.DragonsOntology;

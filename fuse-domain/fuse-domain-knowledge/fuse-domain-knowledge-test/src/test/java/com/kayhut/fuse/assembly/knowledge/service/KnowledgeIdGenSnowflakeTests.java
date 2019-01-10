@@ -1,18 +1,18 @@
 package com.kayhut.fuse.assembly.knowledge.service;
 
-import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
 import com.kayhut.fuse.assembly.knowledge.Setup;
-import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeDataInfraManager;
+import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
+import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
-import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import com.kayhut.fuse.utils.FuseClient;
 import com.typesafe.config.ConfigValueFactory;
 import javaslang.Tuple;
-import javaslang.Tuple2;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;

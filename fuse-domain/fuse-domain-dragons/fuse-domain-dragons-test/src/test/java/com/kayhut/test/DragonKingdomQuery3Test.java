@@ -13,7 +13,7 @@ import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
-import com.kayhut.fuse.utils.FuseClient;
+import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.fuse.services.test.TestCase;
 
 import java.util.Arrays;

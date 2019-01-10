@@ -13,7 +13,7 @@ import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
-import com.kayhut.fuse.utils.FuseClient;
+import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
 import io.restassured.http.Header;
 import org.apache.commons.lang.StringUtils;

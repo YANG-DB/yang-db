@@ -1,12 +1,11 @@
 package com.kayhut.fuse.assembly.knowledge;
 
 import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
-import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeDataInfraManager;
+import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import com.kayhut.fuse.utils.FuseClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 
@@ -14,8 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode.getClient;
 
 public abstract class Setup {
     public static final Path path = Paths.get( "resources", "assembly", "Knowledge", "config", "application.test.engine3.m1.dfs.knowledge.public.conf");

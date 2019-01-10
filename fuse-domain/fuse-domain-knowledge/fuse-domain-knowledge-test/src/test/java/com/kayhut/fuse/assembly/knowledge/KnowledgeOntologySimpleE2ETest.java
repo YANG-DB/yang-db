@@ -1,6 +1,7 @@
 package com.kayhut.fuse.assembly.knowledge;
 
 import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeDataInfraManager;
+import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
@@ -20,7 +21,6 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
-import com.kayhut.fuse.utils.FuseClient;
 import org.junit.*;
 
 import java.io.IOException;
