@@ -44,7 +44,7 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
         // phase 1 - group all Eprops to EPropGroups
-        AsgQueryUtil.<Quant1>elements(query, Quant1.class).forEach(quant -> {
+        AsgQueryUtil.elements(query, Quant1.class).forEach(quant -> {
                 List<AsgEBase<EProp>> ePropsAsgChildren = AsgQueryUtil.nextAdjacentDescendants(quant, EProp.class);
                 List<EProp> eProps = Stream.ofAll(ePropsAsgChildren).map(AsgEBase::geteBase).toJavaList();
 

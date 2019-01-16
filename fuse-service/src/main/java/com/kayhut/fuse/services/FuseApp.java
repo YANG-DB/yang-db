@@ -26,6 +26,7 @@ import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
+import com.kayhut.fuse.logging.StatusReportedJob;
 import com.kayhut.fuse.services.appRegistrars.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -39,8 +40,14 @@ import org.jooby.caffeine.CaffeineCache;
 import org.jooby.handlers.CorsHandler;
 import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
+import org.jooby.quartz.Quartz;
 import org.jooby.scanner.Scanner;
 import org.jooby.swagger.SwaggerUI;
+import org.quartz.DateBuilder;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.triggers.CalendarIntervalTriggerImpl;
 import org.reflections.Reflections;
 
 import java.io.File;
@@ -74,6 +81,9 @@ public class FuseApp extends Jooby {
         get("/", () ->  Results.redirect("/public/assets/earth.html"));
         get("/collision", () ->  Results.redirect("/public/assets/collision.html"));
         get("swagger/swagger.json", () ->  Results.redirect("/public/assets/swagger/swagger.json"));
+
+        //internal quarts reporting job scheduler
+        use(new Quartz().with(StatusReportedJob.class));
 
         //'Access-Control-Allow-Origin' header
         use("*", new CorsHandler());

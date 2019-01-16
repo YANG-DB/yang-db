@@ -20,8 +20,8 @@ package com.kayhut.fuse.dispatcher.cursor;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.dispatcher.logging.*;
-import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import org.slf4j.Logger;
 
@@ -33,10 +33,16 @@ import static com.kayhut.fuse.dispatcher.logging.LogType.*;
  * Created by roman.margolis on 07/01/2018.
  */
 public class LoggingCursor implements Cursor {
+
+    public static final String CURSOR = "cursor";
+
+    public static final String CURSOR_COUNT = CURSOR+".count";
+
     //region Constructors
-    public LoggingCursor(Cursor cursor, Logger logger) {
+    public LoggingCursor(Cursor cursor, Logger logger, MetricRegistry metricRegistry) {
         this.cursor = cursor;
         this.logger = logger;
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -47,6 +53,7 @@ public class LoggingCursor implements Cursor {
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getNextResults", sequence, LogType.of(start), getNextResults, ElapsedFrom.now()).log();
+            metricRegistry.counter(CURSOR_COUNT).inc(1);
             return this.cursor.getNextResults(numResults);
         } catch (Exception ex) {
             thrownException = true;
@@ -54,6 +61,7 @@ public class LoggingCursor implements Cursor {
                     .with(ex).log();
             throw ex;
         } finally {
+            metricRegistry.counter(CURSOR_COUNT).dec(1);
             if (!thrownException) {
                 new LogMessage.Impl(this.logger, trace, "finish getNextResults", sequence, LogType.of(success), getNextResults, ElapsedFrom.now()).log();
             }
@@ -64,6 +72,7 @@ public class LoggingCursor implements Cursor {
     //region Fields
     private Cursor cursor;
     private Logger logger;
+    private MetricRegistry metricRegistry;
 
     private static MethodName.MDCWriter getNextResults = MethodName.of("getNextResults");
     private static LogMessage.MDCWriter sequence = Sequence.incr();

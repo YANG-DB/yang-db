@@ -9,9 +9,9 @@ package com.kayhut.fuse.services.modules;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,11 +25,15 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
+import com.google.inject.internal.SingletonScope;
 import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.cursor.CreateCursorRequestDeserializer;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.dispatcher.resource.store.NodeStatusResource;
+import com.kayhut.fuse.executor.resource.PersistantNodeStatusResource;
+import com.kayhut.fuse.logging.StatusReportedJob;
 import com.kayhut.fuse.model.Range;
 import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.JacksonQueryDescriptor;
@@ -62,11 +66,13 @@ import static com.google.inject.name.Names.named;
  * This module is called by the fuse-service scanner class loader
  */
 public class ServiceModule extends ModuleBase {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceModule.class);
+
     //region ModuleBase Implementation
     @Override
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
         // bind common components
-        long defaultTimeout = config.hasPath("fuse.cursor.timeout") ? config.getLong("fuse.cursor.timeout") : 60*1000*3;
+        long defaultTimeout = config.hasPath("fuse.cursor.timeout") ? config.getLong("fuse.cursor.timeout") : 60 * 1000 * 3;
         binder.bindConstant().annotatedWith(Names.named(ExecutionScope.clientParameter)).to(defaultTimeout);
         binder.bind(RequestIdSupplier.class)
                 .annotatedWith(named(CachedRequestIdSupplier.RequestIdSupplierParameter))
@@ -104,6 +110,24 @@ public class ServiceModule extends ModuleBase {
 
         // register PostConfigurer
         binder.bind(PostConfigurer.class).asEagerSingleton();
+        //register Status Reported Job
+        binder.bind(StatusReportedJob.class).in(new SingletonScope());
+        //register life cycle hooks
+        processLifeCycle(env, config, binder);
+    }
+
+    private void processLifeCycle(Env env, Config config, Binder binder) {
+        env.onStart(() -> {
+            logger.info("starting Fuse");
+        });
+
+        env.onStop(() -> {
+            logger.info("stopping Fuse");
+        });
+
+        env.onStarted(() -> {
+            logger.info("Fuse started");
+        });
 
     }
     //endregion
@@ -160,7 +184,8 @@ public class ServiceModule extends ModuleBase {
                         .annotatedWith(named(LoggingQueryController.loggerParameter))
                         .toInstance(LoggerFactory.getLogger(StandardQueryController.class));
 
-                this.bind(new TypeLiteral<Descriptor<Query>>(){})
+                this.bind(new TypeLiteral<Descriptor<Query>>() {
+                })
                         .annotatedWith(named(LoggingQueryController.queryDescriptorParameter))
                         .to(JacksonQueryDescriptor.class).asEagerSingleton();
 
@@ -277,11 +302,14 @@ public class ServiceModule extends ModuleBase {
             @Override
             protected void configure() {
 
-                this.bind(new TypeLiteral<IdGeneratorController<Range>>(){})
-                        .to(new TypeLiteral<StandardIdGeneratorController<Range>>(){})
+                this.bind(new TypeLiteral<IdGeneratorController<Range>>() {
+                })
+                        .to(new TypeLiteral<StandardIdGeneratorController<Range>>() {
+                        })
                         .asEagerSingleton();
 
-                this.expose(new TypeLiteral<IdGeneratorController<Range>>(){});
+                this.expose(new TypeLiteral<IdGeneratorController<Range>>() {
+                });
             }
         });
     }

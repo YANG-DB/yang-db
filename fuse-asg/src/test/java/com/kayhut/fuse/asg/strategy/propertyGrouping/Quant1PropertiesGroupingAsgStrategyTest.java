@@ -3,6 +3,7 @@ package com.kayhut.fuse.asg.strategy.propertyGrouping;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryAssert;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
+import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
@@ -55,6 +56,39 @@ public class Quant1PropertiesGroupingAsgStrategyTest {
                 .build();
 
         Assert.assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void test_quant_with_2_ePropsGroup() {
+        AsgQuery query = start("q1", "ont").next(typed(1, "1"))
+                .next(quant1(2, all))
+                .in(
+                        ePropGroup(
+                                3,
+                                EProp.of(3, "p1", of(eq, "abc")),
+                                EProp.of(4, "p2", of(eq, 1))),
+                        ePropGroup(
+                                5,
+                                EProp.of(5, "p1", of(eq, "abc")),
+                                EProp.of(6, "p2", of(eq, 1))))
+                .build();
+
+        new Quant1PropertiesGroupingAsgStrategy().apply(query, new AsgStrategyContext(null));
+
+        AsgQuery expectedQuery = start("q1", "ont").next(typed(1, "1"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3,
+                        EPropGroup.of(3,
+                            EProp.of(3, "p1", of(eq, "abc")),
+                            EProp.of(4, "p2", of(eq, 1)))
+                        ,
+                        EPropGroup.of(5,
+                                EProp.of(5, "p1", of(eq, "abc")),
+                                EProp.of(6, "p2", of(eq, 1))))
+                )
+                .build();
+
+        Assert.assertEquals(AsgQueryDescriptor.print(expectedQuery), AsgQueryDescriptor.print(query));
     }
 
     @Test

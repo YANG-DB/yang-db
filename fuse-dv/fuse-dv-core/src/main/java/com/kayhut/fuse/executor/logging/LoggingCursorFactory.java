@@ -20,6 +20,7 @@ package com.kayhut.fuse.executor.logging;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
@@ -39,9 +40,11 @@ public class LoggingCursorFactory implements CursorFactory {
     //region Constructors
     @Inject
     public LoggingCursorFactory(
+            MetricRegistry metricRegistry,
             @Named(cursorFactoryParameter) CursorFactory cursorFactory,
             @Named(cursorLoggerParameter) Logger cursorLogger,
             @Named(traversalLoggerParameter) Logger traversalLogger) {
+        this.metricRegistry = metricRegistry;
         this.cursorFactory = cursorFactory;
         this.cursorLogger = cursorLogger;
         this.traversalLogger = traversalLogger;
@@ -57,10 +60,11 @@ public class LoggingCursorFactory implements CursorFactory {
                 traversalCursorContext.getQueryResource(),
                 traversalCursorContext.getCursorRequest(),
                 new LoggingTraversal<>(traversalCursorContext.getTraversal(), this.traversalLogger));
-        return new LoggingCursor(this.cursorFactory.createCursor(loggingTraversalCursorContext), this.cursorLogger);
+        return new LoggingCursor(this.cursorFactory.createCursor(loggingTraversalCursorContext), this.cursorLogger, metricRegistry);
     }
     //endregion
 
+    private MetricRegistry metricRegistry;
     //region Fields
     private CursorFactory cursorFactory;
     private Logger cursorLogger;

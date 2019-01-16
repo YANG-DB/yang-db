@@ -71,6 +71,10 @@
             <artifactId>jooby-jackson</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.jooby</groupId>
+            <artifactId>jooby-quartz</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.cedarsoftware</groupId>
             <artifactId>json-io</artifactId>
             <version>4.9.10</version>
