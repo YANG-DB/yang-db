@@ -20,6 +20,8 @@ package com.kayhut.fuse.client;
  * #L%
  */
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
@@ -77,7 +79,7 @@ public class SnifferFuseClient implements FuseClient{
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private Client client;
-    private Map<String,FuseClient> fuseClients;
+    private LoadingCache<String, FuseClient>  fuseClients;
     private Map<String,Map> nodeStats;
     private ElasticGraphConfiguration configuration;
 
@@ -86,13 +88,16 @@ public class SnifferFuseClient implements FuseClient{
     private final String fuseBaseUri;
 
     public SnifferFuseClient() {
-        this.fuseClients = new HashMap<>();
-        this.nodeStats = new HashMap<>();
 
         final Config conf = defaultApplication();
         fusePort = conf.getInt("fuse.port");
         fuseProtocol = conf.getString("fuse.protocol");
         fuseBaseUri = conf.getString("fuse.base.uri");
+
+        nodeStats = new HashMap<>();
+        fuseClients = Caffeine.newBuilder()
+                .expireAfterWrite(10, TimeUnit.MINUTES)
+                .build(key -> this);
 
         this.configuration = createElasticGraphConfiguration(conf);
         this.client = getClient(this.configuration);
@@ -118,7 +123,7 @@ public class SnifferFuseClient implements FuseClient{
     private void updateNodeStatus(String id, Map<String, Object> source) {
         try {
             this.nodeStats.put(id,source);
-            this.fuseClients.putIfAbsent(id,new BaseFuseClient(new URL(fuseProtocol,id,fusePort,fuseBaseUri).toString()));
+            this.fuseClients.put(id,new BaseFuseClient(new URL(fuseProtocol,id,fusePort,fuseBaseUri).toString()));
             //todo remove non reporting nodes from client pool
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -127,12 +132,12 @@ public class SnifferFuseClient implements FuseClient{
 
     private FuseClient selectNode() {
         //todo select best appropriate node according to least busy (with respect to living fuse nodes)
-        return fuseClients.values().iterator().next();
+        return fuseClients.asMap().values().iterator().next();
     }
 
     private FuseClient selectNode(String url) {
         //todo select best appropriate node according to least busy & relevant to given url (with respect to living fuse nodes)
-        return fuseClients.values().iterator().next();
+        return fuseClients.asMap().values().iterator().next();
     }
 
     @Override
