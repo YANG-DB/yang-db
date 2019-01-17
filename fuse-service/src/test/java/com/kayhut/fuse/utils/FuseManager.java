@@ -1,5 +1,6 @@
 package com.kayhut.fuse.utils;
 
+import com.kayhut.fuse.client.BaseFuseClient;
 import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.services.FuseApp;
@@ -35,7 +36,7 @@ public class FuseManager {
                 .conf(new File(Paths.get("fuse-test", "fuse-benchmarks-test", "src", "main", "resources", "conf", confFile).toString()), activeProfile);
         new FuseRunner().run(fuseApp, new FuseRunner.Options(Paths.get("fuse-test", "fuse-benchmarks-test", "src", "main", "resources", "conf", "logback.xml").toString(), false));
 
-        fuseClient = new FuseClient("http://localhost:8888/fuse");
+        fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
     }
 
     public FuseApp getFuseApp() {

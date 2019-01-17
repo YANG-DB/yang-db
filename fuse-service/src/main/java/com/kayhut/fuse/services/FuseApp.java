@@ -57,6 +57,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.quartz.JobBuilder.newJob;
+
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class FuseApp extends Jooby {

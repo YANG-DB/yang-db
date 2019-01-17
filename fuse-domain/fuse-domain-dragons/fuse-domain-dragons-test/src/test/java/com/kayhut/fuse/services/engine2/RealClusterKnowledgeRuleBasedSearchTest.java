@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2;
 
+import com.kayhut.fuse.client.BaseFuseClient;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -34,7 +35,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
     @Test
     @Ignore
     public void testAdvancedSearch() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -97,7 +98,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
     @Test
     @Ignore
     public void testAdvancedSearchFieldId() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -158,7 +159,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
     @Test
     @Ignore
     public void testAdvancedSearchFieldIdWithAsteriskOnly() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -219,7 +220,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
     @Test
     @Ignore
     public void testBasicSearchNoContext() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -265,7 +266,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
     @Test
     @Ignore
     public void testBasicSearchWithContext() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 

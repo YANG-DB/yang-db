@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2.data;
 
+import com.kayhut.fuse.client.BaseFuseClient;
 import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.model.OntologyTestUtils.*;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -64,7 +65,7 @@ public abstract class EntityRelationEntityTest {
     }
 
     public static void setup(TransportClient client, boolean calcStats) throws Exception {
-        fuseClient = new FuseClient("http://localhost:8888/fuse");
+        fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
 

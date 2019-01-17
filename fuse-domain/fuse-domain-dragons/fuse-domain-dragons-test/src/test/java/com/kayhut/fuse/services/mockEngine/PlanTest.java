@@ -1,10 +1,10 @@
 package com.kayhut.fuse.services.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.client.BaseFuseClient;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
-import com.kayhut.fuse.client.FuseClient;
 import io.restassured.http.Header;
 import org.junit.Assume;
 import org.junit.Before;
@@ -14,11 +14,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 
 public class PlanTest {
     @Before
@@ -31,7 +27,7 @@ public class PlanTest {
      * execute query with expected plan result
      */
     public void plan() throws IOException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        BaseFuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
 
         //query request
         CreateQueryRequest request = new CreateQueryRequest();

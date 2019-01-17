@@ -44,26 +44,16 @@ import java.util.Map;
 import static com.kayhut.fuse.executor.ExecutorModule.globalClient;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
-public class PersistantNodeStatusResource implements NodeStatusResource {
+public class InMemNodeStatusResource implements NodeStatusResource {
 
-    public static final String SYSTEM = "fuse_node_info";
     public static final String ID = "id";
-    public static final String DATA = "data";
-    public static final String UPDATE_TIME = "updateTime";
-    public static final String RESOURCE = "resource";
-
-    public static final String nodeName = "PersistantNodeStatusResource.@nodeName";
 
     private String name;
-    private Client client;
     private MetricRegistry registry;
 
     @Inject
-    public PersistantNodeStatusResource(@Named(globalClient) Client client,
-                                        MetricRegistry registry) throws UnknownHostException {
-
+    public InMemNodeStatusResource(MetricRegistry registry) throws UnknownHostException {
         this.name = InetAddress.getLocalHost().getHostAddress();
-        this.client = client;
         this.registry = registry;
     }
 
@@ -75,44 +65,15 @@ public class PersistantNodeStatusResource implements NodeStatusResource {
 
     @Override
     public Map<String, Object> getMetrics(String node) {
-        try {
-            final GetResponse response = client.prepareGet(SYSTEM, RESOURCE, node).get();
-            if (response.isExists())
-                return Collections.emptyMap();
-        } catch (IndexNotFoundException e) {
-            final CreateIndexResponse response = this.client.admin().indices()
-                    .create(new CreateIndexRequest()
-                            .waitForActiveShards(ActiveShardCount.ALL)
-                            .index(SYSTEM)).actionGet();
-        }
-        return Collections.emptyMap();
+        return Collections.unmodifiableMap(logStatus(registry));
     }
 
     @Override
     public boolean report() {
-        try {
-            IndexResponse response = client.prepareIndex(SYSTEM, RESOURCE, name)
-                    .setSource(jsonBuilder()
-                            .startObject()
-                            .field(NODE, name)
-                            .field(UPDATE_TIME, System.currentTimeMillis())
-                            .field(DATA, logStatus())
-                            .endObject()
-                    ).execute().actionGet();
-            return response.status() == RestStatus.CREATED || response.status() == RestStatus.OK;
-        } catch (IndexNotFoundException e) {
-            this.client.admin().indices()
-                    .create(new CreateIndexRequest()
-                            .waitForActiveShards(ActiveShardCount.ALL)
-                            .index(SYSTEM)).actionGet();
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return false;
+        return true;
     }
 
-    private Map<String, Object> logStatus() {
+    private Map<String, Object> logStatus(MetricRegistry registry) {
         Map<String, Object> stats = new HashMap<>();
         registry.getMetrics().forEach((key, value) -> {
             switch (key) {

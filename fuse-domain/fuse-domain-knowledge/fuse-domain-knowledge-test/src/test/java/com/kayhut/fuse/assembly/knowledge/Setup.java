@@ -1,6 +1,7 @@
 package com.kayhut.fuse.assembly.knowledge;
 
 import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
+import com.kayhut.fuse.client.BaseFuseClient;
 import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.services.FuseApp;
@@ -32,6 +33,17 @@ public abstract class Setup {
     }
 
     public static void setup(boolean embedded, boolean init) throws Exception {
+        init(embedded,init,true);
+        fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
+    }
+
+    public static void setup(boolean embedded, boolean init, boolean startFuse, FuseClient givenFuseClient) throws Exception {
+        init(embedded,init,startFuse);
+        //set fuse client
+        fuseClient = givenFuseClient;
+    }
+
+    private static void init(boolean embedded, boolean init, boolean startFuse) throws Exception {
         // Start embedded ES
         if(embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("knowledge");
@@ -50,12 +62,14 @@ public abstract class Setup {
         if(init) {
             manager.init();
         }
+
         // Start fuse app (based on Jooby app web server)
-        app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf(path.toFile(), "activeProfile");
-        app.start("server.join=false");
-        //create fuse client class for web api access
-        fuseClient = new FuseClient("http://localhost:8888/fuse");
+        if(startFuse) {
+            app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                    .conf(path.toFile(), "activeProfile");
+            app.start("server.join=false");
+        }
+
     }
 
     public static void createIdGeneratorIndex(Client client) {

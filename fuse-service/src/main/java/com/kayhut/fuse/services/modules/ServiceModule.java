@@ -31,6 +31,7 @@ import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.cursor.CreateCursorRequestDeserializer;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.dispatcher.resource.store.InMemoryResourceStore;
 import com.kayhut.fuse.dispatcher.resource.store.NodeStatusResource;
 import com.kayhut.fuse.executor.resource.PersistantNodeStatusResource;
 import com.kayhut.fuse.logging.StatusReportedJob;
@@ -108,6 +109,8 @@ public class ServiceModule extends ModuleBase {
         //bind request parameters
         binder.bind(PlanTraceOptions.class).in(RequestScoped.class);
 
+        //bind status resource
+        bindStatusResource(env, config, binder);
         // register PostConfigurer
         binder.bind(PostConfigurer.class).asEagerSingleton();
         //register Status Reported Job
@@ -149,6 +152,26 @@ public class ServiceModule extends ModuleBase {
                         .to(LoggingApiDescriptionController.class);
 
                 this.expose(ApiDescriptionController.class);
+            }
+        });
+    }
+
+    protected void bindStatusResource(Env env, Config conf, Binder binder) {
+        // node status persist processor
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                String clazz = env.config().hasPath("fuse.node_status_reporter") ?
+                        env.config().getString("fuse.node_status_reporter") :
+                        InMemoryResourceStore.class.getName();
+                try {
+                    this.bind(NodeStatusResource.class)
+                            .to((Class<? extends NodeStatusResource>) Class.forName(clazz))
+                            .asEagerSingleton();
+                    this.expose(NodeStatusResource.class);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

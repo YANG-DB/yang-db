@@ -24,6 +24,9 @@ import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
 import com.google.inject.internal.SingletonScope;
 import com.google.inject.name.Names;
+import com.kayhut.fuse.core.driver.StandardCursorDriver;
+import com.kayhut.fuse.core.driver.StandardPageDriver;
+import com.kayhut.fuse.core.driver.StandardQueryDriver;
 import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
@@ -31,25 +34,21 @@ import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
-import com.kayhut.fuse.core.driver.StandardCursorDriver;
-import com.kayhut.fuse.core.driver.StandardPageDriver;
-import com.kayhut.fuse.core.driver.StandardQueryDriver;
-import com.kayhut.fuse.dispatcher.resource.store.*;
+import com.kayhut.fuse.dispatcher.resource.store.LoggingResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStoreFactory;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
 import com.kayhut.fuse.executor.elasticsearch.TimeoutClientAdvisor;
 import com.kayhut.fuse.executor.elasticsearch.logging.LoggingClient;
 import com.kayhut.fuse.executor.logging.LoggingCursorFactory;
-import com.kayhut.fuse.executor.logging.LoggingGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.CachedGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.executor.ontology.schema.*;
-import com.kayhut.fuse.executor.resource.PersistantNodeStatusResource;
 import com.kayhut.fuse.executor.resource.PersistantResourceStore;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -63,7 +62,6 @@ import org.unipop.configuration.UniGraphConfiguration;
 import java.util.List;
 
 import static com.google.inject.name.Names.named;
-import static com.kayhut.fuse.dispatcher.resource.store.NodeStatusResource.NODE;
 
 /**
  * Created by lior.perry on 22/02/2017.
@@ -81,8 +79,6 @@ public class ExecutorModule extends ModuleBase {
         bindRawSchema(env, conf, binder);
         bindSchemaProviderFactory(env, conf, binder);
         bindUniGraphProvider(env, conf, binder);
-        //bind status resource
-        bindStatusResource(env, conf, binder);
 
         binder.bind(QueryDriver.class).to(StandardQueryDriver.class).in(RequestScoped.class);
         binder.bind(CursorDriver.class).to(StandardCursorDriver.class).in(RequestScoped.class);
@@ -267,19 +263,6 @@ public class ExecutorModule extends ModuleBase {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-            }
-        });
-    }
-
-    protected void bindStatusResource(Env env, Config conf, Binder binder) {
-        // node status persist processor
-        binder.install(new PrivateModule() {
-            @Override
-            protected void configure() {
-                this.bind(NodeStatusResource.class)
-                        .to(PersistantNodeStatusResource.class)
-                        .asEagerSingleton();
-                this.expose(NodeStatusResource.class);
             }
         });
     }

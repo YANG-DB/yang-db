@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2.data;
 
+import com.kayhut.fuse.client.BaseFuseClient;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -35,7 +36,7 @@ import static io.restassured.RestAssured.given;
 public class SingleEntityTest {
     @BeforeClass
     public static void setup() throws Exception {
-        fuseClient = new FuseClient("http://localhost:8888/fuse");
+        fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
 
         String idField = "id";
 

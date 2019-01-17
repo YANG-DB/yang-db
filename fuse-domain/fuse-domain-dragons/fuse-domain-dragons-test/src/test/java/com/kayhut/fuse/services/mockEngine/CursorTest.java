@@ -1,13 +1,12 @@
 package com.kayhut.fuse.services.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.client.BaseFuseClient;
 import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
-import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
-import com.kayhut.fuse.client.FuseClient;
 import io.restassured.http.Header;
 import org.junit.Assume;
 import org.junit.Before;
@@ -19,8 +18,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 
 public class CursorTest {
     @Before
@@ -33,7 +30,7 @@ public class CursorTest {
      * execute query with expected plan result
      */
     public void cursor() throws IOException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        BaseFuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
 
         //query request
         CreateQueryRequest request = new CreateQueryRequest();

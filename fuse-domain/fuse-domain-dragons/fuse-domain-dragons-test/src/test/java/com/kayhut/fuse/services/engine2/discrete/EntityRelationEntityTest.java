@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2.discrete;
 
+import com.kayhut.fuse.client.BaseFuseClient;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -40,7 +41,7 @@ public class EntityRelationEntityTest {
     //region setup
     @BeforeClass
     public static void setup() throws Exception {
-        fuseClient = new FuseClient("http://localhost:8888/fuse");
+        fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));

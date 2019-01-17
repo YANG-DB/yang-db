@@ -1,19 +1,22 @@
 package com.kayhut.fuse.services.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.client.BaseFuseClient;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
-import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryAssert;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.transport.*;
+import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.transport.CreatePageRequest;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
-import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
 import io.restassured.http.Header;
 import org.apache.commons.lang.StringUtils;
@@ -279,7 +282,7 @@ public class QueryTest {
 
     @Test
     public void queryCreateAndFetchV1QueryResource() throws IOException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        BaseFuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
 
         //query request
         CreateQueryRequest request = new CreateQueryRequest();
@@ -359,7 +362,7 @@ public class QueryTest {
 
     @Test
     public void queryCreateAndFetchAsgQueryResource() throws IOException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        BaseFuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
 
         //query request
         Query query = TestUtils.loadQuery("Q001.json");
@@ -465,7 +468,7 @@ public class QueryTest {
 
     @Test
     public void queryCreateAndDeleteResource() throws IOException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        BaseFuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
 
         //query request
         Query query = TestUtils.loadQuery("Q001.json");

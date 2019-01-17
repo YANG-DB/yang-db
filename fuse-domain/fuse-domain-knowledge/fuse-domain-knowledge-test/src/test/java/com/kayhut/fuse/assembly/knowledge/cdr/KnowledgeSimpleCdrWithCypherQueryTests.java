@@ -2,6 +2,7 @@ package com.kayhut.fuse.assembly.knowledge.cdr;
 
 import com.kayhut.fuse.assembly.knowledge.Setup;
 import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
+import com.kayhut.fuse.client.SnifferFuseClient;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
@@ -20,7 +21,7 @@ public class KnowledgeSimpleCdrWithCypherQueryTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
+        Setup.setup(false,false,false,new SnifferFuseClient());
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         long start = System.currentTimeMillis();
         long amount = DataLoader.load( ctx, "./data/cdr-small.csv");
@@ -31,6 +32,7 @@ public class KnowledgeSimpleCdrWithCypherQueryTests {
     public static void after() {
         ctx.removeCreated();
         ctx.clearCreated();
+        fuseClient.shutdown();
     }
 
     @Test

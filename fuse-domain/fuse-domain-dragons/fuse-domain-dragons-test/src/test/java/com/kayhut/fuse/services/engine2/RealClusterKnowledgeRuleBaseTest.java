@@ -1,6 +1,7 @@
 package com.kayhut.fuse.services.engine2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.client.BaseFuseClient;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
@@ -63,7 +64,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_fetchEntityById() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -102,7 +103,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_fetchEntityById2() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -143,7 +144,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_fetchEntityById22() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -186,7 +187,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_fetchEntityById3() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -224,7 +225,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_fetchEntityInsights() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -262,7 +263,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_fetchEntityInsights2() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -297,7 +298,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test1() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -325,7 +326,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test2() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -356,7 +357,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test3() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -388,7 +389,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test4() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -420,7 +421,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test5() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -453,7 +454,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test6() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -485,7 +486,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test7() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -517,7 +518,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test8() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -555,7 +556,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test18() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -615,7 +616,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test9() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -706,7 +707,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     }
 
     private static void runQuery2(int i, String logicalId) throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -786,7 +787,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     }
 
     private static void runQuery(int i, String logicalId) throws InterruptedException, IOException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -826,7 +827,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test9b() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -889,7 +890,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test10() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -925,7 +926,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test11() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -961,7 +962,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test12() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -999,7 +1000,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test13() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1038,7 +1039,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test14() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1083,7 +1084,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test15() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1119,7 +1120,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_slow_query() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1170,7 +1171,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_slow_query_optional() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1210,7 +1211,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_relationValuesQuery() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1243,7 +1244,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_entitiesQuery() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1280,7 +1281,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_entitiesQuery2() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1320,7 +1321,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_entitiesReferencesQuery() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1355,7 +1356,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_ReferencesEntitiesQuery() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1412,7 +1413,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_entityToLogicalEntityQuery() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1451,7 +1452,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_basicSearchTemplate_partial() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1490,7 +1491,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_basicSearchTemplate_full() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1537,7 +1538,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void test_EConcrete_Insight() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
@@ -1570,7 +1571,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void testIdGen() throws IOException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         Map<String, Object> map = (Map<String, Object>) fuseClient.getId("entity", 10);
         long lower = ((Number) map.get("lower")).longValue();
         long upper = ((Number) map.get("upper")).longValue();
@@ -1581,7 +1582,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void testParallelIdgen() throws IOException, InterruptedException {
-        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         Random random = new Random();
 
         List<Long> lowers = Collections.synchronizedList(new ArrayList<>());

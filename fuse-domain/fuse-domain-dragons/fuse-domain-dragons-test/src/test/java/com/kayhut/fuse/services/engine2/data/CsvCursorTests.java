@@ -1,6 +1,7 @@
 package com.kayhut.fuse.services.engine2.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.client.BaseFuseClient;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
@@ -58,7 +59,7 @@ public class CsvCursorTests {
 
 
     public static void setup(TransportClient client, boolean calcStats) throws Exception {
-        fuseClient = new FuseClient("http://localhost:8888/fuse");
+        fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
 
