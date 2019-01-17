@@ -53,6 +53,20 @@ import java.util.concurrent.TimeUnit;
 
 import static com.typesafe.config.ConfigFactory.defaultApplication;
 
+/**
+ * Fuse Cluster aware client which samples the elasticsearch 'fuse_node_info' index which holds the cluster
+ * status for all fuse nodes
+ *
+ * This client expects application.conf file in the classpath containing the next configurations:
+ * 
+ * fuse.port = 8888
+ * fuse.protocol = http
+ * fuse.base.uri = /fuse
+ *
+ * elasticsearch.hosts = [ "127.0.0.1" ]
+ * elasticsearch.port = 9300
+ * elasticsearch.cluster_name = clusterName
+ */
 public class SnifferFuseClient implements FuseClient{
     public static final String SYSTEM = "fuse_node_info";
     public static final String ID = "id";
