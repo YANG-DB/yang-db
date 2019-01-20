@@ -133,10 +133,19 @@ public class ValueBuilder extends EntityId {
             on.put("dateValue", sdf.format(dateValue));
         else if(geoValue!=null) {
             ObjectNode geo = mapper.createObjectNode();
+            geo.put("lat",geoValue.getCoordinates().getLatitude());
+            geo.put("lon",geoValue.getCoordinates().getLongitude());
+            on.put("geoValue", geo);
+        }
+/*
+        //geo_shape
+        else if(geoValue!=null) {
+            ObjectNode geo = mapper.createObjectNode();
             geo.put("type","point");
             geo.putArray("coordinates").add(geoValue.getCoordinates().getLatitude()).add(geoValue.getCoordinates().getLongitude());
             on.put("geoValue", geo);
         }
+*/
         return on;
     }
 

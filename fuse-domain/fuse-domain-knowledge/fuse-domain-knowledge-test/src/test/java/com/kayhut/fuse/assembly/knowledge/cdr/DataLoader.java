@@ -93,7 +93,7 @@ public abstract class DataLoader {
 
             final EntityBuilder e4 = ctx.e().cat("location").ctx("cdr");
             //point
-            Point point = new Point(Double.valueOf(line[7]), Double.valueOf(line[8]));
+            Point point = new Point(Double.valueOf(line[8]), Double.valueOf(line[7]));
             ValueBuilder v8 = ctx.v().field("location").value(point).ctx("cdr").bdt("geo");
             e4.value(v8);
 

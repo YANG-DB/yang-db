@@ -99,5 +99,8 @@ public enum ConstraintOp {
     like,
 
     @JsonProperty("like any")
-    likeAny
+    likeAny,
+
+    @JsonProperty("distance")
+    distance
 }

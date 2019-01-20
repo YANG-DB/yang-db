@@ -49,7 +49,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
 
     public static final String DATE = "date";
     public static final String INT = "int";
-    public static final String GEO = "geo_shape";
+    public static final String GEO = "geo_point";
     public static final String SCORE = "score";
     public static final String FLOAT = "float";
     public static final String STRING = "string";

@@ -53,7 +53,7 @@ public class Ontology {
         primitiveTypes.add(new PrimitiveType("float", Double.class));
         primitiveTypes.add(new PrimitiveType("date", Date.class));
         primitiveTypes.add(new PrimitiveType("datetime", Date.class));
-        primitiveTypes.add(new PrimitiveType("geo_shape", Point2D.class));
+        primitiveTypes.add(new PrimitiveType("geo_point", Point2D.class));
         primitiveTypes.add(new PrimitiveType("array", Array.class));
     }
 

@@ -94,7 +94,7 @@
           "type": "date"
         },
         "geoValue": {
-          "type": "geo_shape"
+          "type": "geo_point"
         },
         "stringValue": {
           "type": "text",
