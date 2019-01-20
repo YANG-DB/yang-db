@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vividsolutions.jts.geom.Coordinate;
 import javaslang.collection.Stream;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.geo.ShapeRelation;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilders;
@@ -73,6 +74,7 @@ public class QueryBuilder {
         queryBuilderFilter,
         param,
         geoShape,
+        geoBox,
         boost
     }
 
@@ -524,6 +526,27 @@ public class QueryBuilder {
         }
 
         Composite geoShapeComposite = new GeoShapeComposite(name, fieldName, current);
+        this.current.children.add(geoShapeComposite);
+        this.current = geoShapeComposite;
+
+        return this;
+    }
+
+    public QueryBuilder geoBoundingBox(String name, String fieldName,GeoPoint topLeft, GeoPoint bottomRight) {
+        if (this.root == null) {
+            throw new UnsupportedOperationException("'geoShape' may not appear as first statement");
+        }
+
+        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
+            throw new UnsupportedOperationException("'geoShape' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        }
+
+        if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
+            this.current = seekLocalName(current, name);
+            return this;
+        }
+
+        Composite geoShapeComposite = new GeoBoundingBoxComposite(name, fieldName, current,topLeft,bottomRight);
         this.current.children.add(geoShapeComposite);
         this.current = geoShapeComposite;
 
@@ -1708,6 +1731,23 @@ public class QueryBuilder {
             return QueryBuilders.matchAllQuery();
         }
         //endregion
+    }
+
+    public class GeoBoundingBoxComposite extends FieldComposite {
+
+        private final GeoPoint topLeft;
+        private final GeoPoint bottomRight;
+
+        public GeoBoundingBoxComposite(String name, String fieldName, Composite parent, GeoPoint topLeft, GeoPoint bottomRight ) {
+            super(name, fieldName, Op.geoBox, parent);
+            this.topLeft = topLeft;
+            this.bottomRight = bottomRight;
+        }
+
+        @Override
+        protected Object build() {
+            return QueryBuilders.geoBoundingBoxQuery(this.getFieldName()).setCorners(topLeft,bottomRight);
+        }
     }
 
     public class GeoShapeComposite extends FieldComposite {

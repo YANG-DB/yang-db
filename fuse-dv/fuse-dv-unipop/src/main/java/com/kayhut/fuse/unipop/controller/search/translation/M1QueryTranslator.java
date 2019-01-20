@@ -35,17 +35,20 @@ public class M1QueryTranslator extends CompositeQueryTranslator {
         super(
                 new HiddenQueryTranslator(
                         new CompareQueryTranslator(true),
+                        new ContainsGeoBoundsQueryTranslator("geoValue"),
                         new ContainsQueryTranslator(),
                         new ExistsQueryTranslator(),
                         new TextQueryTranslator(),
                         new AndPQueryTranslator(
                                 new CompareQueryTranslator(true),
+                                new ContainsGeoBoundsQueryTranslator("geoValue"),
                                 new ContainsQueryTranslator(),
                                 new ExistsQueryTranslator(),
                                 new TextQueryTranslator()
                         ),
                         new OrPQueryTranslator(
                                 new CompareQueryTranslator(false),
+                                new ContainsGeoBoundsQueryTranslator("geoValue"),
                                 new ContainsQueryTranslator(),
                                 new ExistsQueryTranslator(),
                                 new TextQueryTranslator()

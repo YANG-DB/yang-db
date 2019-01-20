@@ -213,10 +213,29 @@ public class KnowledgeSimpleCdrWithCypherQueryTests {
     }
 
     @Test
+    public void testFetchPhoneWithGeoLocation() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match (phone:Entity )-[rel:hasEvalue]->(value:Evalue) where value.geoValue in ['-106.43,25','-106.7, 24.6'] Return *";
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
+
+        List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+        // Check Entity Response
+        Assert.assertEquals(1, assignments.size());
+
+        Assert.assertFalse( assignments.get(0).getEntities().isEmpty() );
+        System.out.println("Entities fetched: "+assignments.get(0).getEntities().size());
+
+        Assert.assertFalse( assignments.get(0).getRelationships().isEmpty() );
+        System.out.println("Relationships fetched: "+assignments.get(0).getRelationships().size());
+    }
+
+    @Test
     public void testFetchPhoneWithRelationsAndCategory() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        String query = "Match (phone:Entity)-[rel:relatedEntity]->(any:Entity) Where (any.category = 'location') Return *";
+        String query = "Match (location:Entity)-[rel:relatedEntity]->(any:Entity) Where (any.category = 'location') Return *";
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
 
         List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
