@@ -33,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.geojson.Point;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -42,6 +43,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "fieldId",
         "bdt",
         "stringValue",
+        "geoValue",
         "intValue",
         "dateValue",
         "lastUpdateUser",
@@ -70,6 +72,8 @@ public class RelationValue {
     private Integer intValue;
     @JsonProperty("dateValue")
     private Date dateValue;
+    @JsonProperty("geoValue")
+    private Point geoValue;
     @JsonProperty("lastUpdateUser")
     private String lastUpdateUser;
     @JsonProperty("creationUser")
@@ -170,6 +174,16 @@ public class RelationValue {
     @JsonProperty("stringValue")
     public void setStringValue(String stringValue) {
         this.stringValue = stringValue;
+    }
+
+    @JsonProperty("geoValue")
+    public Point getGeoValue() {
+        return geoValue;
+    }
+
+    @JsonProperty("geoValue")
+    public void setGeoValue(Point geoValue) {
+        this.geoValue = geoValue;
     }
 
     public RelationValue withStringValue(String stringValue) {

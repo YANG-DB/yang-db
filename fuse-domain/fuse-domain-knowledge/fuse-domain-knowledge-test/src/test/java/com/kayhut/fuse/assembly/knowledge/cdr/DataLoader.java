@@ -3,20 +3,17 @@ package com.kayhut.fuse.assembly.knowledge.cdr;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kayhut.fuse.assembly.knowledge.domain.*;
 import com.opencsv.CSVReader;
-import org.elasticsearch.client.Client;
+import org.geojson.Point;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
-import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder.*;
-import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder.*;
+import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 
 /**
  * load cdr file into the DB
@@ -56,7 +53,9 @@ public abstract class DataLoader {
     public static long load(KnowledgeWriterContext ctx, String file) throws JsonProcessingException {
         List<String[]> strings = readCSV(file, ',');
         Map<String,EntityBuilder> elements = new HashMap<>();
-        strings.forEach(line -> {
+        Iterator<String[]> iterator = strings.iterator();
+        iterator.next();//skip header
+        iterator.forEachRemaining(line -> {
             //phone1
             final String phoneA = line[0];
             if(!elements.containsKey(phoneA)) {
@@ -93,13 +92,10 @@ public abstract class DataLoader {
             e1.rel(rel,"out");
 
             final EntityBuilder e4 = ctx.e().cat("location").ctx("cdr");
-            //cast to float
-            ValueBuilder v8 = ctx.v().field("lat").value(line[7]).ctx("cdr").bdt("geo");
-            //cast to float
-            ValueBuilder v9 = ctx.v().field("long").value(line[8]).ctx("cdr").bdt("geo");
+            //point
+            Point point = new Point(Double.valueOf(line[7]), Double.valueOf(line[8]));
+            ValueBuilder v8 = ctx.v().field("location").value(point).ctx("cdr").bdt("geo");
             e4.value(v8);
-            e4.value(v9);
-
 
             //phone1->location [type]
             final RelationBuilder location = ctx.rel().cat("location").ctx("cdr");

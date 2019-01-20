@@ -21,7 +21,7 @@ public class KnowledgeSimpleCdrWithCypherQueryTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false,false,false,new SnifferFuseClient());
+        Setup.setup(false);
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         long start = System.currentTimeMillis();
         long amount = DataLoader.load( ctx, "./data/cdr-small.csv");

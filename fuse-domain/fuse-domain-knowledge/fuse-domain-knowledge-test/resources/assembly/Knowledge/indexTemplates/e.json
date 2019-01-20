@@ -101,6 +101,9 @@
         "integerValue": {
           "type": "long"
         },
+        "geoValue": {
+          "type": "geo_shape"
+        },
         "dateValue": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
           "type": "date"

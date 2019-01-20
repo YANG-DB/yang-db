@@ -93,6 +93,9 @@
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
           "type": "date"
         },
+        "geoValue": {
+          "type": "geo_shape"
+        },
         "stringValue": {
           "type": "text",
           "analyzer": "knowledge_ngram_analyzer",

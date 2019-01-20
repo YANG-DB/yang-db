@@ -1,11 +1,14 @@
 package com.kayhut.fuse.assembly.knowledge.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.model.results.Relationship;
 import javaslang.collection.Stream;
+import org.geojson.Point;
+
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -23,6 +26,7 @@ public class ValueBuilder extends EntityId {
     public String fieldId;
     public String bdt;
     public String stringValue;
+    public Point geoValue;
     public Date dateValue;
     public int intValue = Integer.MIN_VALUE;
     private String valueId;
@@ -40,6 +44,11 @@ public class ValueBuilder extends EntityId {
 
     public ValueBuilder value(String value) {
         this.stringValue = value;
+        return this;
+    }
+
+    public ValueBuilder value(Point value) {
+        this.geoValue = value;
         return this;
     }
 
@@ -122,6 +131,12 @@ public class ValueBuilder extends EntityId {
             on.put("intValue", intValue);
         else if(dateValue!=null)
             on.put("dateValue", sdf.format(dateValue));
+        else if(geoValue!=null) {
+            ObjectNode geo = mapper.createObjectNode();
+            geo.put("type","point");
+            geo.putArray("coordinates").add(geoValue.getCoordinates().getLatitude()).add(geoValue.getCoordinates().getLongitude());
+            on.put("geoValue", geo);
+        }
         return on;
     }
 

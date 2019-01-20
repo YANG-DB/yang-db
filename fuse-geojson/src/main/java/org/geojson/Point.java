@@ -20,6 +20,10 @@ package org.geojson;
  * #L%
  */
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Point extends GeoJsonObject {
 
 	private LngLatAlt coordinates;
@@ -77,5 +81,12 @@ public class Point extends GeoJsonObject {
 	@Override
 	public String toString() {
 		return "Point{" + "coordinates=" + coordinates + "} " + super.toString();
+	}
+
+	public Map toMap() {
+		Map map = new HashMap();
+		map.put("type","point");
+		map.put("coordinates",new double[] {coordinates.getLongitude(),coordinates.getLatitude()});
+		return map;
 	}
 }
