@@ -49,6 +49,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
 
     public static final String DATE = "date";
     public static final String INT = "int";
+    public static final String GEO = "geo_shape";
     public static final String SCORE = "score";
     public static final String FLOAT = "float";
     public static final String STRING = "string";
@@ -87,6 +88,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
         String CONTEXT = "context";
         String BDT = "bdt";
         String INT_VALUE = "intValue";
+        String GEO_VALUE = "geoValue";
         String DATE_VALUE = "dateValue";
         String CATEGORY = "category";
         String NAME = "name";
@@ -199,6 +201,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 new GraphElementPropertySchema.ExactIndexingSchema.Impl(STRING_VALUE + "." + KEYWORD),
                                 new GraphElementPropertySchema.NgramsIndexingSchema.Impl(STRING_VALUE, 10))),
                 new GraphRedundantPropertySchema.Impl(INT_VALUE, INT_VALUE, INT),
+                new GraphRedundantPropertySchema.Impl(GEO_VALUE, GEO_VALUE, GEO),
                 new GraphRedundantPropertySchema.Impl(DATE_VALUE, DATE_VALUE, DATE)))
                 .appendAll(redundantMetadataProperties).toJavaList();
 
@@ -298,6 +301,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                         new GraphElementPropertySchema.Impl(BDT, STRING),
                                         new GraphElementPropertySchema.Impl(FIELD_ID, STRING),
                                         new GraphElementPropertySchema.Impl(INT_VALUE, INT),
+                                        new GraphElementPropertySchema.Impl(GEO_VALUE, GEO),
                                         new GraphElementPropertySchema.Impl(DATE_VALUE, DATE),
                                         new GraphElementPropertySchema.Impl(STRING_VALUE, STRING,
                                                 Arrays.asList(
@@ -325,6 +329,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                         new GraphElementPropertySchema.Impl(BDT, STRING),
                                         new GraphElementPropertySchema.Impl(FIELD_ID, STRING),
                                         new GraphElementPropertySchema.Impl(INT_VALUE, INT),
+                                        new GraphElementPropertySchema.Impl(GEO_VALUE, GEO),
                                         new GraphElementPropertySchema.Impl(DATE_VALUE, DATE),
                                         new GraphElementPropertySchema.Impl(STRING_VALUE, STRING,
                                                 Arrays.asList(

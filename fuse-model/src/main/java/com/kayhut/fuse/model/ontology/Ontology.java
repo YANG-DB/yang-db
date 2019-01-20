@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
+import java.awt.geom.Point2D;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Supplier;
@@ -52,6 +53,7 @@ public class Ontology {
         primitiveTypes.add(new PrimitiveType("float", Double.class));
         primitiveTypes.add(new PrimitiveType("date", Date.class));
         primitiveTypes.add(new PrimitiveType("datetime", Date.class));
+        primitiveTypes.add(new PrimitiveType("geo_shape", Point2D.class));
         primitiveTypes.add(new PrimitiveType("array", Array.class));
     }
 

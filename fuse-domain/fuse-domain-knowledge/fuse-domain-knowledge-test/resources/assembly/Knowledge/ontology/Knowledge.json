@@ -43,6 +43,7 @@
         "stringValue",
         "dateValue",
         "intValue",
+        "geoValue",
         "refs",
         "score"
       ]
@@ -86,6 +87,7 @@
         "stringValue",
         "dateValue",
         "intValue",
+        "geoValue",
         "refs",
         "score"
       ]
@@ -475,6 +477,11 @@
       "pType": "dateValue",
       "name": "dateValue",
       "type": "date"
+    },
+    {
+      "pType": "geoValue",
+      "name": "geoValue",
+      "type": "geo_shape"
     },
     {
       "pType": "entityAId",

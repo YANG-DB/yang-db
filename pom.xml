@@ -81,6 +81,9 @@
         <!-- jansi -->
         <jansi.version>1.16</jansi.version>
 
+        <!-- spatial4j -->
+        <spatial4j.version>0.7</spatial4j.version>
+
         <!-- cypher -->
         <openCypher.frontend.version>9.0.20181012</openCypher.frontend.version>
         <openCypher.spark.version>0.2.3</openCypher.spark.version>
@@ -295,6 +298,14 @@
                 <version>${jansi.version}</version>
             </dependency>
             <!-- jansi -->
+
+            <!-- spatial4j -->
+            <dependency>
+                <groupId>org.locationtech.spatial4j</groupId>
+                <artifactId>spatial4j</artifactId>
+                <version>${spatial4j.version}</version>
+            </dependency>
+            <!-- spatial4j -->
 
             <!-- commons -->
             <dependency>

@@ -43,6 +43,7 @@
         "stringValue",
         "dateValue",
         "intValue",
+        "geoValue",
         "refs",
         "score"
       ]
@@ -86,6 +87,7 @@
         "stringValue",
         "dateValue",
         "intValue",
+        "geoValue",
         "refs",
         "score"
       ]

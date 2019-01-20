@@ -47,7 +47,7 @@ public class KnowledgeSimpleCdrWithCypherQueryTests {
                                                            " (rel2:Relation)-[hasRv:hasRvalue]->(rValue:Rvalue) " +
                         " Where " +
                                 " (rValue.fieldId = 'duration' AND rValue.stringValue = 58) AND " +
-                                " (loc.category = 'location' AND value2.fieldId = 'long' )    AND " +
+                                " (loc.category = 'location' AND value2.fieldId = 'location' )    AND " +
                                 " (rel2.category = 'type' )  " +
                         " Return *";
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
