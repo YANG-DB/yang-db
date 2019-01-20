@@ -1735,18 +1735,18 @@ public class QueryBuilder {
 
     public class GeoBoundingBoxComposite extends FieldComposite {
 
-        private final GeoPoint topLeft;
-        private final GeoPoint bottomRight;
+        private final GeoPoint topRight;
+        private final GeoPoint bottomLeft;
 
-        public GeoBoundingBoxComposite(String name, String fieldName, Composite parent, GeoPoint topLeft, GeoPoint bottomRight ) {
+        public GeoBoundingBoxComposite(String name, String fieldName, Composite parent, GeoPoint bottomLeft,GeoPoint topRight ) {
             super(name, fieldName, Op.geoBox, parent);
-            this.topLeft = topLeft;
-            this.bottomRight = bottomRight;
+            this.topRight = topRight;
+            this.bottomLeft = bottomLeft;
         }
 
         @Override
         protected Object build() {
-            return QueryBuilders.geoBoundingBoxQuery(this.getFieldName()).setCorners(topLeft,bottomRight);
+            return QueryBuilders.geoBoundingBoxQuery(this.getFieldName()).setCorners(bottomLeft,topRight);
         }
     }
 

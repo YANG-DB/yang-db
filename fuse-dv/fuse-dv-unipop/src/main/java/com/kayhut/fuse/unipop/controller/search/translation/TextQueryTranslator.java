@@ -25,7 +25,6 @@ import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.unipop.process.predicate.Text;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,14 +34,6 @@ public class TextQueryTranslator implements PredicateQueryTranslator {
     //region PredicateQueryTranslator Implementation
     @Override
     public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
-        if (predicate == null) {
-            return queryBuilder;
-        }
-
-        if (!(predicate.getBiPredicate() instanceof Text.TextPredicate)) {
-            return queryBuilder;
-        }
-
         Text.TextPredicate text = (Text.TextPredicate)predicate.getBiPredicate();
         switch (text) {
             case PREFIX:
@@ -88,6 +79,11 @@ public class TextQueryTranslator implements PredicateQueryTranslator {
         }
 
         return queryBuilder;
+    }
+
+    @Override
+    public boolean test(String key, P<?> predicate) {
+        return (predicate != null) && (predicate.getBiPredicate() instanceof Text.TextPredicate);
     }
     //endregion
 }

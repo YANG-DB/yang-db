@@ -4,7 +4,7 @@ package com.kayhut.fuse.unipop.controller.search.translation;
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,39 +22,26 @@ package com.kayhut.fuse.unipop.controller.search.translation;
 
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.util.AndP;
 
-/**
- * Created by Roman on 18/05/2017.
- */
-public class AndPQueryTranslator extends CompositeQueryTranslator {
-    //region Constructors
-    public AndPQueryTranslator(PredicateQueryTranslator...translators) {
+public class ExclusiveChainTranslator extends CompositeQueryTranslator {
+    public ExclusiveChainTranslator(PredicateQueryTranslator... translators) {
         super(translators);
     }
 
-    public AndPQueryTranslator(Iterable<PredicateQueryTranslator> translators) {
+    public ExclusiveChainTranslator(Iterable<PredicateQueryTranslator> translators) {
         super(translators);
     }
-    //endregion
 
-    //region CompositeQueryTranslator Implementation
     @Override
     public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
-        AndP<?> andP = (AndP<?>)predicate;
-        for(P<?> innerPredicate : andP.getPredicates()) {
-            queryBuilder.push();
-            queryBuilder = super.translate(queryBuilder, key, innerPredicate);
-            queryBuilder.pop();
+        for (PredicateQueryTranslator predicateQueryTranslator : translators) {
+            if(predicateQueryTranslator.test(key, predicate)) {
+                queryBuilder = predicateQueryTranslator.translate(queryBuilder, key, predicate);
+                break;
+            }
         }
 
         return queryBuilder;
-    }
-    //endregion
-
-    @Override
-    public boolean test(String key, P<?> predicate) {
-        return ((predicate instanceof AndP<?>));
     }
 
 }

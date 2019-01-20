@@ -25,8 +25,6 @@ import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import org.apache.tinkerpop.gremlin.process.traversal.Contains;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 
-import java.util.Collections;
-
 /**
  * Created by Roman on 18/05/2017.
  */
@@ -34,14 +32,6 @@ public class ContainsQueryTranslator implements PredicateQueryTranslator {
     //region PredicateQueryTranslator Implementation
     @Override
     public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
-        if (predicate == null) {
-            return queryBuilder;
-        }
-
-        if (!(predicate.getBiPredicate() instanceof Contains)) {
-            return queryBuilder;
-        }
-
         Contains contains = (Contains) predicate.getBiPredicate();
         switch (contains) {
             case within:
@@ -62,5 +52,11 @@ public class ContainsQueryTranslator implements PredicateQueryTranslator {
 
         return queryBuilder;
     }
+
+    @Override
+    public boolean test(String key, P<?> predicate) {
+        return (predicate != null) && (predicate.getBiPredicate() instanceof Contains);
+    }
+
     //endregion
 }

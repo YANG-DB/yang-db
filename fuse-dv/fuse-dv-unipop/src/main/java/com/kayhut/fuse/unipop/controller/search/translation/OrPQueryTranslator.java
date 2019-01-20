@@ -21,9 +21,7 @@ package com.kayhut.fuse.unipop.controller.search.translation;
  */
 
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
-import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.util.AndP;
 import org.apache.tinkerpop.gremlin.process.traversal.util.OrP;
 
 /**
@@ -42,14 +40,6 @@ public class OrPQueryTranslator extends CompositeQueryTranslator {
     //region CompositeQueryTranslator Implementation
     @Override
     public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
-        if (predicate == null) {
-            return queryBuilder;
-        }
-
-        if (!(predicate instanceof OrP<?>)) {
-            return queryBuilder;
-        }
-
         OrP<?> orP = (OrP<?>)predicate;
         queryBuilder.push().bool().should();
         for(P<?> innerPredicate : orP.getPredicates()) {
@@ -61,4 +51,9 @@ public class OrPQueryTranslator extends CompositeQueryTranslator {
         return queryBuilder.pop();
     }
     //endregion
+
+    @Override
+    public boolean test(String key, P<?> predicate) {
+        return (predicate instanceof OrP<?>);
+    }
 }

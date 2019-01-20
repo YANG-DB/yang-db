@@ -41,14 +41,6 @@ public class CompareQueryTranslator implements PredicateQueryTranslator {
     //region PredicateQueryTranslator Implementation
     @Override
     public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
-        if (predicate == null) {
-            return queryBuilder;
-        }
-
-        if (!(predicate.getBiPredicate() instanceof Compare)) {
-            return queryBuilder;
-        }
-
         Compare compare = (Compare) predicate.getBiPredicate();
         String rangeName = shouldAggregateRange ? key : null;
         switch (compare) {
@@ -75,6 +67,11 @@ public class CompareQueryTranslator implements PredicateQueryTranslator {
         return queryBuilder;
     }
     //endregion
+
+    @Override
+    public boolean test(String key, P<?> predicate) {
+        return (predicate != null) && (predicate.getBiPredicate() instanceof Compare);
+    }
 
     //region Fields
     private boolean shouldAggregateRange;

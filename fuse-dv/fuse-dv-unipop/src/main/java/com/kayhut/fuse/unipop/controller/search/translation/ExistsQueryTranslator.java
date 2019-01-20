@@ -46,5 +46,10 @@ public class ExistsQueryTranslator implements PredicateQueryTranslator {
 
         return queryBuilder;
     }
+
+    @Override
+    public boolean test(String key, P<?> predicate) {
+        return predicate!=null;
+    }
     //endregion
 }

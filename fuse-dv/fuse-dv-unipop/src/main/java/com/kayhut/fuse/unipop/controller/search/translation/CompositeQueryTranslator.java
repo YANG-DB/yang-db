@@ -24,7 +24,7 @@ import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 
-import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Roman on 18/05/2017.
@@ -43,12 +43,19 @@ public class CompositeQueryTranslator implements PredicateQueryTranslator {
     //region PredicateQueryTranslator Implementation
     @Override
     public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
-        for(PredicateQueryTranslator translator : this.translators) {
-            queryBuilder = translator.translate(queryBuilder, key, predicate);
+        List<PredicateQueryTranslator> translators = Stream.ofAll(this.translators).filter(t -> t.test(key, predicate)).toJavaList();
+        for (PredicateQueryTranslator predicateQueryTranslator : translators) {
+            queryBuilder = predicateQueryTranslator.translate(queryBuilder, key, predicate);
         }
 
         return queryBuilder;
     }
+
+    @Override
+    public boolean test(String key, P<?> predicate) {
+        return true;
+    }
+
     //endregion
 
     //region Fields

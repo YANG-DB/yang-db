@@ -26,7 +26,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.Contains;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.elasticsearch.common.geo.GeoPoint;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,16 +42,6 @@ public class ContainsGeoBoundsQueryTranslator implements PredicateQueryTranslato
 
     @Override
     public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
-        if (predicate == null) {
-            return queryBuilder;
-        }
-
-        if (!(predicate.getBiPredicate() instanceof Contains)
-                || !Arrays.asList(geoFields).contains(key)
-                || !(predicate.getValue() instanceof List)) {
-            return queryBuilder;
-        }
-
         Contains contains = (Contains) predicate.getBiPredicate();
         final List box = (List) predicate.getValue();
         switch (contains) {
@@ -61,7 +50,7 @@ public class ContainsGeoBoundsQueryTranslator implements PredicateQueryTranslato
                     queryBuilder.push().bool().mustNot().exists(key).pop();
                 } else {
                     queryBuilder.push()
-                            .geoBoundingBox("geo_bounds", key,new GeoPoint(box.get(0).toString()), new GeoPoint(box.get(1).toString()))
+                            .geoBoundingBox("geo_bounds", key, new GeoPoint(box.get(0).toString()), new GeoPoint(box.get(1).toString()))
                             .pop();
                 }
                 break;
@@ -70,7 +59,7 @@ public class ContainsGeoBoundsQueryTranslator implements PredicateQueryTranslato
                     queryBuilder.push().exists(key).pop();
                 } else {
                     queryBuilder.push().bool().mustNot()
-                            .geoBoundingBox("geo_bounds", key,new GeoPoint(box.get(0).toString()), new GeoPoint(box.get(1).toString()))
+                            .geoBoundingBox("geo_bounds", key, new GeoPoint(box.get(0).toString()), new GeoPoint(box.get(1).toString()))
                             .pop();
                 }
                 break;
@@ -79,4 +68,10 @@ public class ContainsGeoBoundsQueryTranslator implements PredicateQueryTranslato
         return queryBuilder;
     }
     //endregion
+
+
+    @Override
+    public boolean test(String key, P<?> predicate) {
+        return (predicate != null) && ((predicate.getBiPredicate() instanceof Contains) && (predicate.getValue() instanceof List) && Arrays.asList(geoFields).contains(key));
+    }
 }
