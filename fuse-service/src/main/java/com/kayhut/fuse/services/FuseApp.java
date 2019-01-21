@@ -83,7 +83,7 @@ public class FuseApp extends Jooby {
         get("", () ->  Results.redirect("/public/assets/earth.html"));
         get("/", () ->  Results.redirect("/public/assets/earth.html"));
         get("/collision", () ->  Results.redirect("/public/assets/collision.html"));
-        get("swagger/swagger.json", () ->  Results.redirect("/public/assets/swagger/swagger.json"));
+//        get("swagger/swagger.json", () ->  Results.redirect("/public/assets/swagger/swagger.json"));
 
         //internal quarts reporting job scheduler
         use(new Quartz().with(StatusReportedJob.class));
@@ -103,9 +103,11 @@ public class FuseApp extends Jooby {
         //dynamically load AppControllerRegistrar that comply with com.kayhut.fuse.services package and derive from AppControllerRegistrarBase
         additionalRegistrars(this, localUrlSupplier);
         //swagger
+/*
         new SwaggerUI()
                 .filter(route -> route.pattern().startsWith("/fuse"))
                 .install(this);
+*/
     }
 
     /**
