@@ -36,18 +36,18 @@ public class InternalsControllerRegistrar extends AppControllerRegistrarBase<Int
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** get the health status of the service */
-        app.use("/fuse/internal/statisticsProvider/name")
-                .get(req -> Results.with(this.getController(app).getStatisticsProviderName()));
-        app.use("/fuse/internal/version")
-                .get(req -> Results.with(this.getController(app).getVersion()));
-        app.use("/fuse/internal/snowflakeId")
-                .get(req -> Results.with(this.getController(app).getSnowflakeId()));
-        app.use("/fuse/internal/cursorBindings")
-                .get(req -> Results.with(this.getController(app).getCursorBindings()));
-        app.use("/fuse/internal/statisticsProvider/setup")
-                .get(req -> Results.with(this.getController(app).getStatisticsProviderSetup()));
-        app.use("/fuse/internal/statisticsProvider/refresh")
-                .put(req -> Results.with(this.getController(app).refreshStatisticsProviderSetup()));
+        app.get("/fuse/internal/statisticsProvider/name",
+                req -> Results.with(this.getController(app).getStatisticsProviderName()));
+        app.get("/fuse/internal/version",
+                req -> Results.with(this.getController(app).getVersion()));
+        app.get("/fuse/internal/snowflakeId",
+                req -> Results.with(this.getController(app).getSnowflakeId()));
+        app.get("/fuse/internal/cursorBindings",
+                req -> Results.with(this.getController(app).getCursorBindings()));
+        app.get("/fuse/internal/statisticsProvider/setup",
+                req -> Results.with(this.getController(app).getStatisticsProviderSetup()));
+        app.put("/fuse/internal/statisticsProvider/refresh",
+                req -> Results.with(this.getController(app).refreshStatisticsProviderSetup()));
     }
     //endregion
 }

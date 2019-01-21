@@ -21,7 +21,6 @@ package com.kayhut.fuse.unipop.controller.search;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vividsolutions.jts.geom.Coordinate;
 import javaslang.collection.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.geo.GeoPoint;
@@ -29,16 +28,17 @@ import org.elasticsearch.common.geo.ShapeRelation;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilders;
 import org.elasticsearch.common.unit.DistanceUnit;
+import org.elasticsearch.common.xcontent.DeprecationHandler;
 import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.script.Script;
-import org.elasticsearch.script.ScriptType;
 import org.geojson.Circle;
 import org.geojson.Envelope;
 import org.geojson.GeoJsonObject;
+import org.locationtech.jts.geom.Coordinate;
 
 import java.io.IOException;
 import java.util.*;
@@ -1793,7 +1793,7 @@ public class QueryBuilder {
                                     envelope.getCoordinates().get(0).getLatitude()));
                 } else {
                     String geoJsonString = mapper.writeValueAsString(geoJson);
-                    XContentParser parser = JsonXContent.jsonXContent.createParser(NamedXContentRegistry.EMPTY, geoJsonString);
+                    XContentParser parser = JsonXContent.jsonXContent.createParser(NamedXContentRegistry.EMPTY, DeprecationHandler.THROW_UNSUPPORTED_OPERATION, geoJsonString);
                     parser.nextToken();
 
                     return ShapeBuilder.parse(parser);

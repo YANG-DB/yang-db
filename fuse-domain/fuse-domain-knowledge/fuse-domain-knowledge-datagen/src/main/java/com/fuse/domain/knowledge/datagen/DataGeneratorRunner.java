@@ -33,7 +33,7 @@ import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.File;
@@ -125,7 +125,7 @@ public class DataGeneratorRunner {
                                         .mustNot(existsQuery("deleteTime"))))
                                 .setFetchSource(new String[]{"logicalId"}, null),
                         new DefaultSearchOrderProvider().build(null),
-                        1000000, 1000, 60000)).map(hit -> (String) hit.sourceAsMap().get("logicalId")).distinct().toJavaSet();
+                        1000000, 1000, 60000)).map(hit -> (String) hit.getSourceAsMap().get("logicalId")).distinct().toJavaSet();
         List<Entity> newEntities = Stream.ofAll(entitiesInvolved)
                 .filter(entity -> !fromContextLogicalIds.contains(entity.getLogicalId()))
                 .toJavaList();
@@ -580,7 +580,7 @@ public class DataGeneratorRunner {
         TransportClient client = new PreBuiltTransportClient(settings);
         elasticConfiguration.getHosts().forEach(host -> {
             try {
-                client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), 9300));
+                client.addTransportAddress(new TransportAddress(InetAddress.getByName(host), 9300));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }

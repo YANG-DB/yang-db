@@ -79,7 +79,7 @@ public class UniformDataTextSupplier extends RandomDataSupplier<String> {
 
         Set<String> wordSet = new HashSet<>();
         for (SearchHit hit : hits) {
-            String fieldValue = (String) hit.sourceAsMap().get(fieldName);
+            String fieldValue = (String) hit.getSourceAsMap().get(fieldName);
             List<String> words = Stream.of(fieldValue.split(" ")).map(String::trim).toJavaList();
 
             for (String word : words) {

@@ -45,10 +45,10 @@ public class SearchHitPromiseVertexConverter implements ElementConverter<SearchH
     public Iterable<Element> convert(SearchHit element) {
         return Collections.singletonList(
                 new PromiseVertex(
-                    Promise.as(element.getId(), (String) element.sourceAsMap().get("type")),
+                    Promise.as(element.getId(), (String) element.getSourceAsMap().get("type")),
                     Optional.empty(),
                     graph,
-                    element.sourceAsMap()));
+                    element.getSourceAsMap()));
     }
     //endregion
 

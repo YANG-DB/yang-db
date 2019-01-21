@@ -81,7 +81,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setEntityCategories(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> (String) hit.sourceAsMap().get("category"))
+                        .groupBy(hit -> (String) hit.getSourceAsMap().get("category"))
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
 
         contextStatistics.setEntityCategoryFields(Stream.ofAll(contextStatistics.getEntityCategories().keySet())
@@ -96,7 +96,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                                 .setFetchSource(new String[] { "logicalId" }, null),
                             new DefaultSearchOrderProvider().build(null),
                             1000000000, 1000, 60000))
-                            .map(hit -> (String)hit.sourceAsMap().get("logicalId"))
+                            .map(hit -> (String)hit.getSourceAsMap().get("logicalId"))
                             .distinct().toJavaList();
 
                     Set<String> categoryFields = Stream.ofAll(new SearchHitScrollIterable(
@@ -110,7 +110,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                             .setFetchSource(new String[] { "fieldId" }, null),
                             new DefaultSearchOrderProvider().build(null),
                             1000000000, 1000, 60000))
-                            .map(hit -> (String)hit.sourceAsMap().get("fieldId"))
+                            .map(hit -> (String)hit.getSourceAsMap().get("fieldId"))
                             .toJavaSet();
 
                     categoryFields.add("title");
@@ -131,7 +131,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                                     .setFetchSource(new String[] { "logicalId" }, null),
                             new DefaultSearchOrderProvider().build(null),
                             1000000000, 1000, 60000))
-                            .map(hit -> (String)hit.sourceAsMap().get("logicalId"))
+                            .map(hit -> (String)hit.getSourceAsMap().get("logicalId"))
                             .distinct().map(logicalId -> logicalId + "." + context).toJavaList();
 
                     Set<String> relationCategories = Stream.ofAll(new SearchHitScrollIterable(
@@ -145,7 +145,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                                     .setFetchSource(new String[] { "category" }, null),
                             new DefaultSearchOrderProvider().build(null),
                             1000000000, 1000, 60000))
-                            .map(hit -> (String)hit.sourceAsMap().get("category"))
+                            .map(hit -> (String)hit.getSourceAsMap().get("category"))
                             .toJavaSet();
 
                     return new Tuple2<>(category, relationCategories);
@@ -153,7 +153,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setEntityReferenceCounts(
             Stream.ofAll(hits)
-                .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.sourceAsMap().get("refs")).size())
+                .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.getSourceAsMap().get("refs")).size())
                 .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
     }
 
@@ -172,11 +172,11 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setEntityValueCounts(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> (String)hit.sourceAsMap().get("fieldId"))
+                        .groupBy(hit -> (String)hit.getSourceAsMap().get("fieldId"))
                         .map(grouping ->
                                 new Tuple2<>(grouping._1(),
                                         grouping._2()
-                                                .groupBy(hit -> (String)hit.sourceAsMap().get("logicalId"))
+                                                .groupBy(hit -> (String)hit.getSourceAsMap().get("logicalId"))
                                                 .map(grouping1 -> grouping1._2().size())
                                                 .groupBy(numValues -> numValues)
                                                 .toJavaMap(grouping1 -> new Tuple2<>(grouping1._1(), grouping1._2().size()))))
@@ -184,20 +184,20 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setEntityValueReferenceCounts(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.sourceAsMap().get("refs")).size())
+                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.getSourceAsMap().get("refs")).size())
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
 
         contextStatistics.setEntityFieldTypes(
                 Stream.ofAll(hits)
-                    .groupBy(hit -> (String)hit.sourceAsMap().get("fieldId"))
+                    .groupBy(hit -> (String)hit.getSourceAsMap().get("fieldId"))
                         .toJavaMap(grouping -> {
                             SearchHit hit = grouping._2().get(0);
                             String type = null;
-                            if (hit.sourceAsMap().containsKey("stringValue")) {
+                            if (hit.getSourceAsMap().containsKey("stringValue")) {
                                 type = "stringValue";
-                            } else if (hit.sourceAsMap().containsKey("intValue")) {
+                            } else if (hit.getSourceAsMap().containsKey("intValue")) {
                                 type = "intValue";
-                            } else if (hit.sourceAsMap().containsKey("dateValue")) {
+                            } else if (hit.getSourceAsMap().containsKey("dateValue")) {
                                 type = "dateValue";
                             }
 
@@ -212,7 +212,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                 .map(fieldId -> new Tuple2<>(fieldId, contextStatistics.getEntityValueCounts().get(fieldId).size()))
                 .forEach(tuple -> contextStatistics.getEntityValueCounts().get(tuple._1()).put(0, numEntitiesInContext - tuple._2()));
 
-        List<String> logicalIds = Stream.ofAll(hits).map(hit -> (String)hit.sourceAsMap().get("logicalId")).distinct().toJavaList();
+        List<String> logicalIds = Stream.ofAll(hits).map(hit -> (String)hit.getSourceAsMap().get("logicalId")).distinct().toJavaList();
         hits = Stream.ofAll(
                 new SearchHitScrollIterable(
                         this.client,
@@ -228,11 +228,11 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setEntityGlobalValueCounts(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> (String)hit.sourceAsMap().get("fieldId"))
+                        .groupBy(hit -> (String)hit.getSourceAsMap().get("fieldId"))
                         .map(grouping ->
                                 new Tuple2<>(grouping._1(),
                                         grouping._2()
-                                                .groupBy(hit -> (String)hit.sourceAsMap().get("logicalId"))
+                                                .groupBy(hit -> (String)hit.getSourceAsMap().get("logicalId"))
                                                 .map(grouping1 -> grouping1._2().size())
                                                 .groupBy(numValues -> numValues)
                                                 .toJavaMap(grouping1 -> new Tuple2<>(grouping1._1(), grouping1._2().size()))))
@@ -240,7 +240,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setEntityGlobalValueReferenceCounts(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.sourceAsMap().get("refs")).size())
+                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.getSourceAsMap().get("refs")).size())
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
     }
 
@@ -259,10 +259,10 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setEntityRelationCounts(
                 Stream.ofAll(hits)
-                    .groupBy(hit -> (String)hit.sourceAsMap().get("direction"))
+                    .groupBy(hit -> (String)hit.getSourceAsMap().get("direction"))
                     .map(grouping -> new Tuple2<>(grouping._1(),
                             grouping._2()
-                                    .groupBy(hit -> (String)hit.sourceAsMap().get("logicalId"))
+                                    .groupBy(hit -> (String)hit.getSourceAsMap().get("logicalId"))
                                     .map(grouping1 -> grouping1._2().size())
                                     .groupBy(numValues -> numValues)
                                     .toJavaMap(grouping1 -> new Tuple2<>(grouping1._1(), grouping1._2().size()))))
@@ -284,7 +284,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setRelationCategories(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> (String) hit.sourceAsMap().get("category"))
+                        .groupBy(hit -> (String) hit.getSourceAsMap().get("category"))
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
 
         contextStatistics.setRelationCategoryFields(Stream.ofAll(contextStatistics.getRelationCategories().keySet())
@@ -299,7 +299,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                                     .setFetchSource(false),
                             new DefaultSearchOrderProvider().build(null),
                             1000000000, 1000, 60000))
-                            .map(SearchHit::id)
+                            .map(SearchHit::getId)
                             .distinct().toJavaList();
 
                     Set<String> categoryFields = Stream.ofAll(new SearchHitScrollIterable(
@@ -313,7 +313,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
                                     .setFetchSource(new String[] { "fieldId" }, null),
                             new DefaultSearchOrderProvider().build(null),
                             1000000000, 1000, 60000))
-                            .map(hit -> (String)hit.sourceAsMap().get("fieldId"))
+                            .map(hit -> (String)hit.getSourceAsMap().get("fieldId"))
                             .toJavaSet();
 
                     categoryFields.add("title");
@@ -324,7 +324,7 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setRelationReferenceCounts(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.sourceAsMap().get("refs")).size())
+                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.getSourceAsMap().get("refs")).size())
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
     }
 
@@ -343,11 +343,11 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setRelationValueCounts(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> (String)hit.sourceAsMap().get("fieldId"))
+                        .groupBy(hit -> (String)hit.getSourceAsMap().get("fieldId"))
                         .map(grouping ->
                                 new Tuple2<>(grouping._1(),
                                         grouping._2()
-                                                .groupBy(hit -> (String)hit.sourceAsMap().get("relationId"))
+                                                .groupBy(hit -> (String)hit.getSourceAsMap().get("relationId"))
                                                 .map(grouping1 -> grouping1._2().size())
                                                 .groupBy(numValues -> numValues)
                                                 .toJavaMap(grouping1 -> new Tuple2<>(grouping1._1(), grouping1._2().size()))))
@@ -355,20 +355,20 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setRelationValueReferenceCounts(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.sourceAsMap().get("refs")).size())
+                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.getSourceAsMap().get("refs")).size())
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
 
         contextStatistics.setRelationFieldTypes(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> (String)hit.sourceAsMap().get("fieldId"))
+                        .groupBy(hit -> (String)hit.getSourceAsMap().get("fieldId"))
                         .toJavaMap(grouping -> {
                             SearchHit hit = grouping._2().get(0);
                             String type = null;
-                            if (hit.sourceAsMap().containsKey("stringValue")) {
+                            if (hit.getSourceAsMap().containsKey("stringValue")) {
                                 type = "stringValue";
-                            } else if (hit.sourceAsMap().containsKey("intValue")) {
+                            } else if (hit.getSourceAsMap().containsKey("intValue")) {
                                 type = "intValue";
-                            } else if (hit.sourceAsMap().containsKey("dateValue")) {
+                            } else if (hit.getSourceAsMap().containsKey("dateValue")) {
                                 type = "dateValue";
                             }
 
@@ -391,12 +391,12 @@ public class SchemaKnowledgeGraphContextStatisticsProvider implements KnowledgeG
 
         contextStatistics.setInsightEntityCounts(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.sourceAsMap().get("entityIds")).size())
+                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.getSourceAsMap().get("entityIds")).size())
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
 
         contextStatistics.setInsightReferenceCounts(
                 Stream.ofAll(hits)
-                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.sourceAsMap().get("refs")).size())
+                        .groupBy(hit -> CollectionUtil.listFromObjectValue(hit.getSourceAsMap().get("refs")).size())
                         .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().size())));
     }
 

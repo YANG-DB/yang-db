@@ -36,7 +36,7 @@ import java.util.Objects;
 
 public class SearchHitUtils {
     public static Map<String, Object> convertToMap(SearchHit searchHit) {
-        return convertToMap(searchHit.sourceRef(), false, XContentType.JSON).v2();
+        return convertToMap(searchHit.getSourceRef(), false, XContentType.JSON).v2();
     }
 
     public static Tuple<XContentType, Map<String, Object>> convertToMap(BytesReference bytes, boolean ordered, XContentType xContentType)
@@ -64,7 +64,7 @@ public class SearchHitUtils {
     public static Map<String, Object> convertToMap(XContent xContent, InputStream input, boolean ordered)
             throws ElasticsearchParseException {
         // It is safe to use EMPTY here because this never uses namedObject
-        try (XContentParser parser = xContent.createParser(NamedXContentRegistry.EMPTY, input)) {
+        try (XContentParser parser = xContent.createParser(NamedXContentRegistry.EMPTY,DeprecationHandler.THROW_UNSUPPORTED_OPERATION, input)) {
             return ordered ? parser.mapOrdered() : parser.map();
         } catch (IOException e) {
             throw new ElasticsearchParseException("Failed to parse content to map", e);

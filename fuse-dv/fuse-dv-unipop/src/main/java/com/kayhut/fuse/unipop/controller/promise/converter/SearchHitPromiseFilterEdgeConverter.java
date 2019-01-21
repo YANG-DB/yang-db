@@ -45,9 +45,9 @@ public class SearchHitPromiseFilterEdgeConverter implements ElementConverter<Sea
 
     @Override
     public Iterable<Edge> convert(SearchHit hit) {
-        Map<String, Object> propertiesMap = hit.sourceAsMap();
+        Map<String, Object> propertiesMap = hit.getSourceAsMap();
         PromiseVertex v = new PromiseVertex(
-                Promise.as(hit.getId(), (String) hit.sourceAsMap().get("type")),
+                Promise.as(hit.getId(), (String) hit.getSourceAsMap().get("type")),
                 Optional.empty(),
                 graph,
                 propertiesMap);

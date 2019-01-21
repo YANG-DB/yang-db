@@ -23,7 +23,6 @@ package com.kayhut.fuse.stat.es.client;
 import org.apache.commons.configuration.Configuration;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
@@ -60,7 +59,7 @@ public class ClientProvider {
         Settings settings = Settings.builder().put("cluster.name", clusterName).build();
         TransportClient esClient = new PreBuiltTransportClient(settings);
         for(String node: hosts) {
-            esClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(node), transportPort));
+            esClient.addTransportAddress(new TransportAddress(InetAddress.getByName(node), transportPort));
         }
         return esClient;
     }

@@ -24,11 +24,8 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import org.elasticsearch.common.bytes.BytesReference;
-import org.elasticsearch.common.io.FastStringReader;
 import org.elasticsearch.common.xcontent.*;
 import org.elasticsearch.common.xcontent.json.JsonXContentGenerator;
-import org.elasticsearch.common.xcontent.json.JsonXContentParser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -94,32 +91,28 @@ public class FuseJsonXContent implements XContent {
     }
 
     @Override
-    public XContentParser createParser(NamedXContentRegistry xContentRegistry, String content) throws IOException {
-        return new FuseJsonXContentParser(xContentRegistry, jsonFactory.createParser(new FastStringReader(content)));
+    public XContentParser createParser(NamedXContentRegistry namedXContentRegistry, DeprecationHandler deprecationHandler, String s) throws IOException {
+        return new FuseJsonXContentParser(namedXContentRegistry,deprecationHandler,jsonFactory.createParser(s));
     }
 
     @Override
-    public XContentParser createParser(NamedXContentRegistry xContentRegistry, InputStream is) throws IOException {
-        return new FuseJsonXContentParser(xContentRegistry, jsonFactory.createParser(is));
+    public XContentParser createParser(NamedXContentRegistry namedXContentRegistry, DeprecationHandler deprecationHandler, InputStream inputStream) throws IOException {
+        return new FuseJsonXContentParser(namedXContentRegistry,deprecationHandler,jsonFactory.createParser(inputStream));
     }
 
     @Override
-    public XContentParser createParser(NamedXContentRegistry xContentRegistry, byte[] data) throws IOException {
-        return new FuseJsonXContentParser(xContentRegistry, jsonFactory.createParser(data));
+    public XContentParser createParser(NamedXContentRegistry namedXContentRegistry, DeprecationHandler deprecationHandler, byte[] bytes) throws IOException {
+        return new FuseJsonXContentParser(namedXContentRegistry,deprecationHandler,jsonFactory.createParser(bytes));
     }
 
     @Override
-    public XContentParser createParser(NamedXContentRegistry xContentRegistry, byte[] data, int offset, int length) throws IOException {
-        return new FuseJsonXContentParser(xContentRegistry, jsonFactory.createParser(data, offset, length));
+    public XContentParser createParser(NamedXContentRegistry namedXContentRegistry, DeprecationHandler deprecationHandler, byte[] bytes, int i, int i1) throws IOException {
+        return new FuseJsonXContentParser(namedXContentRegistry,deprecationHandler,jsonFactory.createParser(bytes,i,i1));
+
     }
 
     @Override
-    public XContentParser createParser(NamedXContentRegistry xContentRegistry, BytesReference bytes) throws IOException {
-        return createParser(xContentRegistry, bytes.streamInput());
-    }
-
-    @Override
-    public XContentParser createParser(NamedXContentRegistry xContentRegistry, Reader reader) throws IOException {
-        return new FuseJsonXContentParser(xContentRegistry, jsonFactory.createParser(reader));
+    public XContentParser createParser(NamedXContentRegistry namedXContentRegistry, DeprecationHandler deprecationHandler, Reader reader) throws IOException {
+        return new FuseJsonXContentParser(namedXContentRegistry,deprecationHandler,jsonFactory.createParser(reader));
     }
 }

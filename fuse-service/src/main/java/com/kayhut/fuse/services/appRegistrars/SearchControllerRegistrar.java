@@ -38,8 +38,7 @@ public class SearchControllerRegistrar extends AppControllerRegistrarBase<Search
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** submit a search */
-        app.use("/fuse/search")
-                .post(req -> {
+        app.post("/fuse/search",req -> {
                     ContentResponse search = this.getController(app).search(req.body(CreateQueryRequest.class));
                     return Results.with(search, search.status());
                 });

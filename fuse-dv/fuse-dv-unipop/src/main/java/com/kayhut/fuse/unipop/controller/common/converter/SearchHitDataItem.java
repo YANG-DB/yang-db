@@ -38,7 +38,7 @@ public class SearchHitDataItem implements DataItem {
     //region DataItem Implementation
     @Override
     public Object id() {
-        return this.searchHit.id();
+        return this.searchHit.getId();
     }
 
     @Override

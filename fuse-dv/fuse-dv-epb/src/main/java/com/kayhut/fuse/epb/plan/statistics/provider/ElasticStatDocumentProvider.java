@@ -75,7 +75,7 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
                 searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
 
         return Stream.ofAll(hits)
-                .map(SearchHit::sourceAsMap)
+                .map(SearchHit::getSourceAsMap)
                 .toJavaList();
     }
     //endregion

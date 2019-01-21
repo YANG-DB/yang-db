@@ -30,7 +30,6 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
@@ -111,17 +110,17 @@ public class IngestFireToES {
     private static Client getClient() throws UnknownHostException {
         Settings settings = Settings.builder().put("cluster.name", "fuse-test").build();
         return new PreBuiltTransportClient(settings)
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("52.174.90.109"), 9300))
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.93.93.10"), 9300))
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.93.93.190"), 9300));
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("52.174.90.109"), 9300))
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("13.93.93.10"), 9300))
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("13.93.93.190"), 9300));
     }
 
     private static Client getClientDataOnly() throws UnknownHostException {
         Settings settings = Settings.builder().put("cluster.name", "fuse-test").build();
         return new PreBuiltTransportClient(settings)
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.81.12.209"), 9300))
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.73.165.97"), 9300))
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("52.166.57.208"), 9300));
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("13.81.12.209"), 9300))
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("13.73.165.97"), 9300))
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("52.166.57.208"), 9300));
     }
 
     private static BulkProcessor getBulkProcessor(Client client) {

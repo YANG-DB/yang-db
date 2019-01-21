@@ -28,9 +28,7 @@ public class HealthAppRegistrar implements AppRegistrar {
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** get the health status of the service */
-        app.use("/fuse/health")
-                /** check health */
-                .get(() -> "Alive And Well...");
+        app.get("/fuse/health",() -> "Alive And Well...");
     }
     //endregion
 }

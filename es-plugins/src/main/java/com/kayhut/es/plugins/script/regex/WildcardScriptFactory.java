@@ -21,8 +21,8 @@ package com.kayhut.es.plugins.script.regex;
  */
 
 import org.apache.lucene.queryparser.flexible.standard.parser.EscapeQuerySyntaxImpl;
-import org.elasticsearch.script.ExecutableScript;
-import org.elasticsearch.script.NativeScriptFactory;
+//import org.elasticsearch.script.ExecutableScript;
+//import org.elasticsearch.script.NativeScriptFactory;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Roman on 5/26/2018.
  */
-public class WildcardScriptFactory implements NativeScriptFactory {
+public class WildcardScriptFactory /*implements NativeScriptFactory*/ {
     //region Constructors
     public WildcardScriptFactory() {
         this.maxPatternCacheSize = 10000;
@@ -39,6 +39,7 @@ public class WildcardScriptFactory implements NativeScriptFactory {
     //endregion
 
     //region NativeScriptFactory Implementation
+/*
     @Override
     public ExecutableScript newScript(Map<String, Object> params) {
         String field = params == null ? null : (String)params.get("field");
@@ -58,13 +59,14 @@ public class WildcardScriptFactory implements NativeScriptFactory {
         Pattern regexPattern = this.patternCache.computeIfAbsent(expression, this::compileWildcardExpression);
         return new RegexScript(field, regexPattern);
     }
+*/
 
-    @Override
+//    @Override
     public boolean needsScores() {
         return false;
     }
 
-    @Override
+//    @Override
     public String getName() {
         return "wildcard";
     }

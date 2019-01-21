@@ -42,28 +42,28 @@ public class CatalogControllerRegistrar extends AppControllerRegistrarBase<Catal
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** get available ontologies*/
-        app.use("/fuse/catalog/ontology")
-                .get(req -> {
+        app.get("/fuse/catalog/ontology"
+                ,req -> {
                     ContentResponse<List<Ontology>> response = this.getController(app).getOntologies();
                     return Results.with(response, response.status());
                 });
 
         /** get the ontology by id */
-        app.use("/fuse/catalog/ontology/:id")
-                .get(req -> {
+        app.get("/fuse/catalog/ontology/:id"
+                ,req -> {
                     ContentResponse response = this.getController(app).getOntology(req.param("id").value());
                     return Results.with(response, response.status());
                 });
 
         /** get available schemas **/
-        app.use("/fuse/catalog/schema")
-                .get(req -> {
+        app.get("/fuse/catalog/schema"
+                ,req -> {
                     ContentResponse<List<GraphElementSchemaProvider>> response = this.getController(app).getSchemas();
                     return Results.with(response, response.status());
                 });
 
-        app.use("/fuse/catalog/schema/:id")
-                .get(req -> {
+        app.get("/fuse/catalog/schema/:id",
+                req -> {
                     ContentResponse response = this.getController(app).getSchema(req.param("id").value());
                     return Results.with(response, response.status());
                 });

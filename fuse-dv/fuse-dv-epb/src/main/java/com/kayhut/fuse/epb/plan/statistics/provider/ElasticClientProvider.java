@@ -23,7 +23,6 @@ package com.kayhut.fuse.epb.plan.statistics.provider;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
@@ -47,7 +46,7 @@ public class ElasticClientProvider {
         TransportClient esClient = new PreBuiltTransportClient(settings);
         for (String node : config.getStatNodesHosts()) {
             try {
-                esClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(node), config.getStatTransportPort()));
+                esClient.addTransportAddress(new TransportAddress(InetAddress.getByName(node), config.getStatTransportPort()));
             } catch (UnknownHostException e) {
                 throw new RuntimeException("Fatal Error: Unable getTo get host information");
             }

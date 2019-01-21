@@ -155,7 +155,7 @@ public class StatTestUtil {
                     .execute()
                     .actionGet();
             for (SearchHit hit : response.getHits()) {
-                esData.add(hit.sourceAsMap());
+                esData.add(hit.getSourceAsMap());
             }
             i++;
         }
@@ -207,7 +207,7 @@ public class StatTestUtil {
         }
         Set<Map<String, Object>> results = new HashSet<>();
         for (SearchHit hit : response.getHits()) {
-            Map<String, Object> doc = hit.sourceAsMap();
+            Map<String, Object> doc = hit.getSourceAsMap();
             results.add(doc);
         }
         return results;

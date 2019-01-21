@@ -21,14 +21,15 @@ package com.kayhut.es.plugins.script.regex;
  */
 
 import org.elasticsearch.index.fielddata.ScriptDocValues;
-import org.elasticsearch.script.AbstractSearchScript;
+//import org.elasticsearch.script.AbstractSearchScript;
+import org.elasticsearch.script.SearchScript;
 
 import java.util.regex.Pattern;
 
 /**
  * Created by Roman on 5/26/2018.
  */
-public class RegexScript extends AbstractSearchScript {
+public class RegexScript /*extends AbstractSearchScript */{
     //region Constructors
     RegexScript(String field, Pattern pattern) {
         this.field = field;
@@ -37,6 +38,7 @@ public class RegexScript extends AbstractSearchScript {
     //endregion
 
     //region AbstractSearchScript Implementation
+/*
     @Override
     public Object run() {
         ScriptDocValues<String> docValue = (ScriptDocValues<String>) doc().get(this.field);
@@ -45,6 +47,12 @@ public class RegexScript extends AbstractSearchScript {
         }
 
         return this.pattern.matcher(docValue.get(0)).matches();
+    }
+*/
+
+//    @Override
+    public double runAsDouble() {
+        return 0;
     }
     //endregion
 

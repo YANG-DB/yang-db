@@ -22,6 +22,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.InternalAggregations;
@@ -60,9 +61,8 @@ public class PromisePromiseElementVertexControllerTest {
 
         //mock response with 2 layers of aggregations
         SearchResponse responseMock = mock(SearchResponse.class);
-        SearchHits hitsMock = mock(SearchHits.class);
-        when(responseMock.getHits()).thenReturn(hitsMock );
-        when(hitsMock.getTotalHits()).thenReturn(10l);
+        SearchHits hitsMock = new SearchHits(new SearchHit[] {},10,10l );
+        when(responseMock.getHits()).thenReturn(hitsMock);
 
         Terms.Bucket destBucket = mock(Terms.Bucket.class);
         when(destBucket.getKeyAsString()).thenReturn("destination1");
@@ -70,7 +70,7 @@ public class PromisePromiseElementVertexControllerTest {
 
         InternalTerms destLayer = mock(InternalTerms.class);
         when(destLayer.getName()).thenReturn(GlobalConstants.EdgeSchema.DEST);
-        when(destLayer.getBuckets()).then((Answer<Object>)invocationOnMock -> Collections.singletonList(destBucket));
+        when(destLayer.getBuckets()).then(invocationOnMock -> Collections.singletonList(destBucket));
 
         Terms.Bucket sourceBucket = mock(Terms.Bucket.class);
         when(sourceBucket.getKeyAsString()).thenReturn("source1");
@@ -79,7 +79,7 @@ public class PromisePromiseElementVertexControllerTest {
 
         InternalTerms sourceLayer = mock(InternalTerms.class);
         when(sourceLayer.getName()).thenReturn(GlobalConstants.EdgeSchema.SOURCE);
-        when(sourceLayer.getBuckets()).then((Answer<Object>) invocationOnMock -> Collections.singletonList(sourceBucket));
+        when(sourceLayer.getBuckets()).then(invocationOnMock -> Collections.singletonList(sourceBucket));
 
         Aggregations aggregations = new InternalAggregations(Arrays.asList(sourceLayer, destLayer));
 
@@ -104,7 +104,7 @@ public class PromisePromiseElementVertexControllerTest {
     }
 
     @Test
-    public void testSingleIdPromiseVertexWithoutConstraint() throws ExecutionException, InterruptedException {
+    public void testSingleIdPromiseVertexWithoutConstraint() {
         MetricRegistry registry = new MetricRegistry();
 
         UniGraph graph = mock(UniGraph.class);

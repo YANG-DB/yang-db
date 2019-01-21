@@ -56,8 +56,8 @@ public class ConstraintSearchAppenderTest {
                 Stream.ofAll(ont.entities())
                         .map(entity -> (GraphVertexSchema) new GraphVertexSchema.Impl(
                                 entity.geteType(),
-                                entity.geteType().equals(OntologyTestUtils.PERSON.name) ? new StaticIndexPartitions(Arrays.asList("Persons1","Persons2")) :
-                                        entity.geteType().equals(OntologyTestUtils.DRAGON.name) ? new StaticIndexPartitions(Arrays.asList("Dragons1","Dragons2")) :
+                                entity.geteType().equals(OntologyTestUtils.PERSON.name) ? new StaticIndexPartitions(Arrays.asList("Persons1", "Persons2")) :
+                                        entity.geteType().equals(OntologyTestUtils.DRAGON.name) ? new StaticIndexPartitions(Arrays.asList("Dragons1", "Dragons2")) :
                                                 new StaticIndexPartitions(Collections.singletonList("idx1"))))
                         .toJavaList();
 
@@ -85,7 +85,7 @@ public class ConstraintSearchAppenderTest {
                                             @Override
                                             public Iterable<Partition> getPartitions() {
                                                 return Collections.singletonList(() ->
-                                                        IntStream.range(0, 3).mapToObj(i -> new Date(System.currentTimeMillis() - 60*60*1000 * i)).
+                                                        IntStream.range(0, 3).mapToObj(i -> new Date(System.currentTimeMillis() - 60 * 60 * 1000 * i)).
                                                                 map(this::getIndexName).collect(Collectors.toList()));
                                             }
 
@@ -119,11 +119,12 @@ public class ConstraintSearchAppenderTest {
 
         return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
+
     private Ontology.Accessor ont;
     private GraphElementSchemaProvider graphElementSchemaProvider;
 
     @Before
-    public void setUp()  {
+    public void setUp() {
         ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
         graphElementSchemaProvider = buildSchemaProvider(ont);
     }
@@ -135,7 +136,7 @@ public class ConstraintSearchAppenderTest {
         VertexControllerContext vertexControllerContext = mock(VertexControllerContext.class);
         Vertex vertex = mock(Vertex.class);
         Client client = mock(Client.class);
-        when(client.prepareSearch()).then((Answer<SearchRequestBuilder>) invocation-> new SearchRequestBuilder(client,mock(SearchAction.class)));
+        when(client.prepareSearch()).then((Answer<SearchRequestBuilder>) invocation -> new SearchRequestBuilder(client, mock(SearchAction.class)));
         when(vertex.label()).then((Answer<String>) invocation -> "Person");
 
         when(context.getVertexControllerContext()).then((Answer<Optional<VertexControllerContext>>) invocation -> Optional.of(vertexControllerContext));
@@ -147,36 +148,7 @@ public class ConstraintSearchAppenderTest {
         ConstraintSearchAppender searchAppender = new ConstraintSearchAppender();
         searchAppender.append(searchBuilder, context);
         SearchRequestBuilder builder = searchBuilder.build(client, false);
-        Assert.assertEquals(builder.toString(),"{\n" +
-                "  \"size\" : 0,\n" +
-                "  \"query\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"filter\" : [\n" +
-                "        {\n" +
-                "          \"bool\" : {\n" +
-                "            \"must\" : [\n" +
-                "              {\n" +
-                "                \"term\" : {\n" +
-                "                  \"type\" : {\n" +
-                "                    \"value\" : \"Person\",\n" +
-                "                    \"boost\" : 1.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"disable_coord\" : false,\n" +
-                "            \"adjust_pure_negative\" : true,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"disable_coord\" : false,\n" +
-                "      \"adjust_pure_negative\" : true,\n" +
-                "      \"boost\" : 1.0\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"_source\" : false\n" +
-                "}");
+        Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}", builder.toString());
     }
 
     @Test
@@ -186,7 +158,7 @@ public class ConstraintSearchAppenderTest {
         VertexControllerContext vertexControllerContext = mock(VertexControllerContext.class);
         Vertex vertex = mock(Vertex.class);
         Client client = mock(Client.class);
-        when(client.prepareSearch()).then((Answer<SearchRequestBuilder>) invocation-> new SearchRequestBuilder(client,mock(SearchAction.class)));
+        when(client.prepareSearch()).then((Answer<SearchRequestBuilder>) invocation -> new SearchRequestBuilder(client, mock(SearchAction.class)));
         when(vertex.label()).then((Answer<String>) invocation -> "Person");
 
         when(context.getVertexControllerContext()).then((Answer<Optional<VertexControllerContext>>) invocation -> Optional.of(vertexControllerContext));
@@ -203,74 +175,7 @@ public class ConstraintSearchAppenderTest {
         ConstraintSearchAppender searchAppender = new ConstraintSearchAppender();
         searchAppender.append(searchBuilder, context);
         SearchRequestBuilder builder = searchBuilder.build(client, false);
-        Assert.assertEquals(builder.toString(),"{\n" +
-                "  \"size\" : 0,\n" +
-                "  \"query\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"must\" : [\n" +
-                "        {\n" +
-                "          \"bool\" : {\n" +
-                "            \"must\" : [\n" +
-                "              {\n" +
-                "                \"term\" : {\n" +
-                "                  \"abc\" : {\n" +
-                "                    \"value\" : \"123\",\n" +
-                "                    \"boost\" : 100.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"filter\" : [\n" +
-                "              {\n" +
-                "                \"bool\" : {\n" +
-                "                  \"must\" : [\n" +
-                "                    {\n" +
-                "                      \"term\" : {\n" +
-                "                        \"edf\" : {\n" +
-                "                          \"value\" : \"bla bla\",\n" +
-                "                          \"boost\" : 1.0\n" +
-                "                        }\n" +
-                "                      }\n" +
-                "                    }\n" +
-                "                  ],\n" +
-                "                  \"disable_coord\" : false,\n" +
-                "                  \"adjust_pure_negative\" : true,\n" +
-                "                  \"boost\" : 1.0\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"disable_coord\" : false,\n" +
-                "            \"adjust_pure_negative\" : true,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"filter\" : [\n" +
-                "        {\n" +
-                "          \"bool\" : {\n" +
-                "            \"must\" : [\n" +
-                "              {\n" +
-                "                \"term\" : {\n" +
-                "                  \"type\" : {\n" +
-                "                    \"value\" : \"Person\",\n" +
-                "                    \"boost\" : 1.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"disable_coord\" : false,\n" +
-                "            \"adjust_pure_negative\" : true,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"disable_coord\" : false,\n" +
-                "      \"adjust_pure_negative\" : true,\n" +
-                "      \"boost\" : 1.0\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"_source\" : false\n" +
-                "}");
+        Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"term\":{\"abc\":{\"value\":\"123\",\"boost\":100.0}}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"edf\":{\"value\":\"bla bla\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}",builder.toString() );
     }
 
     @Test
@@ -280,7 +185,7 @@ public class ConstraintSearchAppenderTest {
         VertexControllerContext vertexControllerContext = mock(VertexControllerContext.class);
         Vertex vertex = mock(Vertex.class);
         Client client = mock(Client.class);
-        when(client.prepareSearch()).then((Answer<SearchRequestBuilder>) invocation-> new SearchRequestBuilder(client,mock(SearchAction.class)));
+        when(client.prepareSearch()).then((Answer<SearchRequestBuilder>) invocation -> new SearchRequestBuilder(client, mock(SearchAction.class)));
         when(vertex.label()).then((Answer<String>) invocation -> "Person");
 
         when(context.getVertexControllerContext()).then((Answer<Optional<VertexControllerContext>>) invocation -> Optional.of(vertexControllerContext));
@@ -297,74 +202,7 @@ public class ConstraintSearchAppenderTest {
         ConstraintSearchAppender searchAppender = new ConstraintSearchAppender();
         searchAppender.append(searchBuilder, context);
         SearchRequestBuilder builder = searchBuilder.build(client, false);
-        Assert.assertEquals(builder.toString(),"{\n" +
-                "  \"size\" : 0,\n" +
-                "  \"query\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"must\" : [\n" +
-                "        {\n" +
-                "          \"bool\" : {\n" +
-                "            \"filter\" : [\n" +
-                "              {\n" +
-                "                \"bool\" : {\n" +
-                "                  \"should\" : [\n" +
-                "                    {\n" +
-                "                      \"term\" : {\n" +
-                "                        \"edf\" : {\n" +
-                "                          \"value\" : \"bla bla\",\n" +
-                "                          \"boost\" : 1.0\n" +
-                "                        }\n" +
-                "                      }\n" +
-                "                    }\n" +
-                "                  ],\n" +
-                "                  \"disable_coord\" : false,\n" +
-                "                  \"adjust_pure_negative\" : true,\n" +
-                "                  \"boost\" : 1.0\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"should\" : [\n" +
-                "              {\n" +
-                "                \"term\" : {\n" +
-                "                  \"abc\" : {\n" +
-                "                    \"value\" : \"123\",\n" +
-                "                    \"boost\" : 100.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"disable_coord\" : false,\n" +
-                "            \"adjust_pure_negative\" : true,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"filter\" : [\n" +
-                "        {\n" +
-                "          \"bool\" : {\n" +
-                "            \"must\" : [\n" +
-                "              {\n" +
-                "                \"term\" : {\n" +
-                "                  \"type\" : {\n" +
-                "                    \"value\" : \"Person\",\n" +
-                "                    \"boost\" : 1.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"disable_coord\" : false,\n" +
-                "            \"adjust_pure_negative\" : true,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"disable_coord\" : false,\n" +
-                "      \"adjust_pure_negative\" : true,\n" +
-                "      \"boost\" : 1.0\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"_source\" : false\n" +
-                "}");
+        Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"filter\":[{\"bool\":{\"should\":[{\"term\":{\"edf\":{\"value\":\"bla bla\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"should\":[{\"term\":{\"abc\":{\"value\":\"123\",\"boost\":100.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}",builder.toString() );
     }
 
     @Test
@@ -374,7 +212,7 @@ public class ConstraintSearchAppenderTest {
         VertexControllerContext vertexControllerContext = mock(VertexControllerContext.class);
         Vertex vertex = mock(Vertex.class);
         Client client = mock(Client.class);
-        when(client.prepareSearch()).then((Answer<SearchRequestBuilder>) invocation-> new SearchRequestBuilder(client,mock(SearchAction.class)));
+        when(client.prepareSearch()).then((Answer<SearchRequestBuilder>) invocation -> new SearchRequestBuilder(client, mock(SearchAction.class)));
         when(vertex.label()).then((Answer<String>) invocation -> "Person");
 
         when(context.getVertexControllerContext()).then((Answer<Optional<VertexControllerContext>>) invocation -> Optional.of(vertexControllerContext));
@@ -394,107 +232,7 @@ public class ConstraintSearchAppenderTest {
         ConstraintSearchAppender searchAppender = new ConstraintSearchAppender();
         searchAppender.append(searchBuilder, context);
         SearchRequestBuilder builder = searchBuilder.build(client, false);
-        Assert.assertEquals(builder.toString(),"{\n" +
-                "  \"size\" : 0,\n" +
-                "  \"query\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"must\" : [\n" +
-                "        {\n" +
-                "          \"bool\" : {\n" +
-                "            \"must\" : [\n" +
-                "              {\n" +
-                "                \"bool\" : {\n" +
-                "                  \"must\" : [\n" +
-                "                    {\n" +
-                "                      \"term\" : {\n" +
-                "                        \"abc\" : {\n" +
-                "                          \"value\" : \"123\",\n" +
-                "                          \"boost\" : 100.0\n" +
-                "                        }\n" +
-                "                      }\n" +
-                "                    }\n" +
-                "                  ],\n" +
-                "                  \"filter\" : [\n" +
-                "                    {\n" +
-                "                      \"bool\" : {\n" +
-                "                        \"must\" : [\n" +
-                "                          {\n" +
-                "                            \"term\" : {\n" +
-                "                              \"edf\" : {\n" +
-                "                                \"value\" : \"bla bla\",\n" +
-                "                                \"boost\" : 1.0\n" +
-                "                              }\n" +
-                "                            }\n" +
-                "                          }\n" +
-                "                        ],\n" +
-                "                        \"disable_coord\" : false,\n" +
-                "                        \"adjust_pure_negative\" : true,\n" +
-                "                        \"boost\" : 1.0\n" +
-                "                      }\n" +
-                "                    }\n" +
-                "                  ],\n" +
-                "                  \"disable_coord\" : false,\n" +
-                "                  \"adjust_pure_negative\" : true,\n" +
-                "                  \"boost\" : 5.0\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"filter\" : [\n" +
-                "              {\n" +
-                "                \"bool\" : {\n" +
-                "                  \"must\" : [\n" +
-                "                    {\n" +
-                "                      \"script\" : {\n" +
-                "                        \"script\" : {\n" +
-                "                          \"inline\" : \"wildcard\",\n" +
-                "                          \"lang\" : \"native\",\n" +
-                "                          \"params\" : {\n" +
-                "                            \"expression\" : \"*bla*\",\n" +
-                "                            \"field\" : \"qwerty\"\n" +
-                "                          }\n" +
-                "                        },\n" +
-                "                        \"boost\" : 1.0\n" +
-                "                      }\n" +
-                "                    }\n" +
-                "                  ],\n" +
-                "                  \"disable_coord\" : false,\n" +
-                "                  \"adjust_pure_negative\" : true,\n" +
-                "                  \"boost\" : 1.0\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"disable_coord\" : false,\n" +
-                "            \"adjust_pure_negative\" : true,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"filter\" : [\n" +
-                "        {\n" +
-                "          \"bool\" : {\n" +
-                "            \"must\" : [\n" +
-                "              {\n" +
-                "                \"term\" : {\n" +
-                "                  \"type\" : {\n" +
-                "                    \"value\" : \"Person\",\n" +
-                "                    \"boost\" : 1.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"disable_coord\" : false,\n" +
-                "            \"adjust_pure_negative\" : true,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"disable_coord\" : false,\n" +
-                "      \"adjust_pure_negative\" : true,\n" +
-                "      \"boost\" : 1.0\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"_source\" : false\n" +
-                "}");
+        Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"term\":{\"abc\":{\"value\":\"123\",\"boost\":100.0}}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"edf\":{\"value\":\"bla bla\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":5.0}}],\"filter\":[{\"bool\":{\"must\":[{\"script\":{\"script\":{\"source\":\"wildcard\",\"lang\":\"native\",\"params\":{\"expression\":\"*bla*\",\"field\":\"qwerty\"}},\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}",builder.toString() );
     }
 
     @Test
@@ -504,7 +242,7 @@ public class ConstraintSearchAppenderTest {
         VertexControllerContext vertexControllerContext = mock(VertexControllerContext.class);
         Vertex vertex = mock(Vertex.class);
         Client client = mock(Client.class);
-        when(client.prepareSearch()).then((Answer<SearchRequestBuilder>) invocation-> new SearchRequestBuilder(client,mock(SearchAction.class)));
+        when(client.prepareSearch()).then((Answer<SearchRequestBuilder>) invocation -> new SearchRequestBuilder(client, mock(SearchAction.class)));
         when(vertex.label()).then((Answer<String>) invocation -> "Person");
 
         when(context.getVertexControllerContext()).then((Answer<Optional<VertexControllerContext>>) invocation -> Optional.of(vertexControllerContext));
@@ -524,106 +262,6 @@ public class ConstraintSearchAppenderTest {
         ConstraintSearchAppender searchAppender = new ConstraintSearchAppender();
         searchAppender.append(searchBuilder, context);
         SearchRequestBuilder builder = searchBuilder.build(client, false);
-        Assert.assertEquals(builder.toString(),"{\n" +
-                "  \"size\" : 0,\n" +
-                "  \"query\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"must\" : [\n" +
-                "        {\n" +
-                "          \"bool\" : {\n" +
-                "            \"filter\" : [\n" +
-                "              {\n" +
-                "                \"bool\" : {\n" +
-                "                  \"should\" : [\n" +
-                "                    {\n" +
-                "                      \"script\" : {\n" +
-                "                        \"script\" : {\n" +
-                "                          \"inline\" : \"wildcard\",\n" +
-                "                          \"lang\" : \"native\",\n" +
-                "                          \"params\" : {\n" +
-                "                            \"expression\" : \"*bla*\",\n" +
-                "                            \"field\" : \"qwerty\"\n" +
-                "                          }\n" +
-                "                        },\n" +
-                "                        \"boost\" : 1.0\n" +
-                "                      }\n" +
-                "                    }\n" +
-                "                  ],\n" +
-                "                  \"disable_coord\" : false,\n" +
-                "                  \"adjust_pure_negative\" : true,\n" +
-                "                  \"boost\" : 1.0\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"should\" : [\n" +
-                "              {\n" +
-                "                \"bool\" : {\n" +
-                "                  \"must\" : [\n" +
-                "                    {\n" +
-                "                      \"term\" : {\n" +
-                "                        \"abc\" : {\n" +
-                "                          \"value\" : \"123\",\n" +
-                "                          \"boost\" : 100.0\n" +
-                "                        }\n" +
-                "                      }\n" +
-                "                    }\n" +
-                "                  ],\n" +
-                "                  \"filter\" : [\n" +
-                "                    {\n" +
-                "                      \"bool\" : {\n" +
-                "                        \"must\" : [\n" +
-                "                          {\n" +
-                "                            \"term\" : {\n" +
-                "                              \"edf\" : {\n" +
-                "                                \"value\" : \"bla bla\",\n" +
-                "                                \"boost\" : 1.0\n" +
-                "                              }\n" +
-                "                            }\n" +
-                "                          }\n" +
-                "                        ],\n" +
-                "                        \"disable_coord\" : false,\n" +
-                "                        \"adjust_pure_negative\" : true,\n" +
-                "                        \"boost\" : 1.0\n" +
-                "                      }\n" +
-                "                    }\n" +
-                "                  ],\n" +
-                "                  \"disable_coord\" : false,\n" +
-                "                  \"adjust_pure_negative\" : true,\n" +
-                "                  \"boost\" : 5.0\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"disable_coord\" : false,\n" +
-                "            \"adjust_pure_negative\" : true,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"filter\" : [\n" +
-                "        {\n" +
-                "          \"bool\" : {\n" +
-                "            \"must\" : [\n" +
-                "              {\n" +
-                "                \"term\" : {\n" +
-                "                  \"type\" : {\n" +
-                "                    \"value\" : \"Person\",\n" +
-                "                    \"boost\" : 1.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"disable_coord\" : false,\n" +
-                "            \"adjust_pure_negative\" : true,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"disable_coord\" : false,\n" +
-                "      \"adjust_pure_negative\" : true,\n" +
-                "      \"boost\" : 1.0\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"_source\" : false\n" +
-                "}");
+        Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"filter\":[{\"bool\":{\"should\":[{\"script\":{\"script\":{\"source\":\"wildcard\",\"lang\":\"native\",\"params\":{\"expression\":\"*bla*\",\"field\":\"qwerty\"}},\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"should\":[{\"bool\":{\"must\":[{\"term\":{\"abc\":{\"value\":\"123\",\"boost\":100.0}}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"edf\":{\"value\":\"bla bla\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":5.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}",builder.toString());
     }
 }

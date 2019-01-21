@@ -36,7 +36,8 @@ public class IdGeneratorControllerRegistrar extends AppControllerRegistrarBase<I
     //region AppControllerRegistrarBase Implementation
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
-        app.use("/fuse/idgen/:id").get(req -> this.getController(app).getNext(req.param("id").value(), req.param("numIds").intValue()));
+        app.get("/fuse/idgen/:id",
+                req -> this.getController(app).getNext(req.param("id").value(), req.param("numIds").intValue()));
     }
     //endregion
 }

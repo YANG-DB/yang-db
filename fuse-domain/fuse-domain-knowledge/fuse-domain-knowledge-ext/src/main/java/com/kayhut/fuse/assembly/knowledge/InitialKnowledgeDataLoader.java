@@ -33,15 +33,14 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateRequest;
-import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateResponse;
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
-import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
@@ -75,7 +74,7 @@ public class InitialKnowledgeDataLoader implements InitialGraphDataLoader {
         client = new PreBuiltTransportClient(settings);
         conf.getConfig("elasticsearch").getList("hosts").unwrapped().forEach(host -> {
             try {
-                client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host.toString()), port));
+                client.addTransportAddress(new TransportAddress(InetAddress.getByName(host.toString()), port));
             } catch (UnknownHostException e) {
                 logger.error(e.getMessage(), e);
             }
@@ -94,11 +93,11 @@ public class InitialKnowledgeDataLoader implements InitialGraphDataLoader {
                 String templateName = FilenameUtils.getBaseName(templateFile.getName());
                 String template = FileUtils.readFileToString(templateFile, "utf-8");
                 if (!client.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
-                    final DeleteIndexTemplateResponse deleteIndexTemplateResponse = client.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet(1500);
-                    if(!deleteIndexTemplateResponse.isAcknowledged()) return -1;
+                    final AcknowledgedResponse acknowledgedResponse = client.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet(1500);
+                    if(!acknowledgedResponse.isAcknowledged()) return -1;
                 }
-                final PutIndexTemplateResponse putIndexTemplateResponse = client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet(1500);
-                if(!putIndexTemplateResponse.isAcknowledged()) return -1;
+                final AcknowledgedResponse acknowledgedResponse = client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet(1500);
+                if(!acknowledgedResponse.isAcknowledged()) return -1;
             }
         }
 

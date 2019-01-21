@@ -89,7 +89,7 @@ public class PersistantResourceStore implements ResourceStore {
                 return Arrays.asList(response.getHits().getHits()).stream()
                         .map(hit -> {
                             try {
-                                return buildQueryResource(hit.getId(),hit.sourceAsMap());
+                                return buildQueryResource(hit.getId(),hit.getSourceAsMap());
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

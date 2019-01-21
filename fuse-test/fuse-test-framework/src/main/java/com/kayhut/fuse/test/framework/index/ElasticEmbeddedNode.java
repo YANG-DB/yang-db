@@ -22,8 +22,9 @@ package com.kayhut.fuse.test.framework.index;
 
 import com.kayhut.es.plugins.script.CommonScriptPlugin;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.logging.LogConfigurator;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.plugins.Plugin;
@@ -46,7 +47,12 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
         public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
-            super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins);
+            super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins,false);
+        }
+
+        @Override
+        protected void registerDerivedNodeNameWithLogger(String nodeName) {
+            LogConfigurator.setNodeName(nodeName);
         }
     }
     //endregion
@@ -110,7 +116,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                         .put("cluster.name", nodeName)
                         .build();
                 client = new PreBuiltTransportClient(settings)
-                        .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
+                        .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
             } catch (UnknownHostException e) {
                 throw new UnknownError(e.getMessage());
             }
@@ -155,7 +161,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("transport.type", "netty4")
                 .put("http.type", "netty4")
                 .put("http.enabled", "true")
-                .put("script.auto_reload_enabled", "false")
+//                .put("script.auto_reload_enabled", "false")
                 .put("transport.tcp.port", httpTransportPort)
                 .build();
 

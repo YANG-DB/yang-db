@@ -186,7 +186,7 @@ public class ElasticStatProvider {
 
     //region Private Methods
     private Object getFieldValueFromHit(final SearchHit hit, final String field) {
-        Map<String, Object> result = hit.sourceAsMap();
+        Map<String, Object> result = hit.getSourceAsMap();
         if (result == null) {
             throw new IllegalArgumentException(String.format("%s is not found.", field));
         }

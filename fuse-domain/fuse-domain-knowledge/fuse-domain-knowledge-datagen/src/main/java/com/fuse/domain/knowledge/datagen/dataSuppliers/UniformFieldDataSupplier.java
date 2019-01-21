@@ -64,9 +64,9 @@ public class UniformFieldDataSupplier<T> extends RandomDataSupplier<T> {
         Set<T> itemSet = new HashSet<>();
         for (SearchHit hit : hits) {
             T fieldValue = (T)Stream.of(
-                    hit.sourceAsMap().get("stringValue"),
-                    hit.sourceAsMap().get("intValue"),
-                    hit.sourceAsMap().get("dateValue"))
+                    hit.getSourceAsMap().get("stringValue"),
+                    hit.getSourceAsMap().get("intValue"),
+                    hit.getSourceAsMap().get("dateValue"))
                     .filter(Objects::nonNull)
                     .toJavaOptional().get();
             itemSet.add(fieldValue);

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.IOUtils;
+import org.elasticsearch.common.xcontent.DeprecationHandler;
 import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.XContentLocation;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -35,9 +36,11 @@ import java.nio.CharBuffer;
 public class FuseJsonXContentParser extends AbstractFuseXContentParser {
 
     final JsonParser parser;
+    private DeprecationHandler deprecationHandler;
 
-    public FuseJsonXContentParser(NamedXContentRegistry xContentRegistry, JsonParser parser) {
+    public FuseJsonXContentParser(NamedXContentRegistry xContentRegistry,DeprecationHandler deprecationHandler, JsonParser parser) {
         super(xContentRegistry);
+        this.deprecationHandler = deprecationHandler;
         this.parser = parser;
     }
 
@@ -67,6 +70,16 @@ public class FuseJsonXContentParser extends AbstractFuseXContentParser {
     }
 
     @Override
+    public boolean isBooleanValueLenient() throws IOException {
+        return interpretedAsLenient;
+    }
+
+    @Override
+    public boolean booleanValueLenient() throws IOException {
+        return false;
+    }
+
+    @Override
     public String currentName() throws IOException {
         return parser.getCurrentName();
     }
@@ -85,6 +98,15 @@ public class FuseJsonXContentParser extends AbstractFuseXContentParser {
     }
 
     @Override
+    public CharBuffer charBufferOrNull() throws IOException {
+        return parser.currentToken() == null ? null : CharBuffer.wrap(parser.getTextCharacters());
+    }
+
+    @Override
+    public CharBuffer charBuffer() throws IOException {
+        return CharBuffer.wrap(parser.getValueAsString());
+    }
+
     public BytesRef utf8Bytes() throws IOException {
         return new BytesRef(CharBuffer.wrap(parser.getTextCharacters(), parser.getTextOffset(), parser.getTextLength()));
     }
@@ -243,5 +265,10 @@ public class FuseJsonXContentParser extends AbstractFuseXContentParser {
     @Override
     public boolean isClosed() {
         return parser.isClosed();
+    }
+
+    @Override
+    public DeprecationHandler getDeprecationHandler() {
+        return deprecationHandler;
     }
 }

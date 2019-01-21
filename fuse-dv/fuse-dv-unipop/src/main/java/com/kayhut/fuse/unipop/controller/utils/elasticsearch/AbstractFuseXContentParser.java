@@ -85,7 +85,6 @@ public abstract class AbstractFuseXContentParser implements XContentParser {
 
     @Override
     public boolean booleanValue() throws IOException {
-        boolean interpretedAsLenient = false;
         boolean booleanValue;
         String rawValue = null;
 
@@ -96,7 +95,7 @@ public abstract class AbstractFuseXContentParser implements XContentParser {
             rawValue = String.valueOf(intValue());
         } else if (token == Token.VALUE_STRING) {
             rawValue = new String(textCharacters(), textOffset(), textLength());
-            interpretedAsLenient = Booleans.isStrictlyBoolean(rawValue) == false;
+            interpretedAsLenient = Booleans.isBoolean(rawValue) == false;
             booleanValue = Booleans.parseBoolean(rawValue, false /* irrelevant */);
         } else {
             booleanValue = doBooleanValue();
@@ -209,14 +208,6 @@ public abstract class AbstractFuseXContentParser implements XContentParser {
         return text();
     }
 
-
-    @Override
-    public BytesRef utf8BytesOrNull() throws IOException {
-        if (currentToken() == Token.VALUE_NULL) {
-            return null;
-        }
-        return utf8Bytes();
-    }
 
     @Override
     public Map<String, Object> map() throws IOException {
@@ -381,4 +372,6 @@ public abstract class AbstractFuseXContentParser implements XContentParser {
 
     @Override
     public abstract boolean isClosed();
+
+    boolean interpretedAsLenient = false;
 }

@@ -45,7 +45,7 @@ import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
@@ -57,7 +57,10 @@ import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Created by rani on 5/21/2018.
@@ -105,7 +108,7 @@ public class KnowledgeDatasetLoader {
         client = new PreBuiltTransportClient(settings);
         conf.getConfig("elasticsearch").getList("hosts").unwrapped().forEach(host -> {
             try {
-                client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host.toString()), port));
+                client.addTransportAddress(new TransportAddress(InetAddress.getByName(host.toString()), port));
             } catch (UnknownHostException e) {
                 logger.error(e.getMessage(), e);
             }

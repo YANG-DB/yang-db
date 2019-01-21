@@ -38,7 +38,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
@@ -48,7 +48,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -117,7 +120,7 @@ public class SnifferFuseClient implements FuseClient{
                 .execute().actionGet();
 
         final SearchHits hits = response.getHits();
-        hits.iterator().forEachRemaining(h->updateNodeStatus(h.getId(),h.getSource()));
+        hits.iterator().forEachRemaining(h->updateNodeStatus(h.getId(),h.getSourceAsMap()));
     }
 
     private void updateNodeStatus(String id, Map<String, Object> source) {
@@ -302,7 +305,7 @@ public class SnifferFuseClient implements FuseClient{
         TransportClient client = new PreBuiltTransportClient(settings);
         configuration.getClusterHosts().forEach(host -> {
             try {
-                client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(String.valueOf(host)), configuration.getClusterPort()));
+                client.addTransportAddress(new TransportAddress(InetAddress.getByName(String.valueOf(host)), configuration.getClusterPort()));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }

@@ -91,7 +91,7 @@ public class GraphBuilder {
             do {
                 for (SearchHit hit : scrollResp.getHits().getHits()) {
                     final String id = hit.getId();
-                    final String type = hit.getSource().get("type").toString();
+                    final String type = hit.getSourceAsMap().get("type").toString();
                     Node node;
                     switch (type) {
                         case "entity":
@@ -102,11 +102,11 @@ public class GraphBuilder {
                             node.setAttribute("ui.color", BLUE);
                             node.setAttribute("ui.size", 50f);
                             node.setAttribute("type", type);
-                            node.setAttribute("context", hit.getSource().get("context").toString());
-                            node.setAttribute("category", hit.getSource().get("category").toString());
-                            node.setAttribute("logicalId", hit.getSource().get("logicalId").toString());
-                            if (hit.getSource().containsKey("refs")) {
-                                ((List) hit.getSource().get("refs")).forEach(ref -> {
+                            node.setAttribute("context", hit.getSourceAsMap().get("context").toString());
+                            node.setAttribute("category", hit.getSourceAsMap().get("category").toString());
+                            node.setAttribute("logicalId", hit.getSourceAsMap().get("logicalId").toString());
+                            if (hit.getSourceAsMap().containsKey("refs")) {
+                                ((List) hit.getSourceAsMap().get("refs")).forEach(ref -> {
                                     if (g.getNode(ref.toString()) == null) {
                                         final Node reference = g.addNode(ref.toString());
                                         reference.setAttribute("referrers", Array.of(id));
@@ -130,28 +130,28 @@ public class GraphBuilder {
                                 node = g.addNode(id);
                             }
                             node.setAttribute("type", type);
-                            node.setAttribute("context", hit.getSource().get("context").toString());
-                            String entityId = hit.getSource().get("entityId").toString();
+                            node.setAttribute("context", hit.getSourceAsMap().get("context").toString());
+                            String entityId = hit.getSourceAsMap().get("entityId").toString();
                             String value = "";
-                            if (hit.getSource().containsKey("stringValue")) {
-                                value = hit.getSource().get("stringValue").toString();
-                            } else if (hit.getSource().containsKey("dateValue")) {
-                                value = hit.getSource().get("dateValue").toString();
-                            } else if (hit.getSource().containsKey("intValue")) {
-                                value = hit.getSource().get("intValue").toString();
+                            if (hit.getSourceAsMap().containsKey("stringValue")) {
+                                value = hit.getSourceAsMap().get("stringValue").toString();
+                            } else if (hit.getSourceAsMap().containsKey("dateValue")) {
+                                value = hit.getSourceAsMap().get("dateValue").toString();
+                            } else if (hit.getSourceAsMap().containsKey("intValue")) {
+                                value = hit.getSourceAsMap().get("intValue").toString();
                             }
 
-                            node.setAttribute("fieldId", hit.getSource().get("fieldId").toString());
+                            node.setAttribute("fieldId", hit.getSourceAsMap().get("fieldId").toString());
                             node.setAttribute("value", value);
                             node.setAttribute("ui.color", LIGHTBLUE);
                             node.setAttribute("ui.size", 30f);
                             node.setAttribute("entityId", entityId);
-                            node.setAttribute("logicalId", hit.getSource().get("logicalId").toString());
-                            if (hit.getSource().containsKey("refs")) {
-                                ((List) hit.getSource().get("refs")).forEach(ref -> {
+                            node.setAttribute("logicalId", hit.getSourceAsMap().get("logicalId").toString());
+                            if (hit.getSourceAsMap().containsKey("refs")) {
+                                ((List) hit.getSourceAsMap().get("refs")).forEach(ref -> {
                                     if (g.getNode(ref.toString()) == null) {
                                         final Node reference = g.addNode(ref.toString());
-                                        reference.setAttribute("context", hit.getSource().get("context").toString());
+                                        reference.setAttribute("context", hit.getSourceAsMap().get("context").toString());
                                         reference.setAttribute("referrers", Array.of(id));
                                         reference.setAttribute("ui.color", BURLYWOOD);
                                         reference.setAttribute("ui.size", 20f);
@@ -183,9 +183,9 @@ public class GraphBuilder {
                             }
                             node.setAttribute("ui.color", LIGHTGREEN);
                             node.setAttribute("ui.size", 30f);
-                            node.setAttribute("context", hit.getSource().getOrDefault("context", "").toString());
+                            node.setAttribute("context", hit.getSourceAsMap().getOrDefault("context", "").toString());
                             node.setAttribute("type", type);
-                            entityId = hit.getSource().get("entityId").toString();
+                            entityId = hit.getSourceAsMap().get("entityId").toString();
                             node.setAttribute("entityId", entityId);
 
                             //add entityId node (if not already exists)
@@ -198,8 +198,8 @@ public class GraphBuilder {
                             }
                             break;
                         case "e.relation":
-                            String entityAId = hit.getSource().get("entityAId").toString();
-                            String entityBId = hit.getSource().get("entityBId").toString();
+                            String entityAId = hit.getSourceAsMap().get("entityAId").toString();
+                            String entityBId = hit.getSourceAsMap().get("entityBId").toString();
                             //add entityId node (if not already exists)
                             if (g.getNode(entityAId) == null)
                                 g.addNode(entityAId);

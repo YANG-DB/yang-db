@@ -41,8 +41,8 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** get the cursor page store info*/
-        app.use(appUrlSupplier.pageStoreUrl(":queryId", ":cursorId"))
-                .get(req -> {
+        app.get(appUrlSupplier.pageStoreUrl(":queryId", ":cursorId"),
+                req -> {
                     Route.of("getPageStore").write();
 
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value(), req.param("cursorId").value());
@@ -50,10 +50,9 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                 });
 
         /** create the next page */
-        app.use(appUrlSupplier.pageStoreUrl(":queryId", ":cursorId"))
-                .post(req -> {
+        app.post(appUrlSupplier.pageStoreUrl(":queryId", ":cursorId"),
+                req -> {
                     Route.of("postPage").write();
-
                     CreatePageRequest createPageRequest = req.body(CreatePageRequest.class);
                     req.set(CreatePageRequest.class, createPageRequest);
                     ContentResponse<PageResourceInfo> entity = createPageRequest.isFetch() ?
@@ -63,23 +62,22 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                 });
 
         /** view the elastic query with d3 html*/
-        app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/elastic/view")
-                .get(req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
+        app.get(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/elastic/view",
+                req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
                         appUrlSupplier.pageStoreUrl(req.param("queryId").value(), req.param("cursorId").value()) + "/" + req.param("pageId").value() + "/elastic"));
 
 
         /** get page info by id */
-        app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))
-                .get(req -> {
+        app.get(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"),
+                req -> {
                     Route.of("getPage").write();
-
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
                     return Results.with(response, response.status());
                 });
 
         /** get page data by id */
-        app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/data")
-                .get(req -> {
+        app.get(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/data",
+                req -> {
                     Route.of("getPageData").write();
 
                     ContentResponse response = this.getController(app).getData(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
@@ -87,8 +85,8 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                 });
 
         /** get page data by id */
-        app.use(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))
-                .delete(req -> {
+        app.delete(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"),
+                req -> {
                     Route.of("deletePage").write();
 
                     ContentResponse response = this.getController(app).delete(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());

@@ -26,7 +26,6 @@ import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.plugins.ScriptPlugin;
-import org.elasticsearch.script.NativeScriptFactory;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,6 +41,9 @@ public class CommonScriptPlugin extends Plugin implements ScriptPlugin {
     //endregion
 
     //region SciprtPlugin Implementation
+
+    /*
+    //todo
     @Override
     public List<NativeScriptFactory> getNativeScripts() {
         return Arrays.asList(
@@ -49,5 +51,6 @@ public class CommonScriptPlugin extends Plugin implements ScriptPlugin {
                 new WildcardScriptFactory()
         );
     }
+*/
     //endregion
 }

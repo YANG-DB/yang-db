@@ -60,36 +60,31 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** get the query store info */
-        app.use(appUrlSupplier.queryStoreUrl())
-                .get(req -> {
+        app.get(appUrlSupplier.queryStoreUrl(),req -> {
                     Route.of("getQueryStore").write();
                     return Results.with(this.getController(app).getInfo(), Status.OK);
                 });
 
         /** create a v1 fallback url */
-        app.use(appUrlSupplier.queryStoreUrl() )
-                .post(req -> postV1(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() ,
+                req -> postV1(app,req,this));
 
         /** create a v1 query */
-        app.use(appUrlSupplier.queryStoreUrl() + "/v1")
-                .post(req -> postV1(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1",req -> postV1(app,req,this));
 
         /** create a cypher query */
-        app.use(appUrlSupplier.queryStoreUrl() + "/cypher")
-                .post(req -> postCypher(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/cypher",req -> postCypher(app,req,this));
 
 
         /** call a query */
-        app.use(appUrlSupplier.queryStoreUrl() + "/call")
-                .post(req -> API.call(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/call",req -> API.call(app,req,this));
 
         /** call a query */
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/nextPageData")
-                .get(req -> API.nextPage(app,req,this));
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/nextPageData",
+                req -> API.nextPage(app,req,this));
 
         /** get the query info */
-        app.use(appUrlSupplier.resourceUrl(":queryId"))
-                .get(req -> {
+        app.get(appUrlSupplier.resourceUrl(":queryId"),req -> {
                     Route.of("getQuery").write();
 
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value());
@@ -97,88 +92,79 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                 });
 
         /** delete a query */
-        app.use(appUrlSupplier.resourceUrl(":queryId"))
-                .delete(req -> {
+        app.delete(appUrlSupplier.resourceUrl(":queryId"),req -> {
                     Route.of("deleteQuery").write();
                     ContentResponse response = this.getController(app).delete(req.param("queryId").value());
                     return Results.with(response, response.status());
                 });
 
         /** get the query verbose plan */
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/planVerbose")
-                .get(req -> {
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/planVerbose",req -> {
                     ContentResponse response = this.getController(app).planVerbose(req.param("queryId").value());
                     //temporary fix for json serialization of object graphs
                     return Results.with(new ObjectMapper().writeValueAsString(response.getData()), response.status())
                             .type("application/json");
                 });
         /** get the print of the execution plan */
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/print")
-                .get(req -> API.planPrint(app,req,this));
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/print",req -> API.planPrint(app,req,this));
 
         /** get the query v1*/
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/v1")
-                .get(req -> {
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/v1",req -> {
                     ContentResponse response = this.getController(app).getV1(req.param("queryId").value());
                     return Results.with(response, response.status());
                 });
         /** get the query v1 print*/
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/v1/print")
-                .get(req -> API.queryPrint(app,req,this));
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/v1/print",req -> API.queryPrint(app,req,this));
 
 
         /** view the asg query with d3 html*/
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg/view")
-                .get(req -> Results.redirect("/public/assets/AsgTreeViewer.html?q=" + req.param("queryId").value()));
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/view",
+                req -> Results.redirect("/public/assets/AsgTreeViewer.html?q=" + req.param("queryId").value()));
 
 
         /** get the asg query */
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg")
-                .get(req -> {
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg",req -> {
                     ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param("queryId").value());
                     return Results.with(response, response.status());
                 });
 
         /** view the elastic query with d3 html*/
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/elastic/view")
-                .get(req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/elastic/view",
+                req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
                         appUrlSupplier.queryStoreUrl() + "/" + req.param("queryId").value() + "/elastic"));
 
         /** get the asg query */
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg/json")
-                .get(req -> {
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/json",req -> {
                     ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param("queryId").value());
                     return Results.json(response.getData());
                 });
 
         /** get the asg query print*/
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/asg/print")
-                .get(req -> API.print(app,req,this));
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/print",
+                req -> API.print(app,req,this));
 
         /** get the query plan execution */
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan")
-                .get(req -> {
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan",req -> {
                     ContentResponse response = this.getController(app).explain(req.param("queryId").value());
                     //temporary fix for jason serialization of object graphs
                     return Results.with(JsonWriter.objectToJson(response), response.status());
                 });
 
         /** get the query verbose plan */
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/json")
-                .get(req -> {
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/json",req -> {
                     ContentResponse response = this.getController(app).explain(req.param("queryId").value());
                     return Results.json(response.getData());
                 });
 
         /** get the query verbose plan */
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/graph")
-                .get(req -> API.planGraph(app,req,this));
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/graph",
+                req -> API.planGraph(app,req,this));
 
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/view")
-                .get(req -> Results.redirect("/public/assets/PlanTreeViewer.html?q=" + req.param("queryId").value()));
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/view",
+                req -> Results.redirect("/public/assets/PlanTreeViewer.html?q=" + req.param("queryId").value()));
 
-        app.use(appUrlSupplier.resourceUrl(":queryId") + "/plan/sankey")
-                .get(req -> Results.redirect("/public/assets/PlanSankeyViewer.html?q=" + req.param("queryId").value()));
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/sankey",
+                req -> Results.redirect("/public/assets/PlanSankeyViewer.html?q=" + req.param("queryId").value()));
     }
     //endregion
 

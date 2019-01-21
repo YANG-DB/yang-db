@@ -20,8 +20,8 @@ package com.kayhut.es.plugins.script.regex;
  * #L%
  */
 
-import org.elasticsearch.script.ExecutableScript;
-import org.elasticsearch.script.NativeScriptFactory;
+//import org.elasticsearch.script.ExecutableScript;
+//import org.elasticsearch.script.NativeScriptFactory;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Roman on 5/26/2018.
  */
-public class RegexScriptFactory implements NativeScriptFactory {
+public class RegexScriptFactory /*implements NativeScriptFactory*/ {
     //region Constructors
     public RegexScriptFactory() {
         this.maxPatternCacheSize = 10000;
@@ -40,6 +40,7 @@ public class RegexScriptFactory implements NativeScriptFactory {
     //endregion
 
     //region NativeScriptFactory Implementation
+/*
     @Override
     public ExecutableScript newScript(Map<String, Object> params) {
         String field = params == null ? null : (String)params.get("field");
@@ -59,13 +60,14 @@ public class RegexScriptFactory implements NativeScriptFactory {
         Pattern regexPattern = this.patternCache.computeIfAbsent(expression, this::compileRegexExpression);
         return new RegexScript(field, regexPattern);
     }
+*/
 
-    @Override
+//    @Override
     public boolean needsScores() {
         return false;
     }
 
-    @Override
+//    @Override
     public String getName() {
         return "regex";
     }
