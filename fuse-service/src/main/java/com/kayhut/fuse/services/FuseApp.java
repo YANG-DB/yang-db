@@ -65,7 +65,7 @@ import static org.quartz.JobBuilder.newJob;
 public class FuseApp extends Jooby {
     //region Consructors
     public FuseApp(AppUrlSupplier localUrlSupplier) {
-        use(new Scanner("com.kayhut.fuse.services.modules").scan(com.kayhut.fuse.dispatcher.modules.ModuleBase.class));
+        use(new Scanner());
 
         use("*", new RequestLogger().extended());
         //metrics statistics

@@ -30,9 +30,15 @@ import com.twitter.snowflake.support.IdSequenceFactory;
  * Created by Roman on 4/9/2018.
  */
 public class SnowflakeRequestIdSupplier implements RequestIdSupplier {
+    private IdGeneratorDriver<Range> idGeneratorDriver;
+
     //region Constructors
     @Inject
     public SnowflakeRequestIdSupplier(IdGeneratorDriver<Range> idGeneratorDriver) {
+        this.idGeneratorDriver = idGeneratorDriver;
+    }
+
+    private void init() {
         IdSequenceFactory idSequenceFactory = new IdSequenceFactory();
         idSequenceFactory.setTimeBits(41);
         idSequenceFactory.setWorkerBits(6);
@@ -52,6 +58,9 @@ public class SnowflakeRequestIdSupplier implements RequestIdSupplier {
     //region RequestIdSupplier Implementation
     @Override
     public String get() {
+        if(sequence==null) {
+            init();
+        }
         return String.format("FR%s", this.sequence.nextId());
     }
 
