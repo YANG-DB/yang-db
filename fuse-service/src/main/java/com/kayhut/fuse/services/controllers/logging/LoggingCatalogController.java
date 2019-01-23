@@ -84,8 +84,8 @@ public class LoggingCatalogController extends LoggingControllerBase<CatalogContr
     }
 
     @Override
-    public ContentResponse<GraphElementSchemaProvider> getSchema(String id) {
-        return new LoggingSyncMethodDecorator<ContentResponse<GraphElementSchemaProvider>>(
+    public ContentResponse<String> getSchema(String id) {
+        return new LoggingSyncMethodDecorator<ContentResponse<String>>(
                 this.logger,
                 this.metricRegistry,
                 getSchema,
@@ -96,8 +96,8 @@ public class LoggingCatalogController extends LoggingControllerBase<CatalogContr
     }
 
     @Override
-    public ContentResponse<List<GraphElementSchemaProvider>> getSchemas() {
-        return new LoggingSyncMethodDecorator<ContentResponse<List<GraphElementSchemaProvider>>>(
+    public ContentResponse<List<String>> getSchemas() {
+        return new LoggingSyncMethodDecorator<ContentResponse<List<String>>>(
                 this.logger,
                 this.metricRegistry,
                 getSchemas,

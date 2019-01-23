@@ -20,6 +20,7 @@ package com.kayhut.fuse.services.controllers;
  * #L%
  */
 
+import com.cedarsoftware.util.io.JsonWriter;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
@@ -68,23 +69,23 @@ public class StandardCatalogController implements CatalogController {
     }
 
     @Override
-    public ContentResponse<GraphElementSchemaProvider> getSchema(String id) {
+    public ContentResponse<String> getSchema(String id) {
         Optional<Ontology> ontology = this.ontologyProvider.get(id);
         if (!ontology.isPresent()) {
             return ContentResponse.notFound();
         }
 
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(this.ontologyProvider.get(id).get());
-        return Builder.<GraphElementSchemaProvider>builder(OK, NOT_FOUND)
-                .data(Optional.of(createSerializableSchemaProvider(schemaProvider)))
+        return Builder.<String>builder(OK, NOT_FOUND)
+                .data(Optional.of(JsonWriter.objectToJson(createSerializableSchemaProvider(schemaProvider))))
                 .compose();
     }
 
     @Override
-    public ContentResponse<List<GraphElementSchemaProvider>> getSchemas() {
-        return Builder.<List<GraphElementSchemaProvider>>builder(OK, NOT_FOUND)
+    public ContentResponse<List<String>> getSchemas() {
+        return Builder.<List<String>>builder(OK, NOT_FOUND)
                 .data(Optional.of(Stream.ofAll(this.ontologyProvider.getAll())
-                        .map(ont -> createSerializableSchemaProvider(this.schemaProviderFactory.get(ont)))
+                        .map(ont -> JsonWriter.objectToJson(createSerializableSchemaProvider(this.schemaProviderFactory.get(ont))))
                         .toJavaList()))
                 .compose();
     }

@@ -147,6 +147,7 @@
         <!-- metrics -->
         <metrics-core.version>3.1.2</metrics-core.version>
 
+        <json.io>4.10.1</json.io>
         <!-- test -->
         <junit.version>4.12</junit.version>
         <easymock.version>3.2</easymock.version>
@@ -602,6 +603,11 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito-core.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.cedarsoftware</groupId>
+                <artifactId>json-io</artifactId>
+                <version>${json.io}</version>
             </dependency>
             <dependency>
                 <groupId>io.rest-assured</groupId>

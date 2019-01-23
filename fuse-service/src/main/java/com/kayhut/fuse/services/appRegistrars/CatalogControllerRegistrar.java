@@ -58,7 +58,7 @@ public class CatalogControllerRegistrar extends AppControllerRegistrarBase<Catal
         /** get available schemas **/
         app.get("/fuse/catalog/schema"
                 ,req -> {
-                    ContentResponse<List<GraphElementSchemaProvider>> response = this.getController(app).getSchemas();
+                    ContentResponse<List<String>> response = this.getController(app).getSchemas();
                     return Results.with(response, response.status());
                 });
 

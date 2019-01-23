@@ -22,7 +22,6 @@ package com.kayhut.fuse.unipop.controller.discrete.converter;
 
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
-import com.kayhut.fuse.unipop.controller.utils.elasticsearch.SearchHitUtils;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
@@ -32,7 +31,9 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.elasticsearch.search.SearchHit;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by roman.margolis on 12/09/2017.
@@ -56,8 +57,9 @@ public class DiscreteVertexConverter<E extends Element> implements ElementConver
     //region ElementConverter Implementation
     @Override
     public Iterable<E> convert(SearchHit searchHit) {
-        //Map<String, Object> source = new HashMap<>(searchHit.sourceAsMap());
-        Map<String, Object> source = SearchHitUtils.convertToMap(searchHit);
+        Map<String, Object> source = new HashMap<>(searchHit.getSourceAsMap());
+        //        ##Es 5 optimization for searchHit deprecated Logger
+        //        Map<String, Object> source = SearchHitUtils.convertToMap(searchHit);
 
         if(searchHit.getScore() > 0){
             source.put("score", searchHit.getScore());

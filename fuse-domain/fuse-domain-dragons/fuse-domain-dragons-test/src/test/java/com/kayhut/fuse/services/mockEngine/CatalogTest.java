@@ -23,6 +23,7 @@ public class CatalogTest {
     @Before
     public void before() {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
+//        TestSuite.setup();
     }
 
     @Test

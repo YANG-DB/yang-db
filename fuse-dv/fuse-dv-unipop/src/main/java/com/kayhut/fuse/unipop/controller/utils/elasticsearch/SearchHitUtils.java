@@ -34,6 +34,9 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * ES 5 optimization for searchHit deprecated Logger
+ */
 public class SearchHitUtils {
     public static Map<String, Object> convertToMap(SearchHit searchHit) {
         return convertToMap(searchHit.getSourceRef(), false, XContentType.JSON).v2();

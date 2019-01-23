@@ -20,7 +20,6 @@ package com.kayhut.fuse.unipop.controller.common.converter;
  * #L%
  */
 
-import com.kayhut.fuse.unipop.controller.utils.elasticsearch.SearchHitUtils;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.Map;
@@ -44,7 +43,9 @@ public class SearchHitDataItem implements DataItem {
     @Override
     public Map<String, Object> properties() {
         if (this.properties == null) {
-            this.properties = SearchHitUtils.convertToMap(this.searchHit);
+            //        ##Es 5 optimization for searchHit deprecated Logger
+            //        this.properties = SearchHitUtils.convertToMap(this.searchHit);
+            this.properties = this.searchHit.getSourceAsMap();
         }
 
         return this.properties;

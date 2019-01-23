@@ -33,7 +33,7 @@ import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.dispatcher.resource.store.InMemoryResourceStore;
 import com.kayhut.fuse.dispatcher.resource.store.NodeStatusResource;
-import com.kayhut.fuse.executor.resource.PersistantNodeStatusResource;
+import com.kayhut.fuse.executor.resource.InMemNodeStatusResource;
 import com.kayhut.fuse.logging.StatusReportedJob;
 import com.kayhut.fuse.model.Range;
 import com.kayhut.fuse.model.descriptors.Descriptor;
@@ -163,7 +163,7 @@ public class ServiceModule extends ModuleBase {
             protected void configure() {
                 String clazz = env.config().hasPath("fuse.node_status_reporter") ?
                         env.config().getString("fuse.node_status_reporter") :
-                        InMemoryResourceStore.class.getName();
+                        InMemNodeStatusResource.class.getName();
                 try {
                     this.bind(NodeStatusResource.class)
                             .to((Class<? extends NodeStatusResource>) Class.forName(clazz))

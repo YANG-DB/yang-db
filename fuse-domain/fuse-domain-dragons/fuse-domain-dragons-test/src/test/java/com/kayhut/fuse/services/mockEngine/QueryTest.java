@@ -36,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 public class QueryTest {
     @Before
     public void before() {
+//        TestSuite.setup();
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 
