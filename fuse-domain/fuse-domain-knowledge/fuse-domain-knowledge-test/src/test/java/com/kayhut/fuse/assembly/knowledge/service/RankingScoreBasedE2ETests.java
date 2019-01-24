@@ -312,8 +312,8 @@ public class RankingScoreBasedE2ETests {
         Assert.assertEquals("e00000013.global", globalEntitiesSorted.get(0).geteID());
         Assert.assertEquals("e00000014.global", globalEntitiesSorted.get(1).geteID());
         Assert.assertEquals("e00000010.global", globalEntitiesSorted.get(2).geteID());
-        Assert.assertEquals("e00000015.global", globalEntitiesSorted.get(3).geteID());
-        Assert.assertEquals("e00000012.global", globalEntitiesSorted.get(4).geteID());
+        Assert.assertEquals("e00000012.global", globalEntitiesSorted.get(3).geteID());
+        Assert.assertEquals("e00000015.global", globalEntitiesSorted.get(4).geteID());
         Assert.assertEquals("e00000011.global", globalEntitiesSorted.get(5).geteID());
         Assert.assertEquals("e00000019.global", globalEntitiesSorted.get(6).geteID());
 
