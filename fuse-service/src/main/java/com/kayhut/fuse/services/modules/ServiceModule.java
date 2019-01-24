@@ -29,6 +29,7 @@ import com.google.inject.internal.SingletonScope;
 import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.cursor.CreateCursorRequestDeserializer;
+import com.kayhut.fuse.dispatcher.driver.DashboardDriver;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.dispatcher.resource.store.InMemoryResourceStore;
@@ -86,6 +87,7 @@ public class ServiceModule extends ModuleBase {
         // bind service controller
         bindApiDescriptionController(env, config, binder);
         bindInternalsController(env, config, binder);
+        bindDashboardController(env, config, binder);
         bindQueryController(env, config, binder);
         bindCursorController(env, config, binder);
         bindPageController(env, config, binder);
@@ -96,6 +98,7 @@ public class ServiceModule extends ModuleBase {
 
         // bind requests
         binder.bind(InternalsDriver.class).to(StandardInternalsDriver.class).in(RequestScoped.class);
+        binder.bind(DashboardDriver.class).to(StandardDashboardDriver.class).in(RequestScoped.class);
         binder.bind(CreateQueryRequest.class).in(RequestScoped.class);
         binder.bind(CreatePageRequest.class).in(RequestScoped.class);
         //cursors type
@@ -183,6 +186,17 @@ public class ServiceModule extends ModuleBase {
                 this.bind(InternalsController.class)
                         .to(StandardInternalsController.class);
                 this.expose(InternalsController.class);
+            }
+        });
+    }
+
+    private void bindDashboardController(Env env, Config config, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                this.bind(DashboardController.class)
+                        .to(StandardDashboardController.class);
+                this.expose(DashboardController.class);
             }
         });
     }
