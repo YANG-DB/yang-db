@@ -65,6 +65,10 @@
             <artifactId>rest-assured</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.codelibs.elasticsearch.module</groupId>
+            <artifactId>analysis-common</artifactId>
+        </dependency>
 
         <!-- runtime -->
 

@@ -48,7 +48,12 @@ public abstract class Setup {
         if(embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("knowledge");
             client = elasticEmbeddedNode.getClient();
-            createIdGeneratorIndex(client);
+            try {
+                createIdGeneratorIndex(client);
+            } catch (Exception e) {
+                //probably index already exists
+                System.out.println(e.getMessage());
+            }
         } else {
             //use existing running ES
             client = elasticEmbeddedNode.getClient("knowledge", 9300);

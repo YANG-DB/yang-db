@@ -24,4 +24,20 @@ public class QueryBuilderTest {
         Assert.assertEquals("StringValue.keyword", current.getFieldName());
         Assert.assertEquals(QueryBuilder.Op.script, current.getOp());
     }
+
+    @Test
+    public void wildcardTest() {
+        final QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.query();
+        queryBuilder.bool();
+        queryBuilder.should();
+        queryBuilder.wildcard("StringValue.keyword","*blabla*");
+
+
+        Assert.assertTrue(queryBuilder.getCurrent() instanceof QueryBuilder.WildcardComposite);
+        final QueryBuilder.WildcardComposite current = (QueryBuilder.WildcardComposite) queryBuilder.getCurrent();
+        Assert.assertEquals("*blabla*", current.getValue());
+        Assert.assertEquals("StringValue.keyword", current.getFieldName());
+        Assert.assertEquals(QueryBuilder.Op.wildcard, current.getOp());
+    }
 }

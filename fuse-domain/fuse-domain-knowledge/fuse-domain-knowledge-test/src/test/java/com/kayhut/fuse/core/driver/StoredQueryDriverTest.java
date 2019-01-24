@@ -76,7 +76,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
     }
 
     @Test
-    public void testGetInfoNoQueries() throws ParseException, JsonProcessingException {
+    public void testGetInfoNoQueries() {
         init("config/application.test.engine3.m1.dfs.knowledge.public.conf");
         RequestScope requestScope = setup();
         Provider<QueryDriver> driverScope = requestScope.scope(Key.get(QueryDriver.class), injector.getProvider(QueryDriver.class));

@@ -9,6 +9,7 @@ import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import org.json.JSONObject;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class KnowledgeSimpleCdrWithJsonQueryTests {
         System.out.println(String.format("Loaded %d rows in %s ",amount,(System.currentTimeMillis()-start)/1000));
     }
 
-//    @AfterClass
+    @AfterClass
     public static void after() {
         ctx.removeCreated();
         ctx.clearCreated();

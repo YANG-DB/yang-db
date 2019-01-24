@@ -21,6 +21,7 @@ package com.kayhut.fuse.test.framework.index;
  */
 
 import com.kayhut.es.plugins.script.CommonScriptPlugin;
+import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.logging.LogConfigurator;
 import org.elasticsearch.common.settings.Settings;
@@ -167,7 +168,9 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
         this.node = new PluginConfigurableNode(settings, Arrays.asList(
                 Netty4Plugin.class,
-                CommonScriptPlugin.class));
+                CommonScriptPlugin.class,
+                CommonAnalysisPlugin.class
+        ));
 
         this.node = this.node.start();
     }

@@ -21,6 +21,7 @@ import java.util.List;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.stream.Collectors.toList;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 
 /**
@@ -74,6 +75,7 @@ public abstract class BaseModuleInjectionTest {
 
     public RequestScope setup() {
         Env env = Mockito.mock(Env.class);
+        Mockito.when(env.config()).thenAnswer(invocation -> config);
         final RequestScope requestScope = new RequestScope();
         requestScope.enter(new HashMap<>());
 
