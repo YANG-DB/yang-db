@@ -22,22 +22,23 @@ package com.kayhut.fuse.services.controllers;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.driver.DashboardDriver;
+import com.kayhut.fuse.executor.resource.PersistantNodeStatusResource;
+import javaslang.collection.Stream;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.InternalDateHistogram;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.support.ValueType;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 /**
  * Created by lior.perry on 20/02/2017.
@@ -73,9 +74,12 @@ public class StandardDashboardDriver implements DashboardDriver {
                 .should(termQuery("type", "relation")));
         final DateHistogramAggregationBuilder aggregation = new DateHistogramAggregationBuilder("graphElementCreatedOverTime");
         aggregation.field("creationTime");
+        aggregation.interval(1000*60*60*24);
+        aggregation.format("DD-MM-YYYY");
         final SearchResponse response = builder.addAggregation(aggregation).get();
-        final Map<Object, Long> elementCount = ((StringTerms) response.getAggregations().get("graphElementCreatedOverTime")).getBuckets().stream()
-                .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
+        final Map<Object, Long> elementCount = ((InternalDateHistogram) response.getAggregations().get("graphElementCreatedOverTime")).getBuckets().stream()
+                .collect(Collectors.toMap(InternalDateHistogram.Bucket::getKey, InternalDateHistogram.Bucket::getDocCount));
+
         return elementCount;
     }
 
@@ -92,6 +96,15 @@ public class StandardDashboardDriver implements DashboardDriver {
         final Map<Object, Long> elementCount = ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()
                 .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
         return elementCount;
+    }
+
+    @Override
+    public Map cursorCount() {
+        final SearchRequestBuilder builder = client.prepareSearch();
+        builder.setIndices(PersistantNodeStatusResource.SYSTEM);
+        builder.setQuery(matchAllQuery());
+        SearchResponse response = builder.get();
+        return Arrays.stream(response.getHits().getHits()).collect(Collectors.toMap(SearchHit::getId, SearchHit::getSourceAsMap));
     }
 
     //enStridregion

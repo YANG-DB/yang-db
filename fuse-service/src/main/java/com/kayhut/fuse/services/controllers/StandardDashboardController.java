@@ -73,6 +73,13 @@ public class StandardDashboardController implements DashboardController {
                 .compose();
     }
 
+    @Override
+    public ContentResponse<Map> cursorCount() {
+        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
+                .data(Optional.of(driver.cursorCount()))
+                .compose();
+    }
+
     //endregion
 
     //region Fields

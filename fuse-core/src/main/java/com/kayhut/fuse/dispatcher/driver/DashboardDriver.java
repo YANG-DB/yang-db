@@ -32,4 +32,6 @@ public interface DashboardDriver {
     Map graphElementCreated() ;
 
     Map graphFieldValuesCount();
+
+    Map cursorCount();
 }
