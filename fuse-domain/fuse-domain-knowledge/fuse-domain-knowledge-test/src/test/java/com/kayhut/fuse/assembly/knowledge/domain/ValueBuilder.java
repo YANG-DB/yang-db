@@ -62,6 +62,20 @@ public class ValueBuilder extends EntityId {
         return this;
     }
 
+    public ValueBuilder value(Object value) {
+        switch (value.getClass().getSimpleName()) {
+            case "String":
+                return value(value.toString());
+            case "Point":
+                return value((Point) value);
+            case "Date":
+                return value((Date) value);
+            case "Integer":
+                return value(value);
+        }
+        return this;
+    }
+
     public ValueBuilder reference(RefBuilder ref) {
         refs.add(ref.id());
         //add as entities sub resource

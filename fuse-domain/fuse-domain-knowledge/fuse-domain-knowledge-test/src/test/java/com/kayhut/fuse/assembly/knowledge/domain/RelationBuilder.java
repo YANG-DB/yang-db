@@ -173,6 +173,7 @@ public class RelationBuilder extends Metadata {
     public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
         ObjectNode on = super.collect(mapper, node);
         //create knowledge entity
+        on.put("id", id());
         on.put("type", physicalType);
         on.put("context", context);
         on.put("category", category);

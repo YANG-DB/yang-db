@@ -129,6 +129,11 @@ public class EntityBuilder extends EntityId {
         return this;
     }
 
+    public ValueBuilder withValue(ValueBuilder value) {
+        value(value);
+        return value;
+    }
+
     public EntityBuilder value(ValueBuilder value) {
         value.entityId = id();
         value.logicalId = this.logicalId;
