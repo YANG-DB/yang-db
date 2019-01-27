@@ -89,6 +89,7 @@ public class FileBuilder extends EntityId {
      */
     public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
         ObjectNode on = super.collect(mapper, node);
+        on.put("id", id());
         on.put("type", physicalType);
         on.put("name", name);
         on.put("path", path);

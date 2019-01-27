@@ -118,6 +118,7 @@ public class ValueBuilder extends EntityId {
     public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
         ObjectNode on = super.collect(mapper, node);
         //create value entity
+        on.put("id", id());
         on.put("type", physicalType);
         on.put("logicalId", logicalId);
         on.put("entityId", entityId);

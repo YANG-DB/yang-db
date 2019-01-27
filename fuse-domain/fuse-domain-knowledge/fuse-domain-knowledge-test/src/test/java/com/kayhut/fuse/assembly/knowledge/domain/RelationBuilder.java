@@ -252,6 +252,7 @@ public class RelationBuilder extends Metadata {
         @Override
         public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
             builder.collect(mapper, node);
+            node.put("id", id());
             node.put("type",physicalType);
             node.put("direction",dir);
             node.put("relationId", builder.id());

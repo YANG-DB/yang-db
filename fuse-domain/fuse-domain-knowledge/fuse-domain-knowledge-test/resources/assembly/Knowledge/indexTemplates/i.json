@@ -67,6 +67,9 @@
             }
           }
         },
+        "id": {
+          "type": "keyword"
+        },
         "entityIds": {
           "type": "keyword"
         },

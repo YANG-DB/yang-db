@@ -124,6 +124,7 @@ public class InsightBuilder extends EntityId {
 
         @Override
         public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
+            node.put("id", id());
             node.put("type", physicalType);
             node.put("entityId",logicalId+"."+context);
             node.put("insightId",insightId);

@@ -86,6 +86,7 @@ public class RvalueBuilder extends EntityId {
     public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
         ObjectNode on = super.collect(mapper, node);
         //create value entity
+        on.put("id", id());
         on.put("type", physicalType);
         on.put("relationId", relationId);
         //on.put("entityId", entityId);

@@ -96,6 +96,9 @@
             }
           }
         },
+        "id": {
+          "type": "keyword"
+        },
         "system": {
           "type": "keyword"
         },

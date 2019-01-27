@@ -6,7 +6,7 @@
       "number_of_shards": "1",
       "number_of_replicas": "0",
       "refresh_interval": "100ms",
-      "sort.field" : "relationId",
+      "sort.field" : "id",
       "sort.order" : "asc",
       "analysis": {
         "normalizer":{
@@ -52,6 +52,9 @@
         "enabled": false
       },
       "properties": {
+        "id": {
+          "type": "keyword"
+        },
         "type": {
           "type": "keyword"
         },

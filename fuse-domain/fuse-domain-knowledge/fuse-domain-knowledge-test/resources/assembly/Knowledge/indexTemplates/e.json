@@ -6,7 +6,7 @@
       "number_of_shards": "1",
       "number_of_replicas": "0",
       "refresh_interval": "100ms",
-      "sort.field" : "logicalId",
+      "sort.field" : "id",
       "sort.order" : "asc",
       "analysis": {
         "normalizer": {
@@ -69,6 +69,9 @@
           "type": "keyword"
         },
         "logicalId": {
+          "type": "keyword"
+        },
+        "id": {
           "type": "keyword"
         },
         "context": {

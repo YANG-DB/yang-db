@@ -63,6 +63,7 @@ public class RefBuilder extends Metadata {
     public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
         ObjectNode on = super.collect(mapper, node);
         //create knowledge entity
+        on.put("id", id());
         on.put("type", physicalType);
         on.put("title", title);
         on.put("url", url);
