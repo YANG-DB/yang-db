@@ -41,6 +41,8 @@ public class DashboardControllerRegistrar extends AppControllerRegistrarBase<Das
                 req -> Results.with(this.getController(app).graphFieldValuesCount()));
         app.get("/fuse/dashboard/created",
                 req -> Results.with(this.getController(app).graphElementCreatedOverTime()));
+        app.get("/fuse/dashboard/count",
+                req -> Results.with(this.getController(app).cursorCount()));
     }
     //endregion
 }

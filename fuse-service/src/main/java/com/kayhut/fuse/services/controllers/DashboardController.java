@@ -35,4 +35,6 @@ public interface DashboardController {
     ContentResponse<Map> graphElementCreatedOverTime();
 
     ContentResponse<Map> graphFieldValuesCount();
+
+    ContentResponse<Map> cursorCount();
 }
