@@ -156,6 +156,41 @@ public class KnowledgeMassInsertionTest {
     }
 
     @Test
+    public void testFetchEntityWithValuesFilterGraph() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match (e:Entity)-[r:hasEvalue]->(ev:Evalue) where (ev.stringValue =~'Lorem*') Return *";
+
+
+        // get Query URL
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, KNOWLEDGE);
+        // Press on Cursor
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(100)));
+
+//        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
+        QueryResultBase pageData = nextPage(fuseClient, cursorResourceInfo, 100);
+        long totalGraphSize = 0;
+        while (countGraphElements(pageData) > totalGraphSize  ) {
+            List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+            // Check Entity Response
+            Assert.assertEquals(1, pageData.getSize());
+            Assert.assertEquals(1, assignments.size());
+            Assert.assertEquals(false, assignments.get(0).getRelationships().isEmpty());
+            Assert.assertEquals(false, assignments.get(0).getEntities().isEmpty());
+
+            totalGraphSize = countGraphElements(pageData);
+            pageData = nextPage(fuseClient, cursorResourceInfo, 100);
+        }
+        //compare Entity created + EValues * 2 ( include the hasEvalue rel per each EValue)
+        long eValues = ((AssignmentsQueryResult) pageData).getAssignments().stream().flatMap(p -> p.getEntities().stream()).filter(p -> p.geteType().equals("Evalue"))
+                .filter(p -> p.getProperty("stringValue").get().getValue().toString().equals("Lorem"))
+                .count();
+        long entities = countGraphElements(pageData,false,true,relationship -> false,entity -> true);
+        Assert.assertEquals(entities+eValues, totalGraphSize);
+    }
+
+    @Test
     public void testFetchEntityWithRelationAndValuesGraph() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

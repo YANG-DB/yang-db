@@ -67,6 +67,10 @@ public class Entity {
         this.eType = eType;
     }
 
+    public Optional<Property> getProperty(String key) {
+        return getProperties().stream().filter(p->p.getpType().equals(key)).findAny();
+    }
+
     public Collection<Property> getProperties() {
         return properties.values();
     }
@@ -107,6 +111,7 @@ public class Entity {
     private String eType;
     private Map<String, Property> properties;
     private List<AttachedProperty> attachedProperties;
+
     //endregion
 
     //region Builder
