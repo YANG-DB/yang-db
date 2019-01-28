@@ -28,18 +28,41 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.QueryResultBase;
+import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static io.restassured.RestAssured.given;
 
 public interface FuseClient {
     //region Protected Methods
+    static long countGraphElements(QueryResultBase pageData ) {
+        return countGraphElements(pageData,true,true,relationship -> true,entity -> true);
+    }
+
+    static long countGraphElements(QueryResultBase pageData, boolean relationship, boolean entities,
+                                   Predicate<Relationship> relPredicate, Predicate<Entity> entityPredicate) {
+        if(pageData instanceof CsvQueryResult)
+            throw new IllegalArgumentException("Cursor returned CsvQueryResult instead of AssignmentsQueryResult");
+
+        if (pageData.getSize()==0)
+            return 0;
+
+        if (pageData instanceof AssignmentsQueryResult
+                && ((AssignmentsQueryResult) pageData).getAssignments().isEmpty())
+            return 0;
+
+        return ((AssignmentsQueryResult) pageData).getAssignments().stream()
+                .mapToLong(e -> (relationship ? e.getRelationships().stream().filter(relPredicate).count() : 0)
+                        + (entities ? e.getEntities().stream().filter(entityPredicate).count() : 0))
+                .sum();
+    }
+
     static String postRequest(String url, Object body) throws IOException {
         return given().contentType("application/json")
                 .body(body)

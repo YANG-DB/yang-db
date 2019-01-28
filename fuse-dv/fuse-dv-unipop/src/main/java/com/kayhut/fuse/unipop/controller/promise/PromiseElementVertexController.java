@@ -34,6 +34,7 @@ import com.kayhut.fuse.unipop.controller.promise.converter.SearchHitPromiseVerte
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
+import com.kayhut.fuse.unipop.converter.SearchHitLivePageIterable;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.Constraint;
@@ -185,12 +186,12 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
 
         //build
         SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
-        SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
+        SearchHitLivePageIterable searchHits = new SearchHitLivePageIterable(
                 client,
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
-                searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
+                searchBuilder.getScrollSize());
 
         return convert(searchHits, new SearchHitPromiseVertexConverter(graph));
     }

@@ -32,6 +32,7 @@ import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
+import com.kayhut.fuse.unipop.converter.SearchHitLivePageIterable;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -132,12 +133,12 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
 
         SearchRequestBuilder searchRequest = searchBuilder.build(client, true);
 
-        SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
+        SearchHitLivePageIterable searchHits = new SearchHitLivePageIterable(
                 client,
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
-                searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
+                searchBuilder.getScrollSize());
 
         ElementConverter<SearchHit, Edge> converter = new DiscreteVertexFilterConverter(context);
 

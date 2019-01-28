@@ -1,5 +1,6 @@
 package com.kayhut.fuse.assembly.knowledge;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder;
 import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder;
@@ -34,11 +35,16 @@ import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.c
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
+import static com.kayhut.fuse.client.FuseClient.countGraphElements;
 import static java.time.temporal.ChronoField.EPOCH_DAY;
 
 public class KnowledgeMassInsertionTest {
     public static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     public static final String[] words = LOREM_IPSUM.split(" ");
+
+    public static final int ENTITY_COUNT = 1000;
+    public static int valuesCount;
+    public static  int relationCount;
 
     static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     static KnowledgeWriterContext ctx;
@@ -49,15 +55,31 @@ public class KnowledgeMassInsertionTest {
         Setup.setup(false);
         rand = new Random();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
+        //load data
+        loadData();
     }
 
-    @After
-    public void after() {
-//        ctx.removeCreated();
-//        ctx.clearCreated();
+    private static void loadData() throws JsonProcessingException {
+        List<EntityBuilder> entities = new ArrayList<>();
+        List<ValueBuilder> values = new ArrayList<>();
+        List<RelationBuilder> relations = new ArrayList<>();
+
+        IntStream.rangeClosed(1, ENTITY_COUNT).forEach(index -> {
+            final Tuple3<List<EntityBuilder>, List<ValueBuilder>, List<RelationBuilder>> tuple3 = populateEntityWithRelation(index);
+            entities.addAll(tuple3._1);
+            values.addAll(tuple3._2);
+            relations.addAll(tuple3._3);
+        });
+
+        final int entitiesCount = commit(ctx, INDEX, entities);
+        System.out.println("completed writing " + entitiesCount + " entities");
+        valuesCount = commit(ctx, INDEX, values);
+        System.out.println("completed writing " + valuesCount + " e.values");
+        relationCount = commit(ctx, REL_INDEX, relations);
+        System.out.println("completed writing " + relationCount + " relations");
     }
 
-    private Tuple3<List<EntityBuilder>, List<ValueBuilder>, List<RelationBuilder>> populateEntityWithRelation(int index) {
+    private static Tuple3<List<EntityBuilder>, List<ValueBuilder>, List<RelationBuilder>> populateEntityWithRelation(int index) {
         final EntityBuilder e1 = _e(ctx.nextLogicalId()).cat(getCategory(index)).ctx("context1")
                 .creationTime(getCreationTime(index)).creationUser(getCreationUser(index));
 
@@ -78,23 +100,23 @@ public class KnowledgeMassInsertionTest {
         return new Tuple3<>(Arrays.asList(e1, e2), valueBuilders, Collections.singletonList(rel));
     }
 
-    private String getFieldName(int index) {
+    private static String getFieldName(int index) {
         return words[(words.length - 1) / (rand.nextInt(index) + 1)];
     }
 
-    private Object getFieldValue(int index) {
+    private static Object getFieldValue(int index) {
         return words[(words.length - 1) / (rand.nextInt(index) + 1)];
     }
 
-    private String getCreationUser(int index) {
+    private static String getCreationUser(int index) {
         return words[(words.length - 1) / (rand.nextInt(index) + 1)];
     }
 
-    private String getCategory(int index) {
+    private static String getCategory(int index) {
         return words[(words.length - 1) / (rand.nextInt(index) + 1)];
     }
 
-    private Date getCreationTime(int index) {
+    private static Date getCreationTime(int index) {
         int minDay = (int) LocalDate.of(1900, 1, 1).toEpochDay();
         int maxDay = (int) LocalDate.of(2019, 1, 1).toEpochDay();
         long randomDay = minDay + rand.nextInt(maxDay - minDay);
@@ -103,25 +125,10 @@ public class KnowledgeMassInsertionTest {
     }
 
     @Test
-    public void testInsertMassEntityWithValuesAndOneRelation() throws IOException, InterruptedException {
-        List<EntityBuilder> entities = new ArrayList<>();
-        List<ValueBuilder> values = new ArrayList<>();
-        List<RelationBuilder> relations = new ArrayList<>();
-
-        IntStream.rangeClosed(1, 1000).forEach(index -> {
-            final Tuple3<List<EntityBuilder>, List<ValueBuilder>, List<RelationBuilder>> tuple3 = populateEntityWithRelation(index);
-            entities.addAll(tuple3._1);
-            values.addAll(tuple3._2);
-            relations.addAll(tuple3._3);
-        });
-
-        System.out.println("completed writing " + commit(ctx, INDEX, entities) + " entities");
-        System.out.println("completed writing " + commit(ctx, INDEX, values) + " e.values");
-        System.out.println("completed writing " + commit(ctx, REL_INDEX, relations) + " relations");
-
+    public void testFetchEntityWithValuesGraph() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        String query = "Match (e:Entity)-[r:hasEvalue]->(ev:Evalue) Return e,r,ev";
+        String query = "Match (e:Entity)-[r:hasEvalue]->(ev:Evalue) Return *";
 
 
         // get Query URL
@@ -131,7 +138,8 @@ public class KnowledgeMassInsertionTest {
 
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
         QueryResultBase pageData = nextPage(fuseClient, cursorResourceInfo, 100);
-        while (pageData.getSize() > 0) {
+        long totalGraphSize = 0;
+        while (countGraphElements(pageData) > totalGraphSize  ) {
             List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
 
             // Check Entity Response
@@ -140,8 +148,75 @@ public class KnowledgeMassInsertionTest {
             Assert.assertEquals(false, assignments.get(0).getRelationships().isEmpty());
             Assert.assertEquals(false, assignments.get(0).getEntities().isEmpty());
 
+            totalGraphSize = countGraphElements(pageData);
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
+        //compare Entity created + EValues * 2 ( include the hasEvalue rel per each EValue)
+        Assert.assertEquals(ENTITY_COUNT+valuesCount*2, totalGraphSize);
+    }
+
+    @Test
+    public void testFetchEntityWithRelationAndValuesGraph() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match (e:Entity)-[r:hasEvalue]->(ev:Evalue)," +
+                        " (e:Entity)-[r:hasRelation]->(rel:Relation) " +
+                        " Return *";
+
+
+        // get Query URL
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, KNOWLEDGE);
+        // Press on Cursor
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(100)));
+
+//        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
+        QueryResultBase pageData = nextPage(fuseClient, cursorResourceInfo, 100);
+        long totalGraphSize = 0;
+        while (countGraphElements(pageData) > totalGraphSize  ) {
+            List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+            // Check Entity Response
+            Assert.assertEquals(1, pageData.getSize());
+            Assert.assertEquals(1, assignments.size());
+            Assert.assertEquals(false, assignments.get(0).getRelationships().isEmpty());
+            Assert.assertEquals(false, assignments.get(0).getEntities().isEmpty());
+
+            totalGraphSize = countGraphElements(pageData);
+            pageData = nextPage(fuseClient, cursorResourceInfo, 100);
+        }
+        //compare Entity created + EValues + relation ( entity + relEntity + value+hasEvalue )
+        Assert.assertEquals(ENTITY_COUNT*2+relationCount+valuesCount*2, totalGraphSize);
+    }
+
+    @Test
+    public void testFetchEntityWithRelationGraph() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        String query = "Match (e:Entity)-[r:hasRelation]->(rel:Relation) Return *";
+
+
+        // get Query URL
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, KNOWLEDGE);
+        // Press on Cursor
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(100)));
+
+//        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
+        QueryResultBase pageData = nextPage(fuseClient, cursorResourceInfo, 100);
+        long totalGraphSize = 0;
+        while (countGraphElements(pageData) > totalGraphSize  ) {
+            List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+
+            // Check Entity Response
+            Assert.assertEquals(1, pageData.getSize());
+            Assert.assertEquals(1, assignments.size());
+            Assert.assertEquals(false, assignments.get(0).getRelationships().isEmpty());
+            Assert.assertEquals(false, assignments.get(0).getEntities().isEmpty());
+
+            totalGraphSize = countGraphElements(pageData);
+            pageData = nextPage(fuseClient, cursorResourceInfo, 100);
+        }
+        //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
+        Assert.assertEquals(ENTITY_COUNT*3+relationCount*2, totalGraphSize);
     }
 
 

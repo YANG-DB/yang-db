@@ -36,6 +36,7 @@ import com.kayhut.fuse.unipop.controller.promise.converter.SearchHitPromiseFilte
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
+import com.kayhut.fuse.unipop.converter.SearchHitLivePageIterable;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -137,12 +138,12 @@ public class PromiseVertexFilterController extends VertexControllerBase {
 
         SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSize(0);
 
-        SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
+        SearchHitLivePageIterable searchHits = new SearchHitLivePageIterable(
                 client,
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
-                searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
+                searchBuilder.getScrollSize());
 
         ElementConverter<SearchHit, Edge> converter = new SearchHitPromiseFilterEdgeConverter(graph);
         return Stream.ofAll(searchHits)

@@ -9,9 +9,9 @@ package com.kayhut.fuse.unipop.converter;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,6 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;
@@ -42,13 +41,11 @@ public class SearchHitLivePageIterable implements Iterable<SearchHit> {
             SearchRequestBuilder searchRequestBuilder,
             SearchOrderProvider orderProvider,
             long limit,
-            int scrollSize,
-            int scrollTime) {
+            int scrollSize) {
         this.searchRequestBuilder = searchRequestBuilder;
         this.orderProvider = orderProvider;
         this.limit = limit;
         this.scrollSize = scrollSize;
-        this.scrollTime = scrollTime;
         this.client = client;
     }
     //endregion
@@ -77,10 +74,6 @@ public class SearchHitLivePageIterable implements Iterable<SearchHit> {
         return this.limit;
     }
 
-    public int getScrollTime() {
-        return this.scrollTime;
-    }
-
     public int getScrollSize() {
         return this.scrollSize;
     }
@@ -92,7 +85,6 @@ public class SearchHitLivePageIterable implements Iterable<SearchHit> {
     private long limit;
     private Client client;
 
-    private int scrollTime;
     private int scrollSize;
     //endregion
 
@@ -102,7 +94,6 @@ public class SearchHitLivePageIterable implements Iterable<SearchHit> {
         //region Constructor
         private LivePageIterator(SearchHitLivePageIterable iterable) {
             this.iterable = iterable;
-            this.scrollId = null;
             this.searchHits = new ArrayList<>(iterable.getScrollSize());
         }
         //endregion
@@ -125,7 +116,6 @@ public class SearchHitLivePageIterable implements Iterable<SearchHit> {
             if (this.searchHits.size() > 0) {
                 SearchHit searchHit = this.searchHits.get(0);
                 this.searchHits.remove(0);
-
                 return searchHit;
             }
 
@@ -147,23 +137,19 @@ public class SearchHitLivePageIterable implements Iterable<SearchHit> {
             if (counter >= this.iterable.getLimit()) {
                 return;
             }
-            SearchResponse response = this.scrollId == null ?
-                    getSearchResponse() :
-                    this.iterable.getClient().prepareSearchScroll(this.scrollId)
-                            .setScroll(new TimeValue(this.iterable.getScrollTime()))
-                            .execute()
-                            .actionGet();
 
-            this.scrollId = response.getScrollId();
+            //next page
+            SearchResponse response = getSearchResponse();
+
+            if(response.getHits().getHits().length > 0) {
+                this.pageStartId = response.getHits().getHits()[response.getHits().getHits().length - 1].getId();
+            }
+
             for (SearchHit hit : response.getHits().getHits()) {
                 if (counter < this.iterable.getLimit()) {
                     this.searchHits.add(hit);
                     counter++;
                 }
-            }
-
-            if (response.getHits().getHits().length == 0) {
-                this.iterable.getClient().prepareClearScroll().addScrollId(this.scrollId).execute().actionGet();
             }
         }
 
@@ -171,29 +157,29 @@ public class SearchHitLivePageIterable implements Iterable<SearchHit> {
             SearchOrderProvider.Sort sort = getOrderProvider().getSort(this.iterable.getSearchRequestBuilder());
             SearchType searchType = getOrderProvider().getSearchType(this.iterable.getSearchRequestBuilder());
 
-            return sort !=SearchOrderProvider.EMPTY  ?
-                this.iterable.getSearchRequestBuilder()
-                        .addSort(sort.getSortField(), sort.getSortOrder())
-                        .setScroll(new TimeValue(iterable.getScrollTime()))
-                        .setSearchType(searchType)
-                        .setSize(Math.min(iterable.getScrollSize(),
-                                (int) Math.min((long) Integer.MAX_VALUE, iterable.getLimit())))
-                        .execute()
-                        .actionGet() :
-            this.iterable.getSearchRequestBuilder()
-                    .setScroll(new TimeValue(iterable.getScrollTime()))
-                    .setSearchType(searchType)
-                    .setSize(Math.min(iterable.getScrollSize(),
-                            (int) Math.min((long) Integer.MAX_VALUE, iterable.getLimit())))
-                    .execute()
-                    .actionGet();
+            return sort != SearchOrderProvider.EMPTY ?
+                    this.iterable.getSearchRequestBuilder()
+                            .addSort(sort.getSortField(), sort.getSortOrder())
+                            .setSearchType(searchType)
+                            .setSize(Math.min(iterable.getScrollSize(),
+                                    (int) Math.min((long) Integer.MAX_VALUE, iterable.getLimit())))
+                            .setFrom((int) counter)
+                            .execute()
+                            .actionGet() :
+                    this.iterable.getSearchRequestBuilder()
+                            .setSearchType(searchType)
+                            .setSize(Math.min(iterable.getScrollSize(),
+                                    (int) Math.min((long) Integer.MAX_VALUE, iterable.getLimit())))
+                            .setFrom((int) counter)
+                            .execute()
+                            .actionGet();
         }
         //endregion
 
         //region Fields
         private SearchHitLivePageIterable iterable;
         private ArrayList<SearchHit> searchHits;
-        private String scrollId;
+        private String pageStartId;
         private long counter;
         //endregion
     }
