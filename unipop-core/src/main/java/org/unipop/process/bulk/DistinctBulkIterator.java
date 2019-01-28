@@ -74,7 +74,7 @@ public class DistinctBulkIterator<S, TId> implements Iterator<List<S>> {
         Supplier<Integer> bulkSizeSupplier = bulkSizeSupplierFactory.get();
 
         List<S> bulk = new ArrayList<>(bulkSizeSupplier.get());
-        HashSet<TId> idSet = new HashSet<>();
+        HashSet<TId> idSet = new LinkedHashSet<>();
         try {
             while(idSet.size() < bulkSizeSupplier.get()) {
                 S s = this.innerIterator.next();

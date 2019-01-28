@@ -30,8 +30,11 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.unipop.structure.UniGraph;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by roman.margolis on 13/09/2017.
@@ -50,7 +53,10 @@ public interface VertexControllerContext extends BulkContext, DirectionContext, 
                 Iterable<Vertex> bulkVertices) {
             super(graph, elementType, schemaProvider, constraint, selectPHasContainers, limit);
             this.direction = direction;
-            this.bulkVertices = Stream.ofAll(bulkVertices).toJavaMap(vertex -> new Tuple2<>(vertex.id(), vertex));
+//            this.bulkVertices = Stream.ofAll(bulkVertices).toJavaMap(vertex -> new Tuple2<>(vertex.id(), vertex));
+            this.bulkVertices = StreamSupport.stream(bulkVertices.spliterator(),false)
+                    .collect(Collectors.toMap(Vertex::id,vertex -> vertex ,(v1,v2) ->{ throw new RuntimeException(String.format("Duplicate key for values %s and %s", v1, v2));}
+                    ,LinkedHashMap::new));
         }
         //endregion
 
@@ -70,7 +76,6 @@ public interface VertexControllerContext extends BulkContext, DirectionContext, 
             return this.bulkVertices.get(id);
         }
         //endregion
-
         //region Fields
         private Direction direction;
         private Map<Object, Vertex> bulkVertices;
