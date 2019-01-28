@@ -9,9 +9,9 @@ package com.kayhut.fuse.services.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,7 @@ package com.kayhut.fuse.services.controllers;
  * #L%
  */
 
+import com.cedarsoftware.util.io.JsonWriter;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
@@ -29,17 +30,18 @@ import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.services.suppliers.SnowflakeRequestIdSupplier;
+import com.typesafe.config.ConfigObject;
+import com.typesafe.config.ConfigRenderOptions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.json.JSONObject;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import static com.kayhut.fuse.services.suppliers.CachedRequestIdSupplier.RequestIdSupplierParameter;
-import static org.jooby.Status.ACCEPTED;
-import static org.jooby.Status.NOT_FOUND;
-import static org.jooby.Status.OK;
+import static org.jooby.Status.*;
 
 /**
  * Created by lior.perry on 19/02/2017.
@@ -84,6 +86,14 @@ public class StandardInternalsController implements InternalsController {
     public ContentResponse<String> getStatisticsProviderName() {
         return Builder.<String>builder(ACCEPTED, NOT_FOUND)
                 .data(this.driver.getStatisticsProviderName()).compose();
+    }
+
+    @Override
+    public ContentResponse<Map> getConfig() {
+        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
+                .data(Optional.of(this.driver.getConfig().get().root().unwrapped()))
+                .compose();
+
     }
 
     @Override

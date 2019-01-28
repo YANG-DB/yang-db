@@ -22,6 +22,8 @@ package com.kayhut.fuse.services.controllers;
 
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.typesafe.config.ConfigObject;
+import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -34,6 +36,7 @@ public interface InternalsController {
     ContentResponse<Long> getSnowflakeId();
     ContentResponse<Map<String, Class<? extends CreateCursorRequest>>> getCursorBindings();
     ContentResponse<String> getStatisticsProviderName();
+    ContentResponse<Map> getConfig();
     ContentResponse<String> getStatisticsProviderSetup();
     ContentResponse<String> refreshStatisticsProviderSetup();
 }

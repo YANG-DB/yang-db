@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.epb.plan.statistics.RefreshableStatisticsProviderFactory;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
+import com.typesafe.config.Config;
 
 import java.util.Optional;
 
@@ -31,12 +32,19 @@ import java.util.Optional;
  * Created by lior.perry on 20/02/2017.
  */
 public class StandardInternalsDriver implements InternalsDriver {
+    private Config config;
     private StatisticsProviderFactory statisticsProviderFactory;
 
     //region Constructors
     @Inject
-    public StandardInternalsDriver(StatisticsProviderFactory factory) {
+    public StandardInternalsDriver(com.typesafe.config.Config config,StatisticsProviderFactory factory) {
+        this.config = config;
         this.statisticsProviderFactory = factory;
+    }
+
+    @Override
+    public Optional<Config> getConfig() {
+        return Optional.of(config);
     }
 
     //endregion
