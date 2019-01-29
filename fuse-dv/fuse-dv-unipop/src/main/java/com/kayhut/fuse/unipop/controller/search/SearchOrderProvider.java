@@ -20,7 +20,6 @@ package com.kayhut.fuse.unipop.controller.search;
  * #L%
  */
 
-import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.search.sort.SortOrder;
