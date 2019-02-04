@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
 /**
  * Created by benishue on 09-May-17.
  */
-public class AsgInnerQueryInSetTransformationStrategyTest {
+public class AsgInnerQueryConstraintTransformationStrategyTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
@@ -47,6 +47,7 @@ public class AsgInnerQueryInSetTransformationStrategyTest {
     public void testTransformLike(){
         Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(Q1());
         AsgQuery asgQuery = asgSupplier.get();
+
     }
 
     private Query Q1() {

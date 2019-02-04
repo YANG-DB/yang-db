@@ -90,7 +90,12 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
     public Collection<AsgEBase<? extends EBase>> getElements() {
         return elements;
     }
-    //endregion
+
+    public void setElements(Collection<AsgEBase<? extends EBase>> elements) {
+        this.elements = elements;
+    }
+
+//endregion
 
     @Override
     public String toString() {
