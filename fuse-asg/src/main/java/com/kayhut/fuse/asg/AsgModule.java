@@ -26,7 +26,7 @@ import com.kayhut.fuse.asg.strategy.AsgStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.CypherAsgStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.M1AsgStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.M1CypherAsgStrategyRegistrar;
-import com.kayhut.fuse.dispatcher.asg.QueryToAsgTransformer;
+import com.kayhut.fuse.dispatcher.asg.QueryToCompositeAsgTransformer;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.dispatcher.query.QueryTransformer;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -49,7 +49,7 @@ public class AsgModule extends ModuleBase {
                 .asEagerSingleton();
 
         binder.bind(new TypeLiteral<QueryTransformer<Query, AsgQuery>>(){})
-                .to(QueryToAsgTransformer.class)
+                .to(QueryToCompositeAsgTransformer.class)
                 .asEagerSingleton();
 
         binder.bind(new TypeLiteral<QueryTransformer<String, AsgQuery>>(){})

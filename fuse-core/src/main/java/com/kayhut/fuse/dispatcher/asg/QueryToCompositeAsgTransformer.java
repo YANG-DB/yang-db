@@ -67,10 +67,10 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
     //region QueryTransformer Implementation
     @Override
     public AsgCompositeQuery transform(Query query) {
-        AsgQuery asgQuery = super.transform(query);
+        AsgCompositeQuery asgQuery = new AsgCompositeQuery(super.transform(query));
         Optional<Ontology> ontology = ontologyProvider.get(query.getOnt());
         apply(asgQuery, new AsgStrategyContext(new Ontology.Accessor(ontology.get())));
-        return new AsgCompositeQuery(asgQuery);
+        return asgQuery;
     }
     //endregion
 
@@ -96,9 +96,12 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
             if (property.isPresent() && isInnerQuery(con) && !ParameterizedConstraint.class.isAssignableFrom(eProp.getCon().getClass())) {
                 Query innerQuery = ((InnerQueryConstraint) con.getExpr()).getInnerQuery();
                 String name = innerQuery.getName();
-                ((AsgCompositeQuery) query).with(super.transform(innerQuery));
                 Constraint newCon = new ParameterizedConstraint(con.getOp(), new NamedParameter(name));
                 eProp.setCon(newCon);
+                //add inner query to chain
+                AsgQuery innerAsgQuery = new AsgCompositeQuery(super.transform(innerQuery));
+                ((AsgCompositeQuery) query).with(innerAsgQuery);
+                apply(innerAsgQuery, context);
             }
         }
         if (klass == RelProp.class) {
@@ -109,9 +112,12 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
                 if (property.isPresent() && isInnerQuery(con) && !ParameterizedConstraint.class.isAssignableFrom(relProp.getCon().getClass())) {
                     Query innerQuery = ((InnerQueryConstraint) con.getExpr()).getInnerQuery();
                     String name = innerQuery.getName();
-                    ((AsgCompositeQuery) query).with(super.transform(innerQuery));
                     Constraint newCon = new ParameterizedConstraint(con.getOp(), new NamedParameter(name));
                     relProp.setCon(newCon);
+                    //add inner query to chain
+                    AsgQuery innerAsgQuery = new AsgCompositeQuery(super.transform(innerQuery));
+                    ((AsgCompositeQuery) query).with(innerAsgQuery);
+                    apply(innerAsgQuery, context);
                 }
             }
         }
