@@ -64,7 +64,8 @@ public class DefaultSelectionAsgStrategy implements AsgStrategy {
 
         AsgQueryUtil.elements(query, EPropGroup.class).forEach(ePropGroupAsgEBase -> {
                     if (Stream.ofAll(ePropGroupAsgEBase.geteBase().getProps())
-                            .filter(eProp -> eProp.getProj() != null).isEmpty()) {
+                            .filter(eProp -> eProp.getProj() != null)
+                            .isEmpty()) {
 
                         Optional<AsgEBase<ETyped>> eTypedAsgEBase = AsgQueryUtil.ancestor(ePropGroupAsgEBase, ETyped.class);
                         List<EProp> projectionProps = Collections.emptyList();

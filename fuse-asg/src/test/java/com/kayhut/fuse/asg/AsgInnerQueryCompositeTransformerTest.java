@@ -103,8 +103,7 @@ public class AsgInnerQueryCompositeTransformerTest {
                         new Start(0, 1),
                         new ETyped(1, "People", "Person", 2, 0),
                         new EPropGroup(2,
-                                new EProp(3, "id",Constraint.of(ConstraintOp.inSet,
-                                        new InnerQueryConstraint(Q2(),"P.id"))))
+                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P.id")))
                 )).build();
         return query;
     }
@@ -125,8 +124,7 @@ public class AsgInnerQueryCompositeTransformerTest {
                         new Start(0, 1),
                         new ETyped(1, "P", "Person", 2, 0),
                         new EPropGroup(2,
-                                new EProp(3, "id",Constraint.of(ConstraintOp.inSet,
-                                        new InnerQueryConstraint(Q1(),"P.id"))))
+                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q1(),"P.id")))
                 )).build();
         return query;
     }

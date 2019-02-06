@@ -9,9 +9,9 @@ package com.kayhut.fuse.model.query.properties.constraint;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,14 +20,19 @@ package com.kayhut.fuse.model.query.properties.constraint;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kayhut.fuse.model.query.Query;
 
-public class InnerQueryConstraint {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class InnerQueryConstraint extends Constraint {
 
     private Query innerQuery;
     private String[] projectedFields;
 
-    public InnerQueryConstraint(Query innerQuery, String ... projectedFields) {
+    public InnerQueryConstraint() {}
+
+    public InnerQueryConstraint(ConstraintOp op, Query innerQuery, String... projectedFields) {
+        super(op,null);
         this.innerQuery = innerQuery;
         this.projectedFields = projectedFields;
     }
@@ -39,4 +44,17 @@ public class InnerQueryConstraint {
     public String[] getProjectedFields() {
         return projectedFields;
     }
+
+    public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery) {
+        return of(op, innerQuery , new String[] {});
+    }
+
+    public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery, String projectedField) {
+        return of(op,innerQuery,new String[] {projectedField});
+    }
+
+    public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery, String... projectedFields) {
+        return new InnerQueryConstraint(op,innerQuery,projectedFields);
+    }
+
 }

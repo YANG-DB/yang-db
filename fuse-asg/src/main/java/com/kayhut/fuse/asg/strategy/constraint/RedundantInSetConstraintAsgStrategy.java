@@ -32,6 +32,8 @@ import javaslang.collection.Stream;
 
 import java.util.List;
 
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.ignorableConstraints;
+
 /**
  * This strategy replaces an inSet constraint with a single value to an equivalent eq constraint with a single value
  */
@@ -49,7 +51,7 @@ public class RedundantInSetConstraintAsgStrategy implements AsgStrategy {
     private void cleanRedundantInSetEprops(EPropGroup ePropGroup) {
         Stream.ofAll(ePropGroup.getProps())
                 .filter(eProp -> eProp.getCon() != null)
-                .filter(prop -> !ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
+                .filter(prop -> !ignorableConstraints.contains(prop.getCon().getClass()))
                 .filter(eProp -> eProp.getCon().getOp().equals(ConstraintOp.inSet))
                 .filter(eProp -> ((List) eProp.getCon().getExpr()).size() == 1)
                 .forEach(eProp -> eProp.setCon(Constraint.of(ConstraintOp.eq, ((List) eProp.getCon().getExpr()).get(0))));

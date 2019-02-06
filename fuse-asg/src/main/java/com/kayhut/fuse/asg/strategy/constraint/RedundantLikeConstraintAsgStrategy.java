@@ -34,6 +34,8 @@ import javaslang.collection.Stream;
 
 import java.util.List;
 
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.ignorableConstraints;
+
 /**
  * search for "like" / "likeAny" constraint within a EpropGroup that has "*" expression in it (in the list of expressions within likeAny)
  * if one found =>
@@ -89,7 +91,7 @@ public class RedundantLikeConstraintAsgStrategy implements AsgStrategy {
     private List<EProp> getRedundantLikeEprops(EPropGroup ePropGroup) {
         return Stream.ofAll(ePropGroup.getProps())
                 .filter(prop -> prop.getCon() != null)
-                .filter(prop -> !ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
+                .filter(prop -> !ignorableConstraints.contains(prop.getCon().getClass()))
                 .filter(prop -> (
                         prop.getCon().getOp().equals(ConstraintOp.like) &&
                                 prop.getCon().getExpr().toString().matches("[*]+")) ||

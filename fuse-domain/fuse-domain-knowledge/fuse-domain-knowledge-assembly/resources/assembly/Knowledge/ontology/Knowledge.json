@@ -479,6 +479,11 @@
       "type": "date"
     },
     {
+      "pType": "geoValue",
+      "name": "geoValue",
+      "type": "geo_shape"
+    },
+    {
       "pType": "entityAId",
       "name": "entityAId",
       "type": "string"

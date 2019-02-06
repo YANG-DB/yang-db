@@ -43,6 +43,7 @@ import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
 import com.kayhut.fuse.model.query.properties.constraint.ParameterizedConstraint;
 import javaslang.collection.Stream;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -93,8 +94,8 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
             Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
 
             Constraint con = eProp.getCon();
-            if (property.isPresent() && isInnerQuery(con) && !ParameterizedConstraint.class.isAssignableFrom(eProp.getCon().getClass())) {
-                Query innerQuery = ((InnerQueryConstraint) con.getExpr()).getInnerQuery();
+            if (property.isPresent() && isInnerQuery(con)) {
+                Query innerQuery = ((InnerQueryConstraint) con).getInnerQuery();
                 String name = innerQuery.getName();
                 Constraint newCon = new ParameterizedConstraint(con.getOp(), new NamedParameter(name));
                 eProp.setCon(newCon);
@@ -109,8 +110,8 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
             Optional<Property> property = context.getOntologyAccessor().$property(relProp.getpType());
             if (relProp.getCon() != null) {
                 Constraint con = relProp.getCon();
-                if (property.isPresent() && isInnerQuery(con) && !ParameterizedConstraint.class.isAssignableFrom(relProp.getCon().getClass())) {
-                    Query innerQuery = ((InnerQueryConstraint) con.getExpr()).getInnerQuery();
+                if (property.isPresent() && isInnerQuery(con)) {
+                    Query innerQuery = ((InnerQueryConstraint) con).getInnerQuery();
                     String name = innerQuery.getName();
                     Constraint newCon = new ParameterizedConstraint(con.getOp(), new NamedParameter(name));
                     relProp.setCon(newCon);
@@ -123,8 +124,8 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
         }
     }
 
-    private boolean isInnerQuery(Constraint op) {
-        return InnerQueryConstraint.class.isAssignableFrom(op.getExpr().getClass());
+    private boolean isInnerQuery(Constraint constraint) {
+        return constraint instanceof InnerQueryConstraint;
     }
 
 }

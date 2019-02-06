@@ -9,9 +9,9 @@ package com.kayhut.fuse.dispatcher.driver;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.dispatcher.validation.QueryValidator;
+import com.kayhut.fuse.model.asgQuery.AsgCompositeQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -118,14 +119,31 @@ public abstract class QueryDriverBase implements QueryDriver {
     private Optional<QueryResourceInfo> create(CreateQueryRequest request, QueryMetadata metadata, Query query) {
         try {
             AsgQuery asgQuery = this.queryTransformer.transform(query);
-
             ValidationResult validationResult = this.queryValidator.validate(asgQuery);
+
             if (!validationResult.valid()) {
                 return Optional.of(new QueryResourceInfo().error(
                         new FuseError(Query.class.getSimpleName(),
-                                validationResult.getValidator() + ":" + Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
+                                validationResult.getValidator() + ":"
+                                        + Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
             }
 
+            //create inner query
+            if (asgQuery instanceof AsgCompositeQuery) {
+                ((AsgCompositeQuery) asgQuery).getQueryChain().forEach(asgQ -> {
+                    ValidationResult validate = this.queryValidator.validate(asgQuery);
+                    if (!validate.valid()) {
+                        throw new IllegalArgumentException(validate.toString());
+                    }
+
+                    Query q = Query.QueryUtils.innerQuery(query,asgQ.getName()).get();
+                    this.resourceStore.addQueryResource(createResource(
+                            new CreateQueryRequest(request.getId()+":"+asgQ.getName(),
+                                    request.getName()+":"+asgQ.getName(),q), q, asgQ, metadata));
+                });
+            }
+
+            //outer most query resource
             this.resourceStore.addQueryResource(createResource(request, query, asgQuery, metadata));
 
             return Optional.of(new QueryResourceInfo(
@@ -138,6 +156,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                             err.getMessage())));
         }
     }
+
     /**
      * internal api
      *
@@ -164,7 +183,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                     .withName(query).build();
 
             this.resourceStore.addQueryResource(createResource(
-                    new CreateQueryRequest(request.getId(),request.getName(),build,request.getPlanTraceOptions(),request.getCreateCursorRequest())
+                    new CreateQueryRequest(request.getId(), request.getName(), build, request.getPlanTraceOptions(), request.getCreateCursorRequest())
                     , build
                     , asgQuery
                     , metadata));
@@ -308,8 +327,8 @@ public abstract class QueryDriverBase implements QueryDriver {
                     : new CreatePageRequest()));
 
             //set pageSize atribute on PageCursorRequest using the given execution params
-            callRequest.getExecutionParams().stream().filter(p->p.getName().equals("pageSize")).findAny()
-                    .ifPresent(v->pageRequest.setPageSize((Integer) v.getValue()));
+            callRequest.getExecutionParams().stream().filter(p -> p.getName().equals("pageSize")).findAny()
+                    .ifPresent(v -> pageRequest.setPageSize((Integer) v.getValue()));
 
             //create the new volatile query
             Optional<QueryResourceInfo> info = create(new CreateQueryRequest(

@@ -29,6 +29,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.constraint.InnerQueryConstraint;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -147,6 +149,32 @@ public class Query implements IQuery<EBase> {
          */
         public static Optional<? extends EBase> findByEnum(IQuery<EBase> query, int eNum) {
             return query.getElements().stream().filter(p -> p.geteNum() == eNum).findFirst();
+        }
+
+        /**
+         * find any inner query
+         * @param query
+         * @return
+         */
+        public static boolean innerQuery(IQuery<EBase> query) {
+            return query.getElements().stream()
+                    .filter(p -> p.getClass().isAssignableFrom(EProp.class))
+                    .anyMatch(p -> ((EProp) p).getCon().getExpr().getClass().isAssignableFrom(InnerQueryConstraint.class));
+        }
+
+            /**
+             * look for inner query with given name
+             * @param query
+             * @param name
+             * @return
+             */
+        public static Optional<Query> innerQuery(IQuery<EBase> query, String name) {
+            return query.getElements().stream()
+                    .filter(p -> p.getClass().isAssignableFrom(EProp.class))
+                    .filter(p -> ((EProp) p).getCon().getExpr().getClass().isAssignableFrom(InnerQueryConstraint.class))
+                    .map(p -> ((InnerQueryConstraint) ((EProp) p).getCon().getExpr()).getInnerQuery())
+                    .filter(q -> q.getName().equals(name))
+                    .findFirst();
         }
 
         /**

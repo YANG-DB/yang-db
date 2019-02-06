@@ -69,7 +69,7 @@ public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
             Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
 
             ConstraintOp op = eProp.getCon().getOp();
-            if (property.isPresent() && isSingleElementOp(op) && !ParameterizedConstraint.class.isAssignableFrom(eProp.getCon().getClass())) {
+            if (property.isPresent() && isSingleElementOp(op) && !ignorableConstraints.contains(eProp.getCon().getClass())) {
                 Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), eProp.getCon().getExpr()));
                 eProp.setCon(newCon);
             }
@@ -79,7 +79,7 @@ public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
             Optional<Property> property = context.getOntologyAccessor().$property(relProp.getpType());
             if(relProp.getCon() != null) {
                 ConstraintOp op = relProp.getCon().getOp();
-                if (property.isPresent() && isSingleElementOp(op) && !ParameterizedConstraint.class.isAssignableFrom(relProp.getCon().getClass())) {
+                if (property.isPresent() && isSingleElementOp(op) && !ignorableConstraints.contains(relProp.getCon().getClass())) {
                     Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), relProp.getCon().getExpr()));
                     relProp.setCon(newCon);
                 }
