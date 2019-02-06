@@ -53,7 +53,7 @@
         "id": {
           "type":"keyword"
         },
-        "mid": {
+        "techId": {
           "type":"keyword"
         },
         "type": {
