@@ -50,6 +50,12 @@
         "enabled": false
       },
       "properties": {
+        "id": {
+          "type":"keyword"
+        },
+        "mid": {
+          "type":"keyword"
+        },
         "type": {
           "type": "keyword"
         },
