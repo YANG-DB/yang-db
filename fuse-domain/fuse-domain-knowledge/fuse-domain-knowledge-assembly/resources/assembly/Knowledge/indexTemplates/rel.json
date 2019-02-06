@@ -52,6 +52,9 @@
         "enabled": false
       },
       "properties": {
+        "id": {
+          "type": "keyword"
+        },
         "type": {
           "type": "keyword"
         },
