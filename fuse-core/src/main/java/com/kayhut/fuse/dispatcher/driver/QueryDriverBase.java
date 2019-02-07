@@ -168,6 +168,8 @@ public abstract class QueryDriverBase implements QueryDriver {
                 if (!validate.valid()) {
                     throw new IllegalArgumentException(validate.toString());
                 }
+                //inner recursive query hierarchy
+                final List<QueryResource> innerQuery = createInnerQuery(request, metadata, asgQ);
 
                 Query q = asgQ.getOrigin();
                 final QueryResource resource = createResource(
@@ -178,7 +180,8 @@ public abstract class QueryDriverBase implements QueryDriver {
                                 request.getName() + "->" + q.getName(),
                                 metadata.isSearchPlan(),
                                 metadata.getCreationTime(),
-                                metadata.getTtl()));
+                                metadata.getTtl()))
+                        .withInnerQueryResources(innerQuery);
                 this.resourceStore.addQueryResource(resource);
                 return resource;
                 //return query resource
@@ -398,7 +401,17 @@ public abstract class QueryDriverBase implements QueryDriver {
             return Optional.empty();
         }
 
-        QueryResourceInfo resourceInfo = new QueryResourceInfo(urlSupplier.resourceUrl(queryId), queryId, urlSupplier.cursorStoreUrl(queryId));
+        final List<QueryResourceInfo> collect = Stream.ofAll(queryResource.get().getInnerQueryResources())
+                .map(qr ->
+                        new QueryResourceInfo(urlSupplier.resourceUrl(
+                                qr.getQueryMetadata().getId()),
+                                qr.getQueryMetadata().getId(),
+                                urlSupplier.cursorStoreUrl(qr.getQueryMetadata().getId())))
+                .toJavaList();
+
+        QueryResourceInfo resourceInfo =
+                new QueryResourceInfo(urlSupplier.resourceUrl(queryId), queryId, urlSupplier.cursorStoreUrl(queryId))
+                .withInnerQueryResources(collect);
         return Optional.of(resourceInfo);
     }
 

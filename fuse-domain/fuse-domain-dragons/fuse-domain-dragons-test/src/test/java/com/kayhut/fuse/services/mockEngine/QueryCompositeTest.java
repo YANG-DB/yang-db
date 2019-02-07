@@ -117,6 +117,90 @@ public class QueryCompositeTest {
     }
 
     @Test
+    public void queryWithHierarchyInnerQueryCreate() throws IOException {
+        BaseFuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
+        //query request
+        CreateQueryRequest request = new CreateQueryRequest();
+        request.setId("1");
+        request.setName("test");
+        request.setQuery(Q0());
+        //submit query
+        given()
+                .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
+                .with().port(8888)
+                .body(request)
+                .post("/fuse/query")
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        final QueryResourceInfo queryResourceInfo = fuseClient.unwrap(o.toString(), QueryResourceInfo.class);
+                        assertTrue(queryResourceInfo.getAsgUrl().endsWith("fuse/query/1/asg"));
+                        assertTrue(queryResourceInfo.getCursorStoreUrl().endsWith("fuse/query/1/cursor"));
+                        assertEquals(1,queryResourceInfo.getInnerUrlResourceInfos().size());
+                        assertTrue(queryResourceInfo.getInnerUrlResourceInfos().get(0).getAsgUrl().endsWith("fuse/query/1->q1/asg"));
+                        assertTrue(queryResourceInfo.getInnerUrlResourceInfos().get(0).getCursorStoreUrl().endsWith("fuse/query/1->q1/cursor"));
+                        return fuseClient.unwrap(o.toString()) != null;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(201)
+                .contentType("application/json;charset=UTF-8");
+
+        //get query resource by id
+        given()
+                .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
+                .with().port(8888)
+                .get("/fuse/query/"+request.getId()+"->"+Q1().getName())
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        final QueryResourceInfo queryResourceInfo = fuseClient.unwrap(o.toString(), QueryResourceInfo.class);
+                        assertTrue(queryResourceInfo.getAsgUrl().endsWith("fuse/query/1->q1/asg"));
+                        assertTrue(queryResourceInfo.getCursorStoreUrl().endsWith("fuse/query/1->q1/cursor"));
+                        assertEquals(1,queryResourceInfo.getInnerUrlResourceInfos().size());
+                        assertTrue(queryResourceInfo.getInnerUrlResourceInfos().get(0).getAsgUrl().endsWith("fuse/query/1->q2/asg"));
+                        assertTrue(queryResourceInfo.getInnerUrlResourceInfos().get(0).getCursorStoreUrl().endsWith("fuse/query/1->q2/cursor"));
+                        return fuseClient.unwrap(o.toString()) != null;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(200)
+                .contentType("application/json;charset=UTF-8");
+
+        given()
+                .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
+                .with().port(8888)
+                .get("/fuse/query/"+request.getId()+"->"+Q2().getName())
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        final QueryResourceInfo queryResourceInfo = fuseClient.unwrap(o.toString(), QueryResourceInfo.class);
+                        assertTrue(queryResourceInfo.getAsgUrl().endsWith("fuse/query/1->q2/asg"));
+                        assertTrue(queryResourceInfo.getCursorStoreUrl().endsWith("fuse/query/1->q2/cursor"));
+                        assertEquals(0,queryResourceInfo.getInnerUrlResourceInfos().size());
+                        return fuseClient.unwrap(o.toString()) != null;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(200)
+                .contentType("application/json;charset=UTF-8");
+
+
+    }
+
+    @Test
     public void queryWithTowInnerQueryCreate() throws IOException {
         BaseFuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         //query request
