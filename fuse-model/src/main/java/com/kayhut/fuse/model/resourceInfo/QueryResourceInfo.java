@@ -12,9 +12,9 @@ package com.kayhut.fuse.model.resourceInfo;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,29 +33,36 @@ import java.util.List;
  * resources
  * http://domain/fuse/query/:id
  * http://domain/fuse/query/:id/asg
+ * http://domain/fuse/query/:id/inner
  * http://domain/fuse/query/:id/v1
  * http://domain/fuse/query/:id/plan
  * http://domain/fuse/query/:id/elastic
  * http://domain/fuse/query/:id/cursor/:sequence
  * http://domain/fuse/query/:id/cursor/:sequence/result/:sequence
  */
-public class QueryResourceInfo extends ResourceInfoBase{
+public class QueryResourceInfo extends ResourceInfoBase {
 
     //region Constructors
-    public QueryResourceInfo() {}
+    public QueryResourceInfo() {
+    }
 
-    public QueryResourceInfo(String resourceUrl,String resourceId, String cursorStoreUrl, CursorResourceInfo...cursorResourceInfos) {
+    public QueryResourceInfo(String resourceUrl, String resourceId, String cursorStoreUrl, CursorResourceInfo... cursorResourceInfos) {
         this(resourceUrl, resourceId, cursorStoreUrl, Stream.of(cursorResourceInfos));
     }
 
-    public QueryResourceInfo(String resourceUrl,String resourceId, String cursorStoreUrl, Iterable<CursorResourceInfo> cursorResourceInfos) {
-        super(resourceUrl,resourceId);
+    public QueryResourceInfo(String resourceUrl, String resourceId, String cursorStoreUrl, Iterable<CursorResourceInfo> cursorResourceInfos) {
+        this(resourceUrl, resourceId, cursorStoreUrl, cursorResourceInfos, Collections.emptyList());
+    }
+
+    public QueryResourceInfo(String resourceUrl, String resourceId, String cursorStoreUrl, Iterable<CursorResourceInfo> cursorResourceInfos, Iterable<QueryResourceInfo> resourceInfos) {
+        super(resourceUrl, resourceId);
         this.cursorStoreUrl = cursorStoreUrl;
-        this.v1QueryUrl = resourceUrl +"/v1";
-        this.asgUrl = resourceUrl +"/asg";
-        this.explainPlanUrl = resourceUrl +"/plan";
-        this.elasticQueryUrl = resourceUrl +"/elastic";
+        this.v1QueryUrl = resourceUrl + "/v1";
+        this.asgUrl = resourceUrl + "/asg";
+        this.explainPlanUrl = resourceUrl + "/plan";
+        this.elasticQueryUrl = resourceUrl + "/elastic";
         this.cursorResourceInfos = cursorResourceInfos == null ? Collections.emptyList() : Stream.ofAll(cursorResourceInfos).toJavaList();
+        this.innerUrlResourceInfos = resourceInfos == null ? Collections.emptyList() : Stream.ofAll(resourceInfos).toJavaList();
     }
 
     //endregion
@@ -73,9 +80,13 @@ public class QueryResourceInfo extends ResourceInfoBase{
         return v1QueryUrl;
     }
 
-    public String getAsgUrl() { return asgUrl; }
+    public String getAsgUrl() {
+        return asgUrl;
+    }
 
-    public String getElasticQueryUrl() { return elasticQueryUrl; }
+    public String getElasticQueryUrl() {
+        return elasticQueryUrl;
+    }
 
     public FuseError getError() {
         return error;
@@ -86,17 +97,27 @@ public class QueryResourceInfo extends ResourceInfoBase{
         return cursorResourceInfos;
     }
 
-    //endregion
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public List<QueryResourceInfo> getInnerUrlResourceInfos() {
+        return innerUrlResourceInfos;
+    }
+
+    public QueryResourceInfo withInnerQueryResources(List<QueryResourceInfo> innerQuery) {
+        this.innerUrlResourceInfos = innerQuery;
+        return this;
+    }
+
+//endregion
 
     public QueryResourceInfo error(FuseError error) {
-        QueryResourceInfo clone  = new QueryResourceInfo(
+        QueryResourceInfo clone = new QueryResourceInfo(
                 this.getResourceUrl(),
                 this.getResourceId(),
                 this.getCursorStoreUrl(),
                 this.cursorResourceInfos);
 
         clone.error = error;
-        return clone ;
+        return clone;
     }
 
     //region Fields
@@ -108,6 +129,8 @@ public class QueryResourceInfo extends ResourceInfoBase{
 
     private FuseError error;
 
+    private List<QueryResourceInfo> innerUrlResourceInfos;
     private List<CursorResourceInfo> cursorResourceInfos;
+
     //endregion
 }

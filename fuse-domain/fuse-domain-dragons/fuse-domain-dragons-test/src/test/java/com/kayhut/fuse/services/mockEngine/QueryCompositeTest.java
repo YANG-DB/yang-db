@@ -2,6 +2,7 @@ package com.kayhut.fuse.services.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.client.BaseFuseClient;
+import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgCompositeQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
@@ -9,6 +10,7 @@ import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryAssert;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -16,6 +18,8 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.constraint.InnerQueryConstraint;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
@@ -36,6 +40,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.ORIGINATED_IN;
+import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -48,44 +54,11 @@ public class QueryCompositeTest {
 //        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 
-    private Query Q0() {
-        Query query = Query.Builder.instance().withName("q0").withOnt("Dragons")
-                .withElements(Arrays.asList(
-                        new Start(0, 1),
-                        new ETyped(1, "P", "Person", 2, 0),
-                        new EPropGroup(2,
-                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q1(),"P.id")))
-                )).build();
-        return query;
-    }
-
-    private Query Q1() {
-        Query query = Query.Builder.instance().withName("q1").withOnt("Dragons")
-                .withElements(Arrays.asList(
-                        new Start(0, 1),
-                        new ETyped(1, "People", "Person", 2, 0),
-                        new EPropGroup(2,
-                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P.id")))
-                )).build();
-        return query;
-    }
-
-    private Query Q2() {
-        Query query = Query.Builder.instance().withName("q2").withOnt("Dragons")
-                .withElements(Arrays.asList(
-                        new Start(0, 1),
-                        new ETyped(1, "P", "Person", 2, 0),
-                        new EPropGroup(2,
-                                new EProp(3, "name",Constraint.of(ConstraintOp.like,"jhon*")))
-                )).build();
-        return query;
-    }
-
     /**
      * execute query with expected path result
      */
     @Test
-    public void queryCreate() throws IOException {
+    public void queryWithOneInnerQueryCreate() throws IOException {
         BaseFuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         //query request
         CreateQueryRequest request = new CreateQueryRequest();
@@ -103,11 +76,13 @@ public class QueryCompositeTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
-                        ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
-                        Map data = (Map) contentResponse.getData();
-                        assertTrue(data.get("resourceUrl").toString().endsWith("/fuse/query/1"));
-                        assertTrue(data.get("cursorStoreUrl").toString().endsWith("/fuse/query/1/cursor"));
-                        return contentResponse.getData() != null;
+                        final QueryResourceInfo queryResourceInfo = fuseClient.unwrap(o.toString(), QueryResourceInfo.class);
+                        assertTrue(queryResourceInfo.getAsgUrl().endsWith("fuse/query/1/asg"));
+                        assertTrue(queryResourceInfo.getCursorStoreUrl().endsWith("fuse/query/1/cursor"));
+                        assertEquals(1,queryResourceInfo.getInnerUrlResourceInfos().size());
+                        assertTrue(queryResourceInfo.getInnerUrlResourceInfos().get(0).getAsgUrl().endsWith("fuse/query/1->q2/asg"));
+                        assertTrue(queryResourceInfo.getInnerUrlResourceInfos().get(0).getCursorStoreUrl().endsWith("fuse/query/1->q2/cursor"));
+                        return fuseClient.unwrap(o.toString()) != null;
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;
@@ -139,6 +114,81 @@ public class QueryCompositeTest {
                 .contentType("application/json;charset=UTF-8");
 
 
+    }
+
+    @Test
+    public void queryWithTowInnerQueryCreate() throws IOException {
+        BaseFuseClient fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
+        //query request
+        CreateQueryRequest request = new CreateQueryRequest();
+        request.setId("1");
+        request.setName("test");
+        request.setQuery(Q4());
+        //submit query
+        given()
+                .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
+                .with().port(8888)
+                .body(request)
+                .post("/fuse/query")
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        final QueryResourceInfo queryResourceInfo = fuseClient.unwrap(o.toString(), QueryResourceInfo.class);
+                        assertTrue(queryResourceInfo.getAsgUrl().endsWith("fuse/query/1/asg"));
+                        assertTrue(queryResourceInfo.getCursorStoreUrl().endsWith("fuse/query/1/cursor"));
+                        assertEquals(2,queryResourceInfo.getInnerUrlResourceInfos().size());
+                        return fuseClient.unwrap(o.toString()) != null;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(201)
+                .contentType("application/json;charset=UTF-8");
+
+        //get query resource by id
+        given()
+                .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
+                .with().port(8888)
+                .get("/fuse/query/"+request.getId()+"->"+Q2().getName())
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        final QueryResourceInfo queryResourceInfo = fuseClient.unwrap(o.toString(), QueryResourceInfo.class);
+                        assertTrue(queryResourceInfo.getAsgUrl().endsWith("fuse/query/1->q2/asg"));
+                        assertTrue(queryResourceInfo.getCursorStoreUrl().endsWith("fuse/query/1->q2/cursor"));
+                        return fuseClient.unwrap(o.toString()) != null;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(200)
+                .contentType("application/json;charset=UTF-8");
+        given()
+                .contentType("application/json")
+                .header(new Header("fuse-external-id", "test"))
+                .with().port(8888)
+                .get("/fuse/query/"+request.getId()+"->"+Q3().getName())
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        final QueryResourceInfo queryResourceInfo = fuseClient.unwrap(o.toString(), QueryResourceInfo.class);
+                        assertTrue(queryResourceInfo.getAsgUrl().endsWith("fuse/query/1->q3/asg"));
+                        assertTrue(queryResourceInfo.getCursorStoreUrl().endsWith("fuse/query/1->q3/cursor"));
+                        return fuseClient.unwrap(o.toString()) != null;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(200)
+                .contentType("application/json;charset=UTF-8");
     }
 
     @Test
@@ -399,6 +449,68 @@ public class QueryCompositeTest {
                 .assertThat()
                 .statusCode(202)
                 .contentType("application/json;charset=UTF-8");
+    }
+
+    private Query Q0() {
+        Query query = Query.Builder.instance().withName("q0").withOnt("Dragons")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "P", "Person", 2, 0),
+                        new EPropGroup(2,
+                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q1(),"P.id")))
+                )).build();
+        return query;
+    }
+
+    private Query Q1() {
+        Query query = Query.Builder.instance().withName("q1").withOnt("Dragons")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "People", "Person", 2, 0),
+                        new EPropGroup(2,
+                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P.id")))
+                )).build();
+        return query;
+    }
+
+    private Query Q2() {
+        Query query = Query.Builder.instance().withName("q2").withOnt("Dragons")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "P", "Person", 2, 0),
+                        new EPropGroup(2,
+                                new EProp(3, "name",Constraint.of(ConstraintOp.like,"jhon*")))
+                )).build();
+        return query;
+    }
+
+    private Query Q3() {
+        Query query = Query.Builder.instance().withName("q3").withOnt("Dragons")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "P", "Person", 2, 0),
+                        new EPropGroup(2,
+                                new EProp(3, "name",Constraint.of(ConstraintOp.inSet,Arrays.asList("jhon","george","jim"))))
+                )).build();
+        return query;
+    }
+
+    private Query Q4() {
+        Query query = Query.Builder.instance().withName("q4").withOnt("Dragons")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "P", "Person", 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(4,8),0),
+                        new Rel(4, OWN.getrType(), Rel.Direction.R, null, 5, 0),
+                        new ETyped(5, "C", OntologyTestUtils.DRAGON.name, 6, 0),
+                        new EPropGroup(6,
+                                new EProp(7, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P.id"))),
+
+                        new Rel(8, OWN.getName(), Rel.Direction.R, null, 9, 0),
+                        new ETyped(9, "D", OntologyTestUtils.DRAGON.name, 10, 0),
+                        new EProp(10, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q3(),"P.id"))
+                )).build();
+        return query;
     }
 
 }

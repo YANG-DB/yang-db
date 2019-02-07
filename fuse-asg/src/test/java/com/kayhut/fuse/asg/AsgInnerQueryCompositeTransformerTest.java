@@ -207,12 +207,12 @@ public class AsgInnerQueryCompositeTransformerTest {
                         new Start(0, 1),
                         new ETyped(1, "P", "Person", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(4,8),0),
-                            new Rel(4, ORIGINATED_IN.getrType(), Rel.Direction.L, null, 5, 0),
+                            new Rel(4, OWN.getrType(), Rel.Direction.L, null, 5, 0),
                             new ETyped(5, "C", OntologyTestUtils.DRAGON.name, 6, 0),
                             new EPropGroup(6,
                                 new EProp(7, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P.id"))),
 
-                            new Rel(8, ORIGINATED_IN.getName(), Rel.Direction.L, null, 9, 0),
+                            new Rel(8, OWN.getName(), Rel.Direction.L, null, 9, 0),
                             new ETyped(9, "D", DRAGON.name, 10, 0),
                             new EProp(10, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q3(),"P.id"))
                 )).build();

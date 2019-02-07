@@ -30,6 +30,7 @@ import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -50,11 +51,25 @@ public class QueryResource {
         this.queryMetadata = queryMetadata;
         this.planNode = planNode;
         this.cursorResources = new HashMap<>();
+        this.innerQueryResources = new HashMap<>();
         this.executionPlan = executionPlan;
     }
     //endregion
 
     //region Public Methods
+    public QueryResource withInnerQueryResources(List<QueryResource> resources) {
+        resources.forEach(this::addInnerQueryResource);
+        return this;
+    }
+
+    public void addInnerQueryResource(QueryResource resource) {
+        this.innerQueryResources.put(resource.getQueryMetadata().getId(), resource);
+    }
+
+    public Iterable<QueryResource> getInnerQueryResources() {
+        return this.innerQueryResources.values();
+    }
+
     public void addCursorResource(String cursorId, CursorResource cursorResource) {
         this.cursorResources.put(cursorId, cursorResource);
     }
@@ -115,6 +130,7 @@ public class QueryResource {
     private Optional<PlanNode<Plan>> planNode;
     private AsgQuery asgQuery;
     private Map<String, CursorResource> cursorResources;
+    private Map<String, QueryResource> innerQueryResources;
     private AtomicInteger cursorSequence = new AtomicInteger();
     //endregion
 }
