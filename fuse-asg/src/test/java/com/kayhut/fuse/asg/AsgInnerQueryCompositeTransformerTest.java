@@ -7,6 +7,7 @@ import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.model.asgQuery.AsgCompositeQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Start;
@@ -29,7 +30,9 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getEprops;
+import static com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor.print;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -63,7 +66,13 @@ public class AsgInnerQueryCompositeTransformerTest {
         AsgQuery asgQuery = asgSupplier.transform(Q1());
         assertTrue(asgQuery != null);
         assertTrue(asgQuery instanceof AsgCompositeQuery);
+        assertNotNull(asgQuery.getOrigin());
+        assertEquals(Q1().getName(),asgQuery.getOrigin().getName());
         assertEquals(((AsgCompositeQuery) asgQuery).getQueryChain().size(),1);
+
+        final AsgQuery inner = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0);
+        assertNotNull(inner.getOrigin());
+        assertEquals(Q2().getName(),inner.getOrigin().getName());
         assertTrue(AsgQueryUtil.element(asgQuery,EPropGroup.class).get().geteBase().getProps().stream()
                 .anyMatch(p->p.getCon().getClass().isAssignableFrom(ParameterizedConstraint.class)));
 
@@ -85,15 +94,27 @@ public class AsgInnerQueryCompositeTransformerTest {
         AsgQuery asgQuery = asgSupplier.transform(Q0());
         assertTrue(asgQuery != null);
         assertTrue(asgQuery instanceof AsgCompositeQuery);
+
+        assertNotNull(asgQuery.getOrigin());
+        assertEquals(Q0().getName(),asgQuery.getOrigin().getName());
+
         assertEquals(((AsgCompositeQuery) asgQuery).getQueryChain().size(),1);
         assertTrue(AsgQueryUtil.element(asgQuery,EPropGroup.class).get().geteBase().getProps().stream()
                 .anyMatch(p->p.getCon().getClass().isAssignableFrom(ParameterizedConstraint.class)));
 
         AsgQuery innerQuery = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0);
         assertTrue(innerQuery instanceof AsgCompositeQuery);
+        assertNotNull(innerQuery.getOrigin());
+        assertEquals(Q1().getName(),innerQuery.getOrigin().getName());
+
         assertEquals(((AsgCompositeQuery) innerQuery).getQueryChain().size(),1);
+
         assertTrue(AsgQueryUtil.element(innerQuery,EPropGroup.class).get().geteBase().getProps().stream()
                 .anyMatch(p->p.getCon().getClass().isAssignableFrom(ParameterizedConstraint.class)));
+
+        AsgQuery realInnerQuery = ((AsgCompositeQuery) innerQuery).getQueryChain().get(0);
+        assertNotNull(realInnerQuery.getOrigin());
+        assertEquals(Q2().getName(),realInnerQuery.getOrigin().getName());
 
     }
 

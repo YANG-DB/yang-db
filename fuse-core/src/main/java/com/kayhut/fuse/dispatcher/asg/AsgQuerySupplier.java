@@ -68,6 +68,7 @@ public class AsgQuerySupplier implements Supplier<AsgQuery> {
 
         AsgQuery asgQuery = AsgQuery.AsgQueryBuilder.anAsgQuery()
                 .withName(query.getName())
+                .withOrigin(query)
                 .withOnt(query.getOnt())
                 .withStart(asgEBaseStart)
                 .withElements(queryAsgElements.values())

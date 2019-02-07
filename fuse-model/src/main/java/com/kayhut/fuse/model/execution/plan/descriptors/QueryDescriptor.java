@@ -169,8 +169,8 @@ public class QueryDescriptor implements Descriptor<Query> {
                 print(builder, query, element, true, true, level + 1, currentLine);
             } else if (element.get() instanceof EPropGroup) {
                 level = builder.size();
-                for (int i = 0; i < ((ScoreEPropGroup) element.get()).getGroups().size(); i++) {
-                    EPropGroup ePropGroup = ((ScoreEPropGroup) element.get()).getGroups().get(i);
+                for (int i = 0; i < ((EPropGroup) element.get()).getGroups().size(); i++) {
+                    EPropGroup ePropGroup = ((EPropGroup) element.get()).getGroups().get(i);
                     print(builder, query, Optional.of(ePropGroup), true, true, level, i);
                 }
             } else if (element.get() instanceof EProp || element.get() instanceof RelProp) {

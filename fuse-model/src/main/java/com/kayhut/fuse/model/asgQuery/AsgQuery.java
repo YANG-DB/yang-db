@@ -24,6 +24,7 @@ package com.kayhut.fuse.model.asgQuery;
  */
 
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -86,6 +87,14 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
         this.parameters = parameters;
     }
 
+    public Query getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(Query origin) {
+        this.origin = origin;
+    }
+
     @Override
     public Collection<AsgEBase<? extends EBase>> getElements() {
         return elements;
@@ -139,6 +148,8 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
     private String ont;
     private String name;
     private AsgEBase<Start> start;
+    private Query origin;
+
     private Collection<NamedParameter> parameters = new ArrayList<>();
     private Collection<AsgEBase<? extends EBase>> elements = new ArrayList<>();
 
@@ -158,6 +169,11 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
 
         public AsgQueryBuilder withOnt(String ont) {
             this.asgQuery.ont = ont;
+            return this;
+        }
+
+        public AsgQueryBuilder withOrigin(Query origin) {
+            this.asgQuery.origin = origin;
             return this;
         }
 

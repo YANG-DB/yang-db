@@ -54,6 +54,7 @@ public class AsgUnionSplitQueryTransformer implements QueryTransformer<AsgQuery,
                         asgEBase -> skipPermutationStops(asgEBase, permutation).getNext()))
                 .map(permutationQueryStart -> AsgQuery.AsgQueryBuilder.anAsgQuery()
                         .withName(query.getName())
+                        .withOrigin(query.getOrigin())
                         .withOnt(query.getOnt())
                         .withStart((AsgEBase<Start>) (AsgEBase<?>) permutationQueryStart)
                         .withElements(new ArrayList<>(AsgQueryUtil.elements(permutationQueryStart)))

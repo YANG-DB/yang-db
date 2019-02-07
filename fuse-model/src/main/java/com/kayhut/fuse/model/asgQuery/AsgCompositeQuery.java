@@ -31,6 +31,7 @@ public class AsgCompositeQuery extends AsgQuery {
     public AsgCompositeQuery(AsgQuery asgQuery) {
         this.setName(asgQuery.getName());
         this.setOnt(asgQuery.getOnt());
+        this.setOrigin(asgQuery.getOrigin());
         this.setParameters(asgQuery.getParameters());
         this.setStart(asgQuery.getStart());
         this.setElements(asgQuery.getElements());

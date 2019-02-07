@@ -136,10 +136,16 @@ public abstract class QueryDriverBase implements QueryDriver {
                         throw new IllegalArgumentException(validate.toString());
                     }
 
-                    Query q = Query.QueryUtils.innerQuery(query,asgQ.getName()).get();
+                    Query q = asgQ.getOrigin();
                     this.resourceStore.addQueryResource(createResource(
-                            new CreateQueryRequest(request.getId()+":"+asgQ.getName(),
-                                    request.getName()+":"+asgQ.getName(),q), q, asgQ, metadata));
+                            new CreateQueryRequest(request.getId()+"->"+q.getName(),
+                                    request.getName()+"->"+q.getName(),q), q, asgQ,
+                            new QueryMetadata(CreateQueryRequestMetadata.Type._volatile,
+                                    request.getId()+"->"+q.getName(),
+                                    request.getName()+"->"+q.getName(),
+                                    metadata.isSearchPlan(),
+                                    metadata.getCreationTime(),
+                                    metadata.getTtl())));
                 });
             }
 

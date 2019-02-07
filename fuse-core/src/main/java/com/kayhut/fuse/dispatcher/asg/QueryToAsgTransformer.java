@@ -66,6 +66,7 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
         AsgQuery.AsgQueryBuilder builder = AsgQuery.AsgQueryBuilder.anAsgQuery()
                 .withName(query.getName())
                 .withOnt(query.getOnt())
+                .withOrigin(query)
                 .withStart(asgEBaseStart)
                 .withElements(queryAsgElements.values());
 

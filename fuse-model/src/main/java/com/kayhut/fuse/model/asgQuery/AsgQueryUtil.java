@@ -539,7 +539,9 @@ public class AsgQueryUtil {
         AsgEBase<Start> clonedStart = AsgQueryUtil.deepClone(query.getStart(), e -> !(e.geteBase() instanceof OptionalComp), b -> true);
 
         List elements = elements(clonedStart);
-        AsgQuery clonedMainQuery = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(clonedStart).withName(query.getName()).withOnt(query.getOnt()).withElements(elements).build();
+        AsgQuery clonedMainQuery = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(clonedStart)
+                .withOrigin(query.getOrigin())
+                .withName(query.getName()).withOnt(query.getOnt()).withElements(elements).build();
         OptionalStrippedQuery.Builder builder = OptionalStrippedQuery.Builder.get();
         builder.withMainQuery(clonedMainQuery);
         for (AsgEBase<OptionalComp> optionalElement : optionals) {
