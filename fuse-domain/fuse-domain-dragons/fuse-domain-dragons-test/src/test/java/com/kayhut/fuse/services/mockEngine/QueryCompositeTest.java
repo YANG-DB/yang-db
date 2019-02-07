@@ -44,8 +44,8 @@ import static org.junit.Assert.assertTrue;
 public class QueryCompositeTest {
     @Before
     public void before() {
-//        TestSuite.setup();
-        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
+        TestSuite.setup();
+//        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 
     private Query Q0() {
@@ -152,7 +152,7 @@ public class QueryCompositeTest {
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
-        request.setQuery(TestUtils.loadQuery("Q001.json"));
+        request.setQuery(Q1());
         request.setCreateCursorRequest(createCursorRequest);
         //submit query
         given()

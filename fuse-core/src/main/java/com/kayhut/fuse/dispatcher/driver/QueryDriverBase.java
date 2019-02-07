@@ -129,26 +129,7 @@ public abstract class QueryDriverBase implements QueryDriver {
             }
 
             //create inner query
-            if (asgQuery instanceof AsgCompositeQuery) {
-                ((AsgCompositeQuery) asgQuery).getQueryChain().forEach(asgQ -> {
-                    ValidationResult validate = this.queryValidator.validate(asgQuery);
-                    if (!validate.valid()) {
-                        throw new IllegalArgumentException(validate.toString());
-                    }
-
-                    Query q = asgQ.getOrigin();
-                    this.resourceStore.addQueryResource(createResource(
-                            new CreateQueryRequest(request.getId()+"->"+q.getName(),
-                                    request.getName()+"->"+q.getName(),q), q, asgQ,
-                            new QueryMetadata(CreateQueryRequestMetadata.Type._volatile,
-                                    request.getId()+"->"+q.getName(),
-                                    request.getName()+"->"+q.getName(),
-                                    metadata.isSearchPlan(),
-                                    metadata.getCreationTime(),
-                                    metadata.getTtl())));
-                });
-            }
-
+            createInnerQuery(request,metadata,asgQuery);
             //outer most query resource
             this.resourceStore.addQueryResource(createResource(request, query, asgQuery, metadata));
 
@@ -160,6 +141,34 @@ public abstract class QueryDriverBase implements QueryDriver {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(),
                             err.getMessage())));
+        }
+    }
+
+    /**
+     * add inner query to repository with related parent query name
+     * @param request
+     * @param metadata
+     * @param asgQuery
+     */
+    private void createInnerQuery(CreateQueryRequestMetadata request, QueryMetadata metadata, AsgQuery asgQuery) {
+        if (asgQuery instanceof AsgCompositeQuery) {
+            ((AsgCompositeQuery) asgQuery).getQueryChain().forEach(asgQ -> {
+                ValidationResult validate = this.queryValidator.validate(asgQuery);
+                if (!validate.valid()) {
+                    throw new IllegalArgumentException(validate.toString());
+                }
+
+                Query q = asgQ.getOrigin();
+                this.resourceStore.addQueryResource(createResource(
+                        new CreateQueryRequest(request.getId()+"->"+q.getName(),
+                                request.getName()+"->"+q.getName(),q), q, asgQ,
+                        new QueryMetadata(CreateQueryRequestMetadata.Type._volatile,
+                                request.getId()+"->"+q.getName(),
+                                request.getName()+"->"+q.getName(),
+                                metadata.isSearchPlan(),
+                                metadata.getCreationTime(),
+                                metadata.getTtl())));
+            });
         }
     }
 
@@ -188,6 +197,9 @@ public abstract class QueryDriverBase implements QueryDriver {
                     .withOnt(request.getOntology())
                     .withName(query).build();
 
+            //create inner query
+            createInnerQuery(request,metadata,asgQuery);
+            //outer most query resource
             this.resourceStore.addQueryResource(createResource(
                     new CreateQueryRequest(request.getId(), request.getName(), build, request.getPlanTraceOptions(), request.getCreateCursorRequest())
                     , build
@@ -210,7 +222,7 @@ public abstract class QueryDriverBase implements QueryDriver {
         try {
             QueryMetadata metadata = getQueryMetadata(request);
             Optional<QueryResourceInfo> queryResourceInfo = this.create(request, metadata, request.getQuery());
-            return getQueryResourceInfo(request, queryResourceInfo);
+            return generateQueryWithResourceInfo(request, queryResourceInfo);
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(),
@@ -224,7 +236,7 @@ public abstract class QueryDriverBase implements QueryDriver {
         try {
             QueryMetadata metadata = getQueryMetadata(request);
             Optional<QueryResourceInfo> queryResourceInfo = this.create(request, metadata, request.getQuery());
-            return getQueryResourceInfo(request, queryResourceInfo);
+            return generateQueryWithResourceInfo(request, queryResourceInfo);
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(),
@@ -234,7 +246,7 @@ public abstract class QueryDriverBase implements QueryDriver {
 
     }
 
-    private Optional<QueryResourceInfo> getQueryResourceInfo(CreateQueryRequestMetadata request, Optional<QueryResourceInfo> queryResourceInfo) {
+    private Optional<QueryResourceInfo> generateQueryWithResourceInfo(CreateQueryRequestMetadata request, Optional<QueryResourceInfo> queryResourceInfo) {
         if (!queryResourceInfo.isPresent() || queryResourceInfo.get().getError() != null) {
             if (queryResourceInfo.get().getError() != null) {
                 return Optional.of(new QueryResourceInfo().error(queryResourceInfo.get().getError()));
