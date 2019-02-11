@@ -95,7 +95,9 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
                 });
 
 
-        Stream.ofAll(bellowFactory.supplyBellow(eBaseCurrent)).forEach(
+        Stream.ofAll(bellowFactory.supplyBellow(eBaseCurrent))
+                .filter(b -> queryElements.get(b) != null)
+                .forEach(
                 eNum -> {
                     EBase eBaseB = queryElements.get(eNum);
                     AsgEBase asgEBaseB = AsgEBase.Builder.get()
