@@ -61,8 +61,10 @@ public abstract class PageDriverBase implements PageDriver {
             return Optional.empty();
         }
 
+        //outer page id resource
         String pageId = cursorResource.get().getNextPageId();
-
+        //create inner page resources
+        createInnerPage(queryResource.get(),cursorId,pageSize);
         PageResource<QueryResultBase> pageResource = this.createResource(queryResource.get(), cursorResource.get(), pageId, pageSize);
         this.resourceStore.addPageResource(queryId, cursorId, pageResource);
 
@@ -73,6 +75,12 @@ public abstract class PageDriverBase implements PageDriver {
                 pageResource.getActualSize(),
                 0,
                 true));
+    }
+
+    private void createInnerPage(QueryResource queryResource, String cursorId, int pageSize) {
+        queryResource.getInnerQueryResources().forEach(inner->{
+            create(inner.getQueryMetadata().getId(),inner.getCurrentCursorId(),pageSize);
+        });
     }
 
     @Override

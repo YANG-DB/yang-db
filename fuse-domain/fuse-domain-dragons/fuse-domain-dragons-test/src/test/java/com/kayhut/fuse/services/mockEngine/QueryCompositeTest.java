@@ -42,6 +42,7 @@ import java.util.Map;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.ORIGINATED_IN;
 import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
+import static com.kayhut.fuse.services.mockEngine.CompositeQueryTestUtils.*;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -535,66 +536,5 @@ public class QueryCompositeTest {
                 .contentType("application/json;charset=UTF-8");
     }
 
-    private Query Q0() {
-        Query query = Query.Builder.instance().withName("q0").withOnt("Dragons")
-                .withElements(Arrays.asList(
-                        new Start(0, 1),
-                        new ETyped(1, "P", "Person", 2, 0),
-                        new EPropGroup(2,
-                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q1(),"P.id")))
-                )).build();
-        return query;
-    }
-
-    private Query Q1() {
-        Query query = Query.Builder.instance().withName("q1").withOnt("Dragons")
-                .withElements(Arrays.asList(
-                        new Start(0, 1),
-                        new ETyped(1, "People", "Person", 2, 0),
-                        new EPropGroup(2,
-                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P.id")))
-                )).build();
-        return query;
-    }
-
-    private Query Q2() {
-        Query query = Query.Builder.instance().withName("q2").withOnt("Dragons")
-                .withElements(Arrays.asList(
-                        new Start(0, 1),
-                        new ETyped(1, "P", "Person", 2, 0),
-                        new EPropGroup(2,
-                                new EProp(3, "name",Constraint.of(ConstraintOp.like,"jhon*")))
-                )).build();
-        return query;
-    }
-
-    private Query Q3() {
-        Query query = Query.Builder.instance().withName("q3").withOnt("Dragons")
-                .withElements(Arrays.asList(
-                        new Start(0, 1),
-                        new ETyped(1, "P", "Person", 2, 0),
-                        new EPropGroup(2,
-                                new EProp(3, "name",Constraint.of(ConstraintOp.inSet,Arrays.asList("jhon","george","jim"))))
-                )).build();
-        return query;
-    }
-
-    private Query Q4() {
-        Query query = Query.Builder.instance().withName("q4").withOnt("Dragons")
-                .withElements(Arrays.asList(
-                        new Start(0, 1),
-                        new ETyped(1, "P", "Person", 2, 0),
-                        new Quant1(2, QuantType.all, Arrays.asList(4,8),0),
-                        new Rel(4, OWN.getrType(), Rel.Direction.R, null, 5, 0),
-                        new ETyped(5, "C", OntologyTestUtils.DRAGON.name, 6, 0),
-                        new EPropGroup(6,
-                                new EProp(7, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P.id"))),
-
-                        new Rel(8, OWN.getName(), Rel.Direction.R, null, 9, 0),
-                        new ETyped(9, "D", OntologyTestUtils.DRAGON.name, 10, 0),
-                        new EProp(10, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q3(),"P.id"))
-                )).build();
-        return query;
-    }
 
 }
