@@ -77,7 +77,7 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public boolean addQueryResource(QueryResource queryResource) {
-        return stores.stream().filter(store -> store.test(queryResource.getQueryMetadata().getType()))
+        return stores.stream().filter(store -> store.test(queryResource.getQueryMetadata().getStorageType()))
                 .findFirst().orElse(stores.iterator().next())
                 .addQueryResource(queryResource);
     }
@@ -117,7 +117,7 @@ public class ResourceStoreFactory implements ResourceStore {
     }
 
     @Override
-    public boolean test(CreateQueryRequest.Type type) {
+    public boolean test(CreateQueryRequest.StorageType type) {
         return false;
     }
 }

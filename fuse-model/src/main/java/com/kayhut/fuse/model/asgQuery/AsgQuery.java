@@ -23,6 +23,9 @@ package com.kayhut.fuse.model.asgQuery;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
@@ -36,7 +39,9 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.InnerQueryConstraint;
 import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
+import com.kayhut.fuse.model.query.properties.constraint.ParameterizedConstraint;
 import com.kayhut.fuse.model.query.properties.projection.Projection;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
@@ -51,6 +56,10 @@ import java.util.Collections;
 /**
  * Created by benishue on 23-Feb-17.
  */
+@JsonSubTypes({
+        @JsonSubTypes.Type(name = "AsgCompositeQuery", value = AsgCompositeQuery.class)})
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
 
     //region Getters & Setters

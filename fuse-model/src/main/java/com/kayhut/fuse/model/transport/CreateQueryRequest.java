@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.query.QueryMetadata.Type;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 /**
@@ -70,6 +71,11 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
     //endregion
 
     //region Properties
+    public CreateQueryRequest storageType(StorageType storageType) {
+        this.storageType = storageType;
+        return this;
+    }
+
     public CreateQueryRequest type(Type type) {
         this.type = type;
         return this;
@@ -118,8 +124,8 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
     }
 
     @Override
-    public Type getType() {
-        return type;
+    public StorageType getStorageType() {
+        return storageType;
     }
 
     public PlanTraceOptions getPlanTraceOptions() {
@@ -137,6 +143,14 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
 
     public void setCreateCursorRequest(CreateCursorRequest createCursorRequest) {
         this.createCursorRequest = createCursorRequest;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     @Override
@@ -164,7 +178,8 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
     //region Fields
     private String id;
     //default type is volatile
-    private Type type = Type._volatile;
+    private StorageType storageType = StorageType._volatile;
+    private Type type = Type.concrete;
     private String name;
     private Query query;
     private long ttl;

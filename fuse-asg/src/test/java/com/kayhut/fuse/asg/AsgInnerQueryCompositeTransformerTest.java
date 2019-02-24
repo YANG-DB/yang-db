@@ -82,7 +82,7 @@ public class AsgInnerQueryCompositeTransformerTest {
     }
 
     @Test
-    public void testTransformToMultiComposite() throws IOException {
+    public void testTransformToMultiComposite()  {
         QueryToAsgTransformer asgSupplier = new QueryToCompositeAsgTransformer(new OntologyProvider() {
             @Override
             public Optional<Ontology> get(String id) {
@@ -117,7 +117,7 @@ public class AsgInnerQueryCompositeTransformerTest {
     }
 
     @Test
-    public void testTransformToMultiInnerComposite() throws IOException {
+    public void testTransformToMultiInnerComposite() {
         QueryToAsgTransformer asgSupplier = new QueryToCompositeAsgTransformer(new OntologyProvider() {
             @Override
             public Optional<Ontology> get(String id) {

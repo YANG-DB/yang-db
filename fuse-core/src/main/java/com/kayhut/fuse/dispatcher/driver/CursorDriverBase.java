@@ -116,7 +116,9 @@ public abstract class CursorDriverBase implements CursorDriver {
         if (!queryResource.isPresent()) {
             return Optional.empty();
         }
-
+        //try delete inner cursors
+        queryResource.get().getInnerQueryResources().forEach(inner->delete(inner.getQueryMetadata().getId(),cursorId));
+        //delete outer cursor
         queryResource.get().deleteCursorResource(cursorId);
         return Optional.of(true);
     }

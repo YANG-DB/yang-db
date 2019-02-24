@@ -148,8 +148,8 @@ public class InMemoryResourceStore implements ResourceStore {
     }
 
     @Override
-    public boolean test(CreateQueryRequest.Type type) {
-        return type.equals(CreateQueryRequest.Type._volatile);
+    public boolean test(CreateQueryRequest.StorageType type) {
+        return type.equals(CreateQueryRequest.StorageType._volatile);
     }
 
 //endregion

@@ -19,6 +19,7 @@ import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import javaslang.Tuple2;
@@ -76,11 +77,11 @@ public class KnowledgeReaderContext {
 
         public KnowledgeQueryBuilder withGlobalEntityValues(String eTag, Filter... filters) {
             return withGlobalEntity(eTag, Collections.EMPTY_LIST,
-                    Arrays.asList(filter().with(QuantType.all, "fieldId", Constraint.of(ConstraintOp.inSet,Arrays.asList("title", "nicknames")))));
+                    Arrays.asList(filter().with(QuantType.all, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames")))));
         }
 
         public KnowledgeQueryBuilder withGlobalEntity(String eTag) {
-            return withGlobalEntity(eTag,Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+            return withGlobalEntity(eTag, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
         }
 
         public KnowledgeQueryBuilder withGlobalEntity(String eTag, List<Filter> entityFilter, List<Filter> entityValueFilter) {
@@ -88,7 +89,7 @@ public class KnowledgeReaderContext {
             this.elements.add(new Rel(currentEnum(), "hasEntity", L, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), LogicalEntity.type, LogicalEntity.type, nextEnum(), 0));
             this.elements.add(new Rel(currentEnum(), "hasEntity", R, null, nextEnum(), 0));
-            this.elements.add(new ETyped(currentEnum(), eTag+"#"+currentEnum(), EntityBuilder.type, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), eTag + "#" + currentEnum(), EntityBuilder.type, nextEnum(), 0));
             //add global quant
             quant();
             //add global rel + values
@@ -99,7 +100,7 @@ public class KnowledgeReaderContext {
             nextEnum();//continue
             entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasEvalue", R, null, nextEnum(), 0));
-            this.elements.add(new ETyped(currentEnum(), eTag+"#"+currentEnum(), ValueBuilder.type, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), eTag + "#" + currentEnum(), ValueBuilder.type, nextEnum(), 0));
 
             quant();
 
@@ -127,7 +128,7 @@ public class KnowledgeReaderContext {
 
 
         public KnowledgeQueryBuilder relatedTo(String eTag, String sideB, Filter... filters) {
-            return relatedTo(entityStack.peek(),eTag,sideB,filters);
+            return relatedTo(entityStack.peek(), eTag, sideB, filters);
         }
 
         public KnowledgeQueryBuilder relatedTo(Quant1 quantEntity, String eTag, String sideB, Filter... filters) {
@@ -194,24 +195,28 @@ public class KnowledgeReaderContext {
 
     }
 
+    static public QueryResourceInfo query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, CreateQueryRequest request) throws IOException {
+        return fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(),request);
+    }
+
     static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, Query query)
             throws IOException, InterruptedException {
         return query(fuseClient, fuseResourceInfo, query, new CreateGraphCursorRequest());
     }
 
-    static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo,int pageSize, Query query)
+    static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, int pageSize, Query query)
             throws IOException, InterruptedException {
         return query(fuseClient, fuseResourceInfo, query, new CreateGraphCursorRequest(new CreatePageRequest(pageSize)));
     }
 
-    static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, String query,String ontology)
+    static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, String query, String ontology)
             throws IOException, InterruptedException {
-        return query(fuseClient, fuseResourceInfo, query,ontology, new CreateGraphCursorRequest());
+        return query(fuseClient, fuseResourceInfo, query, ontology, new CreateGraphCursorRequest());
     }
 
-    static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo,int pageSize, String query,String ontology)
+    static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, int pageSize, String query, String ontology)
             throws IOException, InterruptedException {
-        return query(fuseClient, fuseResourceInfo, query,ontology, new CreateGraphCursorRequest(new CreatePageRequest(pageSize)));
+        return query(fuseClient, fuseResourceInfo, query, ontology, new CreateGraphCursorRequest(new CreatePageRequest(pageSize)));
     }
 
     static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, Query query, CreateCursorRequest createCursorRequest)
@@ -222,7 +227,7 @@ public class KnowledgeReaderContext {
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), createCursorRequest);
         // Press on page to get the relevant page
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(),
-                createCursorRequest.getCreatePageRequest()!=null ? createCursorRequest.getCreatePageRequest().getPageSize() : 1000);
+                createCursorRequest.getCreatePageRequest() != null ? createCursorRequest.getCreatePageRequest().getPageSize() : 1000);
         // Waiting until it gets the response
         while (!pageResourceInfo.isAvailable()) {
             pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
@@ -237,12 +242,12 @@ public class KnowledgeReaderContext {
     static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, String query, String ontology, CreateCursorRequest createCursorRequest)
             throws IOException, InterruptedException {
         // get Query URL
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query,ontology);
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, ontology);
         // Press on Cursor
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), createCursorRequest);
         // Press on page to get the relevant page
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(),
-                createCursorRequest.getCreatePageRequest()!=null ? createCursorRequest.getCreatePageRequest().getPageSize() : 1000);
+                createCursorRequest.getCreatePageRequest() != null ? createCursorRequest.getCreatePageRequest().getPageSize() : 1000);
         // Waiting until it gets the response
         while (!pageResourceInfo.isAvailable()) {
             pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
@@ -254,8 +259,8 @@ public class KnowledgeReaderContext {
         return fuseClient.getPageData(pageResourceInfo.getDataUrl());
     }
 
-    static public QueryResultBase nextPage(FuseClient fuseClient,CursorResourceInfo cursorResourceInfo ,int pageSize) throws IOException, InterruptedException {
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(),pageSize);
+    static public QueryResultBase nextPage(FuseClient fuseClient, CursorResourceInfo cursorResourceInfo, int pageSize) throws IOException, InterruptedException {
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), pageSize);
         // Waiting until it gets the response
         while (!pageResourceInfo.isAvailable()) {
             pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());

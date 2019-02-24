@@ -172,7 +172,7 @@ public class LoggingResourceStore implements ResourceStore {
     private Descriptor<PageResource> pageResourceDescriptor;
 
     @Override
-    public boolean test(CreateQueryRequest.Type type) {
+    public boolean test(CreateQueryRequest.StorageType type) {
         return this.innerResourceStore.test(type);
     }
     //endregion

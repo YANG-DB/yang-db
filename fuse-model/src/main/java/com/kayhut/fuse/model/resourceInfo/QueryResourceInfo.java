@@ -24,6 +24,7 @@ package com.kayhut.fuse.model.resourceInfo;
  */
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.query.QueryMetadata;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
@@ -46,16 +47,17 @@ public class QueryResourceInfo extends ResourceInfoBase {
     public QueryResourceInfo() {
     }
 
-    public QueryResourceInfo(String resourceUrl, String resourceId, String cursorStoreUrl, CursorResourceInfo... cursorResourceInfos) {
-        this(resourceUrl, resourceId, cursorStoreUrl, Stream.of(cursorResourceInfos));
+    public QueryResourceInfo(QueryMetadata.Type type, String resourceUrl, String resourceId, String cursorStoreUrl, CursorResourceInfo... cursorResourceInfos) {
+        this(type, resourceUrl, resourceId, cursorStoreUrl, Stream.of(cursorResourceInfos));
     }
 
-    public QueryResourceInfo(String resourceUrl, String resourceId, String cursorStoreUrl, Iterable<CursorResourceInfo> cursorResourceInfos) {
-        this(resourceUrl, resourceId, cursorStoreUrl, cursorResourceInfos, Collections.emptyList());
+    public QueryResourceInfo(QueryMetadata.Type type,String resourceUrl, String resourceId, String cursorStoreUrl, Iterable<CursorResourceInfo> cursorResourceInfos) {
+        this(type, resourceUrl, resourceId, cursorStoreUrl, cursorResourceInfos, Collections.emptyList());
     }
 
-    public QueryResourceInfo(String resourceUrl, String resourceId, String cursorStoreUrl, Iterable<CursorResourceInfo> cursorResourceInfos, Iterable<QueryResourceInfo> resourceInfos) {
+    public QueryResourceInfo(QueryMetadata.Type type,String resourceUrl, String resourceId, String cursorStoreUrl, Iterable<CursorResourceInfo> cursorResourceInfos, Iterable<QueryResourceInfo> resourceInfos) {
         super(resourceUrl, resourceId);
+        this.type = type;
         this.cursorStoreUrl = cursorStoreUrl;
         this.v1QueryUrl = resourceUrl + "/v1";
         this.asgUrl = resourceUrl + "/asg";
@@ -92,6 +94,10 @@ public class QueryResourceInfo extends ResourceInfoBase {
         return error;
     }
 
+    public QueryMetadata.Type getType() {
+        return type;
+    }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public List<CursorResourceInfo> getCursorResourceInfos() {
         return cursorResourceInfos;
@@ -111,6 +117,7 @@ public class QueryResourceInfo extends ResourceInfoBase {
 
     public QueryResourceInfo error(FuseError error) {
         QueryResourceInfo clone = new QueryResourceInfo(
+                QueryMetadata.Type.concrete,
                 this.getResourceUrl(),
                 this.getResourceId(),
                 this.getCursorStoreUrl(),
@@ -126,6 +133,7 @@ public class QueryResourceInfo extends ResourceInfoBase {
     private String v1QueryUrl;
     private String asgUrl;
     private String elasticQueryUrl;
+    private QueryMetadata.Type type;
 
     private FuseError error;
 

@@ -39,6 +39,8 @@ import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 
+import java.util.List;
+
 /**
  * Created by lior.perry on 20/02/2017.
  */
@@ -63,12 +65,15 @@ public class StandardQueryDriver extends QueryDriverBase {
 
     //region QueryDriverBase Implementation
     @Override
-    protected QueryResource createResource(CreateQueryRequest request, Query query, AsgQuery asgQuery, QueryMetadata metadata) {
+    protected QueryResource createResource(CreateQueryRequest request, Query query, List<QueryResource> innerQuery, AsgQuery asgQuery, QueryMetadata metadata) {
         AsgQuery newAsgQuery = this.queryRewriter.transform(asgQuery);
-
         PlanWithCost<Plan, PlanDetailedCost> planWithCost = PlanWithCost.EMPTY_PLAN;
-
-        if (metadata.isSearchPlan()) {
+        //update as parameterized type query
+        if(!innerQuery.isEmpty()) {
+            metadata.setType(QueryMetadata.Type.parameterized);
+        }
+        //calculate execution plan
+        if (metadata.isSearchPlan() && (metadata.getType()!=QueryMetadata.Type.parameterized)) {
             planWithCost = this.planSearcher.search(newAsgQuery);
 
             if (planWithCost == null) {

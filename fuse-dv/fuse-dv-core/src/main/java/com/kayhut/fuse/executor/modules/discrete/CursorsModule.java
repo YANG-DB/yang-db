@@ -64,8 +64,8 @@ public class CursorsModule extends ModuleBase {
                 new InnerQueryCursor.Factory()));
 
         Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
-                CreateInnerQueryCursorRequest.CursorType,
-                CreateInnerQueryCursorRequest.class,
+                CreateCsvCursorRequest.CursorType,
+                CreateCsvCursorRequest.class,
                 new CsvTraversalCursor.Factory()));
     }
     //endregion

@@ -107,7 +107,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
             errors.add(String.format(ERROR_3 ," interval type ",property));
         }
 
-        //expresion
+        //expression
         if (!Arrays.asList(ConstraintOp.empty, ConstraintOp.notEmpty).contains(property.getCon().getOp())) {
             if (property.getCon().getExpr() == null) {
                 errors.add(String.format(ERROR_3, " expression ", property));

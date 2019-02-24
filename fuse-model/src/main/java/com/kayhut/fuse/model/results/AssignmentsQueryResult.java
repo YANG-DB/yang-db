@@ -41,6 +41,10 @@ public class AssignmentsQueryResult extends QueryResultBase {
     public AssignmentsQueryResult() {
         this.assignments = Collections.emptyList();
     }
+
+    public AssignmentsQueryResult(List<Assignment> assignments) {
+        this.assignments = assignments;
+    }
     //endregion
 
     //region Properties

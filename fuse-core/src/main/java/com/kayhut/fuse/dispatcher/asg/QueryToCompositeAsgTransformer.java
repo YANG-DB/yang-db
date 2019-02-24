@@ -21,31 +21,18 @@ package com.kayhut.fuse.dispatcher.asg;
  */
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
-import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.dispatcher.query.QueryTransformer;
 import com.kayhut.fuse.model.asgQuery.AsgCompositeQuery;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.ParameterizedQuery;
 import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import com.kayhut.fuse.model.query.properties.constraint.InnerQueryConstraint;
-import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
-import com.kayhut.fuse.model.query.properties.constraint.ParameterizedConstraint;
-import javaslang.collection.Stream;
+import com.kayhut.fuse.model.query.properties.constraint.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getEprops;
@@ -96,8 +83,10 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
             Constraint con = eProp.getCon();
             if (property.isPresent() && isInnerQuery(con)) {
                 Query innerQuery = ((InnerQueryConstraint) con).getInnerQuery();
-                String name = innerQuery.getName();
-                Constraint newCon = new ParameterizedConstraint(con.getOp(), new NamedParameter(name));
+                String tagEntity = ((InnerQueryConstraint) con).getTagEntity();
+                String projectedFields = ((InnerQueryConstraint) con).getProjectedField();
+                Constraint newCon = new ParameterizedConstraint(con.getOp(),
+                        new QueryNamedParameter(innerQuery.getName(),tagEntity+"."+projectedFields));
                 eProp.setCon(newCon);
                 //add inner query to chain
                 AsgQuery innerAsgQuery = new AsgCompositeQuery(super.transform(innerQuery));
@@ -112,8 +101,10 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
                 Constraint con = relProp.getCon();
                 if (property.isPresent() && isInnerQuery(con)) {
                     Query innerQuery = ((InnerQueryConstraint) con).getInnerQuery();
-                    String name = innerQuery.getName();
-                    Constraint newCon = new ParameterizedConstraint(con.getOp(), new NamedParameter(name));
+                    String tagEntity = ((InnerQueryConstraint) con).getTagEntity();
+                    String projectedFields = ((InnerQueryConstraint) con).getProjectedField();
+                    Constraint newCon = new ParameterizedConstraint(con.getOp(),
+                            new QueryNamedParameter(innerQuery.getName(),tagEntity+"."+projectedFields));
                     relProp.setCon(newCon);
                     //add inner query to chain
                     AsgQuery innerAsgQuery = new AsgCompositeQuery(super.transform(innerQuery));

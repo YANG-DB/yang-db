@@ -35,7 +35,7 @@ public interface CreateQueryRequestMetadata<T> {
 
     T getQuery();
 
-    Type getType();
+    StorageType getStorageType();
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     CreateCursorRequest getCreateCursorRequest();
@@ -44,7 +44,7 @@ public interface CreateQueryRequestMetadata<T> {
 
     PlanTraceOptions getPlanTraceOptions();
 
-        enum Type {
+        enum StorageType {
         _stored,
         _volatile;
     }

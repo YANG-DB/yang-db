@@ -23,8 +23,6 @@ package com.kayhut.fuse.model.transport.cursor;
  * #L%
  */
 
-import com.kayhut.fuse.model.transport.CreatePageRequest;
-
 /**
  * Created by lior perry
  */

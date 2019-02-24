@@ -23,6 +23,7 @@ import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -46,7 +47,7 @@ public class MockDriver {
 
         //region QueryDriverBase Implementation
         @Override
-        protected QueryResource createResource(CreateQueryRequest request, com.kayhut.fuse.model.query.Query query, AsgQuery asgQuery, QueryMetadata metadata) {
+        protected QueryResource createResource(CreateQueryRequest request, com.kayhut.fuse.model.query.Query query, List<QueryResource> innerQuery, AsgQuery asgQuery, QueryMetadata metadata) {
             return new QueryResource(request, query, asgQuery, metadata, new PlanWithCost<>(new Plan(), new PlanDetailedCost()), Optional.empty());
         }
         //endregion

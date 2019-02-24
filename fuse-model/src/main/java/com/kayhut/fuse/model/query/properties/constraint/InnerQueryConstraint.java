@@ -23,38 +23,48 @@ package com.kayhut.fuse.model.query.properties.constraint;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kayhut.fuse.model.query.Query;
 
+import java.util.Arrays;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InnerQueryConstraint extends Constraint {
 
     private Query innerQuery;
-    private String[] projectedFields;
+    private String tagEntity;
+    private String projectedField;
 
     public InnerQueryConstraint() {}
 
-    public InnerQueryConstraint(ConstraintOp op, Query innerQuery, String... projectedFields) {
+    public InnerQueryConstraint(ConstraintOp op, Query innerQuery,String tagEntity, String projectedField) {
         super(op,null);
         this.innerQuery = innerQuery;
-        this.projectedFields = projectedFields;
+        this.tagEntity = tagEntity;
+        this.projectedField = projectedField;
     }
 
     public Query getInnerQuery() {
         return innerQuery;
     }
 
-    public String[] getProjectedFields() {
-        return projectedFields;
+    public String getProjectedField() {
+        return projectedField;
+    }
+
+    public String getTagEntity() {
+        return tagEntity;
+    }
+
+    @Override
+    public Object getExpr() {
+        return projectedField;
+    }
+
+    public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery,String tagEntity, String projectedFields) {
+        return new InnerQueryConstraint(op,innerQuery,tagEntity,projectedFields);
     }
 
     public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery) {
-        return of(op, innerQuery , new String[] {});
+        return of(op, innerQuery , "","");
     }
 
-    public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery, String projectedField) {
-        return of(op,innerQuery,new String[] {projectedField});
-    }
-
-    public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery, String... projectedFields) {
-        return new InnerQueryConstraint(op,innerQuery,projectedFields);
-    }
 
 }

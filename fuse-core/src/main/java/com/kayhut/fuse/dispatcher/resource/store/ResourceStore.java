@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 /**
  * Created by lior.perry on 06/03/2017.
  */
-public interface ResourceStore extends Predicate<CreateQueryRequest.Type> {
+public interface ResourceStore extends Predicate<CreateQueryRequest.StorageType> {
     Collection<QueryResource> getQueryResources();
     Optional<QueryResource> getQueryResource(String queryId);
     Optional<CursorResource> getCursorResource(String queryId, String cursorId);

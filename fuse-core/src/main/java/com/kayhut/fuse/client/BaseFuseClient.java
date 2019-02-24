@@ -89,6 +89,11 @@ public class BaseFuseClient implements FuseClient {
     }
 
     @Override
+    public QueryResourceInfo postQuery(String queryStoreUrl, CreateQueryRequest request) throws IOException {
+        return this.objectMapper.readValue(unwrap(postRequest(queryStoreUrl +"/" + CreateQueryRequest.TYPE, request)), QueryResourceInfo.class);
+    }
+
+    @Override
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query, PlanTraceOptions planTraceOptions) throws IOException {
         CreateQueryRequest request = new CreateQueryRequest();
         String id = UUID.randomUUID().toString();
