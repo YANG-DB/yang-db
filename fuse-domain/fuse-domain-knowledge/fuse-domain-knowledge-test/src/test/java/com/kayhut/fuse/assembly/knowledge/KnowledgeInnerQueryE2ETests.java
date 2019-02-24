@@ -190,7 +190,7 @@ public class KnowledgeInnerQueryE2ETests {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new ETyped(1, "A", "Evalue", 2, 0),
-                        new EProp(2, "fieldId", Constraint.of(ConstraintOp.contains, "Garage"))
+                        new EProp(2, "fieldId", Constraint.of(ConstraintOp.like, "Garage*"))
                 )).build();
 
         Query queryOuter = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
@@ -222,27 +222,7 @@ public class KnowledgeInnerQueryE2ETests {
         Assert.assertNotNull(graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
         Assert.assertNotNull(((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"));
         Assert.assertEquals(1,((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments")).size());
-        Assert.assertEquals(3, ((List) ((Map) (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
-
-        QueryResourceInfo pathResourceInfo = query(fuseClient, fuseResourceInfo,
-                new CreateQueryRequest("q2", "q2", queryOuter, new CreatePathsCursorRequest(new CreatePageRequest(100))));
-
-        Assert.assertEquals("call[q2]",pathResourceInfo.getResourceId());
-        Assert.assertNotNull(pathResourceInfo.getCursorStoreUrl());
-        Assert.assertFalse(pathResourceInfo.getCursorResourceInfos().isEmpty());
-        Assert.assertNotNull(pathResourceInfo.getCursorResourceInfos().get(0));
-        Assert.assertNotNull(pathResourceInfo.getCursorResourceInfos().get(0).getPageStoreUrl());
-        Assert.assertNotNull(pathResourceInfo.getCursorResourceInfos().get(0).getPageStoreUrl());
-        Assert.assertFalse(pathResourceInfo.getCursorResourceInfos().isEmpty());
-        Assert.assertNotNull(pathResourceInfo.getCursorResourceInfos().get(0));
-        Assert.assertFalse(pathResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
-        Assert.assertNotNull(pathResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0));
-        Assert.assertNotNull(pathResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
-        Assert.assertNotNull(((Map) pathResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"));
-        Assert.assertEquals(2,((List) ((Map) pathResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments")).size());
-        Assert.assertEquals(2, ((List) ((Map) (((List) ((Map) pathResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
-        Assert.assertEquals(2, ((List) ((Map) (((List) ((Map) pathResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(1)).get("entities")).size());
-
+        Assert.assertEquals(2, ((List) ((Map) (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
     }
 
 

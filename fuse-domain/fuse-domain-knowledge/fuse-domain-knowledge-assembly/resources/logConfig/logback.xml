@@ -168,7 +168,7 @@
   <!-- root -->
   <root level="trace">
     <appender-ref ref="stdout" />
-    <!--<appender-ref ref="filetrace" />-->
+    <appender-ref ref="filetrace" />
     <!--<appender-ref ref="elasticsearch"/>-->
   </root>
   <!-- root -->
