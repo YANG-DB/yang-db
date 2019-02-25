@@ -75,6 +75,7 @@ public class QueryBuilder {
         param,
         geoShape,
         geoBox,
+        geoDistance,
         boost
     }
 
@@ -547,6 +548,27 @@ public class QueryBuilder {
         }
 
         Composite geoShapeComposite = new GeoBoundingBoxComposite(name, fieldName, current,topLeft,bottomRight);
+        this.current.children.add(geoShapeComposite);
+        this.current = geoShapeComposite;
+
+        return this;
+    }
+
+    public QueryBuilder geoDistance(String name, String fieldName,GeoPoint location, String distance) {
+        if (this.root == null) {
+            throw new UnsupportedOperationException("'geoShape' may not appear as first statement");
+        }
+
+        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
+            throw new UnsupportedOperationException("'geoShape' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        }
+
+        if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
+            this.current = seekLocalName(current, name);
+            return this;
+        }
+
+        Composite geoShapeComposite = new GeoDistanceComposite(name, fieldName, current,location,distance);
         this.current.children.add(geoShapeComposite);
         this.current = geoShapeComposite;
 
@@ -1747,6 +1769,22 @@ public class QueryBuilder {
         @Override
         protected Object build() {
             return QueryBuilders.geoBoundingBoxQuery(this.getFieldName()).setCorners(bottomLeft,topRight);
+        }
+    }
+    public class GeoDistanceComposite extends FieldComposite {
+
+        private final GeoPoint location;
+        private final String distance;
+
+        public GeoDistanceComposite(String name, String fieldName, Composite parent, GeoPoint location, String distance ) {
+            super(name, fieldName, Op.geoDistance, parent);
+            this.location = location;
+            this.distance = distance;
+        }
+
+        @Override
+        protected Object build() {
+            return QueryBuilders.geoDistanceQuery(this.getFieldName()).point(location).distance(distance);
         }
     }
 

@@ -32,12 +32,12 @@ import java.util.List;
 /**
  * Created by Roman on 18/05/2017.
  */
-public class ContainsGeoBoundsQueryTranslator implements PredicateQueryTranslator {
-    public static final String GEO_BOUNDS = "geo_bounds";
+public class ContainsGeoDistanceQueryTranslator implements PredicateQueryTranslator {
+    public static final String GEO_DISTANCE = "geo_distance";
     private String[] geoFields;
     //region PredicateQueryTranslator Implementation
 
-    public ContainsGeoBoundsQueryTranslator(String... geoFields) {
+    public ContainsGeoDistanceQueryTranslator(String... geoFields) {
         this.geoFields = geoFields;
     }
 
@@ -51,8 +51,8 @@ public class ContainsGeoBoundsQueryTranslator implements PredicateQueryTranslato
                     queryBuilder.push().bool().mustNot().exists(key).pop();
                 } else {
                     queryBuilder.push()
-                            //box.get(0) - geo function name (geo_bounds)
-                            .geoBoundingBox(GEO_BOUNDS, key, new GeoPoint(box.get(1).toString()), new GeoPoint(box.get(2).toString()))
+                            //box.get(0) - geo function name (geo_distance)
+                            .geoDistance(GEO_DISTANCE, key, new GeoPoint(box.get(1).toString()), box.get(2).toString())
                             .pop();
                 }
                 break;
@@ -61,8 +61,8 @@ public class ContainsGeoBoundsQueryTranslator implements PredicateQueryTranslato
                     queryBuilder.push().exists(key).pop();
                 } else {
                     queryBuilder.push().bool().mustNot()
-                            //box.get(0) - geo function name (geo_bounds)
-                            .geoBoundingBox(GEO_BOUNDS, key, new GeoPoint(box.get(1).toString()), new GeoPoint(box.get(2).toString()))
+                            //box.get(0) - geo function name (geo_distance)
+                            .geoDistance(GEO_DISTANCE, key, new GeoPoint(box.get(1).toString()), box.get(2).toString())
                             .pop();
                 }
                 break;
@@ -76,7 +76,7 @@ public class ContainsGeoBoundsQueryTranslator implements PredicateQueryTranslato
     @Override
     public boolean test(String key, P<?> predicate) {
         return (predicate != null) && ((predicate.getBiPredicate() instanceof Contains) && (predicate.getValue() instanceof List)
-                && ((List) predicate.getValue()).get(0).equals(GEO_BOUNDS)
+                && ((List) predicate.getValue()).get(0).equals(GEO_DISTANCE)
                 && Arrays.asList(geoFields).contains(key)
 
         );
