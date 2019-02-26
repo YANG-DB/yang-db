@@ -18,12 +18,6 @@
  */
 package com.kayhut.fuse.client.export.graphml;
 
-/**
- * A collection of tokens used for GraphML related data.
- *
- * @author Marko A. Rodriguez (http://markorodriguez.com)
- * @author Stephen Mallette (http://stephen.genoprime.com)
- */
 final class GraphMLTokens {
     private GraphMLTokens() {}
 

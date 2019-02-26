@@ -30,9 +30,6 @@ final class GraphMLWriterHelper {
 
     private GraphMLWriterHelper() {}
 
-    /**
-     * @author Tijs Rademakers
-     */
     abstract static class DelegatingXMLStreamWriter implements XMLStreamWriter {
 
         private final XMLStreamWriter writer;
