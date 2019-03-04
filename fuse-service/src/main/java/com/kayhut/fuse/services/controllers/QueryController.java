@@ -55,6 +55,14 @@ public interface QueryController {
     ContentResponse<QueryResourceInfo> create(CreateJsonQueryRequest request);
 
     /**
+     * run a stateless query and get immediate graph results (first page only)
+     * type may be volatile or persistent
+     * @param query
+     * @return
+     */
+    ContentResponse<Object> run(Query query);
+
+    /**
      * create a prepared statement, run against db and return results
      * type may be volatile or persistent
      * @param request

@@ -77,6 +77,15 @@ public class StandardQueryController implements QueryController {
     }
 
     @Override
+    public ContentResponse<Object> run(Query query) {
+        return Builder.builder(CREATED, SERVER_ERROR )
+                .data(driver.run(query))
+                .successPredicate(objectContentResponse -> true)
+                .compose();
+
+    }
+
+    @Override
     public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryRequest request) {
         return  createAndFetch(this.create(request),request);
     }

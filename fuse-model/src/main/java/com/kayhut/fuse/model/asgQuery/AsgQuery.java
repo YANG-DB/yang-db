@@ -23,6 +23,7 @@ package com.kayhut.fuse.model.asgQuery;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -50,6 +51,7 @@ import java.util.Collections;
 /**
  * Created by benishue on 23-Feb-17.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
 
     //region Getters & Setters
