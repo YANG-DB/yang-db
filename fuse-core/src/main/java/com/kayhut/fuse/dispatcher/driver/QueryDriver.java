@@ -48,6 +48,8 @@ public interface QueryDriver {
 
     Optional<QueryResourceInfo> createAndFetch(CreateQueryRequest queryRequest);
 
+    Optional<Object> run(Query query);
+
     Optional<Object> getNextPageData(String queryId, Optional<String> cursorId,int pageSize, boolean deleteCurrentPage);
 
     Optional<StoreResourceInfo> getInfo();
@@ -63,4 +65,5 @@ public interface QueryDriver {
     Optional<PlanNode<Plan>> planVerbose(String queryId);
 
     Optional<Boolean> delete(String queryId);
+
 }

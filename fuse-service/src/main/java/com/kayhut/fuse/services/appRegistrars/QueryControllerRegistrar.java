@@ -72,6 +72,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /** create a v1 query */
         app.post(appUrlSupplier.queryStoreUrl() + "/v1",req -> postV1(app,req,this));
 
+        /** create a v1 query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/run",req -> runV1(app,req,this));
+
         /** create a cypher query */
         app.post(appUrlSupplier.queryStoreUrl() + "/cypher",req -> postCypher(app,req,this));
 
@@ -201,6 +204,18 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
                     registrar.getController(app).create(createQueryRequest) :
                     registrar.getController(app).createAndFetch(createQueryRequest);
+
+            return Results.with(response, response.status());
+        }
+
+        public static Result runV1(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+            Route.of("runQuery").write();
+
+            Query query = req.body(Query.class);
+            req.set(Query.class, query);
+            req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
+
+            ContentResponse<Object> response = registrar.getController(app).run(query);
 
             return Results.with(response, response.status());
         }

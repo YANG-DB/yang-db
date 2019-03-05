@@ -469,6 +469,11 @@
       "type": "string"
     },
     {
+      "pType": "geoValue",
+      "name": "geoValue",
+      "type": "geo_point"
+    },
+    {
       "pType": "intValue",
       "name": "intValue",
       "type": "int"

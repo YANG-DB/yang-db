@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 })
 public class TestSuite {
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws Exception {
         Cursor cursor = mock(Cursor.class);
         when(cursor.getNextResults(anyInt())).thenReturn(AssignmentsQueryResult.Builder.instance().build());
 

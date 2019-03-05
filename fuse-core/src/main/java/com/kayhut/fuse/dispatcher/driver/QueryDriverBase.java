@@ -47,6 +47,7 @@ import com.kayhut.fuse.model.results.AssignmentUtils;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
@@ -85,6 +86,26 @@ public abstract class QueryDriverBase implements QueryDriver {
     @Deprecated()
     public Optional<QueryResourceInfo> createAndFetch(CreateQueryRequest request) {
         return create(request);
+    }
+
+    @Override
+    public Optional<Object> run(Query query) {
+        String id = UUID.randomUUID().toString();
+        try {
+            CreateQueryRequest queryRequest = new CreateQueryRequest(id, id, query, new CreateGraphCursorRequest(new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if(!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if(resourceInfo.get().getError()!=null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } finally {
+            //remove stateless query
+            delete(id);
+        }
+
     }
 
 

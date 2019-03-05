@@ -57,6 +57,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static com.kayhut.fuse.services.FuseUtils.loadConfig;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.quartz.JobBuilder.newJob;
 
@@ -137,13 +138,15 @@ public class FuseApp extends Jooby {
 
     //region Public Methods
     public FuseApp conf(File file, String activeProfile, Tuple2<String,ConfigValue> ... values) {
-        Config config = ConfigFactory.parseFile(file);
-        config = config.withValue("application.profile", ConfigValueFactory.fromAnyRef(activeProfile, "FuseApp"));
-        for (Tuple2<String, ConfigValue> value : values) {
-            config = config.withValue(value._1, value._2);
-        }
+        Config config = loadConfig(file, activeProfile, values);
         super.use(config);
         return this;
     }
+
+    public FuseApp conf(Config config) {
+        super.use(config);
+        return this;
+    }
+
     //endregion
 }
