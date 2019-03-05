@@ -239,11 +239,13 @@
                 <artifactId>fuse-domain-knowledge-test</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
+<!--
             <dependency>
                 <groupId>com.kayhut</groupId>
                 <artifactId>fuse-domain-knowledge-poc</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
+-->
 
             <!-- elasticsearch-plugins -->
             <dependency>

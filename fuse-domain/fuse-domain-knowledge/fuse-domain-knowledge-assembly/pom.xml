@@ -61,10 +61,12 @@
             <groupId>com.kayhut</groupId>
             <artifactId>fuse-domain-knowledge-ext</artifactId>
         </dependency>
+<!--
         <dependency>
             <groupId>com.kayhut</groupId>
             <artifactId>fuse-domain-knowledge-poc</artifactId>
         </dependency>
+-->
         <dependency>
             <groupId>com.kayhut</groupId>
             <artifactId>fuse-test-framework</artifactId>
