@@ -1,4 +1,4 @@
-package com.kayhut.fuse.test.framework.index;
+package com.kayhut.fuse.services.embedded;
 
 /*-
  * #%L
@@ -31,12 +31,12 @@ import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static com.kayhut.fuse.test.framework.TestUtil.deleteFolder;
 
 
 /**
@@ -167,11 +167,27 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
         this.node = new PluginConfigurableNode(settings, Arrays.asList(
                 Netty4Plugin.class,
-//                CommonScriptPlugin.class,
                 CommonAnalysisPlugin.class
         ));
 
         this.node = this.node.start();
+        System.out.println("Node started successfully");
     }
+
+    private static void deleteFolder(String folder) {
+        File folderFile = new File(folder);
+        File[] files = folderFile.listFiles();
+        if(files!=null) {
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteFolder(f.getAbsolutePath());
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folderFile.delete();
+    }
+
     //endregion
 }

@@ -481,7 +481,7 @@
     {
       "pType": "geoValue",
       "name": "geoValue",
-      "type": "geo_shape"
+      "type": "geo_point"
     },
     {
       "pType": "entityAId",

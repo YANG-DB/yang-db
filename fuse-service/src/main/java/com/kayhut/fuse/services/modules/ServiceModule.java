@@ -45,6 +45,7 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecutionScope;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.transport.cursor.*;
+import com.kayhut.fuse.services.FuseUtils;
 import com.kayhut.fuse.services.controllers.*;
 import com.kayhut.fuse.services.controllers.logging.*;
 import com.kayhut.fuse.services.suppliers.CachedRequestIdSupplier;
@@ -125,14 +126,17 @@ public class ServiceModule extends ModuleBase {
     private void processLifeCycle(Env env, Config config, Binder binder) {
         env.onStart(() -> {
             logger.info("starting Fuse");
+            FuseUtils.onStart();
         });
 
         env.onStop(() -> {
             logger.info("stopping Fuse");
+            FuseUtils.onStop();
         });
 
         env.onStarted(() -> {
             logger.info("Fuse started");
+            FuseUtils.onStarted();
         });
 
     }

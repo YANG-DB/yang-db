@@ -21,6 +21,7 @@ package com.kayhut.fuse.services;
  */
 
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
+import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.jooby.Jooby;
 
@@ -30,7 +31,7 @@ import java.io.File;
  * Created by Roman on 05/06/2017.
  */
 public class FuseRunner {
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws Exception {
         System.out.println("Args:");
         Stream.of(args).forEach(System.out::println);
 
@@ -46,19 +47,19 @@ public class FuseRunner {
         new FuseRunner().run(new Options(applicationConfFilename, activeProfile, logbackConfigurationFilename, true));
     }
 
-    public void run() {
+    public void run() throws Exception {
         this.run(null, new Options());
     }
 
-    public void run(Jooby app) {
+    public void run(Jooby app) throws Exception {
         this.run(app, new Options());
     }
 
-    public void run(Options options) {
+    public void run(Options options) throws Exception {
         this.run(null, options);
     }
 
-    public void run(Jooby app, Options options) {
+    public void run(Jooby app, Options options) throws Exception {
         String[] joobyArgs = new String[]{
                 "logback.configurationFile=" + options.getLogbackConfigrationFilename(),
                 "server.join=" + (options.isServerJoin() ? "true" : "false")
@@ -70,10 +71,15 @@ public class FuseRunner {
             System.out.println("ConfigFile  " + confFilename + " Not Found - fallback getTo application.conf");
         }
 
+        //load configuration
+        Config config = FuseUtils.loadConfig(configFile, options.getActiveProfile());
+        //try load embedded if required
+        FuseUtils.loadEmbedded(config);
+
+        //load jooby App
         Jooby.run(() -> app != null ?
                 app :
-                new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                        .conf(configFile, options.getActiveProfile()),
+                new FuseApp(new DefaultAppUrlSupplier("/fuse")).conf(config),
                 joobyArgs);
     }
 

@@ -287,6 +287,8 @@ public class Ontology {
         }
 
         public Property $property$(String pType) {
+            if(!$property(pType).isPresent())
+                throw new IllegalArgumentException(String.format("No Such ontology value present %s",pType));
             return $property(pType).get();
         }
 
