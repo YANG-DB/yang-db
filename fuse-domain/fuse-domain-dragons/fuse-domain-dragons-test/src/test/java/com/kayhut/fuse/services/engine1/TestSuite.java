@@ -24,7 +24,7 @@ import java.nio.file.Paths;
 })
 public class TestSuite {
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws Exception {
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(Paths.get("src", "test", "conf", "application.engine1.dev.conf").toString()));
 
