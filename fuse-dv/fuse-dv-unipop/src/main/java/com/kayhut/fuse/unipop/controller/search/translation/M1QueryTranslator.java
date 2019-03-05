@@ -37,6 +37,7 @@ public class M1QueryTranslator extends CompositeQueryTranslator {
                         new CompareQueryTranslator(true),
                         new ExclusiveChainTranslator(
                                 new ContainsGeoBoundsQueryTranslator("geoValue"),
+                                new ContainsGeoDistanceQueryTranslator("geoValue"),
                                 new ContainsQueryTranslator()),
                         new ExistsQueryTranslator(),
                         new TextQueryTranslator(),
@@ -52,6 +53,7 @@ public class M1QueryTranslator extends CompositeQueryTranslator {
                                 new CompareQueryTranslator(false),
                                 new ExclusiveChainTranslator(
                                         new ContainsGeoBoundsQueryTranslator("geoValue"),
+                                        new ContainsGeoDistanceQueryTranslator("geoValue"),
                                         new ContainsQueryTranslator()),
                                 new ExistsQueryTranslator(),
                                 new TextQueryTranslator()

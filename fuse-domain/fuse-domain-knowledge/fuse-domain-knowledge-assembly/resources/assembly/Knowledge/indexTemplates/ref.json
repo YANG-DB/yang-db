@@ -50,6 +50,12 @@
         "enabled": false
       },
       "properties": {
+        "id": {
+          "type":"keyword"
+        },
+        "techId": {
+          "type":"keyword"
+        },
         "type": {
           "type": "keyword"
         },
