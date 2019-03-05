@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 public class QueryCompositeTest {
     @Before
-    public void before() {
+    public void before() throws Exception {
         TestSuite.setup();
 //        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
