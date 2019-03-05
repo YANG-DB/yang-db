@@ -23,8 +23,6 @@ package com.kayhut.fuse.model.query.properties.constraint;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kayhut.fuse.model.query.Query;
 
-import java.util.Arrays;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InnerQueryConstraint extends Constraint {
 
@@ -32,10 +30,11 @@ public class InnerQueryConstraint extends Constraint {
     private String tagEntity;
     private String projectedField;
 
-    public InnerQueryConstraint() {}
+    public InnerQueryConstraint() {
+    }
 
-    public InnerQueryConstraint(ConstraintOp op, Query innerQuery,String tagEntity, String projectedField) {
-        super(op,null);
+    public InnerQueryConstraint(ConstraintOp op, Query innerQuery, String tagEntity, String projectedField) {
+        super(op, null);
         this.innerQuery = innerQuery;
         this.tagEntity = tagEntity;
         this.projectedField = projectedField;
@@ -58,13 +57,15 @@ public class InnerQueryConstraint extends Constraint {
         return projectedField;
     }
 
-    public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery,String tagEntity, String projectedFields) {
-        return new InnerQueryConstraint(op,innerQuery,tagEntity,projectedFields);
+    public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery, String tagEntity, String projectedFields) {
+        return new InnerQueryConstraint(op, innerQuery, tagEntity, projectedFields);
     }
 
     public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery) {
-        return of(op, innerQuery , "","");
+        return of(op, innerQuery, "", "");
     }
 
-
+    public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery, String iType) {
+        return new InnerQueryConstraint(op, innerQuery, iType, "");
+    }
 }

@@ -8,7 +8,6 @@ import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgCompositeQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
-import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
@@ -33,13 +32,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
+import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
+import static org.junit.Assert.*;
 
 /**
- * Created by benishue on 09-May-17.
+ * Created by liorp on 09-May-17.
  */
 public class AsgInnerQueryCompositeTransformerTest {
     //region Setup
@@ -163,7 +161,7 @@ public class AsgInnerQueryCompositeTransformerTest {
                         new Start(0, 1),
                         new ETyped(1, "P", "Person", 2, 0),
                         new EPropGroup(2,
-                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q1(),"P.id")))
+                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet, Q1(),"P","id")))
                 )).build();
         return query;
     }
@@ -174,7 +172,7 @@ public class AsgInnerQueryCompositeTransformerTest {
                         new Start(0, 1),
                         new ETyped(1, "People", "Person", 2, 0),
                         new EPropGroup(2,
-                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P.id")))
+                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P","id")))
                 )).build();
         return query;
     }
@@ -210,11 +208,11 @@ public class AsgInnerQueryCompositeTransformerTest {
                             new Rel(4, OWN.getrType(), Rel.Direction.L, null, 5, 0),
                             new ETyped(5, "C", OntologyTestUtils.DRAGON.name, 6, 0),
                             new EPropGroup(6,
-                                new EProp(7, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P.id"))),
+                                new EProp(7, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P","id"))),
 
                             new Rel(8, OWN.getName(), Rel.Direction.L, null, 9, 0),
                             new ETyped(9, "D", DRAGON.name, 10, 0),
-                            new EProp(10, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q3(),"P.id"))
+                            new EProp(10, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q3(),"P","id"))
                 )).build();
         return query;
     }
