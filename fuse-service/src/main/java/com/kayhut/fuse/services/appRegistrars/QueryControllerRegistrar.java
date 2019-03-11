@@ -38,6 +38,7 @@ import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.model.transport.Response;
 import com.kayhut.fuse.services.controllers.QueryController;
 import org.jooby.*;
+import org.jooby.apitool.ApiTool;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,13 +60,20 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
     //region AppControllerRegistrarBase Implementation
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
-        /** get the query store info */
+        /**
+         * get the query store info
+         * @return All queries in Query store information
+         **/
         app.get(appUrlSupplier.queryStoreUrl(),req -> {
                     Route.of("getQueryStore").write();
                     return Results.with(this.getController(app).getInfo(), Status.OK);
                 });
 
-        /** create a v1 fallback url */
+        /**
+         * create a v1 query resource
+         * @param  V1 Query Request
+         * @return newly created query resource information
+         **/
         app.post(appUrlSupplier.queryStoreUrl() ,
                 req -> postV1(app,req,this));
 
@@ -168,6 +176,13 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/sankey",
                 req -> Results.redirect("/public/assets/PlanSankeyViewer.html?q=" + req.param("queryId").value()));
+
+        //swagger
+        app.use(new ApiTool()
+                .swagger("/swagger")
+                .raml("/raml")
+        );
+
     }
     //endregion
 

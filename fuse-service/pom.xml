@@ -64,7 +64,7 @@
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
-            <artifactId>jooby-swagger</artifactId>
+            <artifactId>jooby-apitool</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
