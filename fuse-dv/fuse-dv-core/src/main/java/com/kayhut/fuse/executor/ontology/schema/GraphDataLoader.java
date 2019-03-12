@@ -27,7 +27,7 @@ import java.io.IOException;
 /**
  * Created by lior.perry on 2/11/2018.
  */
-public interface InitialGraphDataLoader {
+public interface GraphDataLoader {
     /**
      * create the indexTemplates
      * create the vertices and edges indices according to schema

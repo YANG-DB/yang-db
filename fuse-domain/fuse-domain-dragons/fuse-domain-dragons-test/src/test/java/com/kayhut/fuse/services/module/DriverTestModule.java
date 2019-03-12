@@ -13,20 +13,17 @@ import com.kayhut.fuse.executor.cursor.discrete.GraphTraversalCursor;
 import com.kayhut.fuse.executor.cursor.discrete.PathsTraversalCursor;
 import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
-import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
-import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.executor.ontology.schema.GraphDataLoader;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.dispatcher.driver.MockDriver;
 import com.kayhut.fuse.services.engine2.data.schema.InitialTestDataLoader;
 import com.kayhut.fuse.services.engine2.data.schema.discrete.M2DragonsPhysicalSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.typesafe.config.Config;
 import org.elasticsearch.client.Client;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
-import org.mockito.Mockito;
 
 /**
  * Created by Roman on 04/04/2017.
@@ -42,7 +39,7 @@ public class DriverTestModule extends ModuleBase {
         binder.bind(GraphElementSchemaProviderFactory.class)
                 .toInstance(ontology -> new OntologySchemaProvider(ontology, new M2DragonsPhysicalSchemaProvider()));
         binder.bind(Client.class).toInstance(new MockClient());
-        binder.bind(InitialGraphDataLoader.class).toInstance(new InitialTestDataLoader(null, null));
+        binder.bind(GraphDataLoader.class).toInstance(new InitialTestDataLoader(null, null));
 
         Multibinder.newSetBinder(binder, CompositeCursorFactory.Binding.class).addBinding().toInstance(new CompositeCursorFactory.Binding(
                 CreatePathsCursorRequest.CursorType,

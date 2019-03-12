@@ -24,8 +24,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 
-public class VoidGraphDataLoader implements InitialGraphDataLoader {
-    //region InitialGraphDataLoader Implementation
+public class VoidGraphDataLoader implements GraphDataLoader {
+    //region GraphDataLoader Implementation
     @Override
     public long init() throws IOException {
         return 0;

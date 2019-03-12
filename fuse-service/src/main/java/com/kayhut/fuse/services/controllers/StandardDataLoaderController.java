@@ -23,7 +23,7 @@ package com.kayhut.fuse.services.controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
+import com.kayhut.fuse.executor.ontology.schema.GraphDataLoader;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 
@@ -39,7 +39,7 @@ public class StandardDataLoaderController implements DataLoaderController {
     //region Constructors
     @Inject
     public StandardDataLoaderController(OntologyProvider ontologyProvider,
-                                        InitialGraphDataLoader graphDataLoader) {
+                                        GraphDataLoader graphDataLoader) {
         this.ontologyProvider = ontologyProvider;
         this.graphDataLoader = graphDataLoader;
     }
@@ -104,7 +104,7 @@ public class StandardDataLoaderController implements DataLoaderController {
 
     //region Fields
     private OntologyProvider ontologyProvider;
-    private InitialGraphDataLoader graphDataLoader;
+    private GraphDataLoader graphDataLoader;
 
     //endregion
 

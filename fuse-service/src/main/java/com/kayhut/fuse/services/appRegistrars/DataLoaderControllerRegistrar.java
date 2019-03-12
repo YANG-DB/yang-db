@@ -37,13 +37,13 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** get the health status of the service */
-        app.get("/fuse/catalog/ontology/:id/init",
+        app.get("/fuse/load/ontology/:id/init",
                 req -> Results.with(this.getController(app).init(req.param("id").value())));
 
-        app.post("/fuse/catalog/ontology/:id/load",
+        app.post("/fuse/load/ontology/:id/load",
                 req -> Results.with(this.getController(app).load(req.param("id").value(), req.body(JsonNode.class))));
 
-        app.get("/fuse/catalog/ontology/:id/drop",
+        app.get("/fuse/load/ontology/:id/drop",
                 req -> Results.with(this.getController(app).drop(req.param("id").value())));
     }
     //endregion

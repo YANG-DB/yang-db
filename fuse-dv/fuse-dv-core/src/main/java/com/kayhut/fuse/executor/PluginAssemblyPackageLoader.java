@@ -20,7 +20,7 @@ package com.kayhut.fuse.executor;
  * #L%
  */
 
-import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
+import com.kayhut.fuse.executor.ontology.schema.GraphDataLoader;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.typesafe.config.Config;
 
@@ -35,10 +35,10 @@ public class PluginAssemblyPackageLoader extends ExecutorModule {
         return (Class<? extends RawSchema>) Class.forName(conf.getString(conf.getString("assembly")+".physical_raw_schema"));
     }
 
-    protected InitialGraphDataLoader getInitialDataLoader(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    protected GraphDataLoader getInitialDataLoader(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         RawSchema rawSchema = getRawElasticSchema(conf).newInstance();
-        InitialGraphDataLoader initialGraphDataLoader =
-                (InitialGraphDataLoader) (Class.forName(
+        GraphDataLoader initialGraphDataLoader =
+                (GraphDataLoader) (Class.forName(
                         conf.getString(conf.getString("assembly")+".physical_schema_data_loader"))
                         .getConstructor(Config.class, RawSchema.class)
                         .newInstance(conf, rawSchema));

@@ -1,9 +1,7 @@
-package com.kayhut.fuse.assembly.knowledge.domain;
+package com.kayhut.fuse.assembly.knowledge.load.builder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.model.results.Relationship;

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowledge.domain;
+package com.kayhut.fuse.assembly.knowledge.load.builder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -7,8 +7,6 @@ import com.kayhut.fuse.model.results.Property;
 import javaslang.collection.Stream;
 
 import java.util.Arrays;
-
-import static com.kayhut.fuse.assembly.knowledge.domain.KnowlegdeOntology.logicalId;
 
 public class RefBuilder extends Metadata {
     public static final String REF_INDEX = "ref0";

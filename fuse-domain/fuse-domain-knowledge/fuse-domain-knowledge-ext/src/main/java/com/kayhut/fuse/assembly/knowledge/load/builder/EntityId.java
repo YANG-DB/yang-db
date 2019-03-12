@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowledge.domain;
+package com.kayhut.fuse.assembly.knowledge.load.builder;
 
 public abstract class EntityId extends Metadata{
     public String entityId;

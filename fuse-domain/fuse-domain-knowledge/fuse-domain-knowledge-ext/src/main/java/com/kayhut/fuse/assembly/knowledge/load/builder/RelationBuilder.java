@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowledge.domain;
+package com.kayhut.fuse.assembly.knowledge.load.builder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.model.results.Relationship;
 import javaslang.collection.Stream;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
