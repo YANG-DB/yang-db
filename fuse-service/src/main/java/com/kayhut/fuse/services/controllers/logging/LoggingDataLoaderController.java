@@ -21,13 +21,10 @@ package com.kayhut.fuse.services.controllers.logging;
  */
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
-import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
-import com.kayhut.fuse.logging.RequestId;
-import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.services.controllers.DataLoaderController;
 import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
@@ -36,11 +33,9 @@ import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
-import static com.kayhut.fuse.dispatcher.logging.LogType.*;
 
 /**
  * Created by roman.margolis on 14/12/2017.
@@ -63,7 +58,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
 
     //region CatalogController Implementation
     @Override
-    public ContentResponse<String> load(String ontology ) {
+    public ContentResponse<String> load(String ontology, JsonNode data) {
         return new LoggingSyncMethodDecorator<ContentResponse<String>>(
                 this.logger,
                 this.metricRegistry,
@@ -71,7 +66,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.load(ontology), this.resultHandler());
+                .decorate(() -> this.controller.load(ontology, data), this.resultHandler());
     }
 
     @Override

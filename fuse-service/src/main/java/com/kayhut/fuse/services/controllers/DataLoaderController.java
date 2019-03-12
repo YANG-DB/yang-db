@@ -20,6 +20,7 @@ package com.kayhut.fuse.services.controllers;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.kayhut.fuse.model.transport.ContentResponse;
 
 /**
@@ -28,6 +29,6 @@ import com.kayhut.fuse.model.transport.ContentResponse;
 public interface DataLoaderController {
 
     ContentResponse<String> init(String ontology);
-    ContentResponse<String> load(String ontology);
+    ContentResponse<String> load(String ontology, JsonNode data);
     ContentResponse<String> drop(String ontology);
 }

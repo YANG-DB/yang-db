@@ -20,6 +20,7 @@ package com.kayhut.fuse.services.controllers;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
@@ -29,7 +30,6 @@ import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import java.io.IOException;
 import java.util.Optional;
 
-import static java.util.UUID.randomUUID;
 import static org.jooby.Status.*;
 
 /**
@@ -48,11 +48,11 @@ public class StandardDataLoaderController implements DataLoaderController {
     //region CatalogController Implementation
 
     @Override
-    public ContentResponse<String> load(String ontology) {
+    public ContentResponse<String> load(String ontology, JsonNode data) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<String>builder(OK, NOT_FOUND)
-                        .data(Optional.of("Elements loaded:" + this.graphDataLoader.load()))
+                        .data(Optional.of("Elements loaded:" + this.graphDataLoader.load(data)))
                         .compose();
             } catch (IOException e) {
                 return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)

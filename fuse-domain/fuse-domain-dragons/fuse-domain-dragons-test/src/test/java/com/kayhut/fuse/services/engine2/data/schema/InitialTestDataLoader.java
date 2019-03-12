@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2.data.schema;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
@@ -25,7 +26,7 @@ public class InitialTestDataLoader implements InitialGraphDataLoader {
     }
 
     @Override
-    public long load() throws IOException {
+    public long load(JsonNode root) throws IOException {
         return 0;
     }
 

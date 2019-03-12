@@ -20,6 +20,8 @@ package com.kayhut.fuse.executor.ontology.schema;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.io.IOException;
 
 public class VoidGraphDataLoader implements InitialGraphDataLoader {
@@ -30,7 +32,7 @@ public class VoidGraphDataLoader implements InitialGraphDataLoader {
     }
 
     @Override
-    public long load() throws IOException {
+    public long load(JsonNode root) throws IOException {
         return 0;
     }
 
