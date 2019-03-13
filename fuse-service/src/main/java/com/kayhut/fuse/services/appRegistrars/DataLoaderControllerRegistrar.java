@@ -21,7 +21,9 @@ package com.kayhut.fuse.services.appRegistrars;
  */
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.kayhut.fuse.services.controllers.DataLoaderController;
 import org.jooby.Jooby;
 import org.jooby.Results;
@@ -41,7 +43,7 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                 req -> Results.with(this.getController(app).init(req.param("id").value())));
 
         app.post("/fuse/load/ontology/:id/load",
-                req -> Results.with(this.getController(app).load(req.param("id").value(), req.body(JsonNode.class))));
+                req -> Results.with(this.getController(app).load(req.param("id").value(), req.body(LogicalGraphModel.class))));
 
         app.get("/fuse/load/ontology/:id/drop",
                 req -> Results.with(this.getController(app).drop(req.param("id").value())));

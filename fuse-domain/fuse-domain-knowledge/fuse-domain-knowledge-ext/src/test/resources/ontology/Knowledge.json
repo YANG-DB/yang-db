@@ -1,0 +1,532 @@
+{
+  "ont": "Knowledge",
+  "entityTypes": [
+    {
+      "eType": "LogicalEntity",
+      "name": "LogicalEntity",
+      "properties": []
+    },
+    {
+      "eType": "Entity",
+      "name": "Entity",
+      "properties": [
+        "logicalId",
+        "context",
+        "category",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser",
+        "refs",
+        "score",
+        "isExternal"
+      ]
+    },
+    {
+      "eType": "Evalue",
+      "name": "Evalue",
+      "properties": [
+        "logicalId",
+        "context",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser",
+        "fieldId",
+        "bdt",
+        "stringValue",
+        "dateValue",
+        "intValue",
+        "geoValue",
+        "refs",
+        "score"
+      ]
+    },
+    {
+      "eType": "Relation",
+      "name": "Relation",
+      "properties": [
+        "context",
+        "category",
+        "entityAId",
+        "entityACategory",
+        "entityBId",
+        "entityBCategory",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser",
+        "refs",
+        "score"
+      ]
+    },
+    {
+      "eType": "Rvalue",
+      "name": "Rvalue",
+      "properties": [
+        "relationId",
+        "context",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser",
+        "fieldId",
+        "bdt",
+        "stringValue",
+        "dateValue",
+        "intValue",
+        "geoValue",
+        "refs",
+        "score"
+      ]
+    },
+    {
+      "eType": "Reference",
+      "name": "Reference",
+      "properties": [
+        "title",
+        "content",
+        "url",
+        "system",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser",
+        "score"
+      ]
+    },
+    {
+      "eType": "Efile",
+      "name": "Efile",
+      "properties": [
+        "logicalId",
+        "context",
+        "name",
+        "path",
+        "displayName",
+        "mimeType",
+        "category",
+        "description",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser",
+        "refs",
+        "score"
+      ]
+    },
+    {
+      "eType": "Insight",
+      "name": "Insight",
+      "properties": [
+        "content",
+        "context",
+        "entityIds",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser",
+        "refs",
+        "score"
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "rType": "hasEntity",
+      "name": "hasEntity",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "LogicalEntity",
+          "eTypeB": "Entity"
+        }
+      ]
+    },
+    {
+      "rType": "hasEvalue",
+      "name": "hasEvalue",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Evalue"
+        }
+      ]
+    },
+    {
+      "rType": "hasRvalue",
+      "name": "hasRvalue",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Relation",
+          "eTypeB": "Rvalue"
+        }
+      ]
+    },
+    {
+      "rType": "hasRelation",
+      "name": "hasRelation",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Relation"
+        }
+      ]
+    },
+    {
+      "rType": "hasOutRelation",
+      "name": "hasOutRelation",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Relation"
+        }
+      ]
+    },
+    {
+      "rType": "hasInRelation",
+      "name": "hasInRelation",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Relation"
+        }
+      ]
+    },
+    {
+      "rType": "hasInsight",
+      "name": "hasInsight",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Insight"
+        }
+      ]
+    },
+    {
+      "rType": "hasEfile",
+      "name": "hasEfile",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Efile"
+        }
+      ]
+    },
+    {
+      "rType": "hasEntityReference",
+      "name": "hasEntityReference",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Reference"
+        }
+      ]
+    },
+    {
+      "rType": "hasEvalueReference",
+      "name": "hasEvalueReference",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Evalue",
+          "eTypeB": "Reference"
+        }
+      ]
+    },
+    {
+      "rType": "hasRelationReference",
+      "name": "hasRelationReference",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Relation",
+          "eTypeB": "Reference"
+        }
+      ]
+    },
+    {
+      "rType": "hasRvalueReference",
+      "name": "hasRvalueReference",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Rvalue",
+          "eTypeB": "Reference"
+        }
+      ]
+    },
+    {
+      "rType": "hasInsightReference",
+      "name": "hasInsightReference",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Insight",
+          "eTypeB": "Reference"
+        }
+      ]
+    },
+    {
+      "rType": "hasEfileReference",
+      "name": "hasEfileReference",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Efile",
+          "eTypeB": "Reference"
+        }
+      ]
+    },
+    {
+      "rType": "relatedEntity",
+      "name": "relatedEntity",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Entity"
+        }
+      ],
+      "properties": [
+        "context",
+        "category",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser",
+        "refs",
+        "score"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": "logicalId",
+      "name": "logicalId",
+      "type": "string"
+    },
+    {
+      "pType": "relationId",
+      "name": "relationId",
+      "type": "string"
+    },
+    {
+      "pType": "context",
+      "name": "context",
+      "type": "string"
+    },
+    {
+      "pType": "content",
+      "name": "content",
+      "type": "string"
+    },
+    {
+      "pType": "title",
+      "name": "title",
+      "type": "string"
+    },
+    {
+      "pType": "name",
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "pType": "path",
+      "name": "path",
+      "type": "string"
+    },
+    {
+      "pType": "displayName",
+      "name": "displayName",
+      "type": "string"
+    },
+    {
+      "pType": "mimeType",
+      "name": "mimeType",
+      "type": "string"
+    },
+    {
+      "pType": "description",
+      "name": "description",
+      "type": "string"
+    },
+    {
+      "pType": "entityId",
+      "name": "entityId",
+      "type": "string"
+    },
+    {
+      "pType": "entityIds",
+      "name": "entityIds",
+      "type": "string"
+    },
+    {
+      "pType": "url",
+      "name": "url",
+      "type": "string"
+    },
+    {
+      "pType": "system",
+      "name": "system",
+      "type": "string"
+    },
+    {
+      "pType": "agency",
+      "name": "agency",
+      "type": "string"
+    },
+    {
+      "pType": "category",
+      "name": "category",
+      "type": "string"
+    },
+    {
+      "pType": "authorization",
+      "name": "authorization",
+      "type": "string"
+    },
+    {
+      "pType": "lastUpdateUser",
+      "name": "lastUpdateUser",
+      "type": "string"
+    },
+    {
+      "pType": "lastUpdateTime",
+      "name": "lastUpdateTime",
+      "type": "date"
+    },
+    {
+      "pType": "creationTime",
+      "name": "creationTime",
+      "type": "date"
+    },
+    {
+      "pType": "creationUser",
+      "name": "creationUser",
+      "type": "string"
+    },
+    {
+      "pType": "deleteTime",
+      "name": "deleteTime",
+      "type": "date"
+    },
+    {
+      "pType": "deleteUser",
+      "name": "deleteUser",
+      "type": "string"
+    },
+    {
+      "pType": "fieldId",
+      "name": "fieldId",
+      "type": "string"
+    },
+    {
+      "pType": "bdt",
+      "name": "bdt",
+      "type": "string"
+    },
+    {
+      "pType": "value",
+      "name": "value",
+      "type": "string"
+    },
+    {
+      "pType": "stringValue",
+      "name": "stringValue",
+      "type": "string"
+    },
+    {
+      "pType": "geoValue",
+      "name": "geoValue",
+      "type": "geo_point"
+    },
+    {
+      "pType": "intValue",
+      "name": "intValue",
+      "type": "int"
+    },
+    {
+      "pType": "dateValue",
+      "name": "dateValue",
+      "type": "date"
+    },
+    {
+      "pType": "entityAId",
+      "name": "entityAId",
+      "type": "string"
+    },
+    {
+      "pType": "entityBId",
+      "name": "entityBId",
+      "type": "string"
+    },
+    {
+      "pType": "entityACategory",
+      "name": "entityACategory",
+      "type": "string"
+    },
+    {
+      "pType": "entityBCategory",
+      "name": "entityBCategory",
+      "type": "string"
+    },
+    {
+      "pType": "score",
+      "name": "score",
+      "type": "float"
+    },
+    {
+      "pType": "refs",
+      "name": "refs",
+      "type": "string"
+    },
+    {
+      "pType": "id",
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "pType": "type",
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "pType": "isExternal",
+      "name": "isExternal",
+      "type": "string"
+    }
+  ]
+}

@@ -21,12 +21,16 @@ package com.kayhut.fuse.assembly.knowledge;
  */
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.assembly.knowledge.load.KnowledgeContext;
 import com.kayhut.fuse.assembly.knowledge.load.KnowledgeTransformer;
 import com.kayhut.fuse.assembly.knowledge.load.KnowledgeWriterContext;
+import com.kayhut.fuse.dispatcher.ontology.OntologyTransformerProvider;
 import com.kayhut.fuse.executor.ontology.schema.GraphDataLoader;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
+import com.kayhut.fuse.model.logical.LogicalGraphModel;
+import com.kayhut.fuse.model.ontology.transformer.OntologyTransformer;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
@@ -69,7 +73,7 @@ public class KnowledgeDataLoader implements GraphDataLoader {
     private KnowledgeTransformer transformer;
 
     @Inject
-    public KnowledgeDataLoader(Config conf, RawSchema schema) throws UnknownHostException {
+    public KnowledgeDataLoader(Config conf, RawSchema schema, OntologyTransformerProvider transformerProvider) throws UnknownHostException {
         this.conf = conf;
         this.schema = schema;
         Settings settings = Settings.builder().put("cluster.name", conf.getConfig("elasticsearch").getString("cluster_name")).build();
@@ -84,7 +88,9 @@ public class KnowledgeDataLoader implements GraphDataLoader {
         });
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        transformer = new KnowledgeTransformer();
+        //load knowledge transformer
+        final Optional<OntologyTransformer> assembly = transformerProvider.transformer(conf.getString("assembly"));
+        transformer = new KnowledgeTransformer(assembly.get());
     }
 
 
@@ -129,8 +135,8 @@ public class KnowledgeDataLoader implements GraphDataLoader {
      * @param root graph document
      * @return
      */
-    public long load(JsonNode root) {
-        final KnowledgeContext context = transformer.transform(schema, root);
+    public long load(LogicalGraphModel root) {
+        final KnowledgeContext context = transformer.transform(root);
         final KnowledgeWriterContext writerContext = new KnowledgeWriterContext(context);
         //todo load all data to designated indices according to schema
 //        commit(client,w)

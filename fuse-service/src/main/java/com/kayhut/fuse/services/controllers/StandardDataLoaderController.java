@@ -21,9 +21,11 @@ package com.kayhut.fuse.services.controllers;
  */
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.executor.ontology.schema.GraphDataLoader;
+import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 
@@ -48,7 +50,7 @@ public class StandardDataLoaderController implements DataLoaderController {
     //region CatalogController Implementation
 
     @Override
-    public ContentResponse<String> load(String ontology, JsonNode data) {
+    public ContentResponse<String> load(String ontology, LogicalGraphModel data) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<String>builder(OK, NOT_FOUND)

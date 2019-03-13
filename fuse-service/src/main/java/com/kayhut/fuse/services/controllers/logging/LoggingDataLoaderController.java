@@ -22,9 +22,11 @@ package com.kayhut.fuse.services.controllers.logging;
 
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
+import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.services.controllers.DataLoaderController;
 import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
@@ -58,7 +60,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
 
     //region CatalogController Implementation
     @Override
-    public ContentResponse<String> load(String ontology, JsonNode data) {
+    public ContentResponse<String> load(String ontology, LogicalGraphModel data) {
         return new LoggingSyncMethodDecorator<ContentResponse<String>>(
                 this.logger,
                 this.metricRegistry,

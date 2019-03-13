@@ -1,42 +1,30 @@
-package com.kayhut.fuse.executor.ontology.schema;
+package com.kayhut.fuse.assembly.knowledge.load;
 
-/*-
- * #%L
- * fuse-dv-core
- * %%
- * Copyright (C) 2016 - 2018 kayhut
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.logical.LogicalGraphModel;
+import com.kayhut.fuse.model.ontology.transformer.OntologyTransformer;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
-/**
- * Created by lior.perry on 2/11/2018.
- */
-public interface GraphDataLoader {
-    /**
-     * create the indexTemplates
-     * create the vertices and edges indices according to schema
-     * @return
-     * @throws IOException
-     */
-    long init() throws IOException;
+import static org.junit.Assert.*;
+
+public class KnowledgeTransformerTest {
+    private ObjectMapper mapper = new ObjectMapper();
+    private OntologyTransformer ontTransformer;
+    private LogicalGraphModel graphModel;
+
+    @Before
+    public void setUp() throws Exception {
+        final URL resource = getClass().getResource("/ontology/KnowledgeTransformation.json");
+        ontTransformer = mapper.readValue(resource, OntologyTransformer.class);
+        final InputStream stream = getClass().getResourceAsStream("/data/knowledge_graph.json");
+        graphModel =  mapper.readValue(stream,LogicalGraphModel.class);
+
+    }
 
     /**
      * load the given input json graph - all must comply with the ontology and physical schema bounded
@@ -117,16 +105,13 @@ public interface GraphDataLoader {
      *             }
      *         ]
      * }
-     * @param root
      * @return
      * @throws IOException
      */
-    long load(LogicalGraphModel root) throws IOException;
-
-    /**
-     * drop the vertices and edges indices to schema
-     * @return
-     * @throws IOException
-     */
-    long drop() throws IOException;
+    @Test
+    public void transform() {
+        final KnowledgeTransformer transformer = new KnowledgeTransformer(ontTransformer);
+        final KnowledgeContext transform = transformer.transform(graphModel);
+        assertNotNull(transform);
+    }
 }

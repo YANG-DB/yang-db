@@ -1,12 +1,19 @@
 package com.kayhut.fuse.assembly.knowledge.load;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.kayhut.fuse.executor.ontology.schema.RawSchema;
+import com.kayhut.fuse.model.logical.LogicalGraphModel;
+import com.kayhut.fuse.model.ontology.transformer.OntologyTransformer;
 
 public class KnowledgeTransformer {
+    private OntologyTransformer transformer;
 
-    public KnowledgeContext transform(RawSchema schema,JsonNode graph) {
+    public KnowledgeTransformer(OntologyTransformer transformer) {
+        this.transformer = transformer;
+    }
+
+    public KnowledgeContext transform(LogicalGraphModel graph) {
         //todo populate context according to given json graph
+        graph.getNodes();
+        graph.getEdges();
         return new KnowledgeContext();
     }
 }

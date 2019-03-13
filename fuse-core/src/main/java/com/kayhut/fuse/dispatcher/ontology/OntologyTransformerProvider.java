@@ -1,17 +1,17 @@
-package com.kayhut.fuse.services.controllers;
+package com.kayhut.fuse.dispatcher.ontology;
 
 /*-
  * #%L
- * fuse-service
+ * fuse-core
  * %%
  * Copyright (C) 2016 - 2018 kayhut
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,17 +20,13 @@ package com.kayhut.fuse.services.controllers;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.kayhut.fuse.model.logical.LogicalGraphModel;
-import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.ontology.transformer.OntologyTransformer;
 
-/**
- * Created by lior.perry on 19/02/2017.
- */
-public interface DataLoaderController {
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
-    ContentResponse<String> init(String ontology);
-    ContentResponse<String> load(String ontology, LogicalGraphModel data);
-    ContentResponse<String> drop(String ontology);
+public interface OntologyTransformerProvider {
+    Optional<OntologyTransformer> transformer(String id);
+    Collection<OntologyTransformer> transformation();
 }

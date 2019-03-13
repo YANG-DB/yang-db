@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.kayhut.fuse.executor.ontology.schema.GraphDataLoader;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
+import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.typesafe.config.Config;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class InitialTestDataLoader implements GraphDataLoader {
     }
 
     @Override
-    public long load(JsonNode root) throws IOException {
+    public long load(LogicalGraphModel root) throws IOException {
         return 0;
     }
 

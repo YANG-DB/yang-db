@@ -1,0 +1,47 @@
+{
+  "ont": "Knowledge",
+  "entityTypes": [
+    {
+        "pattern": "[\\w+]",
+        "eType": "Entity",
+        "metadataProperties": [
+          {"id": "logicalId"},
+          {"type": "category"}
+        ],
+        "properties": {
+          "pattern": "[\\w+]",
+          "concreteType": "Evalue",
+          "keys": [{"fieldId": "^\\w+(?=:.*)"}],
+          "valuePatterns": [
+            {"geoValue": "^([-+]?)([\\d]{1,2})(((\\.)(\\d+)(,)))(\\s*)(([-+]?)([\\d]{1,3})((\\.)(\\d+))?)$"},
+            {"intValue": "^[-+]?\\d*$"},
+            {"dateValue": "^\\d{1,2}\/\\d{1,2}\/\\d{4}$"},
+            {"stringValue": "[.*]"}
+          ]
+        }
+    }
+  ],
+  "relationTypes": [
+    {
+        "pattern": "[\\w+]",
+        "rType": "Relation",
+        "metadataProperties": [
+          {"id": "id"},
+          {"type": "category"},
+          {"source": "entityAId"},
+          {"target": "entityBId"}
+          ],
+        "properties": {
+          "pattern": "[\\w+]",
+          "concreteType": "Rvalue",
+          "keys": [{"fieldId": "^\\w+(?=:.*)"}],
+          "valuePatterns": [
+            {"geoValue": "^([-+]?)([\\d]{1,2})(((\\.)(\\d+)(,)))(\\s*)(([-+]?)([\\d]{1,3})((\\.)(\\d+))?)$"},
+            {"intValue": "^[-+]?\\d*$"},
+            {"dateValue": "^\\d{1,2}\/\\d{1,2}\/\\d{4}$"},
+            {"stringValue": "[.*]"}
+          ]
+      }
+    }
+  ]
+}
