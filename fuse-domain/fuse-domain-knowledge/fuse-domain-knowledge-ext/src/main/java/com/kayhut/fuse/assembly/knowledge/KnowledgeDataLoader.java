@@ -26,9 +26,11 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.assembly.knowledge.load.KnowledgeContext;
 import com.kayhut.fuse.assembly.knowledge.load.KnowledgeTransformer;
 import com.kayhut.fuse.assembly.knowledge.load.KnowledgeWriterContext;
+import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.ontology.OntologyTransformerProvider;
 import com.kayhut.fuse.executor.ontology.schema.GraphDataLoader;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
+import com.kayhut.fuse.model.Range;
 import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.kayhut.fuse.model.ontology.transformer.OntologyTransformer;
 import com.typesafe.config.Config;
@@ -73,7 +75,7 @@ public class KnowledgeDataLoader implements GraphDataLoader {
     private KnowledgeTransformer transformer;
 
     @Inject
-    public KnowledgeDataLoader(Config conf, RawSchema schema, OntologyTransformerProvider transformerProvider) throws UnknownHostException {
+    public KnowledgeDataLoader(Config conf, RawSchema schema, IdGeneratorDriver<Range> idGenerator, OntologyTransformerProvider transformerProvider) throws UnknownHostException {
         this.conf = conf;
         this.schema = schema;
         Settings settings = Settings.builder().put("cluster.name", conf.getConfig("elasticsearch").getString("cluster_name")).build();
@@ -90,7 +92,7 @@ public class KnowledgeDataLoader implements GraphDataLoader {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         //load knowledge transformer
         final Optional<OntologyTransformer> assembly = transformerProvider.transformer(conf.getString("assembly"));
-        transformer = new KnowledgeTransformer(assembly.get());
+        transformer = new KnowledgeTransformer(assembly.get(),idGenerator);
     }
 
 

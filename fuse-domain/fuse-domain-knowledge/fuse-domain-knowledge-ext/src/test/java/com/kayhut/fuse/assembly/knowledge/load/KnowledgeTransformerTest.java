@@ -1,16 +1,28 @@
 package com.kayhut.fuse.assembly.knowledge.load;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.kayhut.fuse.model.Range;
 import com.kayhut.fuse.model.logical.LogicalGraphModel;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.transformer.OntologyTransformer;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
+import com.kayhut.fuse.unipop.promise.TraversalConstraint;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 public class KnowledgeTransformerTest {
     private ObjectMapper mapper = new ObjectMapper();
@@ -110,7 +122,11 @@ public class KnowledgeTransformerTest {
      */
     @Test
     public void transform() {
-        final KnowledgeTransformer transformer = new KnowledgeTransformer(ontTransformer);
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(),anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0,1000));
+
+        final KnowledgeTransformer transformer = new KnowledgeTransformer(ontTransformer,idGeneratorDriver);
         final KnowledgeContext transform = transformer.transform(graphModel);
         assertNotNull(transform);
     }
