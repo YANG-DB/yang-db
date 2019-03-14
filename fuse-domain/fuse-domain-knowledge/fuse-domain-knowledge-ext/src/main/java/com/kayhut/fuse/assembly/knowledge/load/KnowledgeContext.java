@@ -1,11 +1,13 @@
 package com.kayhut.fuse.assembly.knowledge.load;
 
 import com.kayhut.fuse.assembly.knowledge.load.builder.*;
+import com.kayhut.fuse.model.resourceInfo.FuseError;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class KnowledgeContext {
+    private List<FuseError> failed;
     private List<EntityBuilder> entities;
     private List<ValueBuilder> eValues;
     private List<RelationBuilder> relations;
@@ -16,6 +18,11 @@ public class KnowledgeContext {
         eValues = new ArrayList<>();
         relations = new ArrayList<>();
         rValues = new ArrayList<>();
+        failed = new ArrayList<>();
+    }
+
+    public void failed(String error,String desc) {
+        failed.add(new FuseError(error,desc));
     }
 
     public void add(ValueBuilder builder) {

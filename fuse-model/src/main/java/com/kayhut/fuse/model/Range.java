@@ -57,5 +57,24 @@ public class Range {
     //region Fields
     private long upper;
     private long lower;
+
     //endregion
+    public static class StatefulRange {
+        private Range range;
+        private long index;
+
+        public StatefulRange(Range range) {
+            this.range = range;
+        }
+
+        public long current() {
+            return index;
+        }
+
+        public long next() {
+            if(index>=range.upper)
+                return -1;
+            return index++;
+        }
+    }
 }

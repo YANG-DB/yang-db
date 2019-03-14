@@ -15,8 +15,8 @@ import java.util.function.Predicate;
 
 public class EntityBuilder extends EntityId {
     public static final String INDEX = "e0";
-    public static String type = "Entity";
-    public static String physicalType = "entity";
+    public static final String type = "Entity";
+    public static final String physicalType = "entity";
 
     public String logicalId;
     public String category = "person";

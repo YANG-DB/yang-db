@@ -71,32 +71,61 @@ public class KnowledgeWriterContext {
         return this;
     }
 
+    public String nextLogicalId(long index) {
+        return "e" + String.format(this.schema.getIdFormat("entity"), index);
+
+    }
+
     public String nextLogicalId() {
-        return "e" + String.format(this.schema.getIdFormat("entity"), eCounter.incrementAndGet());
+        return nextLogicalId(eCounter.incrementAndGet());
+    }
+
+    public String nextValueId(long index) {
+        return "ev" + String.format(this.schema.getIdFormat("entity"), index);
     }
 
     public String nextValueId() {
-        return "ev" + String.format(this.schema.getIdFormat("entity"), evCounter.incrementAndGet());
+        return nextValueId( evCounter.incrementAndGet());
+    }
+
+    public String nextRvalueId(long index) {
+        return "rv" + String.format(this.schema.getIdFormat("relation"), index);
     }
 
     public String nextRvalueId() {
-        return "rv" + String.format(this.schema.getIdFormat("relation"), evCounter.incrementAndGet());
+        return nextRvalueId( evCounter.incrementAndGet());
+    }
+
+    public String nextRefId(long index) {
+        return "ref" + String.format(this.schema.getIdFormat("reference"), index);
     }
 
     public String nextRefId() {
-        return "ref" + String.format(this.schema.getIdFormat("reference"), refCounter.incrementAndGet());
+        return nextRefId(refCounter.incrementAndGet());
+    }
+
+    public String nextInsightId(long index) {
+        return "i" + String.format(this.schema.getIdFormat("insight"), index);
     }
 
     public String nextInsightId() {
-        return "i" + String.format(this.schema.getIdFormat("insight"), iCounter.incrementAndGet());
+        return  nextInsightId(iCounter.incrementAndGet());
+    }
+
+    public String nextRelId(long index) {
+        return "r" + String.format(this.schema.getIdFormat("relation"), index);
     }
 
     public String nextRelId() {
-        return "r" + String.format(this.schema.getIdFormat("relation"), relCounter.incrementAndGet());
+        return nextRelId( relCounter.incrementAndGet());
+    }
+
+    public String nextFileId(long index) {
+        return "f" + String.format(this.schema.getIdFormat("e.file"), index);
     }
 
     public String nextFileId() {
-        return "f" + String.format(this.schema.getIdFormat("e.file"), fCounter.incrementAndGet());
+        return nextFileId(fCounter.incrementAndGet());
     }
 
     public static KnowledgeWriterContext init(Client client, RawSchema schema) {

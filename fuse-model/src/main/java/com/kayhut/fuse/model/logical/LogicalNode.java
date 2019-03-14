@@ -58,6 +58,15 @@ public class LogicalNode {
         return properties;
     }
 
+    @Override
+    public String toString() {
+        return "LogicalNode{" +
+                "id='" + id + '\'' +
+                ", metadata=" + metadata +
+                ", properties=" + properties +
+                '}';
+    }
+
     public static class NodeMetadata {
         private String label;
         private Map<String,Object> properties;
@@ -84,6 +93,14 @@ public class LogicalNode {
         public void addProperties(String key, Object value) {
             this.properties.put(key,value);
         }
+
+        @Override
+        public String toString() {
+            return "NodeMetadata{" +
+                    "label='" + label + '\'' +
+                    ", properties=" + properties +
+                    '}';
+        }
     }
 
     public static class NodeProperties{
@@ -101,6 +118,13 @@ public class LogicalNode {
         @JsonAnySetter
         public void addProperties(String key, Object value) {
             this.properties.put(key,value);
+        }
+
+        @Override
+        public String toString() {
+            return "NodeProperties{" +
+                    "properties=" + properties +
+                    '}';
         }
     }
 }

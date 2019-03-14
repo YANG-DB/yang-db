@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public class FileBuilder extends EntityId {
-    public static String type = "Efile";
-    public static String physicalType = "e.file";
+    public static final String type = "Efile";
+    public static final String physicalType = "e.file";
     public String fileId;
     public String name;
     public String path;

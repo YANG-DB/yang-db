@@ -72,6 +72,18 @@ public class LogicalEdge {
         return properties;
     }
 
+    @Override
+    public String toString() {
+        return "LogicalEdge{" +
+                "id='" + id + '\'' +
+                ", source='" + source + '\'' +
+                ", target='" + target + '\'' +
+                ", direction=" + direction +
+                ", metadata=" + metadata +
+                ", properties=" + properties +
+                '}';
+    }
+
     public static class EdgeMetadata {
         private String label;
         private Map<String,Object> properties;
@@ -98,6 +110,14 @@ public class LogicalEdge {
         public void addProperties(String key, Object value) {
             this.properties.put(key,value);
         }
+
+        @Override
+        public String toString() {
+            return "EdgeMetadata{" +
+                    "label='" + label + '\'' +
+                    ", properties=" + properties +
+                    '}';
+        }
     }
 
     public static class EdgeProperties{
@@ -115,6 +135,13 @@ public class LogicalEdge {
         @JsonAnySetter
         public void addProperties(String key, Object value) {
             this.properties.put(key,value);
+        }
+
+        @Override
+        public String toString() {
+            return "EdgeProperties{" +
+                    "properties=" + properties +
+                    '}';
         }
     }
 }
