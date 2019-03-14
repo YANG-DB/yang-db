@@ -20,18 +20,18 @@ public class LogicalTransformerTest {
         assertEquals(2,graphModel.getEdges().size());
         assertEquals("100",graphModel.getEdges().get(0).getId());
         assertEquals("101",graphModel.getEdges().get(1).getId());
-        assertEquals(1,graphModel.getEdges().get(0).getMetadata().getProperties().size());
+        assertEquals(3,graphModel.getEdges().get(0).getMetadata().getProperties().size());
         assertEquals(2,graphModel.getEdges().get(0).getProperties().getProperties().size());
-        assertEquals(1,graphModel.getEdges().get(1).getMetadata().getProperties().size());
+        assertEquals(3,graphModel.getEdges().get(1).getMetadata().getProperties().size());
         assertEquals(5,graphModel.getEdges().get(1).getProperties().getProperties().size());
 
 
         assertEquals(2,graphModel.getNodes().size());
         assertEquals("0",graphModel.getNodes().get(0).getId());
         assertEquals("10",graphModel.getNodes().get(1).getId());
-        assertEquals(1,graphModel.getNodes().get(0).getMetadata().getProperties().size());
+        assertEquals(3,graphModel.getNodes().get(0).getMetadata().getProperties().size());
         assertEquals(6,graphModel.getNodes().get(0).getProperties().getProperties().size());
-        assertEquals(1,graphModel.getNodes().get(1).getMetadata().getProperties().size());
+        assertEquals(3,graphModel.getNodes().get(1).getMetadata().getProperties().size());
         assertEquals(6,graphModel.getNodes().get(1).getProperties().getProperties().size());
     }
 

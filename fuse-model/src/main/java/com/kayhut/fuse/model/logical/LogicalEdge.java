@@ -85,20 +85,10 @@ public class LogicalEdge {
     }
 
     public static class EdgeMetadata {
-        private String label;
         private Map<String,Object> properties;
 
         public EdgeMetadata() {
             this.properties = new HashMap<>();
-        }
-
-        public EdgeMetadata(String label) {
-            this();
-            this.label = label;
-        }
-
-        public String getLabel() {
-            return label;
         }
 
         @JsonAnyGetter
@@ -114,7 +104,6 @@ public class LogicalEdge {
         @Override
         public String toString() {
             return "EdgeMetadata{" +
-                    "label='" + label + '\'' +
                     ", properties=" + properties +
                     '}';
         }

@@ -63,14 +63,35 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
         return (T) this;
     }
 
+    public <T extends Metadata> T putProperty(String key, Object value) {
+        switch (key) {
+            case "lastUpdateTime":
+                return lastUpdateTime((Date) value);
+            case "deleteTime":
+                return deleteTime((Date) value);
+            case "creationTime":
+                return creationTime((Date) value);
+            case "creationUser":
+                return creationUser(value.toString());
+            case "lastUpdateUser":
+                return lastUpdateUser(value.toString());
+
+            default:
+                return (T) this;
+        }
+
+    }
+
+
 //        public Metadata creationTime(String creationTime) {
 //        this.creationTime = creationTime;
 //        return this;
 //    }
 
     // Compare from what fetched from ES
-    public List<Property> collect(List<Property> properties) {
-        ArrayList<Property> list = new ArrayList<>(properties);
+    public List<Property> collect(List<Property>... properties) {
+        ArrayList<Property> list = new ArrayList<>();
+        Arrays.asList(properties).forEach(list::addAll);
         list.addAll(Arrays.asList(
                 new Property("lastUpdateUser", "raw", lastUpdateUser),
                 new Property("creationUser", "raw", creationUser),

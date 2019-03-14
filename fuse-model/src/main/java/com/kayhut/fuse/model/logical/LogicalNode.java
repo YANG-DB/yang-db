@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import static com.kayhut.fuse.model.logical.LogicalGraphModel.LABEL;
 
 /**
  * //example
@@ -68,21 +71,12 @@ public class LogicalNode {
     }
 
     public static class NodeMetadata {
-        private String label;
         private Map<String,Object> properties;
 
         public NodeMetadata() {
             this.properties = new HashMap<>();
         }
 
-        public NodeMetadata(String label) {
-            this();
-            this.label = label;
-        }
-
-        public String getLabel() {
-            return label;
-        }
 
         @JsonAnyGetter
         public Map<String, Object> getProperties() {
@@ -97,9 +91,14 @@ public class LogicalNode {
         @Override
         public String toString() {
             return "NodeMetadata{" +
-                    "label='" + label + '\'' +
                     ", properties=" + properties +
                     '}';
+        }
+
+        public String getLabel() {
+            final Optional<Map.Entry<String, Object>> any = getProperties().entrySet().stream().filter(e -> e.getKey().equals(LABEL)).findAny();
+            //todo return the value of the label:labelName entry or default "Entity"
+            return null;
         }
     }
 

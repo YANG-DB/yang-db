@@ -4,7 +4,8 @@
         "id": "0",
         "metadata": {
           "label": "person",
-          "user-defined": "values"
+          "user-defined": "values",
+          "context": "generic"
         },
         "properties": {
           "fName": "first name",
@@ -24,7 +25,8 @@
         "id": "10",
         "metadata": {
           "label": "person",
-          "user-defined": "values"
+          "user-defined": "values",
+          "context": "generic"
         },
         "properties": {
           "fName": "another first name",
@@ -48,7 +50,8 @@
         "target": "1",
         "metadata": {
           "label": "knows",
-          "user-defined": "values"
+          "user-defined": "values",
+          "context": "generic"
         },
         "properties": {
           "date": "01/01/2000",
@@ -61,7 +64,8 @@
         "target": "1",
         "metadata": {
           "label": "called",
-          "user-defined": "values"
+          "user-defined": "values",
+          "context": "generic"
         },
         "properties": {
           "date": "01/01/2000",

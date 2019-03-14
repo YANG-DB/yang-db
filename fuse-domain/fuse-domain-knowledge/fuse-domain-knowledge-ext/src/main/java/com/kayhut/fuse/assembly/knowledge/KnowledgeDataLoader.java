@@ -92,7 +92,7 @@ public class KnowledgeDataLoader implements GraphDataLoader {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         //load knowledge transformer
         final Optional<OntologyTransformer> assembly = transformerProvider.transformer(conf.getString("assembly"));
-        transformer = new KnowledgeTransformer(assembly.get(),idGenerator);
+        transformer = new KnowledgeTransformer(assembly.get(),schema,idGenerator);
     }
 
 

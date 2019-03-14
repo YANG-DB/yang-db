@@ -2,14 +2,14 @@
   "ont": "Knowledge",
   "entityTypes": [
     {
-        "pattern": "[\\w+]",
+        "pattern": "\\w+",
         "eType": "Entity",
         "metadataProperties": [
           {"id": "logicalId"},
-          {"type": "category"}
+          {"label": "category"}
         ],
         "properties": {
-          "pattern": "[\\w+]",
+          "pattern": "\\w+",
           "concreteType": "Evalue",
           "keys": [{"fieldId": "^\\w+(?=:.*)"}],
           "valuePatterns": [
@@ -23,16 +23,16 @@
   ],
   "relationTypes": [
     {
-        "pattern": "[\\w+]",
+        "pattern": "\\w+",
         "rType": "Relation",
         "metadataProperties": [
           {"id": "id"},
-          {"type": "category"},
+          {"label": "category"},
           {"source": "entityAId"},
           {"target": "entityBId"}
           ],
         "properties": {
-          "pattern": "[\\w+]",
+          "pattern": "\\w+",
           "concreteType": "Rvalue",
           "keys": [{"fieldId": "^\\w+(?=:.*)"}],
           "valuePatterns": [

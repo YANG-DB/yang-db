@@ -7,11 +7,9 @@ import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.model.results.Relationship;
 import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class EntityBuilder extends EntityId {
     public static final String INDEX = "e0";
@@ -21,6 +19,7 @@ public class EntityBuilder extends EntityId {
     public String logicalId;
     public String category = "person";
     public String context = "global";
+    public Map<String,Object> additionalProperties = new HashMap<>();
 
     public List<KnowledgeDomainBuilder> additional = new ArrayList<>();
     public List<String> refs = new ArrayList<>();
@@ -48,6 +47,23 @@ public class EntityBuilder extends EntityId {
     public EntityBuilder ctx(String context) {
         this.context = context;
         return this;
+    }
+
+    public EntityBuilder putProperty(String key, Object value) {
+        super.putProperty(key,value);
+        switch (key) {
+            case "category":
+                return cat(value.toString());
+            case "context":
+                return ctx(value.toString());
+            default:
+                // suppose a property is set on the metadata (supper) entity it will also be added to
+                // the additional properties but the serialization to jsonObject is map based so duplicates
+                // will be eliminated
+                additionalProperties.put(key,value);
+                return this;
+        }
+
     }
 
     public void rel(RelationBuilder relationBuilder, String dir) {
@@ -231,7 +247,11 @@ public class EntityBuilder extends EntityId {
                                 new Property("logicalId", "raw", logicalId),
                                 new Property("context", "raw", context),
                                 new Property("refs", "raw", !refs.isEmpty() ? refs : null)
-                        ))).build();
+                        ),additionalProperties.entrySet().stream()
+                                .map(p->new Property(p.getKey(),p.getValue())).collect(Collectors.toList())
+                        )
+                )
+                .build();
     }
 
     public List<Relationship> withRelations() {

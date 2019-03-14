@@ -1,6 +1,7 @@
 package com.kayhut.fuse.assembly.knowledge.load;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.assembly.knowledge.KnowledgeRawSchema;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.model.Range;
 import com.kayhut.fuse.model.logical.LogicalGraphModel;
@@ -126,7 +127,7 @@ public class KnowledgeTransformerTest {
         when(idGeneratorDriver.getNext(anyString(),anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
 
-        final KnowledgeTransformer transformer = new KnowledgeTransformer(ontTransformer,idGeneratorDriver);
+        final KnowledgeTransformer transformer = new KnowledgeTransformer(ontTransformer,new KnowledgeRawSchema(), idGeneratorDriver);
         final KnowledgeContext transform = transformer.transform(graphModel);
         assertNotNull(transform);
     }

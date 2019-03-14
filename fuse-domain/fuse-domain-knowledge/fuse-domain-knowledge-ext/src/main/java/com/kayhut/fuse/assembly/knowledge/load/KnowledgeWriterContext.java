@@ -71,61 +71,60 @@ public class KnowledgeWriterContext {
         return this;
     }
 
-    public String nextLogicalId(long index) {
-        return "e" + String.format(this.schema.getIdFormat("entity"), index);
-
+    public String nextLogicalId(RawSchema schema,long index) {
+        return "e" + String.format(schema.getIdFormat("entity"), index);
     }
 
     public String nextLogicalId() {
-        return nextLogicalId(eCounter.incrementAndGet());
+        return nextLogicalId(schema,eCounter.incrementAndGet());
     }
 
-    public String nextValueId(long index) {
-        return "ev" + String.format(this.schema.getIdFormat("entity"), index);
+    public String nextValueId(RawSchema schema,long index) {
+        return "ev" + String.format(schema.getIdFormat("entity"), index);
     }
 
     public String nextValueId() {
-        return nextValueId( evCounter.incrementAndGet());
+        return nextValueId(schema, evCounter.incrementAndGet());
     }
 
-    public String nextRvalueId(long index) {
-        return "rv" + String.format(this.schema.getIdFormat("relation"), index);
+    public String nextRvalueId(RawSchema schema,long index) {
+        return "rv" + String.format(schema.getIdFormat("relation"), index);
     }
 
     public String nextRvalueId() {
-        return nextRvalueId( evCounter.incrementAndGet());
+        return nextRvalueId( schema,evCounter.incrementAndGet());
     }
 
-    public String nextRefId(long index) {
-        return "ref" + String.format(this.schema.getIdFormat("reference"), index);
+    public String nextRefId(RawSchema schema,long index) {
+        return "ref" + String.format(schema.getIdFormat("reference"), index);
     }
 
     public String nextRefId() {
-        return nextRefId(refCounter.incrementAndGet());
+        return nextRefId(schema,refCounter.incrementAndGet());
     }
 
-    public String nextInsightId(long index) {
-        return "i" + String.format(this.schema.getIdFormat("insight"), index);
+    public String nextInsightId(RawSchema schema,long index) {
+        return "i" + String.format(schema.getIdFormat("insight"), index);
     }
 
     public String nextInsightId() {
-        return  nextInsightId(iCounter.incrementAndGet());
+        return  nextInsightId(schema,iCounter.incrementAndGet());
     }
 
-    public String nextRelId(long index) {
-        return "r" + String.format(this.schema.getIdFormat("relation"), index);
+    public String nextRelId(RawSchema schema,long index) {
+        return "r" + String.format(schema.getIdFormat("relation"), index);
     }
 
     public String nextRelId() {
-        return nextRelId( relCounter.incrementAndGet());
+        return nextRelId(schema, relCounter.incrementAndGet());
     }
 
-    public String nextFileId(long index) {
-        return "f" + String.format(this.schema.getIdFormat("e.file"), index);
+    public String nextFileId(RawSchema schema,long index) {
+        return "f" + String.format(schema.getIdFormat("e.file"), index);
     }
 
     public String nextFileId() {
-        return nextFileId(fCounter.incrementAndGet());
+        return nextFileId(schema,fCounter.incrementAndGet());
     }
 
     public static KnowledgeWriterContext init(Client client, RawSchema schema) {
