@@ -2,9 +2,11 @@
     "nodes": [
       {
         "id": "0",
+        "label": "person",
         "metadata": {
-          "label": "person",
-          "user-defined": "values"
+          "user-defined": "values",
+          "context": "generic",
+          "created": "01/10/2018"
         },
         "properties": {
           "fName": "first name",
@@ -12,6 +14,7 @@
           "born": "12/12/2000",
           "age": "19",
           "email": "myName@fuse.com",
+          "currentAddressLocation": "43.06,-70.34",
           "address": {
             "state": "my state",
             "street": "my street",
@@ -22,15 +25,17 @@
       },
       {
         "id": "10",
+        "label": "person",
         "metadata": {
-          "label": "person",
-          "user-defined": "values"
+          "user-defined": "values",
+          "created": "01/10/2018"
         },
         "properties": {
           "fName": "another first name",
           "lName": "another last name",
           "age": "20",
           "born": "1/1/1999",
+          "currentAddressLocation": "40.06,-71.34",
           "email": "notMyName@fuse.com",
           "address": {
             "state": "not my state",
@@ -46,9 +51,10 @@
         "id": 100,
         "source": "0",
         "target": "1",
+        "label": "knows",
         "metadata": {
-          "label": "knows",
-          "user-defined": "values"
+          "user-defined": "values",
+          "created": "01/10/2018"
         },
         "properties": {
           "date": "01/01/2000",
@@ -59,9 +65,10 @@
         "id": 101,
         "source": "0",
         "target": "1",
+        "label": "called",
         "metadata": {
-          "label": "called",
-          "user-defined": "values"
+          "user-defined": "values",
+          "created": "01/10/2018"
         },
         "properties": {
           "date": "01/01/2000",

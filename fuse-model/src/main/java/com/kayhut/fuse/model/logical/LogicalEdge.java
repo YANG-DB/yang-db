@@ -31,6 +31,7 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LogicalEdge {
     private String id;
+    private String label;
     private String source;
     private String target;
     private boolean direction;
@@ -39,14 +40,20 @@ public class LogicalEdge {
 
     public LogicalEdge() {}
 
-    public LogicalEdge(String id,String source, String target,boolean direction) {
+    public LogicalEdge(String id,String label,String source, String target,boolean direction) {
         this.id = id;
+        this.label = label;
         this.source = source;
         this.target = target;
         this.direction = direction;
         this.metadata = new EdgeMetadata();
         this.properties = new EdgeProperties();
     }
+
+    public String getLabel() {
+        return label;
+    }
+
 
     public String getId() {
         return id;
@@ -76,6 +83,7 @@ public class LogicalEdge {
     public String toString() {
         return "LogicalEdge{" +
                 "id='" + id + '\'' +
+                "label='" + label + '\'' +
                 ", source='" + source + '\'' +
                 ", target='" + target + '\'' +
                 ", direction=" + direction +

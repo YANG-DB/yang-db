@@ -34,11 +34,20 @@ public class TransformerRelationType {
     public TransformerRelationType() {
     }
 
-    public TransformerRelationType(String id,String type, String name, List<Map<String,String>> metadataProperties) {
+    public TransformerRelationType(String id,String label,String type, String name, List<Map<String,String>> metadataProperties) {
         this.id = id;
+        this.label = label;
         this.rType = type;
         this.pattern = name;
         this.metadataProperties = metadataProperties;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getId() {
@@ -92,9 +101,10 @@ public class TransformerRelationType {
     @Override
     public String toString()
     {
-        return "EntityType [id = "+ id +",eType = "+ rType +", name = "+ pattern +", properties = "+ metadataProperties +"]";
+        return "EntityType [id = "+ id +",eType = "+ rType +", name = "+ pattern +", label = "+ label +", properties = "+ metadataProperties +"]";
     }
 
+    private String label;
     //region Fields
     private String id;
     private String rType;

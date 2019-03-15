@@ -69,9 +69,10 @@ public class ValueBuilder extends EntityId {
             case "Date":
                 return value((Date) value);
             case "Integer":
-                return value(value);
+                return value((int)value);
+            default:
+                return value(value.toString());
         }
-        return this;
     }
 
     public ValueBuilder reference(RefBuilder ref) {

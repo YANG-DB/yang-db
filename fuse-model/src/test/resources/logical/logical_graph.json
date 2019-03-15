@@ -5,7 +5,8 @@
         "metadata": {
           "label": "person",
           "user-defined": "values",
-          "context": "generic"
+          "context": "generic",
+          "created": "01/10/2018"
         },
         "properties": {
           "fName": "first name",
@@ -23,10 +24,10 @@
       },
       {
         "id": "10",
+        "label": "person",
         "metadata": {
-          "label": "person",
           "user-defined": "values",
-          "context": "generic"
+          "created": "01/10/2018"
         },
         "properties": {
           "fName": "another first name",
@@ -48,10 +49,10 @@
         "id": 100,
         "source": "0",
         "target": "1",
+        "label": "knows",
         "metadata": {
-          "label": "knows",
           "user-defined": "values",
-          "context": "generic"
+          "created": "01/10/2018"
         },
         "properties": {
           "date": "01/01/2000",
@@ -62,10 +63,10 @@
         "id": 101,
         "source": "0",
         "target": "1",
+        "label": "called",
         "metadata": {
-          "label": "called",
           "user-defined": "values",
-          "context": "generic"
+          "created": "01/10/2018"
         },
         "properties": {
           "date": "01/01/2000",

@@ -5,12 +5,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.results.Property;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class Metadata extends KnowledgeDomainBuilder {
-    static SimpleDateFormat sdf;
+    public static SimpleDateFormat sdf;
 
     static {
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -70,7 +71,16 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
             case "deleteTime":
                 return deleteTime((Date) value);
             case "creationTime":
-                return creationTime((Date) value);
+                try {
+                    return creationTime((Date) value);
+                } catch (Exception e) {
+                    try {
+                        return creationTime(sdf.parse(value.toString()));
+                    } catch (ParseException e1) {
+                        //error parsing value as date
+                        return creationTime(new Date(value.toString()));
+                    }
+                }
             case "creationUser":
                 return creationUser(value.toString());
             case "lastUpdateUser":

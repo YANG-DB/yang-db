@@ -34,11 +34,20 @@ public class TransformerEntityType {
     public TransformerEntityType() {
     }
 
-    public TransformerEntityType(String id,String type, String name, List<Map<String,String>> metadataProperties) {
+    public TransformerEntityType(String id,String label,String type, String name, List<Map<String,String>> metadataProperties) {
         this.id = id;
+        this.label = label;
         this.eType = type;
         this.pattern = name;
         this.metadataProperties = metadataProperties;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getId() {
@@ -92,9 +101,10 @@ public class TransformerEntityType {
     @Override
     public String toString()
     {
-        return "EntityType [id = "+id+",eType = "+eType+", name = "+ pattern +", properties = "+ metadataProperties +"]";
+        return "EntityType [id = "+id+",eType = "+eType+", name = "+ pattern +", label = "+ label +", properties = "+ metadataProperties +"]";
     }
 
+    private String label;
     //region Fields
     private String eType;
     private String id;

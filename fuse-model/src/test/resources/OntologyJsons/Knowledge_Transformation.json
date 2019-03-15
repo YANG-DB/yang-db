@@ -4,19 +4,20 @@
     {
         "pattern": "\\w+",
         "eType": "Entity",
+        "id": "logicalId",
+        "label": "category",
         "metadataProperties": [
-          {"id": "logicalId"},
-          {"label": "category"}
+          {"created":"creationTime"}
         ],
         "properties": {
           "pattern": "\\w+",
           "concreteType": "Evalue",
-          "keys": [{"fieldId": "^\\w+(?=:.*)"}],
+          "label": "^\\w+(?=:.*)",
           "valuePatterns": [
             {"geoValue": "^([-+]?)([\\d]{1,2})(((\\.)(\\d+)(,)))(\\s*)(([-+]?)([\\d]{1,3})((\\.)(\\d+))?)$"},
             {"intValue": "^[-+]?\\d*$"},
             {"dateValue": "^\\d{1,2}\/\\d{1,2}\/\\d{4}$"},
-            {"stringValue": "[.*]"}
+            {"stringValue": ".*"}
           ]
         }
     }
@@ -25,21 +26,22 @@
     {
         "pattern": "\\w+",
         "rType": "Relation",
+        "id": "id",
+        "label": "category",
         "metadataProperties": [
-          {"id": "id"},
-          {"label": "category"},
+          {"created":"creationTime"},
           {"source": "entityAId"},
           {"target": "entityBId"}
           ],
         "properties": {
           "pattern": "\\w+",
           "concreteType": "Rvalue",
-          "keys": [{"fieldId": "^\\w+(?=:.*)"}],
+          "label": "^\\w+(?=:.*)",
           "valuePatterns": [
             {"geoValue": "^([-+]?)([\\d]{1,2})(((\\.)(\\d+)(,)))(\\s*)(([-+]?)([\\d]{1,3})((\\.)(\\d+))?)$"},
             {"intValue": "^[-+]?\\d*$"},
             {"dateValue": "^\\d{1,2}\/\\d{1,2}\/\\d{4}$"},
-            {"stringValue": "[.*]"}
+            {"stringValue": ".*"}
           ]
       }
     }

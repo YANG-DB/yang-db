@@ -17,8 +17,8 @@ public class EntityBuilder extends EntityId {
     public static final String physicalType = "entity";
 
     public String logicalId;
-    public String category = "person";
-    public String context = "global";
+    public String category;
+    public String context;
     public Map<String,Object> additionalProperties = new HashMap<>();
 
     public List<KnowledgeDomainBuilder> additional = new ArrayList<>();

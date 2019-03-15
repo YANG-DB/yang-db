@@ -15,8 +15,8 @@ import static com.kayhut.fuse.model.logical.LogicalGraphModel.LABEL;
  * //example
  *             {
  *                 "id": "0",
+ *                 "label": "person",
  *                 "metadata": {
- *                     "label": "person",
  *                     "user-defined": "values"
  *                 }
  *                 "properties":{
@@ -38,15 +38,21 @@ import static com.kayhut.fuse.model.logical.LogicalGraphModel.LABEL;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LogicalNode {
     private String id;
+    private String label;
     private NodeMetadata metadata;
     private NodeProperties properties;
 
     public LogicalNode() {}
 
-    public LogicalNode(String id) {
+    public LogicalNode(String id,String label) {
         this.id = id;
+        this.label = label;
         this.metadata = new NodeMetadata();
         this.properties = new NodeProperties();
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     public String getId() {
@@ -65,6 +71,7 @@ public class LogicalNode {
     public String toString() {
         return "LogicalNode{" +
                 "id='" + id + '\'' +
+                "label='" + label + '\'' +
                 ", metadata=" + metadata +
                 ", properties=" + properties +
                 '}';
@@ -93,12 +100,6 @@ public class LogicalNode {
             return "NodeMetadata{" +
                     ", properties=" + properties +
                     '}';
-        }
-
-        public String getLabel() {
-            final Optional<Map.Entry<String, Object>> any = getProperties().entrySet().stream().filter(e -> e.getKey().equals(LABEL)).findAny();
-            //todo return the value of the label:labelName entry or default "Entity"
-            return null;
         }
     }
 

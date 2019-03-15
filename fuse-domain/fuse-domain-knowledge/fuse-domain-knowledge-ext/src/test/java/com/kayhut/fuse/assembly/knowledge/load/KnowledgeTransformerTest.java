@@ -47,8 +47,8 @@ public class KnowledgeTransformerTest {
      *         "nodes": [
      *             {
      *                 "id": "0",
+     *                 "label": "person",
      *                 "metadata": {
-     *                     "label": "person",
      *                     "user-defined": "values"
      *                 }
      *                 "properties":{
@@ -67,8 +67,8 @@ public class KnowledgeTransformerTest {
      *             },
      *             {
      *                 "id": "10",
+     *                 "label": "person",
      *                 "metadata": {
-     *                     "label": "person",
      *                     "user-defined": "values"
      *                 }
      *                 "properties":{

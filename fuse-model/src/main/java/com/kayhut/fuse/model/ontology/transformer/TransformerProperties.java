@@ -8,17 +8,21 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class TransformerProperties {
     private String pattern;
+    private String label;
     private String concreteType;
-    private List<Map<String,String>> keys;
     private List<Map<String,String>> valuePatterns;
 
     public TransformerProperties() {}
 
-    public TransformerProperties(String pattern, String eType, List<Map<String,String>> keys, List<Map<String,String>> valuePatterns) {
+    public TransformerProperties(String pattern,String label, String eType, List<Map<String, String>> valuePatterns) {
+        this.label = label;
         this.pattern = pattern;
         this.concreteType = eType;
-        this.keys = keys;
         this.valuePatterns = valuePatterns;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     public String getPattern() {
@@ -35,14 +39,6 @@ public class TransformerProperties {
 
     public void setConcreteType(String concreteType) {
         this.concreteType = concreteType;
-    }
-
-    public List<Map<String,String>> getKeys() {
-        return keys;
-    }
-
-    public void setKeys(List<Map<String,String>> keys) {
-        this.keys = keys;
     }
 
     public List<Map<String,String>> getValuePatterns() {

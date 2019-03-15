@@ -1,9 +1,6 @@
 package com.kayhut.fuse.assembly.knowledge.load;
 
-import com.kayhut.fuse.assembly.knowledge.load.builder.EntityBuilder;
-import com.kayhut.fuse.assembly.knowledge.load.builder.FileBuilder;
-import com.kayhut.fuse.assembly.knowledge.load.builder.InsightBuilder;
-import com.kayhut.fuse.assembly.knowledge.load.builder.RefBuilder;
+import com.kayhut.fuse.assembly.knowledge.load.builder.*;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.kayhut.fuse.model.Range;
@@ -12,13 +9,17 @@ import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.kayhut.fuse.model.logical.LogicalNode;
 import com.kayhut.fuse.model.ontology.transformer.OntologyTransformer;
 import com.kayhut.fuse.model.ontology.transformer.TransformerEntityType;
+import com.kayhut.fuse.model.ontology.transformer.TransformerProperties;
+import org.geojson.Point;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
-import static com.kayhut.fuse.assembly.knowledge.load.builder.EntityBuilder._e;
+import static com.kayhut.fuse.assembly.knowledge.load.builder.EntityBuilder.*;
+import static com.kayhut.fuse.assembly.knowledge.load.builder.ValueBuilder._v;
 import static java.util.regex.Pattern.matches;
 
 public class KnowledgeTransformer {
@@ -42,16 +43,16 @@ public class KnowledgeTransformer {
         //populate context according to given json graph
         graph.getNodes().forEach(node -> {
             Optional<TransformerEntityType> entityType = transformer.getEntityTypes().stream()
-                    .filter(e -> matches(e.getPattern(), node.getMetadata().getLabel())).findFirst();
-            if(!entityType.isPresent())
-                context.failed("Entity type not matched",node.toString());
+                    .filter(e -> matches(e.getPattern(), node.getLabel())).findFirst();
+            if (!entityType.isPresent())
+                context.failed("Entity type not matched", node.toString());
 
             TransformerEntityType type = entityType.get();
             switch (type.geteType()) {
                 case EntityBuilder.type:
                     StatefulRange range = ranges.computeIfAbsent(EntityBuilder.type,
                             s -> new StatefulRange(idGenerator.getNext(EntityBuilder.type, 1000)));
-                    context.add(createEntity(range,type,node));
+                    context.add(createEntity(range, type, node));
                     break;
                 case RefBuilder.type:
                     break;
@@ -68,23 +69,70 @@ public class KnowledgeTransformer {
 
     private EntityBuilder createEntity(StatefulRange range, TransformerEntityType type, LogicalNode node) {
         //todo what if the "id" field is present -> should we use it instead of the auto id generator ??
-        EntityBuilder builder = _e(writerContext.nextLogicalId(schema,range.next()));
+        EntityBuilder entityBuilder = _e(writerContext.nextLogicalId(schema, range.next()));
+        String physicalLabelKey = type.getLabel();
+        String labelValue = node.getLabel();
+        entityBuilder.putProperty(physicalLabelKey, labelValue);
         //for each metadata property in the logical graph
-        node.getMetadata().getProperties().forEach((logicalKey,value)-> {
-            if(type.hasMetadataProperty(logicalKey)) {
+        node.getMetadata().getProperties().forEach((logicalKey, value) -> {
+            if (type.hasMetadataProperty(logicalKey)) {
                 final Map.Entry<String, String> entry = type.metadataProperty(logicalKey).get().entrySet().iterator().next();
                 final String physicalKey = entry.getValue();
                 //set physical metadata properties
-                builder.putProperty(physicalKey, value);
+                entityBuilder.putProperty(physicalKey, value);
             } else {
                 //set logical metadata properties
-                builder.putProperty(logicalKey, value);
+                entityBuilder.putProperty(logicalKey, value);
             }
 
         });
-        //todo transform regular properties (EValue)
+        //transform regular properties (EValue)
+        StatefulRange propRange = ranges.computeIfAbsent(ValueBuilder.type,
+                s -> new StatefulRange(idGenerator.getNext(ValueBuilder.type, 1000)));
+        node.getProperties().getProperties().forEach((key, value) -> {
+            entityBuilder.value(createValueBuilder(propRange, type.getProperties(), key, value));
+        });
 
+        return entityBuilder;
+    }
 
-        return builder;
+    private ValueBuilder createValueBuilder(StatefulRange propRange, TransformerProperties properties, String key, Object value) {
+        ValueBuilder valueBuilder = _v(writerContext.nextValueId(schema, propRange.next()));
+        //todo think if TransformerProperties.label pattern is still relevant
+        valueBuilder.field(key);
+        //todo think if TransformerProperties.concreteType is still relevant
+        String type = properties.getConcreteType();
+        //find value explicit type according to pattern
+        Optional<Map<String, String>> valueType = properties.getValuePatterns().stream()
+                .filter(p -> value.toString().matches(p.values().iterator().next()))
+                .findFirst();
+        if (valueType.isPresent()) {
+            String explicitType = valueType.get().keySet().iterator().next();
+            valueBuilder.value(toValue(explicitType, value));
+        } else {
+            valueBuilder.value(value);
+        }
+
+        return valueBuilder;
+    }
+
+    private Object toValue(String explicitType, Object value) {
+        switch (explicitType) {
+            case "stringValue":
+                return value.toString();
+            case "intValue":
+                return Integer.valueOf(value.toString());
+            case "dateValue":
+                try {
+                    return Metadata.sdf.parse(value.toString());
+                } catch (ParseException e) {
+                    return new Date(value.toString());
+                }
+            case "geoValue":
+                return new Point(
+                        Double.valueOf(value.toString().split("[,]")[0]),
+                        Double.valueOf(value.toString().split("[,]")[1]));
+        }
+        return value.toString();
     }
 }

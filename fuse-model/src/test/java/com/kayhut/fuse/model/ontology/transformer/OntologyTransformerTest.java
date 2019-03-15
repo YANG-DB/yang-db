@@ -20,13 +20,13 @@ public class OntologyTransformerTest {
         assertEquals(1,transformer.getEntityTypes().size());
         assertEquals(1,transformer.getRelationTypes().size());
         assertEquals("Entity",transformer.getEntityTypes().get(0).geteType());
-        assertEquals(1,transformer.getEntityTypes().get(0).getProperties().getKeys().size());
+        assertEquals("^\\w+(?=:.*)",transformer.getEntityTypes().get(0).getProperties().getLabel());
         assertEquals(4,transformer.getEntityTypes().get(0).getProperties().getValuePatterns().size());
-        assertEquals(2,transformer.getEntityTypes().get(0).getMetadataProperties().size());
+        assertEquals(1,transformer.getEntityTypes().get(0).getMetadataProperties().size());
         assertEquals("Relation",transformer.getRelationTypes().get(0).getrType());
-        assertEquals(1,transformer.getRelationTypes().get(0).getProperties().getKeys().size());
+        assertEquals("^\\w+(?=:.*)",transformer.getRelationTypes().get(0).getProperties().getLabel());
         assertEquals(4,transformer.getRelationTypes().get(0).getProperties().getValuePatterns().size());
-        assertEquals(4,transformer.getRelationTypes().get(0).getMetadataProperties().size());
+        assertEquals(3,transformer.getRelationTypes().get(0).getMetadataProperties().size());
     }
 
 

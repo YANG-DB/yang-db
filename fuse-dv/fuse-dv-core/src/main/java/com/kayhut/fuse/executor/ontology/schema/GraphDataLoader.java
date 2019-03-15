@@ -66,8 +66,8 @@ public interface GraphDataLoader {
      *             },
      *             {
      *                 "id": "10",
+ *                     "label": "person",
      *                 "metadata": {
-     *                     "label": "person",
      *                     "user-defined": "values"
      *                 }
      *                 "properties":{
