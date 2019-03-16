@@ -13,8 +13,8 @@ import java.util.function.Predicate;
 
 
 public class ValueBuilder extends EntityId {
-    public static String physicalType = "e.value";
-    public static String type = "Evalue";
+    public final static String physicalType = "e.value";
+    public final static String type = "Evalue";
 
     public List<Relationship> hasRefs = new ArrayList<>();
     public List<Entity> subEntities = new ArrayList<>();

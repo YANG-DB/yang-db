@@ -5,19 +5,21 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
 import javaslang.collection.Stream;
+import org.geojson.Point;
 
 import java.util.*;
 
 
 public class RvalueBuilder extends EntityId {
-    public static String physicalType = "r.value";
-    public static String type = "Rvalue";
+    public final static String physicalType = "r.value";
+    public final static String type = "Rvalue";
 
     public List<String> refs = new ArrayList<>();
     public String context;
     public String fieldId;
     public String bdt;
     public String stringValue;
+    public Point geoValue;
     public Date dateValue;
     public int intValue = Integer.MIN_VALUE;
     private String valueId;
@@ -35,6 +37,11 @@ public class RvalueBuilder extends EntityId {
 
     public RvalueBuilder value(String value) {
         this.stringValue = value;
+        return this;
+    }
+
+    public RvalueBuilder value(Point value) {
+        this.geoValue = value;
         return this;
     }
 
@@ -66,6 +73,21 @@ public class RvalueBuilder extends EntityId {
     public RvalueBuilder ref(String ... ref) {
         this.refs = Arrays.asList(ref);
         return this;
+    }
+
+    public RvalueBuilder value(Object value) {
+        switch (value.getClass().getSimpleName()) {
+            case "String":
+                return value(value.toString());
+            case "Point":
+                return value((Point) value);
+            case "Date":
+                return value((Date) value);
+            case "Integer":
+                return value((int)value);
+            default:
+                return value(value.toString());
+        }
     }
 
     @Override

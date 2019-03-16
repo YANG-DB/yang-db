@@ -50,13 +50,13 @@ public class DirectoryOntologyTransformerProvider implements OntologyTransformer
         }
         if (dir.exists()) {
             this.transformations =
-                    Stream.of(dir.listFiles() == null ? new File[0] : dir.listFiles())
+                    Stream.of(Objects.requireNonNull(dir.listFiles() == null ? new File[0] : dir.listFiles()))
                             .filter(file -> FilenameUtils.getExtension(file.getName()).equals("json"))
-                            .filter(file -> FilenameUtils.getBaseName(file.getName()).toLowerCase().endsWith("transformation"))
+                            .filter(file -> FilenameUtils.getBaseName(file.getName()).toLowerCase().contains("transformation"))
                             .toJavaMap(file -> {
                                 try {
-                                    return new Tuple2<>(FilenameUtils.getBaseName(file.getName()),
-                                            mapper.readValue(file, OntologyTransformer.class));
+                                    OntologyTransformer ontologyTransformer = mapper.readValue(file, OntologyTransformer.class);
+                                    return new Tuple2<>(ontologyTransformer.getOnt(),ontologyTransformer);
                                 } catch (IOException e) {
                                     return new Tuple2<>(FilenameUtils.getBaseName(file.getName()), new OntologyTransformer());
                                 }

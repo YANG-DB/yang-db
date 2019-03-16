@@ -20,12 +20,11 @@ package com.kayhut.fuse.assembly.knowledge;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.kayhut.fuse.assembly.knowledge.load.KnowledgeContext;
 import com.kayhut.fuse.assembly.knowledge.load.KnowledgeTransformer;
-import com.kayhut.fuse.assembly.knowledge.load.KnowledgeWriterContext;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.ontology.OntologyTransformerProvider;
 import com.kayhut.fuse.executor.ontology.schema.GraphDataLoader;
@@ -44,6 +43,7 @@ import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplat
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -58,9 +58,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Optional;
+import java.util.TimeZone;
 
-import static com.kayhut.fuse.assembly.knowledge.load.KnowledgeWriterContext.*;
+import static com.kayhut.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;
 
 /**
  * Created by lior.perry on 2/11/2018.
@@ -68,31 +69,25 @@ import static com.kayhut.fuse.assembly.knowledge.load.KnowledgeWriterContext.*;
 public class KnowledgeDataLoader implements GraphDataLoader {
     private static final Logger logger = LoggerFactory.getLogger(KnowledgeDataLoader.class);
 
-    private TransportClient client;
+    private Client client;
     private SimpleDateFormat sdf;
-    private Config conf;
     private RawSchema schema;
     private KnowledgeTransformer transformer;
+    private ObjectMapper mapper;
 
     @Inject
-    public KnowledgeDataLoader(Config conf, RawSchema schema, IdGeneratorDriver<Range> idGenerator, OntologyTransformerProvider transformerProvider) throws UnknownHostException {
-        this.conf = conf;
+    public KnowledgeDataLoader(Config config,Client client, RawSchema schema, IdGeneratorDriver<Range> idGenerator, OntologyTransformerProvider transformerProvider) throws UnknownHostException {
         this.schema = schema;
-        Settings settings = Settings.builder().put("cluster.name", conf.getConfig("elasticsearch").getString("cluster_name")).build();
-        int port = conf.getConfig("elasticsearch").getInt("port");
-        client = new PreBuiltTransportClient(settings);
-        conf.getConfig("elasticsearch").getList("hosts").unwrapped().forEach(host -> {
-            try {
-                client.addTransportAddress(new TransportAddress(InetAddress.getByName(host.toString()), port));
-            } catch (UnknownHostException e) {
-                logger.error(e.getMessage(), e);
-            }
-        });
+        this.mapper = new ObjectMapper();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         //load knowledge transformer
-        final Optional<OntologyTransformer> assembly = transformerProvider.transformer(conf.getString("assembly"));
-        transformer = new KnowledgeTransformer(assembly.get(),schema,idGenerator);
+        final Optional<OntologyTransformer> assembly = transformerProvider.transformer(config.getString("assembly"));
+        if(!assembly.isPresent())
+            throw new IllegalArgumentException("No transformer provider found for selected ontology "+config.getString("assembly"));
+        //todo check how to use the injected idGenerator
+        transformer = new KnowledgeTransformer(assembly.get(),schema,new KnowledgeStatelessIdGenerator());
+        this.client = client;
     }
 
 
@@ -137,11 +132,9 @@ public class KnowledgeDataLoader implements GraphDataLoader {
      * @param root graph document
      * @return
      */
-    public long load(LogicalGraphModel root) {
+    public long load(LogicalGraphModel root) throws JsonProcessingException {
         final KnowledgeContext context = transformer.transform(root);
-        final KnowledgeWriterContext writerContext = new KnowledgeWriterContext(context);
-        //todo load all data to designated indices according to schema
-//        commit(client,w)
-        return 0;
+        //load all data to designated indices according to schema
+        return commit(client,schema,mapper,context);
     }
 }

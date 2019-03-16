@@ -20,8 +20,6 @@ package com.kayhut.fuse.services.appRegistrars;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.kayhut.fuse.services.controllers.DataLoaderController;

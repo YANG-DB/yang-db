@@ -130,5 +130,21 @@ public class KnowledgeTransformerTest {
         final KnowledgeTransformer transformer = new KnowledgeTransformer(ontTransformer,new KnowledgeRawSchema(), idGeneratorDriver);
         final KnowledgeContext transform = transformer.transform(graphModel);
         assertNotNull(transform);
+        assertEquals(2,transform.getEntities().size());
+        assertEquals(3,transform.getEntities().get(0).additionalProperties.size());
+        assertEquals(2,transform.getEntities().get(0).additional.size());
+        assertEquals(2,transform.getEntities().get(0).hasRel.size());
+        assertEquals(3,transform.getEntities().get(1).additionalProperties.size());
+        assertEquals(2,transform.getEntities().get(1).additional.size());
+        assertEquals(2,transform.getEntities().get(1).hasRel.size());
+
+        assertEquals(2,transform.getRelations().size());
+        assertEquals(2,transform.getRelations().get(0).hasValues.size());
+        assertEquals(2,transform.getRelations().get(0).additionalProperties.size());
+        assertEquals(5,transform.getRelations().get(1).hasValues.size());
+        assertEquals(2,transform.getRelations().get(1).additionalProperties.size());
+
+        assertEquals(14,transform.geteValues().size());
+        assertEquals(7,transform.getrValues().size());
     }
 }

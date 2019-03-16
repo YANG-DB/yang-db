@@ -7,11 +7,9 @@ import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.model.results.Relationship;
 import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 public class RelationBuilder extends Metadata {
@@ -27,6 +25,7 @@ public class RelationBuilder extends Metadata {
     public String entityACategory;
     public String entityBCategory;
     private String relId;
+    public Map<String, Object> additionalProperties = new HashMap<>();
     public List<String> refs = new ArrayList<>();
 
     public List<Entity> subEntities = new ArrayList<>();
@@ -47,6 +46,22 @@ public class RelationBuilder extends Metadata {
     }
 
     public RelationBuilder() {
+    }
+
+    public RelationBuilder putProperty(String key, Object value) {
+        super.putProperty(key, value);
+        switch (key) {
+            case "category":
+                return cat(value.toString());
+            case "context":
+                return ctx(value.toString());
+            default:
+                // suppose a property is set on the metadata (supper) entity it will also be added to
+                // the additional properties but the serialization to jsonObject is map based so duplicates
+                // will be eliminated
+                additionalProperties.put(key, value);
+                return this;
+        }
     }
 
     public static RelationBuilder _rel(String id) {
@@ -200,7 +215,9 @@ public class RelationBuilder extends Metadata {
                         new Property("entityACategory", "raw", entityACategory),
                         new Property("entityBCategory", "raw", entityBCategory),
                         new Property("refs", "raw", !refs.isEmpty() ? refs : null)
-                ))).build();
+                        ), additionalProperties.entrySet().stream()
+                                .map(p -> new Property(p.getKey(), p.getValue())).collect(Collectors.toList()))
+                ).build();
     }
 
     @Override
@@ -209,17 +226,16 @@ public class RelationBuilder extends Metadata {
     }
 
 
-
     public static class EntityRelationBuilder extends KnowledgeDomainBuilder {
         public static String physicalType = "e.relation";
         private RelationBuilder builder;
         private String dir;
 
-        public EntityRelationBuilder(String entityAId,RelationBuilder source,String dir) {
+        public EntityRelationBuilder(String entityAId, RelationBuilder source, String dir) {
             this.builder = new RelationBuilder(source);
             this.dir = dir;
             //
-            if(!builder.entityAId.equals(entityAId)) {
+            if (!builder.entityAId.equals(entityAId)) {
                 String entityACategory = builder.entityACategory;
 
                 builder.entityACategory(builder.entityBCategory);
@@ -237,7 +253,7 @@ public class RelationBuilder extends Metadata {
 
         @Override
         public String id() {
-            return builder.id()+"."+dir;
+            return builder.id() + "." + dir;
         }
 
         @Override
@@ -254,8 +270,8 @@ public class RelationBuilder extends Metadata {
         public ObjectNode collect(ObjectMapper mapper, ObjectNode node) {
             builder.collect(mapper, node);
             node.put("id", id());
-            node.put("type",physicalType);
-            node.put("direction",dir);
+            node.put("type", physicalType);
+            node.put("direction", dir);
             node.put("relationId", builder.id());
             return node;
         }

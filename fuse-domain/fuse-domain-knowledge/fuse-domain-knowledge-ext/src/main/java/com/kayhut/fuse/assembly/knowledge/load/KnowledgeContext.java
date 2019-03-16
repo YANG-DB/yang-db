@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.resourceInfo.FuseError;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class KnowledgeContext {
     private List<FuseError> failed;
@@ -59,5 +60,16 @@ public class KnowledgeContext {
 
     public List<RvalueBuilder> getrValues() {
         return rValues;
+    }
+
+    public Optional<EntityBuilder> findEntityById(String id) {
+        return entities.stream().filter(e->e.logicalId.equals(id)).findAny();
+    }
+
+    public Optional<EntityBuilder> findEntityByProperty(String property,String value) {
+        return entities.stream()
+                .filter(e->e.additionalProperties.containsKey(property))
+                .filter(e->e.additionalProperties.get(property).equals(value))
+                .findAny();
     }
 }

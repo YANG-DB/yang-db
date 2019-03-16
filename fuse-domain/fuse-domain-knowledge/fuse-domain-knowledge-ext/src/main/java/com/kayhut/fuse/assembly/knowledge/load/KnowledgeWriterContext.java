@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.kayhut.fuse.assembly.knowledge.KnowledgeRawSchema.*;
 
 
 public class KnowledgeWriterContext {
@@ -71,8 +72,12 @@ public class KnowledgeWriterContext {
         return this;
     }
 
-    public String nextLogicalId(RawSchema schema,long index) {
-        return "e" + String.format(schema.getIdFormat("entity"), index);
+    public KnowledgeContext getContext() {
+        return context;
+    }
+
+    public String nextLogicalId(RawSchema schema, long index) {
+        return format(schema, index, "e", "entity");
     }
 
     public String nextLogicalId() {
@@ -80,7 +85,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextValueId(RawSchema schema,long index) {
-        return "ev" + String.format(schema.getIdFormat("entity"), index);
+        return format(schema, index, "ev", "entity");
     }
 
     public String nextValueId() {
@@ -88,7 +93,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextRvalueId(RawSchema schema,long index) {
-        return "rv" + String.format(schema.getIdFormat("relation"), index);
+        return format(schema, index, "rv", "relation");
     }
 
     public String nextRvalueId() {
@@ -96,7 +101,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextRefId(RawSchema schema,long index) {
-        return "ref" + String.format(schema.getIdFormat("reference"), index);
+        return format(schema, index, "ref", "reference");
     }
 
     public String nextRefId() {
@@ -104,7 +109,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextInsightId(RawSchema schema,long index) {
-        return "i" + String.format(schema.getIdFormat("insight"), index);
+        return format(schema, index, "i", "insight");
     }
 
     public String nextInsightId() {
@@ -112,7 +117,15 @@ public class KnowledgeWriterContext {
     }
 
     public String nextRelId(RawSchema schema,long index) {
-        return "r" + String.format(schema.getIdFormat("relation"), index);
+        return format(schema, index, "r", "relation");
+    }
+
+    public static String format(RawSchema schema, long index, String prefix, String type) {
+        return prefix + String.format(schema.getIdFormat(type), index);
+    }
+
+    public static String format(RawSchema schema, String index, String prefix, String type) {
+        return prefix + String.format(schema.getIdFormat(type), index);
     }
 
     public String nextRelId() {
@@ -120,7 +133,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextFileId(RawSchema schema,long index) {
-        return "f" + String.format(schema.getIdFormat("e.file"), index);
+        return format(schema, index, "f", "e.file");
     }
 
     public String nextFileId() {
@@ -148,7 +161,7 @@ public class KnowledgeWriterContext {
         }
     }
 
-    public static <T extends KnowledgeDomainBuilder> int commit(Client client, String index, List<T> builders, ObjectMapper mapper) throws JsonProcessingException {
+    public static <T extends KnowledgeDomainBuilder> int commit(Client client, String index, ObjectMapper mapper, List<T> builders) throws JsonProcessingException {
         int count = 0;
         final BulkRequestBuilder bulk = client.prepareBulk();
         count = process(client, index, count, bulk, builders,mapper);
@@ -159,6 +172,26 @@ public class KnowledgeWriterContext {
         int count = 0;
         final BulkRequestBuilder bulk = client.prepareBulk();
         count = process(client, index, count, bulk, Arrays.asList(builders),mapper);
+        return count;
+    }
+
+    /**
+     * commit all entities and relations with their properties to the DB according to schema partition
+     * - currently only first partition is uses
+     * @param client
+     * @param schema
+     * @param mapper
+     * @param context
+     * @return
+     * @throws JsonProcessingException
+     */
+    public static int commit(Client client, RawSchema schema, ObjectMapper mapper, KnowledgeContext context) throws JsonProcessingException {
+        int count = 0;
+        count += commit(client,schema.getPartition(ENTITY).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getEntities());
+        count += commit(client,schema.getPartition(EVALUE).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.geteValues());
+        count += commit(client,schema.getPartition(RELATION).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getRelations());
+        count += commit(client,schema.getPartition(RVALUE).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getrValues());
+        //todo populate insight and references
         return count;
     }
 
