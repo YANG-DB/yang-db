@@ -26,7 +26,6 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.CreateJsonQueryRequest;
@@ -49,6 +48,8 @@ public interface QueryDriver {
     Optional<QueryResourceInfo> createAndFetch(CreateQueryRequest queryRequest);
 
     Optional<Object> run(Query query);
+
+    Optional<Object> run(String cypher, String ontology);
 
     Optional<Object> getNextPageData(String queryId, Optional<String> cursorId,int pageSize, boolean deleteCurrentPage);
 

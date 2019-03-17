@@ -35,7 +35,6 @@ import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.*;
-import com.kayhut.fuse.model.transport.Response;
 import com.kayhut.fuse.services.controllers.QueryController;
 import org.jooby.*;
 import org.jooby.apitool.ApiTool;
@@ -85,6 +84,8 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** create a cypher query */
         app.post(appUrlSupplier.queryStoreUrl() + "/cypher",req -> postCypher(app,req,this));
+        /** run a cypher query */
+        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/run",req -> runCypher(app,req,this));
 
 
         /** call a query */
@@ -231,6 +232,18 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
 
             ContentResponse<Object> response = registrar.getController(app).run(query);
+
+            return Results.with(response, response.status());
+        }
+
+        public static Result runCypher(Jooby app, final Request req, QueryControllerRegistrar registrar  ) {
+            Route.of("runCypher").write();
+
+            String query = req.param("cypher").value();
+            String ontology = req.param("ontology").value();
+            req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
+
+            ContentResponse<Object> response = registrar.getController(app).run(query,ontology);
 
             return Results.with(response, response.status());
         }

@@ -51,6 +51,7 @@ public class DirectoryOntologyProvider implements OntologyProvider {
             this.ontologies =
                     Stream.of(dir.listFiles() == null ? new File[0] : dir.listFiles())
                     .filter(file -> FilenameUtils.getExtension(file.getName()).equals("json"))
+                    .filter(file -> !FilenameUtils.getBaseName(file.getName()).toLowerCase().contains("transformation"))
                     .toJavaMap(file -> {
                         try {
                             return new Tuple2<>(FilenameUtils.getBaseName(file.getName()),

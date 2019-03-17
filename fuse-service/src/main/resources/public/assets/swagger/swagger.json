@@ -21,20 +21,177 @@
     "application/json"
   ],
   "paths": {
-    "/query": {
+    "/": {
+      "get": {
+        "tags": [
+          "API"
+        ],
+        "summary": "Get API Info",
+        "description": "API Info",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "API resources urls"
+          }
+        }
+      }
+    },
+    "/internal/version": {
+      "get": {
+        "tags": [
+          "management"
+        ],
+        "summary": "Get server version",
+        "description": "Server versions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Server version"
+          }
+        }
+      }
+    },
+    "/internal/config": {
+      "get": {
+        "tags": [
+          "management"
+        ],
+        "summary": "Get server configurations (according to app.config)",
+        "description": "Server configuration",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Server configuration"
+          }
+        }
+      }
+    },
+
+    "/catalog/ontology": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get all Ontology catalog resources",
+        "description": "Ontology catalog resources",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "All Ontology "
+          }
+        }
+      }
+    },
+    "/catalog/ontology/{id}": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Ontology resource by name ",
+        "description": "Ontology resource",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ontology Json"
+          }
+        }
+      }
+    },
+    "/catalog/ontology/{id}/schema": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get specific Ontology schema resource ",
+        "description": "Ontology schema resource",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ontology Json"
+          }
+        }
+      }
+    },
+
+    "/query/cypher": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit a cypher query request",
+        "description": "submit a query to the engine",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "Cypher Query json request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CypherQueryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/cypher/run": {
       "get": {
         "tags": [
           "query"
         ],
-        "summary": "Basic general query Info",
-        "description": "Basic query Info",
-        "parameters": [],
+        "summary": "submit & run cypher query directly  ",
+        "description": "submit & run a query to the engine",
+        "parameters": [
+          {
+            "name": "cypher",
+            "in": "query",
+            "description": "cypher query",
+            "required": true,
+            "type": "string",
+            "default":"match (a)-[b:hasRelation]-(c) return *"
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Basic query Info"
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
           }
         }
-      },
+      }
+    },
+    "/query/v1": {
       "post": {
         "tags": [
           "query"
@@ -50,14 +207,63 @@
             "schema": {
               "$ref": "#/definitions/QueryRequest"
             }
-
           }
         ],
         "responses": {
           "200": {
             "description": "Returns a Query summery (HATEOAS Rest Specification).",
             "schema": {
-              "$ref": "#/definitions/QueryRequest"
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/run": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run V1 query directly  ",
+        "description": "submit & run a query to the engine",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "V1 Query json ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Query"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+
+    "/query": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Basic general query Info",
+        "description": "Basic query Info",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Basic query Info",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QueryInfo"
+              }
             }
           }
         }
@@ -145,7 +351,7 @@
     "/query/{id}/cursor": {
       "get": {
         "tags": [
-          "query"
+          "cursor"
         ],
         "summary": "Fetch query info by ID",
         "description": "Fetch query info by ID",
@@ -172,7 +378,7 @@
       },
       "delete": {
         "tags": [
-          "query"
+          "cursor"
         ],
         "summary": "Deletes a query by ID",
         "description": "Deletes a query by ID.",
@@ -195,7 +401,7 @@
     "/query/{id}/cursor/{cursorId}/page": {
       "get": {
         "tags": [
-          "query"
+          "page"
         ],
         "summary": "Fetch query info by ID",
         "description": "Fetch query info by ID",
@@ -214,7 +420,6 @@
             "required": true,
             "type": "string"
           }
-
         ],
         "responses": {
           "200": {
@@ -230,7 +435,7 @@
       },
       "delete": {
         "tags": [
-          "query"
+          "page"
         ],
         "summary": "Deletes a query by ID",
         "description": "Deletes a query by ID.",
@@ -256,9 +461,187 @@
           }
         }
       }
+    },
+
+    "/dashboard/entities": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Show summery of DB existing entities",
+        "description": "summery of DB entities",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> summery of db elements created (entities / properties) or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/dashboard/fields": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Show summery of DB existing fields types and histogram",
+        "description": "summery of DB fields",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> summery of db fields types (histogram) or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/dashboard/created": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Show summery of created DB elements by creation time ",
+        "description": "summery of time bases created DB elements ",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> Show summery of created DB elements by creation time  or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/dashboard/count": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Show summery of different server statistical metrics",
+        "description": "summery server statistical metrics",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> Show summery of different server statistical metrics or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+
+    "/load/ontology/{id}/init": {
+      "get": {
+        "tags": [
+          "load"
+        ],
+        "summary": "Initialize (Drop & Create) E/S templates & Indices related to the ontology",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "description": "Initialize (Drop & Create) E/S templates & Indices related to the ontology",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of indices created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/drop": {
+      "get": {
+        "tags": [
+          "load"
+        ],
+        "summary": "Drop E/S templates & Indices related to the ontology",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "description": "Drop  E/S templates & Indices related to the ontology",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of indices dropped or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/load": {
+      "post": {
+        "tags": [
+          "load"
+        ],
+        "summary": "Load Logical graph into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "Logical Graph",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LogicalGraph"
+            }
+          }
+        ],
+        "description": "Load Logical graph into DB according to specific ontology Transformer ",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "CypherQueryRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "id": "1",
+        "name": "Q1",
+        "ontology":"Knowledge",
+        "query": "MATCH (a)-[b:hasRelation]-(c) RETURN *"
+      }
+    },
     "QueryRequest": {
       "type": "object",
       "properties": {
@@ -273,8 +656,8 @@
           "$ref": "#/definitions/Query"
         }
       },
-      "example":{
-        "id":"1",
+      "example": {
+        "id": "1",
         "name": "Q1",
         "query": {
           "ont": "Knowledge",
@@ -302,11 +685,28 @@
           "type": "string"
         },
         "elements": {
-          "type":"array",
-          "items":{
+          "type": "array",
+          "items": {
             "$ref": "#/definitions/Element"
           }
         }
+      },
+      "example": {
+          "ont": "Knowledge",
+          "elements": [
+            {
+              "type": "Start",
+              "eNum": 0,
+              "next": 1
+            },
+            {
+              "type": "EConcrete",
+              "eNum": 1,
+              "eTag": "A",
+              "eType": "Entity",
+              "eID": "12345678"
+            }
+          ]
       }
     },
     "Element": {
@@ -338,6 +738,172 @@
           "format": "int32"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "LogicalGraph": {
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LogicalNode"
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LogicalEdge"
+          }
+        }
+      },
+      "example": {
+        "nodes": [
+          {
+            "id": "0",
+            "label": "person",
+            "metadata": {
+              "user-defined": "values",
+              "context": "generic",
+              "created": "01/10/2018"
+            },
+            "properties": {
+              "fName": "first name",
+              "lName": "last name",
+              "born": "12/12/2000",
+              "age": "19",
+              "email": "myName@fuse.com",
+              "currentAddressLocation": "43.06,-70.34",
+              "address": {
+                "state": "my state",
+                "street": "my street",
+                "city": "my city",
+                "zip": "gZip"
+              }
+            }
+          },
+          {
+            "id": "10",
+            "label": "person",
+            "metadata": {
+              "user-defined": "values",
+              "created": "01/10/2018"
+            },
+            "properties": {
+              "fName": "another first name",
+              "lName": "another last name",
+              "age": "20",
+              "born": "1/1/1999",
+              "currentAddressLocation": "40.06,-71.34",
+              "email": "notMyName@fuse.com",
+              "address": {
+                "state": "not my state",
+                "street": "not my street",
+                "city": "not my city",
+                "zip": "not gZip"
+              }
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": 100,
+            "source": "0",
+            "target": "10",
+            "label": "knows",
+            "metadata": {
+              "user-defined": "values",
+              "created": "01/10/2018"
+            },
+            "properties": {
+              "date": "01/01/2000",
+              "medium": "facebook"
+            }
+          },
+          {
+            "id": 101,
+            "source": "0",
+            "target": "10",
+            "label": "called",
+            "metadata": {
+              "user-defined": "values",
+              "created": "01/10/2018"
+            },
+            "properties": {
+              "date": "01/01/2000",
+              "duration": "120",
+              "medium": "cellular",
+              "sourceLocation": "40.06,-71.34",
+              "sourceTarget": "41.12,-70.9"
+            }
+          }
+        ]
+      }
+    },
+    "LogicalEdge": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "properties": {
+          "$ref": "#/definitions/Properties"
+        },
+        "metadata": {
+          "$ref": "#/definitions/Metadata"
+        }
+      }
+    },
+    "LogicalNode": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "properties": {
+          "$ref": "#/definitions/Properties"
+        },
+        "metadata": {
+          "$ref": "#/definitions/Metadata"
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "anyOf": {
+          "$ref": "#/definitions/Property"
+        }
+      }
+    },
+    "Properties": {
+      "type": "object",
+      "properties": {
+        "anyOf": {
+          "$ref": "#/definitions/Property"
+        }
+      }
+    },
+    "Property": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
           "type": "string"
         }
       }
