@@ -18,7 +18,7 @@ public class RelationBuilder extends Metadata {
     public static final String type = "Relation";
     public static String physicalType = "relation";
 
-    public String context;
+    public String context = DEFAULT_CTX;
     public String category;
     public String entityAId;
     public String entityBId;

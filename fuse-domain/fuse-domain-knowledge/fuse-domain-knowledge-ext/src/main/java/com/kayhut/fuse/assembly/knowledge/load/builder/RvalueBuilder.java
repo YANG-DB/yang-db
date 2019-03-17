@@ -15,7 +15,7 @@ public class RvalueBuilder extends EntityId {
     public final static String type = "Rvalue";
 
     public List<String> refs = new ArrayList<>();
-    public String context;
+    public String context = DEFAULT_CTX;
     public String fieldId;
     public String bdt;
     public String stringValue;

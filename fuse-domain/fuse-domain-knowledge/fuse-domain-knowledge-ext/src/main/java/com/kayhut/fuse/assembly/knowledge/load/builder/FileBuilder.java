@@ -19,7 +19,7 @@ public class FileBuilder extends EntityId {
     public String mimeType;
     public String category;
     public String description;
-    public String context = "global";
+    public String context = DEFAULT_CTX;
 
     public static FileBuilder _f(String fileId) {
         final FileBuilder builder = new FileBuilder();

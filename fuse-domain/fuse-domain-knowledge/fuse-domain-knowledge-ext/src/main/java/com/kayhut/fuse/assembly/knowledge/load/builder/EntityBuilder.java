@@ -18,7 +18,7 @@ public class EntityBuilder extends EntityId {
 
     public String logicalId;
     public String category;
-    public String context;
+    public String context = DEFAULT_CTX;
     public Map<String,Object> additionalProperties = new HashMap<>();
 
     public List<KnowledgeDomainBuilder> additional = new ArrayList<>();

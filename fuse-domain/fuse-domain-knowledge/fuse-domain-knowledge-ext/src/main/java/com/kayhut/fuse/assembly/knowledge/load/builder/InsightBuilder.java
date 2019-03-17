@@ -17,7 +17,7 @@ public class InsightBuilder extends EntityId {
     public static String physicalType = "insight";
 
     public String content;
-    public String context;
+    public String context = DEFAULT_CTX;
     public List<String> entityIds;
     private String insightId;
 

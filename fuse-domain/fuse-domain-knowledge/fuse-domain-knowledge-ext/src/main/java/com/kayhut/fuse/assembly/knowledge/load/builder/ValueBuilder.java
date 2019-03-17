@@ -20,7 +20,7 @@ public class ValueBuilder extends EntityId {
     public List<Entity> subEntities = new ArrayList<>();
 
     public List<String> refs = new ArrayList<>();
-    public String context;
+    public String context = DEFAULT_CTX;
     public String fieldId;
     public String bdt;
     public String stringValue;

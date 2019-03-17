@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class KnowledgeDomainBuilder {
+    public static final String DEFAULT_CTX = "default";
+
     public abstract String getType();
 
     public abstract String id();

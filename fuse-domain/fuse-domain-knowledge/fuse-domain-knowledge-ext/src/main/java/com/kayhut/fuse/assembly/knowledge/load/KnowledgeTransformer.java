@@ -99,16 +99,18 @@ public class KnowledgeTransformer {
         if(!sideA.isPresent())
             //todo search Elastic for the given node
             throw new IllegalArgumentException(String.format("Source node %s for edge not found %s",edge.getSource(),edge.toString()));
-        builder.entityAId(sideA.get().logicalId);
+        builder.entityAId(sideA.get().id());
         builder.entityACategory(sideA.get().category);
-        sideA.get().rel(builder,"out");
 
         Optional<EntityBuilder> sideB = writerContext.getContext().findEntityByProperty(TECHNICAL_ID, edge.getTarget());
         if(!sideB.isPresent())
             //todo search Elastic for the given node
             throw new IllegalArgumentException(String.format("Source node %s for edge not found %s",edge.getTarget(),edge.toString()));
-        builder.entityBId(sideB.get().logicalId);
+        builder.entityBId(sideB.get().id());
         builder.entityBCategory(sideB.get().category);
+
+        //populate side with relation builder hasEntityRelation
+        sideA.get().rel(builder,"out");
         sideB.get().rel(builder,"in");
 
         //set metadata properties
