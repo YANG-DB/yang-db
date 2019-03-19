@@ -654,6 +654,9 @@
         },
         "query": {
           "$ref": "#/definitions/Query"
+        },
+        "createCursorRequest": {
+          "$ref": "#/definitions/CreateCursorRequest"
         }
       },
       "example": {
@@ -668,15 +671,60 @@
               "next": 1
             },
             {
-              "type": "EConcrete",
+              "type": "ETyped",
               "eNum": 1,
+              "next": 2,
               "eTag": "A",
-              "eType": "Entity",
-              "eID": "12345678"
+              "eType": "Entity"
+            },
+            {
+              "type": "Rel",
+              "eNum": 2,
+              "next": 3,
+              "rType": "relatedEntity"
+            },
+            {
+              "type": "ETyped",
+              "eNum": 3,
+              "eTag": "B",
+              "eType": "Entity"
             }
           ]
-        }
+        },
+        "createCursorRequest" : {"maxExecutionTime":600000,"cursorType":"graph","createPageRequest":{"pageSize":100,"fetch":false},"include":"all"}
       }
+    },
+    "CreateCursorRequest": {
+      "type": "object",
+      "properties": {
+        "maxExecutionTime": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cursorType": {
+          "type": "string"
+        },
+        "include": {
+          "type": "string"
+        },
+        "createPageRequest": {
+          "$ref": "#/definitions/CreatePageRequest"
+        }
+      },
+      "example": {"maxExecutionTime":600000,"cursorType":"graph","createPageRequest":{"pageSize":100,"fetch":false},"include":"all"}
+    },
+    "CreatePageRequest": {
+      "type": "object",
+      "properties": {
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "fetch": {
+          "type": "boolean"
+        }
+      },
+      "example": {"pageSize":100,"fetch":false}
     },
     "Query": {
       "type": "object",
