@@ -57,18 +57,18 @@ import static com.kayhut.fuse.model.logical.LogicalGraphModel.LABEL;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LogicalNode {
+    public static final String NODE = "Node";
+
     private String id;
-    private String label;
-    private NodeMetadata metadata;
-    private NodeProperties properties;
+    private String label = NODE;
+    private NodeMetadata metadata = new NodeMetadata();
+    private NodeProperties properties = new NodeProperties(); ;
 
     public LogicalNode() {}
 
     public LogicalNode(String id,String label) {
         this.id = id;
         this.label = label;
-        this.metadata = new NodeMetadata();
-        this.properties = new NodeProperties();
     }
 
     public String getLabel() {
@@ -98,11 +98,7 @@ public class LogicalNode {
     }
 
     public static class NodeMetadata {
-        private Map<String,Object> properties;
-
-        public NodeMetadata() {
-            this.properties = new HashMap<>();
-        }
+        private Map<String,Object> properties = new HashMap<>();
 
 
         @JsonAnyGetter
@@ -124,11 +120,7 @@ public class LogicalNode {
     }
 
     public static class NodeProperties{
-        private Map<String,Object> properties;
-
-        public NodeProperties() {
-            this.properties = new HashMap<>();
-        }
+        private Map<String,Object> properties = new HashMap<>();
 
         @JsonAnyGetter
         public Map<String, Object> getProperties() {

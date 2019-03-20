@@ -50,13 +50,14 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LogicalEdge {
+    public static final String EDGE = "Edge";
     private String id;
-    private String label;
+    private String label = EDGE;
     private String source;
     private String target;
     private boolean direction;
-    private EdgeMetadata metadata;
-    private EdgeProperties properties;
+    private EdgeMetadata metadata = new EdgeMetadata();
+    private EdgeProperties properties = new EdgeProperties();
 
     public LogicalEdge() {}
 
@@ -66,8 +67,6 @@ public class LogicalEdge {
         this.source = source;
         this.target = target;
         this.direction = direction;
-        this.metadata = new EdgeMetadata();
-        this.properties = new EdgeProperties();
     }
 
     public String getLabel() {
@@ -138,11 +137,7 @@ public class LogicalEdge {
     }
 
     public static class EdgeProperties{
-        private Map<String,Object> properties;
-
-        public EdgeProperties() {
-            this.properties = new HashMap<>();
-        }
+        private Map<String,Object> properties = new HashMap<>();
 
         @JsonAnyGetter
         public Map<String, Object> getProperties() {

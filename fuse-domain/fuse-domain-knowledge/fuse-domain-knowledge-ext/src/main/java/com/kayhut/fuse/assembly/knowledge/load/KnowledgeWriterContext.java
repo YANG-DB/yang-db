@@ -183,6 +183,9 @@ public class KnowledgeWriterContext {
 
     public static <T extends KnowledgeDomainBuilder> int commit(Client client, String index, ObjectMapper mapper, List<T> builders) throws JsonProcessingException {
         int count = 0;
+        if(builders.isEmpty())
+            return count;
+
         final BulkRequestBuilder bulk = client.prepareBulk();
         count = process(client, index, count, bulk, builders,mapper);
         return count;
