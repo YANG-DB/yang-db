@@ -127,7 +127,7 @@
         <jooq.version>0.9.12</jooq.version>
 
         <!--jooby plugin -->
-        <jooby.version>1.5.1</jooby.version>
+        <jooby.version>1.6.0</jooby.version>
 
         <!--netty -->
         <netty.version>4.1.30</netty.version>
@@ -362,6 +362,11 @@
             <!-- caffeine -->
 
             <!-- jooby -->
+            <dependency>
+                <groupId>org.jooby</groupId>
+                <artifactId>jooby-micrometer</artifactId>
+                <version>${jooby.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby</artifactId>
