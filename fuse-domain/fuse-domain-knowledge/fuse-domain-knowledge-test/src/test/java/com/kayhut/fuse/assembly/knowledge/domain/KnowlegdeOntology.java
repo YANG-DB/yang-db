@@ -17,6 +17,7 @@ public class KnowlegdeOntology {
     public static final String INT = "int";
     public static final String STRING = "string";
     public static final String FLOAT = "float";
+    public static final String LONG = "long";
     public static final String CM = "cm";
 
 //entity
@@ -37,6 +38,7 @@ public class KnowlegdeOntology {
     public static Property intValue = new Property("intValue", INT, "intValue");
     public static Property dateValue = new Property("dateValue", DATE_TYPE, "dateValue");
     public static Property floatValue = new Property("floatValue", FLOAT, "floatValue");
+    public static Property longValue = new Property("longValue", LONG, "longValue");
 
 // relation
     public static Property relationId = new Property("relationId", STRING, "relationId");
@@ -54,7 +56,7 @@ public class KnowlegdeOntology {
 
     public static List<Property> properties = Arrays.asList(
             logicalId,category,content,creationTime,context,lastUpdateTime,deleteUpdateTime,
-            creationUser,lastUpdateUser,fieldId,bdt,stringValue,intValue,dateValue,floatValue,
+            creationUser,lastUpdateUser,fieldId,bdt,stringValue,intValue,longValue,dateValue,floatValue,
             relationId,entityAId,entityACategory,entityBId,entityBCategory,direction,
             url,system);
 
@@ -153,7 +155,7 @@ public class KnowlegdeOntology {
         public static String type = "EVALUE";
         public static List<Property> propertyList = Arrays.asList(id, logicalId, category, context,
                 creationTime, lastUpdateTime, creationUser, lastUpdateUser, deleteUpdateTime,
-                fieldId,bdt,stringValue,intValue,dateValue);
+                fieldId,bdt,stringValue,intValue,longValue,floatValue,dateValue);
 
         public static List<RelationshipType> relationshipList =
                 Collections.singletonList(HAS.addPair(new EPair(type, REFERENCE.type)));

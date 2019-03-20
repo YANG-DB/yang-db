@@ -70,6 +70,10 @@ public class RelationValue {
     private String stringValue;
     @JsonProperty("intValue")
     private Integer intValue;
+    @JsonProperty("longValue")
+    private Integer longValue;
+    @JsonProperty("floatValue")
+    private Integer floatValue;
     @JsonProperty("dateValue")
     private Date dateValue;
     @JsonProperty("geoValue")
@@ -189,6 +193,26 @@ public class RelationValue {
     public RelationValue withStringValue(String stringValue) {
         this.stringValue = stringValue;
         return this;
+    }
+
+    @JsonProperty("longValue")
+    public Integer getLongValue() {
+        return longValue;
+    }
+
+    @JsonProperty("longValue")
+    public void setLongValue(Integer longValue) {
+        this.longValue = longValue;
+    }
+
+    @JsonProperty("floatValue")
+    public Integer getFloatValue() {
+        return floatValue;
+    }
+
+    @JsonProperty("floatValue")
+    public void setFloatValue(Integer floatValue) {
+        this.floatValue = floatValue;
     }
 
     @JsonProperty("intValue")

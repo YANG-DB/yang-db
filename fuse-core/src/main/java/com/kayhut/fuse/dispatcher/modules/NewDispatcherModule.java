@@ -83,7 +83,11 @@ public class NewDispatcherModule extends ModuleBase {
         try {
             return new DirectoryOntologyTransformerProvider(conf.getString("fuse.ontology_provider_dir"));
         } catch (ConfigException e) {
-            return (OntologyTransformerProvider) Class.forName(conf.getString("fuse.ontology_transformation_provider")).getConstructor().newInstance();
+            try {
+                return (OntologyTransformerProvider) Class.forName(conf.getString("fuse.ontology_transformation_provider")).getConstructor().newInstance();
+            } catch (ConfigException.Missing missing) {
+                return new VoidOntologyTransformerProvider();
+            }
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

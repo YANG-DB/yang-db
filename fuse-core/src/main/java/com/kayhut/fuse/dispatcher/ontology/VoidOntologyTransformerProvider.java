@@ -1,8 +1,8 @@
-package com.kayhut.fuse.assembly.knowledge.load.builder;
+package com.kayhut.fuse.dispatcher.ontology;
 
 /*-
  * #%L
- * fuse-domain-knowledge-ext
+ * fuse-core
  * %%
  * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
  * %%
@@ -20,8 +20,20 @@ package com.kayhut.fuse.assembly.knowledge.load.builder;
  * #L%
  */
 
-public abstract class EntityId extends Metadata{
-    public String entityId;
-    public String logicalId;
-    public String relationId;
+import com.kayhut.fuse.model.ontology.transformer.OntologyTransformer;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+
+public class VoidOntologyTransformerProvider implements OntologyTransformerProvider {
+    @Override
+    public Optional<OntologyTransformer> transformer(String id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Collection<OntologyTransformer> transformation() {
+        return Collections.emptyList();
+    }
 }

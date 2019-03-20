@@ -51,7 +51,7 @@ public class KnowledgeMassInsertionGraphTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false);
+        Setup.setup(true);
         rand = new Random();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         //load data
