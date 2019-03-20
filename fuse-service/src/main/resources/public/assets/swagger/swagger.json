@@ -66,7 +66,6 @@
         }
       }
     },
-
     "/catalog/ontology": {
       "get": {
         "tags": [
@@ -128,7 +127,6 @@
         }
       }
     },
-
     "/query/cypher": {
       "post": {
         "tags": [
@@ -171,7 +169,7 @@
             "description": "cypher query",
             "required": true,
             "type": "string",
-            "default":"match (a:Entity)-[b:relatedEntity]-(c:Entity) return *"
+            "default": "match (a:Entity)-[b:relatedEntity]-(c:Entity) return *"
           },
           {
             "name": "ontology",
@@ -247,7 +245,6 @@
         }
       }
     },
-
     "/query": {
       "get": {
         "tags": [
@@ -319,7 +316,7 @@
         }
       }
     },
-    "/query/{id}/plan": {
+    "/query/{id}/plan/json": {
       "get": {
         "tags": [
           "plan"
@@ -462,7 +459,81 @@
         }
       }
     },
-
+    "/query/{id}/cursor/{cursorId}/page/{pageId}/data": {
+      "get": {
+        "tags": [
+          "page"
+        ],
+        "summary": "Fetch Page data by id",
+        "description": "Fetch Page data by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "page"
+        ],
+        "summary": "Deletes page data",
+        "description": "Deletes page data by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A <code>204</code>"
+          }
+        }
+      }
+    },
     "/dashboard/entities": {
       "get": {
         "tags": [
@@ -531,7 +602,6 @@
         }
       }
     },
-
     "/load/ontology/{id}/init": {
       "get": {
         "tags": [
@@ -638,7 +708,7 @@
       "example": {
         "id": "1",
         "name": "Q1",
-        "ontology":"Knowledge",
+        "ontology": "Knowledge",
         "query": "match (a:Entity)-[b:relatedEntity]-(c:Entity) return *"
       }
     },
@@ -691,7 +761,15 @@
             }
           ]
         },
-        "createCursorRequest" : {"maxExecutionTime":600000,"cursorType":"graph","createPageRequest":{"pageSize":100,"fetch":false},"include":"all"}
+        "createCursorRequest": {
+          "maxExecutionTime": 600000,
+          "cursorType": "graph",
+          "createPageRequest": {
+            "pageSize": 100,
+            "fetch": false
+          },
+          "include": "all"
+        }
       }
     },
     "CreateCursorRequest": {
@@ -711,7 +789,15 @@
           "$ref": "#/definitions/CreatePageRequest"
         }
       },
-      "example": {"maxExecutionTime":600000,"cursorType":"graph","createPageRequest":{"pageSize":100,"fetch":false},"include":"all"}
+      "example": {
+        "maxExecutionTime": 600000,
+        "cursorType": "graph",
+        "createPageRequest": {
+          "pageSize": 100,
+          "fetch": false
+        },
+        "include": "all"
+      }
     },
     "CreatePageRequest": {
       "type": "object",
@@ -724,7 +810,10 @@
           "type": "boolean"
         }
       },
-      "example": {"pageSize":100,"fetch":false}
+      "example": {
+        "pageSize": 100,
+        "fetch": false
+      }
     },
     "Query": {
       "type": "object",
@@ -740,21 +829,33 @@
         }
       },
       "example": {
-          "ont": "Knowledge",
-          "elements": [
-            {
-              "type": "Start",
-              "eNum": 0,
-              "next": 1
-            },
-            {
-              "type": "EConcrete",
-              "eNum": 1,
-              "eTag": "A",
-              "eType": "Entity",
-              "eID": "12345678"
-            }
-          ]
+        "ont": "Knowledge",
+        "elements": [
+          {
+            "type": "Start",
+            "eNum": 0,
+            "next": 1
+          },
+          {
+            "type": "ETyped",
+            "eNum": 1,
+            "next": 2,
+            "eTag": "A",
+            "eType": "Entity"
+          },
+          {
+            "type": "Rel",
+            "eNum": 2,
+            "next": 3,
+            "rType": "relatedEntity"
+          },
+          {
+            "type": "ETyped",
+            "eNum": 3,
+            "eTag": "B",
+            "eType": "Entity"
+          }
+        ]
       }
     },
     "Element": {
@@ -806,547 +907,700 @@
           }
         }
       },
-      "example":
-      {
+      "example": {
         "nodes": [
           {
             "metadata": {
               "group": 1
             },
             "id": "Myriel",
-            "properties":{ "name": "Myriel"}
+            "properties": {
+              "name": "Myriel"
+            }
           },
           {
             "metadata": {
               "group": 1
             },
             "id": "Napoleon",
-            "properties":{ "name": "Napoleon"}
+            "properties": {
+              "name": "Napoleon"
+            }
           },
           {
             "metadata": {
               "group": 1
             },
             "id": "Mlle.Baptistine",
-            "properties":{ "name": "Mlle.Baptistine"}
+            "properties": {
+              "name": "Mlle.Baptistine"
+            }
           },
           {
             "metadata": {
               "group": 1
             },
             "id": "Mme.Magloire",
-            "properties":{ "name": "Mme.Magloire"}
+            "properties": {
+              "name": "Mme.Magloire"
+            }
           },
           {
             "metadata": {
               "group": 1
             },
             "id": "CountessdeLo",
-            "properties":{ "name": "CountessdeLo"}
+            "properties": {
+              "name": "CountessdeLo"
+            }
           },
           {
             "metadata": {
               "group": 1
             },
             "id": "Geborand",
-            "properties":{ "name": "Geborand"}
+            "properties": {
+              "name": "Geborand"
+            }
           },
           {
             "metadata": {
               "group": 1
             },
             "id": "Champtercier",
-            "properties":{ "name": "Champtercier"}
+            "properties": {
+              "name": "Champtercier"
+            }
           },
           {
             "metadata": {
               "group": 1
             },
             "id": "Cravatte",
-            "properties":{ "name": "Cravatte"}
+            "properties": {
+              "name": "Cravatte"
+            }
           },
           {
             "metadata": {
               "group": 1
             },
             "id": "Count",
-            "properties":{ "name": "Count"}
+            "properties": {
+              "name": "Count"
+            }
           },
           {
             "metadata": {
               "group": 1
             },
             "id": "OldMan",
-            "properties":{ "name": "OldMan"}
+            "properties": {
+              "name": "OldMan"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Labarre",
-            "properties":{ "name": "Labarre"}
+            "properties": {
+              "name": "Labarre"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Valjean",
-            "properties":{ "name": "Valjean"}
+            "properties": {
+              "name": "Valjean"
+            }
           },
           {
             "metadata": {
               "group": 3
             },
             "id": "Marguerite",
-            "properties":{ "name": "Marguerite"}
+            "properties": {
+              "name": "Marguerite"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Mme.deR",
-            "properties":{ "name": "Mme.deR"}
+            "properties": {
+              "name": "Mme.deR"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Isabeau",
-            "properties":{ "name": "Isabeau"}
+            "properties": {
+              "name": "Isabeau"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Gervais",
-            "properties":{ "name": "Gervais"}
+            "properties": {
+              "name": "Gervais"
+            }
           },
           {
             "metadata": {
               "group": 3
             },
             "id": "Tholomyes",
-            "properties":{ "name": "Tholomyes"}
+            "properties": {
+              "name": "Tholomyes"
+            }
           },
           {
             "metadata": {
               "group": 3
             },
             "id": "Listolier",
-            "properties":{ "name": "Listolier"}
+            "properties": {
+              "name": "Listolier"
+            }
           },
           {
             "metadata": {
               "group": 3
             },
             "id": "Fameuil",
-            "properties":{ "name": "Fameuil"}
+            "properties": {
+              "name": "Fameuil"
+            }
           },
           {
             "metadata": {
               "group": 3
             },
             "id": "Blacheville",
-            "properties":{ "name": "Blacheville"}
+            "properties": {
+              "name": "Blacheville"
+            }
           },
           {
             "metadata": {
               "group": 3
             },
             "id": "Favourite",
-            "properties":{ "name": "Favourite"}
+            "properties": {
+              "name": "Favourite"
+            }
           },
           {
             "metadata": {
               "group": 3
             },
             "id": "Dahlia",
-            "properties":{ "name": "Dahlia"}
+            "properties": {
+              "name": "Dahlia"
+            }
           },
           {
             "metadata": {
               "group": 3
             },
             "id": "Zephine",
-            "properties":{ "name": "Zephine"}
+            "properties": {
+              "name": "Zephine"
+            }
           },
           {
             "metadata": {
               "group": 3
             },
             "id": "Fantine",
-            "properties":{ "name": "Fantine"}
+            "properties": {
+              "name": "Fantine"
+            }
           },
           {
             "metadata": {
               "group": 4
             },
             "id": "Mme.Thenardier",
-            "properties":{ "name": "Mme.Thenardier"}
+            "properties": {
+              "name": "Mme.Thenardier"
+            }
           },
           {
             "metadata": {
               "group": 4
             },
             "id": "Thenardier",
-            "properties":{ "name": "Thenardier"}
+            "properties": {
+              "name": "Thenardier"
+            }
           },
           {
             "metadata": {
               "group": 5
             },
             "id": "Cosette",
-            "properties":{ "name": "Cosette"}
+            "properties": {
+              "name": "Cosette"
+            }
           },
           {
             "metadata": {
               "group": 4
             },
             "id": "Javert",
-            "properties":{ "name": "Javert"}
+            "properties": {
+              "name": "Javert"
+            }
           },
           {
             "metadata": {
               "group": 0
             },
             "id": "Fauchelevent",
-            "properties":{ "name": "Fauchelevent"}
+            "properties": {
+              "name": "Fauchelevent"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Bamatabois",
-            "properties":{ "name": "Bamatabois"}
+            "properties": {
+              "name": "Bamatabois"
+            }
           },
           {
             "metadata": {
               "group": 3
             },
             "id": "Perpetue",
-            "properties":{ "name": "Perpetue"}
+            "properties": {
+              "name": "Perpetue"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Simplice",
-            "properties":{ "name": "Simplice"}
+            "properties": {
+              "name": "Simplice"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Scaufflaire",
-            "properties":{ "name": "Scaufflaire"}
+            "properties": {
+              "name": "Scaufflaire"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Woman1",
-            "properties":{ "name": "Woman1"}
+            "properties": {
+              "name": "Woman1"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Judge",
-            "properties":{ "name": "Judge"}
+            "properties": {
+              "name": "Judge"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Champmathieu",
-            "properties":{ "name": "Champmathieu"}
+            "properties": {
+              "name": "Champmathieu"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Brevet",
-            "properties":{ "name": "Brevet"}
+            "properties": {
+              "name": "Brevet"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Chenildieu",
-            "properties":{ "name": "Chenildieu"}
+            "properties": {
+              "name": "Chenildieu"
+            }
           },
           {
             "metadata": {
               "group": 2
             },
             "id": "Cochepaille",
-            "properties":{ "name": "Cochepaille"}
+            "properties": {
+              "name": "Cochepaille"
+            }
           },
           {
             "metadata": {
               "group": 4
             },
             "id": "Pontmercy",
-            "properties":{ "name": "Pontmercy"}
+            "properties": {
+              "name": "Pontmercy"
+            }
           },
           {
             "metadata": {
               "group": 6
             },
             "id": "Boulatruelle",
-            "properties":{ "name": "Boulatruelle"}
+            "properties": {
+              "name": "Boulatruelle"
+            }
           },
           {
             "metadata": {
               "group": 4
             },
             "id": "Eponine",
-            "properties":{ "name": "Eponine"}
+            "properties": {
+              "name": "Eponine"
+            }
           },
           {
             "metadata": {
               "group": 4
             },
             "id": "Anzelma",
-            "properties":{ "name": "Anzelma"}
+            "properties": {
+              "name": "Anzelma"
+            }
           },
           {
             "metadata": {
               "group": 5
             },
             "id": "Woman2",
-            "properties":{ "name": "Woman2"}
+            "properties": {
+              "name": "Woman2"
+            }
           },
           {
             "metadata": {
               "group": 0
             },
             "id": "MotherInnocent",
-            "properties":{ "name": "MotherInnocent"}
+            "properties": {
+              "name": "MotherInnocent"
+            }
           },
           {
             "metadata": {
               "group": 0
             },
             "id": "Gribier",
-            "properties":{ "name": "Gribier"}
+            "properties": {
+              "name": "Gribier"
+            }
           },
           {
             "metadata": {
               "group": 7
             },
             "id": "Jondrette",
-            "properties":{ "name": "Jondrette"}
+            "properties": {
+              "name": "Jondrette"
+            }
           },
           {
             "metadata": {
               "group": 7
             },
             "id": "Mme.Burgon",
-            "properties":{ "name": "Mme.Burgon"}
+            "properties": {
+              "name": "Mme.Burgon"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Gavroche",
-            "properties":{ "name": "Gavroche"}
+            "properties": {
+              "name": "Gavroche"
+            }
           },
           {
             "metadata": {
               "group": 5
             },
             "id": "Gillenormand",
-            "properties":{ "name": "Gillenormand"}
+            "properties": {
+              "name": "Gillenormand"
+            }
           },
           {
             "metadata": {
               "group": 5
             },
             "id": "Magnon",
-            "properties":{ "name": "Magnon"}
+            "properties": {
+              "name": "Magnon"
+            }
           },
           {
             "metadata": {
               "group": 5
             },
             "id": "Mlle.Gillenormand",
-            "properties":{ "name": "Mlle.Gillenormand"}
+            "properties": {
+              "name": "Mlle.Gillenormand"
+            }
           },
           {
             "metadata": {
               "group": 5
             },
             "id": "Mme.Pontmercy",
-            "properties":{ "name": "Mme.Pontmercy"}
+            "properties": {
+              "name": "Mme.Pontmercy"
+            }
           },
           {
             "metadata": {
               "group": 5
             },
             "id": "Mlle.Vaubois",
-            "properties":{ "name": "Mlle.Vaubois"}
+            "properties": {
+              "name": "Mlle.Vaubois"
+            }
           },
           {
             "metadata": {
               "group": 5
             },
             "id": "Lt.Gillenormand",
-            "properties":{ "name": "Lt.Gillenormand"}
+            "properties": {
+              "name": "Lt.Gillenormand"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Marius",
-            "properties":{ "name": "Marius"}
+            "properties": {
+              "name": "Marius"
+            }
           },
           {
             "metadata": {
               "group": 5
             },
             "id": "BaronessT",
-            "properties":{ "name": "BaronessT"}
+            "properties": {
+              "name": "BaronessT"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Mabeuf",
-            "properties":{ "name": "Mabeuf"}
+            "properties": {
+              "name": "Mabeuf"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Enjolras",
-            "properties":{ "name": "Enjolras"}
+            "properties": {
+              "name": "Enjolras"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Combeferre",
-            "properties":{ "name": "Combeferre"}
+            "properties": {
+              "name": "Combeferre"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Prouvaire",
-            "properties":{ "name": "Prouvaire"}
+            "properties": {
+              "name": "Prouvaire"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Feuilly",
-            "properties":{ "name": "Feuilly"}
+            "properties": {
+              "name": "Feuilly"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Courfeyrac",
-            "properties":{ "name": "Courfeyrac"}
+            "properties": {
+              "name": "Courfeyrac"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Bahorel",
-            "properties":{ "name": "Bahorel"}
+            "properties": {
+              "name": "Bahorel"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Bossuet",
-            "properties":{ "name": "Bossuet"}
+            "properties": {
+              "name": "Bossuet"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Joly",
-            "properties":{ "name": "Joly"}
+            "properties": {
+              "name": "Joly"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Grantaire",
-            "properties":{ "name": "Grantaire"}
+            "properties": {
+              "name": "Grantaire"
+            }
           },
           {
             "metadata": {
               "group": 9
             },
             "id": "MotherPlutarch",
-            "properties":{ "name": "MotherPlutarch"}
+            "properties": {
+              "name": "MotherPlutarch"
+            }
           },
           {
             "metadata": {
               "group": 4
             },
             "id": "Gueulemer",
-            "properties":{ "name": "Gueulemer"}
+            "properties": {
+              "name": "Gueulemer"
+            }
           },
           {
             "metadata": {
               "group": 4
             },
             "id": "Babet",
-            "properties":{ "name": "Babet"}
+            "properties": {
+              "name": "Babet"
+            }
           },
           {
             "metadata": {
               "group": 4
             },
             "id": "Claquesous",
-            "properties":{ "name": "Claquesous"}
+            "properties": {
+              "name": "Claquesous"
+            }
           },
           {
             "metadata": {
               "group": 4
             },
             "id": "Montparnasse",
-            "properties":{ "name": "Montparnasse"}
+            "properties": {
+              "name": "Montparnasse"
+            }
           },
           {
             "metadata": {
               "group": 5
             },
             "id": "Toussaint",
-            "properties":{ "name": "Toussaint"}
+            "properties": {
+              "name": "Toussaint"
+            }
           },
           {
             "metadata": {
               "group": 10
             },
             "id": "Child1",
-            "properties":{ "name": "Child1"}
+            "properties": {
+              "name": "Child1"
+            }
           },
           {
             "metadata": {
               "group": 10
             },
             "id": "Child2",
-            "properties":{ "name": "Child2"}
+            "properties": {
+              "name": "Child2"
+            }
           },
           {
             "metadata": {
               "group": 4
             },
             "id": "Brujon",
-            "properties":{ "name": "Brujon"}
+            "properties": {
+              "name": "Brujon"
+            }
           },
           {
             "metadata": {
               "group": 8
             },
             "id": "Mme.Hucheloup",
-            "properties":{ "name": "Mme.Hucheloup"}
+            "properties": {
+              "name": "Mme.Hucheloup"
+            }
           }
         ],
         "edges": [
@@ -3129,7 +3383,8 @@
             }
           }
         ]
-      }},
+      }
+    },
     "LogicalEdge": {
       "type": "object",
       "properties": {

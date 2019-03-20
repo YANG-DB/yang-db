@@ -47,13 +47,17 @@ public abstract class FuseUtils {
         if(config.hasPath("elasticsearch.embedded") &&
             config.getBoolean("elasticsearch.embedded")) {
             String nodeName = config.getString("elasticsearch.cluster_name");
+            boolean deleteOnLoad = true;
+            if(config.hasPath("elasticsearch.delete_data_on_load")) {
+                deleteOnLoad = config.getBoolean("elasticsearch.delete_data_on_load");
+            }
             int nodePort = config.getInt("elasticsearch.port ");
             String target =  "target/es";
             if(config.hasPath("elasticsearch.workingDir"))
                 target = config.getString("elasticsearch.workingDir");
 
             System.out.println(String.format("Loading embedded server %s on port %d on target %s",nodeName,nodePort,target));
-            closeables.add(new ElasticEmbeddedNode(target, 9200, nodePort, nodeName));
+            closeables.add(new ElasticEmbeddedNode(target, 9200, nodePort, nodeName, deleteOnLoad));
             return true;
         }
         return false;
