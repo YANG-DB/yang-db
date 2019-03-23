@@ -24,7 +24,9 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.results.Property;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,6 +69,16 @@ public class LogicalEdge {
         this.source = source;
         this.target = target;
         this.direction = direction;
+    }
+
+    public LogicalEdge withMetadata(Collection<Property> properties) {
+        properties.forEach(p->this.metadata.addProperties(p.getpType(),p.getValue()));
+        return this;
+    }
+
+    public LogicalEdge withProperty(String property, Object value) {
+        properties.addProperties(property,value);
+        return this;
     }
 
     public String getLabel() {

@@ -57,7 +57,7 @@ public class CsvTraversalCursor implements Cursor {
     public CsvQueryResult getNextResults(int numResults) {
 
         CsvQueryResult.Builder builder = CsvQueryResult.Builder.instance();
-        AssignmentsQueryResult newResult = (AssignmentsQueryResult) this.cursor.getNextResults(numResults);
+        AssignmentsQueryResult<Entity,Relationship> newResult = (AssignmentsQueryResult<Entity,Relationship>) this.cursor.getNextResults(numResults);
 
         Stream.ofAll(newResult.getAssignments()).forEach(res -> builder.withLine(convertToCsv(res)));
         if(csvCursorRequest.isWithHeaders()){
@@ -83,7 +83,7 @@ public class CsvTraversalCursor implements Cursor {
         }
     }
 
-    private String convertToCsv(Assignment assignment){
+    private String convertToCsv(Assignment<Entity,Relationship> assignment){
         if(csvCursorRequest.getCsvElements().length == 0){
             return convertToCsvNoSelection(assignment);
         }
@@ -100,7 +100,7 @@ public class CsvTraversalCursor implements Cursor {
         return writer.getBuffer().toString();
     }
 
-    private String convertCsvElement(CreateCsvCursorRequest.CsvElement csvElement, Assignment assignment) {
+    private String convertCsvElement(CreateCsvCursorRequest.CsvElement csvElement, Assignment<Entity,Relationship> assignment) {
         switch (csvElement.getElementType()) {
             case Entity:
                 Optional<Entity> entity = Stream.ofAll(assignment.getEntities()).find(e -> e.geteTag().contains(csvElement.getTag1())).toJavaOptional();
@@ -142,7 +142,7 @@ public class CsvTraversalCursor implements Cursor {
         return null;
     }
 
-    private String convertToCsvNoSelection(Assignment assignment) {
+    private String convertToCsvNoSelection(Assignment<Entity,Relationship> assignment) {
         Map<String, Entity> entityMap = new HashMap<>();
         StringWriter writer = new StringWriter();
 

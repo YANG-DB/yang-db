@@ -8,8 +8,11 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
+import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.client.FuseClient;
+import com.kayhut.fuse.model.results.Entity;
+import com.kayhut.fuse.model.results.Relationship;
 import com.kayhut.fuse.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.fuse.test.framework.index.Mappings;
 import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
@@ -104,10 +107,11 @@ public class SingleEntityTest {
 
         Assert.assertEquals(requestedPageSize, pageResourceInfo.getRequestedPageSize());
         Assert.assertEquals(actualPageSize, pageResourceInfo.getActualPageSize());
-        Assert.assertEquals(actualPageSize, pageData.getAssignments().size());
+        List<Assignment<Entity,Relationship>> assignments = pageData.getAssignments();
+        Assert.assertEquals(actualPageSize, assignments.size());
 
         Set<String> ids = new HashSet<>();
-        pageData.getAssignments().forEach(assignment -> {
+        assignments.forEach(assignment -> {
             Assert.assertTrue(assignment.getEntities().size() == 1);
             ids.add(assignment.getEntities().get(0).geteID());
 

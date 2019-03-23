@@ -178,13 +178,17 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
         }
 
 
-        Assignment assignment = builder.build();
+        Assignment assignment = compose(builder);
         return AssignmentsQueryResult.Builder.instance().withAssignment(assignment).build();
+    }
+
+    protected Assignment compose(Assignment.Builder builder) {
+        return builder.build();
     }
     //endregion
 
     //region Private Methods
-    private Entity toEntity(Vertex vertex, Set<String> eTags) {
+    protected Entity toEntity(Vertex vertex, Set<String> eTags) {
         String eType = vertex.label();
         List<Property> properties = Stream.ofAll(vertex::properties)
                 .map(this::toProperty)
@@ -200,7 +204,7 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
         return builder.build();
     }
 
-    private Relationship toRelationship(Edge edge, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
+    protected Relationship toRelationship(Edge edge, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
         Relationship.Builder builder = Relationship.Builder.instance();
         List<Property> properties = Stream.ofAll(edge::properties)
                 .map(this::toProperty)
@@ -268,8 +272,8 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
 
     private com.kayhut.fuse.model.ontology.Property typeProperty;
 
-    private Map<String, EEntityBase> eEntityBases;
-    private Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
+    protected Map<String, EEntityBase> eEntityBases;
+    protected Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
 
     boolean includeEntities;
     boolean includeRelationships;

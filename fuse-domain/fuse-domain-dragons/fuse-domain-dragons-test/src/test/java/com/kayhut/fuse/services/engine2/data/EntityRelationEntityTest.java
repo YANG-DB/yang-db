@@ -657,10 +657,13 @@ public abstract class EntityRelationEntityTest {
                         null,
                         eId,
                         singleton(DRAGON.name)),
-                assignment -> !Stream.ofAll(assignment.getEntities())
-                        .filter(entity -> entity.geteTag().contains("B"))
-                        .filter(entity -> entity.geteID().equals(eId))
-                        .isEmpty()));
+                assignment -> {
+                    List<Entity> entities = assignment.getEntities();
+                    return !Stream.ofAll(entities)
+                            .filter(entity -> entity.geteTag().contains("B"))
+                            .filter(entity -> entity.geteID().equals(eId))
+                            .isEmpty();
+                }));
     }
 
     private void test_ConcreteDragon_Fire_Dragon(String eId, Rel.Direction direction) throws Exception {
@@ -681,10 +684,13 @@ public abstract class EntityRelationEntityTest {
                         null,
                         null,
                         singleton(DRAGON.name)),
-                assignment -> !Stream.ofAll(assignment.getEntities())
-                        .filter(entity -> entity.geteTag().contains("A"))
-                        .filter(entity -> entity.geteID().equals(eId))
-                        .isEmpty()));
+                assignment -> {
+                    List<Entity> entities = assignment.getEntities();
+                    return !Stream.ofAll(entities)
+                            .filter(entity -> entity.geteTag().contains("A"))
+                            .filter(entity -> entity.geteID().equals(eId))
+                            .isEmpty();
+                }));
     }
 
     private void test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp op, Object value) throws Exception {
@@ -706,12 +712,15 @@ public abstract class EntityRelationEntityTest {
                         ConversionUtil.convertConstraint(of(op, value)),
                         null,
                         singleton(DRAGON.name)),
-                assignment -> !Stream.ofAll(assignment.getEntities())
-                        .filter(entity -> entity.geteTag().contains("B"))
-                        .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
-                        .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
-                                .test(temperatureValueFunction.apply(intId)))
-                        .isEmpty()));
+                assignment -> {
+                    List<Entity> entities = assignment.getEntities();
+                    return !Stream.ofAll(entities)
+                            .filter(entity -> entity.geteTag().contains("B"))
+                            .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
+                            .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
+                                    .test(temperatureValueFunction.apply(intId)))
+                            .isEmpty();
+                }));
     }
 
     private void test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp op, Object value) throws Exception {
@@ -731,12 +740,15 @@ public abstract class EntityRelationEntityTest {
                 10,
                 Rel.Direction.R,
                 getExpectedEdgeTraversalConstraint(FIRE.getName(), Direction.OUT, null, null, null, singleton(DRAGON.name)),
-                assignment -> !Stream.ofAll(assignment.getEntities())
-                        .filter(entity -> entity.geteTag().contains("A"))
-                        .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
-                        .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
-                                .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
-                        .isEmpty()));
+                assignment -> {
+                    List<Entity> entities = assignment.getEntities();
+                    return !Stream.ofAll(entities)
+                            .filter(entity -> entity.geteTag().contains("A"))
+                            .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
+                            .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
+                                    .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
+                            .isEmpty();
+                }));
     }
 
     private void test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp op, Object value) throws Exception {
@@ -755,12 +767,15 @@ public abstract class EntityRelationEntityTest {
                 10,
                 Rel.Direction.R,
                 getExpectedEdgeTraversalConstraint(FIRE.getName(), Direction.OUT, null, null, null, singleton(DRAGON.name)),
-                assignment -> !Stream.ofAll(assignment.getEntities())
-                        .filter(entity -> entity.geteTag().contains("B"))
-                        .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
-                        .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
-                                .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
-                        .isEmpty()));
+                assignment -> {
+                    List<Entity> entities = assignment.getEntities();
+                    return !Stream.ofAll(entities)
+                            .filter(entity -> entity.geteTag().contains("B"))
+                            .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
+                            .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
+                                    .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
+                            .isEmpty();
+                }));
     }
 
     private void test_Dragon_Fire_Untyped(Rel.Direction direction) throws Exception {
@@ -781,10 +796,13 @@ public abstract class EntityRelationEntityTest {
                         null,
                         null,
                         Arrays.asList(PERSON.name, HORSE.name, DRAGON.name, KINGDOM.name, GUILD.name)),
-                assignment -> !Stream.ofAll(assignment.getEntities())
-                        .filter(entity -> entity.geteTag().contains("A"))
-                        .filter(entity -> entity.geteType() == $ont.eType$(DRAGON.name))
-                        .isEmpty()));
+                assignment -> {
+                    List<Entity> entities = assignment.getEntities();
+                    return !Stream.ofAll(entities)
+                            .filter(entity -> entity.geteTag().contains("A"))
+                            .filter(entity -> entity.geteType() == $ont.eType$(DRAGON.name))
+                            .isEmpty();
+                }));
     }
 
     private void test_Untyped_Fire_Dragon(Rel.Direction direction) throws Exception {
@@ -805,10 +823,13 @@ public abstract class EntityRelationEntityTest {
                         null,
                         null,
                         singleton(DRAGON.name)),
-                assignment -> !Stream.ofAll(assignment.getEntities())
-                        .filter(entity -> entity.geteTag().contains("B"))
-                        .filter(entity -> entity.geteType() == $ont.eType$(DRAGON.name))
-                        .isEmpty()));
+                assignment -> {
+                    List<Entity> entities = assignment.getEntities();
+                    return !Stream.ofAll(entities)
+                            .filter(entity -> entity.geteTag().contains("B"))
+                            .filter(entity -> entity.geteType() == $ont.eType$(DRAGON.name))
+                            .isEmpty();
+                }));
     }
 
     protected abstract TraversalConstraint getExpectedEdgeTraversalConstraint(

@@ -3,6 +3,7 @@ package com.kayhut.fuse.model.results;
 import javaslang.collection.Stream;
 import org.junit.Assert;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class QueryResultAssert {
     }
 
     //region Public Methods
-    public static void assertEquals(AssignmentsQueryResult expected, AssignmentsQueryResult actual, boolean ignoreRelId, boolean ignoreTags) {
+    public static void assertEquals(AssignmentsQueryResult<Entity,Relationship> expected, AssignmentsQueryResult<Entity,Relationship> actual, boolean ignoreRelId, boolean ignoreTags) {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
@@ -39,9 +40,9 @@ public class QueryResultAssert {
 
         Assert.assertEquals(expected.getAssignments().size(), actual.getAssignments().size());
 
-        List<Assignment> expectedAssignments = Stream.ofAll(expected.getAssignments())
+        List<Assignment<Entity,Relationship>> expectedAssignments = Stream.ofAll(expected.getAssignments())
                 .sortBy(Assignment::toString).toJavaList();
-        List<Assignment> actualAssignments = Stream.ofAll(actual.getAssignments())
+        List<Assignment<Entity,Relationship>> actualAssignments = Stream.ofAll(actual.getAssignments())
                 .sortBy(Assignment::toString).toJavaList();
 
         for (int i = 0; i < expectedAssignments.size(); i++) {
@@ -54,12 +55,12 @@ public class QueryResultAssert {
         assertEquals(expected, actual, ignoreRelId, false);
     }
 
-    public static void assertEquals(Assignment expected, Assignment actual, boolean ignoreRelId, boolean ignoreTags) {
+    public static void assertEquals(Assignment<Entity,Relationship> expected, Assignment<Entity,Relationship> actual, boolean ignoreRelId, boolean ignoreTags) {
         assertEquals(expected.getEntities(),actual.getEntities(), ignoreTags);
         assertEquals(expected.getRelationships(),actual.getRelationships(), ignoreRelId,ignoreTags);
     }
 
-    public static void assertEquals(List<Relationship> expected, List<Relationship> actual, boolean ignoreRelId, boolean ignoreTags) {
+    public static void assertEquals(Collection<Relationship> expected, Collection<Relationship> actual, boolean ignoreRelId, boolean ignoreTags) {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 

@@ -24,7 +24,9 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.results.Property;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -71,6 +73,7 @@ public class LogicalNode {
         this.label = label;
     }
 
+
     public String getLabel() {
         return label;
     }
@@ -95,6 +98,16 @@ public class LogicalNode {
                 ", metadata=" + metadata +
                 ", properties=" + properties +
                 '}';
+    }
+
+    public LogicalNode withMetadata(Collection<Property> properties) {
+        properties.forEach(p->this.metadata.addProperties(p.getpType(),p.getValue()));
+        return this;
+    }
+
+    public LogicalNode withProperty(String property, Object value) {
+        properties.addProperties(property,value);
+        return this;
     }
 
     public static class NodeMetadata {

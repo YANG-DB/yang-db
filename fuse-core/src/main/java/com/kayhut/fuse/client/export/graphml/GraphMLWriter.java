@@ -234,8 +234,8 @@ public final class GraphMLWriter implements GraphWriter {
         }
     }
 
-    private void writeEdges(final XMLStreamWriter writer, final Assignment graph) throws XMLStreamException {
-        final List<Relationship> edges = graph.getRelationships();
+    private void writeEdges(final XMLStreamWriter writer, final Assignment<Entity,Relationship> graph) throws XMLStreamException {
+        final List<Relationship> edges = new ArrayList<>(graph.getRelationships());
         Collections.sort(edges, Comparator.comparing(e -> e.getrID(), String.CASE_INSENSITIVE_ORDER));
 
         for (Relationship edge : edges) {
@@ -317,9 +317,9 @@ public final class GraphMLWriter implements GraphWriter {
                 GraphMLTokens.GRAPHML_XMLNS + ' ' + this.xmlSchemaLocation.orElse(GraphMLTokens.DEFAULT_GRAPHML_SCHEMA_LOCATION));
     }
 
-    private static Map<String, String> determineVertexTypes(final Assignment graph) {
+    private static Map<String, String> determineVertexTypes(final Assignment<Entity,Relationship> graph) {
         final Map<String, String> vertexKeyTypes = new HashMap<>();
-        final List<Entity> vertices = graph.getEntities();
+        final Collection<Entity> vertices = graph.getEntities();
         for (Entity entity : vertices) {
             for (Property prop : entity.getProperties()) {
                 if (!vertexKeyTypes.containsKey(prop.getpType())) {
@@ -331,9 +331,9 @@ public final class GraphMLWriter implements GraphWriter {
         return vertexKeyTypes;
     }
 
-    private static Map<String, String> determineEdgeTypes(final Assignment graph) {
+    private static Map<String, String> determineEdgeTypes(final Assignment<Entity,Relationship> graph) {
         final Map<String, String> edgeKeyTypes = new HashMap<>();
-        final List<Relationship> relationships = graph.getRelationships();
+        final Collection<Relationship> relationships = graph.getRelationships();
         for (Relationship relationship : relationships) {
             for (Property prop : relationship.getProperties()) {
                 if (!edgeKeyTypes.containsKey(prop.getpType())) {

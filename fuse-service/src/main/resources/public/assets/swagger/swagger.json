@@ -169,7 +169,7 @@
             "description": "cypher query",
             "required": true,
             "type": "string",
-            "default": "match (a:Entity)-[b:relatedEntity]-(c:Entity) return *"
+            "default": "match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue), (e:Entity)-[hasRelEn:relatedEntity]->(e2:Entity) return *"
           },
           {
             "name": "ontology",
@@ -709,7 +709,7 @@
         "id": "1",
         "name": "Q1",
         "ontology": "Knowledge",
-        "query": "match (a:Entity)-[b:relatedEntity]-(c:Entity) return *"
+        "query": "match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue), (e:Entity)-[hasRelEn:relatedEntity]->(e2:Entity) return *"
       }
     },
     "QueryRequest": {
@@ -748,22 +748,45 @@
               "eType": "Entity"
             },
             {
-              "type": "Rel",
               "eNum": 2,
-              "next": 3,
+              "type": "Quant1",
+              "qType": "all",
+              "next": [
+                3,
+                5
+              ]
+            },
+            {
+              "type": "Rel",
+              "dir": "R",
+              "eNum": 3,
+              "next": 4,
               "rType": "relatedEntity"
             },
             {
               "type": "ETyped",
-              "eNum": 3,
+              "eNum": 4,
               "eTag": "B",
               "eType": "Entity"
+            },
+            {
+              "type": "Rel",
+              "dir": "R",
+              "eNum": 5,
+              "next": 6,
+              "rType": "hasEvalue"
+            },
+            {
+              "type": "ETyped",
+              "eNum": 6,
+              "eTag": "Ev",
+              "eType": "Evalue"
             }
           ]
         },
         "createCursorRequest": {
           "maxExecutionTime": 600000,
-          "cursorType": "graph",
+          "cursorType": "knowledgeLogicalGraphCursorRequest",
           "createPageRequest": {
             "pageSize": 100,
             "fetch": false
@@ -844,16 +867,39 @@
             "eType": "Entity"
           },
           {
-            "type": "Rel",
             "eNum": 2,
-            "next": 3,
+            "type": "Quant1",
+            "qType": "all",
+            "next": [
+              3,
+              5
+            ]
+          },
+          {
+            "type": "Rel",
+            "dir": "R",
+            "eNum": 3,
+            "next": 4,
             "rType": "relatedEntity"
           },
           {
             "type": "ETyped",
-            "eNum": 3,
+            "eNum": 4,
             "eTag": "B",
             "eType": "Entity"
+          },
+          {
+            "type": "Rel",
+            "dir": "R",
+            "eNum": 5,
+            "next": 6,
+            "rType": "hasEvalue"
+          },
+          {
+            "type": "ETyped",
+            "eNum": 6,
+            "eTag": "Ev",
+            "eType": "Evalue"
           }
         ]
       }

@@ -19,10 +19,8 @@ import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.Assignment;
-import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
-import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
@@ -131,9 +129,9 @@ public class UnionQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
         Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
         Assert.assertEquals(3,((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().size());
-        Assignment assignment1 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0);
-        Assignment assignment2 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(1);
-        Assignment assignment3 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(2);
+        Assignment<Entity,Relationship> assignment1 = ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0);
+        Assignment<Entity,Relationship> assignment2 = ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(1);
+        Assignment<Entity,Relationship> assignment3 = ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(2);
         Assert.assertEquals(1,assignment1.getEntities().size());
         Assert.assertEquals(2,assignment2.getEntities().size());
         Assert.assertEquals(1,assignment2.getRelationships().size());
@@ -186,11 +184,11 @@ public class UnionQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
         Assert.assertEquals(5,((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().size());
 
-        Assignment assignment1 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0);
-        Assignment assignment2 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(1);
-        Assignment assignment3 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(2);
-        Assignment assignment4 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(3);
-        Assignment assignment5 = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(4);
+        Assignment<Entity,Relationship> assignment1 = ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0);
+        Assignment<Entity,Relationship> assignment2 = ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(1);
+        Assignment<Entity,Relationship> assignment3 = ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(2);
+        Assignment<Entity,Relationship> assignment4 = ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(3);
+        Assignment<Entity,Relationship> assignment5 = ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(4);
 
         Assert.assertEquals(1,assignment1.getEntities().size());
 

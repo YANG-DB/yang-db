@@ -83,7 +83,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
         Assert.assertEquals(1, pageData.getSize());
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
 
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+        AssignmentsQueryResult<Entity,Relationship> expectedResult = AssignmentsQueryResult.Builder.<Entity,Relationship>instance()
                 .withAssignment(Assignment.Builder.instance()
                         .withEntity(e1.toEntity())
                         .build()).build();
@@ -216,7 +216,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = start().withEntity(e1.getETag()).withValue(v1.getETag()).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
-        List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+        List<Assignment<Entity,Relationship>> assignments = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments();
 
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
@@ -228,8 +228,8 @@ public class KnowledgeSimpleEntityWithFilterTests {
         Assert.assertEquals("Entity", assignments.get(0).getEntities().get(0).geteType());
         Assert.assertEquals("Evalue", assignments.get(0).getEntities().get(1).geteType());
 
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance()
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.<Entity,Relationship>instance()
+                .withAssignment(Assignment.Builder.<Entity,Relationship>instance()
                         .withEntity(e1.toEntity())//context entity
                         .withEntities(e1.subEntities())//logicalEntity
                         .withRelationships(e1.withRelations())//relationships
@@ -253,7 +253,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = start().withEntity(e1.getETag()).withValue(v1.getETag()).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
-        List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+        List<Assignment<Entity,Relationship>> assignments = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments();
 
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
@@ -267,8 +267,8 @@ public class KnowledgeSimpleEntityWithFilterTests {
         Assert.assertEquals("Evalue", assignments.get(0).getEntities().get(1).geteType());
         Assert.assertEquals("Evalue", assignments.get(0).getEntities().get(2).geteType());
 
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance()
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.<Entity,Relationship>instance()
+                .withAssignment(Assignment.Builder.<Entity,Relationship>instance()
                         .withEntity(e1.toEntity())//context entity
                         .withEntities(e1.subEntities())//logicalEntity
                         .withRelationships(e1.withRelations())//relationships
@@ -300,9 +300,9 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
-        Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
-        Assert.assertEquals(4, ((AssignmentsQueryResult) pageData).getAssignments().get(0).getEntities().size());
-        Assert.assertEquals(4, ((AssignmentsQueryResult) pageData).getAssignments().get(0).getRelationships().size());
+        Assert.assertEquals(1, ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().size());
+        Assert.assertEquals(4, ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().get(0).getEntities().size());
+        Assert.assertEquals(4, ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().get(0).getRelationships().size());
 
 /*
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
@@ -352,7 +352,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
-        final List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+        final List<Assignment<Entity,Relationship>> assignments = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments();
 
         Assert.assertEquals(1, assignments.size());
         Assert.assertEquals(1, assignments.get(0).getRelationships().size());
@@ -372,16 +372,16 @@ public class KnowledgeSimpleEntityWithFilterTests {
 */
 
         //verify assignments return as expected
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance()
+        AssignmentsQueryResult<Entity,Relationship> expectedResult = AssignmentsQueryResult.Builder.<Entity,Relationship>instance()
+                .withAssignment(Assignment.Builder.<Entity,Relationship>instance()
                         .withEntity(e1.toEntity())
                         .withEntities(e1.subEntities())
                         .withRelationships(e1.withRelations())
                         .build()).build();
 
         // Check if expected and actual are equal
-        QueryResultAssert.assertEquals(expectedResult.getAssignments().get(0).getEntities(), ((AssignmentsQueryResult) pageData).getAssignments().get(0).getEntities(), true);
-        QueryResultAssert.assertEquals(expectedResult.getAssignments().get(0).getRelationships(), ((AssignmentsQueryResult) pageData).getAssignments().get(0).getRelationships(), true, true);
+        QueryResultAssert.assertEquals(expectedResult.getAssignments().get(0).getEntities(), ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().get(0).getEntities(), true);
+        QueryResultAssert.assertEquals(expectedResult.getAssignments().get(0).getRelationships(), ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().get(0).getRelationships(), true, true);
 
     }
 
@@ -424,7 +424,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
-        final List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+        final List<Assignment<Entity,Relationship>> assignments = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments();
 
         Assert.assertEquals(1, assignments.size());
         Assert.assertEquals(2, assignments.get(0).getRelationships().size());
@@ -485,7 +485,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
-        final List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+        final List<Assignment<Entity,Relationship>> assignments = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments();
 
         Assert.assertEquals(1, assignments.size());
         Assert.assertEquals(1, assignments.get(0).getRelationships().size());

@@ -34,7 +34,10 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.QueryResultBase;
+import com.kayhut.fuse.model.results.Relationship;
 import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
@@ -199,7 +202,7 @@ public class BaseFuseClient implements FuseClient {
 
     @Override
     public QueryResultBase getPageData(String pageDataUrl) throws IOException {
-        return this.objectMapper.readValue(unwrap(getRequest(pageDataUrl)), QueryResultBase.class);
+        return this.objectMapper.readValue(unwrap(getRequest(pageDataUrl)), new TypeReference<AssignmentsQueryResult<Entity,Relationship>>() {});
     }
 
     @Override

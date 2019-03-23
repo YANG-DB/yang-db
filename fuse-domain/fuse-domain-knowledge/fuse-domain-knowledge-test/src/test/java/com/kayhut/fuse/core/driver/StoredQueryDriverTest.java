@@ -154,10 +154,13 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertFalse(infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
         Assert.assertTrue(infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
         Assert.assertNotNull(infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
-        Assert.assertFalse(((AssignmentsQueryResult) infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
-        Assert.assertFalse(((AssignmentsQueryResult) infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().isEmpty());
-        Assert.assertEquals(1,((AssignmentsQueryResult) infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size());
-        Assert.assertFalse(((AssignmentsQueryResult) infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().get(0).getProperties().stream().anyMatch(p->p.getpType().equals("deleteTime")));
+
+        List<Assignment<Entity, Relationship>> assignments = ((AssignmentsQueryResult<Entity, Relationship>) infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments();
+        Assert.assertFalse(assignments.isEmpty());
+        List<Entity> entities = new ArrayList<>(assignments.get(0).getEntities());
+        Assert.assertFalse(entities.isEmpty());
+        Assert.assertEquals(1, entities.size());
+        Assert.assertFalse(entities.get(0).getProperties().stream().anyMatch(p->p.getpType().equals("deleteTime")));
 
     }
     @Test
@@ -197,10 +200,13 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertFalse(infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
         Assert.assertTrue(infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
         Assert.assertNotNull(infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
-        Assert.assertFalse(((AssignmentsQueryResult) infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
-        Assert.assertFalse(((AssignmentsQueryResult) infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().isEmpty());
-        Assert.assertEquals(1,((AssignmentsQueryResult) infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size());
-        Assert.assertTrue(((AssignmentsQueryResult) infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().get(0).getProperties().stream().anyMatch(p->p.getpType().equals("deleteTime")));
+        List<Assignment<Entity, Relationship>> assignments = ((AssignmentsQueryResult<Entity, Relationship>) infoCall.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments();
+
+        List<Entity> entities = new ArrayList<>(assignments.get(0).getEntities());
+        Assert.assertFalse(assignments.isEmpty());
+        Assert.assertFalse(entities.isEmpty());
+        Assert.assertEquals(1, entities.size());
+        Assert.assertTrue(entities.get(0).getProperties().stream().anyMatch(p->p.getpType().equals("deleteTime")));
     }
 
     @Test
@@ -230,8 +236,8 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
         Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
         Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
-        Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
-        Assert.assertEquals(2, ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
+        Assert.assertFalse(((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
+        Assert.assertEquals(2, ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
 
     }
 
@@ -262,13 +268,13 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
         Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
         Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
-        Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
-        Assert.assertEquals(1, ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
+        Assert.assertFalse(((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
+        Assert.assertEquals(1, ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
 
         Optional<Object> data = driver.getNextPageData("q1", Optional.empty(), 1, true);
         Assert.assertTrue(data.isPresent());
-        Assert.assertFalse(((AssignmentsQueryResult) data.get()).getAssignments().isEmpty());
-        Assert.assertEquals(1, ((AssignmentsQueryResult) data.get()).getAssignments().get(0).getEntities().size(), 1);
+        Assert.assertFalse(((AssignmentsQueryResult<Entity,Relationship>) data.get()).getAssignments().isEmpty());
+        Assert.assertEquals(1, ((AssignmentsQueryResult<Entity,Relationship>) data.get()).getAssignments().get(0).getEntities().size(), 1);
 
         data = driver.getNextPageData("q1", Optional.empty(), 1, true);
         Assert.assertTrue(data.isPresent());
@@ -333,15 +339,16 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
         Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
         Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
-        Assignment assignment = ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0);
+        Assignment<Entity,Relationship> assignment = ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0);
         com.kayhut.fuse.model.results.Entity entityA = Stream.ofAll(assignment.getEntities()).find(e -> e.geteTag().contains("A")).get();
 
         Entity entityB = Stream.ofAll(assignment.getEntities()).find(e -> e.geteTag().contains("B")).get();
         Assert.assertEquals(e1Id, entityA.geteID());
         Assert.assertEquals(e2.id(), entityB.geteID());
 
-        Assert.assertEquals(1, assignment.getRelationships().size());
-        Option<Property> category = Stream.ofAll(assignment.getRelationships().get(0).getProperties()).find(p -> p.getpType().equals("category"));
+        List<Relationship> relationships = new ArrayList<>(assignment.getRelationships());
+        Assert.assertEquals(1, relationships.size());
+        Option<Property> category = Stream.ofAll(relationships.get(0).getProperties()).find(p -> p.getpType().equals("category"));
         Assert.assertFalse(category.isEmpty());
         Assert.assertEquals("rel", category.get().getValue());
 
@@ -380,7 +387,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
         Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
         Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
-        Assert.assertEquals(2, ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
+        Assert.assertEquals(2, ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
     }
 
     @Test
@@ -416,8 +423,8 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
         Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
         Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
-        Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
-        Assert.assertEquals(1, ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
+        Assert.assertFalse(((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
+        Assert.assertEquals(1, ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
     }
 
     @Test
@@ -618,9 +625,9 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         Assert.assertFalse(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty());
         Assert.assertTrue(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).isAvailable());
         Assert.assertNotNull(info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData());
-        Assert.assertFalse(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
-        Assert.assertEquals(1, ((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
-        Assert.assertTrue(((AssignmentsQueryResult) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().get(0).getProperties().contains(new Property("name", "raw", "mazda")));
+        Assert.assertFalse(((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().isEmpty());
+        Assert.assertEquals(1, ((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().size(), 1);
+        Assert.assertTrue(((AssignmentsQueryResult<Entity,Relationship>) info.get().getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).getAssignments().get(0).getEntities().get(0).getProperties().contains(new Property("name", "raw", "mazda")));
 
         Optional<Boolean> deleted = driver.delete("callQ1");
         Assert.assertTrue(deleted.get());
