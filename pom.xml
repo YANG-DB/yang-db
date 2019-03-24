@@ -229,6 +229,11 @@
             </dependency>
             <dependency>
                 <groupId>com.kayhut</groupId>
+                <artifactId>fuse-domain-knowledge-tutorial</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kayhut</groupId>
                 <artifactId>fuse-domain-knowledge-datagen</artifactId>
                 <version>${fuse.version}</version>
             </dependency>

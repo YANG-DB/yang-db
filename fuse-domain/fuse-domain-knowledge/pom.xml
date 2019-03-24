@@ -16,7 +16,7 @@
         <module>fuse-domain-knowledge-ext</module>
         <module>fuse-domain-knowledge-datagen</module>
         <module>fuse-domain-knowledge-test</module>
-        <!--<module>fuse-domain-knowledge-poc</module>-->
+        <module>fuse-domain-knowledge-tutorial</module>
         <module>fuse-domain-knowledge-assembly</module>
     </modules>
 
