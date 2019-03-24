@@ -8,9 +8,7 @@ import com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.Assignment;
-import com.kayhut.fuse.model.results.AssignmentsQueryResult;
-import com.kayhut.fuse.model.results.QueryResultBase;
+import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.Tuple3;
@@ -141,9 +139,9 @@ public class KnowledgeMassInsertionPathTest {
         long totalValuesSize = 0;
         while (pageData.getSize() > 0) {
             // Check Entity Response
-            final long entityCount = ((AssignmentsQueryResult) pageData).getAssignments().stream()
+            final long entityCount = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().stream()
                     .flatMap(p -> p.getEntities().stream()).filter(p -> p.geteType().equals("Entity")).count();
-            final long valueCount = ((AssignmentsQueryResult) pageData).getAssignments().stream()
+            final long valueCount = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().stream()
                     .flatMap(p -> p.getEntities().stream()).filter(p -> p.geteType().equals("Evalue")).count();
 
             if (pageData.getSize() < 500) {
@@ -181,9 +179,9 @@ public class KnowledgeMassInsertionPathTest {
         long totalValuesSize = 0;
         while (pageData.getSize() > 0) {
             // Check Entity Response
-            final long entityCount = ((AssignmentsQueryResult) pageData).getAssignments().stream()
+            final long entityCount = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().stream()
                     .flatMap(p -> p.getEntities().stream()).filter(p -> p.geteType().equals("Entity")).count();
-            long valueCount = ((AssignmentsQueryResult) pageData).getAssignments().stream().flatMap(p -> p.getEntities().stream()).filter(p -> p.geteType().equals("Evalue"))
+            long valueCount = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().stream().flatMap(p -> p.getEntities().stream()).filter(p -> p.geteType().equals("Evalue"))
                     .filter(p -> p.getProperty("stringValue").get().getValue().toString().equals("Lorem"))
                     .count();
 
@@ -227,15 +225,15 @@ public class KnowledgeMassInsertionPathTest {
         long totalValuesSize = 0;
         while (pageData.getSize() > 0) {
             // Check Entity Response
-            final long entityCount = ((AssignmentsQueryResult) pageData).getAssignments().stream()
+            final long entityCount = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().stream()
                     .flatMap(p -> p.getEntities().stream()).filter(p -> p.geteType().equals("Entity")).count();
-            long valueCount = ((AssignmentsQueryResult) pageData).getAssignments().stream()
+            long valueCount = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().stream()
                     .flatMap(p -> p.getEntities().stream()).filter(p -> p.geteType().equals("Evalue"))
                     .count();
-            long relEValueCount = ((AssignmentsQueryResult) pageData).getAssignments().stream()
+            long relEValueCount = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().stream()
                     .flatMap(p -> p.getRelationships().stream().filter(r->r.getrType().equals("hasEvalue")))
                     .count();
-            long relHasRelCount = ((AssignmentsQueryResult) pageData).getAssignments().stream()
+            long relHasRelCount = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().stream()
                     .flatMap(p -> p.getRelationships().stream().filter(r->r.getrType().equals("hasRelation")))
                     .count();
 

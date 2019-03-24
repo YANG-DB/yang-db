@@ -8,7 +8,10 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
+import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.model.results.Entity;
+import com.kayhut.fuse.model.results.Relationship;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.NonRedundantTestSuite;
 import com.kayhut.fuse.client.FuseClient;
@@ -176,10 +179,11 @@ public class SingleEntityTest {
 
         Assert.assertEquals(requestedPageSize, pageResourceInfo.getRequestedPageSize());
         Assert.assertEquals(actualPageSize, pageResourceInfo.getActualPageSize());
-        Assert.assertEquals(actualPageSize, pageData.getAssignments().size());
+        List<Assignment<Entity,Relationship>> assignments = pageData.getAssignments();
+        Assert.assertEquals(actualPageSize, assignments.size());
 
         Set<String> ids = new HashSet<>();
-        pageData.getAssignments().forEach(assignment -> {
+        assignments.forEach(assignment -> {
             Assert.assertTrue(assignment.getEntities().size() == 1);
             ids.add(assignment.getEntities().get(0).geteID());
 
@@ -220,8 +224,9 @@ public class SingleEntityTest {
             Assert.assertTrue(pageResourceInfo.getActualPageSize() == pageSize);
 
             AssignmentsQueryResult pageData = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
-            Assert.assertTrue(pageData.getAssignments().size() == pageSize);
-            pageData.getAssignments().forEach(assignment -> {
+            List<Assignment<Entity,Relationship>> assignments = pageData.getAssignments();
+            Assert.assertTrue(assignments.size() == pageSize);
+            assignments.forEach(assignment -> {
                 Assert.assertTrue(assignment.getEntities().size() == 1);
                 ids.add(assignment.getEntities().get(0).geteID());
 

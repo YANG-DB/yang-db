@@ -110,6 +110,22 @@ public class KnowledgeContextEntityValueDataGenerator implements KnowledgeGraphG
                         fieldId,
                         (int)this.fieldValuesSupplier.get(),
                         metadataSupplier.get());
+            case "floatValue":
+                return new EvalueFloat(
+                        logicalId,
+                        context,
+                        entityId,
+                        fieldId,
+                        new Float((int) this.fieldValuesSupplier.get()).floatValue(),
+                        metadataSupplier.get());
+            case "longValue":
+                return new EvalueLong(
+                        logicalId,
+                        context,
+                        entityId,
+                        fieldId,
+                        new Long((int) this.fieldValuesSupplier.get()).longValue(),
+                        metadataSupplier.get());
             case "dateValue":
                 return new EvalueDate(
                         logicalId,

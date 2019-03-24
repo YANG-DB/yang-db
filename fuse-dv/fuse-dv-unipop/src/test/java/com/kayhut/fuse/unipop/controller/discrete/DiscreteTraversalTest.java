@@ -61,7 +61,6 @@ import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application
  */
 public class DiscreteTraversalTest {
     //region Static Fields
-    public static final boolean EMBEDDED = false;
     public static final String CLUSTER_NAME = "knowledge";
     public static ElasticEmbeddedNode elasticEmbeddedNode;
     public static ElasticGraphConfiguration elasticGraphConfiguration;
@@ -77,9 +76,7 @@ public class DiscreteTraversalTest {
     //region Setup
     @BeforeClass
     public static void setup() throws Exception {
-        if (EMBEDDED)
-            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
-
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance(CLUSTER_NAME);
         elasticGraphConfiguration = new ElasticGraphConfiguration();
         elasticGraphConfiguration.setClusterName(CLUSTER_NAME);
         elasticGraphConfiguration.setElasticGraphScrollSize(1000);

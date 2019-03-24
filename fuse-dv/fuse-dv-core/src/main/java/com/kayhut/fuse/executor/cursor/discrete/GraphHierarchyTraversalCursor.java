@@ -93,7 +93,7 @@ public class GraphHierarchyTraversalCursor implements Cursor {
     //region Protected Methods
 
 
-    private void consolidateFullGraph(AssignmentsQueryResult result) {
+    private void consolidateFullGraph(AssignmentsQueryResult<Entity,Relationship> result) {
         Map<String, Stream<Entity>> newEntityStreams =
                 Stream.ofAll(result.getAssignments())
                         .flatMap(Assignment::getEntities)
@@ -132,7 +132,7 @@ public class GraphHierarchyTraversalCursor implements Cursor {
 
     //region Fields
     private Cursor cursor;
-    private AssignmentsQueryResult fullGraph;
+    private AssignmentsQueryResult<Entity,Relationship> fullGraph;
 
     private Set<String> entityIds;
     private Set<String> relationshipIds;

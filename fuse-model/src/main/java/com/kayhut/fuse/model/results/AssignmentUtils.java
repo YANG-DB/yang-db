@@ -36,7 +36,7 @@ public abstract class AssignmentUtils {
      * @param tag
      * @return
      */
-    public static NamedParameter collectByTag(AssignmentsQueryResult result, String tag) {
+    public static NamedParameter collectByTag(AssignmentsQueryResult<Entity,Relationship> result, String tag) {
         Set results = new LinkedHashSet<>();
         String[] split = tag.split("[.]");
         //eTag

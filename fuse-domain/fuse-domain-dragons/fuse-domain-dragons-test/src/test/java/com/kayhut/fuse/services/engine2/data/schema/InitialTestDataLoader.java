@@ -1,8 +1,10 @@
 package com.kayhut.fuse.services.engine2.data.schema;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
-import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
+import com.kayhut.fuse.executor.ontology.schema.GraphDataLoader;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
+import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.typesafe.config.Config;
 
 import java.io.IOException;
@@ -10,7 +12,7 @@ import java.io.IOException;
 /**
  * Created by lior.perry on 2/12/2018.
  */
-public class InitialTestDataLoader implements InitialGraphDataLoader {
+public class InitialTestDataLoader implements GraphDataLoader {
 
     public InitialTestDataLoader() {
     }
@@ -25,7 +27,7 @@ public class InitialTestDataLoader implements InitialGraphDataLoader {
     }
 
     @Override
-    public long load() throws IOException {
+    public long load(LogicalGraphModel root) throws IOException {
         return 0;
     }
 

@@ -1,0 +1,82 @@
+{
+    "nodes": [
+      {
+        "id": "0",
+        "label": "person",
+        "metadata": {
+          "user-defined": "values",
+          "context": "generic",
+          "created": "01/10/2018"
+        },
+        "properties": {
+          "fName": "first name",
+          "lName": "last name",
+          "born": "12/12/2000",
+          "age": "19",
+          "email": "myName@fuse.com",
+          "currentAddressLocation": "43.06,-70.34",
+          "address": {
+            "state": "my state",
+            "street": "my street",
+            "city": "my city",
+            "zip": "gZip"
+          }
+        }
+      },
+      {
+        "id": "10",
+        "label": "person",
+        "metadata": {
+          "user-defined": "values",
+          "created": "01/10/2018"
+        },
+        "properties": {
+          "fName": "another first name",
+          "lName": "another last name",
+          "age": "20",
+          "born": "1/1/1999",
+          "currentAddressLocation": "40.06,-71.34",
+          "email": "notMyName@fuse.com",
+          "address": {
+            "state": "not my state",
+            "street": "not my street",
+            "city": "not my city",
+            "zip": "not gZip"
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": 100,
+        "source": "0",
+        "target": "10",
+        "label": "knows",
+        "metadata": {
+          "user-defined": "values",
+          "created": "01/10/2018"
+        },
+        "properties": {
+          "date": "01/01/2000",
+          "medium": "facebook"
+        }
+      },
+      {
+        "id": 101,
+        "source": "0",
+        "target": "10",
+        "label": "called",
+        "metadata": {
+          "user-defined": "values",
+          "created": "01/10/2018"
+        },
+        "properties": {
+          "date": "01/01/2000",
+          "duration": "120",
+          "medium": "cellular",
+          "sourceLocation": "40.06,-71.34",
+          "sourceTarget": "41.12,-70.9"
+        }
+      }
+    ]
+}

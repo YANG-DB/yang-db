@@ -28,7 +28,7 @@ public class InnerQueryCursorTest {
         when(cursorMock.getNextResults(anyInt())).thenReturn(res1, AssignmentsQueryResult.Builder.instance().build());
 
         InnerQueryCursor cursor = new InnerQueryCursor(cursorMock, null);
-        AssignmentsQueryResult nextResults = (AssignmentsQueryResult) cursor.getNextResults(1000);
+        AssignmentsQueryResult<Entity,Relationship> nextResults = (AssignmentsQueryResult<Entity,Relationship>) cursor.getNextResults(1000);
         Assert.assertEquals(1, nextResults.getAssignments().size());
         Assert.assertEquals(1, nextResults.getAssignments().get(0).getEntities().size());
         Assert.assertEquals("123", nextResults.getAssignments().get(0).getEntities().get(0).geteID());

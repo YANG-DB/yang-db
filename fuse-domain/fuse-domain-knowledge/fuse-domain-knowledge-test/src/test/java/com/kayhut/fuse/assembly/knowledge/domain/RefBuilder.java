@@ -10,7 +10,6 @@ import java.util.Arrays;
 
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowlegdeOntology.logicalId;
 
-//todo - for kobi usage
 public class RefBuilder extends Metadata {
     public static final String REF_INDEX = "ref0";
 

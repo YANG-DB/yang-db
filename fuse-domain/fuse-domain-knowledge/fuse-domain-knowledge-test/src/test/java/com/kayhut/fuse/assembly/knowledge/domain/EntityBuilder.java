@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-//todo - for kobi usage
 public class EntityBuilder extends EntityId {
     public static final String INDEX = "e0";
     public static String type = "Entity";

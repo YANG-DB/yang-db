@@ -1,17 +1,17 @@
-package com.kayhut.fuse.executor.ontology.schema;
+package com.kayhut.fuse.dispatcher.ontology;
 
 /*-
  * #%L
- * fuse-dv-core
+ * fuse-core
  * %%
  * Copyright (C) 2016 - 2018 kayhut
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,13 +20,13 @@ package com.kayhut.fuse.executor.ontology.schema;
  * #L%
  */
 
-import java.io.IOException;
+import com.kayhut.fuse.model.ontology.transformer.OntologyTransformer;
 
-/**
- * Created by lior.perry on 2/11/2018.
- */
-public interface InitialGraphDataLoader {
-    long init() throws IOException;
-    long load() throws IOException;
-    long drop() throws IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+
+public interface OntologyTransformerProvider {
+    Optional<OntologyTransformer> transformer(String id);
+    Collection<OntologyTransformer> transformation();
 }

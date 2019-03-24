@@ -108,6 +108,25 @@ public abstract class QueryDriverBase implements QueryDriver {
 
     }
 
+    @Override
+    public Optional<Object> run(String cypher, String ontology) {
+        String id = UUID.randomUUID().toString();
+        try {
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, cypher, ontology,new CreateGraphCursorRequest(new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if(!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if(resourceInfo.get().getError()!=null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } finally {
+            //remove stateless query
+            delete(id);
+        }
+    }
+
 
     @Override
     public Optional<Object> getNextPageData(String queryId, Optional<String> cursorId, int pageSize, boolean deleteCurrentPage) {

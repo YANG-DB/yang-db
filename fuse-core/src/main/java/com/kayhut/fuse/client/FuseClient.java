@@ -58,7 +58,7 @@ public interface FuseClient {
                 && ((AssignmentsQueryResult) pageData).getAssignments().isEmpty())
             return 0;
 
-        return ((AssignmentsQueryResult) pageData).getAssignments().stream()
+        return ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().stream()
                 .mapToLong(e -> (relationship ? e.getRelationships().stream().filter(relPredicate).count() : 0)
                         + (entities ? e.getEntities().stream().filter(entityPredicate).count() : 0))
                 .sum();

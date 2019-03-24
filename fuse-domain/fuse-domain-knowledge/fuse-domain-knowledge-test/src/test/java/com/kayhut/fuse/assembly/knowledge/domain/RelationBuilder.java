@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 
-//todo - for kobi usage
 public class RelationBuilder extends Metadata {
     public static final String REL_INDEX = "rel0";
 

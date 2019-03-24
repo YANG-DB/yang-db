@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.function.Predicate;
 
 
-//todo - for kobi usage
 public class ValueBuilder extends EntityId {
     public static String physicalType = "e.value";
     public static String type = "Evalue";
@@ -26,6 +25,8 @@ public class ValueBuilder extends EntityId {
     public String fieldId;
     public String bdt;
     public String stringValue;
+    public long longValue;
+    public float floatValue;
     public Point geoValue;
     public Date dateValue;
     public int intValue = Integer.MIN_VALUE;
@@ -39,6 +40,14 @@ public class ValueBuilder extends EntityId {
 
     public ValueBuilder id(String logicalId) {
         this.logicalId = logicalId;
+        return this;
+    }
+    public ValueBuilder value(long value) {
+        this.longValue = value;
+        return this;
+    }
+    public ValueBuilder value(float value) {
+        this.floatValue = value;
         return this;
     }
 
@@ -71,7 +80,11 @@ public class ValueBuilder extends EntityId {
             case "Date":
                 return value((Date) value);
             case "Integer":
-                return value(value);
+                return value((int)value);
+            case "Long":
+                return value((long)value);
+            case "Float":
+                return value((float)value);
         }
         return this;
     }
@@ -144,6 +157,10 @@ public class ValueBuilder extends EntityId {
             on.put("stringValue", stringValue);
         else if(intValue!=Integer.MIN_VALUE)
             on.put("intValue", intValue);
+        else if(longValue!=0)
+            on.put("longValue", longValue);
+        else if(floatValue!=0)
+            on.put("floatValue", floatValue);
         else if(dateValue!=null)
             on.put("dateValue", sdf.format(dateValue));
         else if(geoValue!=null) {
@@ -171,6 +188,10 @@ public class ValueBuilder extends EntityId {
             value = new Property("stringValue", "raw", stringValue);
         else if(intValue!=Integer.MIN_VALUE)
             value = new Property("intValue", "raw", intValue);
+        else if(floatValue!=0)
+            value = new Property("floatValue", "raw", floatValue);
+        else if(longValue!=0)
+            value = new Property("longValue", "raw", longValue);
         else if(dateValue!=null)
             value = new Property("dateValue", "raw", sdf.format(dateValue));
 

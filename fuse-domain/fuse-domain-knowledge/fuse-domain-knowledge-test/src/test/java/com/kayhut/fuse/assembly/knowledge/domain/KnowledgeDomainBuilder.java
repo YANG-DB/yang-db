@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-//todo - for kobi usage
 public abstract class KnowledgeDomainBuilder {
     public abstract String getType();
 

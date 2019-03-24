@@ -201,7 +201,7 @@ public class KnowledgeSimpleEntityWithRelationTests {
         )).build();
 
         // Read Entity (with V1 query)
-        AssignmentsQueryResult pageData = (AssignmentsQueryResult) query(fuseClient, fuseResourceInfo, query, new KnowledgeGraphHierarchyCursorRequest());
+        AssignmentsQueryResult<Entity,Relationship> pageData = (AssignmentsQueryResult) query(fuseClient, fuseResourceInfo, query, new KnowledgeGraphHierarchyCursorRequest());
 
         Assert.assertEquals(1, pageData.getAssignments().size());
         Assert.assertEquals(2,pageData.getAssignments().get(0).getEntities().size());
@@ -243,7 +243,7 @@ public class KnowledgeSimpleEntityWithRelationTests {
         )).build();
 
         // Read Entity (with V1 query)
-        AssignmentsQueryResult pageData = (AssignmentsQueryResult) query(fuseClient, fuseResourceInfo, query);
+        AssignmentsQueryResult<Entity,Relationship> pageData = (AssignmentsQueryResult<Entity,Relationship>) query(fuseClient, fuseResourceInfo, query);
 
         Assert.assertEquals(1, pageData.getAssignments().size());
         Assert.assertEquals(2,pageData.getAssignments().get(0).getEntities().size());

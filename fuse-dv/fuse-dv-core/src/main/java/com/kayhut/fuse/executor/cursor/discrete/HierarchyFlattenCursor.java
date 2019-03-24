@@ -59,10 +59,10 @@ public class HierarchyFlattenCursor implements Cursor {
         List<String> roots = new ArrayList<>();
         Set<String> allVertices = new HashSet<>();
 
-        AssignmentsQueryResult nextResults;
+        AssignmentsQueryResult<Entity,Relationship> nextResults;
         do{
             nextResults = this.innerCursor.getNextResults(numResults);
-            for (Assignment assignment : nextResults.getAssignments()) {
+            for (Assignment<Entity,Relationship> assignment : nextResults.getAssignments()) {
                 Entity child = Stream.ofAll(assignment.getEntities()).find(e -> e.geteTag().contains("Child")).get();
                 Option<Entity> parent = Stream.ofAll(assignment.getEntities()).find(e -> e.geteTag().contains("Parent"));
 

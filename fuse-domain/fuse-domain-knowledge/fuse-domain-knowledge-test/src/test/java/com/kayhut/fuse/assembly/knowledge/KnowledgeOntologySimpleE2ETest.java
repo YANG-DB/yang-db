@@ -17,6 +17,8 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
+import com.kayhut.fuse.model.results.Entity;
+import com.kayhut.fuse.model.results.Relationship;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
@@ -93,7 +95,7 @@ public class KnowledgeOntologySimpleE2ETest {
                 new EProp(11, $ont.pType$("title"), Constraint.of(ConstraintOp.notEmpty)/*, "sample")*/))
         ).build();
 
-        AssignmentsQueryResult pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
+        AssignmentsQueryResult<Entity,Relationship> pageData = GetAssignmentForQuery(query, fuseResourceInfo, 10, 0);
         int resultsSize = pageData.getSize();
         Assert.assertEquals(resultsSize, 1);
         String rtype = pageData.getResultType();
@@ -158,7 +160,7 @@ public class KnowledgeOntologySimpleE2ETest {
         }
     }
 
-    private void CheckAssignmentQueryResults(int total, int relationsCount, int entitiesCount, AssignmentsQueryResult data) {
+    private void CheckAssignmentQueryResults(int total, int relationsCount, int entitiesCount, AssignmentsQueryResult<Entity,Relationship> data) {
         int resultsSize = data.getSize();
         Assert.assertEquals(resultsSize, total);
         String rtype = data.getResultType();

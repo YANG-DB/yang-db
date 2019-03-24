@@ -9,7 +9,6 @@ import javaslang.collection.Stream;
 import java.util.Arrays;
 import java.util.Optional;
 
-//todo - for kobi usage
 public class FileBuilder extends EntityId {
     public static String type = "Efile";
     public static String physicalType = "e.file";
