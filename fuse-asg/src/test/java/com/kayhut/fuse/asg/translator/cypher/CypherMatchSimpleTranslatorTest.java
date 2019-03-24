@@ -98,7 +98,7 @@ public class CypherMatchSimpleTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quant1(100, all))
                 .in(
-                        rel(2, null, Rel.Direction.RL,"Rel_#2")
+                        rel(2, "*", Rel.Direction.RL,"Rel_#2")
                                 .next(unTyped(3, "b"))
                 ).build();
 
@@ -115,7 +115,7 @@ public class CypherMatchSimpleTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quant1(100, all))
                 .in(
-                        rel(2, null, Rel.Direction.R,"Rel_#2")
+                        rel(2, "*", Rel.Direction.R,"Rel_#2")
                                 .next(unTyped(3, "b"))
                 ).build();
 
@@ -133,7 +133,7 @@ public class CypherMatchSimpleTranslatorTest {
                 .next(typed(1, "Dragon","a"))
                 .next(quant1(100, all))
                 .in(
-                        rel(2, null, Rel.Direction.RL,"Rel_#2")
+                        rel(2, "*", Rel.Direction.RL,"Rel_#2")
                                 .next(typed(3,"Person", "b"))
                 ).build();
 
@@ -149,7 +149,7 @@ public class CypherMatchSimpleTranslatorTest {
                 .next(typed(1, "Dragon","a"))
                 .next(quant1(100, all))
                 .in(
-                        rel(2, null, Rel.Direction.RL,"c")
+                        rel(2, "*", Rel.Direction.RL,"c")
                                 .next(typed(3,"Person", "b"))
                 ).build();
         assertEquals(print(expected), print(query));
@@ -165,7 +165,7 @@ public class CypherMatchSimpleTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quant1(100, all))
                 .in(
-                        rel(2, null, Rel.Direction.R,"c")
+                        rel(2, "*", Rel.Direction.R,"c")
                                 .next(unTyped(3, "b"))
                 ).build();
 

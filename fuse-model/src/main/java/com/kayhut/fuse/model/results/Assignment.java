@@ -34,7 +34,7 @@ import java.util.*;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Assignment {
+public class Assignment<E,R> {
     //region Constructors
     public Assignment() {
         this.entities = Collections.emptyList();
@@ -43,22 +43,22 @@ public class Assignment {
     //endregion
 
     //region Properties
-    public List<Relationship> getRelationships ()
+    public List<R> getRelationships ()
     {
         return relationships;
     }
 
-    public void setRelationships (List<Relationship> relationships)
+    public void setRelationships (List<R> relationships)
     {
         this.relationships = relationships;
     }
 
-    public List<Entity> getEntities ()
+    public List<E> getEntities ()
     {
         return entities;
     }
 
-    public void setEntities (List<Entity> entities)
+    public void setEntities (List<E> entities)
     {
         this.entities = entities;
     }
@@ -73,8 +73,8 @@ public class Assignment {
     //endregion
 
     //region Fields
-    private List<Entity> entities;
-    private List<Relationship> relationships;
+    private List<E> entities;
+    private List<R> relationships;
     //endregion
 
     public static final class Builder {
@@ -118,8 +118,8 @@ public class Assignment {
             return this;
         }
 
-        public Assignment build() {
-            Assignment assignment = new Assignment();
+        public Assignment<Entity,Relationship> build() {
+            Assignment<Entity,Relationship> assignment = new Assignment<>();
             //assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
             assignment.setEntities(Stream.ofAll(this.entities.values()).sortBy(Entity::geteType).toJavaList());
             assignment.setRelationships(this.relationships);

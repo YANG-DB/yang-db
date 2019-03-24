@@ -9,9 +9,9 @@ package com.kayhut.fuse.services;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,37 +29,27 @@ import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.logging.StatusReportedJob;
 import com.kayhut.fuse.services.appRegistrars.*;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValue;
-import com.typesafe.config.ConfigValueFactory;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import javaslang.Tuple2;
 import org.jooby.Jooby;
 import org.jooby.RequestLogger;
 import org.jooby.Results;
 import org.jooby.caffeine.CaffeineCache;
 import org.jooby.handlers.CorsHandler;
-import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
+import org.jooby.micrometer.Micrometer;
 import org.jooby.quartz.Quartz;
 import org.jooby.scanner.Scanner;
-import org.jooby.swagger.SwaggerUI;
-import org.quartz.DateBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.impl.JobDetailImpl;
-import org.quartz.impl.triggers.CalendarIntervalTriggerImpl;
 import org.reflections.Reflections;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 import static com.kayhut.fuse.services.FuseUtils.loadConfig;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.quartz.JobBuilder.newJob;
 
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -72,6 +62,21 @@ public class FuseApp extends Jooby {
         //metrics statistics
         MetricRegistry metricRegistry = new MetricRegistry();
         bind(metricRegistry);
+
+        use(new Micrometer());
+
+        // Timer example:
+        use("*", (req, rsp, chain) -> {
+            MeterRegistry registry = require(MeterRegistry.class);
+            Timer timer = registry.timer("http.server.requests");
+            timer.record(() -> {
+                try {
+                    chain.next(req, rsp);
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            });
+        });
         use(new Metrics(metricRegistry)
                 .request()
                 .threadDump()
@@ -80,11 +85,12 @@ public class FuseApp extends Jooby {
                 .metric("threads", new ThreadStatesGaugeSet())
                 .metric("gc", new GarbageCollectorMetricSet()));
 
-        use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {}));
-        get("", () ->  Results.redirect("/public/assets/earth.html"));
-        get("/", () ->  Results.redirect("/public/assets/earth.html"));
-        get("/collision", () ->  Results.redirect("/public/assets/collision.html"));
-//        get("swagger/swagger.json", () ->  Results.redirect("/public/assets/swagger/swagger.json"));
+        use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {
+        }));
+//        get("", () ->  Results.redirect("/public/assets/earth.html"));
+//        get("/", () ->  Results.redirect("/public/assets/earth.html"));
+//        get("/collision", () ->  Results.redirect("/public/assets/collision.html"));
+        get("swagger/swagger.json", () -> Results.redirect("/public/assets/swagger/swagger.json"));
 
         //internal quarts reporting job scheduler
         use(new Quartz().with(StatusReportedJob.class));
@@ -103,25 +109,20 @@ public class FuseApp extends Jooby {
 
         //dynamically load AppControllerRegistrar that comply with com.kayhut.fuse.services package and derive from AppControllerRegistrarBase
         additionalRegistrars(this, localUrlSupplier);
-        //swagger
-/*
-        new SwaggerUI()
-                .filter(route -> route.pattern().startsWith("/fuse"))
-                .install(this);
-*/
     }
 
     /**
      * dynamically load AppControllerRegistrar that comply with com.kayhut.fuse.services package and derive from AppControllerRegistrarBase
+     *
      * @param fuseApp
      * @param localUrlSupplier
      */
     private void additionalRegistrars(FuseApp fuseApp, AppUrlSupplier localUrlSupplier) {
         Reflections reflections = new Reflections(FuseApp.class.getPackage().getName());
         Set<Class<? extends AppControllerRegistrarBase>> allClasses = reflections.getSubTypesOf(AppControllerRegistrarBase.class);
-        allClasses.forEach(clazz-> {
+        allClasses.forEach(clazz -> {
             try {
-                clazz.getConstructor().newInstance().register(fuseApp,localUrlSupplier);
+                clazz.getConstructor().newInstance().register(fuseApp, localUrlSupplier);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
@@ -137,7 +138,7 @@ public class FuseApp extends Jooby {
 
 
     //region Public Methods
-    public FuseApp conf(File file, String activeProfile, Tuple2<String,ConfigValue> ... values) {
+    public FuseApp conf(File file, String activeProfile, Tuple2<String, ConfigValue>... values) {
         Config config = loadConfig(file, activeProfile, values);
         super.use(config);
         return this;

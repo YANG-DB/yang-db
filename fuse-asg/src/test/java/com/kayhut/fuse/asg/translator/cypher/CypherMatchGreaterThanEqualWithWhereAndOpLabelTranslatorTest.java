@@ -71,7 +71,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon AND (a.age < 100 AND b.birth >= '28/01/2001')  RETURN a");
         final AsgEBase<Quant1> quantA = quant1(100, all);
-        quantA.addNext(rel(2, null, Rel.Direction.RL,"Rel_#2")
+        quantA.addNext(rel(2, "*", Rel.Direction.RL,"Rel_#2")
                 .addNext(unTyped(3, "b")
                         .next(quant1(300, all)
                                 .addNext(
@@ -97,7 +97,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
         AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
         final AsgQuery query = translator.translate("MATCH (a)--(b) where a:Dragon AND (a.age < b.age AND b.birth >= '28/01/2001')  RETURN a");
         final AsgEBase<Quant1> quantA = quant1(100, all);
-        quantA.addNext(rel(2, null, Rel.Direction.RL,"Rel_#2")
+        quantA.addNext(rel(2, "*", Rel.Direction.RL,"Rel_#2")
                 .addNext(unTyped(3, "b")
                         .next(quant1(300, all)
                                 .addNext(
@@ -126,7 +126,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
         //region Test Methods
 
         final AsgEBase<Quant1> quantA = quant1(100, all);
-        quantA.addNext(rel(2, null, Rel.Direction.RL,"c")
+        quantA.addNext(rel(2, "*", Rel.Direction.RL,"c")
                 .below(relPropGroup(200,all,
                         new RelProp(201,"type",of(inSet, Arrays.asList("Freeze")),0),
                         new RelProp(201,"type",of(inSet, Arrays.asList("Fire")),0)))
@@ -158,7 +158,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
         //region Test Methods
 
         final AsgEBase<Quant1> quantA = quant1(100, all);
-        quantA.addNext(rel(2, null, Rel.Direction.RL,"c")
+        quantA.addNext(rel(2, "*", Rel.Direction.RL,"c")
                 .below(relPropGroup(200,all,
                         new RelProp(201,"size",of(gt, 50),0)))
                 .addNext(unTyped(3, "b")

@@ -36,6 +36,7 @@ import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -63,7 +64,7 @@ public class StandardInternalsController implements InternalsController {
     @Override
     public ContentResponse<String> getVersion() {
         return Builder.<String>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(this.getClass().getPackage().getImplementationVersion()))
+                .data(Optional.of(String.format("%d_%d",1900+(new Date().getYear()) , new Date().getMonth())))
                 .compose();
     }
 

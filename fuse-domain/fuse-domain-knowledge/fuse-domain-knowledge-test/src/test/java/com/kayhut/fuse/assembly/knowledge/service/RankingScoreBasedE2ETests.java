@@ -22,6 +22,7 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.QueryResultAssert;
+import com.kayhut.fuse.model.results.Relationship;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
 import org.jooby.Jooby;
@@ -322,7 +323,7 @@ public class RankingScoreBasedE2ETests {
     @Test
     public void testLongPrefix() throws IOException, InterruptedException {
         Query query = getByNicknamesLike("abcdefghijkl*");
-        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        AssignmentsQueryResult<Entity,Relationship> assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntities
                 = assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).collect(Collectors.toList());
@@ -336,7 +337,7 @@ public class RankingScoreBasedE2ETests {
     @Test
     public void testQuestionMark() throws IOException, InterruptedException {
         Query query = getByNicknamesLike("*?*");
-        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        AssignmentsQueryResult<Entity,Relationship> assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntities
                 = assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).collect(Collectors.toList());
@@ -350,7 +351,7 @@ public class RankingScoreBasedE2ETests {
     @Test
     public void testWhitespace() throws IOException, InterruptedException {
         Query query = getByNicknamesLike("* *");
-        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        AssignmentsQueryResult<Entity,Relationship> assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntities
                 = assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).collect(Collectors.toList());
@@ -362,7 +363,7 @@ public class RankingScoreBasedE2ETests {
     @Test
     public void testTitleLikeAny() throws IOException, InterruptedException {
         Query query = getByTitleLikeAny(Arrays.asList("*moti*", "*cohen*"));
-        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        AssignmentsQueryResult<Entity,Relationship> assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
 
         List<Entity> globalEntities
@@ -377,7 +378,7 @@ public class RankingScoreBasedE2ETests {
     @Test
     public void testTitleLikeAnyUpperCase() throws IOException, InterruptedException {
         Query query = getByTitleLikeAny(Arrays.asList("*MOTI*", "*COHEN*"));
-        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        AssignmentsQueryResult<Entity,Relationship> assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
 
         List<Entity> globalEntities
@@ -392,7 +393,7 @@ public class RankingScoreBasedE2ETests {
     @Test
     public void testWhitespaceStartNickEq() throws IOException, InterruptedException {
         Query query = getByNicknamesEq("  OMG  ");
-        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        AssignmentsQueryResult<Entity,Relationship> assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntities
                 = assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).collect(Collectors.toList());
@@ -404,7 +405,7 @@ public class RankingScoreBasedE2ETests {
     @Test
     public void testWhitespaceStartNickLikeEq() throws IOException, InterruptedException {
         Query query = getByNicknamesLike("  OMG  ");
-        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        AssignmentsQueryResult<Entity,Relationship> assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntities
                 = assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).collect(Collectors.toList());
@@ -416,7 +417,7 @@ public class RankingScoreBasedE2ETests {
     @Test
     public void testWhitespaceStartNick() throws IOException, InterruptedException {
         Query query = getByNicknamesLike("*  OMG  *");
-        AssignmentsQueryResult assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
+        AssignmentsQueryResult<Entity,Relationship> assignmentsQueryResult = runQuery(query, Arrays.asList("A"));
         Assert.assertEquals(1, assignmentsQueryResult.getAssignments().size());
         List<Entity> globalEntities
                 = assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).collect(Collectors.toList());
@@ -426,7 +427,7 @@ public class RankingScoreBasedE2ETests {
     }
 
 
-    private List<Entity> getGlobalEntitesSorted(AssignmentsQueryResult assignmentsQueryResult) {
+    private List<Entity> getGlobalEntitesSorted(AssignmentsQueryResult<Entity,Relationship> assignmentsQueryResult) {
         return assignmentsQueryResult.getAssignments().get(0).getEntities().stream().filter(e -> e.geteTag().contains("A")).sorted((o1, o2) -> -1*Double.compare((double) o1.getProperties().stream().filter(p -> p.getpType().equals("score")).findFirst().get().getValue(),
                 (double) o2.getProperties().stream().filter(p -> p.getpType().equals("score")).findFirst().get().getValue())).collect(Collectors.toList());
     }

@@ -35,9 +35,9 @@ import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.*;
-import com.kayhut.fuse.model.transport.Response;
 import com.kayhut.fuse.services.controllers.QueryController;
 import org.jooby.*;
+import org.jooby.apitool.ApiTool;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,13 +59,20 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
     //region AppControllerRegistrarBase Implementation
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
-        /** get the query store info */
+        /**
+         * get the query store info
+         * @return All queries in Query store information
+         **/
         app.get(appUrlSupplier.queryStoreUrl(),req -> {
                     Route.of("getQueryStore").write();
                     return Results.with(this.getController(app).getInfo(), Status.OK);
                 });
 
-        /** create a v1 fallback url */
+        /**
+         * create a v1 query resource
+         * @param  V1 Query Request
+         * @return newly created query resource information
+         **/
         app.post(appUrlSupplier.queryStoreUrl() ,
                 req -> postV1(app,req,this));
 
@@ -77,6 +84,8 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** create a cypher query */
         app.post(appUrlSupplier.queryStoreUrl() + "/cypher",req -> postCypher(app,req,this));
+        /** run a cypher query */
+        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/run",req -> runCypher(app,req,this));
 
 
         /** call a query */
@@ -168,6 +177,13 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/sankey",
                 req -> Results.redirect("/public/assets/PlanSankeyViewer.html?q=" + req.param("queryId").value()));
+
+        //swagger
+        app.use(new ApiTool()
+                .swagger("/swagger")
+                .raml("/raml")
+        );
+
     }
     //endregion
 
@@ -216,6 +232,18 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
 
             ContentResponse<Object> response = registrar.getController(app).run(query);
+
+            return Results.with(response, response.status());
+        }
+
+        public static Result runCypher(Jooby app, final Request req, QueryControllerRegistrar registrar  ) {
+            Route.of("runCypher").write();
+
+            String query = req.param("cypher").value();
+            String ontology = req.param("ontology").value();
+            req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
+
+            ContentResponse<Object> response = registrar.getController(app).run(query,ontology);
 
             return Results.with(response, response.status());
         }

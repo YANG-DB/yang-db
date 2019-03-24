@@ -51,7 +51,7 @@ public class GraphTraversalCursor implements Cursor {
     public GraphTraversalCursor(Cursor cursor) {
         this.cursor = cursor;
 
-        this.fullGraph = new AssignmentsQueryResult();
+        this.fullGraph = new AssignmentsQueryResult<Entity,Relationship>();
         this.fullGraph.setAssignments(new ArrayList<>());
         this.fullGraph.getAssignments().add(new Assignment());
         this.fullGraph.getAssignments().get(0).setEntities(new ArrayList<>());
@@ -73,7 +73,7 @@ public class GraphTraversalCursor implements Cursor {
     //endregion
 
     //region Protected Methods
-    private void consolidateFullGraph(AssignmentsQueryResult result) {
+    private void consolidateFullGraph(AssignmentsQueryResult<Entity,Relationship> result) {
         Map<String, Stream<Entity>> newEntityStreams =
                 Stream.ofAll(result.getAssignments())
                 .flatMap(Assignment::getEntities)
@@ -110,7 +110,7 @@ public class GraphTraversalCursor implements Cursor {
 
     //region Fields
     private Cursor cursor;
-    private AssignmentsQueryResult fullGraph;
+    private AssignmentsQueryResult<Entity,Relationship> fullGraph;
 
     private Set<String> entityIds;
     private Set<String> relationshipIds;

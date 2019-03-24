@@ -20,17 +20,20 @@ package com.kayhut.fuse.executor.ontology.schema;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.kayhut.fuse.model.logical.LogicalGraphModel;
+
 import java.io.IOException;
 
-public class VoidGraphDataLoader implements InitialGraphDataLoader {
-    //region InitialGraphDataLoader Implementation
+public class VoidGraphDataLoader implements GraphDataLoader {
+    //region GraphDataLoader Implementation
     @Override
     public long init() throws IOException {
         return 0;
     }
 
     @Override
-    public long load() throws IOException {
+    public long load(LogicalGraphModel root) throws IOException {
         return 0;
     }
 

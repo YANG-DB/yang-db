@@ -18,7 +18,6 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
-import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
@@ -54,6 +53,11 @@ public class MockDriver {
 
         @Override
         public Optional<Object> run(com.kayhut.fuse.model.query.Query query) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<Object> run(String cypher, String ontology) {
             return Optional.empty();
         }
         //endregion

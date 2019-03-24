@@ -36,7 +36,7 @@ import java.util.List;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class AssignmentsQueryResult extends QueryResultBase {
+public class AssignmentsQueryResult<E,R> extends QueryResultBase {
     //region Constructors
     public AssignmentsQueryResult() {
         this.assignments = Collections.emptyList();
@@ -62,12 +62,12 @@ public class AssignmentsQueryResult extends QueryResultBase {
         this.pattern = pattern;
     }
 
-    public List<Assignment> getAssignments ()
+    public List<Assignment<E,R>> getAssignments ()
     {
         return assignments;
     }
 
-    public void setAssignments (List<Assignment> assignments)
+    public void setAssignments (List<Assignment<E,R>> assignments)
     {
         this.assignments = assignments;
     }
@@ -83,7 +83,7 @@ public class AssignmentsQueryResult extends QueryResultBase {
 
     //region Fields
     private Query pattern;
-    private List<Assignment> assignments;
+    private List<Assignment<E,R>> assignments;
 
     @Override
     public int getSize() {
@@ -91,7 +91,7 @@ public class AssignmentsQueryResult extends QueryResultBase {
     }
     //endregion
 
-    public static final class Builder {
+    public static final class Builder<E,R> {
         //region Constructors
         private Builder() {
             assignments = new ArrayList<>();
@@ -110,18 +110,18 @@ public class AssignmentsQueryResult extends QueryResultBase {
             return this;
         }
 
-        public Builder withAssignment(Assignment assignments) {
+        public Builder withAssignment(Assignment<E,R> assignments) {
             this.assignments.add(assignments);
             return this;
         }
 
-        public Builder withAssignments(List<Assignment> assignments) {
+        public Builder withAssignments(List<Assignment<E,R>> assignments) {
             this.assignments = assignments;
             return this;
         }
 
-        public AssignmentsQueryResult build() {
-            AssignmentsQueryResult assignmentsQueryResult = new AssignmentsQueryResult();
+        public AssignmentsQueryResult<E,R> build() {
+            AssignmentsQueryResult<E,R> assignmentsQueryResult = new AssignmentsQueryResult<>();
             assignmentsQueryResult.setPattern(pattern);
             assignmentsQueryResult.setAssignments(assignments);
             return assignmentsQueryResult;
@@ -130,7 +130,7 @@ public class AssignmentsQueryResult extends QueryResultBase {
 
         //region Fields
         private Query pattern;
-        private List<Assignment> assignments;
+        private List<Assignment<E,R>> assignments;
         //endregion
     }
 

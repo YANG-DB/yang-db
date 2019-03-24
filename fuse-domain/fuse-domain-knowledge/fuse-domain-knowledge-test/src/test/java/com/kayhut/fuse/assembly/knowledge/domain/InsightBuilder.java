@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-//todo - for kobi usage
 public class InsightBuilder extends EntityId {
     public static final String INSIGHT_INDEX = "i0";
     public static final String type = "Insight";

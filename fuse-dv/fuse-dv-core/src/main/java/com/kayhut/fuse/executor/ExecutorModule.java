@@ -111,9 +111,9 @@ public class ExecutorModule extends ModuleBase {
             @Override
             protected void configure() {
                 try {
-                    this.bind(InitialGraphDataLoader.class)
+                    this.bind(GraphDataLoader.class)
                             .to(getInitialDataLoader(conf));
-                    this.expose(InitialGraphDataLoader.class);
+                    this.expose(GraphDataLoader.class);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -271,8 +271,8 @@ public class ExecutorModule extends ModuleBase {
         return (Class<? extends RawSchema>) Class.forName(conf.getString(conf.getString("assembly")+".physical_raw_schema"));
     }
 
-    private Class<? extends InitialGraphDataLoader> getInitialDataLoader(Config conf) throws ClassNotFoundException {
-        return (Class<? extends InitialGraphDataLoader>) (Class.forName(conf.getString(conf.getString("assembly")+".physical_schema_data_loader")));
+    private Class<? extends GraphDataLoader> getInitialDataLoader(Config conf) throws ClassNotFoundException {
+        return (Class<? extends GraphDataLoader>) (Class.forName(conf.getString(conf.getString("assembly")+".physical_schema_data_loader")));
     }
 
     private Class<? extends SearchOrderProviderFactory> getSearchOrderProvider(Config conf) throws ClassNotFoundException {

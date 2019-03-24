@@ -77,6 +77,10 @@ public class EntityValue {
     private String bdt;
     @JsonProperty("stringValue")
     private String stringValue;
+    @JsonProperty("longValue")
+    private Integer longValue;
+    @JsonProperty("floatValue")
+    private Integer floatValue;
     @JsonProperty("intValue")
     private Integer intValue;
     @JsonProperty("geoValue")
@@ -93,6 +97,26 @@ public class EntityValue {
     private List<String> refs = null;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    @JsonProperty("longValue")
+    public Integer getLongValue() {
+        return longValue;
+    }
+
+    @JsonProperty("longValue")
+    public void setLongValue(Integer longValue) {
+        this.longValue = longValue;
+    }
+
+    @JsonProperty("floatValue")
+    public Integer getFloatValue() {
+        return floatValue;
+    }
+
+    @JsonProperty("floatValue")
+    public void setFloatValue(Integer floatValue) {
+        this.floatValue = floatValue;
+    }
 
     @JsonProperty("type")
     public String getType() {

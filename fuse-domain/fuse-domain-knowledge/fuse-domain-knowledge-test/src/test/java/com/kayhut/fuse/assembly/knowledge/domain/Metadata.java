@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//todo - for kobi usage
 public abstract class Metadata extends KnowledgeDomainBuilder {
     static SimpleDateFormat sdf;
 

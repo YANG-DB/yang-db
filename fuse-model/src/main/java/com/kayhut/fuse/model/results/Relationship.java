@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by benishue on 21-Feb-17.
@@ -109,6 +110,10 @@ public class Relationship {
 
     public List<Property> getProperties() {
         return properties;
+    }
+
+    public Optional<Property> getProperty(String key) {
+        return getProperties().stream().filter(p->p.getpType().equals(key)).findAny();
     }
 
     public void setProperties(List<Property> properties) {

@@ -8,13 +8,10 @@ import com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.Assignment;
-import com.kayhut.fuse.model.results.AssignmentsQueryResult;
-import com.kayhut.fuse.model.results.QueryResultBase;
+import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import javaslang.Tuple3;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,7 +49,7 @@ public class KnowledgeMassInsertionGraphTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false);
+        Setup.setup(true);
         rand = new Random();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         //load data
@@ -183,7 +180,7 @@ public class KnowledgeMassInsertionGraphTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
         //compare Entity created + EValues * 2 ( include the hasEvalue rel per each EValue)
-        long eValues = ((AssignmentsQueryResult) pageData).getAssignments().stream().flatMap(p -> p.getEntities().stream()).filter(p -> p.geteType().equals("Evalue"))
+        long eValues = ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().stream().flatMap(p -> p.getEntities().stream()).filter(p -> p.geteType().equals("Evalue"))
                 .filter(p -> p.getProperty("stringValue").get().getValue().toString().equals("Lorem"))
                 .count();
         long entities = countGraphElements(pageData,false,true,relationship -> false,entity -> true);

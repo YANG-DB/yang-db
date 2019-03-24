@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
 import javaslang.collection.Stream;
+import org.geojson.Point;
+
 import java.util.*;
 
 
@@ -17,8 +19,11 @@ public class RvalueBuilder extends EntityId {
     public String fieldId;
     public String bdt;
     public String stringValue;
+    public Point geoValue;
     public Date dateValue;
     public int intValue = Integer.MIN_VALUE;
+    public long longValue;
+    public float floatValue;
     private String valueId;
 
     public static RvalueBuilder _r(String valueId){
@@ -32,8 +37,14 @@ public class RvalueBuilder extends EntityId {
         return this;
     }
 
+
     public RvalueBuilder value(String value) {
         this.stringValue = value;
+        return this;
+    }
+
+    public RvalueBuilder value(Point value) {
+        this.geoValue = value;
         return this;
     }
 
@@ -44,6 +55,15 @@ public class RvalueBuilder extends EntityId {
 
     public RvalueBuilder value(int value) {
         this.intValue = value;
+        return this;
+    }
+
+    public RvalueBuilder value(long value) {
+        this.longValue = value;
+        return this;
+    }
+    public RvalueBuilder value(float value) {
+        this.floatValue = value;
         return this;
     }
 
@@ -98,6 +118,10 @@ public class RvalueBuilder extends EntityId {
             on.put("stringValue", stringValue);
         else if(intValue!=Integer.MIN_VALUE)
             on.put("intValue", intValue);
+        else if(longValue!=0)
+            on.put("longValue", longValue);
+        else if(floatValue!=0.0)
+            on.put("floatValue", floatValue);
         else if(dateValue!=null)
             on.put("dateValue", sdf.format(dateValue));
         return on;
@@ -110,6 +134,10 @@ public class RvalueBuilder extends EntityId {
             value = new Property("stringValue", "raw", stringValue);
         else if(intValue!=Integer.MIN_VALUE)
             value = new Property("intValue", "raw", intValue);
+        else if(longValue!=0)
+            value = new Property("longValue", "raw", longValue);
+        else if(floatValue!=0)
+            value = new Property("floatValue", "raw", floatValue);
         else if(dateValue!=null)
             value = new Property("dateValue", "raw", sdf.format(dateValue));
 

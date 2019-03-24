@@ -172,6 +172,8 @@ public class AssignmentToGraph {
                             String value = n.getProperties().stream().filter(v ->
                                     v.getpType().equals("stringValue") ||
                                             v.getpType().equals("intValue") ||
+                                            v.getpType().equals("longValue") ||
+                                            v.getpType().equals("floatValue") ||
                                             v.getpType().equals("dateValue"))
                                     .findAny().get().getValue().toString();
 
