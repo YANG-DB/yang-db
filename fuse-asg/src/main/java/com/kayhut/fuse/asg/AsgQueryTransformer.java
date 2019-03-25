@@ -51,6 +51,9 @@ public class AsgQueryTransformer implements QueryTransformer<AsgQuery, AsgQuery>
     //region QueryTransformer Implementation
     @Override
     public AsgQuery transform(AsgQuery query) {
+        if(query==null)
+            throw new IllegalArgumentException("Query was null - probably serialization from input failed");
+
         Optional<Ontology> ontology = this.ontologyProvider.get(query.getOnt());
         if (!ontology.isPresent()) {
             throw new RuntimeException("unknown ontology");

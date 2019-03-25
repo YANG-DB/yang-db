@@ -23,6 +23,9 @@ package com.kayhut.fuse.model.resourceInfo;
  * #L%
  */
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * Created by lior.perry on 6/11/2017.
  */
@@ -31,6 +34,14 @@ public class FuseError {
     private String errorDescription;
 
     public FuseError() {}
+
+    public FuseError(String errorCode, Exception e) {
+        this.errorCode = errorCode;
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        this.errorDescription = e.getMessage()!=null ? e.getMessage() : sw.toString();
+
+    }
 
     public FuseError(String errorCode, String errorDescription) {
         this.errorCode = errorCode;

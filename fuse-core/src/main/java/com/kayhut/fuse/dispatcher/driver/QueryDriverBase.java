@@ -175,8 +175,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                     urlSupplier.cursorStoreUrl(metadata.getId())));
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(),
-                            err.getMessage())));
+                    new FuseError(Query.class.getSimpleName(),err)));
         }
     }
     /**

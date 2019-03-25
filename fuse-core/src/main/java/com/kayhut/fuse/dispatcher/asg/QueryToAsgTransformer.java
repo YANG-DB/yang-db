@@ -50,6 +50,9 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
     //region QueryTransformer Implementation
     @Override
     public AsgQuery transform(Query query) {
+        if(query==null)
+            throw new IllegalArgumentException("Query was null - probably serialization from input failed");
+
         Map<Integer, EBase> queryElements = new HashMap<>();
         Stream.ofAll(query.getElements()).forEach(eBase -> queryElements.put(eBase.geteNum(), eBase));
 

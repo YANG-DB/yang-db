@@ -45,6 +45,9 @@ public class AsgUnionSplitQueryTransformer implements QueryTransformer<AsgQuery,
 
     @Override
     public Iterable<AsgQuery> transform(AsgQuery query) {
+        if(query==null)
+            throw new IllegalArgumentException("Query was null - probably serialization from input failed");
+
         return Stream.ofAll(new PermutationVisitor(Collections.emptyMap()).visit(query.getStart()))
                 .map(permutation -> AsgQueryUtil.transform(
                         query.getStart(),
