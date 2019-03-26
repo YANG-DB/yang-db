@@ -36,8 +36,8 @@ public class KnowledgeTutorialControllerRegistrar extends AppControllerRegistrar
     //region AppControllerRegistrarBase Implementation
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
-        app.get("tutorial/1.json", () -> Results.redirect("/public/assets/swagger/swagger-tutorial-1.json"));
-        app.get("tutorial/2.json", () -> Results.redirect("/public/assets/swagger/swagger-tutorial-2.json"));
+        app.get("tutorial/1", () -> Results.redirect("/public/assets/swagger/swagger-tutorial-1.json"));
+        app.get("tutorial/2", () -> Results.redirect("/public/assets/swagger/swagger-tutorial-2.json"));
     }
     //endregion
 }
