@@ -1,5 +1,4 @@
-![]https://avatars1.githubusercontent.com/u/48943349?s=460&v=4
-From Graph to Elastic 
+From Graph to Elastic - A tail of a Yang-DB...
 =========================================================================================
 >This project was kindly contributed back to the community by Kayhut.com 
 
