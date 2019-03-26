@@ -1,10 +1,10 @@
-From Graph to Elastic
+From Graph to Elastic 
 =========================================================================================
 >This project was kindly contributed back to the community by Kayhut.com 
 
-####Project Fuse
+#### Project YANG-DB
 
-* [wiki](https://bitbucket.org/liordana/fuse/wiki/Home)
+* [wiki](http://github.com/YANG-DB/yang-db)
 
 ##### Members:
 
