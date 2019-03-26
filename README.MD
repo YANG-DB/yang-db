@@ -1,3 +1,4 @@
+![]https://avatars1.githubusercontent.com/u/48943349?s=460&v=4
 From Graph to Elastic 
 =========================================================================================
 >This project was kindly contributed back to the community by Kayhut.com 
@@ -799,7 +800,7 @@ The process in which each step is buffering the result until it reaches the requ
 
 This process is recursive in the sense that when a middle step needs more vertices from the former step it calls the former step which in turn can call its former step until possibly reaching the first step or exhausting the data (no more elements found matching the query).
 
-![alt text](https://media.licdn.com/dms/image/C4E12AQHwIKRIdmeyog/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=Wm39J09DkIOb9mzG1YRagxiZeOiFxaGQIwza6eSmunA)
+![](https://media.licdn.com/dms/image/C4E12AQHwIKRIdmeyog/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=Wm39J09DkIOb9mzG1YRagxiZeOiFxaGQIwza6eSmunA)
 
 Each step maintains a state (scroll) over the data it already fetched (position) so it can continue bulking data when it is required.
 
