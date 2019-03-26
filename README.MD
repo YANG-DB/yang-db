@@ -4,7 +4,7 @@ From Graph to Elastic - A tail of a Yang-DB...
 
 #### Project YANG-DB
 
-* [wiki](http://github.com/YANG-DB/yang-db)
+* [wiki](https://github.com/YANG-DB/yang-db/wiki)
 
 ##### Members:
 
