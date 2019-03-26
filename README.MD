@@ -231,19 +231,19 @@ top of it. Let’s review the schema (simplified for this article)
 ![](https://media.licdn.com/dms/image/C4E12AQEYjHioWmFiZQ/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=QxczQsdb6HOxjAkZNfzYfvCMQ-cJvzd7KMRk8offa9o)
 
 
-#####Person
+##### Person
  * [name ,age ,gender ,birthdate ,Joined ,status ,email ]
 
-#####Post
+##### Post
  * [ content ,language , imageFile ]
 
-#####Location
+##### Location
  * [coordination,country ,type (city/village) ] 
 
-####Forum
+#### Forum
  * [title ,creationDate ] 
 
-####Tag
+#### Tag
  * [type ]
 
 #### Domain Relations
@@ -335,7 +335,7 @@ Since we assume our social graph will grow over time we can plan the capacity of
 
 Apart from the edge properties and id attributes, we introducing data redundancy to help reduce the need to fetch all the vertices on the other side (given some filter exists on their properties).
 
-####Modeling the edge
+#### Modeling the edge
 ![](https://media.licdn.com/dms/image/C4E12AQGcDT2vo15FDw/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=525ERGd9LnUIBQ-lyTPPZqmrkX3BB8Duo6cFC4dvQv8)
 
 Friend Edge document:
