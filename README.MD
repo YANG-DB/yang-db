@@ -1,6 +1,5 @@
 From Graph to Elastic - A tail of a Yang-DB...
 =========================================================================================
->This project was kindly contributed back to the community by Kayhut.com 
 
 #### Project YANG-DB
 
