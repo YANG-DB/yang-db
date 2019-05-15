@@ -9,9 +9,9 @@ package com.kayhut.fuse.assembly.knowledge.parser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,42 +23,53 @@ package com.kayhut.fuse.assembly.knowledge.parser;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.assembly.knowledge.parser.model.BusinessTypesProvider;
 import com.kayhut.fuse.assembly.knowledge.parser.model.Step;
-import com.kayhut.fuse.assembly.knowledge.parser.model.Types;
 import com.kayhut.fuse.model.Next;
+import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.properties.BaseProp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.stringtemplate.v4.ST;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.kayhut.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.SchemaFields.CATEGORY;
+import static com.kayhut.fuse.assembly.knowledge.parser.JsonQueryTranslator.PropertyBuilder.*;
 import static com.kayhut.fuse.assembly.knowledge.parser.model.TypeConstraint.asConstraint;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
+import static java.util.Collections.emptyList;
 
 public class JsonQueryTranslator {
     static private ObjectMapper mapper =
             new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+    public Query translate(String query, BusinessTypesProvider typesProvider) throws IOException {
+        return jsonParser(new JSONObject(query), typesProvider);
+    }
 
-    static public Query jsonParser(JSONObject query) throws IOException {
+    public Query translate(JSONObject query, BusinessTypesProvider typesProvider) throws IOException {
+        return jsonParser(query, typesProvider);
+    }
+
+
+    private Query jsonParser(JSONObject query, BusinessTypesProvider typesProvider) throws IOException {
         Query.Builder builder = Query.Builder.instance();
-        builder.withName(query.optString("name","Query:"+System.currentTimeMillis()));
-        builder.withOnt(query.optString("ontology","Knowledge"));
+        builder.withName(query.optString("name", "Query:" + System.currentTimeMillis()));
+        builder.withOnt(query.optString("ontology", "Knowledge"));
 
         JSONArray clause = query.getJSONArray("clause");
         AtomicInteger sequence = new AtomicInteger(0);
@@ -69,88 +80,159 @@ public class JsonQueryTranslator {
 
         //iterate and populate query elements
         for (int i = 0; i < clauseArray.length(); i++) {
-            JSONObject obj = clauseArray.getJSONArray(i).getJSONObject(0);
-            builder.withElement(element(context, mapper.readValue(obj.toString(), Step.class), sequence));
+            builder.appendElements(element(i, clauseArray, context, sequence, typesProvider));
         }
 
         return builder.build();
     }
 
 
-    private static EBase[] element(AtomicReference<EBase> context,Step step, AtomicInteger sequence) {
+    private List<EBase> element(int index, JSONArray clauseArray, AtomicReference<EBase> context, AtomicInteger sequence, BusinessTypesProvider typesProvider) throws IOException {
         List<EBase> elements = new ArrayList<>();
+        JSONObject obj = clauseArray.getJSONArray(index).getJSONObject(0);
+        Step step = mapper.readValue(obj.toString(), Step.class);
+        boolean hasNextStep = index < (clauseArray.length() - 1);
         switch (step.getType()) {
             case entity:
-                elements.addAll(createNode(context,step,sequence));
+                elements.addAll(createNode(context, step, sequence, typesProvider, hasNextStep));
                 break;
             case link:
-                elements.addAll(createEdge(context,step,sequence));
+                elements.addAll(createEdge(context, step, sequence, typesProvider, hasNextStep));
                 break;
         }
-        return elements.toArray(new EBase[elements.size()]);
+        return elements;
     }
 
     /**
      * generate Entity type node plus hasEvalue relation with the eValue props
+     *
      * @param step
      * @param sequence
+     * @param hasNextStep
      * @return
      */
-    private static Collection<EBase> createNode( AtomicReference<EBase> context, Step step, AtomicInteger sequence) {
+    private Collection<EBase> createNode(AtomicReference<EBase> context, Step step, AtomicInteger sequence, BusinessTypesProvider typesProvider, boolean hasNextStep) {
         List<EBase> nodes = new ArrayList<>();
         final ETyped entity = new ETyped(sequence.incrementAndGet(),
                 step.getConceptId() + "_" + sequence.get(),
                 "Entity", -1, 0);
-        addNext(context,entity);
+        addNext(context, entity);
         nodes.add(entity);
         //context moves to entity
         context.set(entity);
 
         //region populate eValues
-        if(!step.getProperties().isEmpty()) {
-            nodes.addAll(appendProperties(context, step, sequence, entity));
+        if (!step.getProperties().isEmpty()) {
+            nodes.addAll(appendProperties(context, step, emptyList(), sequence, entity, EProp.class, "Evalue","hasEvalue", typesProvider));
         }
         //endregion
         return nodes;
     }
 
-    private static List<EBase> appendProperties(AtomicReference<EBase> context, Step step, AtomicInteger sequence, ETyped entity) {
+
+    /**
+     * generate Relation type node plus hasRvalue relation with the rValue props
+     *
+     * @param context
+     * @param step
+     * @param sequence
+     * @param hasNextStep
+     * @return
+     */
+    private Collection<EBase> createEdge(AtomicReference<EBase> context, Step step, AtomicInteger sequence, BusinessTypesProvider typesProvider, boolean hasNextStep) {
+        List<EBase> nodes = new ArrayList<>();
+        //add rel => assuming former entity if of 'Entity' type
+        int relId = sequence.incrementAndGet();
+        RelationTypeBuilder typeBuilder = new RelationTypeBuilder(step.getDirection());
+        Rel relatedEntity = new Rel(relId, "hasRelation", typeBuilder.direction.to(), relId + ":" + step.getConceptId() + "_" + typeBuilder.rType() + "_[" + typeBuilder.direction + "]", -1);
+        //add next
+        addNext(context, relatedEntity);
+        nodes.add(relatedEntity);
+        //context moves to entity
+        context.set(relatedEntity);
+
+        final ETyped entity = new ETyped(sequence.incrementAndGet(),
+                step.getConceptId() + "_" + sequence.get(),
+                "Relation", -1, 0);
+        addNext(context, entity);
+        nodes.add(entity);
+        //context moves to entity
+        context.set(entity);
+        //label is "conceptId":"http://huha.com/facebook#friends"
+        String category = step.getConceptId();
+        //metadata properties
+        List<BaseProp> props = Collections.singletonList(new BaseProp() {
+            @Override
+            public String getpType() {
+                return CATEGORY;
+            }
+
+            @Override
+            public Constraint getCon() {
+                return Constraint.of(eq, category);
+            }
+        });
+        //region populate eValues/rValue
+        nodes.addAll(appendProperties(context, step, props, sequence, entity, EProp.class, "Rvalue","hasRvalue", typesProvider));
+        // add next rel only if another step (Entity) exists
+        if (hasNextStep) {
+            //add rel reverse <=
+            relId = sequence.incrementAndGet();
+            relatedEntity = new Rel(relId, "hasRelation", typeBuilder.direction.reverse().to(), relId + ":" + step.getConceptId() + "_" + typeBuilder.reverse() + "_[" + typeBuilder.direction.reverse() + "]", -1);
+            //add metadata relProps below
+            addNext(context, relatedEntity);
+            nodes.add(relatedEntity);
+            //context moves to rel
+            context.set(relatedEntity);
+        }
+        return nodes;
+    }
+
+    private <T extends BaseProp> List<EBase> appendProperties(AtomicReference<EBase> context, Step step, List<BaseProp> metadata,
+                                                              AtomicInteger sequence, ETyped entity, Class<T> propClazz,
+                                                              String propType, String propRelType, BusinessTypesProvider typesProvider) {
         List<EBase> nodes = new ArrayList<>();
         final int quantId = sequence.incrementAndGet();
         entity.setNext(quantId);
-        Quant1 quant = new Quant1(quantId,QuantType.all, new ArrayList<>(),0 );
+        Quant1 quant = new Quant1(quantId, QuantType.all, new ArrayList<>(), 0);
         nodes.add(quant);
         //context moves to quant
         context.set(quant);
-        //todo add metadata relProps below
+        //add metadata relProps below
+        metadata.forEach(prop -> {
+            final int propId = sequence.incrementAndGet();
+            quant.addNext(propId);
+            //add _Value Node
+            nodes.add(createProp(propClazz, propId, prop.getpType(), prop.getCon()));
+        });
 
-        //region add eProps
+        //region add eProps /
         step.getProperties().forEach((key, value) -> {
             final int relId = sequence.incrementAndGet();
             quant.addNext(relId);
 
-            //add rel hasEvalue
-            final int eValue = sequence.incrementAndGet();
-            nodes.add(new Rel(relId, "hasEvalue", Rel.Direction.R, relId + ":" + step.getConceptId() + "_hasEvalue_" + key, eValue, 0));
+            //add rel has?(E/R)value
+            final int _value = sequence.incrementAndGet();
+            nodes.add(new Rel(relId, propRelType, Rel.Direction.R, relId + ":" + step.getConceptId() + "_" + propRelType + "_" + key, _value, 0));
 
-            //add eValue Node
+            //add _Value Node
             final int propQuantId = sequence.incrementAndGet();
-            nodes.add(new ETyped(eValue, eValue + ":" + step.getConceptId() + "_eValue_" + key, "Evalue", propQuantId, 0));
+            nodes.add(new ETyped(_value, _value + ":" + step.getConceptId() + "_" + propType + "_" + key, propType, propQuantId, 0));
 
             //add properties quant
             final Quant1 propsQuant = new Quant1(propQuantId, QuantType.all, new ArrayList<>(), 0);
             nodes.add(propsQuant);
 
-            //add eProp fieldId
+            //add ?(e/r)Prop fieldId
             final int fieldId = sequence.incrementAndGet();
-            nodes.add(new EProp(fieldId, "fieldId",
-                    Constraint.of(ConstraintOp.eq, Types.byValue(key).getSuffix())));
+            nodes.add(createProp(propClazz, fieldId, "fieldId",
+                    Constraint.of(eq, key)));
             propsQuant.addNext(fieldId);
 
             //add value constraint
             final int valueId = sequence.incrementAndGet();
-            nodes.add(new EProp(valueId,
-                    Types.byValue(key).getFieldType(),
+            nodes.add(createProp(propClazz, valueId,
+                    typesProvider.type(key).orElse("stringValue"),
                     asConstraint(value.getMatchType(), value.getValue())));
             propsQuant.addNext(valueId);
         });
@@ -158,50 +240,83 @@ public class JsonQueryTranslator {
         //endregion
     }
 
-    /**
-     * generate Relation type node plus hasEvalue relation with the eValue props
-     * @param context
-     * @param step
-     * @param sequence
-     * @return
-     */
-    private static Collection<EBase> createEdge(AtomicReference<EBase> context, Step step, AtomicInteger sequence) {
-        List<EBase> nodes = new ArrayList<>();
-        //add rel hasEvalue
-        int relId = sequence.incrementAndGet();
-        Rel relatedEntity = new Rel(relId, "relatedEntity", step.getDirection().to(), relId + ":" + step.getConceptId() + "_hasRelation_["+step.getDirection()+"]", 0, 0);
-        nodes.add(relatedEntity);
-
-        //todo add rValue properties
-
-        //add metadata relProps below
-        if(!step.getProperties().isEmpty()) {
-            ArrayList<RelProp> props = new ArrayList<>();
-            int relGroup = sequence.incrementAndGet();
-            relatedEntity.setB(relGroup);
-            step.getProperties().forEach((key, value) -> {
-                //add metadata constraint
-                final int valueId = sequence.incrementAndGet();
-                props.add(new RelProp(valueId,
-                        Types.byValue(key).getSuffix(),
-                        asConstraint(value.getMatchType(), value.getValue()),0));
-            });
-            //populate group
-            RelPropGroup group = new RelPropGroup(relGroup, props);
-            nodes.add(group);
-        }
-        addNext(context,relatedEntity);
-        //context moves to rel
-        context.set(relatedEntity);
-        return nodes;
-    }
-
-    private static void addNext(AtomicReference<EBase> context, EBase entity) {
-        if(Quant1.class.isAssignableFrom(context.get().getClass())) {
+    private void addNext(AtomicReference<EBase> context, EBase entity) {
+        if (Quant1.class.isAssignableFrom(context.get().getClass())) {
             ((Quant1) context.get()).addNext(entity.geteNum());
-        }else  if(Next.class.isAssignableFrom(context.get().getClass())) {
+        } else if (Next.class.isAssignableFrom(context.get().getClass())) {
             ((Next) context.get()).setNext(entity.geteNum());
         }
     }
 
+    static class RelationTypeBuilder {
+        private Direction direction;
+
+        public RelationTypeBuilder(Direction direction) {
+            this.direction = direction;
+        }
+
+        public String reverse() {
+            String rType = "hasRelation";
+            switch (direction.reverse().to()) {
+                case L:
+                    rType = "hasInRelation";
+                    break;
+                case R:
+                    rType = "hasOutRelation";
+                    break;
+            }
+            return rType;
+
+        }
+
+        public String rType() {
+            String rType = "hasRelation";
+            switch (direction.to()) {
+                case L:
+                    rType = "hasInRelation";
+                    break;
+                case R:
+                    rType = "hasOutRelation";
+                    break;
+            }
+            return rType;
+        }
+
+    }
+
+    static class PropertyBuilder {
+
+        static <T extends BaseProp> String relationTypeName(Class<T> clazz) {
+            switch (clazz.getSimpleName()) {
+                case "EProp":
+                    return "hasEvalue";
+                case "RelProp":
+                    return "hasRvalue";
+                default:
+                    return "hasEvalue";
+            }
+        }
+
+        static <T extends BaseProp> String typeName(Class<T> clazz) {
+            switch (clazz.getSimpleName()) {
+                case "EProp":
+                    return "Evalue";
+                case "RelProp":
+                    return "Rvalue";
+                default:
+                    return "Evalue";
+            }
+        }
+
+        static <T extends BaseProp> BaseProp createProp(Class<T> clazz, int eNum, String pType, Constraint con) {
+            switch (clazz.getSimpleName()) {
+                case "EProp":
+                    return new EProp(eNum, pType, con);
+                case "RelProp":
+                    return new RelProp(eNum, pType, con);
+                default:
+                    return new EProp(eNum, pType, con);
+            }
+        }
+    }
 }

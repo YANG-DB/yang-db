@@ -4,7 +4,7 @@ package com.kayhut.fuse.asg.strategy.selection;
  * #%L
  * fuse-asg
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
+import com.kayhut.fuse.model.query.properties.CalculatedEProp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
@@ -64,7 +65,9 @@ public class DefaultSelectionAsgStrategy implements AsgStrategy {
 
         AsgQueryUtil.elements(query, EPropGroup.class).forEach(ePropGroupAsgEBase -> {
                     if (Stream.ofAll(ePropGroupAsgEBase.geteBase().getProps())
-                            .filter(eProp -> eProp.getProj() != null).isEmpty()) {
+                            .filter(eProp -> !(eProp instanceof CalculatedEProp))
+                            .filter(eProp -> eProp.getProj() != null)
+                            .isEmpty()) {
 
                         Optional<AsgEBase<ETyped>> eTypedAsgEBase = AsgQueryUtil.ancestor(ePropGroupAsgEBase, ETyped.class);
                         List<EProp> projectionProps = Collections.emptyList();

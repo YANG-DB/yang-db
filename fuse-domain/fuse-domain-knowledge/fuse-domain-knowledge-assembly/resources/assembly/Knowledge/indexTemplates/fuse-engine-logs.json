@@ -1,0 +1,90 @@
+{
+  "order": 0,
+  "template": "fuse-engine-logs-*",
+  "settings": {
+    "index": {
+      "number_of_shards": "1",
+      "number_of_replicas": "0"
+    }
+  },
+  "mappings": {
+    "log": {
+      "properties": {
+        "logType": {
+          "type": "keyword"
+        },
+        "level": {
+          "type": "keyword"
+        },
+        "logger": {
+          "type": "keyword"
+        },
+        "requestExternalOperation": {
+          "type": "keyword"
+        },
+        "methodName": {
+          "type": "keyword"
+        },
+        "route": {
+          "type": "keyword"
+        },
+        "thread": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "message": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "query": {
+          "type": "object",
+          "enabled": false
+        },
+        "elapsed": {
+          "type": "integer"
+        },
+        "@timestamp": {
+          "type": "date"
+        },
+        "elapsedFrom": {
+          "type": "integer"
+        },
+        "elasticElapsed": {
+          "type": "integer"
+        },
+        "elasticElapsedTotal": {
+          "type": "integer"
+        },
+        "networkElasticElapsed": {
+          "type": "integer"
+        },
+        "networkElasticElapsedTotal": {
+          "type": "integer"
+        },
+        "requestId": {
+          "type": "keyword"
+        },
+        "host": {
+          "type": "keyword"
+        },
+        "requestExternalId": {
+          "type": "keyword"
+        },
+        "responseLength": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "aliases": {}
+}

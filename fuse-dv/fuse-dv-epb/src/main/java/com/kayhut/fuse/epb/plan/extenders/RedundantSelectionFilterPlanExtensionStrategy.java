@@ -4,7 +4,7 @@ package com.kayhut.fuse.epb.plan.extenders;
  * #%L
  * fuse-dv-epb
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.properties.projection.CalculatedFieldProjection;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
@@ -129,9 +130,11 @@ public class RedundantSelectionFilterPlanExtensionStrategy implements PlanExtens
 
         RelPropGroup relPropGroup = lastRelationFilterOp.get().getAsgEbase().geteBase().clone();
 
+        //add redundant (if such exist) vertex property to rel (exclude calculated fields)
         if(lastEntityFilterOp.isPresent()) {
             Stream.ofAll(lastEntityFilterOp.get().getAsgEbase().geteBase().getProps())
                     .filter(eProp -> eProp.getProj() != null)
+                    .filter(eProp -> !(eProp.getProj() instanceof CalculatedFieldProjection))
                     .toJavaList()
                     .forEach(p -> {
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = endSchema

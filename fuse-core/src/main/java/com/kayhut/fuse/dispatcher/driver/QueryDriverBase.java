@@ -4,14 +4,14 @@ package com.kayhut.fuse.dispatcher.driver;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,6 +40,7 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -85,10 +86,10 @@ public abstract class QueryDriverBase implements QueryDriver {
         try {
             CreateQueryRequest queryRequest = new CreateQueryRequest(id, id, query, new CreateGraphCursorRequest(new CreatePageRequest()));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
-            if(!resourceInfo.isPresent())
+            if (!resourceInfo.isPresent())
                 return Optional.empty();
 
-            if(resourceInfo.get().getError()!=null)
+            if (resourceInfo.get().getError() != null)
                 return Optional.of(resourceInfo.get().getError());
 
             return Optional.of(resourceInfo.get());
@@ -103,12 +104,12 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> run(String cypher, String ontology) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, cypher, ontology,new CreateGraphCursorRequest(new CreatePageRequest()));
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, cypher, ontology, new CreateGraphCursorRequest(new CreatePageRequest()));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
-            if(!resourceInfo.isPresent())
+            if (!resourceInfo.isPresent())
                 return Optional.empty();
 
-            if(resourceInfo.get().getError()!=null)
+            if (resourceInfo.get().getError() != null)
                 return Optional.of(resourceInfo.get().getError());
 
             return Optional.of(resourceInfo.get());
@@ -158,7 +159,7 @@ public abstract class QueryDriverBase implements QueryDriver {
      */
     private Optional<QueryResourceInfo> create(CreateQueryRequest request, QueryMetadata metadata, Query query) {
         try {
-            AsgQuery asgQuery = this.queryTransformer.transform(query);
+            AsgQuery asgQuery = transform(query);
 
             ValidationResult validationResult = this.queryValidator.validate(asgQuery);
             if (!validationResult.valid()) {
@@ -175,9 +176,10 @@ public abstract class QueryDriverBase implements QueryDriver {
                     urlSupplier.cursorStoreUrl(metadata.getId())));
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(),err)));
+                    new FuseError(Query.class.getSimpleName(), err)));
         }
     }
+
     /**
      * internal api
      *
@@ -186,13 +188,13 @@ public abstract class QueryDriverBase implements QueryDriver {
      * @param query
      * @return
      */
-    private Optional<QueryResourceInfo> create(CreateJsonQueryRequest request, QueryMetadata metadata, String query) {
+    protected Optional<QueryResourceInfo> create(CreateJsonQueryRequest request, QueryMetadata metadata, String query) {
         try {
-            AsgQuery asgQuery = this.jsonQueryTransformer.transform(query);
+            AsgQuery asgQuery = transform(query);
             asgQuery.setName(metadata.getName());
             asgQuery.setOnt(request.getOntology());
 
-            ValidationResult validationResult = this.queryValidator.validate(asgQuery);
+            ValidationResult validationResult = validateAsgQuery(asgQuery);
             if (!validationResult.valid()) {
                 return Optional.of(new QueryResourceInfo().error(
                         new FuseError(Query.class.getSimpleName(),
@@ -204,7 +206,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                     .withName(query).build();
 
             this.resourceStore.addQueryResource(createResource(
-                    new CreateQueryRequest(request.getId(),request.getName(),build,request.getPlanTraceOptions(),request.getCreateCursorRequest())
+                    new CreateQueryRequest(request.getId(), request.getName(), build, request.getPlanTraceOptions(), request.getCreateCursorRequest())
                     , build
                     , asgQuery
                     , metadata));
@@ -218,6 +220,26 @@ public abstract class QueryDriverBase implements QueryDriver {
                     new FuseError(Query.class.getSimpleName(),
                             err.getMessage())));
         }
+    }
+
+    protected ValidationResult validateAsgQuery(AsgQuery query) {
+        return this.queryValidator.validate(query);
+    }
+
+    public ValidationResult validateQuery(Query query) {
+        AsgQuery asgQuery = transform(query);
+        if (!validateAsgQuery(asgQuery).valid())
+            return validateAsgQuery(asgQuery);
+        return validateAsgQuery(rewrite(asgQuery));
+    }
+
+    protected AsgQuery transform(Query query) {
+        return this.queryTransformer.transform(query);
+    }
+
+
+    protected AsgQuery transform(String query) {
+        return this.jsonQueryTransformer.transform(query);
     }
 
     @Override
@@ -249,7 +271,7 @@ public abstract class QueryDriverBase implements QueryDriver {
 
     }
 
-    private Optional<QueryResourceInfo> getQueryResourceInfo(CreateQueryRequestMetadata request, Optional<QueryResourceInfo> queryResourceInfo) {
+    protected Optional<QueryResourceInfo> getQueryResourceInfo(CreateQueryRequestMetadata request, Optional<QueryResourceInfo> queryResourceInfo) {
         if (!queryResourceInfo.isPresent() || queryResourceInfo.get().getError() != null) {
             if (queryResourceInfo.get().getError() != null) {
                 return Optional.of(new QueryResourceInfo().error(queryResourceInfo.get().getError()));
@@ -319,7 +341,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                 ));
     }
 
-    private QueryMetadata getQueryMetadata(CreateQueryRequestMetadata request) {
+    protected QueryMetadata getQueryMetadata(CreateQueryRequestMetadata request) {
         String queryId = getOrCreateId(request.getId());
         return new QueryMetadata(request.getType(), queryId, request.getName(), request.isSearchPlan(), System.currentTimeMillis(), request.getTtl());
     }
@@ -348,8 +370,8 @@ public abstract class QueryDriverBase implements QueryDriver {
                     : new CreatePageRequest()));
 
             //set pageSize atribute on PageCursorRequest using the given execution params
-            callRequest.getExecutionParams().stream().filter(p->p.getName().equals("pageSize")).findAny()
-                    .ifPresent(v->pageRequest.setPageSize((Integer) v.getValue()));
+            callRequest.getExecutionParams().stream().filter(p -> p.getName().equals("pageSize")).findAny()
+                    .ifPresent(v -> pageRequest.setPageSize((Integer) v.getValue()));
 
             //create the new volatile query
             Optional<QueryResourceInfo> info = create(new CreateQueryRequest(
@@ -434,10 +456,41 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Boolean> delete(String queryId) {
         return Optional.of(resourceStore.deleteQueryResource(queryId));
     }
+
+    @Override
+    public Optional<PlanWithCost<Plan, PlanDetailedCost>> plan(Query query) {
+        AsgQuery asgQuery = transform(query);
+        if (!validateAsgQuery(asgQuery).valid())
+            return Optional.of(new PlanWithCost.ErrorPlanWithCost(
+                    new FuseError("PlanValidationError", validateAsgQuery(asgQuery).toString())));
+
+        AsgQuery rewrite = rewrite(asgQuery);
+        if (!validateAsgQuery(rewrite).valid())
+            return Optional.of(new PlanWithCost.ErrorPlanWithCost(
+                    new FuseError("PlanValidationError", validateAsgQuery(rewrite).toString())));
+
+        try {
+            return Optional.of(planWithCost(QueryMetadata.random("plan", true), rewrite));
+        } catch (Exception e) {
+            return Optional.of(new PlanWithCost.ErrorPlanWithCost(new FuseError("NoValidPlanFound", e)));
+        }
+    }
+
+    @Override
+    public Optional<GraphTraversal> traversal(Query query) {
+        final PlanWithCost<Plan, PlanDetailedCost> planWithCost = plan(query).get();
+        return this.cursorDriver.traversal(planWithCost,query.getOnt());
+    }
+
+
     //endregion
 
     //region Protected Abstract Methods
+    protected abstract PlanWithCost<Plan, PlanDetailedCost> planWithCost(QueryMetadata metadata, AsgQuery query);
+
     protected abstract QueryResource createResource(CreateQueryRequest request, Query query, AsgQuery asgQuery, QueryMetadata metadata);
+
+    protected abstract AsgQuery rewrite(AsgQuery asgQuery);
     //endregion
 
     //region Fields

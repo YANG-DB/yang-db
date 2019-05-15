@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.cursor.discrete;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,12 @@ import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.executor.utils.ConversionUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.results.*;
@@ -117,9 +119,10 @@ public class PathsTraversalCursor implements Cursor {
     //endregion
 
     //region Private Methods
-    private AssignmentsQueryResult toQuery(int numResults) {
+    protected AssignmentsQueryResult toQuery(int numResults) {
         AssignmentsQueryResult.Builder builder = instance();
-        builder.withPattern(context.getQueryResource().getQuery());
+        final Query pattern = context.getQueryResource().getQuery();
+        builder.withPattern(pattern);
         //build assignments
         (context.getTraversal().next(numResults)).forEach(path -> {
             builder.withAssignment(toAssignment(path));
@@ -127,7 +130,7 @@ public class PathsTraversalCursor implements Cursor {
         return builder.build();
     }
 
-    private Assignment toAssignment(Path path) {
+    protected Assignment toAssignment(Path path) {
         Assignment.Builder builder = Assignment.Builder.instance();
 
         List<Object> pathObjects = path.objects();
@@ -153,7 +156,7 @@ public class PathsTraversalCursor implements Cursor {
         return builder.build();
     }
 
-    private Entity toEntity(Vertex vertex, EEntityBase element) {
+    protected Entity toEntity( Vertex vertex, EEntityBase element) {
         String eType = vertex.label();
         List<Property> properties = Stream.ofAll(vertex::properties)
                 .map(this::toProperty)
@@ -169,16 +172,20 @@ public class PathsTraversalCursor implements Cursor {
         return builder.build();
     }
 
-    private Relationship toRelationship(Edge edge, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
+    protected Relationship toRelationship(Edge edge, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
         Relationship.Builder builder = Relationship.Builder.instance();
         builder.withRID(edge.id().toString());
         builder.withRType(rel.getrType());
         builder.withEID1(edge.outVertex().id().toString());
         builder.withEID2(edge.inVertex().id().toString());
         //add properties
-        builder.withProperties(Stream.ofAll(edge::properties)
-                .map(p -> new Property(p.key(), p.value()))
-                .toJavaList());
+        List<Property> properties = Stream.ofAll(edge::properties)
+                .map(this::toProperty)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toJavaList();
+
+        builder.withProperties(properties);
 
         switch (rel.getDir()) {
             case R:
@@ -194,7 +201,7 @@ public class PathsTraversalCursor implements Cursor {
         return builder.build();
     }
 
-    private Optional<Property> toProperty(VertexProperty vertexProperty) {
+    protected Optional<Property> toProperty(org.apache.tinkerpop.gremlin.structure.Property vertexProperty) {
         return Stream.of(vertexProperty.key())
                 .map(key -> this.ont.property(key))
                 .filter(Optional::isPresent)

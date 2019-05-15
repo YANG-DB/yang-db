@@ -4,7 +4,7 @@ package com.kayhut.fuse.gta.strategy.discrete;
  * #%L
  * fuse-dv-gta
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ public class M2PlanOpTranslationStrategy extends CompositePlanOpTranslationStrat
                         new RelationFilterOpTranslationStrategy(),
                         new RelationSelectionTranslationStrategy()),
                 new OptionalOpTranslationStrategy(this),
+                new CountOpTranslationStrategy(this),
                 new UnionOpTranslationStrategy(this),
                 new JoinEntityOpTranslationStrategy(new ChainedPlanOpTraversalTranslator(this), EntityJoinOp.class)
         ).toJavaList();

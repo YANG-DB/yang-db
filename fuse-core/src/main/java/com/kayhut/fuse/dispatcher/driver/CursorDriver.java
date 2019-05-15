@@ -4,7 +4,7 @@ package com.kayhut.fuse.dispatcher.driver;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,13 @@ package com.kayhut.fuse.dispatcher.driver;
  * #L%
  */
 
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 import java.util.Optional;
 
@@ -33,5 +37,6 @@ public interface CursorDriver {
     Optional<CursorResourceInfo> create(String queryId, CreateCursorRequest cursorRequest);
     Optional<StoreResourceInfo> getInfo(String queryId);
     Optional<CursorResourceInfo> getInfo(String queryId, String cursorId);
+    Optional<GraphTraversal> traversal(PlanWithCost plan, String ontology);
     Optional<Boolean> delete(String queryId, String cursorId);
 }

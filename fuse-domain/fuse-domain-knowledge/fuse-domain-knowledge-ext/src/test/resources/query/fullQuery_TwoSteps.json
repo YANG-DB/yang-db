@@ -1,0 +1,68 @@
+{
+  "format": "query",
+  "name": "PERSON HAS TOPIC TOPIC HAS URL URL HAS DOCUMENT FACEBOOK POST",
+  "query": {
+    "clause": [
+      [
+        [
+          {
+            "type": "entity",
+            "conceptId": "http://huha.com/minimal#person",
+            "properties": {}
+          }
+        ],
+        [
+          {
+            "type": "link",
+            "direction": "out",
+            "conceptId": "http://huha.com/minimal#hasTopic",
+            "properties": {}
+          }
+        ],
+        [
+          {
+            "type": "entity",
+            "conceptId": "http://huha.com/minimal#topic",
+            "properties": {}
+          }
+        ],
+        [
+          {
+            "type": "link",
+            "direction": "out",
+            "conceptId": "http://huha.com/minimal#hasUrl",
+            "properties": {}
+          }
+        ],
+        [
+          {
+            "type": "entity",
+            "conceptId": "http://huha.com/minimal#url",
+            "properties": {}
+          }
+        ],
+        [
+          {
+            "type": "link",
+            "direction": "out",
+            "conceptId": "http://huha.com/minimal#hasDocument",
+            "properties": {}
+          }
+        ],
+        [
+          {
+            "type": "entity",
+            "conceptId": "http://huha.com/facebook#post",
+            "properties": {}
+          }
+        ]
+      ]
+    ],
+    "aggregations": [],
+    "group_by": []
+  },
+  "timestamp": 1553768575403,
+  "severity": 0,
+  "description": "",
+  "workspaceId": "WORKSPACE_3ff8e467932b4879b0e48896b70261f2"
+}

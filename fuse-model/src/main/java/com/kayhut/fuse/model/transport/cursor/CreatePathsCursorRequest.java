@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.transport.cursor;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ package com.kayhut.fuse.model.transport.cursor;
  * #L%
  */
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 
 /**

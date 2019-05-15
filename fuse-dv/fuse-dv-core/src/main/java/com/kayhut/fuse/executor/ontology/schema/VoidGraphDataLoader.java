@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.ontology.schema;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package com.kayhut.fuse.executor.ontology.schema;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.logical.LogicalGraphModel;
 
+import java.io.File;
 import java.io.IOException;
 
 public class VoidGraphDataLoader implements GraphDataLoader {
@@ -34,6 +35,11 @@ public class VoidGraphDataLoader implements GraphDataLoader {
 
     @Override
     public long load(LogicalGraphModel root) throws IOException {
+        return 0;
+    }
+
+    @Override
+    public long load(File data) throws IOException {
         return 0;
     }
 

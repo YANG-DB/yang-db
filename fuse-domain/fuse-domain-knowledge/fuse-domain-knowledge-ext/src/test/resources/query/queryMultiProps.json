@@ -1,25 +1,33 @@
 {
-  "clause": [
-    [
+  "format": "query",
+  "name": "PERSON FACEBOOK FRIENDS PERSON",
+  "timestamp": 1553678255642,
+  "severity": 0,
+  "description": "",
+  "workspaceId": "WORKSPACE_3ff8e467932b4879b0e48896b70261f2",
+  "query": {
+    "clause": [
       [
-        {
-          "type": "entity",
-          "conceptId": "http://huha.com/minimal#person",
-          "properties": {
-            "http://huha.com/minimal#birthday": {
-              "matchType": "GT",
-              "value": "2019-01-08 12:26"
-            },
-            "http://huha.com#title": {
-              "matchType": "QUERY",
-              "value": "shuki"
+        [
+          {
+            "type": "entity",
+            "conceptId": "http://huha.com/minimal#person",
+            "properties": {
+              "http://huha.com/minimal#birthday": {
+                "matchType": "GT",
+                "value": "2019-01-08 12:26"
+              },
+              "http://huha.com/minimal#title": {
+                "matchType": "QUERY",
+                "value": "shuki"
+              }
             }
           }
-        }
+        ]
       ]
-    ]
-  ],
-  "aggregations": [],
-  "group_by": []
+    ],
+    "aggregations": [],
+    "group_by": []
+  }
 }
 

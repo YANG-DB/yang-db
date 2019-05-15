@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query.quant;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,11 +43,20 @@ public class Quant1 extends QuantBase {
         this.next = Collections.emptyList();
     }
 
+    public Quant1(int eNum, QuantType quantType) {
+        this(eNum,quantType,Collections.emptyList());
+    }
+
+    public Quant1(int eNum, QuantType qType, Iterable<Integer> next) {
+        this(eNum,qType,next,-1);
+    }
+
     public Quant1(int eNum, QuantType qType, Iterable<Integer> next, int b) {
         super(eNum, qType);
         this.next = Stream.ofAll(next).toJavaList();
         this.b = b;
     }
+
     //endregion
 
 

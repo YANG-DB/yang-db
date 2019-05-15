@@ -4,7 +4,7 @@ package com.kayhut.fuse.services.controllers;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import static org.jooby.Status.*;
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class StandardInternalsController implements InternalsController {
+public class StandardInternalsController implements InternalsController<StandardInternalsController,InternalsDriver> {
     //region Constructors
     @Inject
     public StandardInternalsController(
@@ -86,13 +86,13 @@ public class StandardInternalsController implements InternalsController {
     @Override
     public ContentResponse<String> getStatisticsProviderName() {
         return Builder.<String>builder(ACCEPTED, NOT_FOUND)
-                .data(this.driver.getStatisticsProviderName()).compose();
+                .data(driver().getStatisticsProviderName()).compose();
     }
 
     @Override
     public ContentResponse<Map> getConfig() {
         return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(this.driver.getConfig().get().root().unwrapped()))
+                .data(Optional.of(driver().getConfig().get().root().unwrapped()))
                 .compose();
 
     }
@@ -100,13 +100,23 @@ public class StandardInternalsController implements InternalsController {
     @Override
     public ContentResponse<String> getStatisticsProviderSetup() {
         return Builder.<String>builder(ACCEPTED, NOT_FOUND)
-                .data(this.driver.getStatisticsProviderSetup()).compose();
+                .data(driver().getStatisticsProviderSetup()).compose();
     }
 
     @Override
     public ContentResponse<String> refreshStatisticsProviderSetup() {
         return Builder.<String>builder(ACCEPTED, NOT_FOUND)
-                .data(this.driver.refreshStatisticsProviderSetup()).compose();
+                .data(driver().refreshStatisticsProviderSetup()).compose();
+    }
+
+    protected InternalsDriver driver() {
+        return driver;
+    }
+
+    @Override
+    public StandardInternalsController driver(InternalsDriver driver) {
+        this.driver = driver;
+        return this;
     }
     //endregion
 
@@ -114,5 +124,6 @@ public class StandardInternalsController implements InternalsController {
     private InternalsDriver driver;
     private RequestIdSupplier requestIdSupplier;
     private Set<CompositeCursorFactory.Binding> cursorBindings;
+
     //endregion
 }

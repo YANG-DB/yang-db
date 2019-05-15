@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query.entity;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ package com.kayhut.fuse.model.query.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.Next;
+import com.kayhut.fuse.model.Tagged;
 import com.kayhut.fuse.model.query.EBase;
 
 /**
@@ -33,7 +34,7 @@ import com.kayhut.fuse.model.query.EBase;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class EAgg extends EBase implements Next<Integer> {
+public class EAgg extends EBase implements Next<Integer>, Tagged {
 
     public String geteTag() {
         return eTag;

@@ -4,7 +4,7 @@ package com.kayhut.fuse.dispatcher.cursor;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,11 @@ public class LoggingCursor implements Cursor {
                 new LogMessage.Impl(this.logger, trace, "finish getNextResults", sequence, LogType.of(success), getNextResults, ElapsedFrom.now()).log();
             }
         }
+    }
+
+    @Override
+    public Object getContext() {
+        return cursor.getContext();
     }
     //endregion
 

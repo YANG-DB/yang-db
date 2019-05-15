@@ -4,7 +4,7 @@ package com.kayhut.fuse.dispatcher.cursor;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import com.kayhut.fuse.model.results.QueryResultBase;
 /**
  * Created by lior.perry on 06/03/2017.
  */
-public interface Cursor {
+public interface Cursor<T> {
     QueryResultBase getNextResults(int numResults);
+    T getContext();
+
 }

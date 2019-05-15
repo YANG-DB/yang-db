@@ -71,6 +71,9 @@
         "logicalId": {
           "type": "keyword"
         },
+        "techId": {
+          "type":"keyword"
+        },
         "id": {
           "type": "keyword"
         },

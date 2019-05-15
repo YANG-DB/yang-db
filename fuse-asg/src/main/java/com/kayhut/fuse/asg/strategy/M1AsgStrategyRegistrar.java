@@ -4,7 +4,7 @@ package com.kayhut.fuse.asg.strategy;
  * #%L
  * fuse-asg
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.asg.strategy.constraint.*;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.*;
 import com.kayhut.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
+import com.kayhut.fuse.asg.strategy.type.RelationPatternRangeAsgStrategy;
 import com.kayhut.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 
@@ -46,6 +47,7 @@ public class M1AsgStrategyRegistrar implements AsgStrategyRegistrar {
         return Arrays.asList(
                 new AsgNamedParametersStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
+                new RelationPatternRangeAsgStrategy(),
                 new Quant1AllQuantGroupingAsgStrategy(),
                 new EPropGroupingAsgStrategy(),
                 new HQuantPropertiesGroupingAsgStrategy(),

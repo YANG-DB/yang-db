@@ -4,7 +4,7 @@ package com.kayhut.fuse.unipop.controller.discrete;
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,16 +43,18 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.unipop.process.start.UniGraphStartCountStep;
 import org.unipop.query.aggregation.ReduceEdgeQuery;
 import org.unipop.query.aggregation.ReduceQuery;
 import org.unipop.structure.UniGraph;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
@@ -90,6 +92,20 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
 
     }
 
+    @Override
+    public long max(ReduceQuery uniQuery) {
+        throw new UnsupportedOperationException("Please implement me ...");
+    }
+
+    @Override
+    public long avg(ReduceQuery uniQuery) {
+        throw new UnsupportedOperationException("Please implement me ...");
+    }
+
+    public long min(ReduceQuery uniQuery) {
+        throw new UnsupportedOperationException("Please implement me ...");
+    }
+
     private void buildEdgeQuery(ReduceEdgeQuery reduceQuery, SearchBuilder searchBuilder) {
         Iterable<String> edgeLabels = getRequestedEdgeLabels(reduceQuery.getPredicates().getPredicates());
 
@@ -117,7 +133,8 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
                     Optional.of(Constraint.by(__.has(T.label, P.within(Stream.ofAll(edgeLabels).toJavaList()))));
         }
 
-        List<HasContainer> vertexHasContainer = Stream.ofAll(reduceQuery.getVertexPredicates().getPredicates()).filter(hasContainer -> hasContainer.getKey().toLowerCase().equals(GlobalConstants.HasKeys.CONSTRAINT))
+        List<HasContainer> vertexHasContainer = Stream.ofAll(reduceQuery.getVertexPredicates().getPredicates())
+                .filter(hasContainer -> hasContainer.getKey().toLowerCase().equals(GlobalConstants.HasKeys.CONSTRAINT))
                 .toJavaList();
         if(vertexHasContainer.size() > 1){
             throw new UnsupportedOperationException("Single \"" + GlobalConstants.HasKeys.CONSTRAINT + "\" allowed");

@@ -4,7 +4,7 @@ package com.kayhut.fuse.dispatcher.driver;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseError;
@@ -100,6 +101,7 @@ public abstract class CursorDriverBase implements CursorDriver {
                 cursorResource.get().getCursorRequest(),
                 urlSupplier.pageStoreUrl(queryId, cursorId)));
     }
+
 
     @Override
     public Optional<Boolean> delete(String queryId, String cursorId) {

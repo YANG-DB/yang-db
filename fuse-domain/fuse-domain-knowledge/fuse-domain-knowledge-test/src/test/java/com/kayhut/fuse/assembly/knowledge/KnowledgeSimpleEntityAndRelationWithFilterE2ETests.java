@@ -50,7 +50,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        //Setup.setup();
+        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -144,6 +144,38 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
                         new ETyped(5, "R", "Relation", 6, 0),
                         new EProp(6, "category", Constraint.of(ConstraintOp.eq, rel1.category))
                 )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e1.toEntity())
+                        .withEntity(rel1.toEntity())
+                        .withEntity(e2.toEntity())
+                        .withRelationships(e1.withRelations("hasRelation", rel1.id()))
+                        .withRelationships(e2.withRelations("hasRelation", rel1.id()))
+                        .build())
+                .build();
+
+        // Check if expected results and actual results are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
+    @Test
+    public void testEqByEntityCategoryAndInRelationCategoryAndOutRel() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Entity", 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
+                        new EProp(3, "category", Constraint.of(ConstraintOp.eq, e1.category)),
+                        new Rel(4, "hasRelation", R, null, 5, 0),
+                        new ETyped(5, "R", "Relation", 6, 0),
+                        new Quant1(6, QuantType.all, Arrays.asList(7, 8), 0),
+                        new EProp(7, "category", Constraint.of(ConstraintOp.eq, rel1.category)),
+                        new Rel(8, "hasRelation", L, null, 9, 0),
+                        new ETyped(9, "BV", "Entity", -1, 0))
+                ).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()

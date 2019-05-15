@@ -4,7 +4,7 @@ package com.kayhut.fuse.gta.strategy.discrete;
  * #%L
  * fuse-dv-gta
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.query.properties.projection.CalculatedFieldProjection;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import javaslang.collection.Stream;
@@ -86,8 +87,10 @@ public class EntitySelectionTranslationStrategy extends PlanOpTranslationStrateg
                 .filter(hasStep -> isSelectionHasStep((HasStep<?>)hasStep))
                 .forEach(step -> traversal.asAdmin().removeStep(step));
 
+        //process schematic projection fields exclude calculated field from selection
         Stream.ofAll(lastEntityFilterOp.getAsgEbase().geteBase().getProps())
                 .filter(eProp -> eProp.getProj() != null)
+                .filter(eProp -> !(eProp.getProj() instanceof CalculatedFieldProjection))
                 .forEach(eProp -> traversal.has(context.getOnt().$property$(eProp.getpType()).getName(),
                         SelectP.raw(context.getOnt().$property$(eProp.getpType()).getName())));
 

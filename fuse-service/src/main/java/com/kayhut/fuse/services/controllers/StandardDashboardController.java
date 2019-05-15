@@ -4,7 +4,7 @@ package com.kayhut.fuse.services.controllers;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import static org.jooby.Status.NOT_FOUND;
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class StandardDashboardController implements DashboardController {
+public class StandardDashboardController implements DashboardController<StandardDashboardController,DashboardDriver> {
     //region Constructors
     @Inject
     public StandardDashboardController(
@@ -55,36 +55,47 @@ public class StandardDashboardController implements DashboardController {
     @Override
     public ContentResponse<Map> graphElementCount() {
         return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver.graphElementCount()))
+                .data(Optional.of(driver().graphElementCount()))
                 .compose();
     }
 
     @Override
     public ContentResponse<Map> graphElementCreatedOverTime() {
         return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver.graphElementCreated()))
+                .data(Optional.of(driver().graphElementCreated()))
                 .compose();
     }
 
     @Override
     public ContentResponse<Map> graphFieldValuesCount() {
         return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver.graphFieldValuesCount()))
+                .data(Optional.of(driver().graphFieldValuesCount()))
                 .compose();
     }
 
     @Override
     public ContentResponse<Map> cursorCount() {
         return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver.cursorCount()))
+                .data(Optional.of(driver().cursorCount()))
                 .compose();
     }
 
+    protected DashboardDriver driver() {
+        return driver;
+    }
+
     //endregion
+
+    @Override
+    public StandardDashboardController driver(DashboardDriver driver) {
+        this.driver = driver;
+        return this;
+    }
 
     //region Fields
     private DashboardDriver driver;
     private RequestIdSupplier requestIdSupplier;
     private Set<CompositeCursorFactory.Binding> cursorBindings;
+
     //endregion
 }

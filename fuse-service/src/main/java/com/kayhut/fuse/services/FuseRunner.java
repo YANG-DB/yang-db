@@ -4,7 +4,7 @@ package com.kayhut.fuse.services;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +79,11 @@ public class FuseRunner {
         //load jooby App
         Jooby.run(() -> app != null ?
                 app :
-                new FuseApp(new DefaultAppUrlSupplier("/fuse")).conf(config),
-                joobyArgs);
+                new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                        .conf(config)
+                        .throwBootstrapException(),
+                joobyArgs)
+        ;
     }
 
     public static class Options {

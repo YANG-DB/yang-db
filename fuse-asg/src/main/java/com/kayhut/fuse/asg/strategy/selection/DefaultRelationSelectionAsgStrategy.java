@@ -4,7 +4,7 @@ package com.kayhut.fuse.asg.strategy.selection;
  * #%L
  * fuse-asg
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,7 @@ import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
@@ -64,7 +61,9 @@ public class DefaultRelationSelectionAsgStrategy implements AsgStrategy {
 
         AsgQueryUtil.elements(query, RelPropGroup.class).forEach(relPropGroup -> {
                     if (Stream.ofAll(relPropGroup.geteBase().getProps())
-                            .filter(eProp -> eProp.getProj() != null).isEmpty()) {
+                            .filter(rProp -> rProp.getProj() != null)
+//                          .filter(rProp -> !(rProp instanceof CalculatedEProp))
+                            .isEmpty()) {
 
                         Optional<AsgEBase<Rel>> relAsgEBase = AsgQueryUtil.ancestor(relPropGroup, Rel.class);
                         if (relAsgEBase.isPresent()) {

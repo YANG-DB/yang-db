@@ -4,7 +4,7 @@ package com.kayhut.fuse.services.controllers.logging;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package com.kayhut.fuse.services.controllers.logging;
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
@@ -43,7 +44,7 @@ import static com.kayhut.fuse.dispatcher.logging.RequestIdByScope.Builder.query;
 /**
  * Created by roman.margolis on 14/12/2017.
  */
-public class LoggingPageController extends LoggingControllerBase<PageController> implements PageController  {
+public class LoggingPageController extends LoggingControllerBase<PageController> implements PageController<PageController,PageDriver>  {
     public static final String controllerParameter = "LoggingPageController.@controller";
     public static final String loggerParameter = "LoggingPageController.@logger";
 
@@ -140,5 +141,10 @@ public class LoggingPageController extends LoggingControllerBase<PageController>
     private static MethodName.MDCWriter getInfoByQueryIdAndCursorIdAndPageId = MethodName.of("getInfoByQueryIdAndCursorIdAndPageId");
     private static MethodName.MDCWriter getData = MethodName.of("getData");
     private static MethodName.MDCWriter delete = MethodName.of("delete");
+
+    @Override
+    public PageController driver(PageDriver driver) {
+        return (PageController) this.controller.driver(driver);
+    }
     //endregion
 }

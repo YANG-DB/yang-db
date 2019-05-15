@@ -38,6 +38,7 @@ public class EntityBuilder extends EntityId {
 
     public String logicalId;
     public String category;
+    public String techId;
     public String context = DEFAULT_CTX;
     public Map<String,Object> additionalProperties = new HashMap<>();
 
@@ -61,6 +62,11 @@ public class EntityBuilder extends EntityId {
 
     public EntityBuilder cat(String category) {
         this.category = category;
+        return this;
+    }
+
+    public EntityBuilder techId(String techId) {
+        this.techId = techId;
         return this;
     }
 
@@ -247,6 +253,7 @@ public class EntityBuilder extends EntityId {
         on.put("logicalId", logicalId);
         on.put("context", context);
         on.put("category", category);
+        on.put("techId", techId);
         on.put("refs", collectRefs(mapper, refs));
         return on;
     }
@@ -264,6 +271,7 @@ public class EntityBuilder extends EntityId {
                 .withProperties(
                         collect(Arrays.asList(
                                 new Property("category", "raw", category),
+                                new Property("techId", "raw", techId),
                                 new Property("logicalId", "raw", logicalId),
                                 new Property("context", "raw", context),
                                 new Property("refs", "raw", !refs.isEmpty() ? refs : null)

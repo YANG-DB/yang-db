@@ -23,13 +23,13 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.TimeZone;
-import static com.kayhut.fuse.assembly.knowledge.Setup.client;
-import static com.kayhut.fuse.assembly.knowledge.Setup.fuseClient;
-import static com.kayhut.fuse.assembly.knowledge.Setup.manager;
+
+import static com.kayhut.fuse.assembly.knowledge.Setup.*;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
@@ -49,7 +49,7 @@ public class KnowledgeSimpleRelationAndRvalueWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        //Setup.setup();
+        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Relation entities for tests
@@ -325,12 +325,12 @@ public class KnowledgeSimpleRelationAndRvalueWithFilterE2ETests {
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "R", "Relation", 2, 0),
+                        new ETyped(1, "R1", "Relation", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
                         new EProp(3, "category", Constraint.of(ConstraintOp.like, "*heel*")),
                         new OptionalComp(4, 5),
                         new Rel(5, "hasRvalue", R, null, 6, 0),
-                        new ETyped(6, "R", "Rvalue", 7, 0),
+                        new ETyped(6, "R2", "Rvalue", 7, 0),
                         new EProp(7, "fieldId", Constraint.of(ConstraintOp.eq, rv8.fieldId))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -590,13 +590,13 @@ public class KnowledgeSimpleRelationAndRvalueWithFilterE2ETests {
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new ETyped(1, "R", "Relation", 2, 0),
+                        new ETyped(1, "R1", "Relation", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                         new EProp(3, "category", Constraint.of(ConstraintOp.like, "*eel*")),
                         new EProp(4, "lastUpdateUser", Constraint.of(ConstraintOp.eq, rel3.lastUpdateUser)),
                         new OptionalComp(5, 6),
                         new Rel(6, "hasRvalue", R, null, 7, 0),
-                        new ETyped(7, "R", "Rvalue", 8, 0),
+                        new ETyped(7, "R2", "Rvalue", 8, 0),
                         new EProp(8, "fieldId", Constraint.of(ConstraintOp.eq, rv1.fieldId))
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -607,7 +607,6 @@ public class KnowledgeSimpleRelationAndRvalueWithFilterE2ETests {
                         .build())
                 .build();
 
-        // Check if expected results and actual results are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 

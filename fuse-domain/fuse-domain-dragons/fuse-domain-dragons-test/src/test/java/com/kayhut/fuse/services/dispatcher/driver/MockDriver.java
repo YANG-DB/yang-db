@@ -18,10 +18,13 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 import java.util.Optional;
 
@@ -51,6 +54,11 @@ public class MockDriver {
         }
 
         @Override
+        protected AsgQuery rewrite(AsgQuery asgQuery) {
+            return asgQuery;
+        }
+
+        @Override
         public Optional<Object> run(com.kayhut.fuse.model.query.Query query) {
             return Optional.empty();
         }
@@ -58,6 +66,16 @@ public class MockDriver {
         @Override
         public Optional<Object> run(String cypher, String ontology) {
             return Optional.empty();
+        }
+
+        @Override
+        public Optional<GraphTraversal> traversal(com.kayhut.fuse.model.query.Query query) {
+            return Optional.empty();
+        }
+
+        @Override
+        protected PlanWithCost<Plan, PlanDetailedCost> planWithCost(QueryMetadata metadata, AsgQuery query) {
+            return PlanWithCost.EMPTY_PLAN;
         }
         //endregion
     }
@@ -86,6 +104,11 @@ public class MockDriver {
 
         //region Fields
         private CursorFactory cursorFactory;
+
+        @Override
+        public Optional<GraphTraversal> traversal(PlanWithCost plan, String ontology) {
+            return Optional.empty();
+        }
         //endregion
     }
 

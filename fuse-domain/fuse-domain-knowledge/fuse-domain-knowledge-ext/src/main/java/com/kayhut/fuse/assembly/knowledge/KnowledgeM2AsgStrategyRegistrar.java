@@ -4,7 +4,7 @@ package com.kayhut.fuse.assembly.knowledge;
  * #%L
  * fuse-domain-knowledge-ext
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import com.kayhut.fuse.asg.strategy.propertyGrouping.*;
 import com.kayhut.fuse.asg.strategy.schema.ExactConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.asg.strategy.selection.DefaultRelationSelectionAsgStrategy;
 import com.kayhut.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
+import com.kayhut.fuse.asg.strategy.type.RelationPatternRangeAsgStrategy;
 import com.kayhut.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
@@ -63,6 +64,7 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
                 new AsgNamedParametersStrategy(),
+                new RelationPatternRangeAsgStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
                 new EPropGroupingAsgStrategy(),
                 new HQuantPropertiesGroupingAsgStrategy(),

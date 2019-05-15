@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.cursor.discrete;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import javaslang.control.Option;
 import java.io.StringWriter;
 import java.util.*;
 
-public class HierarchyFlattenCursor implements Cursor {
+public class HierarchyFlattenCursor implements Cursor<TraversalCursorContext> {
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -136,6 +136,12 @@ public class HierarchyFlattenCursor implements Cursor {
 
         return paths;
     }
+
+    @Override
+    public TraversalCursorContext getContext() {
+        return innerCursor.getContext();
+    }
+
     //endregion
 
     //region Fields

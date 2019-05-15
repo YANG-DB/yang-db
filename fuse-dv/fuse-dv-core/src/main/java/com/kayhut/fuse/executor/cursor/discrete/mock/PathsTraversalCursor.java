@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.cursor.discrete.mock;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import java.nio.file.Paths;
 /**
  * Created by roman.margolis on 08/11/2017.
  */
-public class PathsTraversalCursor implements Cursor {
+public class PathsTraversalCursor implements Cursor<TraversalCursorContext> {
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -65,6 +65,11 @@ public class PathsTraversalCursor implements Cursor {
             e.printStackTrace();
             return new AssignmentsQueryResult();
         }
+    }
+
+    @Override
+    public TraversalCursorContext getContext() {
+        return context;
     }
     //endregion
 

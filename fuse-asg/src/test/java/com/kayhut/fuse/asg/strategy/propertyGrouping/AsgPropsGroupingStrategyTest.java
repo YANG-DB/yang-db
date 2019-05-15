@@ -11,7 +11,9 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
+import com.kayhut.fuse.model.query.aggregation.AggLOp;
 import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.properties.CalculatedEProp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
@@ -19,6 +21,7 @@ import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
 import com.kayhut.fuse.model.query.properties.constraint.ParameterizedConstraint;
+import com.kayhut.fuse.model.query.properties.projection.CalculatedFieldProjection;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import org.junit.Test;
@@ -121,6 +124,35 @@ public class AsgPropsGroupingStrategyTest {
         assertEquals(1, existingGroup.getParents().get(0).geteNum());
         assertEquals(0, existingGroup.getNext().size());
         assertTrue(((EPropGroup) existingGroup.geteBase()).getProps().size() == 1);
+    }
+    @Test
+    public void innerGroupCaseWithCalculatedFieldTest() throws Exception {
+        //region Query Building
+        Query query = Query.Builder.instance().withName("q1").withOnt("Dragons")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Person", 2, 0),
+                        new EPropGroup(2,
+                                new CalculatedEProp(10, "A->B", new CalculatedFieldProjection(AggLOp.count)),
+                                new EProp(3, "name",
+                                        ParameterizedConstraint.of(ConstraintOp.eq, new NamedParameter("name"))))
+                )).build();
+        //endregion
+
+        AsgQuery asgQuery = new AsgQuerySupplier(query).get();
+        EPropGroupingAsgStrategy EPropGroupingAsgStrategy = new EPropGroupingAsgStrategy();
+        EPropGroupingAsgStrategy.apply(asgQuery, new AsgStrategyContext(null));
+        //Checking that the ASG query still hold - nothing has broken
+        assertEquals(0, asgQuery.getStart().geteBase().geteNum());
+        assertEquals(0, asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());
+        AsgEBase<? extends EBase> asgEBase1 = asgQuery.getStart().getNext().get(0);
+        assertEquals(asgEBase1.geteBase().geteNum(), 1);
+        //Checking the EProp grouping mechanism
+        AsgEBase<EBase> existingGroup = AsgQueryUtil.element(asgQuery, 2).get();
+        assertNotNull(existingGroup);
+        assertEquals(1, existingGroup.getParents().get(0).geteNum());
+        assertEquals(0, existingGroup.getNext().size());
+        assertTrue(((EPropGroup) existingGroup.geteBase()).getProps().size() == 2);
     }
 
     // Query with an AND Quantifier where all his children are Eprop Type -  e.g., Q27 - 2

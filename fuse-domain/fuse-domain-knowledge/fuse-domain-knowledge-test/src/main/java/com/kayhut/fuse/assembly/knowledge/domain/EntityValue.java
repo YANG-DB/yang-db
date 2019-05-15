@@ -4,7 +4,7 @@ package com.kayhut.fuse.assembly.knowledge.domain;
  * #%L
  * fuse-domain-knowledge-test
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public class EntityValue {
     @JsonProperty("longValue")
     private Integer longValue;
     @JsonProperty("floatValue")
-    private Integer floatValue;
+    private Float floatValue;
     @JsonProperty("intValue")
     private Integer intValue;
     @JsonProperty("geoValue")
@@ -109,12 +109,12 @@ public class EntityValue {
     }
 
     @JsonProperty("floatValue")
-    public Integer getFloatValue() {
+    public Float getFloatValue() {
         return floatValue;
     }
 
     @JsonProperty("floatValue")
-    public void setFloatValue(Integer floatValue) {
+    public void setFloatValue(Float floatValue) {
         this.floatValue = floatValue;
     }
 

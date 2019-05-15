@@ -7,7 +7,7 @@ package org.unipop.structure;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
+import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyProperty;
+import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyVertexProperty;
 import org.unipop.query.mutation.PropertyQuery;
 import org.unipop.query.mutation.RemoveQuery;
 
@@ -52,10 +54,27 @@ public abstract class UniElement implements Element {
     protected abstract String getDefaultLabel();
 
     protected Property addPropertyLocal(String key, Object value) {
-        ElementHelper.validateProperty(key, value);
-        Property property = createProperty(key, value);
-        getPropertiesMap().put(key, property);
-        return property;
+        try {
+            ElementHelper.validateProperty(key, value);
+            Property property = createProperty(key, value);
+            getPropertiesMap().put(key, property);
+            return property;
+        } catch (IllegalArgumentException e) {
+            //todo in case some mandatory fields do not exist allow empty property place holder
+            final EmptyUniVertexProperty emptyVertexProperty = new EmptyUniVertexProperty() {
+                @Override
+                public String key() {
+                    return key;
+                }
+
+                @Override
+                public Object value() {
+                    return value;
+                }
+            };
+            getPropertiesMap().put(key, emptyVertexProperty);
+            return emptyVertexProperty;
+        }
     }
 
     @Override

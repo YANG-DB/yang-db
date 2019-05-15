@@ -1,0 +1,18 @@
+{
+  "namespace":"http://huha.com/cdrs",
+  "version":1.0,
+  "properties":[
+    {
+      "name":"cdr",
+      "type":"intValue"
+    },
+    {
+      "name":"caller",
+      "type":"stringValue"
+    },
+    {
+      "name":"receiver",
+      "type":"stringValue"
+    }
+  ]
+}

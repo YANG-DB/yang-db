@@ -4,7 +4,7 @@ package com.kayhut.fuse.services.modules;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import com.kayhut.fuse.dispatcher.cursor.CreateCursorRequestDeserializer;
 import com.kayhut.fuse.dispatcher.driver.DashboardDriver;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
-import com.kayhut.fuse.dispatcher.resource.store.InMemoryResourceStore;
 import com.kayhut.fuse.dispatcher.resource.store.NodeStatusResource;
 import com.kayhut.fuse.executor.resource.InMemNodeStatusResource;
 import com.kayhut.fuse.logging.StatusReportedJob;
@@ -92,7 +91,6 @@ public class ServiceModule extends ModuleBase {
         bindQueryController(env, config, binder);
         bindCursorController(env, config, binder);
         bindPageController(env, config, binder);
-        bindSearchController(env, config, binder);
         bindCatalogController(env, config, binder);
         bindDataLoaderController(env, config, binder);
         bindIdGeneratorController(env, config, binder);
@@ -274,26 +272,6 @@ public class ServiceModule extends ModuleBase {
                         .to(LoggingPageController.class);
 
                 this.expose(PageController.class);
-            }
-        });
-    }
-
-    private void bindSearchController(Env env, Config config, Binder binder) {
-        binder.install(new PrivateModule() {
-            @Override
-            protected void configure() {
-                this.bind(SearchController.class)
-                        .annotatedWith(named(LoggingSearchController.controllerParameter))
-                        .to(StandardSearchController.class);
-
-                this.bind(Logger.class)
-                        .annotatedWith(named(LoggingSearchController.loggerParameter))
-                        .toInstance(LoggerFactory.getLogger(StandardSearchController.class));
-
-                this.bind(SearchController.class)
-                        .to(LoggingSearchController.class);
-
-                this.expose(SearchController.class);
             }
         });
     }

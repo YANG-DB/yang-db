@@ -4,7 +4,7 @@ package com.kayhut.fuse.asg.validation;
  * #%L
  * fuse-asg
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,12 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.EPair;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.entity.Typed;
+import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.HashSet;
 import javaslang.collection.Set;
@@ -59,11 +61,11 @@ public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
             Rel.Direction dir = rel.geteBase().getDir();
 
             Optional<AsgEBase<EEntityBase>> sideA = AsgQueryUtil.ancestor(rel, v -> v.geteBase() instanceof EEntityBase);
-            Optional<AsgEBase<EEntityBase>> sideB = AsgQueryUtil.nextAdjacentDescendant(rel, EEntityBase.class);
+            Optional<AsgEBase<EEntityBase>> sideB = calculateNextDescendant(rel,EEntityBase.class);
 
             if (dir.equals(Rel.Direction.L)) {
                 sideB = AsgQueryUtil.ancestor(rel, v -> v.geteBase() instanceof EEntityBase);
-                sideA = AsgQueryUtil.nextAdjacentDescendant(rel, EEntityBase.class);
+                sideA = calculateNextDescendant(rel,EEntityBase.class);
             }
 
             if (!sideA.isPresent() || !sideB.isPresent())
@@ -92,6 +94,16 @@ public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
             return OK;
 
         return new ValidationResult(false, this.getClass().getSimpleName(), errors.toArray(new String[errors.size()]));
+    }
+
+    private <T extends EBase> Optional<AsgEBase<T>> calculateNextDescendant(AsgEBase<Rel> rel, Class<T> clazz) {
+        final List<AsgEBase<? extends EBase>> path = AsgQueryUtil.pathToNextDescendant(rel, clazz);
+        Optional<AsgEBase<T>> element = Optional.empty();
+        if(!path.isEmpty() && path.size()==2)
+            element = Optional.of((AsgEBase<T>) path.get(1));
+        if(!path.isEmpty() && path.size()==3 && QuantBase.class.isAssignableFrom(path.get(1).geteBase().getClass()))
+            element = Optional.of((AsgEBase<T>) path.get(2));
+        return element;
     }
 
     private Set<String> getSideTypes(Optional<AsgEBase<EEntityBase>> side) {

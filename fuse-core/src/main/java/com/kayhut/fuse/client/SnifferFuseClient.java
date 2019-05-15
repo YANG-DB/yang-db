@@ -20,9 +20,11 @@ package com.kayhut.fuse.client;
  * #L%
  */
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -154,6 +156,16 @@ public class SnifferFuseClient implements FuseClient{
     }
 
     @Override
+    public QueryResourceInfo loadData(String ontology, LogicalGraphModel root) throws IOException {
+        return selectNode().loadData(ontology,root);
+    }
+
+    @Override
+    public QueryResourceInfo loadData(String ontology, URL resource) throws IOException {
+        return selectNode().loadData(ontology,resource);
+    }
+
+    @Override
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException {
         return selectNode().postQuery(queryStoreUrl,query);
     }
@@ -231,6 +243,11 @@ public class SnifferFuseClient implements FuseClient{
     @Override
     public Ontology getOntology(String ontologyUrl) throws IOException {
         return selectNode().getOntology(ontologyUrl);
+    }
+
+    @Override
+    public QueryResultBase getPageData(String pageDataUrl, TypeReference typeReference) throws IOException {
+        return selectNode(pageDataUrl).getPageData(pageDataUrl,typeReference);
     }
 
     @Override

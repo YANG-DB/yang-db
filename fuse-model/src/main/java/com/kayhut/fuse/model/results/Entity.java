@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.results;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ package com.kayhut.fuse.model.results;
  */
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -34,6 +35,7 @@ import java.util.*;
  * Created by benishue on 21-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Entity {
     //region Constructors
     public Entity() {
@@ -78,6 +80,10 @@ public class Entity {
     public void setProperties(Collection<Property> properties) {
         this.properties = Stream.ofAll(properties)
                 .toJavaMap(property -> new Tuple2<>(property.getpType(), property));
+    }
+
+    public void setProperty(Property property) {
+        this.properties.put(property.getpType(),property);
     }
 
     public List<AttachedProperty> getAttachedProperties() {
@@ -134,6 +140,11 @@ public class Entity {
         //region Public Methods
         public Builder withETag(Set<String> eTag) {
             this.eTag = eTag;
+            return this;
+        }
+
+        public Builder withETag(String eTag) {
+            this.eTag = Collections.singleton(eTag);
             return this;
         }
 

@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.execution.plan;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,10 @@ public enum Direction {
 
     public static Direction of(Rel.Direction dir) {
         switch (dir) {
-            case L:
-                return in;
             case R:
                 return out;
+            case L:
+                return in;
             case RL:
                 return both;
         }

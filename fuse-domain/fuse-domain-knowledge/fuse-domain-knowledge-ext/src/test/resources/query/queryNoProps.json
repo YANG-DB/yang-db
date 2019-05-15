@@ -1,15 +1,23 @@
 {
-  "clause": [
-    [
+  "format": "query",
+  "name": "PERSON FACEBOOK FRIENDS PERSON",
+  "timestamp": 1553678255642,
+  "severity": 0,
+  "description": "",
+  "workspaceId": "WORKSPACE_3ff8e467932b4879b0e48896b70261f2",
+  "query": {
+    "clause": [
       [
-        {
-          "type": "entity",
-          "conceptId": "http://huha.com/minimal#person"
-        }
+        [
+          {
+            "type": "entity",
+            "conceptId": "http://huha.com/minimal#person"
+          }
+        ]
       ]
-    ]
-  ],
-  "aggregations": [],
-  "group_by": []
+    ],
+    "aggregations": [],
+    "group_by": []
+  }
 }
 

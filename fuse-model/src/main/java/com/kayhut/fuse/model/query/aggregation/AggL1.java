@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query.aggregation;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,18 @@ package com.kayhut.fuse.model.query.aggregation;
  * #L%
  */
 
+import com.kayhut.fuse.model.Tagged;
+
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class AggL1 extends AggLBase {
+public class AggL1 extends AggLBase implements Tagged {
     //region Properties
-    public String getETag() {
+    public String geteTag() {
         return this.eTag;
     }
 
-    public void setETag(String value) {
+    public void seteTag(String value) {
         this.eTag = value;
     }
     //endregion

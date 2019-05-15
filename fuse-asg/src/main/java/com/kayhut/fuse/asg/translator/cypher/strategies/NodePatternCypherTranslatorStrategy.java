@@ -90,20 +90,29 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
 
                 final Option<Expression> properties = ((NodePattern) element).properties();
                 if (properties.nonEmpty()) {
-                    Collection<Tuple2<PropertyKeyName, Expression>> collection = asJavaCollectionConverter(((MapExpression) properties.get()).items()).asJavaCollection();
-                    Property property = new Property(variable.get(), collection.iterator().next()._1, InputPosition.NONE());
-                    Equals equals = new Equals(property, collection.iterator().next()._2, InputPosition.NONE());
-                    CypherUtils.Wrapper wrapper = CypherUtils.Wrapper.of(equals);
-                    equalityExpression.apply(Optional.empty(), com.bpodgursky.jbool_expressions.Variable.of(wrapper), query, context);
+                    addProps(query, context, variable, properties);
                 }
             } else {
                 //todo validate same label on existing node
                 node = byTag.get();
+                final Option<Expression> properties = ((NodePattern) element).properties();
+                if (properties.nonEmpty()) {
+                    addProps(query, context, variable, properties);
+                }
+
             }
             //return scope to original node
             context.scope(node);
         }
 
+    }
+
+    protected void addProps(AsgQuery query, CypherStrategyContext context, Option<LogicalVariable> variable, Option<Expression> properties) {
+        Collection<Tuple2<PropertyKeyName, Expression>> collection = asJavaCollectionConverter(((MapExpression) properties.get()).items()).asJavaCollection();
+        Property property = new Property(variable.get(), collection.iterator().next()._1, InputPosition.NONE());
+        Equals equals = new Equals(property, collection.iterator().next()._2, InputPosition.NONE());
+        CypherUtils.Wrapper wrapper = CypherUtils.Wrapper.of(equals);
+        equalityExpression.apply(Optional.empty(), com.bpodgursky.jbool_expressions.Variable.of(wrapper), query, context);
     }
 
     private EqualityExpression equalityExpression;

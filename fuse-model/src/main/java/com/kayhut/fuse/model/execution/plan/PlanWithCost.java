@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.execution.plan;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import com.kayhut.fuse.model.descriptors.ToStringDescriptor;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
+import com.kayhut.fuse.model.resourceInfo.FuseError;
 
 import java.util.Collections;
 
@@ -39,6 +40,19 @@ import static com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp.emp
 public class PlanWithCost<P, C> implements IPlan {
     public static EmptyPlanWithCost EMPTY_PLAN =  new EmptyPlanWithCost();
 
+
+    public final static class ErrorPlanWithCost extends PlanWithCost {
+        private FuseError error;
+
+        public ErrorPlanWithCost(FuseError error) {
+            super(new Plan(Collections.emptyList()),null);
+            this.error = error;
+        }
+
+        public String toString() {
+            return error.toString();
+        }
+    }
 
     public final static class EmptyPlanWithCost extends PlanWithCost {
         private EmptyPlanWithCost() {

@@ -28,6 +28,7 @@ import com.kayhut.fuse.dispatcher.cursor.CreateCursorRequestDeserializer;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -46,6 +47,7 @@ import javaslang.collection.Stream;
 import org.jooby.MediaType;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Map;
 import java.util.UUID;
 
@@ -82,6 +84,19 @@ public class BaseFuseClient implements FuseClient {
     }
 
     @Override
+    public QueryResourceInfo loadData(String ontology, LogicalGraphModel root) throws IOException {
+        // URL:/fuse/load/ontology/:id/load
+        String resourceURl = String.format("%s/load/ontology/%s/load", this.fuseUrl, ontology);
+        String result = unwrap(postRequest(resourceURl, root));
+        return new QueryResourceInfo(resourceURl,ontology,result);
+    }
+
+    @Override
+    public QueryResourceInfo loadData(String ontology, URL resource) throws IOException {
+        return loadData(ontology,objectMapper.readValue(resource,LogicalGraphModel.class));
+    }
+
+    @Override
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException {
         return postQuery(queryStoreUrl,query, PlanTraceOptions.of(PlanTraceOptions.Level.none));
     }
@@ -111,7 +126,7 @@ public class BaseFuseClient implements FuseClient {
         request.setQuery(query);
         request.setOntology(ontology);
         request.setPlanTraceOptions(planTraceOptions);
-        final String response = postRequest(queryStoreUrl +"/" + CreateJsonQueryRequest.TYPE, request);
+        final String response = postRequest(queryStoreUrl +"/" + CreateJsonQueryRequest.TYPE_CYPHER, request);
         return this.objectMapper.readValue(unwrap(response), QueryResourceInfo.class);
     }
 
@@ -203,6 +218,11 @@ public class BaseFuseClient implements FuseClient {
     @Override
     public QueryResultBase getPageData(String pageDataUrl) throws IOException {
         return this.objectMapper.readValue(unwrap(getRequest(pageDataUrl)), new TypeReference<AssignmentsQueryResult<Entity,Relationship>>() {});
+    }
+
+    @Override
+    public QueryResultBase getPageData(String pageDataUrl, TypeReference typeReference) throws IOException {
+        return this.objectMapper.readValue(unwrap(getRequest(pageDataUrl)), typeReference);
     }
 
     @Override

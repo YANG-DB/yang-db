@@ -4,7 +4,7 @@ package com.kayhut.fuse.dispatcher.driver;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.CreateJsonQueryRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ExecuteStoredQueryRequest;
+import com.kayhut.fuse.model.validation.ValidationResult;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 import java.util.Optional;
 
@@ -38,6 +40,8 @@ import java.util.Optional;
  * Created by lior.perry on 21/02/2017.
  */
 public interface QueryDriver {
+
+    ValidationResult validateQuery(Query query);
 
     Optional<QueryResourceInfo> create(CreateQueryRequest queryRequest);
 
@@ -63,8 +67,11 @@ public interface QueryDriver {
 
     Optional<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId);
 
+    Optional<PlanWithCost<Plan, PlanDetailedCost>> plan(Query query);
+
     Optional<PlanNode<Plan>> planVerbose(String queryId);
 
     Optional<Boolean> delete(String queryId);
 
+    Optional<GraphTraversal> traversal(Query query);
 }

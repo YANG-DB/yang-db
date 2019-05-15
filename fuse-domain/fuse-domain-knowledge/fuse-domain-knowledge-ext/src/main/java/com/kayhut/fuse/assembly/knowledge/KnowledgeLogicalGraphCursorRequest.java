@@ -4,7 +4,7 @@ package com.kayhut.fuse.assembly.knowledge;
  * #%L
  * fuse-domain-knowledge-ext
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@ package com.kayhut.fuse.assembly.knowledge;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 
-/**
- * Created by Roman on 7/7/2018.
- */
 public class KnowledgeLogicalGraphCursorRequest extends CreateGraphHierarchyCursorRequest {
     public static final String CursorType = "knowledgeLogicalGraphCursorRequest";
 
@@ -41,13 +38,33 @@ public class KnowledgeLogicalGraphCursorRequest extends CreateGraphHierarchyCurs
     }
 
     public KnowledgeLogicalGraphCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest) {
+        this(countTags,createPageRequest, GraphFormat.JSON);
+    }
+
+    public KnowledgeLogicalGraphCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest,GraphFormat format ) {
         super(countTags, createPageRequest);
+        this.format = format;
         this.setCursorType(CursorType);
     }
 
     public KnowledgeLogicalGraphCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest) {
+        this(include,countTags,createPageRequest,GraphFormat.JSON);
+    }
+
+    public KnowledgeLogicalGraphCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest, GraphFormat format) {
         super(include, countTags, createPageRequest);
+        this.format = format;
         this.setCursorType(CursorType);
     }
+
+    public GraphFormat getFormat() {
+        return format;
+    }
+
     //endregion
+    private GraphFormat format = GraphFormat.JSON;
+
+    public enum GraphFormat {
+        JSON,XML
+    }
 }

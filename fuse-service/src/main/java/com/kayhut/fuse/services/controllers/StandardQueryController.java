@@ -4,7 +4,7 @@ package com.kayhut.fuse.services.controllers;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
+import com.kayhut.fuse.model.validation.ValidationResult;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -44,7 +46,7 @@ import static org.jooby.Status.*;
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class StandardQueryController implements QueryController {
+public class StandardQueryController implements QueryController<QueryController,QueryDriver> {
     public static final String cursorControllerParameter = "StandardQueryController.@cursorController";
     public static final String pageControllerParameter = "StandardQueryController.@pageController";
 
@@ -64,14 +66,19 @@ public class StandardQueryController implements QueryController {
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
         return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
-                .data(driver.create(request))
+                .data(driver().create(request))
                 .successPredicate(response -> response.getData() != null && response.getData().getError() == null)
                 .compose();
     }
+
+    protected QueryDriver driver() {
+        return driver;
+    }
+
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateJsonQueryRequest request) {
         return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
-                .data(driver.create(request))
+                .data(driver().create(request))
                 .successPredicate(response -> response.getData() != null && response.getData().getError() == null)
                 .compose();
     }
@@ -79,16 +86,24 @@ public class StandardQueryController implements QueryController {
     @Override
     public ContentResponse<Object> run(Query query) {
         return Builder.builder(CREATED, SERVER_ERROR )
-                .data(driver.run(query))
+                .data(driver().run(query))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
 
     }
 
     @Override
+    public ContentResponse<ValidationResult> validate(Query query) {
+        return Builder.<ValidationResult>builder(CREATED, SERVER_ERROR )
+                .data(Optional.of(driver().validateQuery(query)))
+                .successPredicate(objectContentResponse -> true)
+                .compose();
+    }
+
+    @Override
     public ContentResponse<Object> run(String cypher, String ontology) {
         return Builder.builder(CREATED, SERVER_ERROR )
-                .data(driver.run(cypher,ontology))
+                .data(driver().run(cypher,ontology))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
 
@@ -188,7 +203,7 @@ public class StandardQueryController implements QueryController {
 
     @Override
     public ContentResponse<QueryResourceInfo> callAndFetch(ExecuteStoredQueryRequest request) {
-        Optional<QueryResourceInfo> queryResourceInfoResponse = driver.call(request);
+        Optional<QueryResourceInfo> queryResourceInfoResponse = driver().call(request);
         return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                 .data(queryResourceInfoResponse)
                 .compose();
@@ -197,63 +212,86 @@ public class StandardQueryController implements QueryController {
     @Override
     public ContentResponse<Object> fetchNextPage(String queryId, Optional<String> cursorId, int pageSize, boolean deleteCurrentPage) {
         return Builder.builder(OK, NOT_FOUND)
-                .data(this.driver.getNextPageData(queryId,cursorId,pageSize,deleteCurrentPage))
+                .data(driver().getNextPageData(queryId,cursorId,pageSize,deleteCurrentPage))
                 .compose();
     }
 
     @Override
     public ContentResponse<StoreResourceInfo> getInfo() {
         return Builder.<StoreResourceInfo>builder(OK, NOT_FOUND)
-                .data(this.driver.getInfo())
+                .data(driver().getInfo())
                 .compose();
     }
 
     @Override
     public ContentResponse<QueryResourceInfo> getInfo(String queryId) {
         return Builder.<QueryResourceInfo>builder(OK, NOT_FOUND)
-                .data(this.driver.getInfo(queryId))
+                .data(driver().getInfo(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<Query> getV1(String queryId) {
         return Builder.<Query>builder(OK, NOT_FOUND)
-                .data(this.driver.getV1(queryId))
+                .data(driver().getV1(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<AsgQuery> getAsg(String queryId) {
         return Builder.<AsgQuery>builder(OK, NOT_FOUND)
-                .data(this.driver.getAsg(queryId))
+                .data(driver().getAsg(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<PlanNode<Plan>> planVerbose(String queryId) {
         return Builder.<PlanNode<Plan>>builder(OK, NOT_FOUND)
-                .data(this.driver.planVerbose(queryId))
+                .data(driver().planVerbose(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId) {
         return Builder.<PlanWithCost<Plan, PlanDetailedCost>>builder(OK, NOT_FOUND)
-                .data(this.driver.explain(queryId))
+                .data(driver().explain(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<Boolean> delete(String queryId) {
         return Builder.<Boolean>builder(ACCEPTED, NOT_FOUND)
-                .data(this.driver.delete(queryId))
+                .data(driver().delete(queryId))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> plan(Query query) {
+            return Builder.<PlanWithCost<Plan, PlanDetailedCost>>builder(ACCEPTED, NOT_FOUND)
+                .data(driver().plan(query))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<GraphTraversal> traversal(Query query) {
+        return Builder.<GraphTraversal>builder(ACCEPTED, NOT_FOUND)
+                .data(driver().traversal(query))
                 .compose();
     }
     //endregion
 
+    /**
+     * replace execution driver
+     * @param driver
+     * @return
+     */
+    public StandardQueryController driver(QueryDriver driver) {
+        this.driver = driver;
+        return this;
+    }
+
     //region Fields
     private QueryDriver driver;
-
     private CursorController cursorController;
     private PageController pageController;
     //endregion

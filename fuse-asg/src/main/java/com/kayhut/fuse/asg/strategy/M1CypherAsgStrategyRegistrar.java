@@ -20,8 +20,13 @@ package com.kayhut.fuse.asg.strategy;
  * #L%
  */
 
+import com.google.inject.Inject;
 import com.kayhut.fuse.asg.translator.cypher.strategies.*;
 import com.kayhut.fuse.asg.translator.cypher.strategies.expressions.*;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyTransformerProvider;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import org.opencypher.v9_0.util.ASTNode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +34,18 @@ import java.util.Collections;
 import java.util.List;
 
 public class M1CypherAsgStrategyRegistrar implements CypherAsgStrategyRegistrar {
+    private final OntologyProvider ontologyProvider;
+    private final OntologyTransformerProvider transformerProvider;
+
+    //region Constructors
+    @Inject
+    public M1CypherAsgStrategyRegistrar(OntologyProvider ontologyProvider,OntologyTransformerProvider transformerProvider) {
+        this.ontologyProvider = ontologyProvider;
+        this.transformerProvider = transformerProvider;
+    }
+
+    //endregion
+
     @Override
     public Iterable<CypherTranslatorStrategy> register() {
         //translators
@@ -37,7 +54,9 @@ public class M1CypherAsgStrategyRegistrar implements CypherAsgStrategyRegistrar 
                 new StepPatternCypherTranslatorStrategy(
                         new NodePatternCypherTranslatorStrategy(new EqualityExpression()),
                         new EqualityExpression()
-                ));
+                ),
+                new LogicalGraphTransformerTranslatorStrategy(ontologyProvider,transformerProvider)
+        );
 
         //expressions
         whereExpressionStrategies = new ArrayList<>();

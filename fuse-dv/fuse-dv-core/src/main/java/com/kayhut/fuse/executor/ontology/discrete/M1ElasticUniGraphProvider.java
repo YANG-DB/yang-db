@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.ontology.discrete;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,14 +35,12 @@ import com.kayhut.fuse.unipop.controller.discrete.DiscreteElementReduceControlle
 import com.kayhut.fuse.unipop.controller.discrete.DiscreteElementVertexController;
 import com.kayhut.fuse.unipop.controller.discrete.DiscreteVertexController;
 import com.kayhut.fuse.unipop.controller.discrete.DiscreteVertexFilterController;
-import com.kayhut.fuse.unipop.controller.search.SearchOrderProvider;
 import com.kayhut.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.kayhut.fuse.unipop.process.traversal.strategy.FuseStandardStrategyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.FuseUniGraph;
 import org.elasticsearch.client.Client;
 import org.unipop.configuration.UniGraphConfiguration;
-import org.unipop.process.strategyregistrar.StandardStrategyProvider;
 import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.controller.ControllerManagerFactory;
 import org.unipop.query.controller.UniQueryController;

@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.results;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ package com.kayhut.fuse.model.results;
  */
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.query.Query;
 
@@ -36,6 +37,7 @@ import java.util.List;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AssignmentsQueryResult<E,R> extends QueryResultBase {
     //region Constructors
     public AssignmentsQueryResult() {

@@ -1,0 +1,10 @@
+{
+  "namespace":"http://huha.com/gdelt",
+  "version":1.0,
+  "properties":[
+    {
+      "name":"globalEventId",
+      "type":"intValue"
+    }
+  ]
+}

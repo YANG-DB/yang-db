@@ -11,6 +11,7 @@
       "name": "Entity",
       "properties": [
         "logicalId",
+        "techId",
         "context",
         "category",
         "authorization",
@@ -43,6 +44,8 @@
         "stringValue",
         "dateValue",
         "intValue",
+        "longValue",
+        "floatValue",
         "geoValue",
         "refs",
         "score"
@@ -52,11 +55,14 @@
       "eType": "Relation",
       "name": "Relation",
       "properties": [
+        "techId",
         "context",
         "category",
         "entityAId",
+        "entityATechId",
         "entityACategory",
         "entityBId",
+        "entityBTechId",
         "entityBCategory",
         "authorization",
         "lastUpdateUser",
@@ -86,7 +92,9 @@
         "bdt",
         "stringValue",
         "dateValue",
+        "floatValue",
         "intValue",
+        "longValue",
         "geoValue",
         "refs",
         "score"
@@ -339,6 +347,11 @@
       "type": "string"
     },
     {
+      "pType": "techId",
+      "name": "techId",
+      "type": "string"
+    },
+    {
       "pType": "relationId",
       "name": "relationId",
       "type": "string"
@@ -479,6 +492,16 @@
       "type": "int"
     },
     {
+      "pType": "longValue",
+      "name": "longValue",
+      "type": "long"
+    },
+    {
+      "pType": "floatValue",
+      "name": "floatValue",
+      "type": "float"
+    },
+    {
       "pType": "dateValue",
       "name": "dateValue",
       "type": "date"
@@ -491,6 +514,16 @@
     {
       "pType": "entityBId",
       "name": "entityBId",
+      "type": "string"
+    },
+    {
+      "pType": "entityATechId",
+      "name": "entityATechId",
+      "type": "string"
+    },
+    {
+      "pType": "entityBTechId",
+      "name": "entityBTechId",
       "type": "string"
     },
     {

@@ -73,10 +73,16 @@
         "entityAId": {
           "type": "keyword"
         },
+        "entityATechId": {
+          "type": "keyword"
+        },
         "entityALogicalId": {
           "type": "keyword"
         },
         "entityBId": {
+          "type": "keyword"
+        },
+        "entityBTechId": {
           "type": "keyword"
         },
         "entityBLogicalId": {

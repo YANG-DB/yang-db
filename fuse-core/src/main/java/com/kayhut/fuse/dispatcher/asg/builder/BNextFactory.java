@@ -4,7 +4,7 @@ package com.kayhut.fuse.dispatcher.asg.builder;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,13 @@ package com.kayhut.fuse.dispatcher.asg.builder;
 import com.kayhut.fuse.dispatcher.asg.BellowFactory;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.RelPattern;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.aggregation.*;
 import com.kayhut.fuse.model.query.combiner.HComb;
 import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.quant.HQuant;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
@@ -61,17 +59,20 @@ public class BNextFactory implements BellowFactory{
         this.map.put(Quant1.class, ebase -> ((Quant1)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Quant1) ebase).getB()));
         this.map.put(Quant2.class, ebase -> (Collections.emptyList()));
         this.map.put(Rel.class, ebase -> ((Rel)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getB()));
+        this.map.put(RelPattern.class, ebase -> ((Rel)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getB()));
         this.map.put(RelProp.class, ebase -> ((RelProp)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((RelProp) ebase).getB()));
         this.map.put(RelPropGroup.class, ebase -> (Collections.emptyList()));
         this.map.put(ETyped.class, ebase -> ((ETyped)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((ETyped) ebase).getB()));
         this.map.put(EUntyped.class, ebase -> (Collections.emptyList()));
         this.map.put(EAgg.class, ebase -> (Collections.emptyList()));
         this.map.put(EProp.class, ebase -> (Collections.emptyList()));
+        this.map.put(CalculatedEProp.class, (ebase) -> (Collections.emptyList()));
         this.map.put(EPropGroup.class, ebase -> (Collections.emptyList()));
         this.map.put(EConcrete.class, ebase -> (Collections.emptyList()));
         this.map.put(ELog.class, ebase -> (Collections.emptyList()));
         this.map.put(Start.class, ebase -> ((Start)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Start) ebase).getB()));
         this.map.put(OptionalComp.class, (ebase) -> Collections.emptyList());
+        this.map.put(CountComp.class, (ebase) -> Collections.emptyList());
     }
     //endregion
 

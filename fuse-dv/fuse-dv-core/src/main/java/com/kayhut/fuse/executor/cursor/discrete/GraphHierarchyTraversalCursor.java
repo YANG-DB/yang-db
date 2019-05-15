@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.cursor.discrete;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import java.util.*;
 /**
  * Created by roman.margolis on 11/03/2018.
  */
-public class GraphHierarchyTraversalCursor implements Cursor {
+public class GraphHierarchyTraversalCursor implements Cursor<TraversalCursorContext> {
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -51,7 +51,7 @@ public class GraphHierarchyTraversalCursor implements Cursor {
     //endregion
 
     //region Constructors
-    public GraphHierarchyTraversalCursor(Cursor cursor, Iterable<String> countTags) {
+    public GraphHierarchyTraversalCursor(Cursor<TraversalCursorContext> cursor, Iterable<String> countTags) {
         this.cursor = cursor;
 
         this.fullGraph = new AssignmentsQueryResult();
@@ -128,10 +128,16 @@ public class GraphHierarchyTraversalCursor implements Cursor {
         this.entityIds.addAll(newEntities.keySet());
         this.relationshipIds.addAll(newRelationships.keySet());
     }
+
+    @Override
+    public TraversalCursorContext getContext() {
+        return cursor.getContext();
+    }
+
     //endregion
 
     //region Fields
-    private Cursor cursor;
+    private Cursor<TraversalCursorContext> cursor;
     private AssignmentsQueryResult<Entity,Relationship> fullGraph;
 
     private Set<String> entityIds;

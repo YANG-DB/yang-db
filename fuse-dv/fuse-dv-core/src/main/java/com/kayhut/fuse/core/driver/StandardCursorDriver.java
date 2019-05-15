@@ -4,14 +4,14 @@ package com.kayhut.fuse.core.driver;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +39,8 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.unipop.process.Profiler;
+
+import java.util.Optional;
 
 /**
  * Created by lior.perry on 20/02/2017.
@@ -68,16 +69,7 @@ public class StandardCursorDriver extends CursorDriverBase {
         PlanWithCost<Plan, PlanDetailedCost> executionPlan = queryResource.getExecutionPlan();
         Ontology ontology = this.ontologyProvider.get(queryResource.getQuery().getOnt()).get();
 
-        GraphTraversal<?, ?> traversal = null;
-        try {
-            traversal = this.planTraversalTranslator.translate(
-                    executionPlan,
-                    new TranslationContext(
-                            new Ontology.Accessor(ontology),
-                            uniGraphProvider.getGraph(ontology).traversal()));
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        GraphTraversal<?, ?> traversal = createTraversal(executionPlan, ontology);
 
         //traversal.asAdmin().getSideEffects().register("profiler", Profiler.Impl::new, null);
 
@@ -90,6 +82,24 @@ public class StandardCursorDriver extends CursorDriverBase {
 
         return new CursorResource(cursorId, cursor, cursorRequest);
     }
+
+    protected GraphTraversal<?, ?> createTraversal(PlanWithCost<Plan, PlanDetailedCost> plan, Ontology ontology) {
+        try {
+            return this.planTraversalTranslator.translate(
+                    plan,
+                    new TranslationContext(
+                            new Ontology.Accessor(ontology),
+                            uniGraphProvider.getGraph(ontology).traversal()));
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public Optional<GraphTraversal> traversal(PlanWithCost plan, String ontology) {
+        return Optional.of(createTraversal(plan,this.ontologyProvider.get(ontology).get()));
+    }
+
     //endregion
 
     //region Fields
@@ -97,5 +107,6 @@ public class StandardCursorDriver extends CursorDriverBase {
     private PlanTraversalTranslator planTraversalTranslator;
     private CursorFactory cursorFactory;
     private UniGraphProvider uniGraphProvider;
+
     //endregion
 }

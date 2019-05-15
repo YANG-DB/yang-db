@@ -224,7 +224,7 @@ public class KnowledgeSimpleSomeTests {
                         new Quant1(2, QuantType.some, Arrays.asList(3, 4), 0),
 
                             new Rel(3, "hasEntityReference", R, null, 13, 0), // e4, ref9
-                                new ETyped(13, "R", "Reference", 0, 0),
+                                new ETyped(13, "R0", "Reference", 0, 0),
                             // OR
                             new Rel(4, "hasEvalue", R, null, 5, 0),
                                 new ETyped(5, "R1", "Evalue", 6, 0),
@@ -232,7 +232,7 @@ public class KnowledgeSimpleSomeTests {
                                 new EProp(7, "fieldId", Constraint.of(ConstraintOp.eq, ev3.fieldId)), // e1, ev1, ref1 + e3,ev3, ref4,5,6
                                 // AND
                                     new Rel(8, "hasEvalueReference", R, null, 9, 0),
-                                    new ETyped(9, "R", "Reference", 0, 0)
+                                    new ETyped(9, "R2", "Reference", 0, 0)
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
@@ -353,7 +353,7 @@ public class KnowledgeSimpleSomeTests {
                         new Quant1(2, QuantType.some, Arrays.asList(3, 4), 0),
 
                         new Rel(3, "hasEntityReference", R, null, 13, 0), // e4, ref9
-                        new ETyped(13, "R", "Reference", 0, 0),
+                        new ETyped(13, "R0", "Reference", 0, 0),
                         // OR
                         new Rel(4, "hasEvalue", R, null, 5, 0),
                         new ETyped(5, "R1", "Evalue", 6, 0),
@@ -361,7 +361,7 @@ public class KnowledgeSimpleSomeTests {
                         new EProp(7, "fieldId", Constraint.of(ConstraintOp.eq, ev3.fieldId)), // e1, ev1 + e3,ev3
                         // second OR
                         new Rel(8, "hasEvalueReference", R, null, 9, 0),
-                        new ETyped(9, "R", "Reference", 10, 0),
+                        new ETyped(9, "R3", "Reference", 10, 0),
                         new EProp(10, "content", Constraint.of(ConstraintOp.eq, ref8.content))  // e4, ev5, ref8
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);

@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan;
 
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
+import com.kayhut.fuse.dispatcher.validation.QueryValidator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.PredicateCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1.M1DfsRedundantPlanExtensionStrategy;
@@ -28,6 +29,7 @@ import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +50,7 @@ import static org.mockito.Mockito.when;
 public class UnionPlanSearcherTests {
     //region Fields
     private OntologyProvider ontologyProvider;
+    private QueryValidator<AsgQuery> queryValidator;
     //ontology
     private Ontology.Accessor ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
     private GraphElementSchemaProviderFactory schemaProviderFactory;
@@ -57,6 +60,9 @@ public class UnionPlanSearcherTests {
     public void setup() {
         this.ontologyProvider = mock(OntologyProvider.class);
         when(ontologyProvider.get(any())).thenReturn(Optional.of(OntologyTestUtils.createDragonsOntologyShort()));
+
+        this.queryValidator = (QueryValidator<AsgQuery>) mock(QueryValidator.class);
+        when(queryValidator.validate(any())).thenReturn(ValidationResult.OK);
 
         this.schemaProviderFactory = ontology -> buildSchemaProvider(new Ontology.Accessor(ontology));
     }
@@ -142,7 +148,7 @@ public class UnionPlanSearcherTests {
                         ).getOps()),
                 new DoubleCost(0));
 
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,ontologyProvider);
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,queryValidator,ontologyProvider);
         AsgQuery query = queryNoQuant();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
@@ -153,7 +159,7 @@ public class UnionPlanSearcherTests {
     @Test
     public void testOneQuantSingleBranch() {
         final BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> searcher = createBottomUpPlanSearcher();
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,ontologyProvider);
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,queryValidator,ontologyProvider);
         AsgQuery query = querySingleSomeQuantSingleBranch();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
@@ -166,7 +172,7 @@ public class UnionPlanSearcherTests {
     public void testOneQuantMultiBranch() {
         final BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> searcher = createBottomUpPlanSearcher();
 
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,ontologyProvider);
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,queryValidator,ontologyProvider);
         AsgQuery query = querySingleSomeQuantMultiBranch();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 
@@ -186,7 +192,7 @@ public class UnionPlanSearcherTests {
     public void testTwoQuantMultiBranch() {
         final BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> searcher = createBottomUpPlanSearcher();
 
-        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,ontologyProvider);
+        UnionPlanSearcher planSearcher = new UnionPlanSearcher(searcher,queryValidator,ontologyProvider);
         AsgQuery query = queryMultiSomeQuantMultiBranch();
         final PlanWithCost<Plan, PlanDetailedCost> planWithCost = planSearcher.search(query);
 

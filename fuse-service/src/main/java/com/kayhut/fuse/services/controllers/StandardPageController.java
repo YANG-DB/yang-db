@@ -4,7 +4,7 @@ package com.kayhut.fuse.services.controllers;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import static org.jooby.Status.*;
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class StandardPageController implements PageController {
+public class StandardPageController implements PageController<PageController,PageDriver> {
     //region Constructors
     @Inject
     public StandardPageController(PageDriver driver) {
@@ -48,7 +48,7 @@ public class StandardPageController implements PageController {
     @Override
     public ContentResponse<PageResourceInfo> create(String queryId, String cursorId, CreatePageRequest createPageRequest) {
         return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR)
-                .data(this.driver.create(queryId, cursorId, createPageRequest.getPageSize()))
+                .data(driver().create(queryId, cursorId, createPageRequest.getPageSize()))
                 .compose();
     }
 
@@ -80,34 +80,43 @@ public class StandardPageController implements PageController {
     @Override
     public ContentResponse<StoreResourceInfo> getInfo(String queryid, String cursorId) {
         return Builder.<StoreResourceInfo>builder(OK, NOT_FOUND)
-                .data(this.driver.getInfo(queryid, cursorId))
+                .data(driver().getInfo(queryid, cursorId))
                 .compose();
     }
 
     @Override
     public ContentResponse<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId) {
         return Builder.<PageResourceInfo>builder(OK, NOT_FOUND)
-                .data(this.driver.getInfo(queryId, cursorId, pageId))
+                .data(driver().getInfo(queryId, cursorId, pageId))
                 .compose();
     }
 
     @Override
     public ContentResponse<Object> getData(String queryId, String cursorId, String pageId) {
         return builder(OK, NOT_FOUND)
-                .data(this.driver.getData(queryId, cursorId, pageId))
+                .data(driver().getData(queryId, cursorId, pageId))
                 .compose();
     }
 
     @Override
     public ContentResponse<Boolean> delete(String queryId, String cursorId, String pageId) {
         return ContentResponse.Builder.<Boolean>builder(ACCEPTED, NOT_FOUND)
-                .data(this.driver.delete(queryId, cursorId, pageId))
+                .data(driver().delete(queryId, cursorId, pageId))
                 .compose();
     }
 
+    protected PageDriver driver() {
+        return driver;
+    }
     //endregion
 
     //region Fields
     private PageDriver driver;
+
+    @Override
+    public StandardPageController driver(PageDriver driver) {
+        this.driver = driver;
+        return this;
+    }
     //endregion
 }

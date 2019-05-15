@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.modules.discrete;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,16 @@ public class CursorsModule extends ModuleBase {
                 CreatePathsCursorRequest.CursorType,
                 CreatePathsCursorRequest.class,
                 new PathsTraversalCursor.Factory()));
+
+        Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
+                CreateForwardOnlyPathTraversalCursorRequest.CursorType,
+                CreateForwardOnlyPathTraversalCursorRequest.class,
+                new ForwardOnlyPathsTraversalCursor.Factory()));
+
+        Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
+                FindPathTraversalCursorRequest.CursorType,
+                FindPathTraversalCursorRequest.class,
+                new FindPathsTraversalCursor.Factory()));
 
         Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
                 CreateGraphCursorRequest.CursorType,

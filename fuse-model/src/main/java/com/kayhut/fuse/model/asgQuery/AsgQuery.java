@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.asgQuery;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,16 +27,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
+import com.kayhut.fuse.model.query.aggregation.CountComp;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
+import com.kayhut.fuse.model.query.properties.projection.CalculatedFieldProjection;
 import com.kayhut.fuse.model.query.properties.projection.Projection;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
@@ -345,6 +344,10 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return new AsgEBase<>(EProp.of(eNum, pType, constraint));
         }
 
+        public static AsgEBase<CalculatedEProp> eProp(int eNum, String expression, CalculatedFieldProjection projection) {
+            return new AsgEBase<>(CalculatedEProp.of(eNum, expression, projection));
+        }
+
         public static AsgEBase<EProp> eProp(int eNum, String pType, Projection projection) {
             return new AsgEBase<>(EProp.of(eNum, pType, projection));
         }
@@ -394,6 +397,11 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
 
         public static AsgEBase<OptionalComp> optional(int eNum) {
             OptionalComp optionalComp = new OptionalComp(eNum, 0);
+            return new AsgEBase<>(optionalComp);
+        }
+
+        public static AsgEBase<CountComp> count(int eNum) {
+            CountComp optionalComp = new CountComp(eNum, 0);
             return new AsgEBase<>(optionalComp);
         }
 

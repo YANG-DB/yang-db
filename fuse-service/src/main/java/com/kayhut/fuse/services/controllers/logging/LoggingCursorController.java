@@ -4,7 +4,7 @@ package com.kayhut.fuse.services.controllers.logging;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
 import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
@@ -45,7 +46,7 @@ import static com.kayhut.fuse.dispatcher.logging.RequestIdByScope.Builder.query;
 /**
  * Created by roman.margolis on 14/12/2017.
  */
-public class LoggingCursorController extends LoggingControllerBase<CursorController> implements CursorController {
+public class LoggingCursorController extends LoggingControllerBase<CursorController> implements CursorController<CursorController,CursorDriver> {
     public static final String controllerParameter = "LoggingCursorController.@controller";
     public static final String loggerParameter = "LoggingCursorController.@logger";
 
@@ -109,6 +110,11 @@ public class LoggingCursorController extends LoggingControllerBase<CursorControl
                 Arrays.asList(info, trace))
                 .decorate(() -> this.controller.delete(queryId, cursorId), this.resultHandler());
     }
+
+    @Override
+    public CursorController driver(CursorDriver driver) {
+        return (CursorController) this.controller.driver(driver);
+    }
     //endregion
 
     //region Fields
@@ -116,5 +122,6 @@ public class LoggingCursorController extends LoggingControllerBase<CursorControl
     private static MethodName.MDCWriter getInfoByQueryId = MethodName.of("getInfoByQueryId");
     private static MethodName.MDCWriter getInfoByQueryIdAndCursorId = MethodName.of("getInfoByQueryIdAndCursorId");
     private static MethodName.MDCWriter delete = MethodName.of("delete");
+
     //endregion
 }

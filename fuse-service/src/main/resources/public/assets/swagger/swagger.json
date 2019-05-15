@@ -18,7 +18,8 @@
     "application/json"
   ],
   "produces": [
-    "application/json"
+    "application/json",
+    "application/xml"
   ],
   "paths": {
     "/": {
@@ -212,6 +213,90 @@
             "description": "Returns a Query summery (HATEOAS Rest Specification).",
             "schema": {
               "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/validate": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & validate V1 query directly  ",
+        "description": "submit & validate a query to the engine",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "V1 Query json ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Query"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query validation summery ",
+            "schema": {
+              "$ref": "#/definitions/QueryValidation"
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/plan": {
+      "post": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "submit V1 query and see generated plan ",
+        "description": "submit V1 query and see generated plan ",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "V1 Query json ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Query"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Plan",
+            "schema": {
+              "$ref": "#/definitions/PlanInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/traversal": {
+      "post": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "submit V1 query and see generated execution traversal gremlin ",
+        "description": "submit V1 query and see generated execution traversal gremlin ",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "V1 Query json ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Query"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Traversal gremlin",
+            "schema": {
+              "$ref": "#/definitions/TraversalInfo"
             }
           }
         }
@@ -787,6 +872,7 @@
         "createCursorRequest": {
           "maxExecutionTime": 600000,
           "cursorType": "knowledgeLogicalGraphCursorRequest",
+          "format": "XML",
           "createPageRequest": {
             "pageSize": 100,
             "fetch": false
@@ -933,6 +1019,45 @@
           "format": "int32"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "PlanInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "TraversalInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "QueryValidation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "error": {
           "type": "string"
         }
       }

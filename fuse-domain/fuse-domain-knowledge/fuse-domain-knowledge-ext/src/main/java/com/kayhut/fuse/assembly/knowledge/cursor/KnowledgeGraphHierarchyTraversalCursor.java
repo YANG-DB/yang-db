@@ -4,7 +4,7 @@ package com.kayhut.fuse.assembly.knowledge.cursor;
  * #%L
  * fuse-domain-knowledge-ext
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.*;
 
-public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
+public class KnowledgeGraphHierarchyTraversalCursor implements Cursor<TraversalCursorContext> {
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -256,6 +256,11 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor {
                 .forEach(property -> firstVertex.property(property.key(), property.value()));
 
         return firstVertex;
+    }
+
+    @Override
+    public TraversalCursorContext getContext() {
+        return context;
     }
 
     private Edge mergeEdges(List<Edge> edges) {

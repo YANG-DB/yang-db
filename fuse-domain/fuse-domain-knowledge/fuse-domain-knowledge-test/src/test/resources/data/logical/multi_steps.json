@@ -1,0 +1,159 @@
+{
+  "nodes": [
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "Myriel",
+      "properties": {
+        "name": "Myriel"
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "Napoleon",
+      "properties": {
+        "name": "Napoleon"
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "Mlle.Baptistine",
+      "properties": {
+        "name": "Mlle.Baptistine"
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "Mme.Magloire",
+      "properties": {
+        "name": "Mme.Magloire"
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "CountessdeLo",
+      "properties": {
+        "name": "CountessdeLo"
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "Geborand",
+      "properties": {
+        "name": "Geborand"
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "Champtercier",
+      "properties": {
+        "name": "Champtercier"
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "Cravatte",
+      "properties": {
+        "name": "Cravatte"
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "Count",
+      "properties": {
+        "name": "Count"
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "OldMan",
+      "properties": {
+        "name": "OldMan"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "Myriel",
+      "target": "Napoleon",
+      "metadata": {
+        "value": 1
+      }
+    },
+    {
+      "source": "Napoleon",
+      "target": "Mlle.Baptistine",
+      "metadata": {
+        "value": 1
+      }
+    },
+    {
+      "source": "Mlle.Baptistine",
+      "target": "Mme.Magloire",
+      "metadata": {
+        "value": 1
+      }
+    },
+    {
+      "source": "Mme.Magloire",
+      "target": "CountessdeLo",
+      "metadata": {
+        "value": 1
+      }
+    },
+    {
+      "source": "CountessdeLo",
+      "target": "Geborand",
+      "metadata": {
+        "value": 1
+      }
+    },
+    {
+      "source": "Myriel",
+      "target": "Champtercier",
+      "metadata": {
+        "value": 1
+      }
+    },
+    {
+      "source": "Champtercier",
+      "target": "Cravatte",
+      "metadata": {
+        "value": 1
+      }
+    },
+    {
+      "source": "Cravatte",
+      "target": "Count",
+      "metadata": {
+        "value": 1
+      }
+    },
+    {
+      "source": "Count",
+      "target": "OldMan",
+      "metadata": {
+        "value": 1
+      }
+    }
+  ]
+}

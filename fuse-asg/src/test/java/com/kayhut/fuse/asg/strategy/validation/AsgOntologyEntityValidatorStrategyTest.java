@@ -7,7 +7,11 @@ import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.aggregation.AggLOp;
+import com.kayhut.fuse.model.query.properties.CalculatedEProp;
+import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.projection.CalculatedFieldProjection;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 import org.junit.Assert;
@@ -16,6 +20,7 @@ import org.junit.Test;
 
 import java.util.Date;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.FIRST_NAME;
 import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;

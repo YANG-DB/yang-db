@@ -4,7 +4,7 @@ package com.kayhut.fuse.services.controllers;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import static org.jooby.Status.*;
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class StandardCursorController implements CursorController {
+public class StandardCursorController implements CursorController<CursorController,CursorDriver> {
     //region Constructors
     @Inject
     public StandardCursorController(CursorDriver driver) {
@@ -46,32 +46,43 @@ public class StandardCursorController implements CursorController {
     @Override
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
         return Builder.<CursorResourceInfo>builder(CREATED, SERVER_ERROR)
-                .data(this.driver.create(queryId, createCursorRequest))
+                .data(driver().create(queryId, createCursorRequest))
                 .compose();
     }
 
     @Override
     public ContentResponse<StoreResourceInfo> getInfo(String queryId) {
         return Builder.<StoreResourceInfo>builder(OK, NOT_FOUND)
-                .data(this.driver.getInfo(queryId))
+                .data(driver().getInfo(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId) {
         return Builder.<CursorResourceInfo>builder(OK, NOT_FOUND)
-                .data(this.driver.getInfo(queryId, cursorId))
+                .data(driver().getInfo(queryId, cursorId))
                 .compose();
     }
 
     @Override
     public ContentResponse<Boolean> delete(String queryId, String cursorId) {
         return Builder.<Boolean>builder(ACCEPTED, NOT_FOUND)
-                .data(this.driver.delete(queryId, cursorId)).compose();
+                .data(driver().delete(queryId, cursorId)).compose();
+    }
+
+    protected CursorDriver driver() {
+        return driver;
     }
     //endregion
 
+    @Override
+    public StandardCursorController driver(CursorDriver driver) {
+        this.driver = driver;
+        return this;
+    }
+
     //region Fields
     private CursorDriver driver;
+
     //endregion
 }

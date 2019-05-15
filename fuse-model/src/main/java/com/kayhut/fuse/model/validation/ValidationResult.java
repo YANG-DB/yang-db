@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.validation;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ package com.kayhut.fuse.model.validation;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javaslang.collection.Stream;
 
 import java.util.Arrays;
@@ -31,6 +33,7 @@ import java.util.StringJoiner;
 /**
  * Created by lior.perry on 5/29/2017.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ValidationResult {
     public static ValidationResult OK = new ValidationResult(true, "none");
 
@@ -41,6 +44,9 @@ public class ValidationResult {
     }
 
     //region Constructors
+
+    public ValidationResult() {}
+
     public ValidationResult(boolean valid, String validator, String... errors) {
         this(valid, validator, Stream.of(errors));
     }
@@ -76,8 +82,11 @@ public class ValidationResult {
 //endregion
 
     //region Fields
-    private final String validator;
+    @JsonProperty("validator")
+    private String validator;
+    @JsonProperty("isValid")
     private boolean valid;
+    @JsonProperty("errors")
     private Iterable<String> errors;
     //endregion
 }

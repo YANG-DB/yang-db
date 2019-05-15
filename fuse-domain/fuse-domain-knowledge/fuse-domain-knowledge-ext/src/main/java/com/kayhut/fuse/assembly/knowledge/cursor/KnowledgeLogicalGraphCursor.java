@@ -20,7 +20,8 @@ package com.kayhut.fuse.assembly.knowledge.cursor;
  * #L%
  */
 
-import com.kayhut.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory;
+import com.kayhut.fuse.assembly.knowledge.KnowledgeLogicalGraphCursorRequest;
+import com.kayhut.fuse.assembly.knowledge.KnowledgeLogicalGraphCursorRequest.GraphFormat;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
@@ -33,7 +34,6 @@ import com.kayhut.fuse.model.results.Relationship;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -42,6 +42,8 @@ import static com.kayhut.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFa
 
 public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversalCursor {
 
+    private final GraphFormat format;
+
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -49,13 +51,15 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
         public Cursor createCursor(Context context) {
             return new KnowledgeLogicalGraphCursor(
                     (TraversalCursorContext) context,
-                    ((CreateGraphHierarchyCursorRequest) context.getCursorRequest()).getCountTags());
+                    ((KnowledgeLogicalGraphCursorRequest) context.getCursorRequest()).getCountTags(),
+                    ((KnowledgeLogicalGraphCursorRequest) context.getCursorRequest()).getFormat());
         }
         //endregion
     }
 
-    public KnowledgeLogicalGraphCursor(TraversalCursorContext context, Iterable<String> countTags) {
+    public KnowledgeLogicalGraphCursor(TraversalCursorContext context, Iterable<String> countTags, GraphFormat format) {
         super(context, countTags);
+        this.format = format;
     }
 
 

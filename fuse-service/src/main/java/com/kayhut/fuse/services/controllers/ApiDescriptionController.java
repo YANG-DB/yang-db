@@ -4,7 +4,7 @@ package com.kayhut.fuse.services.controllers;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.kayhut.fuse.model.transport.ContentResponse;
 /**
  * Created by Roman on 11/06/2017.
  */
-public interface ApiDescriptionController {
+public interface ApiDescriptionController
+{
     ContentResponse<FuseResourceInfo> getInfo();
 }

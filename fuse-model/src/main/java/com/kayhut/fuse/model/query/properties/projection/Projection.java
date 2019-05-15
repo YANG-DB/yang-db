@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query.properties.projection;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(name = "Identity", value = IdentityProjection.class)
+        @JsonSubTypes.Type(name = "Identity", value = IdentityProjection.class),
+        @JsonSubTypes.Type(name = "CalculatedField", value = CalculatedFieldProjection.class)
 })
 public abstract class Projection {
 }

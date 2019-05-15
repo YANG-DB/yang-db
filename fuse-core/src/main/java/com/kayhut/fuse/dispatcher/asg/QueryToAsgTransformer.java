@@ -4,7 +4,7 @@ package com.kayhut.fuse.dispatcher.asg;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,9 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
                 });
 
 
-        Stream.ofAll(bellowFactory.supplyBellow(eBaseCurrent)).forEach(
+        Stream.ofAll(bellowFactory.supplyBellow(eBaseCurrent))
+                .filter(b -> queryElements.get(b) != null)
+                .forEach(
                 eNum -> {
                     EBase eBaseB = queryElements.get(eNum);
                     AsgEBase asgEBaseB = AsgEBase.Builder.get()

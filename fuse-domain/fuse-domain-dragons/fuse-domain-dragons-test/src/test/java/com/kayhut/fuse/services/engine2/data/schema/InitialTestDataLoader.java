@@ -7,6 +7,7 @@ import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.typesafe.config.Config;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -28,6 +29,11 @@ public class InitialTestDataLoader implements GraphDataLoader {
 
     @Override
     public long load(LogicalGraphModel root) throws IOException {
+        return 0;
+    }
+
+    @Override
+    public long load(File data) throws IOException {
         return 0;
     }
 

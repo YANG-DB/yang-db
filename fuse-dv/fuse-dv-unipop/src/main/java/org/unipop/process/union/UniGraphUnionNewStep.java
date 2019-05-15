@@ -4,7 +4,7 @@ package org.unipop.process.union;
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,9 @@ public class UniGraphUnionNewStep<S, E> extends AbstractStep<S,E> implements Tra
                 try {
                     traversalInWork = unionTraversals.get(currentTraversalInWork);
                     result = traversalInWork.nextTraverser();
-                } catch (NoSuchElementException e1) {}
+                } catch (NoSuchElementException e1) {
+                    //ignore exception -> part of the 'normal' exception return type gremlin coding standard
+                }
             }
             return result;
         }

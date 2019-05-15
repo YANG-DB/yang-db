@@ -4,7 +4,7 @@ package com.kayhut.fuse.services.controllers.logging;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import com.kayhut.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -61,6 +62,18 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
     //region CatalogController Implementation
     @Override
     public ContentResponse<String> load(String ontology, LogicalGraphModel data) {
+        return new LoggingSyncMethodDecorator<ContentResponse<String>>(
+                this.logger,
+                this.metricRegistry,
+                load,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.load(ontology, data), this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<String> load(String ontology, File data) {
         return new LoggingSyncMethodDecorator<ContentResponse<String>>(
                 this.logger,
                 this.metricRegistry,

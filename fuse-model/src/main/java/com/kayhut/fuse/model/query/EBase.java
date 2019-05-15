@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import com.kayhut.fuse.model.query.quant.Quant2;
         @JsonSubTypes.Type(name = "Quant2", value = Quant2.class),
         @JsonSubTypes.Type(name = "RComb", value = RComb.class),
         @JsonSubTypes.Type(name = "Rel", value = Rel.class),
+        @JsonSubTypes.Type(name = "RelPattern", value = RelPattern.class),
         @JsonSubTypes.Type(name = "RelProp", value = RelProp.class),
         @JsonSubTypes.Type(name = "RelPropGroup", value = RelPropGroup.class),
         @JsonSubTypes.Type(name = "AggL1", value = AggL1.class),
@@ -71,9 +72,11 @@ import com.kayhut.fuse.model.query.quant.Quant2;
         @JsonSubTypes.Type(name = "AggM4", value = AggM4.class),
         @JsonSubTypes.Type(name = "AggM5", value = AggM5.class),
         @JsonSubTypes.Type(name = "OptionalComp", value = OptionalComp.class),
+        @JsonSubTypes.Type(name = "CountComp", value = CountComp.class),
         @JsonSubTypes.Type(name = "SchematicEProp", value = SchematicEProp.class),
         @JsonSubTypes.Type(name = "SchematicRankedEProp", value = SchematicRankedEProp.class),
-        @JsonSubTypes.Type(name = "ScoreEProp", value = ScoreEProp.class)
+        @JsonSubTypes.Type(name = "ScoreEProp", value = ScoreEProp.class),
+        @JsonSubTypes.Type(name = "CalculatedEProp", value = CalculatedEProp.class)
 })
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)

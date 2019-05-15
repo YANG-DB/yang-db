@@ -7,7 +7,7 @@ package org.unipop.query.aggregation;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,5 +37,8 @@ public class ReduceQuery extends PredicateQuery {
 
     public interface SearchController<E extends Element> extends UniQueryController {
         long count(ReduceQuery uniQuery);
+        long max(ReduceQuery uniQuery);
+        long min(ReduceQuery uniQuery);
+        long avg(ReduceQuery uniQuery);
     }
 }

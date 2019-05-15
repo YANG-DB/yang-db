@@ -6,10 +6,13 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.aggregation.AggLOp;
+import com.kayhut.fuse.model.query.properties.CalculatedEProp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.projection.CalculatedFieldProjection;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
@@ -32,8 +35,10 @@ public class AsgEntityPropertiesValidationStrategyTest {
     Ontology ontology;
 
     AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
-            .next(typed(1, PERSON.type))
-            .next(ePropGroup(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
+            .next(typed(1, PERSON.type,"p"))
+            .next(ePropGroup(10,
+                    EProp.of(11, FIRST_NAME.type, of(eq, "Moshe")),
+                    CalculatedEProp.of(101, "p->eTag", new CalculatedFieldProjection(AggLOp.count))))
             .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                     RelProp.of(10, START_DATE.type, of(eq, new Date())))))
             .next(concrete(3, "HorseWithNoName", HORSE.type,"display","eTag"))
@@ -101,6 +106,41 @@ public class AsgEntityPropertiesValidationStrategyTest {
         ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
         Assert.assertFalse(validationResult.valid());
         Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_2));
+    }
+    @Test
+    public void testNotValidQuantPropGroupEntityMismatchQuery() {
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
+                .next(typed(1, PERSON.type))
+                .next(quant1(2, QuantType.all))
+                .in(relPropGroup(3, RelProp.of(3, NAME.type, Constraint.of(ConstraintOp.le,"abc"))),
+                    rel(4, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
+                            RelProp.of(10, START_DATE.type, of(eq, new Date()))))
+                    .next(concrete(5, "HorseWithNoName", HORSE.type,"display","eTag"))
+                    .next(ePropGroup(12, EProp.of(13, NAME.type, of(eq, "bubu")))))
+                .build();
+
+        AsgEntityPropertiesValidatorStrategy strategy = new AsgEntityPropertiesValidatorStrategy();
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_1));
+    }
+
+    @Test
+    public void testNotValidQuantPropEntityMismatchQuery() {
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
+                .next(typed(1, PERSON.type))
+                .next(quant1(2, QuantType.all))
+                .in(relProp(3, RelProp.of(3, NAME.type, Constraint.of(ConstraintOp.le,"abc"))),
+                    rel(4, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
+                            RelProp.of(10, START_DATE.type, of(eq, new Date()))))
+                    .next(concrete(5, "HorseWithNoName", HORSE.type,"display","eTag"))
+                    .next(ePropGroup(12, EProp.of(13, NAME.type, of(eq, "bubu")))))
+                .build();
+
+        AsgEntityPropertiesValidatorStrategy strategy = new AsgEntityPropertiesValidatorStrategy();
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_1));
     }
 
     @Test

@@ -45,7 +45,7 @@ public enum TypeConstraint {
     public static Constraint asConstraint(String key,Object value) {
         final Option<TypeConstraint> constraints = Stream.of(TypeConstraint.values()).find(v -> v.name().equals(key));
         if(constraints.isEmpty())
-            return Constraint.of(ConstraintOp.contains,value);
+            return Constraint.of(ConstraintOp.like,value);
 
         return Constraint.of(constraints.get().op,value);
     }

@@ -4,7 +4,7 @@ package com.kayhut.fuse.assembly.knowledge;
  * #%L
  * fuse-domain-knowledge-ext
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,22 @@ package com.kayhut.fuse.assembly.knowledge;
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
-import com.kayhut.fuse.assembly.knowledge.cursor.KnowledgeLogicalGraphCursor;
 import com.kayhut.fuse.assembly.knowledge.cursor.KnowledgeGraphHierarchyTraversalCursor;
+import com.kayhut.fuse.assembly.knowledge.cursor.KnowledgeLogicalGraphCursor;
+import com.kayhut.fuse.assembly.knowledge.parser.FolderBasedTypeProvider;
+import com.kayhut.fuse.assembly.knowledge.parser.model.BusinessTypesProvider;
 import com.kayhut.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.ext.driver.ExtensionQueryDriver;
 import com.kayhut.fuse.model.Range;
+import com.kayhut.fuse.services.KnowledgeExtensionQueryController;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
 import org.jooby.Env;
+import org.jooby.scope.RequestScoped;
+
+import java.net.URISyntaxException;
 
 import static com.google.inject.name.Names.named;
 
@@ -54,6 +62,20 @@ public class KnowledgeModule extends ModuleBase {
                 KnowledgeLogicalGraphCursorRequest.CursorType,
                 KnowledgeLogicalGraphCursorRequest.class,
                 new KnowledgeLogicalGraphCursor.Factory()));
+
+        binder.bind(BusinessTypesProvider.class).toInstance(provider(conf));
+        binder.bind(ExtensionQueryDriver.class).in(RequestScoped.class);
+        binder.bind(KnowledgeExtensionQueryController.class).in(RequestScoped.class);
+    }
+
+
+    private BusinessTypesProvider provider(Config conf) throws URISyntaxException {
+        try {
+            return new FolderBasedTypeProvider(conf.getString("Knowledge.business_type_provider_dir"));
+        }catch (ConfigException.Missing missing) {
+            return new FolderBasedTypeProvider("ontology");
+        }
+
     }
     //endregion
 }

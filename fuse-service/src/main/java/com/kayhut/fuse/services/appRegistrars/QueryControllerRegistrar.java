@@ -4,7 +4,7 @@ package com.kayhut.fuse.services.appRegistrars;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,9 @@ import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.*;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.services.controllers.QueryController;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.jooby.*;
 import org.jooby.apitool.ApiTool;
 
@@ -75,6 +77,15 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
          **/
         app.post(appUrlSupplier.queryStoreUrl() ,
                 req -> postV1(app,req,this));
+
+        /** validate a v1 query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/validate",req -> validateV1(app,req,this));
+
+        /** get the plan from v1 query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/plan",req -> plan(app,req,this));
+
+        /** get the traversal from v1 query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/traversal",req -> traversal(app,req,this));
 
         /** create a v1 query */
         app.post(appUrlSupplier.queryStoreUrl() + "/v1",req -> postV1(app,req,this));
@@ -204,6 +215,39 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     registrar.getController(app).createAndFetch(createQueryRequest);
 
             return Results.with(response, response.status());
+
+        }
+
+        public static Result validateV1(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+            Route.of("validateQuery").write();
+
+            Query query = req.body(Query.class);
+            req.set(Query.class, query);
+            ContentResponse<ValidationResult> response = registrar.getController(app).validate(query);
+
+            return Results.json(response.getData());
+
+        }
+
+        public static Result plan(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+            Route.of("planByQuery").write();
+
+            Query query = req.body(Query.class);
+            req.set(Query.class, query);
+            ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = registrar.getController(app).plan(query);
+
+            return Results.json(response.getData().toString());
+
+        }
+
+        public static Result traversal(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+            Route.of("traversal").write();
+
+            Query query = req.body(Query.class);
+            req.set(Query.class, query);
+            ContentResponse<GraphTraversal> response = registrar.getController(app).traversal(query);
+
+            return Results.with(response.getData().explain().prettyPrint());
 
         }
 

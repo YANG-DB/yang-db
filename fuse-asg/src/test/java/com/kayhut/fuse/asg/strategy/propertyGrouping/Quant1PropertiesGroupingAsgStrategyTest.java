@@ -4,17 +4,22 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryAssert;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
+import com.kayhut.fuse.model.query.aggregation.AggLOp;
+import com.kayhut.fuse.model.query.properties.CalculatedEProp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.projection.CalculatedFieldProjection;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.FIRST_NAME;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.*;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
@@ -43,7 +48,8 @@ public class Quant1PropertiesGroupingAsgStrategyTest {
                 .next(quant1(2, all))
                 .in(
                         eProp(3, "p1", of(eq, "abc" )),
-                        eProp(4, "p2", of(eq, 1)))
+                        eProp(4, "p2", of(eq, 1)),
+                        eProp(101, "p->eTag", new CalculatedFieldProjection(AggLOp.count)))
                 .build();
 
         new Quant1PropertiesGroupingAsgStrategy().apply(query, new AsgStrategyContext(null));
@@ -52,7 +58,8 @@ public class Quant1PropertiesGroupingAsgStrategyTest {
                 .in(ePropGroup(
                         3,
                         EProp.of(3, "p1", of(eq, "abc")),
-                        EProp.of(4, "p2", of(eq, 1))))
+                        EProp.of(4, "p2", of(eq, 1)),
+                        CalculatedEProp.of(101, "p->eTag", new CalculatedFieldProjection(AggLOp.count))))
                 .build();
 
         Assert.assertEquals(expectedQuery, query);

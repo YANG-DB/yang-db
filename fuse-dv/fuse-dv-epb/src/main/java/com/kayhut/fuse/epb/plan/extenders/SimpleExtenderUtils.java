@@ -4,7 +4,7 @@ package com.kayhut.fuse.epb.plan.extenders;
  * #%L
  * fuse-dv-epb
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
+import com.kayhut.fuse.model.query.aggregation.CountComp;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -79,6 +80,7 @@ public interface SimpleExtenderUtils {
     static boolean shouldAddElement(AsgEBase element) {
         return element != null &&
                 !(element.geteBase() instanceof Start) &&
+                !(element.geteBase() instanceof CountComp) &&
                 !(element.geteBase() instanceof OptionalComp);
     }
 

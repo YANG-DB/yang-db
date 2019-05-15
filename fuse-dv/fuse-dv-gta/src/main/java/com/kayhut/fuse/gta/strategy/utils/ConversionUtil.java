@@ -4,7 +4,7 @@ package com.kayhut.fuse.gta.strategy.utils;
  * #%L
  * fuse-dv-gta
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class ConversionUtil {
             //case match: return Text.like((V)constraint.getExpr());
             case like: return Text.like((V)constraint.getExpr());
             case likeAny: return Text.like((V)constraint.getExpr());
-            default: throw new RuntimeException("not supported");
+            default: throw new RuntimeException(constraint.getOp() +" not supported constraint");
         }
     }
 

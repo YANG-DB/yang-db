@@ -4,7 +4,7 @@ package com.kayhut.fuse.asg.validation;
  * #%L
  * fuse-asg
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,17 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.entity.Typed;
+import com.kayhut.fuse.model.query.properties.BaseProp;
+import com.kayhut.fuse.model.query.properties.CalculatedEProp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 
@@ -54,7 +59,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
         Ontology.Accessor accessor = context.getOntologyAccessor();
         Stream.ofAll(AsgQueryUtil.elements(query, EProp.class))
                 .forEach(property -> {
-                    Optional<AsgEBase<EEntityBase>> parent = AsgQueryUtil.ancestor(property,v->v.geteBase() instanceof EEntityBase);
+                    Optional<AsgEBase<EEntityBase>> parent = calculateNextAncestor(property,EEntityBase.class);
                     if (!parent.isPresent()) {
                         errors.add(ERROR_1 + ":" + property);
                     } else {
@@ -64,7 +69,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
 
         Stream.ofAll(AsgQueryUtil.elements(query, EPropGroup.class))
                 .forEach(group -> {
-                    Optional<AsgEBase<EEntityBase>> parent = AsgQueryUtil.ancestor(group,v->v.geteBase() instanceof EEntityBase);
+                    Optional<AsgEBase<EEntityBase>> parent = calculateNextAncestor(group,EEntityBase.class);
                     if (!parent.isPresent()) {
                         errors.add(ERROR_1 + group);
                     } else {
@@ -79,7 +84,9 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
     //endregion
 
     private List<String> check(Ontology.Accessor accessor, AsgEBase<EEntityBase> base, EPropGroup property) {
-        return property.getProps().stream().map(prop->check(accessor,base,prop))
+        return property.getProps().stream()
+                .filter(prop->!CalculatedEProp.class.isAssignableFrom(prop.getClass()))
+                .map(prop->check(accessor,base,prop))
                 .flatMap(Collection::stream).collect(Collectors.toList());
     }
 
@@ -97,9 +104,17 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
             Stream<String> types = Stream.ofAll(((EUntyped) base.geteBase()).getvTypes()).map(accessor::$entity$).flatMap(EntityType::getProperties);
             String pType = property.getpType();
 
-            if (types.toJavaStream().noneMatch(p -> p.equals(pType))) {
-                errors.add(ERROR_2 + ":" + print(base, property));
+            //skip projection fields validation
+            if(property.getProj()==null) {
+                if (types.toJavaStream().noneMatch(p -> p.equals(pType))) {
+                    errors.add(ERROR_2 + ":" + print(base, property));
+                }
             }
+        }
+
+        // if projection type prop -> dont check constraints
+        if(property.getProj()!=null) {
+            return errors;
         }
 
         //interval type
@@ -119,5 +134,15 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
             errors.add(String.format(ERROR_3 ," operation ",property));
         }
         return errors;
+    }
+
+    public static  <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz) {
+        final List<AsgEBase<? extends EBase>> path = AsgQueryUtil.pathToAncestor(eProp, clazz);
+        Optional<AsgEBase<T>> element = Optional.empty();
+        if(!path.isEmpty() && path.size()==2)
+            element = Optional.of((AsgEBase<T>) path.get(1));
+        if(!path.isEmpty() && path.size()==3 && QuantBase.class.isAssignableFrom(path.get(1).geteBase().getClass()))
+            element = Optional.of((AsgEBase<T>) path.get(2));
+        return element;
     }
 }

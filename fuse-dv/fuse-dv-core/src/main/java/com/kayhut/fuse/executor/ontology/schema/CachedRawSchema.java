@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.ontology.schema;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +23,25 @@ package com.kayhut.fuse.executor.ontology.schema;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by roman.margolis on 01/03/2018.
  */
 public class CachedRawSchema implements RawSchema {
     public static final String rawSchemaParameter = "CachedRawSchema.@rawSchema";
+    public static final String systemIndicesParameter = "CachedRawSchema.@systemIndices";
 
     //region Constructors
     @Inject
     public CachedRawSchema(
+            @Named(systemIndicesParameter) IndicesProvider systemIndices,
             @Named(rawSchemaParameter) RawSchema rawSchema) {
+        this.indices = new ArrayList<>();
+        CollectionUtils.addAll(this.indices, systemIndices.indices());
+        CollectionUtils.addAll(this.indices, rawSchema.indices());
         this.rawSchema = rawSchema;
 
         this.indexPartitions = Collections.synchronizedMap(new HashMap<>());
@@ -65,10 +68,6 @@ public class CachedRawSchema implements RawSchema {
 
     @Override
     public Iterable<String> indices() {
-        if (this.indices == null) {
-            this.indices = this.rawSchema.indices();
-        }
-
         return this.indices;
     }
     //endregion
@@ -80,6 +79,6 @@ public class CachedRawSchema implements RawSchema {
     private Map<String, List<IndexPartitions.Partition>> indexPartitionsPartitions;
     private Map<String, String> idFormats;
 
-    private Iterable<String> indices;
+    private List<String> indices;
     //endregion
 }

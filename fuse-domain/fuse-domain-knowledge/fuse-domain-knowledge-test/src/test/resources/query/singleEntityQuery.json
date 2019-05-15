@@ -1,0 +1,20 @@
+{
+  "clause": [
+    [
+      [
+        {
+          "conceptId": "http://huha.com/gdelt#gdeltEvent",
+          "type": "entity",
+          "properties": {
+            "http://huha.com/gdelt#globalEventId": {
+              "matchType": "QUERY",
+              "value": "840100756"
+            }
+          }
+        }
+      ]
+    ]
+  ],
+  "group_by": [],
+  "aggregations": []
+}

@@ -26,7 +26,7 @@ public class KnowledgeSimpleCdrWithCypherQueryTests {
         Setup.setup(false);
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         long start = System.currentTimeMillis();
-        long amount = DataLoader.load( ctx, "./data/cdr-small.csv");
+        long amount = DataLoader.load( ctx, "data/cdr/cdr-small.csv");
         System.out.println(String.format("Loaded %d rows in %s ",amount,(System.currentTimeMillis()-start)/1000));
     }
 

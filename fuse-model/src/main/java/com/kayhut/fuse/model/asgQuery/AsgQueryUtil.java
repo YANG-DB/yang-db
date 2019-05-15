@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.asgQuery;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,15 @@ package com.kayhut.fuse.model.asgQuery;
  * #L%
  */
 
+import com.kayhut.fuse.model.Tagged;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.RelPattern;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantBase;
 import javaslang.Tuple2;
@@ -67,9 +70,11 @@ public class AsgQueryUtil {
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getByTag(AsgEBase<T> asgEBase, String eTag) {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext,
                 p -> (EEntityBase.class.isAssignableFrom(p.geteBase().getClass()) &&
+                        ((EEntityBase) p.geteBase()).geteTag()!=null &&
                         ((EEntityBase) p.geteBase()).geteTag().equals(eTag))
                         ||
                         (Rel.class.isAssignableFrom(p.geteBase().getClass()) &&
+                                ((Rel) p.geteBase()).getWrapper() != null &&
                                 ((Rel) p.geteBase()).getWrapper().equals(eTag))
                 , truePredicate);
     }
@@ -80,6 +85,24 @@ public class AsgQueryUtil {
                 emptyIterableFunction,
                 AsgEBase::getParents,
                 asgEBase1 -> predicate.test(asgEBase1) && notThisPredicateFunction.apply(asgEBase).test(asgEBase1),
+                truePredicate);
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate,Predicate<AsgEBase> traversalPredicate) {
+        return element(
+                asgEBase,
+                emptyIterableFunction,
+                AsgEBase::getParents,
+                asgEBase1 -> predicate.test(asgEBase1) && notThisPredicateFunction.apply(asgEBase).test(asgEBase1),
+                traversalPredicate);
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestorRoot(AsgEBase<T> asgEBase) {
+        return element(
+                asgEBase,
+                emptyIterableFunction,
+                AsgEBase::getParents,
+                asgEBase1 -> asgEBase1.getParents().isEmpty(),
                 truePredicate);
     }
 
@@ -204,7 +227,9 @@ public class AsgQueryUtil {
     }
 
     public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextDescendantsSingleHop(AsgEBase<T> asgEBase, Class<?> klass) {
-        return nextDescendants(asgEBase, (asgEBase1 -> classPredicateFunction.apply(klass).test(asgEBase1) && asgEBase1 != asgEBase), (asgEBase1 -> asgEBase1 == asgEBase || !classPredicateFunction.apply(klass).test(asgEBase1)));
+        return nextDescendants(asgEBase,
+                (asgEBase1 -> classPredicateFunction.apply(klass).test(asgEBase1) && asgEBase1 != asgEBase),
+                (asgEBase1 -> asgEBase1 == asgEBase || !classPredicateFunction.apply(klass).test(asgEBase1)));
     }
 
 
@@ -461,6 +486,19 @@ public class AsgQueryUtil {
                 elementPredicate, truePredicate, Collections.emptyList());
     }
 
+    public static List<String> eTags(AsgQuery query) {
+        return eTags(query.getStart());
+    }
+
+    public static <T extends EBase> List<String> eTags(AsgEBase<T> element) {
+        return values(element,
+                AsgEBase::getB,
+                AsgEBase::getNext,
+                asgEBase -> ((Tagged) asgEBase.geteBase()).geteTag(),
+                asgEBase -> asgEBase.geteBase() instanceof Tagged,
+                truePredicate, Collections.emptyList());
+    }
+
     public static AsgEBase<Rel> reverse(AsgEBase<Rel> relAsgEBase) {
         Rel reversedRel = new Rel();
         reversedRel.seteNum(relAsgEBase.geteNum());
@@ -500,6 +538,44 @@ public class AsgQueryUtil {
     }
 
     public static <T extends EBase> AsgEBase<T> deepCloneWithEnums(
+            AtomicInteger counter,
+            AsgEBase<T> asgEBase,
+            Predicate<AsgEBase<? extends EBase>> nextPredicate,
+            Predicate<AsgEBase<? extends EBase>> bPredicate) {
+        AsgEBase.Builder<T> eBaseBuilder = AsgEBase.Builder.get();
+        T clone;
+        //quant base has a special sequence counter
+        if (QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
+            clone = (T) asgEBase.geteBase().clone(counter.incrementAndGet());
+        } else if (BasePropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
+            clone = (T) asgEBase.geteBase().clone(counter.incrementAndGet());
+        } else {
+            clone = (T) asgEBase.geteBase().clone(counter.incrementAndGet());
+        }
+        //update etag
+/*
+        //todo enabling this code will cause creation of new tags that will not assiciated with former tags that was cloned from
+        // and therefore will not be found
+        if(clone instanceof Tagged && ((Tagged) clone).geteTag() != null) {
+            final String tag = ((Tagged) clone).geteTag();
+            ((Tagged) clone).seteTag(tag +"_"+clone.geteNum());
+        }
+*/
+        eBaseBuilder.withEBase(clone);
+
+        List<AsgEBase<? extends EBase>> next = Stream.ofAll(asgEBase.getNext()).filter(nextPredicate).toJavaList();
+        for (int i = 0; i < next.size(); i++) {
+            eBaseBuilder.withNext(deepCloneWithEnums(counter, next.get(i), nextPredicate, bPredicate));
+        }
+        List<AsgEBase<? extends EBase>> bNext = Stream.ofAll(asgEBase.getB()).filter(bPredicate).toJavaList();
+
+        for (int i = 0; i < bNext.size(); i++) {
+            eBaseBuilder.withB(deepCloneWithEnums(counter, next.get(i), nextPredicate, bPredicate));
+        }
+        return eBaseBuilder.build();
+    }
+
+    public static <T extends EBase> AsgEBase<T> deepCloneWithEnums(
             int[] max,
             AsgEBase<T> asgEBase,
             Predicate<AsgEBase<? extends EBase>> nextPredicate,
@@ -514,6 +590,15 @@ public class AsgQueryUtil {
         } else {
             clone = (T) asgEBase.geteBase().clone(++max[0]);
         }
+        //update etag
+/*
+        //todo enabling this code will cause creation of new tags that will not assiciated with former tags that was cloned from
+        // and therefore will not be found
+        if(clone instanceof Tagged && ((Tagged) clone).geteTag() != null) {
+            final String tag = ((Tagged) clone).geteTag();
+            ((Tagged) clone).seteTag(tag +"_"+clone.geteNum());
+        }
+*/
         eBaseBuilder.withEBase(clone);
 
         List<AsgEBase<? extends EBase>> next = Stream.ofAll(asgEBase.getNext()).filter(nextPredicate).toJavaList();
@@ -552,6 +637,29 @@ public class AsgQueryUtil {
 
         }
         return builder.build();
+    }
+
+    /**
+     * add a new quant element after the source entity
+     * @param quantAsg
+     * @param source
+     * @return
+     */
+    public static void addAsNext(AsgEBase<Quant1> quantAsg, AsgEBase source) {
+        List<AsgEBase<? extends EBase>> next = new ArrayList<>(source.getNext());
+        quantAsg.addNext(next);
+        quantAsg.setParent(Arrays.asList(source));
+        source.setNext(Arrays.asList(quantAsg));
+    }
+
+    public static void replace(AsgEBase source, AsgEBase target) {
+        List<AsgEBase<? extends EBase>> next = new ArrayList<>(source.getNext());
+        target.setNext(next);
+    }
+
+
+    public static int count(AsgEBase<? extends EBase> asgEBase, Class<EBase> aClass) {
+        return elements(asgEBase, classPredicateFunction.apply(aClass)).size();
     }
 
     public static class OptionalStrippedQuery {

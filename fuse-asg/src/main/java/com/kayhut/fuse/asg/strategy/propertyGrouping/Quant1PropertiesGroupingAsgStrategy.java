@@ -4,7 +4,7 @@ package com.kayhut.fuse.asg.strategy.propertyGrouping;
  * #%L
  * fuse-asg
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
@@ -58,7 +60,11 @@ public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
                     quant.addNextChild(new AsgEBase<>(ePropGroup));
                 } else {
                     List<AsgEBase<EPropGroup>> ePropsGroupAsgChildren = AsgQueryUtil.nextAdjacentDescendants(quant, EPropGroup.class);
-                    if (ePropsGroupAsgChildren.isEmpty() && quant.geteBase().getqType().equals(QuantType.all)) {
+                    Optional<AsgEBase<EBase>> ancestor = AsgQueryUtil.ancestor(quant, asgEBase -> asgEBase.geteBase() instanceof ETyped,
+                            asgEBase -> !(asgEBase.geteBase() instanceof Rel));
+                    if (ePropsGroupAsgChildren.isEmpty()
+                            && ancestor.isPresent()
+                            && quant.geteBase().getqType().equals(QuantType.all)) {
                         EPropGroup ePropGroup = new EPropGroup(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get() + 1);
                         AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
                         quant.addNextChild(ePropGroupAsgEbase);

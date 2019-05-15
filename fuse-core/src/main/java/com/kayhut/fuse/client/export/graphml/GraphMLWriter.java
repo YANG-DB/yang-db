@@ -62,7 +62,7 @@ public final class GraphMLWriter implements GraphWriter {
     private final String edgeLabelKey;
     private final String vertexLabelKey;
 
-    private GraphMLWriter(final boolean normalize, final Map<String, String> vertexKeyTypes,
+    public GraphMLWriter(final boolean normalize, final Map<String, String> vertexKeyTypes,
                           final Map<String, String> edgeKeyTypes, final String xmlSchemaLocation,
                           final String edgeLabelKey, final String vertexLabelKey) {
         this.vertexKeyTypes = Optional.ofNullable(vertexKeyTypes);
@@ -163,8 +163,8 @@ public final class GraphMLWriter implements GraphWriter {
      */
     @Override
     public void writeGraph(final OutputStream outputStream, final Assignment g) throws IOException {
-        final Map<String, String> identifiedVertexKeyTypes = this.vertexKeyTypes.orElseGet(() -> GraphMLWriter.determineVertexTypes(g));
-        final Map<String, String> identifiedEdgeKeyTypes = this.edgeKeyTypes.orElseGet(() -> GraphMLWriter.determineEdgeTypes(g));
+        final Map<String, String> identifiedVertexKeyTypes = new HashMap<>(this.vertexKeyTypes.orElseGet(() -> GraphMLWriter.determineVertexTypes(g)));
+        final Map<String, String> identifiedEdgeKeyTypes = new HashMap<>(this.edgeKeyTypes.orElseGet(() -> GraphMLWriter.determineEdgeTypes(g)));
 
         if (identifiedEdgeKeyTypes.containsKey(this.edgeLabelKey))
             throw new IllegalStateException(String.format("The edgeLabelKey value of[%s] conflicts with the name of an existing property key to be included in the GraphML", this.edgeLabelKey));

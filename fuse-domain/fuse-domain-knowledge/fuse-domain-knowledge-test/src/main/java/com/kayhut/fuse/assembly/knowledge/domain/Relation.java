@@ -4,7 +4,7 @@ package com.kayhut.fuse.assembly.knowledge.domain;
  * #%L
  * fuse-domain-knowledge-test
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "type",
+        "techId",
+        "entityATechId",
+        "entityBTechId",
         "entityALogicalId",
         "entityAId",
         "entityACategory",
@@ -61,16 +64,22 @@ public class Relation {
     private String entityALogicalId;
     @JsonProperty("entityAId")
     private String entityAId;
+    @JsonProperty("entityATechId")
+    private String entityATechId;
     @JsonProperty("entityACategory")
     private String entityACategory;
     @JsonProperty("entityBLogicalId")
     private String entityBLogicalId;
     @JsonProperty("entityBId")
     private String entityBId;
+    @JsonProperty("entityBTechId")
+    private String entityBTechId;
     @JsonProperty("entityBCategory")
     private String entityBCategory;
     @JsonProperty("context")
     private String context;
+    @JsonProperty("techId")
+    private String techId;
     @JsonProperty("category")
     private String category;
     @JsonProperty("lastUpdateUser")
@@ -105,6 +114,16 @@ public class Relation {
         return this;
     }
 
+    @JsonProperty("techId")
+    public String getTechId() {
+        return techId;
+    }
+
+    @JsonProperty("techId")
+    public void setTechId(String techId) {
+        this.techId = techId;
+    }
+
     @JsonProperty("entityALogicalId")
     public String getEntityALogicalId() {
         return entityALogicalId;
@@ -118,6 +137,26 @@ public class Relation {
     public Relation withEntityALogicalId(String entityALogicalId) {
         this.entityALogicalId = entityALogicalId;
         return this;
+    }
+
+    @JsonProperty("entityATechId")
+    public String getEntityATechId() {
+        return entityATechId;
+    }
+
+    @JsonProperty("entityATechId")
+    public void setEntityATechId(String entityATechId) {
+        this.entityATechId = entityATechId;
+    }
+
+    @JsonProperty("entityBTechId")
+    public String getEntityBTechId() {
+        return entityBTechId;
+    }
+
+    @JsonProperty("entityBTechId")
+    public void setEntityBTechId(String entityBTechId) {
+        this.entityBTechId = entityBTechId;
     }
 
     @JsonProperty("entityAId")

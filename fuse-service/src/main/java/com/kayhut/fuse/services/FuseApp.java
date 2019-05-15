@@ -4,7 +4,7 @@ package com.kayhut.fuse.services;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,6 @@ import com.kayhut.fuse.logging.StatusReportedJob;
 import com.kayhut.fuse.services.appRegistrars.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
 import javaslang.Tuple2;
 import org.jooby.Jooby;
 import org.jooby.RequestLogger;
@@ -39,7 +37,6 @@ import org.jooby.Results;
 import org.jooby.caffeine.CaffeineCache;
 import org.jooby.handlers.CorsHandler;
 import org.jooby.metrics.Metrics;
-import org.jooby.micrometer.Micrometer;
 import org.jooby.quartz.Quartz;
 import org.jooby.scanner.Scanner;
 import org.reflections.Reflections;
@@ -63,20 +60,7 @@ public class FuseApp extends Jooby {
         MetricRegistry metricRegistry = new MetricRegistry();
         bind(metricRegistry);
 
-        use(new Micrometer());
-
         // Timer example:
-        use("*", (req, rsp, chain) -> {
-            MeterRegistry registry = require(MeterRegistry.class);
-            Timer timer = registry.timer("http.server.requests");
-            timer.record(() -> {
-                try {
-                    chain.next(req, rsp);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            });
-        });
         use(new Metrics(metricRegistry)
                 .request()
                 .threadDump()

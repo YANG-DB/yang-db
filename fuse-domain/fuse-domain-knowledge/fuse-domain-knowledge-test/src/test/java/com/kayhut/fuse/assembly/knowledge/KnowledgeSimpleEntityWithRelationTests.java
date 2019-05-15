@@ -9,11 +9,16 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.results.*;
+import com.kayhut.fuse.model.transport.cursor.CreateForwardOnlyPathTraversalCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
 import org.junit.*;
@@ -29,6 +34,7 @@ import java.util.TimeZone;
 import static com.kayhut.fuse.assembly.knowledge.Setup.*;
 import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder._e;
+import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KnowledgeQueryBuilder.start;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
@@ -36,12 +42,14 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RefBuilder._ref;
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder._rel;
+import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
 public class KnowledgeSimpleEntityWithRelationTests {
     static KnowledgeWriterContext ctx;
     static SimpleDateFormat sdf;
     @BeforeClass
     public static void setup() throws Exception {
+        Setup.setup(false,true);
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -93,7 +101,6 @@ public class KnowledgeSimpleEntityWithRelationTests {
         // Check if expected and actual are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true,true);
     }
-
 
 
     @Test

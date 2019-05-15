@@ -4,7 +4,7 @@ package com.kayhut.fuse.unipop.controller.common.logging;
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,24 @@ public class LoggingReduceController implements ReduceQuery.SearchController {
     public long count(ReduceQuery reduceQuery) {
         return new LoggingSyncMethodDecorator<Long>(this.logger, this.metricRegistry, count, trace)
                 .decorate(() -> this.searchController.count(reduceQuery), new Passthrough<>((ex) -> 0L));
+    }
+
+    @Override
+    public long max(ReduceQuery reduceQuery) {
+        return new LoggingSyncMethodDecorator<Long>(this.logger, this.metricRegistry, count, trace)
+                .decorate(() -> this.searchController.max(reduceQuery), new Passthrough<>((ex) -> 0L));
+    }
+
+    @Override
+    public long min(ReduceQuery reduceQuery) {
+        return new LoggingSyncMethodDecorator<Long>(this.logger, this.metricRegistry, count, trace)
+                .decorate(() -> this.searchController.min(reduceQuery), new Passthrough<>((ex) -> 0L));
+    }
+
+    @Override
+    public long avg(ReduceQuery reduceQuery) {
+        return new LoggingSyncMethodDecorator<Long>(this.logger, this.metricRegistry, count, trace)
+                .decorate(() -> this.searchController.avg(reduceQuery), new Passthrough<>((ex) -> 0L));
     }
     //endregion
 

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.assembly.knowledge.domain;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.kayhut.fuse.client.FuseClient;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Query;
@@ -13,10 +14,8 @@ import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
-import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
-import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
-import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
-import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.*;
+import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
@@ -218,18 +217,28 @@ public class KnowledgeReaderContext {
             throws IOException, InterruptedException {
         // get Query URL
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        if(queryResourceInfo.getError()!=null) {
+            return new AssignmentsQueryResult<Entity,Relation>() {
+                @Override
+                public int getSize() {
+                    return -1;
+                }
+
+                public FuseError error() {
+                    return queryResourceInfo.getError();
+                }
+
+                @Override
+                public String toString() {
+                    return error().getErrorDescription();
+                }
+            };
+        }
+
         // Press on Cursor
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), createCursorRequest);
         // Press on page to get the relevant page
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(),
-                createCursorRequest.getCreatePageRequest()!=null ? createCursorRequest.getCreatePageRequest().getPageSize() : 1000);
-        // Waiting until it gets the response
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
+        PageResourceInfo pageResourceInfo = getPageResourceInfo(fuseClient, cursorResourceInfo, createCursorRequest.getCreatePageRequest() != null ? createCursorRequest.getCreatePageRequest().getPageSize() : 1000);
         // return the relevant data
         return fuseClient.getPageData(pageResourceInfo.getDataUrl());
     }
@@ -238,23 +247,47 @@ public class KnowledgeReaderContext {
             throws IOException, InterruptedException {
         // get Query URL
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query,ontology);
+        if(queryResourceInfo.getError()!=null) {
+            return new AssignmentsQueryResult<Entity,Relation>() {
+                @Override
+                public int getSize() {
+                    return -1;
+                }
+
+                public FuseError error() {
+                    return queryResourceInfo.getError();
+                }
+
+                @Override
+                public String toString() {
+                    return error().getErrorDescription();
+                }
+            };
+        }
+
         // Press on Cursor
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), createCursorRequest);
         // Press on page to get the relevant page
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(),
-                createCursorRequest.getCreatePageRequest()!=null ? createCursorRequest.getCreatePageRequest().getPageSize() : 1000);
-        // Waiting until it gets the response
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
+        PageResourceInfo pageResourceInfo = getPageResourceInfo(fuseClient, cursorResourceInfo, createCursorRequest.getCreatePageRequest() != null ? createCursorRequest.getCreatePageRequest().getPageSize() : 1000);
         // return the relevant data
         return fuseClient.getPageData(pageResourceInfo.getDataUrl());
     }
 
     static public QueryResultBase nextPage(FuseClient fuseClient,CursorResourceInfo cursorResourceInfo ,int pageSize) throws IOException, InterruptedException {
+        PageResourceInfo pageResourceInfo = getPageResourceInfo(fuseClient, cursorResourceInfo, pageSize);
+        // return the relevant data
+        return fuseClient.getPageData(pageResourceInfo.getDataUrl());
+
+    }
+
+    static public QueryResultBase nextPage(FuseClient fuseClient, CursorResourceInfo cursorResourceInfo, TypeReference typeReference, int pageSize) throws IOException, InterruptedException {
+        PageResourceInfo pageResourceInfo = getPageResourceInfo(fuseClient, cursorResourceInfo, pageSize);
+        // return the relevant data
+        return fuseClient.getPageData(pageResourceInfo.getDataUrl(),typeReference);
+
+    }
+
+    protected static PageResourceInfo getPageResourceInfo(FuseClient fuseClient, CursorResourceInfo cursorResourceInfo, int pageSize) throws IOException, InterruptedException {
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(),pageSize);
         // Waiting until it gets the response
         while (!pageResourceInfo.isAvailable()) {
@@ -263,9 +296,7 @@ public class KnowledgeReaderContext {
                 Thread.sleep(10);
             }
         }
-        // return the relevant data
-        return fuseClient.getPageData(pageResourceInfo.getDataUrl());
-
+        return pageResourceInfo;
     }
 
     public static class Filter {

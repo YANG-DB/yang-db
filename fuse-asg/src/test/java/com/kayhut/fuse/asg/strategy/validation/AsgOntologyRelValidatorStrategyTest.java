@@ -59,6 +59,7 @@ public class AsgOntologyRelValidatorStrategyTest {
         ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
         Assert.assertTrue(validationResult.valid());
     }
+
     @Test
     public void testNotValidDirectionParentEntityWithQuantUntypedQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
@@ -194,6 +195,23 @@ public class AsgOntologyRelValidatorStrategyTest {
         ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
         Assert.assertFalse(validationResult.valid());
         Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgOntologyRelValidatorStrategy.ERROR_1));
+
+    }
+
+    @Test
+    public void testValidRelWithQuantBeforeRelQuery() {
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(unTyped(1)).
+                next(quant1(2, QuantType.all))
+                        .next(rel(3, FREEZE.getrType(), Rel.Direction.R).below(relProp(5)))
+                                .next(quant1(4, QuantType.all))
+                                .next(typed(5, DRAGON.type))
+                                    .next(quant1(6, QuantType.all))
+                                        .in(ePropGroup(7, EProp.of(7, NAME.type, Constraint.of(ConstraintOp.eq, "abc"))))
+                .build();
+        AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(validationResult.toString(),validationResult.valid());
 
     }
 

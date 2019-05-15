@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.transport;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,26 +35,37 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String> {
-    public static final String TYPE = "cypher";
+    public static final String TYPE_CYPHER = "cypher";
 
     //region Constructors
     public CreateJsonQueryRequest() {
+        this(TYPE_CYPHER);
+    }
+
+    public CreateJsonQueryRequest(String queryType) {
+        this.queryType = queryType;
         this.planTraceOptions = new PlanTraceOptions();
         this.planTraceOptions.setLevel(PlanTraceOptions.Level.none);
-
         this.ttl = 300000;
     }
 
-    public CreateJsonQueryRequest(String id, String name, String query, String ontology) {
+    public CreateJsonQueryRequest(String id, String name,String queryType, String query, String ontology) {
         this();
         this.id = id;
         this.name = name;
+        this.queryType = queryType;
         this.query = query;
         this.ontology = ontology;
     }
 
+    public CreateJsonQueryRequest(String id, String name,String queryType, String query, String ontology, CreateCursorRequest createCursorRequest) {
+        this(id, name, query,ontology, new PlanTraceOptions());
+        this.queryType = queryType;
+        this.createCursorRequest = createCursorRequest;
+    }
+
     public CreateJsonQueryRequest(String id, String name, String query, String ontology, PlanTraceOptions planTraceOptions) {
-        this(id, name, query,ontology);
+        this(id, name, TYPE_CYPHER, query,ontology);
         this.planTraceOptions = planTraceOptions;
     }
 
@@ -138,6 +149,10 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
         this.createCursorRequest = createCursorRequest;
     }
 
+    public String getQueryType() {
+        return queryType;
+    }
+
     public long getTtl() {
         return ttl;
     }
@@ -154,6 +169,7 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
         return "CreateQueryRequest{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
+                ", queryType=" + queryType + "\n"+
                 ", query=" + query + "\n"+
                 ", createCursorRequest=" + (createCursorRequest!=null ? createCursorRequest.toString() : "None" )+
                 '}';
@@ -165,6 +181,7 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
     private Type type = Type._volatile;
     private String name;
     private String query;
+    private String queryType;
     private String ontology;
     private long ttl;
     private boolean searchPlan = true;

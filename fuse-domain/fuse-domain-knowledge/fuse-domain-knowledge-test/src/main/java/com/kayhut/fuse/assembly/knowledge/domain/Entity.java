@@ -4,7 +4,7 @@ package com.kayhut.fuse.assembly.knowledge.domain;
  * #%L
  * fuse-domain-knowledge-test
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "type",
+        "techId",
         "logicalId",
         "context",
         "category",
@@ -50,6 +51,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 public class Entity {
 
+    @JsonProperty("techId")
+    private String techId;
     @JsonProperty("type")
     private String type;
     @JsonProperty("logicalId")
@@ -88,6 +91,16 @@ public class Entity {
     public Entity withType(String type) {
         this.type = type;
         return this;
+    }
+
+    @JsonProperty("techId")
+    public String getTechId() {
+        return techId;
+    }
+
+    @JsonProperty("techId")
+    public void setTechId(String techId) {
+        this.techId = techId;
     }
 
     @JsonProperty("logicalId")

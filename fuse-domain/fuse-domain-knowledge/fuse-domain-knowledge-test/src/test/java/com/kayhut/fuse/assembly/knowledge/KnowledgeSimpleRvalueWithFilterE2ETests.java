@@ -115,7 +115,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new EConcrete(1, "A", "Rvalue", rv1.id(),"",0, 0)
+                        new EConcrete(1, "A", "Rvalue", rv1.id(),"A",0, 0)
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 

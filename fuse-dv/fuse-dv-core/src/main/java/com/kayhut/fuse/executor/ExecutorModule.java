@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,6 +136,11 @@ public class ExecutorModule extends ModuleBase {
                             conf.getString(conf.getString("assembly") + ".physical_raw_schema_prefix") :
                             "";
                     this.bindConstant().annotatedWith(named(PrefixedRawSchema.prefixParameter)).to(prefix);
+
+                    this.bind(IndicesProvider.class)
+                            .annotatedWith(named(CachedRawSchema.systemIndicesParameter))
+                            .to(SystemIndicesProvider.class)
+                            .asEagerSingleton();
                     this.bind(RawSchema.class)
                             .annotatedWith(named(PartitionFilteredRawSchema.rawSchemaParameter))
                             .to(PrefixedRawSchema.class)

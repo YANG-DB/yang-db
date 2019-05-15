@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,10 @@ package com.kayhut.fuse.model.query;
  * #L%
  */
 
+import com.kayhut.fuse.model.transport.CreateQueryRequestMetadata;
+
+import java.util.UUID;
+
 import static com.kayhut.fuse.model.transport.CreateQueryRequestMetadata.Type;
 
 /**
@@ -32,6 +36,10 @@ public final class QueryMetadata {
 
     public interface QueryMetadataAble {
         QueryMetadata getQueryMetadata();
+    }
+
+    public static QueryMetadata random(String name, boolean searchPlan) {
+        return new QueryMetadata(CreateQueryRequestMetadata.Type._volatile, UUID.randomUUID().toString(),name,searchPlan,System.currentTimeMillis(),10000);
     }
 
     //region Properties

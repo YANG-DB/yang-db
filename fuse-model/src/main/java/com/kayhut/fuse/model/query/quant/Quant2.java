@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query.quant;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import java.util.List;
  * Created by benishue on 17/02/2017.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Deprecated
 public class Quant2 extends QuantBase {
 
     public List<Integer> getNext() {

@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.resourceInfo;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,8 @@ public class FuseError {
         this.errorCode = errorCode;
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
+        //todo check is in debug mode
+        e.printStackTrace();
         this.errorDescription = e.getMessage()!=null ? e.getMessage() : sw.toString();
 
     }
@@ -64,4 +66,35 @@ public class FuseError {
         return errorDescription;
     }
 
+    @Override
+    public String toString() {
+        return "FuseError{" +
+                "errorCode='" + errorCode + '\'' +
+                ", errorDescription='" + errorDescription + '\'' +
+                '}';
+    }
+
+
+    public static class FuseErrorException extends RuntimeException {
+        private final FuseError error;
+
+        public FuseErrorException(String message, FuseError error) {
+            super(message);
+            this.error = error;
+        }
+
+        public FuseErrorException(FuseError error) {
+            super();
+            this.error = error;
+        }
+
+        public FuseErrorException(String message, Throwable cause, FuseError error) {
+            super(message, cause);
+            this.error = error;
+        }
+
+        public FuseError getError() {
+            return error;
+        }
+    }
 }

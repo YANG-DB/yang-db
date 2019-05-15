@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.asgQuery;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,6 +108,17 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
         this.next = new ArrayList<>();
         this.b = new ArrayList<>();
     }
+
+    @Override
+    public AsgEBase<T> clone() {
+        AsgEBase<T> clone = new AsgEBase<>();
+        clone.seteBase((T) eBase.clone());
+        clone.setParent(new ArrayList<>(parent));
+        clone.setNext(new ArrayList<>(next));
+        clone.setB(new ArrayList<>(b));
+        return clone;
+    }
+
     //endregion
 
     //region Properties
@@ -117,13 +128,13 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
 
     public AsgEBase<? extends EBase> addNext(AsgEBase<? extends EBase> node) {
         this.next.add(node);
-        node.setParent(Arrays.asList(this));
+        node.setParent(new ArrayList<>(Arrays.asList(this)));
         return this;
     }
 
     public AsgEBase<? extends EBase> addNext(List<AsgEBase<? extends EBase>> nodes) {
         this.next.addAll(nodes);
-        nodes.stream().forEach(e->e.setParent(Arrays.asList(this)));
+        nodes.stream().forEach(e->e.setParent(new ArrayList<>(Arrays.asList(this))));
         return this;
     }
 
@@ -135,7 +146,7 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
     @Override
     public void setNext(List<AsgEBase<? extends EBase>> next) {
         this.next = next;
-        next.stream().forEach(e->e.setParent(Arrays.asList(this)));
+        next.stream().forEach(e->e.setParent(new ArrayList<>(Arrays.asList(this))));
     }
 
     public List<AsgEBase<? extends EBase>> getB() {
@@ -177,6 +188,11 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
         return this;
     }
 
+    public AsgEBase<T> nextList(List<AsgEBase<? extends EBase>> elements) {
+        elements.forEach(this::addNextChild);
+        return this;
+    }
+
     public void addNextChild(AsgEBase<? extends EBase> asgEBase) {
         if (!this.next.contains(asgEBase)) {
             this.next.add(asgEBase);
@@ -186,6 +202,11 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
 
     public AsgEBase<T> below(AsgEBase<? extends EBase> asgEBase) {
         addBChild(asgEBase);
+        return this;
+    }
+
+    public AsgEBase<T> below(List<AsgEBase<? extends EBase>> elements) {
+        elements.forEach(this::addBChild);
         return this;
     }
 

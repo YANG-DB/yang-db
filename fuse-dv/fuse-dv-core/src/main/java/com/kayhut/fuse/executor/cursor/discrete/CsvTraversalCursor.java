@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.cursor.discrete;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import javaslang.collection.Stream;
 import java.io.StringWriter;
 import java.util.*;
 
-public class CsvTraversalCursor implements Cursor {
+public class CsvTraversalCursor implements Cursor<TraversalCursorContext> {
     //region CursorFactory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -64,6 +64,11 @@ public class CsvTraversalCursor implements Cursor {
             addHeaders(csvCursorRequest, builder);
         }
         return builder.build();
+    }
+
+    @Override
+    public TraversalCursorContext getContext() {
+        return cursor.getContext();
     }
     //endregion
 
@@ -192,7 +197,7 @@ public class CsvTraversalCursor implements Cursor {
     //endregion
 
     //region Fields
-    private Cursor cursor;
+    private Cursor<TraversalCursorContext> cursor;
     private CreateCsvCursorRequest csvCursorRequest;
     private char separator = ',';
     private char quotechar = '"';

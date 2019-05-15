@@ -42,7 +42,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
     @BeforeClass
     public static void setup() throws Exception
     {
-        //Setup.setup();
+        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Evalue entities for tests
@@ -128,7 +128,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
-                        new EConcrete(1, "A", "Evalue", v1.id(), "", 0, 0)
+                        new EConcrete(1, "A", "Evalue", v1.id(), "A", 0, 0)
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 

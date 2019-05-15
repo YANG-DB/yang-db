@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query.entity;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,10 @@ import java.util.List;
 public class ETyped extends EEntityBase implements Typed.eTyped {
     //region Constructors
     public ETyped() {}
+
+    public ETyped(int eNum, String eTag, String eType, int next) {
+        this(eNum,eTag,eType,next,-1);
+    }
 
     public ETyped(int eNum, String eTag, String eType, int next, int b) {
         super(eNum, eTag, next, b);

@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.ontology.schema;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,12 @@ import java.util.Set;
  * Describing the elastic (raw) indices & indices partitions
  * each index has id formatting
  */
-public interface RawSchema {
+public interface RawSchema extends IndicesProvider {
+
     IndexPartitions getPartition(String type);
 
     String getIdFormat(String type);
 
     List<IndexPartitions.Partition> getPartitions(String type);
 
-    Iterable<String> indices();
 }

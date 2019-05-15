@@ -40,10 +40,13 @@ public class RelationBuilder extends Metadata {
 
     public String context = DEFAULT_CTX;
     public String category;
+    public String techId;
     public String entityAId;
     public String entityBId;
     public String entityACategory;
+    public String entityATechId;
     public String entityBCategory;
+    public String entityBTechId;
     private String relId;
     public Map<String, Object> additionalProperties = new HashMap<>();
     public List<String> refs = new ArrayList<>();
@@ -57,11 +60,14 @@ public class RelationBuilder extends Metadata {
         super(builder);
         this.relId = builder.relId;
         this.category = builder.category;
+        this.techId = builder.techId;
         this.context = builder.context;
         this.entityAId = builder.entityAId;
         this.entityBId = builder.entityBId;
         this.entityACategory = builder.entityACategory;
         this.entityBCategory = builder.entityBCategory;
+        this.entityATechId = builder.entityATechId;
+        this.entityBTechId = builder.entityBTechId;
         this.refs = Arrays.asList(builder.refs.toArray(new String[builder.refs.size()]));
     }
 
@@ -93,17 +99,24 @@ public class RelationBuilder extends Metadata {
     public RelationBuilder sideA(EntityBuilder sideA) {
         this.entityAId = sideA.id();
         this.entityACategory = sideA.category;
+        this.entityATechId = sideA.techId;
         return this;
     }
 
     public RelationBuilder sideB(EntityBuilder sideB) {
         this.entityBId = sideB.id();
         this.entityBCategory = sideB.category;
+        this.entityBTechId = sideB.techId;
         return this;
     }
 
     public RelationBuilder cat(String category) {
         this.category = category;
+        return this;
+    }
+
+    public RelationBuilder techId(String techId) {
+        this.techId = techId;
         return this;
     }
 
@@ -127,8 +140,18 @@ public class RelationBuilder extends Metadata {
         return this;
     }
 
+    public RelationBuilder entityATechId(String entityATechId) {
+        this.entityATechId = entityATechId;
+        return this;
+    }
+
     public RelationBuilder entityBCategory(String entityBCategory) {
         this.entityBCategory = entityBCategory;
+        return this;
+    }
+
+    public RelationBuilder entityBTechId(String entityBTechId) {
+        this.entityBTechId = entityBTechId;
         return this;
     }
 
@@ -212,10 +235,13 @@ public class RelationBuilder extends Metadata {
         on.put("type", physicalType);
         on.put("context", context);
         on.put("category", category);
+        on.put("techId", techId);
         on.put("entityAId", entityAId);
         on.put("entityBId", entityBId);
         on.put("entityACategory", entityACategory);
+        on.put("entityATechId", entityATechId);
         on.put("entityBCategory", entityBCategory);
+        on.put("entityBTechId", entityBTechId);
         on.put("refs", collectRefs(mapper, refs));
         //make sure value or content
         return on;
@@ -230,6 +256,7 @@ public class RelationBuilder extends Metadata {
                 .withProperties(collect(Arrays.asList(
                         new Property("context", "raw", context),
                         new Property("category", "raw", category),
+                        new Property("techId", "raw", techId),
                         new Property("entityAId", "raw", entityAId),
                         new Property("entityBId", "raw", entityBId),
                         new Property("entityACategory", "raw", entityACategory),
@@ -257,9 +284,12 @@ public class RelationBuilder extends Metadata {
             //
             if (!builder.entityAId.equals(entityAId)) {
                 String entityACategory = builder.entityACategory;
+                String entityATechId= builder.entityATechId;
 
                 builder.entityACategory(builder.entityBCategory);
+                builder.entityATechId(builder.entityBTechId);
                 builder.entityBCategory(entityACategory);
+                builder.entityBTechId(entityATechId);
 
                 builder.entityBId(builder.entityAId);
                 builder.entityAId(entityAId);

@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,6 +109,13 @@ public class Query implements IQuery<EBase> {
         public Builder withElements(List<EBase> elements) {
             this.elements = elements;
             return this;
+        }
+
+        public Builder appendElements(List<EBase> elements) {
+            if(elements==null) {
+                this.elements = new ArrayList<>();
+            }
+            return withElement(elements.toArray(new EBase[0]));
         }
 
         public Builder withElement(EBase ... element) {

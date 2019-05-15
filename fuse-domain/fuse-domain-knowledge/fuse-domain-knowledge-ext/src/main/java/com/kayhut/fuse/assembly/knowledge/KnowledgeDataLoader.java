@@ -4,7 +4,7 @@ package com.kayhut.fuse.assembly.knowledge;
  * #%L
  * fuse-domain-knowledge-ext
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.kayhut.fuse.assembly.knowledge.load.KnowledgeContext;
 import com.kayhut.fuse.assembly.knowledge.load.KnowledgeTransformer;
-import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.ontology.OntologyTransformerProvider;
 import com.kayhut.fuse.executor.ontology.schema.GraphDataLoader;
 import com.kayhut.fuse.executor.ontology.schema.RawSchema;
-import com.kayhut.fuse.model.Range;
 import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.kayhut.fuse.model.ontology.transformer.OntologyTransformer;
 import com.typesafe.config.Config;
@@ -44,17 +42,12 @@ import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequ
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -76,7 +69,7 @@ public class KnowledgeDataLoader implements GraphDataLoader {
     private ObjectMapper mapper;
 
     @Inject
-    public KnowledgeDataLoader(Config config,Client client, RawSchema schema, IdGeneratorDriver<Range> idGenerator, OntologyTransformerProvider transformerProvider) throws UnknownHostException {
+    public KnowledgeDataLoader(Config config, Client client, RawSchema schema, OntologyTransformerProvider transformerProvider) {
         this.schema = schema;
         this.mapper = new ObjectMapper();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -136,5 +129,10 @@ public class KnowledgeDataLoader implements GraphDataLoader {
         final KnowledgeContext context = transformer.transform(root);
         //load all data to designated indices according to schema
         return commit(client,schema,mapper,context);
+    }
+
+    @Override
+    public long load(File data) throws IOException {
+        return 0;
     }
 }

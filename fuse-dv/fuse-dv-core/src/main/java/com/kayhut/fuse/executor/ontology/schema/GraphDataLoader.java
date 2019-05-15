@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.ontology.schema;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,9 @@ package com.kayhut.fuse.executor.ontology.schema;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kayhut.fuse.model.logical.LogicalGraphModel;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -124,9 +123,20 @@ public interface GraphDataLoader {
     long load(LogicalGraphModel root) throws IOException;
 
     /**
+     * does:
+     *  - unzip file
+     *  - split to multiple small files
+     *  - for each file (in parallel)
+     *      - convert into bulk set
+     *      - commit to repository
+     */
+    long load(File data) throws IOException;
+
+    /**
      * drop the vertices and edges indices to schema
      * @return
      * @throws IOException
      */
     long drop() throws IOException;
+
 }

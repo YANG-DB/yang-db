@@ -21,7 +21,9 @@ package com.kayhut.fuse.client;
  */
 
 import com.cedarsoftware.util.io.JsonReader;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -34,7 +36,7 @@ import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 import java.io.IOException;
-import java.util.Map;
+import java.net.URL;
 import java.util.function.Predicate;
 
 import static io.restassured.RestAssured.given;
@@ -91,6 +93,10 @@ public interface FuseClient {
 
     Object getId(String name, int numIds) throws IOException;
 
+    QueryResourceInfo loadData(String ontology, LogicalGraphModel resource) throws IOException;
+
+    QueryResourceInfo loadData(String ontology, URL resource) throws IOException;
+
     QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException;
 
     QueryResourceInfo postQuery(String queryStoreUrl, String query, String ontology) throws IOException;
@@ -122,6 +128,8 @@ public interface FuseClient {
     CursorResourceInfo getCursor(String cursorUrl, String cursorId) throws IOException;
 
     Ontology getOntology(String ontologyUrl) throws IOException;
+
+    QueryResultBase getPageData(String pageDataUrl, TypeReference typeReference) throws IOException ;
 
     QueryResultBase getPageData(String pageDataUrl) throws IOException;
 

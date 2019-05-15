@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,13 @@ package com.kayhut.fuse.model.query;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.kayhut.fuse.model.Below;
 import com.kayhut.fuse.model.Next;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.Typed;
 
 import java.util.Collections;
@@ -38,6 +41,9 @@ import java.util.List;
  * Created by lior.perry on 16-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(name = "RelPattern", value = RelPattern.class)})
 public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.rTyped{
 
     public enum Direction {
@@ -54,6 +60,10 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
 
     //region Constructors
     public Rel() {
+    }
+
+    public Rel(int eNum, String rType, Direction dir, String wrapper, int next) {
+        this(eNum,rType,dir,wrapper,next,-1);
     }
 
     public Rel(int eNum, String rType, Direction dir, String wrapper, int next, int b) {

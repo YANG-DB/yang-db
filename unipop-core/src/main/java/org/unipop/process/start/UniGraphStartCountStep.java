@@ -7,7 +7,7 @@ package org.unipop.process.start;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,7 @@ package org.unipop.process.start;
  */
 
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
-import org.apache.tinkerpop.gremlin.process.traversal.step.map.GraphStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.AbstractStep;
 import org.unipop.process.predicate.ReceivesPredicatesHolder;
 import org.unipop.query.StepDescriptor;
@@ -34,7 +32,6 @@ import org.unipop.query.aggregation.ReduceQuery;
 import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.predicates.PredicatesHolder;
 import org.unipop.query.predicates.PredicatesHolderFactory;
-import org.unipop.query.search.SearchQuery;
 
 import java.util.List;
 import java.util.NoSuchElementException;

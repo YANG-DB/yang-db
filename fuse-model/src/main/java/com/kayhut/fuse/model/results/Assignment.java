@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.results;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ package com.kayhut.fuse.model.results;
  */
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import javaslang.collection.Stream;
 
@@ -34,6 +35,7 @@ import java.util.*;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Assignment<E,R> {
     //region Constructors
     public Assignment() {
@@ -102,6 +104,16 @@ public class Assignment<E,R> {
             Entity currentEntity = this.entities.get(entity.geteID());
             if (currentEntity != null) {
                 entity = Entity.Builder.instance().withEntity(currentEntity).withEntity(entity).build();
+            }
+
+            entities.put(entity.geteID(), entity);
+            return this;
+        }
+
+        public Builder withEntity(Entity entity,String tag) {
+            Entity currentEntity = this.entities.get(entity.geteID());
+            if (currentEntity != null) {
+                entity = Entity.Builder.instance().withEntity(currentEntity).withEntity(entity).withETag(tag).build();
             }
 
             entities.put(entity.geteID(), entity);
