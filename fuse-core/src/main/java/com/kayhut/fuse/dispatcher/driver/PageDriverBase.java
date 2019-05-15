@@ -4,7 +4,7 @@ package com.kayhut.fuse.dispatcher.driver;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,10 @@ public abstract class PageDriverBase implements PageDriver {
             return Optional.empty();
         }
 
+        //outer page id resource
         String pageId = cursorResource.get().getNextPageId();
-
+        //create inner page resources
+        createInnerPage(queryResource.get(),cursorId,pageSize);
         PageResource<QueryResultBase> pageResource = this.createResource(queryResource.get(), cursorResource.get(), pageId, pageSize);
         this.resourceStore.addPageResource(queryId, cursorId, pageResource);
 
@@ -73,6 +75,12 @@ public abstract class PageDriverBase implements PageDriver {
                 pageResource.getActualSize(),
                 0,
                 true));
+    }
+
+    private void createInnerPage(QueryResource queryResource, String cursorId, int pageSize) {
+        queryResource.getInnerQueryResources().forEach(inner->{
+            create(inner.getQueryMetadata().getId(),cursorId,pageSize);
+        });
     }
 
     @Override
@@ -148,6 +156,9 @@ public abstract class PageDriverBase implements PageDriver {
             return Optional.empty();
         }
 
+        //delete inner query pages
+        queryResource.get().getInnerQueryResources().forEach(inner->delete(inner.getQueryMetadata().getId(),cursorId,pageId));
+        //delete outer resources
         Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
         if (!cursorResource.isPresent()) {
             return Optional.empty();

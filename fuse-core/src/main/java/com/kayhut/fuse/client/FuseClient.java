@@ -9,9 +9,9 @@ package com.kayhut.fuse.client;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,6 +32,7 @@ import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
@@ -43,16 +44,16 @@ import static io.restassured.RestAssured.given;
 
 public interface FuseClient {
     //region Protected Methods
-    static long countGraphElements(QueryResultBase pageData ) {
-        return countGraphElements(pageData,true,true,relationship -> true,entity -> true);
+    static long countGraphElements(QueryResultBase pageData) {
+        return countGraphElements(pageData, true, true, relationship -> true, entity -> true);
     }
 
     static long countGraphElements(QueryResultBase pageData, boolean relationship, boolean entities,
                                    Predicate<Relationship> relPredicate, Predicate<Entity> entityPredicate) {
-        if(pageData instanceof CsvQueryResult)
+        if (pageData instanceof CsvQueryResult)
             throw new IllegalArgumentException("Cursor returned CsvQueryResult instead of AssignmentsQueryResult");
 
-        if (pageData.getSize()==0)
+        if (pageData.getSize() == 0)
             return 0;
 
         if (pageData instanceof AssignmentsQueryResult
@@ -85,7 +86,7 @@ public interface FuseClient {
     }
 
     static <T> T unwrapDouble(String response) throws IOException {
-        return ((ContentResponse<T>)JsonReader.jsonToJava((String)JsonReader.jsonToJava(response))).getData();
+        return ((ContentResponse<T>) JsonReader.jsonToJava((String) JsonReader.jsonToJava(response))).getData();
     }
 
     //region Public Methods
@@ -100,6 +101,8 @@ public interface FuseClient {
     QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException;
 
     QueryResourceInfo postQuery(String queryStoreUrl, String query, String ontology) throws IOException;
+
+    QueryResourceInfo postQuery(String queryStoreUrl, CreateQueryRequest request) throws IOException;
 
     QueryResourceInfo postQuery(String queryStoreUrl, Query query, PlanTraceOptions planTraceOptions) throws IOException;
 

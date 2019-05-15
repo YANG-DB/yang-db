@@ -4,7 +4,7 @@ package com.kayhut.fuse.dispatcher.resource.store;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 /**
  * Created by lior.perry on 06/03/2017.
  */
-public interface ResourceStore extends Predicate<CreateQueryRequest.Type> {
+public interface ResourceStore extends Predicate<CreateQueryRequest.StorageType> {
     Collection<QueryResource> getQueryResources();
     Optional<QueryResource> getQueryResource(String queryId);
     Optional<CursorResource> getCursorResource(String queryId, String cursorId);

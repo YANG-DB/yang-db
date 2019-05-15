@@ -4,7 +4,7 @@ package com.kayhut.fuse.dispatcher.resource.store;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public boolean addQueryResource(QueryResource queryResource) {
-        return stores.stream().filter(store -> store.test(queryResource.getQueryMetadata().getType()))
+        return stores.stream().filter(store -> store.test(queryResource.getQueryMetadata().getStorageType()))
                 .findFirst().orElse(stores.iterator().next())
                 .addQueryResource(queryResource);
     }
@@ -117,7 +117,7 @@ public class ResourceStoreFactory implements ResourceStore {
     }
 
     @Override
-    public boolean test(CreateQueryRequest.Type type) {
+    public boolean test(CreateQueryRequest.StorageType type) {
         return false;
     }
 }

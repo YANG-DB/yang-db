@@ -24,7 +24,11 @@ package com.kayhut.fuse.model.asgQuery;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.aggregation.CountComp;
@@ -50,6 +54,9 @@ import java.util.Collections;
 /**
  * Created by benishue on 23-Feb-17.
  */
+@JsonSubTypes({
+        @JsonSubTypes.Type(name = "AsgCompositeQuery", value = AsgCompositeQuery.class)})
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
 
@@ -87,11 +94,24 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
         this.parameters = parameters;
     }
 
+    public Query getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(Query origin) {
+        this.origin = origin;
+    }
+
     @Override
     public Collection<AsgEBase<? extends EBase>> getElements() {
         return elements;
     }
-    //endregion
+
+    public void setElements(Collection<AsgEBase<? extends EBase>> elements) {
+        this.elements = elements;
+    }
+
+//endregion
 
     @Override
     public String toString() {
@@ -135,6 +155,8 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
     private String ont;
     private String name;
     private AsgEBase<Start> start;
+    private Query origin;
+
     private Collection<NamedParameter> parameters = new ArrayList<>();
     private Collection<AsgEBase<? extends EBase>> elements = new ArrayList<>();
 
@@ -154,6 +176,11 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
 
         public AsgQueryBuilder withOnt(String ont) {
             this.asgQuery.ont = ont;
+            return this;
+        }
+
+        public AsgQueryBuilder withOrigin(Query origin) {
+            this.asgQuery.origin = origin;
             return this;
         }
 

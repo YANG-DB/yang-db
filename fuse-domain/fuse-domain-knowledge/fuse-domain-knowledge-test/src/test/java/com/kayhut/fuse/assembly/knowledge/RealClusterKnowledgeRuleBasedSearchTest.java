@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services.engine2;
+package com.kayhut.fuse.assembly.knowledge;
 
 import com.kayhut.fuse.client.BaseFuseClient;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;

@@ -32,6 +32,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
     @BeforeClass
     public static void setup() throws Exception {
+        Setup.setup(false,false);
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
@@ -303,22 +304,6 @@ public class KnowledgeSimpleEntityWithFilterTests {
         Assert.assertEquals(1, ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().size());
         Assert.assertEquals(4, ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().get(0).getEntities().size());
         Assert.assertEquals(4, ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().get(0).getRelationships().size());
-
-/*
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//context entity
-                        .withEntities(e1.subEntities())//logicalEntity
-                        .withEntity(global.toEntity())//global entity
-                        .withEntity(value.toEntity())//context entity
-                        .withRelationships(e1.withRelations())//relationships
-                        .withRelationships(global.withRelations())//relationships (double relationships for the 2 different etags variations...
-                        .build()).build();
-
-        // Check if expected and actual are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
-*/
-
 
     }
 

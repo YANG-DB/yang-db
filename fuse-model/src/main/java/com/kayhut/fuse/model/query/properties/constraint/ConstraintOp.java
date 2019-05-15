@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query.properties.constraint;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,14 @@ package com.kayhut.fuse.model.query.properties.constraint;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by lior.perry on 23/02/2017.
  */
 public enum ConstraintOp {
+
     @JsonProperty("empty")
     empty,
 
@@ -99,6 +103,14 @@ public enum ConstraintOp {
     like,
 
     @JsonProperty("like any")
-    likeAny
+    likeAny;
+
+    public static Set<Class> ignorableConstraints;
+
+    static {
+        ignorableConstraints = new HashSet<>();
+        ignorableConstraints.add(ParameterizedConstraint.class);
+        ignorableConstraints.add(InnerQueryConstraint.class);
+    }
 
 }

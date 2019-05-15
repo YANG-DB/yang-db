@@ -4,7 +4,7 @@ package com.kayhut.fuse.asg;
  * #%L
  * fuse-dv-asg
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,7 @@ import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.asg.strategy.AsgStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.CypherAsgStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.M1CypherAsgStrategyRegistrar;
-import com.kayhut.fuse.asg.strategy.M2AsgStrategyRegistrar;
-import com.kayhut.fuse.dispatcher.asg.QueryToAsgTransformer;
-import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
+import com.kayhut.fuse.dispatcher.asg.QueryToCompositeAsgTransformer;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.dispatcher.query.QueryTransformer;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -50,7 +48,7 @@ public class M2AsgModule extends ModuleBase {
                 .to(getAsgStrategyRegistrar(conf));
 
         binder.bind(new TypeLiteral<QueryTransformer<Query, AsgQuery>>(){})
-                .to(QueryToAsgTransformer.class)
+                .to(QueryToCompositeAsgTransformer.class)
                 .asEagerSingleton();
 
         binder.bind(new TypeLiteral<QueryTransformer<String, AsgQuery>>(){})

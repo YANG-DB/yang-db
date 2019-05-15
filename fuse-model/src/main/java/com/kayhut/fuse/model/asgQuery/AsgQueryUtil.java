@@ -31,6 +31,7 @@ import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.properties.constraint.ParameterizedConstraint;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantBase;
@@ -50,6 +51,13 @@ import java.util.stream.Collectors;
  */
 public class AsgQueryUtil {
     //region Public Methods
+    public static List<EProp> getParameterizedConstraintEProps(AsgQuery query) {
+        return getEprops(query).stream()
+                .filter(prop -> prop.getCon() != null)
+                .filter(prop -> ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
+                .collect(Collectors.toList());
+    }
+
     public static int maxEntityNum(AsgQuery query) {
         return Stream.ofAll(AsgQueryUtil.eNums(query,
                 asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())
@@ -624,7 +632,9 @@ public class AsgQueryUtil {
         AsgEBase<Start> clonedStart = AsgQueryUtil.deepClone(query.getStart(), e -> !(e.geteBase() instanceof OptionalComp), b -> true);
 
         List elements = elements(clonedStart);
-        AsgQuery clonedMainQuery = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(clonedStart).withName(query.getName()).withOnt(query.getOnt()).withElements(elements).build();
+        AsgQuery clonedMainQuery = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(clonedStart)
+                .withOrigin(query.getOrigin())
+                .withName(query.getName()).withOnt(query.getOnt()).withElements(elements).build();
         OptionalStrippedQuery.Builder builder = OptionalStrippedQuery.Builder.get();
         builder.withMainQuery(clonedMainQuery);
         for (AsgEBase<OptionalComp> optionalElement : optionals) {

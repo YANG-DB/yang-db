@@ -81,7 +81,7 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
     //endregion
 
     //region Properties
-    public CreateJsonQueryRequest type(Type type) {
+    public CreateJsonQueryRequest type(StorageType type) {
         this.type = type;
         return this;
     }
@@ -128,7 +128,7 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
         return query;
     }
 
-    public Type getType() {
+    public StorageType getStorageType() {
         return type;
     }
 
@@ -178,7 +178,7 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
     //region Fields
     private String id;
     //default type is volatile
-    private Type type = Type._volatile;
+    private StorageType type = StorageType._volatile;
     private String name;
     private String query;
     private String queryType;

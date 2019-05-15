@@ -44,7 +44,8 @@ public class AsgRankingPropagationGroupingStrategyTest {
                                 .build())
                         .build();
 
-        return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
+        return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName)
+                .withOnt(ontologyName).withStart(asgStart).build();
     }
 
     public static AsgQuery oneHierarchyBoostingQuery(String queryName, String ontologyName) {

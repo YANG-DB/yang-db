@@ -18,6 +18,7 @@ import com.kayhut.fuse.model.resourceInfo.*;
 import com.kayhut.fuse.model.results.AssignmentsQueryResult;
 import com.kayhut.fuse.model.results.QueryResultBase;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import javaslang.Tuple2;
@@ -191,6 +192,10 @@ public class KnowledgeReaderContext {
         }
 
 
+    }
+
+    static public QueryResourceInfo query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, CreateQueryRequest request) throws IOException {
+        return fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(),request);
     }
 
     static public QueryResultBase query(FuseClient fuseClient, FuseResourceInfo fuseResourceInfo, Query query)

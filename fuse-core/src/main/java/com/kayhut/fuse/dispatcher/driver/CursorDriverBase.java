@@ -29,9 +29,9 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseError;
-import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateInnerQueryCursorRequest;
 import javaslang.collection.Stream;
 
 import java.util.Optional;
@@ -56,8 +56,10 @@ public abstract class CursorDriverBase implements CursorDriver {
                 return Optional.of(new CursorResourceInfo().error(
                         new FuseError(Query.class.getSimpleName(), "failed fetching next page for query " + queryId)));
         }
-
+        //outer query cursor id
         String cursorId = queryResource.get().getNextCursorId();
+        //inner cursors for inner queries
+        createInnerCursor(queryResource.get(),new CreateInnerQueryCursorRequest(cursorRequest));
         this.resourceStore.addCursorResource(queryId, this.createResource(queryResource.get(), cursorId, cursorRequest));
 
         return Optional.of(new CursorResourceInfo(
@@ -65,6 +67,13 @@ public abstract class CursorDriverBase implements CursorDriver {
                 cursorId,
                 cursorRequest,
                 urlSupplier.pageStoreUrl(queryId, cursorId)));
+    }
+
+    private void createInnerCursor(QueryResource query, CreateCursorRequest cursorRequest) {
+        Iterable<QueryResource> innerQueryResources = query.getInnerQueryResources();
+        innerQueryResources.forEach(innerQuery->{
+            create(innerQuery.getQueryMetadata().getId(),cursorRequest);
+        });
     }
 
     @Override
@@ -109,7 +118,9 @@ public abstract class CursorDriverBase implements CursorDriver {
         if (!queryResource.isPresent()) {
             return Optional.empty();
         }
-
+        //try delete inner cursors
+        queryResource.get().getInnerQueryResources().forEach(inner->delete(inner.getQueryMetadata().getId(),cursorId));
+        //delete outer cursor
         queryResource.get().deleteCursorResource(cursorId);
         return Optional.of(true);
     }

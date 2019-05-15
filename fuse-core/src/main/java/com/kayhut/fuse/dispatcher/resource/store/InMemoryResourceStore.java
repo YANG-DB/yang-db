@@ -4,7 +4,7 @@ package com.kayhut.fuse.dispatcher.resource.store;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,8 +148,8 @@ public class InMemoryResourceStore implements ResourceStore {
     }
 
     @Override
-    public boolean test(CreateQueryRequest.Type type) {
-        return type.equals(CreateQueryRequest.Type._volatile);
+    public boolean test(CreateQueryRequest.StorageType type) {
+        return type.equals(CreateQueryRequest.StorageType._volatile);
     }
 
 //endregion

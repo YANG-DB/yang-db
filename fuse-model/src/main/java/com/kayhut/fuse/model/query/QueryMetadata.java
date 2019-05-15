@@ -24,10 +24,11 @@ package com.kayhut.fuse.model.query;
  */
 
 import com.kayhut.fuse.model.transport.CreateQueryRequestMetadata;
+import com.kayhut.fuse.model.transport.CreateQueryRequestMetadata.StorageType;
 
 import java.util.UUID;
 
-import static com.kayhut.fuse.model.transport.CreateQueryRequestMetadata.Type;
+
 
 /**
  * Created by lior.perry on 21/02/2017.
@@ -39,29 +40,38 @@ public final class QueryMetadata {
     }
 
     public static QueryMetadata random(String name, boolean searchPlan) {
-        return new QueryMetadata(CreateQueryRequestMetadata.Type._volatile, UUID.randomUUID().toString(),name,searchPlan,System.currentTimeMillis(),10000);
+        return new QueryMetadata(CreateQueryRequestMetadata.StorageType._volatile, UUID.randomUUID().toString(),name,searchPlan,System.currentTimeMillis(),10000);
     }
 
     //region Properties
-    public QueryMetadata(Type type, String id, String name, boolean searchPlan , long creationTime, long ttl) {
-        this.type = type;
+    public QueryMetadata(StorageType storageType, String id, String name, boolean searchPlan , long creationTime, long ttl) {
+        this(Type.concrete, storageType, id, name, searchPlan, creationTime, ttl);
+    }
+
+    public QueryMetadata(Type type,StorageType storageType, String id, String name, boolean searchPlan , long creationTime, long ttl) {
+        this.storageType = storageType;
         this.id = id;
         this.name = name;
         this.searchPlan = searchPlan;
         this.creationTime = creationTime;
         this.ttl = ttl;
+        this.type = type;
     }
 
     public boolean isSearchPlan() {
         return searchPlan;
     }
 
-    public Type getType() {
-        return type;
+    public StorageType getStorageType() {
+        return storageType;
     }
 
     public String getId() {
         return id;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public String getName() {
@@ -75,7 +85,20 @@ public final class QueryMetadata {
     public long getTtl() {
         return ttl;
     }
-    //endregion
+
+    public void setSearchPlan(boolean searchPlan) {
+        this.searchPlan = searchPlan;
+    }
+
+    public void setStorageType(StorageType storageType) {
+        this.storageType = storageType;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+//endregion
 
     //region Fields
     private long creationTime;
@@ -83,6 +106,14 @@ public final class QueryMetadata {
     private String id;
     private String name;
     private boolean searchPlan = true;
+    private StorageType storageType;
     private Type type;
     //endregion
+
+    public enum Type {
+        concrete,
+        parameterized
+
+
+    }
 }

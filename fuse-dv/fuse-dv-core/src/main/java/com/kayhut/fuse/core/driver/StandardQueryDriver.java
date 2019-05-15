@@ -44,6 +44,8 @@ import com.kayhut.fuse.model.validation.ValidationResult;
 
 import java.util.Optional;
 
+import java.util.List;
+
 /**
  * Created by lior.perry on 20/02/2017.
  */
@@ -68,12 +70,16 @@ public class StandardQueryDriver extends QueryDriverBase {
 
     //region QueryDriverBase Implementation
     @Override
-    protected QueryResource createResource(CreateQueryRequest request, Query query, AsgQuery asgQuery, QueryMetadata metadata) {
+    protected QueryResource createResource(CreateQueryRequest request, Query query, List<QueryResource> innerQuery, AsgQuery asgQuery, QueryMetadata metadata) {
         AsgQuery newAsgQuery = rewrite(asgQuery);
         ValidationResult result = validateAsgQuery(newAsgQuery);
         if (!result.valid()) {
             throw new FuseError.FuseErrorException(new FuseError(Query.class.getSimpleName(),
                     "Asg Query rewrite validation error " + result.toString()));
+        }
+        //update as parameterized type query
+        if(!innerQuery.isEmpty()) {
+            metadata.setType(QueryMetadata.Type.parameterized);
         }
 
         PlanWithCost<Plan, PlanDetailedCost> planWithCost = planWithCost(metadata, newAsgQuery);
@@ -84,7 +90,8 @@ public class StandardQueryDriver extends QueryDriverBase {
     protected PlanWithCost<Plan, PlanDetailedCost> planWithCost(QueryMetadata metadata, AsgQuery query) {
         PlanWithCost<Plan, PlanDetailedCost> planWithCost = PlanWithCost.EMPTY_PLAN;
 
-        if (metadata.isSearchPlan()) {
+        //calculate execution plan
+        if (metadata.isSearchPlan() && (metadata.getType()!=QueryMetadata.Type.parameterized)) {
             planWithCost = this.planSearcher.search(query);
 
             if (planWithCost == null) {

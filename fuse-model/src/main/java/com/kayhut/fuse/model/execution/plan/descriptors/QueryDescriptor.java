@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.execution.plan.descriptors;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -169,8 +169,8 @@ public class QueryDescriptor implements Descriptor<Query> {
                 print(builder, query, element, true, true, level + 1, currentLine);
             } else if (element.get() instanceof EPropGroup) {
                 level = builder.size();
-                for (int i = 0; i < ((ScoreEPropGroup) element.get()).getGroups().size(); i++) {
-                    EPropGroup ePropGroup = ((ScoreEPropGroup) element.get()).getGroups().get(i);
+                for (int i = 0; i < ((EPropGroup) element.get()).getGroups().size(); i++) {
+                    EPropGroup ePropGroup = ((EPropGroup) element.get()).getGroups().get(i);
                     print(builder, query, Optional.of(ePropGroup), true, true, level, i);
                 }
             } else if (element.get() instanceof EProp || element.get() instanceof RelProp) {

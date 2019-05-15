@@ -31,6 +31,7 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.logical.LogicalGraphModel;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
@@ -88,7 +89,7 @@ public class BaseFuseClient implements FuseClient {
         // URL:/fuse/load/ontology/:id/load
         String resourceURl = String.format("%s/load/ontology/%s/load", this.fuseUrl, ontology);
         String result = unwrap(postRequest(resourceURl, root));
-        return new QueryResourceInfo(resourceURl,ontology,result);
+        return new QueryResourceInfo(QueryMetadata.Type.concrete, resourceURl,ontology,result);
     }
 
     @Override
@@ -104,6 +105,11 @@ public class BaseFuseClient implements FuseClient {
     @Override
     public QueryResourceInfo postQuery(String queryStoreUrl, String query, String ontology) throws IOException {
         return postQuery(queryStoreUrl,query,ontology, PlanTraceOptions.of(PlanTraceOptions.Level.none));
+    }
+
+    @Override
+    public QueryResourceInfo postQuery(String queryStoreUrl, CreateQueryRequest request) throws IOException {
+        return this.objectMapper.readValue(unwrap(postRequest(queryStoreUrl +"/" + CreateQueryRequest.TYPE, request)), QueryResourceInfo.class);
     }
 
     @Override

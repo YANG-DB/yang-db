@@ -2,6 +2,11 @@
   "ont": "Dragons",
   "properties": [
     {
+      "pType": "id",
+      "name": "id",
+      "type": "string"
+    },
+    {
       "pType": "firstName",
       "name": "firstName",
       "type": "string"
@@ -82,6 +87,7 @@
       "eType": "Person",
       "name": "Person",
       "properties": [
+        "id",
         "firstName",
         "lastName",
         "gender",

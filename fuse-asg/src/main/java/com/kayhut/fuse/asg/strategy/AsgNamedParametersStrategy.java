@@ -4,7 +4,7 @@ package com.kayhut.fuse.asg.strategy;
  * #%L
  * fuse-asg
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,14 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
                 .filter(prop -> prop.getCon() != null)
                 .filter(prop -> ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
                 .forEach(eProp -> {
-                    String name = ((Map<String, Object>) eProp.getCon().getExpr()).values().iterator().next().toString();
-                    Optional<NamedParameter> parameter = query.getParameters().stream().filter(p -> p.getName().equals(name)).findAny();
+                    Object expr = eProp.getCon().getExpr();
+                    String[] name = {"name"};
+                    if(expr instanceof QueryNamedParameter) {
+                        name[0] = ((QueryNamedParameter) expr).getName();
+                    } else if(expr instanceof Map) {
+                        name[0] = ((Map<String, Object>) expr).values().iterator().next().toString();
+                    }
+                    Optional<NamedParameter> parameter = query.getParameters().stream().filter(p -> p.getName().equals(name[0])).findAny();
                     parameter.ifPresent(namedParameter -> eProp.setCon(Constraint.of(eProp.getCon().getOp(), namedParameter.getValue(), eProp.getCon().getiType())));
                 });
 
