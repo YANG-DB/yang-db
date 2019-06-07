@@ -12,9 +12,9 @@ package com.kayhut.fuse.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,23 @@ package com.kayhut.fuse.model;
  * Created by lior.perry on 5/8/2017.
  */
 public interface Tagged {
+    String TAG_EVAL = "$:{}";
+
+    static String tagSeq(String value) {
+        return value + TAG_EVAL;
+    }
+
+    static boolean isSeq(Tagged value) {
+        return value.geteTag().contains(TAG_EVAL);
+    }
+
+    static Tagged setSeq(int eNum,Tagged value) {
+        value.seteTag(value.geteTag().replace("{}", Integer.toString(eNum)));
+        return value;
+    }
+
     String geteTag();
 
     void seteTag(String eTag);
+
 }

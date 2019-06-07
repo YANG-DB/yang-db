@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query.properties.constraint;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,11 @@ public class OptionalUnaryParameterizedConstraint extends ParameterizedConstrain
 
     public Set<ConstraintOp> getOperations() {
         return operations;
+    }
+
+    @Override
+    public OptionalUnaryParameterizedConstraint clone() {
+        return new OptionalUnaryParameterizedConstraint(getOp(),getOperations(), ((NamedParameter) getExpr()));
     }
 
     private Set<ConstraintOp> operations = Collections.emptySet();

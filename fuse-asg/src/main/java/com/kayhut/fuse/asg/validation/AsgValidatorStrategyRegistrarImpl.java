@@ -28,6 +28,7 @@ public class AsgValidatorStrategyRegistrarImpl implements AsgValidatorStrategyRe
     public Iterable<AsgValidatorStrategy> register() {
         return Collections.singletonList(new CompositeValidatorStrategy(
                 new AsgCycleValidatorStrategy(),
+                new AsgCompositeQueryValidatorStrategy(),
                 new AsgEntityDuplicateEnumValidatorStrategy(),
                 new AsgEntityDuplicateETagValidatorStrategy(),
                 new AsgEntityPropertiesValidatorStrategy(),
@@ -35,6 +36,7 @@ public class AsgValidatorStrategyRegistrarImpl implements AsgValidatorStrategyRe
                 new AsgOntologyRelValidatorStrategy(),
                 new AsgRelPropertiesValidatorStrategy(),
                 new AsgStartEntityValidatorStrategy(),
+                new AsgWhereByConstraintValidatorStrategy(),
                 new AsgStepsValidatorStrategy()
         ));
     }

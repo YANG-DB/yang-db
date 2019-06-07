@@ -2,6 +2,7 @@ package com.kayhut.fuse.services.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.client.BaseFuseClient;
+import com.kayhut.fuse.model.asgQuery.AsgCompositeQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
@@ -408,7 +409,7 @@ public class QueryTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
-                        asgQuery[0] = fuseClient.unwrap(o.toString(), AsgQuery.class);
+                        asgQuery[0] = fuseClient.unwrap(o.toString(), AsgCompositeQuery.class);
                         assertTrue(asgQuery[0].getName() != null);
                         assertTrue(asgQuery[0].getOnt() != null);
                         assertTrue(AsgQueryUtil.elements(asgQuery[0]).size() >= request.getQuery().getElements().size());

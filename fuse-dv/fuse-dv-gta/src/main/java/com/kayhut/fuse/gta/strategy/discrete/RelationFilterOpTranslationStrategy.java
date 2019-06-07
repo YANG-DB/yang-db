@@ -4,7 +4,7 @@ package com.kayhut.fuse.gta.strategy.discrete;
  * #%L
  * fuse-dv-gta
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.properties.constraint.WhereByConstraint;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import javaslang.collection.Stream;
@@ -114,6 +115,7 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
 
         List<Traversal> epropTraversals = Stream.ofAll(relPropGroup.getProps())
                 .filter(relProp -> relProp.getCon() != null)
+                .filter(relProp -> !(relProp.getCon() instanceof WhereByConstraint))
                 .map(relProp -> convertRelPropToTraversal(relProp, ont))
                 .filter(Optional::isPresent)
                 .map(Optional::get)

@@ -60,6 +60,7 @@ public class BNextFactory implements BellowFactory{
         this.map.put(Quant2.class, ebase -> (Collections.emptyList()));
         this.map.put(Rel.class, ebase -> ((Rel)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getB()));
         this.map.put(RelPattern.class, ebase -> ((Rel)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getB()));
+        this.map.put(EndPattern.class, ebase -> ((EndPattern)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((EndPattern) ebase).getB()));
         this.map.put(RelProp.class, ebase -> ((RelProp)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((RelProp) ebase).getB()));
         this.map.put(RelPropGroup.class, ebase -> (Collections.emptyList()));
         this.map.put(ETyped.class, ebase -> ((ETyped)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((ETyped) ebase).getB()));
@@ -69,7 +70,6 @@ public class BNextFactory implements BellowFactory{
         this.map.put(CalculatedEProp.class, (ebase) -> (Collections.emptyList()));
         this.map.put(EPropGroup.class, ebase -> (Collections.emptyList()));
         this.map.put(EConcrete.class, ebase -> (Collections.emptyList()));
-        this.map.put(ELog.class, ebase -> (Collections.emptyList()));
         this.map.put(Start.class, ebase -> ((Start)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Start) ebase).getB()));
         this.map.put(OptionalComp.class, (ebase) -> Collections.emptyList());
         this.map.put(CountComp.class, (ebase) -> Collections.emptyList());

@@ -4,7 +4,7 @@ package com.kayhut.fuse.unipop.controller.utils.traversal;
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,8 @@ public class TraversalVisitor<TReturn> {
             visitNotStep((NotStep) o);
         } else if (o.getClass() == HasStep.class) {
             visitHasStep((HasStep) o);
+        } else if (o.getClass() == WherePredicateStep.class) {
+            visitWhereStep((WherePredicateStep) o);
         } else if (o.getClass() == TraversalFilterStep.class) {
             visitTraversalFilterStep((TraversalFilterStep) o);
         } else if(o.getClass() == BoostingStepWrapper.class){
@@ -94,6 +96,10 @@ public class TraversalVisitor<TReturn> {
     }
 
     protected TReturn visitHasStep(HasStep<?> hasStep) {
+        return null;
+    }
+
+    protected TReturn visitWhereStep(WherePredicateStep<?> wherePredicateStep) {
         return null;
     }
 

@@ -4,7 +4,7 @@ package com.kayhut.fuse.unipop.controller.utils.traversal;
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,6 +139,11 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
         }
 
         return Boolean.TRUE;
+    }
+
+    @Override
+    protected Boolean visitWhereStep(WherePredicateStep<?> wherePredicateStep) {
+        return true;
     }
 
     @Override

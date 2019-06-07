@@ -4,7 +4,7 @@ package com.kayhut.fuse.unipop.controller.discrete.converter;
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit
 
         DiscreteVertex v = new DiscreteVertex(
                 hit.getId(),
-                this.typeToLabelVertexSchemas.get((String)source.get("type")).getLabel(),
+                this.typeToLabelVertexSchemas.get(source.get("type")).getLabel(),
                 context.getGraph(),
                 contextVertexProperties);
 

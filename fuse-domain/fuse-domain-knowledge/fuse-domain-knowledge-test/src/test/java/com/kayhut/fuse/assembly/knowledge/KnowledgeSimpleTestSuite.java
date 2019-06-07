@@ -1,6 +1,6 @@
 package com.kayhut.fuse.assembly.knowledge;
 
-import com.kayhut.fuse.assembly.knowledge.load.KnowledgeWriterContext;
+import com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -15,7 +15,7 @@ import org.junit.runners.Suite;
         //KnowledgeSimpleEntityWithFilterTests.class,
         //KnowledgeSimpleCdrWithCypherQueryTests.class,
         KnowledgeSimpleEntityWithFilterE2ETests.class,
-        KnowledgeSimpleEvalueWithFilterE2ETests.class,
+        KnowledgeInnerQueryE2ETests.class,
         KnowledgeSimpleEfileWithFilterE2ETests.class,
         KnowledgeSimpleReferenceWithFilterE2ETests.class,
         KnowledgeSimpleRelationWithFilterE2ETests.class,

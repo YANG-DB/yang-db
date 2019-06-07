@@ -61,7 +61,6 @@ public class NextEbaseFactory implements NextFactory {
         this.map.put(EUntyped.class, (ebase) -> ((EUntyped)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((EUntyped) ebase).getNext()));
         this.map.put(EAgg.class, (ebase) -> ((EAgg)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((EAgg) ebase).getNext()));
         this.map.put(EConcrete.class, (ebase) -> ((EConcrete)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((EConcrete) ebase).getNext()));
-        this.map.put(ELog.class, (ebase) -> ((ELog)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((ELog) ebase).getNext()));
         this.map.put(EProp.class, (ebase) -> (Collections.emptyList()));
         this.map.put(CalculatedEProp.class, (ebase) -> (Collections.emptyList()));
         this.map.put(EPropGroup.class, (ebase) -> (Collections.emptyList()));
@@ -69,6 +68,7 @@ public class NextEbaseFactory implements NextFactory {
         this.map.put(Quant2.class, (ebase) -> ((Quant2) ebase).getNext());
         this.map.put(Rel.class, (ebase) -> ((Rel)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getNext()));
         this.map.put(RelPattern.class, (ebase) -> ((Rel)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getNext()));
+        this.map.put(EndPattern.class, (ebase) -> ((EndPattern)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((EndPattern) ebase).getNext()));
         this.map.put(Start.class, (ebase) -> ((Start)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((Start) ebase).getNext()));
         this.map.put(OptionalComp.class, (ebase) -> ((OptionalComp)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((OptionalComp)ebase).getNext()));
         this.map.put(CountComp.class, (ebase) -> ((CountComp)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((CountComp)ebase).getNext()));

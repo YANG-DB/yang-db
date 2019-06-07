@@ -4,7 +4,7 @@ package com.kayhut.fuse.gta.strategy.discrete;
  * #%L
  * fuse-dv-gta
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.properties.constraint.WhereByConstraint;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.step.BoostingStepWrapper;
@@ -49,6 +50,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.filter.WhereTraversalStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.EdgeOtherVertexStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.VertexStep;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -209,6 +211,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
 
         List<Traversal> epropTraversals = Stream.ofAll(ePropGroup.getProps())
                 .filter(eProp -> eProp.getCon() != null)
+                .filter(eProp -> !(eProp.getCon() instanceof WhereByConstraint))
                 .map(eprop -> convertEPropToTraversal(eprop, ont))
                 .toJavaList();
 
@@ -250,6 +253,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
                 ((SchematicEProp)eProp).getSchematicName() : property.get().getName();
 
         GraphTraversal<Object, Object> traversal = __.start().has(actualPropertyName, ConversionUtil.convertConstraint(eProp.getCon()));
+
         if(eProp instanceof RankingProp){
             GraphTraversal.Admin admin = __.start().asAdmin();
             traversal = admin.addStep(new BoostingStepWrapper<>(traversal.asAdmin().getEndStep(), ((RankingProp) eProp).getBoost()));

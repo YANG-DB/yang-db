@@ -4,14 +4,14 @@ package com.kayhut.fuse.dispatcher.resource.store;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ResourceStoreFactory implements ResourceStore {
@@ -52,8 +53,13 @@ public class ResourceStoreFactory implements ResourceStore {
     }
 
     @Override
+    public Collection<QueryResource> getQueryResources(Predicate<String> predicate) {
+        return stores.stream().flatMap(store -> store.getQueryResources(predicate).stream()).collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<QueryResource> getQueryResource(String queryId) {
-        if(queryId==null) return Optional.empty();
+        if (queryId == null) return Optional.empty();
         return stores.stream().map(store -> store.getQueryResource(queryId))
                 .filter(Optional::isPresent)
                 .findFirst().orElse(Optional.empty());
@@ -61,7 +67,7 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public Optional<CursorResource> getCursorResource(String queryId, String cursorId) {
-        if(queryId==null || cursorId==null) return Optional.empty();
+        if (queryId == null || cursorId == null) return Optional.empty();
         return stores.stream().map(store -> store.getCursorResource(queryId, cursorId))
                 .filter(Optional::isPresent)
                 .findFirst().orElse(Optional.empty());
@@ -69,7 +75,7 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public Optional<PageResource> getPageResource(String queryId, String cursorId, String pageId) {
-        if(queryId==null || cursorId==null || pageId==null) return Optional.empty();
+        if (queryId == null || cursorId == null || pageId == null) return Optional.empty();
         return stores.stream().map(store -> store.getPageResource(queryId, cursorId, pageId))
                 .filter(Optional::isPresent)
                 .findFirst().orElse(Optional.empty());
@@ -77,20 +83,20 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public boolean addQueryResource(QueryResource queryResource) {
-        return stores.stream().filter(store -> store.test(queryResource.getQueryMetadata().getType()))
+        return stores.stream().filter(store -> store.test(queryResource.getQueryMetadata().getStorageType()))
                 .findFirst().orElse(stores.iterator().next())
                 .addQueryResource(queryResource);
     }
 
     @Override
     public boolean deleteQueryResource(String queryId) {
-        if(queryId==null) return false;
+        if (queryId == null) return false;
         return stores.stream().filter(store -> store.deleteQueryResource(queryId)).findFirst().isPresent();
     }
 
     @Override
     public boolean addCursorResource(String queryId, CursorResource cursorResource) {
-        if(queryId==null ) return false;
+        if (queryId == null) return false;
         return stores.stream().filter(store -> store.getQueryResource(queryId).isPresent())
                 .findFirst().orElse(stores.iterator().next())
                 .addCursorResource(queryId, cursorResource);
@@ -98,13 +104,13 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public boolean deleteCursorResource(String queryId, String cursorId) {
-        if(queryId==null || cursorId==null) return false;
+        if (queryId == null || cursorId == null) return false;
         return stores.stream().filter(store -> store.deleteCursorResource(queryId, cursorId)).findFirst().isPresent();
     }
 
     @Override
     public boolean addPageResource(String queryId, String cursorId, PageResource pageResource) {
-        if(queryId==null || cursorId==null) return false;
+        if (queryId == null || cursorId == null) return false;
         return stores.stream().filter(store -> store.getQueryResource(queryId).isPresent())
                 .findFirst().orElse(stores.iterator().next())
                 .addPageResource(queryId, cursorId, pageResource);
@@ -112,12 +118,12 @@ public class ResourceStoreFactory implements ResourceStore {
 
     @Override
     public boolean deletePageResource(String queryId, String cursorId, String pageId) {
-        if(queryId==null || cursorId==null || pageId==null) return false;
+        if (queryId == null || cursorId == null || pageId == null) return false;
         return stores.stream().filter(store -> store.deletePageResource(queryId, cursorId, pageId)).findFirst().isPresent();
     }
 
     @Override
-    public boolean test(CreateQueryRequest.Type type) {
+    public boolean test(CreateQueryRequest.StorageType type) {
         return false;
     }
 }

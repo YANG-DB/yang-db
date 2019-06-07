@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.resource;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.CreateQueryRequestMetadata;
+import com.kayhut.fuse.model.transport.CreateQueryRequestMetadata.StorageType;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -50,9 +52,10 @@ import org.elasticsearch.rest.RestStatus;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.model.transport.CreateQueryRequestMetadata.Type._stored;
+import static com.kayhut.fuse.model.transport.CreateQueryRequestMetadata.StorageType._stored;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
@@ -78,6 +81,13 @@ public class PersistantResourceStore implements ResourceStore {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(CreateCursorRequest.class, new CreateCursorRequestDeserializer(cursorBindings));
         mapper.registerModules(module);
+    }
+
+    @Override
+    public Collection<QueryResource> getQueryResources(Predicate<String> predicate) {
+        return getQueryResources().stream()
+                .filter(p->predicate.test(p.getQueryMetadata().getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -209,7 +219,7 @@ public class PersistantResourceStore implements ResourceStore {
     }
 
     @Override
-    public boolean test(CreateQueryRequest.Type type) {
+    public boolean test(CreateQueryRequest.StorageType type) {
         return type.equals(_stored);
     }
 }

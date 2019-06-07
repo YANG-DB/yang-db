@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query.properties.constraint;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,11 @@ public class ParameterizedConstraint extends Constraint {
 
     public ParameterizedConstraint(ConstraintOp op, NamedParameter parameter) {
         super(op,parameter);
+    }
+
+    @Override
+    public ParameterizedConstraint clone() {
+        return new ParameterizedConstraint(getOp(), ((NamedParameter) getExpr()));
     }
 
     public static ParameterizedConstraint of(ConstraintOp op) {

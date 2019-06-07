@@ -84,6 +84,7 @@ public abstract class BaseModuleInjectionTest {
             protected void configure() {
                 try {
                     //bind annotation to request scope
+                    this.binder().bind(Config.class).toInstance(config);
                     this.binder().bindScope(RequestScoped.class,requestScope);
                     modules.forEach(m -> {
                         try {

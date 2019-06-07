@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.logging;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,11 +55,8 @@ public class LoggingCursorFactory implements CursorFactory {
     @Override
     public Cursor createCursor(Context context) {
         TraversalCursorContext traversalCursorContext = (TraversalCursorContext)context;
-        TraversalCursorContext loggingTraversalCursorContext = new TraversalCursorContext(
-                traversalCursorContext.getOntology(),
-                traversalCursorContext.getQueryResource(),
-                traversalCursorContext.getCursorRequest(),
-                new LoggingTraversal<>(traversalCursorContext.getTraversal(), this.traversalLogger));
+        TraversalCursorContext loggingTraversalCursorContext = traversalCursorContext.clone();
+        loggingTraversalCursorContext.setTraversal(new LoggingTraversal<>(traversalCursorContext.getTraversal(), this.traversalLogger));
         return new LoggingCursor(this.cursorFactory.createCursor(loggingTraversalCursorContext), this.cursorLogger, metricRegistry);
     }
     //endregion

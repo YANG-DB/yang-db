@@ -9,13 +9,17 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
+import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.RelPattern;
+import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.quant.Quant1;
@@ -23,16 +27,13 @@ import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.END_DATE;
 import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
+import static com.kayhut.fuse.model.Tagged.tagSeq;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
@@ -71,13 +72,13 @@ public class RelationRangeAsgStrategyTest {
     }
 
     @Test
-    public void testUntypedToTypedStrategyWithoutQuantsInPath() throws Exception {
+    public void testUntypedToTypedStrategyWithoutQuantsInPath() {
         Ontology.Accessor ont = new Ontology.Accessor(ontology);
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1,OntologyTestUtils.PERSON.type))
-                .next(new AsgEBase<>(new RelPattern(2, OntologyTestUtils.OWN.getrType(), new Range(1, 3), R))
+                .next(relPattern(2, OntologyTestUtils.OWN.getrType(), new Range(1, 3), R)
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(unTyped(3))
+                .next(endPattern(new EUntyped(3,tagSeq("end"),0,-1)))
                 .build();
 
         RelationPatternRangeAsgStrategy strategy = new RelationPatternRangeAsgStrategy();
@@ -87,12 +88,23 @@ public class RelationRangeAsgStrategyTest {
         Assert.assertFalse(AsgQueryUtil.element(query, RelPattern.class).isPresent());
         Assert.assertTrue(quant.isPresent());
         Assert.assertEquals(3, quant.get().getNext().size());
+        Assert.assertEquals(1, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==3).count());
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==2).count());
+        Assert.assertEquals(3, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==1).count());
+
         Assert.assertEquals(3, AsgQueryUtil.count(quant.get().getNext().get(0), EBase.class));
         Assert.assertEquals(7, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
         Assert.assertEquals(11, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
+
         Assert.assertEquals(6, AsgQueryUtil.elements(query, Rel.class).stream().filter(r -> r.getB().size() == 1).count());
-        Assert.assertEquals(4, (long) AsgQueryUtil.elements(query, QuantBase.class).size());
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, RelProp.class).size());
+        Assert.assertEquals(6, AsgQueryUtil.elements(query, RelPropGroup.class).size());
+
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, EProp.class).size());
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, EPropGroup.class).size());
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
+        System.out.println(AsgQueryDescriptor.print(query));
+
     }
 
     @Test
@@ -100,9 +112,9 @@ public class RelationRangeAsgStrategyTest {
         Ontology.Accessor ont = new Ontology.Accessor(ontology);
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1,OntologyTestUtils.PERSON.type))
-                .next(new AsgEBase<>(new RelPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R))
+                .next(relPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R)
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(typed(3, OntologyTestUtils.PERSON.type))
+                .next(endPattern(new ETyped(3,tagSeq("end"), OntologyTestUtils.PERSON.type,0,-1)))
                 .next(eProp(4, OntologyTestUtils.FIRST_NAME.type, of(eq, "abc")))
                 .build();
 
@@ -112,29 +124,40 @@ public class RelationRangeAsgStrategyTest {
         Optional<AsgEBase<Quant1>> quant = AsgQueryUtil.elements(query, Quant1.class).stream().filter(q -> q.geteBase().getqType().equals(QuantType.some)).findAny();
         Assert.assertFalse(AsgQueryUtil.element(query, RelPattern.class).isPresent());
         Assert.assertTrue(quant.isPresent());
+
         Assert.assertEquals(3, quant.get().getNext().size());
-        Assert.assertEquals(5, AsgQueryUtil.count(quant.get().getNext().get(0), EBase.class));
-        Assert.assertEquals(11, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
-        Assert.assertEquals(17, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
+        Assert.assertEquals(1, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==3).count());
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==2).count());
+        Assert.assertEquals(3, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==1).count());
+
+        Assert.assertEquals(4, AsgQueryUtil.count(quant.get().getNext().get(0), EBase.class));
+        Assert.assertEquals(8, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
+        Assert.assertEquals(12, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
+
         Assert.assertEquals(6, AsgQueryUtil.elements(query, Rel.class).stream().filter(r -> r.getB().size() == 1).count());
-        Assert.assertEquals(6, AsgQueryUtil.elements(query, EProp.class).stream().filter(ep -> ep.geteBase().getCon().getOp().equals(eq)).count());
-        Assert.assertEquals(10, (long) AsgQueryUtil.elements(query, QuantBase.class).size());
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, RelProp.class).size());
+        Assert.assertEquals(6, AsgQueryUtil.elements(query, RelPropGroup.class).size());
+
+        Assert.assertEquals(3, AsgQueryUtil.elements(query, EProp.class).stream().filter(ep -> ep.geteBase().getCon().getOp().equals(eq)).count());
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, EPropGroup.class).size());
+
+
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
+        System.out.println(AsgQueryDescriptor.print(query));
     }
 
     @Test
-    @Ignore("fix ontology terms & path after quant in resulting query")
     public void testUntypedToTypedWithSomePropsStrategyWithoutQuantsInPath() throws Exception {
         Ontology.Accessor ont = new Ontology.Accessor(ontology);
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
-                .next(typed(1, "Entity", "source"))
+                .next(typed(1, OntologyTestUtils.PERSON.type, "source"))
                 .next(quant1(2, all))
                 .in(
-                        eProp(4, "p1", of(eq, "abc")),
-                        new AsgEBase<>(new RelPattern(2, OntologyTestUtils.OWN.getrType(), new Range(1, 3), R))
+                        eProp(4, OntologyTestUtils.FIRST_NAME.type, of(eq, "abc")),
+                        relPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R)
                                 .next(
-                                        typed(3, OntologyTestUtils.DRAGON.type)
-                                                .addNext(eProp(4, "p1", of(eq, "abc")))))
+                                        endPattern(new ETyped(3,tagSeq("end"), OntologyTestUtils.PERSON.type,0))
+                                                .addNext(eProp(4, OntologyTestUtils.LAST_NAME.type, of(eq, "abc")))))
 
                 .build();
         RelationPatternRangeAsgStrategy strategy = new RelationPatternRangeAsgStrategy();
@@ -144,23 +167,33 @@ public class RelationRangeAsgStrategyTest {
         Assert.assertFalse(AsgQueryUtil.element(query, RelPattern.class).isPresent());
         Assert.assertTrue(quant.isPresent());
         Assert.assertEquals(3, quant.get().getNext().size());
-        Assert.assertEquals(4, AsgQueryUtil.count(quant.get().getNext().get(0), EBase.class));
-        Assert.assertEquals(9, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
-        Assert.assertEquals(14, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
-        Assert.assertEquals(7, AsgQueryUtil.elements(query, EProp.class).stream().filter(ep -> ep.geteBase().getCon().getOp().equals(eq)).count());
-        Assert.assertEquals(11, (long) AsgQueryUtil.elements(query, QuantBase.class).size());
+        Assert.assertEquals(1, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==3).count());
+        Assert.assertEquals(1, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==2).count());
+        Assert.assertEquals(3, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==1).count());
+
+        Assert.assertEquals(3, AsgQueryUtil.count(quant.get().getNext().get(0), EBase.class));
+        Assert.assertEquals(6, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
+        Assert.assertEquals(9, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
+
+
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, RelProp.class).size());
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, RelPropGroup.class).size());
+
+        Assert.assertEquals(1, AsgQueryUtil.elements(query, EProp.class).stream().filter(ep -> ep.geteBase().getpType().equals(OntologyTestUtils.FIRST_NAME.type)).count());
+        Assert.assertEquals(3, AsgQueryUtil.elements(query, EProp.class).stream().filter(ep -> ep.geteBase().getpType().equals(OntologyTestUtils.LAST_NAME.type)).count());
+
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
+        System.out.println(AsgQueryDescriptor.print(query));
     }
 
     @Test
-    @Ignore("todo fix this test")
     public void testUntypedToTypedWithQuantPropsStrategyWithoutQuantsInPath() throws Exception {
         Ontology.Accessor ont = new Ontology.Accessor(ontology);
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1,OntologyTestUtils.PERSON.type))
-                .next(new AsgEBase<>(new RelPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R))
+                .next(relPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R)
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(typed(3, OntologyTestUtils.PERSON.type))
+                .next(endPattern(new ETyped(3, tagSeq("end"),OntologyTestUtils.PERSON.type,0)))
                 .next(quant1(4, all))
                 .in(ePropGroup(5,
                         EProp.of(5, OntologyTestUtils.FIRST_NAME.type, Constraint.of(ConstraintOp.like, "Dormir"))))
@@ -173,13 +206,21 @@ public class RelationRangeAsgStrategyTest {
         Assert.assertFalse(AsgQueryUtil.element(query, RelPattern.class).isPresent());
         Assert.assertTrue(quant.isPresent());
         Assert.assertEquals(3, quant.get().getNext().size());
-        Assert.assertEquals(6, AsgQueryUtil.count(quant.get().getNext().get(0), EBase.class));
-        Assert.assertEquals(13, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
-        Assert.assertEquals(20, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
+        Assert.assertEquals(1, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==3).count());
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==2).count());
+        Assert.assertEquals(6, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==1).count());
+
+        Assert.assertEquals(5, AsgQueryUtil.count(quant.get().getNext().get(0), EBase.class));
+        Assert.assertEquals(9, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
+        Assert.assertEquals(13, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
+
         Assert.assertEquals(6, AsgQueryUtil.elements(query, Rel.class).stream().filter(r -> r.getB().size() == 1).count());
-        Assert.assertEquals(6, AsgQueryUtil.elements(query, EPropGroup.class).stream().filter(ep -> ep.geteBase().getProps().size() == 1).count());
-        Assert.assertEquals(16, (long) AsgQueryUtil.elements(query, QuantBase.class).size());
+
+        Assert.assertEquals(3, AsgQueryUtil.elements(query, EPropGroup.class).stream().filter(ep -> ep.geteBase().getProps().size() == 1).count());
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, EProp.class).size());
+
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
+        System.out.println(AsgQueryDescriptor.print(query));
 
     }
 
@@ -187,14 +228,14 @@ public class RelationRangeAsgStrategyTest {
     public void testUntypedToTypedWithQuantPropsAfterRelStrategyWithoutQuantsInPath() throws Exception {
         Ontology.Accessor ont = new Ontology.Accessor(ontology);
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
-                .next(unTyped(1))
-                .next(new AsgEBase<>(new RelPattern(2, OntologyTestUtils.OWN.getrType(), new Range(1, 3), R))
+                .next(unTyped(1,"P",Collections.singletonList(OntologyTestUtils.PERSON.type)))
+                .next(relPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R)
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(quant1(3, all))
                 .in(relPropGroup(11, all, RelProp.of(11, END_DATE.type, of(eq, new Date()))),
-                        typed(4, OntologyTestUtils.DRAGON.type)
+                        endPattern(new ETyped(4, tagSeq("end"),OntologyTestUtils.PERSON.type,0))
                                 .next(quant1(5, all)
-                                        .addNext(ePropGroup(12, EProp.of(12, "name", Constraint.of(ConstraintOp.like, "Dormir"))))
+                                        .addNext(ePropGroup(12, EProp.of(12, OntologyTestUtils.FIRST_NAME.type, Constraint.of(ConstraintOp.like, "Dormir"))))
                                 )
                 )
                 .build();
@@ -206,29 +247,36 @@ public class RelationRangeAsgStrategyTest {
         Assert.assertFalse(AsgQueryUtil.element(query, RelPattern.class).isPresent());
         Assert.assertTrue(quant.isPresent());
         Assert.assertEquals(3, quant.get().getNext().size());
+        Assert.assertEquals(1, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==3).count());
+        Assert.assertEquals(6, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==2).count());
+        Assert.assertEquals(3, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==1).count());
+
         Assert.assertEquals(7, AsgQueryUtil.count(quant.get().getNext().get(0), EBase.class));
-        Assert.assertEquals(14, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
-        Assert.assertEquals(21, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
+        Assert.assertEquals(12, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
+        Assert.assertEquals(17, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
+
         Assert.assertEquals(6, AsgQueryUtil.elements(query, Rel.class).stream().filter(r -> r.getB().size() == 1).count());
-        Assert.assertEquals(6, AsgQueryUtil.elements(query, EPropGroup.class).stream().filter(ep -> ep.geteBase().getProps().size() == 1).count());
-        Assert.assertEquals(13, (long) AsgQueryUtil.elements(query, QuantBase.class).size());
+        Assert.assertEquals(6, AsgQueryUtil.elements(query, RelPropGroup.class).stream().filter(ep -> ep.geteBase().getProps().get(0).getpType().equals(START_DATE.type)).count());
+        Assert.assertEquals(6, AsgQueryUtil.elements(query, RelPropGroup.class).stream().filter(ep -> ep.geteBase().getProps().get(0).getpType().equals(END_DATE.type)).count());
+
+        Assert.assertEquals(3, AsgQueryUtil.elements(query, EPropGroup.class).stream().filter(ep -> ep.geteBase().getProps().size() == 1).count());
 
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
+        System.out.println(AsgQueryDescriptor.print(query));
     }
 
     @Test
-    @Ignore("todo fix this test")
     public void testUntypedToTypedWithPropsStrategyWithQuantsInPath() {
         Ontology.Accessor ont = new Ontology.Accessor(ontology);
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
-                .next(unTyped(1))
+                .next(unTyped(1,"P", Collections.singletonList(OntologyTestUtils.PERSON.type)))
                 .next(quant1(2, all))
                 .in(ePropGroup(3,
-                        EProp.of(3, "name", Constraint.of(ConstraintOp.like, "Dormir"))))
-                .next(new AsgEBase<>(new RelPattern(2, OntologyTestUtils.OWN.getrType(), new Range(1, 3), R))
+                        EProp.of(3, OntologyTestUtils.FIRST_NAME.type, Constraint.of(ConstraintOp.like, "Dormir"))))
+                .next(relPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R)
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(typed(3, OntologyTestUtils.DRAGON.type))
-                .next(eProp(4, "p1", of(eq, "abc")))
+                .next(endPattern(new ETyped(3,tagSeq("end"), OntologyTestUtils.PERSON.type,0)))
+                .next(eProp(4, OntologyTestUtils.NAME.type, of(eq, "abc")))
                 .build();
 
         RelationPatternRangeAsgStrategy strategy = new RelationPatternRangeAsgStrategy();
@@ -238,13 +286,23 @@ public class RelationRangeAsgStrategyTest {
         Assert.assertFalse(AsgQueryUtil.element(query, RelPattern.class).isPresent());
         Assert.assertTrue(quant.isPresent());
         Assert.assertEquals(3, quant.get().getNext().size());
-        Assert.assertEquals(5, AsgQueryUtil.count(quant.get().getNext().get(0), EBase.class));
-        Assert.assertEquals(11, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
-        Assert.assertEquals(17, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
+        Assert.assertEquals(1, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==3).count());
+        Assert.assertEquals(1, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==2).count());
+        Assert.assertEquals(3, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==1).count());
+
+        Assert.assertEquals(4, AsgQueryUtil.count(quant.get().getNext().get(0), EBase.class));
+        Assert.assertEquals(8, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
+        Assert.assertEquals(12, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
+
         Assert.assertEquals(6, AsgQueryUtil.elements(query, Rel.class).stream().filter(r -> r.getB().size() == 1).count());
-        Assert.assertEquals(6, AsgQueryUtil.elements(query, EProp.class).stream().filter(ep -> ep.geteBase().getCon().getOp().equals(eq)).count());
-        Assert.assertEquals(11, (long) AsgQueryUtil.elements(query, QuantBase.class).size());
+        Assert.assertEquals(6, AsgQueryUtil.elements(query, RelPropGroup.class).size());
+        Assert.assertEquals(0, AsgQueryUtil.elements(query, RelProp.class).size());
+
+        Assert.assertEquals(3, AsgQueryUtil.elements(query, EProp.class).stream().filter(ep -> ep.geteBase().getCon().getOp().equals(eq)).count());
+        Assert.assertEquals(1, AsgQueryUtil.elements(query, EPropGroup.class).size());
+
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
+        System.out.println(AsgQueryDescriptor.print(query));
 
     }
 

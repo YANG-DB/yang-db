@@ -31,6 +31,7 @@ import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.kayhut.fuse.executor.CompositeTraversalCursorContext;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -38,9 +39,17 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateInnerQueryCursorRequest;
+import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.kayhut.fuse.model.asgQuery.AsgCompositeQuery.hasInnerQuery;
+import static com.kayhut.fuse.model.asgQuery.AsgCompositeQuery.isComposite;
 
 /**
  * Created by lior.perry on 20/02/2017.
@@ -73,14 +82,31 @@ public class StandardCursorDriver extends CursorDriverBase {
 
         //traversal.asAdmin().getSideEffects().register("profiler", Profiler.Impl::new, null);
 
-        Cursor cursor = this.cursorFactory.createCursor(
-                new TraversalCursorContext(
-                        ontology,
-                        queryResource,
-                        cursorRequest,
-                        traversal.path()));
+        //todo in case of composite cursor -> add depended cursors for query
+        //if query has inner queries -> create new CreateInnerQueryCursorRequest(cursorRequest)
+        TraversalCursorContext context = createContext(queryResource, cursorRequest, ontology, traversal);
+        Cursor cursor = this.cursorFactory.createCursor(context);
 
         return new CursorResource(cursorId, cursor, cursorRequest);
+    }
+
+    protected TraversalCursorContext createContext(QueryResource queryResource, CreateCursorRequest cursorRequest, Ontology ontology, GraphTraversal<?, ?> traversal) {
+        TraversalCursorContext context = new TraversalCursorContext(
+                ontology,
+                queryResource,
+                cursorRequest,
+                traversal.path());
+        if (hasInnerQuery(queryResource.getAsgQuery())) {
+            List<QueryResource> queryResources = Stream.ofAll(queryResource.getInnerQueryResources()).toJavaList();
+            //first level (hierarchy) inner queries
+            return new CompositeTraversalCursorContext(
+                    new TraversalCursorContext(
+                            ontology,
+                            queryResource,
+                            new CreateInnerQueryCursorRequest(cursorRequest),
+                            traversal.path()), queryResources);
+        }
+        return context;
     }
 
     protected GraphTraversal<?, ?> createTraversal(PlanWithCost<Plan, PlanDetailedCost> plan, Ontology ontology) {
@@ -97,7 +123,7 @@ public class StandardCursorDriver extends CursorDriverBase {
 
     @Override
     public Optional<GraphTraversal> traversal(PlanWithCost plan, String ontology) {
-        return Optional.of(createTraversal(plan,this.ontologyProvider.get(ontology).get()));
+        return Optional.of(createTraversal(plan, this.ontologyProvider.get(ontology).get()));
     }
 
     //endregion

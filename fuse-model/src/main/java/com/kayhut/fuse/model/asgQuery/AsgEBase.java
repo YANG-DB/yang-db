@@ -28,10 +28,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kayhut.fuse.model.Next;
 import com.kayhut.fuse.model.query.EBase;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 23-Feb-17.
@@ -64,19 +62,21 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
             if (this.next == null) {
                 this.next = new ArrayList<>();
             }
-
-            this.next.add(next);
+            if(next!=null)
+                this.next.add(next);
             return this;
         }
 
         public Builder<T> withB(List<AsgEBase<? extends EBase>> b) {
-            this.b = b;
+            this.b = b.stream().filter(Objects::nonNull).collect(Collectors.toList());
             return this;
         }
 
         public Builder<T> withB(AsgEBase<? extends EBase> b) {
             this.b = new ArrayList<>();
-            this.b.add(b);
+            if(b!=null) {
+                this.b.add(b);
+            }
             return this;
         }
 
@@ -111,8 +111,12 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
 
     @Override
     public AsgEBase<T> clone() {
+        return clone(geteNum());
+    }
+
+    public AsgEBase<T> clone(int eNum) {
         AsgEBase<T> clone = new AsgEBase<>();
-        clone.seteBase((T) eBase.clone());
+        clone.seteBase((T) eBase.clone(eNum));
         clone.setParent(new ArrayList<>(parent));
         clone.setNext(new ArrayList<>(next));
         clone.setB(new ArrayList<>(b));

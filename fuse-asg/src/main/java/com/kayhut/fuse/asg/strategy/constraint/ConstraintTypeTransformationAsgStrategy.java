@@ -4,7 +4,7 @@ package com.kayhut.fuse.asg.strategy.constraint;
  * #%L
  * fuse-asg
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,7 @@ import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
     //region Constructors
     public ConstraintTypeTransformationAsgStrategy() {
-        this.singleValueOps = Stream.of(eq, ne, gt, ge, lt, le, contains, startsWith, notContains, notStartsWith, notEndsWith,
-                fuzzyEq, fuzzyNe, match, notMatch, empty, notEmpty).toJavaSet();
+        this.singleValueOps = ConstraintOp.singleValueOps;
     }
     //endregion
 
@@ -69,8 +68,9 @@ public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
             Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
 
             ConstraintOp op = eProp.getCon().getOp();
-            if (property.isPresent() && isSingleElementOp(op) && !ParameterizedConstraint.class.isAssignableFrom(eProp.getCon().getClass())) {
-                Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), eProp.getCon().getExpr()));
+            if (property.isPresent() && isSingleElementOp(op) && !ignorableConstraints.contains(eProp.getCon().getClass())) {
+                Constraint newCon = eProp.getCon().clone();
+                newCon.setExpr(new OntologyPropertyTypeFactory().supply(property.get(), eProp.getCon().getExpr()));
                 eProp.setCon(newCon);
             }
         }
@@ -79,7 +79,7 @@ public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
             Optional<Property> property = context.getOntologyAccessor().$property(relProp.getpType());
             if(relProp.getCon() != null) {
                 ConstraintOp op = relProp.getCon().getOp();
-                if (property.isPresent() && isSingleElementOp(op) && !ParameterizedConstraint.class.isAssignableFrom(relProp.getCon().getClass())) {
+                if (property.isPresent() && isSingleElementOp(op) && !ignorableConstraints.contains(relProp.getCon().getClass())) {
                     Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), relProp.getCon().getExpr()));
                     relProp.setCon(newCon);
                 }

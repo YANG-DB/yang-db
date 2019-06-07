@@ -33,16 +33,13 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import org.opencypher.v9_0.expressions.*;
-import org.opencypher.v9_0.expressions.functions.E;
+import org.opencypher.v9_0.expressions.BinaryOperatorExpression;
+import org.opencypher.v9_0.expressions.Literal;
+import org.opencypher.v9_0.expressions.Property;
+import org.opencypher.v9_0.expressions.Variable;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
-import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 
 public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression> extends BaseExpressionStrategy {
 

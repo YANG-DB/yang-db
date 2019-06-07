@@ -4,7 +4,7 @@ package com.kayhut.fuse.executor.cursor;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,30 @@ public class TraversalCursorContext implements CursorFactory.Context {
     public Ontology getOntology() {
         return ontology;
     }
-    //endregion
+
+    public void setOntology(Ontology ontology) {
+        this.ontology = ontology;
+    }
+
+    public void setQueryResource(QueryResource queryResource) {
+        this.queryResource = queryResource;
+    }
+
+    public void setCursorRequest(CreateCursorRequest cursorRequest) {
+        this.cursorRequest = cursorRequest;
+    }
+
+    public void setTraversal(Traversal<?, Path> traversal) {
+        this.traversal = traversal;
+    }
+
+//endregion
+
+
+    @Override
+    public TraversalCursorContext clone()  {
+        return new TraversalCursorContext(ontology,queryResource,cursorRequest,traversal);
+    }
 
     //region Fields
     private Ontology ontology;

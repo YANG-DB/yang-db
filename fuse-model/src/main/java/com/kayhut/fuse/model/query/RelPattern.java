@@ -56,6 +56,10 @@ public class RelPattern extends Rel{
         this.length = length;
     }
 
+    public void setLength(Range length) {
+        this.length = length;
+    }
+
     public Range getLength() {
         return length;
     }

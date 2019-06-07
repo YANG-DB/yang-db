@@ -32,6 +32,7 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResultBase;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.typesafe.config.Config;
@@ -173,6 +174,11 @@ public class SnifferFuseClient implements FuseClient{
     @Override
     public QueryResourceInfo postQuery(String queryStoreUrl, String query, String ontology) throws IOException {
         return selectNode().postQuery(queryStoreUrl,query,ontology);
+    }
+
+    @Override
+    public QueryResourceInfo postQuery(String queryStoreUrl, CreateQueryRequest request) throws IOException {
+        return selectNode().postQuery(queryStoreUrl,request);
     }
 
     @Override

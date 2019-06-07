@@ -44,6 +44,8 @@ import com.kayhut.fuse.model.validation.ValidationResult;
 
 import java.util.Optional;
 
+import java.util.List;
+
 /**
  * Created by lior.perry on 20/02/2017.
  */
@@ -84,6 +86,7 @@ public class StandardQueryDriver extends QueryDriverBase {
     protected PlanWithCost<Plan, PlanDetailedCost> planWithCost(QueryMetadata metadata, AsgQuery query) {
         PlanWithCost<Plan, PlanDetailedCost> planWithCost = PlanWithCost.EMPTY_PLAN;
 
+        //calculate execution plan
         if (metadata.isSearchPlan()) {
             planWithCost = this.planSearcher.search(query);
 

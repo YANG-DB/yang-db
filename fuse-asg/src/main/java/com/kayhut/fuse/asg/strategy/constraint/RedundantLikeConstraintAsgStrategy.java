@@ -4,7 +4,7 @@ package com.kayhut.fuse.asg.strategy.constraint;
  * #%L
  * fuse-asg
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@ import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
 import java.util.List;
+
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.ignorableConstraints;
 
 /**
  * search for "like" / "likeAny" constraint within a EpropGroup that has "*" expression in it (in the list of expressions within likeAny)
@@ -89,7 +91,7 @@ public class RedundantLikeConstraintAsgStrategy implements AsgStrategy {
     private List<EProp> getRedundantLikeEprops(EPropGroup ePropGroup) {
         return Stream.ofAll(ePropGroup.getProps())
                 .filter(prop -> prop.getCon() != null)
-                .filter(prop -> !ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
+                .filter(prop -> !ignorableConstraints.contains(prop.getCon().getClass()))
                 .filter(prop -> (
                         prop.getCon().getOp().equals(ConstraintOp.like) &&
                                 prop.getCon().getExpr().toString().matches("[*]+")) ||

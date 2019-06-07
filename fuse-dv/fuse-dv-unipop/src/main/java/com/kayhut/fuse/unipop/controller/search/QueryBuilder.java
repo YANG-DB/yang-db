@@ -4,7 +4,7 @@ package com.kayhut.fuse.unipop.controller.search;
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1492,17 +1492,17 @@ public class QueryBuilder {
             }
             // TEMPORARY PATCH: should add transformation logic to GTA
 
-            if (from != null || to != null) {
+            if (from != null && to != null) {
                 return QueryBuilders.rangeQuery(this.getFieldName())
                         .from(from)
                         .to(to)
                         .includeLower(includeLower)
                         .includeUpper(includeUpper);
-            } else if (from != null && to == null) {
+            } else if (from != null) {
                 return QueryBuilders.rangeQuery(this.getFieldName())
                         .from(from)
                         .includeLower(includeLower);
-            } else if (from == null && to != null) {
+            } else if (to != null) {
                 return QueryBuilders.rangeQuery(this.getFieldName())
                         .to(to)
                         .includeUpper(includeUpper);

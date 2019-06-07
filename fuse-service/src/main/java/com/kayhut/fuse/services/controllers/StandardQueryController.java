@@ -137,6 +137,7 @@ public class StandardQueryController implements QueryController<QueryController,
         if (cursorResourceInfoResponse.status() == SERVER_ERROR) {
             return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                     .data(Optional.of(new QueryResourceInfo(
+                            queryResourceInfoResponse.getData().getType(),
                             queryResourceInfoResponse.getData().getResourceUrl(),
                             queryResourceInfoResponse.getData().getResourceId(),
                             queryResourceInfoResponse.getData().getCursorStoreUrl())))
@@ -147,6 +148,7 @@ public class StandardQueryController implements QueryController<QueryController,
         if (request.getCreateCursorRequest().getCreatePageRequest() == null) {
             return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                     .data(Optional.of(new QueryResourceInfo(
+                            queryResourceInfoResponse.getData().getType(),
                             queryResourceInfoResponse.getData().getResourceUrl(),
                             queryResourceInfoResponse.getData().getResourceId(),
                             queryResourceInfoResponse.getData().getCursorStoreUrl(),
@@ -154,6 +156,13 @@ public class StandardQueryController implements QueryController<QueryController,
                     .compose();
         }
 
+//      early exist -> in case of parameterized query content already created
+        if(queryResourceInfoResponse.getData()!=null &&
+                !queryResourceInfoResponse.getData().getCursorResourceInfos().isEmpty() &&
+                    !queryResourceInfoResponse.getData().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty())
+            return queryResourceInfoResponse;
+
+        //
         ContentResponse<PageResourceInfo> pageResourceInfoResponse =
                 this.pageController.create(
                         queryResourceInfoResponse.getData().getResourceId(),
@@ -162,6 +171,7 @@ public class StandardQueryController implements QueryController<QueryController,
         if (pageResourceInfoResponse.status() == SERVER_ERROR) {
             return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                     .data(Optional.of(new QueryResourceInfo(
+                            queryResourceInfoResponse.getData().getType(),
                             queryResourceInfoResponse.getData().getResourceUrl(),
                             queryResourceInfoResponse.getData().getResourceId(),
                             queryResourceInfoResponse.getData().getCursorStoreUrl(),
@@ -180,6 +190,7 @@ public class StandardQueryController implements QueryController<QueryController,
         if (pageDataResponse.status() == SERVER_ERROR) {
             return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                     .data(Optional.of(new QueryResourceInfo(
+                            queryResourceInfoResponse.getData().getType(),
                             queryResourceInfoResponse.getData().getResourceUrl(),
                             queryResourceInfoResponse.getData().getResourceId(),
                             queryResourceInfoResponse.getData().getCursorStoreUrl(),
@@ -193,6 +204,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
         return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                 .data(Optional.of(new QueryResourceInfo(
+                        queryResourceInfoResponse.getData().getType(),
                         queryResourceInfoResponse.getData().getResourceUrl(),
                         queryResourceInfoResponse.getData().getResourceId(),
                         queryResourceInfoResponse.getData().getCursorStoreUrl(),

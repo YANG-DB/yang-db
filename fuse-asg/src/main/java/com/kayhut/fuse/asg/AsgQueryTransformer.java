@@ -4,7 +4,7 @@ package com.kayhut.fuse.asg;
  * #%L
  * fuse-asg
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@ package com.kayhut.fuse.asg;
 import com.google.inject.Inject;
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.asg.strategy.AsgStrategyRegistrar;
-import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
-import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
-import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.query.QueryTransformer;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;

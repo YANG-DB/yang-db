@@ -23,7 +23,7 @@ public class KnowledgeSimpleCdrWithCypherQueryTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false);
+        Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         long start = System.currentTimeMillis();
         long amount = DataLoader.load( ctx, "data/cdr/cdr-small.csv");

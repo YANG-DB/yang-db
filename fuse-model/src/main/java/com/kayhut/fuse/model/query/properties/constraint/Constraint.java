@@ -7,7 +7,7 @@ package com.kayhut.fuse.model.query.properties.constraint;
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import java.util.Set;
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
+        @JsonSubTypes.Type(name = "InnerQueryConstraint", value = InnerQueryConstraint.class),
+        @JsonSubTypes.Type(name = "WhereByConstraint", value = WhereByConstraint.class),
         @JsonSubTypes.Type(name = "ParameterizedConstraint", value = ParameterizedConstraint.class)})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -92,6 +96,12 @@ public class Constraint {
 
         return true;
     }
+
+    @Override
+    public Constraint clone() {
+        return new Constraint(op,expr,iType);
+    }
+
     //endregion
 
     //region Properties

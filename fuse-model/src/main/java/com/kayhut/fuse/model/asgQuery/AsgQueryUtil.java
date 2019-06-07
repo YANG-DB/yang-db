@@ -26,11 +26,13 @@ package com.kayhut.fuse.model.asgQuery;
 import com.kayhut.fuse.model.Tagged;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.RelPattern;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.entity.EndPattern;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
+import com.kayhut.fuse.model.query.properties.constraint.ParameterizedConstraint;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantBase;
@@ -45,11 +47,29 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.model.Tagged.*;
+import static java.util.stream.Collectors.toSet;
+
 /**
  * Created by Roman on 15/05/2017.
  */
 public class AsgQueryUtil {
     //region Public Methods
+    public static List<EProp> getParameterizedConstraintEProps(AsgQuery query) {
+        return getEprops(query).stream()
+                .filter(prop -> prop.getCon() != null)
+                .filter(prop -> ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
+                .collect(Collectors.toList());
+    }
+
+    public static Optional<EProp> getParameterizedConstraint(AsgEBase<? extends EBase> eBase, NamedParameter namedParameter) {
+        return getEprops(eBase).stream()
+                .filter(prop -> prop.getCon() != null)
+                .filter(prop -> ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
+                .filter(prop -> ((NamedParameter) prop.getCon().getExpr()).getName().equals(namedParameter.getName()))
+                .findFirst();
+    }
+
     public static int maxEntityNum(AsgQuery query) {
         return Stream.ofAll(AsgQueryUtil.eNums(query,
                 asgEBase -> !QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass())
@@ -67,10 +87,27 @@ public class AsgQueryUtil {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext, p -> p.geteBase().geteNum() == eNum, truePredicate);
     }
 
+    /**
+     * get last Descendant - skip Props & Prop groups
+     *
+     * @param asgEBase
+     * @param excludes
+     * @param <T>
+     * @return
+     */
+    public static <T extends EBase> AsgEBase<EBase> lastDescendant(AsgEBase<T> asgEBase, List<Class> excludes) {
+        return element(asgEBase, emptyIterableFunction,
+                element -> element.getNext().stream()
+                        .filter(p -> !excludes.stream().filter(e -> e.isAssignableFrom(p.geteBase().getClass())).findAny().isPresent())
+                        .collect(Collectors.toList()),
+                e -> !e.hasNext(),
+                truePredicate).get();
+    }
+
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getByTag(AsgEBase<T> asgEBase, String eTag) {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext,
                 p -> (EEntityBase.class.isAssignableFrom(p.geteBase().getClass()) &&
-                        ((EEntityBase) p.geteBase()).geteTag()!=null &&
+                        ((EEntityBase) p.geteBase()).geteTag() != null &&
                         ((EEntityBase) p.geteBase()).geteTag().equals(eTag))
                         ||
                         (Rel.class.isAssignableFrom(p.geteBase().getClass()) &&
@@ -88,7 +125,7 @@ public class AsgQueryUtil {
                 truePredicate);
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate,Predicate<AsgEBase> traversalPredicate) {
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate, Predicate<AsgEBase> traversalPredicate) {
         return element(
                 asgEBase,
                 emptyIterableFunction,
@@ -405,6 +442,32 @@ public class AsgQueryUtil {
         return path(asgEBase, AsgEBase::getNext, predicate, Collections.emptyList());
     }
 
+    /**
+     * direct Descendant distance may only be 1 or 2 steps away and include only Quant and any klass types
+     *
+     * @param asgEBase
+     * @param klass
+     * @param <T>
+     * @return
+     */
+    public static <T extends EBase> List<AsgEBase<? extends EBase>> pathToDirectDescendant(AsgEBase<T> asgEBase, Class<?> klass) {
+        if (!asgEBase.hasNext())
+            return Collections.emptyList();
+
+        List<AsgEBase<? extends EBase>> path = AsgQueryUtil.pathToNextDescendant(asgEBase, EProp.class);
+        //direct Descendant distance may only be 1 or 2 (quant) steps away
+        if (path.size() > 3)
+            return Collections.emptyList();
+
+        //skip first node which is the source
+        if (path.subList(1, path.size())
+                .stream().filter(p -> !Arrays.asList(klass, Quant1.class).contains(p.geteBase().getClass()))
+                .findAny().isPresent())
+            return Collections.emptyList();
+
+        return path;
+    }
+
     public static <T extends EBase> List<AsgEBase<? extends EBase>> pathToNextDescendant(AsgEBase<T> asgEBase, Class<?> klass) {
         return pathToNextDescendant(asgEBase, classPredicateFunction.apply(klass));
     }
@@ -542,6 +605,16 @@ public class AsgQueryUtil {
             AsgEBase<T> asgEBase,
             Predicate<AsgEBase<? extends EBase>> nextPredicate,
             Predicate<AsgEBase<? extends EBase>> bPredicate) {
+        return deepCloneWithEnums(counter, asgEBase, nextPredicate, bPredicate, false);
+    }
+
+    public static <T extends EBase> AsgEBase<T> deepCloneWithEnums(
+            AtomicInteger counter,
+            AsgEBase<T> asgEBase,
+            Predicate<AsgEBase<? extends EBase>> nextPredicate,
+            Predicate<AsgEBase<? extends EBase>> bPredicate,
+            boolean cloneTags) {
+
         AsgEBase.Builder<T> eBaseBuilder = AsgEBase.Builder.get();
         T clone;
         //quant base has a special sequence counter
@@ -549,28 +622,37 @@ public class AsgQueryUtil {
             clone = (T) asgEBase.geteBase().clone(counter.incrementAndGet());
         } else if (BasePropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
             clone = (T) asgEBase.geteBase().clone(counter.incrementAndGet());
+/*
+        } else if (EndPattern.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
+            clone = (T) ((EndPattern) asgEBase.geteBase()).getEndEntity().clone(counter.incrementAndGet());
+*/
         } else {
             clone = (T) asgEBase.geteBase().clone(counter.incrementAndGet());
         }
-        //update etag
-/*
-        //todo enabling this code will cause creation of new tags that will not assiciated with former tags that was cloned from
-        // and therefore will not be found
-        if(clone instanceof Tagged && ((Tagged) clone).geteTag() != null) {
-            final String tag = ((Tagged) clone).geteTag();
-            ((Tagged) clone).seteTag(tag +"_"+clone.geteNum());
+
+        // this code will cause creation of new tags that will not assiciated with former tags that was cloned from and therefore will not be found
+        if (clone instanceof Tagged &&
+                ((Tagged) clone).geteTag() != null) {
+
+            if (cloneTags) {
+                ((Tagged) clone).seteTag(tagSeq(((Tagged) clone).geteTag()));
+            }
+
+            if (isSeq((Tagged) clone)) {
+                Tagged.setSeq(clone.geteNum(), (Tagged) clone);
+            }
         }
-*/
+
         eBaseBuilder.withEBase(clone);
 
         List<AsgEBase<? extends EBase>> next = Stream.ofAll(asgEBase.getNext()).filter(nextPredicate).toJavaList();
         for (int i = 0; i < next.size(); i++) {
-            eBaseBuilder.withNext(deepCloneWithEnums(counter, next.get(i), nextPredicate, bPredicate));
+            eBaseBuilder.withNext(deepCloneWithEnums(counter, next.get(i), nextPredicate, bPredicate, cloneTags));
         }
         List<AsgEBase<? extends EBase>> bNext = Stream.ofAll(asgEBase.getB()).filter(bPredicate).toJavaList();
 
         for (int i = 0; i < bNext.size(); i++) {
-            eBaseBuilder.withB(deepCloneWithEnums(counter, next.get(i), nextPredicate, bPredicate));
+            eBaseBuilder.withB(deepCloneWithEnums(counter, next.get(i), nextPredicate, bPredicate, cloneTags));
         }
         return eBaseBuilder.build();
     }
@@ -580,6 +662,15 @@ public class AsgQueryUtil {
             AsgEBase<T> asgEBase,
             Predicate<AsgEBase<? extends EBase>> nextPredicate,
             Predicate<AsgEBase<? extends EBase>> bPredicate) {
+        return deepCloneWithEnums(max, asgEBase, nextPredicate, bPredicate, false);
+    }
+
+    public static <T extends EBase> AsgEBase<T> deepCloneWithEnums(
+            int[] max,
+            AsgEBase<T> asgEBase,
+            Predicate<AsgEBase<? extends EBase>> nextPredicate,
+            Predicate<AsgEBase<? extends EBase>> bPredicate,
+            boolean cloneTags) {
         AsgEBase.Builder<T> eBaseBuilder = AsgEBase.Builder.get();
         T clone;
         //quant base has a special sequence counter
@@ -587,28 +678,29 @@ public class AsgQueryUtil {
             clone = (T) asgEBase.geteBase().clone(max[0] * 100);
         } else if (BasePropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
             clone = (T) asgEBase.geteBase().clone(max[0] * 100);
+        } else if (EndPattern.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
+            clone = (T) ((EndPattern) asgEBase.geteBase()).getEndEntity().clone(++max[0]);
         } else {
             clone = (T) asgEBase.geteBase().clone(++max[0]);
         }
         //update etag
-/*
-        //todo enabling this code will cause creation of new tags that will not assiciated with former tags that was cloned from
-        // and therefore will not be found
-        if(clone instanceof Tagged && ((Tagged) clone).geteTag() != null) {
-            final String tag = ((Tagged) clone).geteTag();
-            ((Tagged) clone).seteTag(tag +"_"+clone.geteNum());
+        //this code will cause creation of new tags that will not assiciated with former tags that was cloned from and therefore will not be found
+        if (clone instanceof Tagged &&
+                ((Tagged) clone).geteTag() != null) {
+            if (isSeq((Tagged) clone) || cloneTags) {
+                Tagged.setSeq(clone.geteNum(), (Tagged) clone);
+            }
         }
-*/
         eBaseBuilder.withEBase(clone);
 
         List<AsgEBase<? extends EBase>> next = Stream.ofAll(asgEBase.getNext()).filter(nextPredicate).toJavaList();
         for (int i = 0; i < next.size(); i++) {
-            eBaseBuilder.withNext(deepCloneWithEnums(max, next.get(i), nextPredicate, bPredicate));
+            eBaseBuilder.withNext(deepCloneWithEnums(max, next.get(i), nextPredicate, bPredicate, cloneTags));
         }
         List<AsgEBase<? extends EBase>> bNext = Stream.ofAll(asgEBase.getB()).filter(bPredicate).toJavaList();
 
         for (int i = 0; i < bNext.size(); i++) {
-            eBaseBuilder.withB(deepCloneWithEnums(max, next.get(i), nextPredicate, bPredicate));
+            eBaseBuilder.withB(deepCloneWithEnums(max, next.get(i), nextPredicate, bPredicate, cloneTags));
         }
         return eBaseBuilder.build();
     }
@@ -624,7 +716,9 @@ public class AsgQueryUtil {
         AsgEBase<Start> clonedStart = AsgQueryUtil.deepClone(query.getStart(), e -> !(e.geteBase() instanceof OptionalComp), b -> true);
 
         List elements = elements(clonedStart);
-        AsgQuery clonedMainQuery = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(clonedStart).withName(query.getName()).withOnt(query.getOnt()).withElements(elements).build();
+        AsgQuery clonedMainQuery = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(clonedStart)
+                .withOrigin(query.getOrigin())
+                .withName(query.getName()).withOnt(query.getOnt()).withElements(elements).build();
         OptionalStrippedQuery.Builder builder = OptionalStrippedQuery.Builder.get();
         builder.withMainQuery(clonedMainQuery);
         for (AsgEBase<OptionalComp> optionalElement : optionals) {
@@ -641,6 +735,7 @@ public class AsgQueryUtil {
 
     /**
      * add a new quant element after the source entity
+     *
      * @param quantAsg
      * @param source
      * @return
@@ -660,6 +755,16 @@ public class AsgQueryUtil {
 
     public static int count(AsgEBase<? extends EBase> asgEBase, Class<EBase> aClass) {
         return elements(asgEBase, classPredicateFunction.apply(aClass)).size();
+    }
+
+    public static List<AsgEBase<? extends EBase>> mergePath(List<AsgEBase<? extends EBase>>... paths) {
+        Set<AsgEBase<? extends EBase>> collect = Arrays.asList(paths).stream()
+                .flatMap(p -> p.stream())
+                .collect(toSet());
+        return collect.stream()
+                .sorted(Comparator.comparing(AsgEBase::geteNum))
+                .collect(Collectors.toList());
+
     }
 
     public static class OptionalStrippedQuery {
@@ -716,10 +821,31 @@ public class AsgQueryUtil {
         return java.util.stream.Stream.concat(eProps.stream(), eProps2.stream()).collect(Collectors.toList());
     }
 
+    public static List<EProp> getEprops(AsgEBase<? extends EBase> eBase) {
+        List<EProp> eProps = Stream.ofAll(AsgQueryUtil.elements(eBase, EProp.class))
+                .map(AsgEBase::geteBase).toJavaList();
+
+        List<EPropGroup> ePropsGroup = Stream.ofAll(AsgQueryUtil.elements(eBase, EPropGroup.class))
+                .map(AsgEBase::geteBase).toJavaList();
+        List<EProp> eProps2 = Stream.ofAll(ePropsGroup).flatMap(EPropGroup::getProps).toJavaList();
+
+        return java.util.stream.Stream.concat(eProps.stream(), eProps2.stream()).collect(Collectors.toList());
+    }
+
     public static List<RelProp> getRelProps(AsgQuery query) {
         List<RelProp> relProps = Stream.ofAll(AsgQueryUtil.elements(query, RelProp.class))
                 .map(AsgEBase::geteBase).toJavaList();
         List<RelPropGroup> relPropsGroup = Stream.ofAll(AsgQueryUtil.elements(query, RelPropGroup.class))
+                .map(AsgEBase::geteBase).toJavaList();
+        List<RelProp> relProps2 = Stream.ofAll(relPropsGroup).flatMap(RelPropGroup::getProps).toJavaList();
+
+        return java.util.stream.Stream.concat(relProps.stream(), relProps2.stream()).collect(Collectors.toList());
+    }
+
+    public static List<RelProp> getRelProps(AsgEBase<? extends EBase> eBase) {
+        List<RelProp> relProps = Stream.ofAll(AsgQueryUtil.elements(eBase, RelProp.class))
+                .map(AsgEBase::geteBase).toJavaList();
+        List<RelPropGroup> relPropsGroup = Stream.ofAll(AsgQueryUtil.elements(eBase, RelPropGroup.class))
                 .map(AsgEBase::geteBase).toJavaList();
         List<RelProp> relProps2 = Stream.ofAll(relPropsGroup).flatMap(RelPropGroup::getProps).toJavaList();
 
@@ -777,7 +903,7 @@ public class AsgQueryUtil {
     //endregion
 
     //region Private Methods
-    private static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> element(
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> element(
             AsgEBase<T> asgEBase,
             Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> vElementProvider,
             Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> hElementProvider,
@@ -858,7 +984,7 @@ public class AsgQueryUtil {
         return newValues;
     }
 
-    private static List<AsgEBase<? extends EBase>> path(
+    public static List<AsgEBase<? extends EBase>> path(
             AsgEBase<? extends EBase> asgEBase,
             Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> elementProvider,
             Predicate<AsgEBase> predicate,

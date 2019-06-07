@@ -96,5 +96,12 @@ public class FuseError {
         public FuseError getError() {
             return error;
         }
+
+        @Override
+        public String toString() {
+            return "FuseErrorException{" +
+                    "error=" + error +
+                    '}';
+        }
     }
 }

@@ -20,28 +20,8 @@ package com.kayhut.fuse.asg.translator.cypher.strategies.expressions;
  * #L%
  */
 
-import com.kayhut.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
-import com.kayhut.fuse.asg.translator.cypher.strategies.CypherUtils;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import org.opencypher.v9_0.expressions.HasLabels;
-import org.opencypher.v9_0.expressions.LabelName;
-import org.opencypher.v9_0.expressions.Variable;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
-import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.inSet;
-import static scala.collection.JavaConverters.asJavaCollectionConverter;
 
 public abstract class BaseExpressionStrategy implements ExpressionStrategies {
 
