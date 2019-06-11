@@ -5,7 +5,7 @@ package com.kayhut.fuse.datagen.storyoficeandfire.entities;
  * #%L
  * fuse-domain-gragons-datagen
  * %%
- * Copyright (C) 2016 - 2018 kayhut
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
