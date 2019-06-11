@@ -38,7 +38,7 @@ public class KnowledgeSimpleCdrWithV1InnerQueryTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false,true);
+        Setup.setup(true,true);
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         long start = System.currentTimeMillis();
         long amount = DataLoader.load( ctx, "./data/cdr/cdr-small.csv");
@@ -53,7 +53,8 @@ public class KnowledgeSimpleCdrWithV1InnerQueryTests {
     }
 
     @Test
-    public void testInnerQuery() throws IOException, InterruptedException {
+    @Ignore(value = "check")
+    public void testInnerQueryInSet() throws IOException, InterruptedException {
         Query q1 = Query.Builder.instance().withName("Query" + System.currentTimeMillis()).withOnt("Knowledge")
                 .withElements(Arrays.asList(
                         new Start(0, 1),
@@ -70,6 +71,34 @@ public class KnowledgeSimpleCdrWithV1InnerQueryTests {
                         new Rel(2, "hasEvalue", R, null, 3, 0),
                         new ETyped(3, "A2", "Evalue", 4, 0),
                         new EProp(4, "stringValue", InnerQueryConstraint.of(ConstraintOp.inSet,q1,"A2.stringValue"))
+                )).build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo graphResourceInfo = query(fuseClient, fuseResourceInfo, new CreateQueryRequest("q0", "q0", q0, new CreateGraphCursorRequest(new CreatePageRequest(100))));
+        Assert.assertEquals(1, ((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments")).size());
+        Assert.assertEquals(16, ((List) ((Map) (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
+        // return the relevant data
+    }
+
+    @Test
+    @Ignore(value = "check")
+    public void testInnerQueryEq() throws IOException, InterruptedException {
+        Query q1 = Query.Builder.instance().withName("Query" + System.currentTimeMillis()).withOnt("Knowledge")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A1", "Entity", 2, 0),
+                        new Rel(2, "hasEvalue", R, null, 3, 0),
+                        new ETyped(3, "A2", "Evalue", 4, 0),
+                        new EProp(4, "fieldId", Constraint.of(ConstraintOp.eq,"phone"))
+                )).build();
+
+        Query q0 = Query.Builder.instance().withName("Query" + System.currentTimeMillis()).withOnt("Knowledge")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A1", "Entity", 2, 0),
+                        new Rel(2, "hasEvalue", R, null, 3, 0),
+                        new ETyped(3, "A2", "Evalue", 4, 0),
+                        new EProp(4, "stringValue", InnerQueryConstraint.of(ConstraintOp.eq,q1,"A2.stringValue"))
                 )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
