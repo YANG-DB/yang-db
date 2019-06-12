@@ -222,6 +222,11 @@ public class BaseFuseClient implements FuseClient {
     }
 
     @Override
+    public Query getQuery(String queryUrl,Class<? extends Query> klass) throws IOException {
+        return unwrap(getRequest(queryUrl), klass);
+    }
+
+    @Override
     public QueryResultBase getPageData(String pageDataUrl) throws IOException {
         return this.objectMapper.readValue(unwrap(getRequest(pageDataUrl)), new TypeReference<AssignmentsQueryResult<Entity,Relationship>>() {});
     }

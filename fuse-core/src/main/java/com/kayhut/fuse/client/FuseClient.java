@@ -132,6 +132,8 @@ public interface FuseClient {
 
     Ontology getOntology(String ontologyUrl) throws IOException;
 
+    Query getQuery(String queryUrl,Class<? extends Query> klass) throws IOException;
+
     QueryResultBase getPageData(String pageDataUrl, TypeReference typeReference) throws IOException ;
 
     QueryResultBase getPageData(String pageDataUrl) throws IOException;

@@ -70,7 +70,4 @@ public class InnerQueryConstraint extends Constraint implements WhereByFacet {
         return of(op, innerQuery, "", "");
     }
 
-    public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery, String iType) {
-        return new InnerQueryConstraint(op, innerQuery, iType, "");
-    }
 }

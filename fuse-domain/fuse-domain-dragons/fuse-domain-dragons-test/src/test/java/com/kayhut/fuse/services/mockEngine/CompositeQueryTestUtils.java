@@ -24,7 +24,7 @@ public abstract class CompositeQueryTestUtils {
                         new Start(0, 1),
                         new ETyped(1, "P", "Person", 2, 0),
                         new EPropGroup(2,
-                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q1(),"P.id")))
+                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q1(),"P","id")))
                 )).build();
         return query;
     }
@@ -35,7 +35,7 @@ public abstract class CompositeQueryTestUtils {
                         new Start(0, 1),
                         new ETyped(1, "P", "Person", 2, 0),
                         new EPropGroup(2,
-                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P.id")))
+                                new EProp(3, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P","id")))
                 )).build();
         return query;
     }
@@ -71,11 +71,11 @@ public abstract class CompositeQueryTestUtils {
                         new Rel(4, OWN.getrType(), Rel.Direction.R, null, 5, 0),
                         new ETyped(5, "C", OntologyTestUtils.DRAGON.name, 6, 0),
                         new EPropGroup(6,
-                                new EProp(7, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P.id"))),
+                                new EProp(7, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q2(),"P","id"))),
 
                         new Rel(8, OWN.getName(), Rel.Direction.R, null, 9, 0),
                         new ETyped(9, "D", OntologyTestUtils.DRAGON.name, 10, 0),
-                        new EProp(10, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q3(),"P.id"))
+                        new EProp(10, "id",InnerQueryConstraint.of(ConstraintOp.inSet,Q3(),"P","id"))
                 )).build();
         return query;
     }

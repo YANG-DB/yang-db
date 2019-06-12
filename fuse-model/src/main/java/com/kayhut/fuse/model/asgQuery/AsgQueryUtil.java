@@ -571,8 +571,35 @@ public class AsgQueryUtil {
         return AsgEBase.Builder.<Rel>get().withEBase(reversedRel).build();
     }
 
+    /**
+     * flatten query graph to assignments pathes
+     * @param query
+     * @return
+     */
+    public static List<List<AsgEBase<? extends EBase>>> flattenQuery(AsgQuery query) {
+        List<AsgEBase<EBase>> ends = elements(query.getStart(), emptyIterableFunction,  AsgEBase::getNext, truePredicate, truePredicate, Collections.emptyList())
+                .stream()
+                .filter(e->!e.hasNext()).collect(Collectors.toList());
+        List<List<AsgEBase<? extends EBase>>> pathes = ends.stream().map(e -> path(query.getStart(), e)).collect(Collectors.toList());
+        return pathes;
+
+    }
+
+    /**
+     * print list of pathes
+     * @param pathes
+     * @return
+     */
+    public static List<String> patterns(List<List<AsgEBase<? extends EBase>>> pathes) {
+        return pathes.stream().map(p->pattern(p)).collect(Collectors.toList());
+    }
+
     public static String pattern(AsgQuery query) {
-        List<AsgEBase<EBase>> elements = elements(query);
+        List<AsgEBase<? extends EBase>> elements = elements(query).stream().collect(Collectors.toList());
+        return pattern(elements);
+    }
+
+    public static String pattern(List<AsgEBase<? extends EBase>> elements) {
         StringJoiner joiner = new StringJoiner(":", "", "");
         elements.forEach(e -> {
             if (e.geteBase() instanceof EEntityBase)

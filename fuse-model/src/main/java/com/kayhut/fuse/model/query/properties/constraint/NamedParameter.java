@@ -26,7 +26,6 @@ package com.kayhut.fuse.model.query.properties.constraint;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.kayhut.fuse.model.asgQuery.AsgCompositeQuery;
 
 import java.util.Objects;
 

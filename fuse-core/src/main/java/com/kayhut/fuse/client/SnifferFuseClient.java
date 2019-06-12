@@ -252,6 +252,11 @@ public class SnifferFuseClient implements FuseClient{
     }
 
     @Override
+    public Query getQuery(String queryUrl,Class<? extends Query> klass) throws IOException {
+        return selectNode(queryUrl).getQuery(queryUrl,klass);
+    }
+
+    @Override
     public QueryResultBase getPageData(String pageDataUrl, TypeReference typeReference) throws IOException {
         return selectNode(pageDataUrl).getPageData(pageDataUrl,typeReference);
     }
