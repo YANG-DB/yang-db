@@ -34,7 +34,11 @@ public class InnerQueryConstraint extends Constraint implements WhereByFacet {
     }
 
     public InnerQueryConstraint(ConstraintOp op, Query innerQuery, String tagEntity, String projectedField) {
-        super(op, null);
+        this(op,null,innerQuery,tagEntity,projectedField);
+    }
+
+    public InnerQueryConstraint(ConstraintOp op, Object expression, Query innerQuery, String tagEntity, String projectedField) {
+        super(op, expression);
         this.innerQuery = innerQuery;
         this.tagEntity = tagEntity;
         this.projectedField = projectedField;
@@ -64,6 +68,10 @@ public class InnerQueryConstraint extends Constraint implements WhereByFacet {
 
     public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery, String tagEntity, String projectedFields) {
         return new InnerQueryConstraint(op, innerQuery, tagEntity, projectedFields);
+    }
+
+    public static InnerQueryConstraint of(ConstraintOp op,Object expression, Query innerQuery, String tagEntity, String projectedFields) {
+        return new InnerQueryConstraint(op, expression,innerQuery, tagEntity, projectedFields);
     }
 
     public static InnerQueryConstraint of(ConstraintOp op, Query innerQuery) {

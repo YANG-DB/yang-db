@@ -118,5 +118,40 @@ public class KnowledgeSimpleCdrWithV1InnerQueryTests {
         Assert.assertEquals(16, ((List) ((Map) (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
         // return the relevant data
     }
+    @Test
+    public void testInnerQueryInRelativeRange() throws IOException, InterruptedException {
+        Query q1 = Query.Builder.instance().withName("Query" + "_testInnerQueryEq").withOnt("Knowledge")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A1", "Entity", 2, 0),
+                        new Rel(2, "hasEvalue", R, null, 3, 0),
+                        new ETyped(3, "A2", "Evalue", 4, 0),
+                        new EProp(4, "fieldId", Constraint.of(ConstraintOp.eq,"phone"))
+                )).build();
+
+        long start = System.currentTimeMillis() + (1000 * 60 * 24);
+        long end = System.currentTimeMillis() - (1000 * 60 * 24);
+
+        Query q0 = Query.Builder.instance().withName("Query" + System.currentTimeMillis()).withOnt("Knowledge")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A1", "Entity", 2, 0),
+                        new Rel(2, "hasEvalue", R, null, 3, 0),
+                        new ETyped(3, "A2", "Evalue", 4, 0),
+                        new EProp(4, "stringValue", InnerQueryConstraint.of(ConstraintOp.within,
+                                new long[] {start, end},q1,"A2","creationTime"))
+                )).build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo graphResourceInfo = query(fuseClient, fuseResourceInfo, new CreateQueryRequest("q0", "q0", q0, new CreateGraphCursorRequest(new CreatePageRequest(100))));
+        ParameterizedQuery query = (ParameterizedQuery) fuseClient.getQuery(graphResourceInfo.getV1QueryUrl(), ParameterizedQuery.class);
+        Assert.assertEquals("[└── Start, \n" +
+                        "    ──Typ[Entity:1]--> Rel(hasEvalue:2)──Typ[Evalue:3]──?[4]:[stringValue<eq,{name=A2.stringValue, query=Query_testInnerQueryEq}>]]",
+                QueryDescriptor.print(query));
+        Assert.assertEquals(8,((List)((List< NamedParameter>)query.getParams()).get(0).getValue()).size());
+        Assert.assertEquals(1, ((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments")).size());
+        Assert.assertEquals(16, ((List) ((Map) (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
+        // return the relevant data
+    }
 
 }

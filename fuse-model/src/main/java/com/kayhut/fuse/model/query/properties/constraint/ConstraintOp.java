@@ -67,6 +67,9 @@ public enum ConstraintOp {
     @JsonProperty("in range")
     inRange,
 
+    @JsonProperty("within")
+    within,
+
     @JsonProperty("not in range")
     notInRange,
 
@@ -115,7 +118,7 @@ public enum ConstraintOp {
         ignorableConstraints.add(ParameterizedConstraint.class);
         ignorableConstraints.add(InnerQueryConstraint.class);
 
-        singleValueOps = Stream.of(eq, ne, gt, ge, lt, le, contains, startsWith, notContains, notStartsWith, notEndsWith,
+        singleValueOps = Stream.of(eq, ne, gt, ge, lt, le, contains, within, startsWith, notContains, notStartsWith, notEndsWith,
                 fuzzyEq, fuzzyNe, match, notMatch, empty, notEmpty).toJavaSet();
 
         multiValueOps = Stream.of(inRange, notInRange, inSet, notInSet, empty, notEmpty, likeAny).toJavaSet();
