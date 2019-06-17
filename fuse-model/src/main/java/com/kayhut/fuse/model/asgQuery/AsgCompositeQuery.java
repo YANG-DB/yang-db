@@ -9,9 +9,9 @@ package com.kayhut.fuse.model.asgQuery;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,7 @@ package com.kayhut.fuse.model.asgQuery;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.query.properties.constraint.WhereByFacet;
 
 import java.util.*;
 
@@ -29,9 +30,10 @@ import java.util.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AsgCompositeQuery extends AsgQuery {
     public static final String INNER = "_Inner";
-    private Set<AsgQuery> queryChain = new LinkedHashSet<>();
+    private Set<InnerAsgQuery> queryChain = new LinkedHashSet<>();
 
-    public AsgCompositeQuery() {}
+    public AsgCompositeQuery() {
+    }
 
     public AsgCompositeQuery(AsgQuery asgQuery) {
         this.setName(asgQuery.getName());
@@ -42,12 +44,12 @@ public class AsgCompositeQuery extends AsgQuery {
         this.setElements(asgQuery.getElements());
     }
 
-    public AsgCompositeQuery with(AsgQuery query) {
+    public AsgCompositeQuery with(InnerAsgQuery query) {
         queryChain.add(query);
         return this;
     }
 
-    public List<AsgQuery> getQueryChain() {
+    public List<InnerAsgQuery> getQueryChain() {
         return new ArrayList<>(queryChain);
     }
 
@@ -59,4 +61,22 @@ public class AsgCompositeQuery extends AsgQuery {
         return isComposite(asgQuery) && !((AsgCompositeQuery) asgQuery).getQueryChain().isEmpty();
     }
 
+
+    public static class InnerAsgQuery {
+        private AsgQuery query;
+        private WhereByFacet.JoinType joinType;
+
+        public InnerAsgQuery(AsgQuery query, WhereByFacet.JoinType joinType) {
+            this.query = query;
+            this.joinType = joinType;
+        }
+
+        public AsgQuery getQuery() {
+            return query;
+        }
+
+        public WhereByFacet.JoinType getJoinType() {
+            return joinType;
+        }
+    }
 }

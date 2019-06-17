@@ -44,7 +44,6 @@ public class ConversionUtil {
             case lt: return P.lt(cast(constraint.getExpr()));
             case ge: return P.gte(cast(constraint.getExpr()));
             case le: return P.lte(cast(constraint.getExpr()));
-            case within:
             case inRange:
                 range = CollectionUtil.listFromObjectValue(constraint.getExpr());
                 return P.between(cast(range.get(0)), cast(range.get(1)));

@@ -340,7 +340,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                     }
                 }
                 return mergeBucketsCardinality(bucketInfos);
-            case within:
             case inRange:
                 valueList = (List<T>) value;
                 bucketsAbove = histogramStatistics.findBucketsAbove(valueList.get(0), constraint.getiType().startsWith("["));
@@ -487,7 +486,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             Property property =  ont.$property$(eProp.getpType());
             if(property.getName().equals(indexPartitions.getTimeField())){
                 switch(eProp.getCon().getOp()){
-                    case within:
                     case inRange:
                         List<Date> values = (List<Date>)eProp.getCon().getExpr();
                         timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(eProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
@@ -530,7 +528,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         for (RelProp relProp : relPropGroup.getProps()){
             if (ont.$property$(relProp.getpType()).getName().equals(indexPartitions.getTimeField())) {
                 switch(relProp.getCon().getOp()){
-                    case within:
                     case inRange:
                         List<Date> values = (List<Date>)relProp.getCon().getExpr();
                         if(!values.isEmpty()) {

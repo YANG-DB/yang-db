@@ -60,21 +60,18 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
     }
 
     protected void manageParameterizedConstraint(List<NamedParameter> params, EProp eProp) {
-        Object expr = eProp.getCon().getExpr();
-        String[] name = {"name"};
-        if (expr instanceof QueryNamedParameter) {
-            name[0] = ((QueryNamedParameter) expr).getName();
-        } else if (expr instanceof Map) {
-            name[0] = ((Map<String, Object>) expr).values().iterator().next().toString();
-        }
-        Optional<NamedParameter> parameter = params.stream().filter(p -> p.getName().equals(name[0])).findAny();
+        ParameterizedConstraint expr = (ParameterizedConstraint) eProp.getCon();
+        String name = expr.getParameter().getName();
+        Optional<NamedParameter> parameter = params.stream().filter(p -> p.getName().equals(name)).findAny();
         //in case of singular operator and list of operands - use union of conditions for each query pattern
-        if(isArrayOrIterable(parameter.get().getValue()) && isSingleElementOp(eProp.getCon().getOp())) {
+        if(isArrayOrIterable(parameter.get().getValue()) && isForEachJoin(expr)) {
             AtomicInteger counter = new AtomicInteger(AsgQueryUtil.maxEntityNum(query));
             //repeat for each condition - union on all params
             AsgEBase<Quant1> quant = new AsgEBase<>(new Quant1(counter.incrementAndGet(), QuantType.some));
             AsgEBase<EBase> asgEBase = AsgQueryUtil.nextDescendant(query.getStart(), ETyped.class).get();
-            ((Collection) parameter.get().getValue()).forEach(value->{
+            Collection parameterValues = (Collection) parameter.get().getValue();
+            //replace each value with the appropriate pattern
+            parameterValues.forEach(value->{
                 //clone pattern for each value
                 AsgEBase<EBase> pattern = AsgQueryUtil.deepCloneWithEnums(counter, asgEBase, t -> true, t -> true,true);
                 //replace named parameter with value...
@@ -85,8 +82,22 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
             });
             query.getStart().setNext(Collections.singletonList(quant));
         } else {
-            parameter.ifPresent(namedParameter -> eProp.setCon(Constraint.of(eProp.getCon().getOp(), namedParameter.getValue(), eProp.getCon().getiType())));
+            parameter.ifPresent(namedParameter -> eProp.setCon(Constraint.of(eProp.getCon().getOp(), parseValue(eProp.getCon().getOp(),eProp.getCon().getExpr(),namedParameter), eProp.getCon().getiType())));
         }
+    }
+
+    private Object parseValue(ConstraintOp op,Object exp,NamedParameter namedParameter) {
+        if(isArrayOrIterable(exp)) {
+            //todo parse expression (function?) according to operator and assign named param value
+        }
+        return namedParameter.getValue();
+    }
+
+    private boolean isForEachJoin(ParameterizedConstraint expr) {
+        if(expr instanceof JoinParameterizedConstraint) {
+            return ((JoinParameterizedConstraint) expr).getJoinType().equals(WhereByFacet.JoinType.FOR_EACH);
+        }
+        return isSingleElementOp(expr.getOp());
     }
 
     protected void manageOptionalUnaryParameterizedConstraint(List<NamedParameter> params, EProp eProp) {
@@ -126,7 +137,7 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
     }
 
     private boolean isIterable(Object obj) {
-        return Iterable.class.isAssignableFrom(obj.getClass());
+        return obj!=null && Iterable.class.isAssignableFrom(obj.getClass());
     }
 
     private AsgQuery query;

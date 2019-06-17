@@ -31,12 +31,11 @@ import com.kayhut.fuse.model.query.Query.QueryUtils;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.properties.BaseProp;
 import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.*;
-import com.kayhut.fuse.model.query.quant.Quant1;
 
-import java.util.*;
-import java.util.function.Predicate;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -85,15 +84,16 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
         if (eBase.getCon() != null) {
             Constraint con = eBase.getCon();
             if (property.isPresent() && con instanceof InnerQueryConstraint) {
+                WhereByFacet.JoinType joinType = ((InnerQueryConstraint) con).getJoinType();
                 Query innerQuery = ((InnerQueryConstraint) con).getInnerQuery();
                 String tagEntity = ((InnerQueryConstraint) con).getTagEntity();
                 String projectedFields = ((InnerQueryConstraint) con).getProjectedField();
-                Constraint newCon = new ParameterizedConstraint(con.getOp(),
-                        new QueryNamedParameter(innerQuery.getName(), tagEntity + "." + projectedFields));
+                Constraint newCon = new JoinParameterizedConstraint(con.getOp(), con.getExpr(),
+                        new QueryNamedParameter(innerQuery.getName(), tagEntity + "." + projectedFields),joinType);
                 eBase.setCon(newCon);
                 //add inner query to chain
                 AsgQuery innerAsgQuery = new AsgCompositeQuery(super.transform(innerQuery));
-                ((AsgCompositeQuery) query).with(innerAsgQuery);
+                ((AsgCompositeQuery) query).with(new AsgCompositeQuery.InnerAsgQuery(innerAsgQuery, ((InnerQueryConstraint) con).getJoinType()));
                 apply(innerAsgQuery, context);
             } else if (property.isPresent() && con instanceof WhereByConstraint) {
                 //split single query with where constraint into 2 queries
@@ -120,16 +120,17 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
                         .build();
 
                 //compose parameterized constraint
+                WhereByFacet.JoinType joinType = ((WhereByFacet) con).getJoinType();
                 String tagEntity = ((WhereByFacet) con).getTagEntity();
                 String projectedFields = ((WhereByFacet) con).getProjectedField();
-                Constraint newCon = new ParameterizedConstraint(con.getOp(),
+                Constraint newCon = new JoinParameterizedConstraint(con.getOp(), con.getExpr(),
                         new QueryNamedParameter(innerQuery.getName(),
-                                tagEntity + "." + projectedFields));
+                                tagEntity + "." + projectedFields),joinType);
                 eBase.setCon(newCon);
 
                 //add inner query to chain
                 AsgQuery innerAsgQuery = new AsgCompositeQuery(innerQuery);
-                ((AsgCompositeQuery) query).with(innerAsgQuery);
+                ((AsgCompositeQuery) query).with(new AsgCompositeQuery.InnerAsgQuery(innerAsgQuery,((WhereByFacet) con).getJoinType()));
                 apply(innerAsgQuery, context);
             }
         }

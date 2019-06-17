@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class WhereByConstraint extends Constraint implements WhereByFacet {
 
     private String projectedField;
+    private JoinType joinType;
 
     public WhereByConstraint() {
     }
@@ -33,10 +34,22 @@ public class WhereByConstraint extends Constraint implements WhereByFacet {
     public WhereByConstraint(ConstraintOp op, String expression, String projectedField) {
         super(op, expression);
         this.projectedField = projectedField;
+        this.joinType = ConstraintOp.singleValueOps.contains(op) ? JoinType.FOR_EACH : JoinType.FULL;
+    }
+
+    public WhereByConstraint(ConstraintOp op, String expression, JoinType joinType, String projectedField) {
+        super(op, expression);
+        this.joinType = joinType;
+        this.projectedField = projectedField;
     }
 
     public String getProjectedField() {
         return projectedField;
+    }
+
+    @Override
+    public JoinType getJoinType() {
+        return joinType;
     }
 
     public String getTagEntity() {
@@ -50,5 +63,9 @@ public class WhereByConstraint extends Constraint implements WhereByFacet {
 
     public static WhereByConstraint of(ConstraintOp op, String expression, String projectedFields) {
         return new WhereByConstraint(op, expression, projectedFields);
+    }
+
+    public static WhereByConstraint of(ConstraintOp op, String expression,JoinType joinType, String projectedFields) {
+        return new WhereByConstraint(op, expression,joinType, projectedFields);
     }
 }

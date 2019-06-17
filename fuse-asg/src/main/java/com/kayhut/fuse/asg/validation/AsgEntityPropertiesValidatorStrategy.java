@@ -43,6 +43,7 @@ import javaslang.collection.Stream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.ignorableConstraints;
 import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 import static com.kayhut.fuse.model.validation.ValidationResult.print;
 
@@ -116,6 +117,9 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
         if(property.getProj()!=null) {
             return errors;
         }
+
+        if(ignorableConstraints.contains(property.getCon().getClass()))
+            return errors;
 
         //interval type
         if(property.getCon().getiType()==null) {

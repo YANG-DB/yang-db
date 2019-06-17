@@ -74,9 +74,10 @@ public class ConstraintIterableTransformationAsgStrategy implements AsgStrategy 
             Object expr = eProp.getCon().getExpr();
             if (expr != null) {
                 ConstraintOp op = eProp.getCon().getOp();
-                if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {
+                if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent() ) {
                     List<Object> newList = transformToNewList(property.get(), expr);
-                    Constraint newCon = new Constraint(eProp.getCon().getOp(), newList);
+                    Constraint newCon = eProp.getCon().clone();
+                    newCon.setExpr(newList);
                     eProp.setCon(newCon);
                 }
             }
@@ -90,7 +91,8 @@ public class ConstraintIterableTransformationAsgStrategy implements AsgStrategy 
                     ConstraintOp op = relProp.getCon().getOp();
                     if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {
                         List<Object> newList = transformToNewList(property.get(), expr);
-                        Constraint newCon = new Constraint(relProp.getCon().getOp(), newList);
+                        Constraint newCon = relProp.getCon().clone();
+                        newCon.setExpr(newList);
                         relProp.setCon(newCon);
                     }
                 }

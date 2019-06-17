@@ -219,7 +219,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     private List<QueryResource> compositeQuery(CreateQueryRequestMetadata request, QueryMetadata metadata, AsgQuery outer) {
         if (hasInnerQuery(outer)) {
             List<QueryResource> resources = ((AsgCompositeQuery) outer).getQueryChain().stream()
-                    .map(inner -> getQueryResource(request, metadata.clone(), inner))
+                    .map(inner -> getQueryResource(request, metadata.clone(), inner.getQuery()))
                     .collect(Collectors.toList());
 
             //unable to run plan search with QueryNamedParams due to DiscreteElementReduceController attempting to count elements...
@@ -637,15 +637,14 @@ public abstract class QueryDriverBase implements QueryDriver {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryResourceInfo.getResourceId());
         List<EProp> parameterizedConstraints = AsgQueryUtil.getParameterizedConstraintEProps(queryResource.get().getAsgQuery());
         return parameterizedConstraints.stream()
-                .map(eProp -> extractQueryProjectedParams(queryResource.get(), eProp))
+                .map(eProp -> extractQueryProjectedParams(queryResource.get(), (ParameterizedConstraint) eProp.getCon()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
     }
 
-    private Optional<NamedParameter> extractQueryProjectedParams(QueryResource queryResource, EProp eProp) {
-        ParameterizedConstraint con = (ParameterizedConstraint) eProp.getCon();
-        QueryNamedParameter namedParameter = (QueryNamedParameter) con.getExpr();
+    private Optional<NamedParameter> extractQueryProjectedParams(QueryResource queryResource, ParameterizedConstraint con) {
+        QueryNamedParameter namedParameter = (QueryNamedParameter) con.getParameter();
         String query = namedParameter.getQuery();
         Option<QueryResource> innerQuery = Stream.ofAll(queryResource.getInnerQueryResources())
                 .find(p -> p.getQuery().getName().contains(query));

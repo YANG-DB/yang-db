@@ -38,8 +38,12 @@ public class OptionalUnaryParameterizedConstraint extends ParameterizedConstrain
     public OptionalUnaryParameterizedConstraint() {}
 
     public OptionalUnaryParameterizedConstraint(ConstraintOp defaultValue, Set<ConstraintOp> ops, NamedParameter parameter) {
+        this(defaultValue,null,ops,parameter);
+    }
+
+    public OptionalUnaryParameterizedConstraint(ConstraintOp defaultValue,Object exp, Set<ConstraintOp> ops, NamedParameter parameter) {
         //set defaultValue as the op field of the base class (calling OptionalUnaryParameterizedConstraint.getOps() will result with the default value)
-        super(defaultValue,parameter);
+        super(defaultValue,exp,parameter);
         this.operations = ops;
     }
 
@@ -49,7 +53,7 @@ public class OptionalUnaryParameterizedConstraint extends ParameterizedConstrain
 
     @Override
     public OptionalUnaryParameterizedConstraint clone() {
-        return new OptionalUnaryParameterizedConstraint(getOp(),getOperations(), ((NamedParameter) getExpr()));
+        return new OptionalUnaryParameterizedConstraint(getOp(),getExpr(),getOperations(), getParameter());
     }
 
     private Set<ConstraintOp> operations = Collections.emptySet();

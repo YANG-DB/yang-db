@@ -87,11 +87,13 @@ public class KnowledgeLikeCombinerStrategy extends AsgPredicateRoutingStrategy<E
     private static boolean ePropGroupContainsLikeFieldOnRankableFields(EPropGroup ePropGroup) {
         boolean fieldExists = !Stream.ofAll(ePropGroup.getProps())
                 .filter(eProp -> eProp.getCon() != null && eProp.getpType().equals("fieldId"))
+                .filter(eProp -> eProp.getCon().getExpr() != null )
                 .find(eProp -> applicableFieldNames.contains(eProp.getCon().getExpr().toString()))
                 .isEmpty();
 
         if (fieldExists && !Stream.ofAll(ePropGroup.getProps())
                 .filter(eProp -> eProp.getCon() != null && eProp.getpType().equals("stringValue"))
+                .filter(eProp -> eProp.getCon().getExpr() != null )
                 .filter(eProp -> !eProp.getCon().getExpr().toString().isEmpty())
                 .find(eProp -> eProp.getCon().getOp() == ConstraintOp.like || eProp.getCon().getOp() == ConstraintOp.eq)
                 .isEmpty()) {

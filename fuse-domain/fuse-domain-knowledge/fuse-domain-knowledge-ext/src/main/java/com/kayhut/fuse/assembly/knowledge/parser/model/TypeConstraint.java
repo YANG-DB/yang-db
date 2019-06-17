@@ -30,7 +30,6 @@ public enum TypeConstraint {
     EXACT("=",ConstraintOp.eq),
     IN("IN",ConstraintOp.inSet),
     RANGE("",ConstraintOp.inRange),
-    WITHIN("WITHIN",ConstraintOp.within),
     LT("<",ConstraintOp.lt),
     GT(">",ConstraintOp.gt),
     PLAIN("CONTAINS",ConstraintOp.like);

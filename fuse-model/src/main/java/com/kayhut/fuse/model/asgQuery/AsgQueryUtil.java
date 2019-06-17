@@ -66,7 +66,7 @@ public class AsgQueryUtil {
         return getEprops(eBase).stream()
                 .filter(prop -> prop.getCon() != null)
                 .filter(prop -> ParameterizedConstraint.class.isAssignableFrom(prop.getCon().getClass()))
-                .filter(prop -> ((NamedParameter) prop.getCon().getExpr()).getName().equals(namedParameter.getName()))
+                .filter(prop -> ((ParameterizedConstraint) prop.getCon()).getParameter().getName().equals(namedParameter.getName()))
                 .findFirst();
     }
 

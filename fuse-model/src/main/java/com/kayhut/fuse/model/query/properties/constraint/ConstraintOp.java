@@ -109,16 +109,15 @@ public enum ConstraintOp {
     @JsonProperty("like any")
     likeAny;
 
-    public static Set<Class> ignorableConstraints;
+    public static Set<Class<? extends Constraint>> ignorableConstraints;
     public static Set<ConstraintOp> singleValueOps;
     public static Set<ConstraintOp> multiValueOps;
 
     static {
-        ignorableConstraints = new HashSet<>();
-        ignorableConstraints.add(ParameterizedConstraint.class);
-        ignorableConstraints.add(InnerQueryConstraint.class);
+        ignorableConstraints = Stream.of(ParameterizedConstraint.class,JoinParameterizedConstraint.class,
+                InnerQueryConstraint.class).toJavaSet();
 
-        singleValueOps = Stream.of(eq, ne, gt, ge, lt, le, contains, within, startsWith, notContains, notStartsWith, notEndsWith,
+        singleValueOps = Stream.of(eq, ne, gt, ge, lt, le, contains, startsWith, notContains, notStartsWith, notEndsWith,
                 fuzzyEq, fuzzyNe, match, notMatch, empty, notEmpty).toJavaSet();
 
         multiValueOps = Stream.of(inRange, notInRange, inSet, notInSet, empty, notEmpty, likeAny).toJavaSet();

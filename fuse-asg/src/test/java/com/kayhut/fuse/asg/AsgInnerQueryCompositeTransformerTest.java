@@ -76,13 +76,13 @@ public class AsgInnerQueryCompositeTransformerTest {
         assertEquals(Q5().getName(), asgQuery.getOrigin().getName());
         assertEquals(((AsgCompositeQuery) asgQuery).getQueryChain().size(), 1);
 
-        final AsgQuery inner = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0);
+        final AsgQuery inner = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0).getQuery();
         assertNotNull(inner.getOrigin());
         assertEquals("[└── Start, \n" +
                 "    ──Typ[:Person P1#1]]", AsgQueryDescriptor.print(inner));
         assertEquals(Q5().getName() + INNER, inner.getOrigin().getName());
         assertTrue(AsgQueryUtil.elements(asgQuery, EProp.class).stream()
-                .anyMatch(p -> p.geteBase().getCon().getClass().isAssignableFrom(ParameterizedConstraint.class)));
+                .anyMatch(p -> p.geteBase().getCon() instanceof ParameterizedConstraint));
 
 
     }
@@ -107,7 +107,7 @@ public class AsgInnerQueryCompositeTransformerTest {
         assertEquals(Q6().getName(), asgQuery.getOrigin().getName());
         assertEquals(((AsgCompositeQuery) asgQuery).getQueryChain().size(), 1);
 
-        final AsgQuery inner = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0);
+        final AsgQuery inner = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0).getQuery();
         assertNotNull(inner.getOrigin());
         assertEquals("[└── Start, \n" +
                 "    ──Typ[:Person P1#1]──Q[2:all]:{20}, \n" +
@@ -139,14 +139,14 @@ public class AsgInnerQueryCompositeTransformerTest {
         assertEquals(Q1().getName(), asgQuery.getOrigin().getName());
         assertEquals(((AsgCompositeQuery) asgQuery).getQueryChain().size(), 1);
 
-        final AsgQuery inner = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0);
+        final AsgQuery inner = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0).getQuery();
         assertNotNull(inner.getOrigin());
         assertEquals("[└── Start, \n" +
                 "    ──Typ[:Person P#1]──?[..][2], \n" +
                 "                            └─?[3]:[name<like,jhon*>]]", AsgQueryDescriptor.print(inner));
         assertEquals(Q2().getName(), inner.getOrigin().getName());
         assertTrue(AsgQueryUtil.element(asgQuery, EPropGroup.class).get().geteBase().getProps().stream()
-                .anyMatch(p -> p.getCon().getClass().isAssignableFrom(ParameterizedConstraint.class)));
+                .anyMatch(p -> p.getCon() instanceof ParameterizedConstraint));
 
     }
 
@@ -172,14 +172,14 @@ public class AsgInnerQueryCompositeTransformerTest {
 
         assertEquals(((AsgCompositeQuery) asgQuery).getQueryChain().size(), 2);
         assertTrue(AsgQueryUtil.element(asgQuery, EPropGroup.class).get().geteBase().getProps().stream()
-                .anyMatch(p -> p.getCon().getClass().isAssignableFrom(ParameterizedConstraint.class)));
+                .anyMatch(p -> p.getCon() instanceof ParameterizedConstraint));
 
-        AsgQuery innerQuery = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0);
+        AsgQuery innerQuery = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0).getQuery();
         assertTrue(innerQuery instanceof AsgCompositeQuery);
         assertNotNull(innerQuery.getOrigin());
         assertEquals(Q3().getName(), innerQuery.getOrigin().getName());
 
-        innerQuery = ((AsgCompositeQuery) asgQuery).getQueryChain().get(1);
+        innerQuery = ((AsgCompositeQuery) asgQuery).getQueryChain().get(1).getQuery();
         assertTrue(innerQuery instanceof AsgCompositeQuery);
         assertNotNull(innerQuery.getOrigin());
         assertEquals(Q2().getName(), innerQuery.getOrigin().getName());
@@ -207,9 +207,9 @@ public class AsgInnerQueryCompositeTransformerTest {
 
         assertEquals(((AsgCompositeQuery) asgQuery).getQueryChain().size(), 1);
         assertTrue(AsgQueryUtil.element(asgQuery, EPropGroup.class).get().geteBase().getProps().stream()
-                .anyMatch(p -> p.getCon().getClass().isAssignableFrom(ParameterizedConstraint.class)));
+                .anyMatch(p -> p.getCon() instanceof ParameterizedConstraint));
 
-        AsgQuery innerQuery = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0);
+        AsgQuery innerQuery = ((AsgCompositeQuery) asgQuery).getQueryChain().get(0).getQuery();
         assertTrue(innerQuery instanceof AsgCompositeQuery);
         assertNotNull(innerQuery.getOrigin());
         assertEquals(Q1().getName(), innerQuery.getOrigin().getName());
@@ -217,9 +217,9 @@ public class AsgInnerQueryCompositeTransformerTest {
         assertEquals(((AsgCompositeQuery) innerQuery).getQueryChain().size(), 1);
 
         assertTrue(AsgQueryUtil.element(innerQuery, EPropGroup.class).get().geteBase().getProps().stream()
-                .anyMatch(p -> p.getCon().getClass().isAssignableFrom(ParameterizedConstraint.class)));
+                .anyMatch(p -> p.getCon() instanceof ParameterizedConstraint));
 
-        AsgQuery realInnerQuery = ((AsgCompositeQuery) innerQuery).getQueryChain().get(0);
+        AsgQuery realInnerQuery = ((AsgCompositeQuery) innerQuery).getQueryChain().get(0).getQuery();
         assertNotNull(realInnerQuery.getOrigin());
         assertEquals(Q2().getName(), realInnerQuery.getOrigin().getName());
 

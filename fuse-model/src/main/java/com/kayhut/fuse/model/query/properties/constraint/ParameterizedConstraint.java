@@ -30,19 +30,27 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(name = "OptionalUnaryParameterizedConstraint", value = OptionalUnaryParameterizedConstraint.class)})
+        @JsonSubTypes.Type(name = "OptionalUnaryParameterizedConstraint", value = OptionalUnaryParameterizedConstraint.class),
+        @JsonSubTypes.Type(name = "JoinParameterizedConstraint", value = JoinParameterizedConstraint.class)})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ParameterizedConstraint extends Constraint {
+    private NamedParameter parameter;
+
     public ParameterizedConstraint() {}
 
-    public ParameterizedConstraint(ConstraintOp op, NamedParameter parameter) {
-        super(op,parameter);
+    public ParameterizedConstraint(ConstraintOp op,Object expression, NamedParameter parameter) {
+        super(op,expression);
+        this.parameter = parameter;
     }
 
     @Override
     public ParameterizedConstraint clone() {
-        return new ParameterizedConstraint(getOp(), ((NamedParameter) getExpr()));
+        return new ParameterizedConstraint(getOp(),getExpr(),getParameter());
+    }
+
+    public NamedParameter getParameter() {
+        return parameter;
     }
 
     public static ParameterizedConstraint of(ConstraintOp op) {
