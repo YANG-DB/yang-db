@@ -82,6 +82,7 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new ConstraintExpCharEscapeTransformationAsgStrategy(),
                 new RankingPropertiesPropagationAsgStrategy(),
                 new RedundantInSetConstraintAsgStrategy(),
+                new RedundantInRangeConstraintAsgStrategy(),
                 new RedundantPropGroupAsgStrategy(),
                 new DefaultSelectionAsgStrategy(this.ontologyProvider),
                 new DefaultRelationSelectionAsgStrategy(this.ontologyProvider)

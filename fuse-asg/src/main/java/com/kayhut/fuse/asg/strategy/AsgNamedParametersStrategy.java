@@ -95,7 +95,8 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
                 quant.addNext(pattern);
             });
             query.getStart().setNext(Collections.singletonList(quant));
-        } else if (isArrayOrIterable(parameter.get().getValue())) {
+        //if operand is singular and param values are multiple - create ePropGroup
+        } else if (isArrayOrIterable(parameter.get().getValue() ) && ConstraintOp.singleValueOps.contains(eProp.getCon().getOp())) {
             //todo add conditions inside an "AND" EPropGroup
             Optional<AsgEBase<EBase>> ePropAsg = AsgQueryUtil.get(query.getStart(), eProp.geteNum());
             Collection parameterValues = (Collection) parameter.get().getValue();
