@@ -44,6 +44,7 @@ public class AsgNamedParametersStrategyTest {
     public void setUp() throws Exception {
         String ontologyExpectedJson = readJsonToString("src/test/resources/Dragons_Ontology.json");
         Ontology ontology = new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class);
+        ont = new Ontology.Accessor(ontology);
         asgSupplier = new QueryToCompositeAsgTransformer(new OntologyProvider() {
             @Override
             public Optional<Ontology> get(String id) {
@@ -126,7 +127,7 @@ public class AsgNamedParametersStrategyTest {
 
         Assert.assertEquals("[└── Start, \n" +
                         "    ──Typ[:Person P1#1]]",
-                AsgQueryDescriptor.print(((AsgCompositeQuery) query).getQueryChain().get(0).getQuery()));
+                AsgQueryDescriptor.print(((AsgCompositeQuery) query).getQueryChain().get(0)));
 
         Assert.assertTrue(AsgQueryUtil.element(query, asgEBase -> (asgEBase.geteBase() instanceof QuantBase) &&
                 ((QuantBase) asgEBase.geteBase()).getqType().equals(some)).isPresent());
@@ -156,7 +157,7 @@ public class AsgNamedParametersStrategyTest {
         Assert.assertEquals("[└── Start, \n" +
                 "    ──Typ[:Person P1#1]──Q[2:all]:{20}, \n" +
                 "                                  └─?[20]:[Person<contains,Jimmy>]]",
-                AsgQueryDescriptor.print(((AsgCompositeQuery) query).getQueryChain().get(0).getQuery()));
+                AsgQueryDescriptor.print(((AsgCompositeQuery) query).getQueryChain().get(0)));
         Assert.assertTrue(AsgQueryUtil.element(query, asgEBase -> (asgEBase.geteBase() instanceof QuantBase) &&
                 ((QuantBase) asgEBase.geteBase()).getqType().equals(some)).isPresent());
 
@@ -184,7 +185,7 @@ public class AsgNamedParametersStrategyTest {
         Assert.assertEquals("[└── Start, \n" +
                         "    ──Typ[:Person P#1]──?[..][2], \n" +
                         "                            └─?[3]:[name<like,jhon*>]]",
-                AsgQueryDescriptor.print(((AsgCompositeQuery) query).getQueryChain().get(0).getQuery()));
+                AsgQueryDescriptor.print(((AsgCompositeQuery) query).getQueryChain().get(0)));
         Assert.assertTrue(AsgQueryUtil.element(query, asgEBase -> (asgEBase.geteBase() instanceof QuantBase) &&
                 ((QuantBase) asgEBase.geteBase()).getqType().equals(some)).isPresent());
 

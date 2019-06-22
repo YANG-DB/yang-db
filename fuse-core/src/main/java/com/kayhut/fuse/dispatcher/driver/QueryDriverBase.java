@@ -219,7 +219,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     private List<QueryResource> compositeQuery(CreateQueryRequestMetadata request, QueryMetadata metadata, AsgQuery outer) {
         if (hasInnerQuery(outer)) {
             List<QueryResource> resources = ((AsgCompositeQuery) outer).getQueryChain().stream()
-                    .map(inner -> getQueryResource(request, metadata.clone(), inner.getQuery()))
+                    .map(inner -> getQueryResource(request, metadata.clone(), inner))
                     .collect(Collectors.toList());
 
             //unable to run plan search with QueryNamedParams due to DiscreteElementReduceController attempting to count elements...
