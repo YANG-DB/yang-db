@@ -134,6 +134,8 @@
 
         <!-- fastutil -->
         <fastutil.version>8.1.1</fastutil.version>
+        <!-- aviator exp eval -->
+        <aviator.version>4.2.0</aviator.version>
 
         <!-- logging -->
         <slf4j.version>1.7.25</slf4j.version>
@@ -490,6 +492,13 @@
                 <version>${jooq.version}</version>
             </dependency>
             <!-- jooq -->
+
+            <!-- string eval compiler -->
+            <dependency>
+                <groupId>com.googlecode.aviator</groupId>
+                <artifactId>aviator</artifactId>
+                <version>${aviator.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>it.unimi.dsi</groupId>

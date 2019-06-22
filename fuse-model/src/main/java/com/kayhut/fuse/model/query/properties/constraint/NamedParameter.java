@@ -34,6 +34,8 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NamedParameter {
+    public static final String $VAL = "$val";
+
     private String name;
     private Object value;
 

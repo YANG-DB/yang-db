@@ -30,7 +30,7 @@ import java.util.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AsgCompositeQuery extends AsgQuery {
     public static final String INNER = "_Inner";
-    private Set<InnerAsgQuery> queryChain = new LinkedHashSet<>();
+    private Set<AsgQuery> queryChain = new LinkedHashSet<>();
 
     public AsgCompositeQuery() {
     }
@@ -44,12 +44,12 @@ public class AsgCompositeQuery extends AsgQuery {
         this.setElements(asgQuery.getElements());
     }
 
-    public AsgCompositeQuery with(InnerAsgQuery query) {
+    public AsgCompositeQuery with(AsgQuery query) {
         queryChain.add(query);
         return this;
     }
 
-    public List<InnerAsgQuery> getQueryChain() {
+    public List<AsgQuery> getQueryChain() {
         return new ArrayList<>(queryChain);
     }
 
@@ -62,21 +62,4 @@ public class AsgCompositeQuery extends AsgQuery {
     }
 
 
-    public static class InnerAsgQuery {
-        private AsgQuery query;
-        private WhereByFacet.JoinType joinType;
-
-        public InnerAsgQuery(AsgQuery query, WhereByFacet.JoinType joinType) {
-            this.query = query;
-            this.joinType = joinType;
-        }
-
-        public AsgQuery getQuery() {
-            return query;
-        }
-
-        public WhereByFacet.JoinType getJoinType() {
-            return joinType;
-        }
-    }
 }

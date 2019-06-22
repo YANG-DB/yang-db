@@ -1,14 +1,14 @@
 package com.kayhut.fuse.assembly.knowledge;
 
 import com.kayhut.fuse.assembly.knowledge.domain.*;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
+import com.kayhut.fuse.model.query.ParameterizedQuery;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
-import com.kayhut.fuse.model.query.properties.constraint.InnerQueryConstraint;
+import com.kayhut.fuse.model.query.properties.constraint.*;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
@@ -38,6 +38,7 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 import static com.kayhut.fuse.assembly.knowledge.domain.RvalueBuilder._r;
 import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
+import static com.kayhut.fuse.model.query.properties.constraint.NamedParameter.$VAL;
 import static com.kayhut.fuse.model.query.properties.constraint.WhereByConstraint.of;
 
 
@@ -352,6 +353,7 @@ public class KnowledgeInnerQueryE2ETests {
         Assert.assertEquals(2, ((List) ((Map) (((List) ((Map) pathResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(1)).get("entities")).size());
 
     }
+
     @Test
     public void testSimpleInnerQueryWithConstraintEQOnId() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
@@ -514,5 +516,78 @@ public class KnowledgeInnerQueryE2ETests {
         Assert.assertEquals(9, ((List) ((Map) (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
     }
 
+    @Test
+    public void testInnerQueryInRelativeDayRange() throws IOException, InterruptedException {
+        Query q1 = Query.Builder.instance().withName("Query" + "_testInnerQueryEq").withOnt("Knowledge")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A1", "Entity", 2, 0),
+                        new Rel(2, "hasEvalue", R, null, 3, 0),
+                        new ETyped(3, "A2", "Evalue", 4, 0))
+                ).build();
+
+        long day = (1000 * 60 * 60 *24);
+
+        Query q0 = Query.Builder.instance().withName("Query" + System.currentTimeMillis()).withOnt("Knowledge")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A1", "Entity", 2, 0),
+                        new Rel(2, "hasEvalue", R, null, 3, 0),
+                        new ETyped(3, "A2", "Evalue", 4, 0),
+                        new EProp(4, "creationTime", InnerQueryConstraint.of(ConstraintOp.inRange,
+                                new Object[]{String.format("%s.time - %d", $VAL, day/2), String.format("%s.time + %d  ", $VAL, day/2)},
+                                WhereByFacet.JoinType.FOR_EACH, q1, "A2", "creationTime"))
+                )).build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo graphResourceInfo = query(fuseClient, fuseResourceInfo, new CreateQueryRequest("q0", "q0", q0, new CreateGraphCursorRequest(new CreatePageRequest(100))));
+        ParameterizedQuery query = (ParameterizedQuery) fuseClient.getQuery(graphResourceInfo.getV1QueryUrl(), ParameterizedQuery.class);
+        Assert.assertEquals("[└── Start, \n" +
+                        "    ──Typ[Entity:1]--> Rel(hasEvalue:2)──Typ[Evalue:3]──?[4]:[creationTime<inRange,[$val.time - 43200000, $val.time + 43200000  ]>]]",
+                QueryDescriptor.print(query));
+        Assert.assertEquals(7, ((List) ((List<NamedParameter>) query.getParams()).get(0).getValue()).size());
+        Assert.assertEquals(1, ((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments")).size());
+        Assert.assertEquals(14, ((List) ((Map) (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
+
+
+        // return the relevant data
+    }
+    @Test
+    public void testInnerQueryInRelativeMinuteRange() throws IOException, InterruptedException {
+        Query q1 = Query.Builder.instance().withName("Query" + "_testInnerQueryEq").withOnt("Knowledge")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A1", "Entity", 2, 0),
+                        new Rel(2, "hasEvalue", R, null, 3, 0),
+                        new ETyped(3, "A2", "Evalue", 4, 0),
+                        new EProp(4,"lastUpdateUser",Constraint.of(ConstraintOp.eq, "Dudu peretz"))
+                )).build();
+
+        long minute = (1000 * 60 );
+
+        Query q0 = Query.Builder.instance().withName("Query" + System.currentTimeMillis()).withOnt("Knowledge")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A1", "Entity", 2, 0),
+                        new Rel(2, "hasEvalue", R, null, 3, 0),
+                        new ETyped(3, "A2", "Evalue", 4, 0),
+                        new EProp(4, "creationTime", InnerQueryConstraint.of(ConstraintOp.inRange,
+                                new Object[]{String.format("%s.time - %d", $VAL, minute/2), String.format("%s.time + %d  ", $VAL, minute/2)},
+                                WhereByFacet.JoinType.FOR_EACH, q1, "A2", "creationTime"))
+                )).build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo graphResourceInfo = query(fuseClient, fuseResourceInfo, new CreateQueryRequest("q0", "q0", q0, new CreateGraphCursorRequest(new CreatePageRequest(100))));
+        ParameterizedQuery query = (ParameterizedQuery) fuseClient.getQuery(graphResourceInfo.getV1QueryUrl(), ParameterizedQuery.class);
+        Assert.assertEquals("[└── Start, \n" +
+                        "    ──Typ[Entity:1]--> Rel(hasEvalue:2)──Typ[Evalue:3]──?[4]:[creationTime<inRange,[$val.time - 30000, $val.time + 30000  ]>]]",
+                QueryDescriptor.print(query));
+        Assert.assertEquals(1, ((List) ((List<NamedParameter>) query.getParams()).get(0).getValue()).size());
+        Assert.assertEquals(1, ((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments")).size());
+        Assert.assertEquals(2, ((List) ((Map) (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
+
+
+        // return the relevant data
+    }
 
 }

@@ -20,10 +20,14 @@ package com.kayhut.fuse.asg.strategy;
  * #L%
  */
 
+import com.googlecode.aviator.AviatorEvaluator;
+import com.googlecode.aviator.Expression;
+import com.kayhut.fuse.asg.util.OntologyPropertyTypeFactory;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
+import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -33,11 +37,15 @@ import com.kayhut.fuse.model.query.quant.QuantType;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQueryUtil.getEprops;
 import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
+import static com.kayhut.fuse.model.query.properties.constraint.NamedParameter.$VAL;
+import static java.util.Collections.singletonMap;
 
 public class AsgNamedParametersStrategy implements AsgStrategy {
+
 
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
@@ -45,6 +53,8 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
         this.context = context;
         if (query.getParameters().isEmpty())
             return;
+
+        this.propertyTypeFactory = new OntologyPropertyTypeFactory();
 
         //first handle more specific OptionalUnaryParameterizedConstraint
         getEprops(query).stream()
@@ -64,37 +74,50 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
         String name = expr.getParameter().getName();
         Optional<NamedParameter> parameter = params.stream().filter(p -> p.getName().equals(name)).findAny();
         //in case of singular operator and list of operands - use union of conditions for each query pattern
-        if(isArrayOrIterable(parameter.get().getValue()) && isForEachJoin(expr)) {
+        if (isArrayOrIterable(parameter.get().getValue()) && isForEachJoin(expr)) {
             AtomicInteger counter = new AtomicInteger(AsgQueryUtil.maxEntityNum(query));
             //repeat for each condition - union on all params
             AsgEBase<Quant1> quant = new AsgEBase<>(new Quant1(counter.incrementAndGet(), QuantType.some));
             AsgEBase<EBase> asgEBase = AsgQueryUtil.nextDescendant(query.getStart(), ETyped.class).get();
             Collection parameterValues = (Collection) parameter.get().getValue();
             //replace each value with the appropriate pattern
-            parameterValues.forEach(value->{
+            parameterValues.forEach(value -> {
                 //clone pattern for each value
-                AsgEBase<EBase> pattern = AsgQueryUtil.deepCloneWithEnums(counter, asgEBase, t -> true, t -> true,true);
+                AsgEBase<EBase> pattern = AsgQueryUtil.deepCloneWithEnums(counter, asgEBase, t -> true, t -> true, true);
                 //replace named parameter with value...
                 Optional<EProp> constraint = AsgQueryUtil.getParameterizedConstraint(pattern, parameter.get());
-                manageParameterizedConstraint(Collections.singletonList(new NamedParameter(parameter.get().getName(), value)),constraint.get());
-               //add to union
+                manageParameterizedConstraint(Collections.singletonList(new NamedParameter(parameter.get().getName(), value)), constraint.get());
+                //add to union
                 quant.addNext(pattern);
             });
             query.getStart().setNext(Collections.singletonList(quant));
         } else {
-            parameter.ifPresent(namedParameter -> eProp.setCon(Constraint.of(eProp.getCon().getOp(), parseValue(eProp.getCon().getOp(),eProp.getCon().getExpr(),namedParameter), eProp.getCon().getiType())));
+            parameter.ifPresent(namedParameter -> eProp.setCon(Constraint.of(eProp.getCon().getOp(), parseValue(eProp, eProp.getCon().getExpr(), namedParameter), eProp.getCon().getiType())));
         }
     }
 
-    private Object parseValue(ConstraintOp op,Object exp,NamedParameter namedParameter) {
-        if(isArrayOrIterable(exp)) {
-            //todo parse expression (function?) according to operator and assign named param value
+    private Object parseValue(EProp eProp, Object exp, NamedParameter namedParameter) {
+        Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
+
+        if(exp==null)
+            return namedParameter.getValue();
+
+        if (isArrayOrIterable(exp)) {
+            //parse expression (function?) according to operator and assign named param value
+            return ((Collection)exp).stream()
+                    .filter(e-> exp.toString().contains($VAL))
+                    .map(e->AviatorEvaluator.execute(e.toString(),
+                            singletonMap($VAL,propertyTypeFactory.supply(property.get(),namedParameter.getValue()))))
+                    .collect(Collectors.toList());
+        } else if(exp.toString().contains($VAL)) {
+            return AviatorEvaluator.execute(exp.toString(),
+                    singletonMap($VAL,propertyTypeFactory.supply(property.get(),namedParameter.getValue())));
         }
         return namedParameter.getValue();
     }
 
     private boolean isForEachJoin(ParameterizedConstraint expr) {
-        if(expr instanceof JoinParameterizedConstraint) {
+        if (expr instanceof JoinParameterizedConstraint) {
             return ((JoinParameterizedConstraint) expr).getJoinType().equals(WhereByFacet.JoinType.FOR_EACH);
         }
         return isSingleElementOp(expr.getOp());
@@ -137,9 +160,10 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
     }
 
     private boolean isIterable(Object obj) {
-        return obj!=null && Iterable.class.isAssignableFrom(obj.getClass());
+        return obj != null && Iterable.class.isAssignableFrom(obj.getClass());
     }
 
+    private OntologyPropertyTypeFactory propertyTypeFactory;
     private AsgQuery query;
     private AsgStrategyContext context;
 

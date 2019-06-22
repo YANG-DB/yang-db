@@ -93,7 +93,7 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
                 eBase.setCon(newCon);
                 //add inner query to chain
                 AsgQuery innerAsgQuery = new AsgCompositeQuery(super.transform(innerQuery));
-                ((AsgCompositeQuery) query).with(new AsgCompositeQuery.InnerAsgQuery(innerAsgQuery, ((InnerQueryConstraint) con).getJoinType()));
+                ((AsgCompositeQuery) query).with(new AsgCompositeQuery(innerAsgQuery));
                 apply(innerAsgQuery, context);
             } else if (property.isPresent() && con instanceof WhereByConstraint) {
                 //split single query with where constraint into 2 queries
@@ -130,7 +130,7 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
 
                 //add inner query to chain
                 AsgQuery innerAsgQuery = new AsgCompositeQuery(innerQuery);
-                ((AsgCompositeQuery) query).with(new AsgCompositeQuery.InnerAsgQuery(innerAsgQuery,((WhereByFacet) con).getJoinType()));
+                ((AsgCompositeQuery) query).with(new AsgCompositeQuery(innerAsgQuery));
                 apply(innerAsgQuery, context);
             }
         }
