@@ -24,20 +24,26 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.InnerQueryConstraint;
 import com.kayhut.fuse.model.query.properties.constraint.WhereByConstraint;
+import com.kayhut.fuse.model.query.properties.constraint.WhereByFacet;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 
 public class AsgWhereByConstraintValidatorStrategy implements AsgValidatorStrategy {
 
-    public static final String ERROR_2 = "where by constraint projection name doesnt match any existing tag ";
-    public static final String ERROR_3 = "where by constraint field doesnt match entity ontological field";
+    public static final String ERROR_1 = "Only single where by constraint can exist in a query";
+    public static final String ERROR_2 = "where by constraint projection name %s doesnt match any existing tag ";
+    public static final String ERROR_3 = "where by constraint field doesnt %s match entity ontological field";
 
     @Override
     public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {
@@ -45,12 +51,25 @@ public class AsgWhereByConstraintValidatorStrategy implements AsgValidatorStrate
         //todo - add validation on where by clause
         // - verify tags correlate
         // - verify field exists on tagged entity in the ontology
-        Ontology.Accessor accessor = context.getOntologyAccessor();
-        int count = Stream.ofAll(AsgQueryUtil.elements(query, EProp.class)).count(p -> isWhereClause(p.geteBase()));
+        int count = Stream.ofAll(AsgQueryUtil.getEprops(query)).count(this::isWhereClause);
 
         if(count > 1) {
-            errors.add(ERROR_2);
+            errors.add(ERROR_1);
         }
+
+        Stream.ofAll(AsgQueryUtil.getEprops(query))
+                .filter(this::isWhereClause)
+                .forEach(p->{
+                    WhereByFacet con = (WhereByFacet) p.getCon();
+                    String tagEntity = con.getTagEntity();
+                    if(!AsgQueryUtil.getByTag(query.getStart(),tagEntity).isPresent())
+                        errors.add(String.format(ERROR_2,tagEntity));
+
+                    String projectedField = con.getProjectedField();
+                    if(!context.getOntologyAccessor().$property(projectedField).isPresent())
+                        errors.add(String.format(ERROR_3,projectedField));
+
+                });
 
         if (errors.isEmpty())
             return OK;
@@ -62,6 +81,7 @@ public class AsgWhereByConstraintValidatorStrategy implements AsgValidatorStrate
 
 
     private boolean isWhereClause(EProp p) {
-        return p.getCon()!=null && p.getCon() instanceof WhereByConstraint;
+        return p.getCon()!=null && p.getCon() instanceof WhereByFacet;
     }
+
 }
