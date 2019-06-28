@@ -59,6 +59,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
 
         Ontology.Accessor accessor = context.getOntologyAccessor();
         Stream.ofAll(AsgQueryUtil.elements(query, EProp.class))
+                .filter(property -> !(property.geteBase() instanceof CalculatedEProp))
                 .forEach(property -> {
                     Optional<AsgEBase<EEntityBase>> parent = calculateNextAncestor(property,EEntityBase.class);
                     if (!parent.isPresent()) {

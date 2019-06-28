@@ -54,7 +54,7 @@ public class KnowledgeEntityAndRelationWithCalculatedFieldTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false,true);
+        Setup.setup(true,true);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
