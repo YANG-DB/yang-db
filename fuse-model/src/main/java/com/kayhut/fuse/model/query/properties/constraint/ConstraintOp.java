@@ -94,6 +94,12 @@ public enum ConstraintOp {
     @JsonProperty("match")
     match,
 
+    @JsonProperty("match_phrase")
+    match_phrase,
+
+    @JsonProperty("query_string")
+    query_string,
+
     @JsonProperty("not match")
     notMatch,
 
@@ -118,9 +124,9 @@ public enum ConstraintOp {
                 InnerQueryConstraint.class).toJavaSet();
 
         singleValueOps = Stream.of(eq, ne, gt, ge, lt, le, contains, startsWith, notContains, notStartsWith, notEndsWith,
-                fuzzyEq, fuzzyNe, match, notMatch, empty, notEmpty).toJavaSet();
+                fuzzyEq, fuzzyNe, match, match_phrase, notMatch, empty, notEmpty).toJavaSet();
 
-        multiValueOps = Stream.of(inRange, notInRange, inSet, notInSet, empty, notEmpty, likeAny).toJavaSet();
+        multiValueOps = Stream.of(inRange, notInRange, inSet, notInSet, empty, notEmpty, likeAny, query_string).toJavaSet();
     }
 
 }

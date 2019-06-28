@@ -33,7 +33,9 @@ import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchPhraseQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.script.Script;
 import org.geojson.Circle;
 import org.geojson.Envelope;
@@ -68,6 +70,8 @@ public class QueryBuilder {
         script,
         regexp,
         match,
+        matchPhrase,
+        stringQuery,
         ids,
         type,
         exists,
@@ -461,7 +465,30 @@ public class QueryBuilder {
     public QueryBuilder match(String fieldName, Object value) {
         return this.match(null, fieldName, value);
     }
+    public QueryBuilder matchPhrase(String fieldName, Object value) {
+        return this.matchPhrase(null, fieldName, value);
+    }
 
+    public QueryBuilder matchPhrase(String name, String fieldName, Object value) {
+        if (this.root == null) {
+            throw new UnsupportedOperationException("'match_phrase' may not appear as first statement");
+        }
+
+        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
+            throw new UnsupportedOperationException("'match_phrase' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        }
+
+        if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
+            this.current = seekLocalName(current, name);
+            return this;
+        }
+
+        Composite matchComposite = new MatchPhraseComposite(name, fieldName, value, current);
+        this.current.children.add(matchComposite);
+        this.current = matchComposite;
+
+        return this;
+    }
     public QueryBuilder match(String name, String fieldName, Object value) {
         if (this.root == null) {
             throw new UnsupportedOperationException("'match' may not appear as first statement");
@@ -477,6 +504,31 @@ public class QueryBuilder {
         }
 
         Composite matchComposite = new MatchComposite(name, fieldName, value, current);
+        this.current.children.add(matchComposite);
+        this.current = matchComposite;
+
+        return this;
+    }
+
+    public QueryBuilder queryString(String fieldName, Object value) {
+        return queryString(null,fieldName,value);
+    }
+
+    public QueryBuilder queryString(String name, String fieldName, Object value) {
+        if (this.root == null) {
+            throw new UnsupportedOperationException("'queryString' may not appear as first statement");
+        }
+
+        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
+            throw new UnsupportedOperationException("'queryString' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        }
+
+        if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
+            this.current = seekLocalName(current, name);
+            return this;
+        }
+
+        Composite matchComposite = new QueryStringComposite(name, fieldName, value, current);
         this.current.children.add(matchComposite);
         this.current = matchComposite;
 
@@ -1634,6 +1686,59 @@ public class QueryBuilder {
         @Override
         protected Object build() {
             return QueryBuilders.matchQuery(this.getFieldName(), this.value);
+        }
+        //endregion
+
+        //region Properties
+        public Object getValue() {
+            return this.value;
+        }
+        //endregion
+
+        //region Fields
+        private Object value;
+        //endregion
+    }
+
+    public class MatchPhraseComposite extends FieldComposite {
+        //region Constructor
+        protected MatchPhraseComposite(String name, String fieldName, Object value, Composite parent) {
+            super(name, fieldName, Op.matchPhrase, parent);
+            this.value = value;
+        }
+        //endregion
+
+        //region Composite Implementation
+        @Override
+        protected Object build() {
+            return QueryBuilders.matchPhraseQuery(this.getFieldName(), this.value);
+        }
+        //endregion
+
+        //region Properties
+        public Object getValue() {
+            return this.value;
+        }
+        //endregion
+
+        //region Fields
+        private Object value;
+        //endregion
+    }
+
+    public class QueryStringComposite extends FieldComposite {
+        //region Constructor
+        protected QueryStringComposite(String name, String fieldName, Object value, Composite parent) {
+            super(name, fieldName, Op.stringQuery, parent);
+            this.value = value;
+        }
+        //endregion
+
+        //region Composite Implementation
+        @Override
+        protected Object build() {
+            QueryStringQueryBuilder queryBuilder = new QueryStringQueryBuilder(this.value.toString());
+            return queryBuilder.defaultField(this.getFieldName());
         }
         //endregion
 

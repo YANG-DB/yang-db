@@ -12,9 +12,9 @@ package org.unipop.process.predicate;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,14 +33,57 @@ import java.util.function.BiPredicate;
  * Created by sbarzilay on 12/15/15.
  */
 public class Text {
-    public static <V> P<V> like(final V value) { return new P(TextPredicate.LIKE, value); }
-    public static <V> P<V> unlike(final V value) { return new P(TextPredicate.UNLIKE, value); }
-    public static <V> P<V> regexp(final V value) { return new P(TextPredicate.REGEXP, value); }
-    public static <V> P<V> unregexp(final V value) { return new P(TextPredicate.UNREGEXP, value); }
-    public static <V> P<V> fuzzy(final V value) { return new P(TextPredicate.FUZZY, value); }
-    public static <V> P<V> unfuzzy(final V value) { return new P(TextPredicate.UNFUZZY, value); }
-    public static <V> P<V> prefix(final V value) { return new P(TextPredicate.PREFIX, value); }
-    public static <V> P<V> unprefix(final V value) { return new P(TextPredicate.UNPREFIX, value); }
+    public static <V> P<V> queryString(final V value) {
+        return new P(TextPredicate.QUERY_STRING, value);
+    }
+
+    public static <V> P<V> like(final V value) {
+        return new P(TextPredicate.LIKE, value);
+    }
+
+    public static <V> P<V> match(final V value) {
+        return new P(TextPredicate.MATCH, value);
+    }
+
+    public static <V> P<V> matchPhrase(final V value) {
+        return new P(TextPredicate.MATCH, value);
+    }
+
+    public static <V> P<V> unmatchPhrase(final V value) {
+        return new P(TextPredicate.UNMATCH_PHRASE, value);
+    }
+
+    public static <V> P<V> unmatch(final V value) {
+        return new P(TextPredicate.UNMATCH, value);
+    }
+
+    public static <V> P<V> unlike(final V value) {
+        return new P(TextPredicate.UNLIKE, value);
+    }
+
+    public static <V> P<V> regexp(final V value) {
+        return new P(TextPredicate.REGEXP, value);
+    }
+
+    public static <V> P<V> unregexp(final V value) {
+        return new P(TextPredicate.UNREGEXP, value);
+    }
+
+    public static <V> P<V> fuzzy(final V value) {
+        return new P(TextPredicate.FUZZY, value);
+    }
+
+    public static <V> P<V> unfuzzy(final V value) {
+        return new P(TextPredicate.UNFUZZY, value);
+    }
+
+    public static <V> P<V> prefix(final V value) {
+        return new P(TextPredicate.PREFIX, value);
+    }
+
+    public static <V> P<V> unprefix(final V value) {
+        return new P(TextPredicate.UNPREFIX, value);
+    }
 
     public enum TextPredicate implements BiPredicate<Object, Object> {
         PREFIX {
@@ -83,6 +126,62 @@ public class Text {
             @Override
             public TextPredicate negate() {
                 return UNLIKE;
+            }
+        },
+        MATCH {
+            @Override
+            public boolean test(final Object first, final Object second) {
+                return first.toString().matches(second.toString().replace("?", ".?").replace("*", ".*?"));
+            }
+
+            /**
+             * The negative of {@code MATCH} is {@link #UNMATCH}.
+             */
+            @Override
+            public TextPredicate negate() {
+                return UNMATCH;
+            }
+        },
+        MATCH_PHRASE {
+            @Override
+            public boolean test(final Object first, final Object second) {
+                return first.toString().matches(second.toString().replace("?", ".?").replace("*", ".*?"));
+            }
+
+            /**
+             * The negative of {@code MATCH_PHRASE} is {@link #UNMATCH_PHRASE}.
+             */
+            @Override
+            public TextPredicate negate() {
+                return UNMATCH_PHRASE;
+            }
+        },
+        UNMATCH {
+            @Override
+            public boolean test(final Object first, final Object second) {
+                return !negate().test(first, second);
+            }
+
+            /**
+             * The negative of {@code UNMATCH} is {@link #MATCH}.
+             */
+            @Override
+            public TextPredicate negate() {
+                return MATCH;
+            }
+        },
+        UNMATCH_PHRASE {
+            @Override
+            public boolean test(final Object first, final Object second) {
+                return !negate().test(first, second);
+            }
+
+            /**
+             * The negative of {@code UNMATCH_PHRASE} is {@link #MATCH_PHRASE}.
+             */
+            @Override
+            public TextPredicate negate() {
+                return UNMATCH_PHRASE;
             }
         },
         UNLIKE {
@@ -157,6 +256,34 @@ public class Text {
             public TextPredicate negate() {
                 return FUZZY;
             }
-        };
+        },
+        QUERY_STRING {
+            @Override
+            public boolean test(final Object first, final Object second) {
+                return first.toString().matches(second.toString().replace("?", ".?").replace("*", ".*?"));
+            }
+
+            /**
+             * The negative of {@code QUERY_STRING} is {@link #UN_QUERY_STRING}.
+             */
+            @Override
+            public TextPredicate negate() {
+                return UN_QUERY_STRING;
+            }
+        },
+        UN_QUERY_STRING {
+            @Override
+            public boolean test(final Object first, final Object second) {
+                return !negate().test(first, second);
+            }
+
+            /**
+             * The negative of {@code UN_QUERY_STRING} is {@link #QUERY_STRING}.
+             */
+            @Override
+            public TextPredicate negate() {
+                return QUERY_STRING;
+            }
+        }
     }
 }

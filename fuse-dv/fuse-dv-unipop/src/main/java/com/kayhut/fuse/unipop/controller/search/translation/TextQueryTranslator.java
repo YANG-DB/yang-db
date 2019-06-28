@@ -77,6 +77,41 @@ public class TextQueryTranslator implements PredicateQueryTranslator {
                     queryBuilder.push().wildcard(key, predicate.getValue().toString()).pop();
                 }
                 break;
+
+            case MATCH:
+                if (Iterable.class.isAssignableFrom(predicate.getValue().getClass())) {
+                    queryBuilder.push().bool().should();
+                    // ((Iterable)predicate.getValue()).forEach(likeValue -> queryBuilder.push().wildcardScript(key, likeValue.toString()).pop());// - ES 5 wildcard script
+                    ((Iterable)predicate.getValue()).forEach(likeValue -> queryBuilder.push().match(key, likeValue.toString()).pop());
+                    queryBuilder.pop();
+                } else {
+                    //queryBuilder.push().wildcardScript(key, predicate.getValue().toString()).pop(); // - ES 5 wildcard script
+                    queryBuilder.push().match(key, predicate.getValue().toString()).pop();
+                }
+                break;
+            case MATCH_PHRASE:
+                if (Iterable.class.isAssignableFrom(predicate.getValue().getClass())) {
+                    queryBuilder.push().bool().should();
+                    // ((Iterable)predicate.getValue()).forEach(likeValue -> queryBuilder.push().wildcardScript(key, likeValue.toString()).pop());// - ES 5 wildcard script
+                    ((Iterable)predicate.getValue()).forEach(likeValue -> queryBuilder.push().matchPhrase(key, likeValue.toString()).pop());
+                    queryBuilder.pop();
+                } else {
+                    //queryBuilder.push().wildcardScript(key, predicate.getValue().toString()).pop(); // - ES 5 wildcard script
+                    queryBuilder.push().matchPhrase(key, predicate.getValue().toString()).pop();
+                }
+                break;
+
+                case QUERY_STRING:
+                if (Iterable.class.isAssignableFrom(predicate.getValue().getClass())) {
+                    queryBuilder.push().bool().should();
+                    // ((Iterable)predicate.getValue()).forEach(likeValue -> queryBuilder.push().wildcardScript(key, likeValue.toString()).pop());// - ES 5 wildcard script
+                    ((Iterable)predicate.getValue()).forEach(likeValue -> queryBuilder.push().queryString(key, likeValue.toString()).pop());
+                    queryBuilder.pop();
+                } else {
+                    //queryBuilder.push().wildcardScript(key, predicate.getValue().toString()).pop(); // - ES 5 wildcard script
+                    queryBuilder.push().queryString(key, predicate.getValue().toString()).pop();
+                }
+                break;
         }
 
         return queryBuilder;

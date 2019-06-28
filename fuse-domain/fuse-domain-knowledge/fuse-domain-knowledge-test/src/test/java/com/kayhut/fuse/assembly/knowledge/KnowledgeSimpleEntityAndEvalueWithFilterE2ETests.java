@@ -15,10 +15,8 @@ import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.results.*;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -47,7 +45,7 @@ public class KnowledgeSimpleEntityAndEvalueWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false,true);
+        Setup.setup(true,true);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -63,14 +61,14 @@ public class KnowledgeSimpleEntityAndEvalueWithFilterE2ETests {
         v1 = _v(ctx.nextValueId()).field("Car sale").value("Chevrolet").bdt("identifier").ctx("sale")
                 .creationUser("kobi Shaul").lastUpdateUser("Dudu peretz").creationTime(sdf.parse("2018-07-12 09:01:03.763"))
                 .deleteTime(sdf.parse("2017-10-10 09:09:09.090"));
-        v2 = _v(ctx.nextValueId()).field("garage").value("Zion and his sons").bdt("identifier").ctx("fixing cars")
+        v2 = _v(ctx.nextValueId()).field("garage").value("Zion with his sons").bdt("identifier").ctx("fixing cars")
                 .creationUser("kobi Shaul").lastUpdateUser("Dudu Peretz").creationTime(new Date(System.currentTimeMillis()));
         v3 = _v(ctx.nextValueId()).field("Car sales").value("chevrolet").bdt("California").ctx("Sale cars")
                 .creationUser("Kobi Peretz").lastUpdateUser("Dudu Shaul").creationTime(new Date(System.currentTimeMillis()));
         v4 = _v(ctx.nextValueId()).field("Garage").value(322).bdt("Netanya").ctx("fixing cars").creationUser("Haim Melamed")
                 .lastUpdateUser("haim Melamed").creationTime(sdf.parse("2018-04-17 13:05:13.098"))
                 .lastUpdateTime(sdf.parse("2018-04-17 23:59:58.987"));
-        v5 = _v(ctx.nextValueId()).field("Color").value("White").bdt("Identifier").ctx("colors")
+        v5 = _v(ctx.nextValueId()).field("Color").value("White & wtf Black ").bdt("Identifier").ctx("colors")
                 .creationUser("Haim Melamed").creationTime(sdf.parse("2016-09-02 19:45:23.123"))
                 .lastUpdateUser("haim Melamed").deleteTime(sdf.parse("2017-12-12 01:00:00.000"));
         v6 = _v(ctx.nextValueId()).field("date meeting").value(sdf.parse("2015-02-03 14:04:33.125")).bdt("Car owners meeting")
@@ -79,7 +77,7 @@ public class KnowledgeSimpleEntityAndEvalueWithFilterE2ETests {
         v7 = _v(ctx.nextValueId()).field("North Garages").value(222).bdt("North").ctx("North country")
                 .creationUser("Gabi Levy").lastUpdateUser("Gabi Levy").creationTime(sdf.parse("2014-08-18 18:08:18.888"))
                 .lastUpdateTime(sdf.parse("2018-05-07 03:51:52.387"));
-        v8 = _v(ctx.nextValueId()).field("North Garages").value(sdf.parse("2013-01-01 11:01:31.121")).bdt("Car owners meeting")
+        v8 = _v(ctx.nextValueId()).field("North Garages").value("Black, what is you color ? white ?").bdt("Car owners meeting")
                 .ctx("changing information").creationUser("Yaaaaaariv").lastUpdateUser("Yael Biniamin")
                 .creationTime(sdf.parse("2017-07-07 17:47:27.727")).deleteTime(sdf.parse("2017-10-10 09:09:09.090"));
         v9 = _v(ctx.nextValueId()).field("North Garages").value(999).bdt("North").ctx("North country")
@@ -432,6 +430,166 @@ public class KnowledgeSimpleEntityAndEvalueWithFilterE2ETests {
                         .withRelationships(e4.withRelations("hasEvalue", v8.id()))
                         .withRelationships(e4.withRelations("hasEvalue", v9.id()))
                         .withRelationships(e4.withRelations("hasEvalue", v10.id()))
+                        .build())
+                .build();
+
+        // Check if expected results and actual results are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
+
+    @Test
+    public void testMatchEntityEvalueStringValue() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Entity", 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(5), 0),
+                        new Rel(5, "hasEvalue", R, null, 6, 0),
+                        new ETyped(6, "V", "Evalue", 7, 0),
+                        new EProp(7, "stringValue", Constraint.of(ConstraintOp.match, "White Black"))
+
+                        )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e2.toEntity())
+                        .withEntity(e4.toEntity())
+                        .withEntity(v5.toEntity())
+                        .withEntity(v8.toEntity())
+                        .withRelationships(e2.withRelations("hasEvalue", v5.id()))
+                        .withRelationships(e4.withRelations("hasEvalue", v8.id()))
+                        .build())
+                .build();
+
+        // Check if expected results and actual results are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
+
+    @Test
+    public void testQueryFuzzyEntityEvalueStringValue() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Entity", 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(5), 0),
+                        new Rel(5, "hasEvalue", R, null, 6, 0),
+                        new ETyped(6, "V", "Evalue", 7, 0),
+                        new EProp(7, "stringValue", Constraint.of(ConstraintOp.query_string, "Whit~ Blac~" ))
+
+                        )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e1.toEntity())
+                        .withEntity(e2.toEntity())
+                        .withEntity(e4.toEntity())
+                        .withEntity(v2.toEntity())
+                        .withEntity(v5.toEntity())
+                        .withEntity(v8.toEntity())
+                        .withRelationships(e1.withRelations("hasEvalue", v2.id()))
+                        .withRelationships(e2.withRelations("hasEvalue", v5.id()))
+                        .withRelationships(e4.withRelations("hasEvalue", v8.id()))
+                        .build())
+                .build();
+
+        // Check if expected results and actual results are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
+
+    @Test
+    @Ignore("todo fix expression for proximity")
+    public void testQueryProximityEntityEvalueStringValue() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Entity", 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(5), 0),
+                        new Rel(5, "hasEvalue", R, null, 6, 0),
+                        new ETyped(6, "V", "Evalue", 7, 0),
+                        new EProp(7, "stringValue", Constraint.of(ConstraintOp.query_string, "\"White Black\"~5" ))
+
+                        )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e2.toEntity())
+                        .withEntity(e4.toEntity())
+                        .withEntity(v5.toEntity())
+                        .withEntity(v8.toEntity())
+                        .withRelationships(e2.withRelations("hasEvalue", v5.id()))
+                        .withRelationships(e4.withRelations("hasEvalue", v8.id()))
+                        .build())
+                .build();
+
+        // Check if expected results and actual results are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
+
+
+    @Test
+    public void testQueryLuceneOrEntityEvalueStringValue() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Entity", 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(5), 0),
+                        new Rel(5, "hasEvalue", R, null, 6, 0),
+                        new ETyped(6, "V", "Evalue", 7, 0),
+                        new EProp(7, "stringValue", Constraint.of(ConstraintOp.query_string, "(White OR color) AND (Black)" ))
+
+                        )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e2.toEntity())
+                        .withEntity(e4.toEntity())
+                        .withEntity(v5.toEntity())
+                        .withEntity(v8.toEntity())
+                        .withRelationships(e2.withRelations("hasEvalue", v5.id()))
+                        .withRelationships(e4.withRelations("hasEvalue", v8.id()))
+                        .build())
+                .build();
+
+        // Check if expected results and actual results are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
+
+    @Test
+    public void testQueryMatchPhraseEntityEvalueStringValue() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Entity", 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(5), 0),
+                        new Rel(5, "hasEvalue", R, null, 6, 0),
+                        new ETyped(6, "V", "Evalue", 7, 0),
+                        new EProp(7, "stringValue", Constraint.of(ConstraintOp.match_phrase, "black and white" ))
+
+                        )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e2.toEntity())
+                        .withEntity(e4.toEntity())
+                        .withEntity(v5.toEntity())
+                        .withEntity(v8.toEntity())
+                        .withRelationships(e2.withRelations("hasEvalue", v5.id()))
+                        .withRelationships(e4.withRelations("hasEvalue", v8.id()))
                         .build())
                 .build();
 

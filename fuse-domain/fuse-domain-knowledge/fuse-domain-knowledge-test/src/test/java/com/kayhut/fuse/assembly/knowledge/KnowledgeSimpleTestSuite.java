@@ -14,6 +14,7 @@ import org.junit.runners.Suite;
         //KnowledgeSimpleEntityWithRelationTests.class,
         //KnowledgeSimpleEntityWithFilterTests.class,
         //KnowledgeSimpleCdrWithCypherQueryTests.class,
+        KnowledgeEntityAndRelationWithCalculatedFieldTests.class,
         KnowledgeSimpleEntityWithFilterE2ETests.class,
         KnowledgeInnerQueryE2ETests.class,
         KnowledgeSimpleEfileWithFilterE2ETests.class,
