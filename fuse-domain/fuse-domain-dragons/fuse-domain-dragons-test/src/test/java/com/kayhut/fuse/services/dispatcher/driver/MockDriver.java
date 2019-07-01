@@ -20,7 +20,6 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,7 +37,7 @@ public class MockDriver {
                 QueryValidator<AsgQuery> queryValidator,
                 ResourceStore resourceStore,
                 AppUrlSupplier urlSupplier) {
-            super(cursorDriver, pageDriver, queryTransformer,queryJasonTransformer, queryValidator, resourceStore, urlSupplier);
+            super(cursorDriver, pageDriver, queryTransformer, queryJasonTransformer, queryValidator, resourceStore, urlSupplier);
         }
         //endregion
 
@@ -78,8 +77,10 @@ public class MockDriver {
     public static class Cursor extends CursorDriverBase {
         //region Constructors
         @Inject
-        public Cursor(ResourceStore resourceStore, AppUrlSupplier urlSupplier, CursorFactory cursorFactory) {
+        public Cursor(ResourceStore resourceStore, PageDriver pageDriver,
+                      AppUrlSupplier urlSupplier, CursorFactory cursorFactory) {
             super(resourceStore, urlSupplier);
+            this.pageDriver = pageDriver;
             this.cursorFactory = cursorFactory;
         }
         //endregion
@@ -99,6 +100,7 @@ public class MockDriver {
 
         //region Fields
         private CursorFactory cursorFactory;
+
 
         @Override
         public Optional<GraphTraversal> traversal(PlanWithCost plan, String ontology) {

@@ -126,7 +126,8 @@ public abstract class PageDriverBase implements PageDriver {
                 pageResource.get().getRequestedSize(),
                 pageResource.get().getActualSize(),
                 pageResource.get().getExecutionTime(),
-                pageResource.get().isAvailable()));
+                pageResource.get().isAvailable(),
+                pageResource.get().getData()));
     }
 
     @Override

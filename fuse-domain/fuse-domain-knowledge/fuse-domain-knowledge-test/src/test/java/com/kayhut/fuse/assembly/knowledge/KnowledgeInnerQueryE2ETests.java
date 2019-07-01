@@ -1,6 +1,8 @@
 package com.kayhut.fuse.assembly.knowledge;
 
 import com.kayhut.fuse.assembly.knowledge.domain.*;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
+import com.kayhut.fuse.model.query.ParameterizedQuery;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -380,7 +382,13 @@ public class KnowledgeInnerQueryE2ETests {
         QueryResourceInfo graphResourceInfo = query(fuseClient, fuseResourceInfo,
                 new CreateQueryRequest("q1", "q1", queryOuter, new CreateGraphCursorRequest(new CreatePageRequest(100))));
 
-
+        ParameterizedQuery query = (ParameterizedQuery) fuseClient.getQuery(graphResourceInfo.getV1QueryUrl(), ParameterizedQuery.class);
+        Assert.assertEquals("[└── Start, \n" +
+                        "    ──Typ[Entity:1]──Q[2]:{3|4}, \n" +
+                        "                           └─?[3]:[category<eq,opel>], \n" +
+                        "                           └-> Rel(hasEvalue:4)──Typ[Evalue:5]──?[6]:[id<eq,null>]]",
+                QueryDescriptor.print(query));
+        //region assert
         Assert.assertEquals("call[q1]", graphResourceInfo.getResourceId());
         Assert.assertNotNull(graphResourceInfo.getCursorStoreUrl());
         Assert.assertFalse(graphResourceInfo.getCursorResourceInfos().isEmpty());
@@ -414,6 +422,7 @@ public class KnowledgeInnerQueryE2ETests {
         Assert.assertEquals(2, ((List) ((Map) pathResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments")).size());
         Assert.assertEquals(2, ((List) ((Map) (((List) ((Map) pathResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
         Assert.assertEquals(2, ((List) ((Map) (((List) ((Map) pathResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(1)).get("entities")).size());
+        //endregion assert
 
     }
 

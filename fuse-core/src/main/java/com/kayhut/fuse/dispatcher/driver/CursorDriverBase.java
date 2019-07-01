@@ -34,6 +34,7 @@ import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateInnerQueryCursorRequest;
 import javaslang.collection.Stream;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -109,7 +110,12 @@ public abstract class CursorDriverBase implements CursorDriver {
                 urlSupplier.resourceUrl(queryId, cursorId),
                 cursorId,
                 cursorResource.get().getCursorRequest(),
-                urlSupplier.pageStoreUrl(queryId, cursorId)));
+                urlSupplier.pageStoreUrl(queryId, cursorId),
+                resourceStore.getPageResource(queryId,cursorId,cursorResource.get().getCurrentPageId()).isPresent() ?
+                        Collections.singletonList(
+                                pageDriver.getInfo(queryId,cursorId,cursorResource.get().getCurrentPageId()).get()) :
+                        Collections.EMPTY_LIST
+                ));
     }
 
 
@@ -132,6 +138,7 @@ public abstract class CursorDriverBase implements CursorDriver {
     //endregion
 
     //region Fields
+    protected PageDriver pageDriver;
     protected ResourceStore resourceStore;
     protected AppUrlSupplier urlSupplier;
     //endregion

@@ -59,6 +59,7 @@ import java.util.stream.Collectors;
 import static com.kayhut.fuse.model.Utils.getOrCreateId;
 import static com.kayhut.fuse.model.asgQuery.AsgCompositeQuery.hasInnerQuery;
 import static com.kayhut.fuse.model.asgQuery.AsgCompositeQuery.isComposite;
+import static java.util.Collections.EMPTY_LIST;
 
 /**
  * Created by Roman on 12/15/2017.
@@ -310,7 +311,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                     urlSupplier.resourceUrl(metadata.getId()),
                     metadata.getId(),
                     urlSupplier.cursorStoreUrl(metadata.getId()))
-                    .withInnerQueryResources(getQueryResourceInfos( innerQuery)));
+                    .withInnerQueryResources(getQueryResourceInfos(innerQuery)));
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(),
@@ -434,7 +435,12 @@ public abstract class QueryDriverBase implements QueryDriver {
 
         //handle parameterized query -> will eventually call this getQueryResourceInfo() method with the real parameterized concrete values
         Optional<QueryResourceInfo> resourceInfo = parameterizedQuery(request, queryResourceInfo);
-        if(resourceInfo.isPresent()) return resourceInfo;
+        if (resourceInfo.isPresent()) {
+            String innerQueryResourceId = queryResourceInfo.get().getInnerUrlResourceInfos().get(0).getResourceId();
+            Optional<QueryResourceInfo> info = getInfo(innerQueryResourceId);
+            resourceInfo.get().withInnerQueryResources(Collections.singletonList(info.get()));
+            return resourceInfo;
+        }
 
         return Optional.of(
                 new QueryResourceInfo(
@@ -448,7 +454,8 @@ public abstract class QueryDriverBase implements QueryDriver {
 
     /**
      * handle parameterized query ->
-     *  this will eventually call this create() method with the real parameterized concrete values
+     * this will eventually call this create() method with the real parameterized concrete values
+     *
      * @param request
      * @param queryResourceInfo
      * @return
@@ -456,7 +463,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     private Optional<QueryResourceInfo> parameterizedQuery(CreateQueryRequestMetadata request, Optional<QueryResourceInfo> queryResourceInfo) {
         if (queryResourceInfo.get().getType() == QueryMetadata.Type.parameterized) {
             Optional<QueryResourceInfo> resourceInfo = call(new ExecuteStoredQueryRequest(
-                    "call[" + request.getId()+"]",
+                    "call[" + request.getId() + "]",
                     request.getId(),
                     request.getCreateCursorRequest(),
                     extractInnerQueryParams(queryResourceInfo.get()),
@@ -538,22 +545,32 @@ public abstract class QueryDriverBase implements QueryDriver {
         }
 
         //composite query info
-        final List<QueryResourceInfo> collect = Stream.ofAll(queryResource.get().getInnerQueryResources())
+        QueryResource resource = queryResource.get();
+        final List<QueryResourceInfo> collect = Stream.ofAll(resource.getInnerQueryResources())
                 .map(qr ->
                         new QueryResourceInfo(
                                 qr.getQueryMetadata().getType(),
                                 urlSupplier.resourceUrl(
                                         qr.getQueryMetadata().getId()),
                                 qr.getQueryMetadata().getId(),
-                                urlSupplier.cursorStoreUrl(qr.getQueryMetadata().getId())))
+                                urlSupplier.cursorStoreUrl(qr.getQueryMetadata().getId()),
+                                //inner cursor resource
+                                cursorDriver.getInfo(qr.getQueryMetadata().getId(), qr.getCurrentCursorId()).isPresent() ?
+                                        Collections.singletonList(
+                                                cursorDriver.getInfo(qr.getQueryMetadata().getId(), qr.getCurrentCursorId()).get())
+                                        : EMPTY_LIST))
                 .toJavaList();
 
         QueryResourceInfo resourceInfo =
                 new QueryResourceInfo(
-                        queryResource.get().getQueryMetadata().getType(),
+                        resource.getQueryMetadata().getType(),
                         urlSupplier.resourceUrl(queryId),
                         queryId,
-                        urlSupplier.cursorStoreUrl(queryId))
+                        urlSupplier.cursorStoreUrl(queryId),
+                        cursorDriver.getInfo(resource.getQueryMetadata().getId(), resource.getCurrentCursorId()).isPresent() ?
+                                Collections.singletonList(
+                                        cursorDriver.getInfo(resource.getQueryMetadata().getId(),resource.getCurrentCursorId()).get())
+                                : EMPTY_LIST)
                         .withInnerQueryResources(collect);
         return Optional.of(resourceInfo);
     }

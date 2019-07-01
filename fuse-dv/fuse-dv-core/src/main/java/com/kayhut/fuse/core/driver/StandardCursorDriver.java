@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.driver.CursorDriverBase;
+import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.gta.PlanTraversalTranslator;
 import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
@@ -59,12 +60,14 @@ public class StandardCursorDriver extends CursorDriverBase {
     @Inject
     public StandardCursorDriver(
             ResourceStore resourceStore,
+            PageDriver pageDriver,
             OntologyProvider ontologyProvider,
             PlanTraversalTranslator planTraversalTranslator,
             CursorFactory cursorFactory,
             UniGraphProvider uniGraphProvider,
             AppUrlSupplier urlSupplier) {
         super(resourceStore, urlSupplier);
+        this.pageDriver = pageDriver;
         this.ontologyProvider = ontologyProvider;
         this.planTraversalTranslator = planTraversalTranslator;
         this.cursorFactory = cursorFactory;
