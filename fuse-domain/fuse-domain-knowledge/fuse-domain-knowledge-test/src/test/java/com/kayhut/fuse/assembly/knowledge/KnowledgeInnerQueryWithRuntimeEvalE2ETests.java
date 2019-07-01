@@ -9,28 +9,23 @@ import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.constraint.*;
-import com.kayhut.fuse.model.query.quant.Quant1;
-import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.kayhut.fuse.assembly.knowledge.Setup.*;
 import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.kayhut.fuse.assembly.knowledge.domain.EntityBuilder._e;
-import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
 import static com.kayhut.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
@@ -39,7 +34,6 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RvalueBuilder._r;
 import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.constraint.NamedParameter.$VAL;
-import static com.kayhut.fuse.model.query.properties.constraint.WhereByConstraint.of;
 
 
 public class KnowledgeInnerQueryWithRuntimeEvalE2ETests {
@@ -61,18 +55,21 @@ public class KnowledgeInnerQueryWithRuntimeEvalE2ETests {
         // Entities for tests
         e1 = _e(ctx.nextLogicalId()).cat("opel").ctx("context1").creationTime(sdf.parse("2018-01-28 14:33:53.567"))
                 .deleteTime(sdf.parse("2018-06-09 02:02:02.222"));
-        e2 = _e(ctx.nextLogicalId()).cat("opel").ctx("context2").lastUpdateTime(sdf.parse("2017-03-20 12:12:35.111"))
+        e2 = _e(ctx.nextLogicalId()).cat("opel").ctx("context2").creationTime(sdf.parse("1990-05-18 14:33:53.567"))
+                .lastUpdateTime(sdf.parse("2017-03-20 12:12:35.111"))
                 .deleteTime(sdf.parse("2018-07-09 02:02:02.222"));
-        e3 = _e(ctx.nextLogicalId()).cat("opel").ctx("context3").lastUpdateUser("Kobi Shaul")
+        e3 = _e(ctx.nextLogicalId()).cat("opel").ctx("context3").creationTime(sdf.parse("2009-05-18 14:33:53.567"))
+                .lastUpdateUser("Kobi Shaul")
                 .deleteTime(sdf.parse("2018-02-09 02:02:02.222"));
-        e4 = _e(e3.logicalId).cat("mazda").ctx("context1").creationUser("Dudi Frid")
+        e4 = _e(e3.logicalId).cat("mazda").ctx("context1").creationTime(sdf.parse("1980-01-10 14:33:53.567"))
+                .creationUser("Dudi Frid")
                 .deleteTime(sdf.parse("2016-08-09 02:02:02.222"));
         // Evalue entities for tests
         v1 = _v(ctx.nextValueId()).field("Car sale").value("Chevrolet").bdt("identifier").ctx("sale")
                 .creationUser("kobi Shaul").lastUpdateUser("Dudu peretz").creationTime(sdf.parse("2018-07-12 09:01:03.763"))
                 .deleteTime(sdf.parse("2017-10-10 09:09:09.090"));
         v2 = _v(ctx.nextValueId()).field("garage").value("Zion and his sons").bdt("identifier").ctx("fixing cars")
-                .creationUser("kobi Shaul").lastUpdateUser("Dudu Peretz").creationTime(new Date(System.currentTimeMillis()));
+                .creationUser("kobi Shaul").lastUpdateUser("Dudu Peretz").creationTime(sdf.parse("2013-07-12 09:01:03.763"));
         v3 = _v(ctx.nextValueId()).field("Car sales").value("chevrolet").bdt("California").ctx("Sale cars")
                 .creationUser("Kobi Peretz").lastUpdateUser("Dudu Shaul").creationTime(sdf.parse("2013-03-20 12:12:35.111"));
         v4 = _v(ctx.nextValueId()).field("Garage").value(322).bdt("Netanya").ctx("fixing cars").creationUser("Haim Melamed")
@@ -214,6 +211,33 @@ public class KnowledgeInnerQueryWithRuntimeEvalE2ETests {
         Assert.assertEquals(7, ((List) ((List<NamedParameter>) query.getParams()).get(0).getValue()).size());
         Assert.assertEquals(1, ((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments")).size());
         Assert.assertEquals(14, ((List) ((Map) (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
+
+
+        // return the relevant data
+    }
+    @Test
+    public void testWhereByQueryInRelativeDayRange() throws IOException, InterruptedException {
+        long day = (1000 * 60 * 60 *24);
+        Query q0 = Query.Builder.instance().withName("Query" + System.currentTimeMillis()).withOnt("Knowledge")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A1", "Entity", 2, 0),
+                        new Rel(2, "hasEvalue", R, null, 3, 0),
+                        new ETyped(3, "A2", "Evalue", 4, 0),
+                        new EProp(4, "creationTime", WhereByConstraint.of(ConstraintOp.inRange,
+                                new Object[]{String.format("%s.time - %d", $VAL, day/2), String.format("%s.time + %d  ", $VAL, day/2)},
+                                WhereByFacet.JoinType.FOR_EACH, "A1", "creationTime"))
+                )).build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo graphResourceInfo = query(fuseClient, fuseResourceInfo, new CreateQueryRequest("q0", "q0", q0, new CreateGraphCursorRequest(new CreatePageRequest(100))));
+        ParameterizedQuery query = (ParameterizedQuery) fuseClient.getQuery(graphResourceInfo.getV1QueryUrl(), ParameterizedQuery.class);
+        Assert.assertEquals("[└── Start, \n" +
+                        "    ──Typ[Entity:1]--> Rel(hasEvalue:2)──Typ[Evalue:3]──?[4]:[creationTime<inRange,[$val.time - 43200000, $val.time + 43200000  ]>]]",
+                QueryDescriptor.print(query));
+        Assert.assertEquals(4, ((List) ((List<NamedParameter>) query.getParams()).get(0).getValue()).size());
+        Assert.assertEquals(1, ((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments")).size());
+        Assert.assertEquals(0, (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).size());
 
 
         // return the relevant data

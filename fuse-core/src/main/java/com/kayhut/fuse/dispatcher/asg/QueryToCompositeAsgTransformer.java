@@ -97,7 +97,7 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
                 apply(innerAsgQuery, context);
             } else if (property.isPresent() && con instanceof WhereByConstraint) {
                 //split single query with where constraint into 2 queries
-                String tagToSplit = con.getExpr().toString();
+                String tagToSplit = ((WhereByFacet) con).getTagEntity();
                 Optional<AsgEBase<EBase>> asgEBase = AsgQueryUtil.getByTag(query.getStart(), tagToSplit);
 
                 //compose inner query

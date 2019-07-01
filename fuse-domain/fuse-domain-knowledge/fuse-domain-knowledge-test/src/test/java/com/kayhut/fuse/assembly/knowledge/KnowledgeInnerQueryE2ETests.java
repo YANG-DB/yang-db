@@ -11,6 +11,7 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.constraint.InnerQueryConstraint;
+import com.kayhut.fuse.model.query.properties.constraint.WhereByConstraint;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
@@ -40,7 +41,6 @@ import static com.kayhut.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 import static com.kayhut.fuse.assembly.knowledge.domain.RvalueBuilder._r;
 import static com.kayhut.fuse.assembly.knowledge.domain.ValueBuilder._v;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
-import static com.kayhut.fuse.model.query.properties.constraint.WhereByConstraint.of;
 
 
 public class KnowledgeInnerQueryE2ETests {
@@ -193,14 +193,14 @@ public class KnowledgeInnerQueryE2ETests {
                         new Start(0, 1),
                         new ETyped(1, "E1", "Entity", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(20, 3, 6), 0),
-                        new EProp(20, "category", of(ConstraintOp.eq, "mazda")),
+                        new EProp(20, "category", WhereByConstraint.of(ConstraintOp.eq, "mazda")),
                         new Rel(3, "hasEvalue", R, null, 4, 0),
                         new ETyped(4, "V1", "Evalue", 0, 0),
                         new Rel(6, "relatedEntity", R, null, 7, 0),
                         new ETyped(7, "E2", "Entity", 9, 0),
                         new Rel(9, "hasEvalue", R, null, 10, 0),
                         new ETyped(10, "V2", "Evalue", 11, 0),
-                        new EProp(11, "creationTime", of(ConstraintOp.gt, "V1", "creationTime"))
+                        new EProp(11, "creationTime", WhereByConstraint.of(ConstraintOp.gt, "V1", "creationTime"))
                 )).build();
 
 

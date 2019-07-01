@@ -23,19 +23,13 @@ package com.kayhut.fuse.asg.validation;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
-import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import com.kayhut.fuse.model.query.properties.constraint.InnerQueryConstraint;
-import com.kayhut.fuse.model.query.properties.constraint.WhereByConstraint;
 import com.kayhut.fuse.model.query.properties.constraint.WhereByFacet;
 import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 

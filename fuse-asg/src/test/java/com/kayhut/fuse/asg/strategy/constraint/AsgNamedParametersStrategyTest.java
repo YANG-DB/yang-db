@@ -16,10 +16,7 @@ import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
-import com.kayhut.fuse.model.query.properties.constraint.InnerQueryConstraint;
-import com.kayhut.fuse.model.query.properties.constraint.NamedParameter;
+import com.kayhut.fuse.model.query.properties.constraint.*;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.query.quant.QuantType;
@@ -35,7 +32,6 @@ import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
-import static com.kayhut.fuse.model.query.properties.constraint.WhereByConstraint.of;
 import static com.kayhut.fuse.model.query.quant.QuantType.some;
 
 public class AsgNamedParametersStrategyTest {
@@ -72,7 +68,7 @@ public class AsgNamedParametersStrategyTest {
                         new ETyped(7, "E2", OntologyTestUtils.DRAGON.name, 9, 0),
                         new Rel(9, FIRE.getrType() , R, null, 10, 0),
                         new ETyped(10, "V2", HORSE.type, 11, 0),
-                        new EProp(11,BIRTH_DATE.type, of(ConstraintOp.gt, "P1","creationTime"))
+                        new EProp(11,BIRTH_DATE.type, WhereByConstraint.of(ConstraintOp.gt, "P1","creationTime"))
                 )).build();
     }
 
@@ -83,14 +79,14 @@ public class AsgNamedParametersStrategyTest {
                         new Start(0, 1),
                         new ETyped(1, "P1", OntologyTestUtils.PERSON.type, 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(20, 3, 6), 0),
-                        new EProp(20, PERSON.name, of(ConstraintOp.contains, "Jimmy")),
+                        new EProp(20, PERSON.name, WhereByConstraint.of(ConstraintOp.contains, "Jimmy")),
                         new Rel(3, OWN.getrType(), R, null, 4, 0),
                         new ETyped(4, "V1", OntologyTestUtils.DRAGON.name, 0, 0),
                         new Rel(6, MEMBER_OF.getrType(), R, null, 7, 0),
                         new ETyped(7, "E2", OntologyTestUtils.DRAGON.name, 9, 0),
                         new Rel(9, FIRE.getrType() , R, null, 10, 0),
                         new ETyped(10, "V2", HORSE.type, 11, 0),
-                        new EProp(11,BIRTH_DATE.type, of(ConstraintOp.gt, "P1","creationTime"))
+                        new EProp(11,BIRTH_DATE.type, WhereByConstraint.of(ConstraintOp.gt, "P1","creationTime"))
                 )).build();
     }
 

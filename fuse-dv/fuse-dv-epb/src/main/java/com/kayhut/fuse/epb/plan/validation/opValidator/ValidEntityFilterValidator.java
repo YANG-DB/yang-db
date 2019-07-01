@@ -31,8 +31,8 @@ import com.kayhut.fuse.model.query.properties.BasePropGroup;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.WhereByConstraint;
+import com.kayhut.fuse.model.query.properties.constraint.WhereByFacet;
 import com.kayhut.fuse.model.validation.ValidationResult;
-import com.kayhut.fuse.unipop.controller.utils.ConversionUtil;
 import javaslang.collection.Stream;
 
 import java.util.Collection;
@@ -67,9 +67,9 @@ public class ValidEntityFilterValidator implements ChainedPlanValidator.PlanOpVa
                         .findAny();
 
                 if (whereClause.isPresent()) {
-                    WhereByConstraint constraint = (WhereByConstraint) whereClause.get().getCon();
+                    WhereByFacet constraint = (WhereByFacet) whereClause.get().getCon();
                     Optional<PlanOp> op = PlanUtil.first(compositePlanOp,
-                            planHasValidTagged(constraint.getExpr().toString()));
+                            planHasValidTagged(constraint.getTagEntity()));
                     if(op.isPresent())
                         return ValidationResult.OK;
                     //none valid plan
