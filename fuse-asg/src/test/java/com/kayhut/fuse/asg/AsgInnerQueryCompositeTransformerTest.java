@@ -318,6 +318,27 @@ public class AsgInnerQueryCompositeTransformerTest {
                 )).build();
     }
 
+    private Query Q7() {
+        return Query.Builder.instance().withName("q7").withOnt("Dragons")
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "P1", PERSON.type, 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(20, 3, 6), 0),
+                        new EProp(20, PERSON.name, WhereByConstraint.of(ConstraintOp.contains, "Jimmy")),
+                        new Rel(3, OWN.getrType(), R, null, 4, 0),
+                        new ETyped(4, "V1", OntologyTestUtils.DRAGON.name, 0, 0),
+                        new Rel(6, MEMBER_OF.getrType(), R, null, 7, 0),
+                        new ETyped(7, "E2", DRAGON.name, 8, 0),
+                        new Quant1(8, QuantType.all, Arrays.asList(9, 12), 0),
+                        new Rel(9, FIRE.getrType(), R, null, 10, 0),
+                        new ETyped(10, "V2", HORSE.type, 11, 0),
+                        new EProp(11, BIRTH_DATE.type, WhereByConstraint.of(ConstraintOp.gt, "P1", "creationTime")),
+                        new Rel(12, FREEZE.getrType(), R, null, 13, 0),
+                        new ETyped(13, "V3", DRAGON.type, 14, 0),
+                        new EProp(14, COLOR.type, WhereByConstraint.of(ConstraintOp.ne, "V1", "stringValue"))
+                )).build();
+    }
+
 
     //endregion
 
