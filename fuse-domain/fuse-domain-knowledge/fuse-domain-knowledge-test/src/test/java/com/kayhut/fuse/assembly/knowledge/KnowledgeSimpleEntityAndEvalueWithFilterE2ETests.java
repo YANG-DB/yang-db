@@ -503,7 +503,6 @@ public class KnowledgeSimpleEntityAndEvalueWithFilterE2ETests {
     }
 
     @Test
-    @Ignore("todo fix expression for proximity")
     public void testQueryProximityEntityEvalueStringValue() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -514,7 +513,7 @@ public class KnowledgeSimpleEntityAndEvalueWithFilterE2ETests {
                         new Quant1(2, QuantType.all, Arrays.asList(5), 0),
                         new Rel(5, "hasEvalue", R, null, 6, 0),
                         new ETyped(6, "V", "Evalue", 7, 0),
-                        new EProp(7, "stringValue", Constraint.of(ConstraintOp.query_string, "\"White Black\"~5" ))
+                        new EProp(7, "stringValue", Constraint.of(ConstraintOp.query_string, "White Black ~2" ))
 
                         )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
