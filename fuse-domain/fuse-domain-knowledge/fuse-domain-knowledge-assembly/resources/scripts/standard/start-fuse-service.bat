@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set mainClass=com.kayhut.fuse.services.FuseRunner
+set mainClass=com.yangdb.fuse.services.FuseRunner
 set configFile=config/application.conf
 set classPath=".;lib/*"
 set activeProfile=activeProfile

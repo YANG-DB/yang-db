@@ -78,7 +78,7 @@ if "%flavourName%"=="" (
     goto :help
 )
 
-set mainClass=com.kayhut.fuse.services.FuseRunner
+set mainClass=com.yangdb.fuse.services.FuseRunner
 set configFile=config/application.%flavourName%.conf
 set classPath=".;lib/*"
 

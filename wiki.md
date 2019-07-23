@@ -1,6 +1,6 @@
 ![](https://bytebucket.org/ravatar/%7Bfebcdb99-dbb1-4750-aeb9-f09a1be94b10%7D?ts=2032751)
 
->This project was kindly contributed back to the community by Kayhut.com
+>This project was kindly contributed back to the community by kayhut.com
 # Fuse
 Fuse is a graph query engine.
 It is based on elasticsearch as the physical graph storage layer and the tinkerpop graph traversing framework.

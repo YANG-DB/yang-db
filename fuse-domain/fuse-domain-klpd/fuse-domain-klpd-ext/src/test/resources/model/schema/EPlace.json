@@ -1,0 +1,223 @@
+[
+	{
+		"RecordName": "EPlace",
+		"DataUnits": [
+			{
+				"DataUnitName": "DUIRLinkedEntity",
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedEntity",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EBankAccount"
+							},
+							{
+								"Dictionary": "EGang"
+							},
+							{
+								"Dictionary": "ECheck"
+							},
+							{
+								"Dictionary": "EEvent"
+							},
+							{
+								"Dictionary": "ELegalOrganization"
+							},
+							{
+								"Dictionary": "ENonLegalOrganization"
+							},
+							{
+								"Dictionary": "EObservationReport"
+							},
+							{
+								"Dictionary": "EInterestGroup"
+							},
+							{
+								"Dictionary": "EPerson"
+							},
+							{
+								"Dictionary": "EPlace"
+							},
+							{
+								"Dictionary": "ETelephone"
+							},
+							{
+								"Dictionary": "EUMLStall"
+							},
+							{
+								"Dictionary": "EVehicle"
+							},
+							{
+								"Dictionary": "EVessel"
+							},
+							{
+								"Dictionary": "EInformationReport"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkDescription",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "linkedirtdic"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedIRT",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EInformationReport"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_Remarks",
+						"IsMultiple": false,
+						"FieldType": "String"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUPlaceMain",
+				"IsSingle": true,
+				"IsMandatory": true,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_Address",
+						"IsMultiple": false,
+						"FieldType": "Address"
+					},
+					{
+						"FieldName": "wit_refToRecord",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EPlace"
+							}
+						]
+					},
+					{
+						"FieldName": "Pos",
+						"IsMultiple": true,
+						"FieldType": "Location"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DURecordLink",
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_linkToRecord1",
+						"IsMultiple": false,
+						"FieldType": "RecordReference"
+					},
+					{
+						"FieldName": "wit_linkToRecord2",
+						"IsMultiple": false,
+						"FieldType": "RecordReference"
+					},
+					{
+						"FieldName": "wit_linkToRecordSourceDataUnit",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUResourceLibItemLinkedEntity",
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedEntity",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EBankAccount"
+							},
+							{
+								"Dictionary": "EGang"
+							},
+							{
+								"Dictionary": "ECheck"
+							},
+							{
+								"Dictionary": "EEvent"
+							},
+							{
+								"Dictionary": "ELegalOrganization"
+							},
+							{
+								"Dictionary": "ENonLegalOrganization"
+							},
+							{
+								"Dictionary": "EObservationReport"
+							},
+							{
+								"Dictionary": "EInterestGroup"
+							},
+							{
+								"Dictionary": "EPerson"
+							},
+							{
+								"Dictionary": "EPlace"
+							},
+							{
+								"Dictionary": "EICF"
+							},
+							{
+								"Dictionary": "ETelephone"
+							},
+							{
+								"Dictionary": "EUMLStall"
+							},
+							{
+								"Dictionary": "EVehicle"
+							},
+							{
+								"Dictionary": "EVessel"
+							},
+							{
+								"Dictionary": "EInformationReport"
+							},
+							{
+								"Dictionary": "EResourceLibraryItem"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkRemarks",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "500"
+					},
+					{
+						"FieldName": "wit_LinkedResourceLibrary",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EResourceLibraryItem"
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

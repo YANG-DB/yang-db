@@ -1,15 +1,15 @@
 package providers.test;
 
-import com.kayhut.fuse.unipop.schemaProviders.GraphLayoutProvider;
-import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
-import com.kayhut.test.data.DragonsOntologyGraphLayoutProviderFactory;
+import com.yangdb.fuse.unipop.schemaProviders.GraphLayoutProvider;
+import com.yangdb.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
+import com.yangdb.test.data.DragonsOntologyGraphLayoutProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Optional;
 
-import static com.kayhut.fuse.model.OntologyTestUtils.createDragonsOntologyLong;
+import static com.yangdb.fuse.model.OntologyTestUtils.createDragonsOntologyLong;
 
 /**
  * Created by lior.perry on 6/4/2017.

@@ -1,0 +1,1288 @@
+[
+	{
+		"RecordName": "EVehicle",
+		"DataUnits": [
+			{
+				"DataUnitName": "DUENP168Person",
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedENP168",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ENP168"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedPerson",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EPerson"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_PersonCategory",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "PersonCategory"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_TrafficPersonInvolvedType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "TrafficPersonInvolvedType"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_PersonID",
+						"IsMultiple": false
+					},
+					{
+						"FieldName": "wit_InjuryDegree",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "InjuryDegree"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedTelephone",
+						"IsMultiple": true,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ETelephone"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_RelatedVehicle",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EVehicle"
+							}
+						]
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUENP168Vehicle",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedENP168",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ENP168"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedVehicle",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EVehicle"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleKey",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "20"
+					},
+					{
+						"FieldName": "wit_VehicleType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "VehicleType"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleMake",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "VehicleMake"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleColor",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "20"
+					},
+					{
+						"FieldName": "wit_VehicleCondition",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "VehicleCondition"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_NoOfPassengers",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					},
+					{
+						"FieldName": "wit_RegistrationCountry",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "Countries"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleModel",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "40"
+					},
+					{
+						"FieldName": "wit_InsuranceCompany",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "InsuranceCompany"
+							}
+						]
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUIRLinkedEntity",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedEntity",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EBankAccount"
+							},
+							{
+								"Dictionary": "EGang"
+							},
+							{
+								"Dictionary": "ECheck"
+							},
+							{
+								"Dictionary": "EEvent"
+							},
+							{
+								"Dictionary": "ELegalOrganization"
+							},
+							{
+								"Dictionary": "ENonLegalOrganization"
+							},
+							{
+								"Dictionary": "EObservationReport"
+							},
+							{
+								"Dictionary": "EInterestGroup"
+							},
+							{
+								"Dictionary": "EPerson"
+							},
+							{
+								"Dictionary": "EPlace"
+							},
+							{
+								"Dictionary": "ETelephone"
+							},
+							{
+								"Dictionary": "EUMLStall"
+							},
+							{
+								"Dictionary": "EVehicle"
+							},
+							{
+								"Dictionary": "EVessel"
+							},
+							{
+								"Dictionary": "EInformationReport"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkDescription",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "linkedirtdic"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedIRT",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EInformationReport"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_Remarks",
+						"IsMultiple": false,
+						"FieldType": "String"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUObservationRptDetails",
+				"IsTemporal": true,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_ObservationReportNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "18"
+					},
+					{
+						"FieldName": "wit_ReferenceNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "15"
+					},
+					{
+						"FieldName": "wit_DateOfRequest",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_RequestedBy",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "66"
+					},
+					{
+						"FieldName": "wit_ProjectName",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "66"
+					},
+					{
+						"FieldName": "wit_LinkedPersonOfInterest",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EPerson"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedVehicleOfInterest",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EVehicle"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LocationOfInterest",
+						"IsMultiple": false,
+						"FieldType": "Address"
+					},
+					{
+						"FieldName": "wit_PreparedByBranch",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "BranchTeam"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_PreparedByTeam",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "BranchTeam"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_OperationDateRange",
+						"IsMultiple": false,
+						"FieldType": "DateRange"
+					},
+					{
+						"FieldName": "wit_ReportText",
+						"IsMultiple": false,
+						"FieldType": "RichTextField"
+					},
+					{
+						"FieldName": "wit_DateReportSubmitted",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_EnrichmentStatus",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "Status"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_refToRecord",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EObservationReport"
+							}
+						]
+					},
+					{
+						"FieldName": "Pos",
+						"IsMultiple": true,
+						"FieldType": "Location"
+					},
+					{
+						"FieldName": "wit_ExtractedEntitiesXML",
+						"IsMultiple": false,
+						"FieldType": "RichTextField"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUOverallRemarks",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"CanOverridePermissions": true,
+				"fields": [
+					{
+						"FieldName": "wit_OverallRemarks",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "1000"
+					},
+					{
+						"FieldName": "wit_InformationDateTime",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_refToRecord",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EUMLStall"
+							},
+							{
+								"Dictionary": "EInterestGroup"
+							},
+							{
+								"Dictionary": "EVessel"
+							},
+							{
+								"Dictionary": "EVehicle"
+							},
+							{
+								"Dictionary": "ETelephone"
+							},
+							{
+								"Dictionary": "EInformationReport"
+							},
+							{
+								"Dictionary": "EEvent"
+							},
+							{
+								"Dictionary": "EGang"
+							},
+							{
+								"Dictionary": "ENonLegalOrganization"
+							},
+							{
+								"Dictionary": "ELegalOrganization"
+							},
+							{
+								"Dictionary": "EBankAccount"
+							},
+							{
+								"Dictionary": "EProject"
+							},
+							{
+								"Dictionary": "ECheck"
+							},
+							{
+								"Dictionary": "ECriminalLaw"
+							}
+						]
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUPersonMissing",
+				"IsTemporal": true,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_DocNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "15"
+					},
+					{
+						"FieldName": "wit_LastSeenDateTime",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_LastSeenPlace",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "140"
+					},
+					{
+						"FieldName": "wit_LastLocationFound",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "140"
+					},
+					{
+						"FieldName": "wit_ProbableHaunt",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "128"
+					},
+					{
+						"FieldName": "wit_ReportingPlace",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "140"
+					},
+					{
+						"FieldName": "wit_CashCarried",
+						"IsMultiple": false,
+						"FieldType": "Decimal"
+					},
+					{
+						"FieldName": "wit_DocumentCarry",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "128"
+					},
+					{
+						"FieldName": "wit_PersonalProblem",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "128"
+					},
+					{
+						"FieldName": "wit_SchoolWork",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "128"
+					},
+					{
+						"FieldName": "wit_LeftWithLuggageIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_SearchMadeIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_NoOfTimesMissing",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					},
+					{
+						"FieldName": "wit_AttireWorn",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "128"
+					},
+					{
+						"FieldName": "wit_LinkedEvent",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EEvent"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleRegNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "15"
+					},
+					{
+						"FieldName": "wit_LinkedVehicle",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EVehicle"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleType",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "300"
+					},
+					{
+						"FieldName": "wit_VehicleMake",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "300"
+					},
+					{
+						"FieldName": "wit_VehicleModel",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "300"
+					},
+					{
+						"FieldName": "wit_VehicleColor",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "300"
+					},
+					{
+						"FieldName": "wit_VehicleFeatures",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "66"
+					},
+					{
+						"FieldName": "wit_FoundDateTime",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_FoundOrReturned",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "MissingPersonFoundOrReturned"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_MCYSReferredIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "mcys_ref_ind"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_MCYSReferredDateTime",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_FoundBy",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "66"
+					},
+					{
+						"FieldName": "wit_HospitalReferred",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "255"
+					},
+					{
+						"FieldName": "wit_HospitalReferredDateTime",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_MedicalExamIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_MedicalExamReason",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "128"
+					},
+					{
+						"FieldName": "wit_MedicalExamResults",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "255"
+					},
+					{
+						"FieldName": "wit_OffenceCommittedAgainstSubject",
+						"IsMultiple": false,
+						"FieldType": "Dictionary"
+					},
+					{
+						"FieldName": "wit_CauseOfAbsence",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "300"
+					},
+					{
+						"FieldName": "wit_MeanOfSubsistence",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "300"
+					},
+					{
+						"FieldName": "wit_MissingPersonRelatedPlace",
+						"IsMultiple": true
+					},
+					{
+						"FieldName": "wit_refToRecord",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EPerson"
+							}
+						]
+					},
+					{
+						"FieldName": "Pos",
+						"IsMultiple": true,
+						"FieldType": "Location"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DURecordLink",
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_linkToRecord1",
+						"IsMultiple": false,
+						"FieldType": "RecordReference"
+					},
+					{
+						"FieldName": "wit_linkToRecord2",
+						"IsMultiple": false,
+						"FieldType": "RecordReference"
+					},
+					{
+						"FieldName": "wit_linkToRecordSourceDataUnit",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUResourceLibItemLinkedEntity",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedEntity",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EBankAccount"
+							},
+							{
+								"Dictionary": "EGang"
+							},
+							{
+								"Dictionary": "ECheck"
+							},
+							{
+								"Dictionary": "EEvent"
+							},
+							{
+								"Dictionary": "ELegalOrganization"
+							},
+							{
+								"Dictionary": "ENonLegalOrganization"
+							},
+							{
+								"Dictionary": "EObservationReport"
+							},
+							{
+								"Dictionary": "EInterestGroup"
+							},
+							{
+								"Dictionary": "EPerson"
+							},
+							{
+								"Dictionary": "EPlace"
+							},
+							{
+								"Dictionary": "EICF"
+							},
+							{
+								"Dictionary": "ETelephone"
+							},
+							{
+								"Dictionary": "EUMLStall"
+							},
+							{
+								"Dictionary": "EVehicle"
+							},
+							{
+								"Dictionary": "EVessel"
+							},
+							{
+								"Dictionary": "EInformationReport"
+							},
+							{
+								"Dictionary": "EResourceLibraryItem"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkRemarks",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "500"
+					},
+					{
+						"FieldName": "wit_LinkedResourceLibrary",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EResourceLibraryItem"
+							}
+						]
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUVehicleDetails",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": true,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_RegistrationDate",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_LinkedVehicle",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EVehicle"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleSerialNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "38"
+					},
+					{
+						"FieldName": "wit_RegistrationCountry",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "Countries"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_ClassCode",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					},
+					{
+						"FieldName": "wit_ChasisNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "25"
+					},
+					{
+						"FieldName": "wit_EngineNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "25"
+					},
+					{
+						"FieldName": "wit_MotorNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "25"
+					},
+					{
+						"FieldName": "wit_VehicleMake",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "VehicleMake"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "VehicleType"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleModel",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "40"
+					},
+					{
+						"FieldName": "wit_LitreCapacity",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					},
+					{
+						"FieldName": "wit_BodyDesc",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "110"
+					},
+					{
+						"FieldName": "wit_SeatDesc",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "60"
+					},
+					{
+						"FieldName": "wit_SeatCapacity",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					},
+					{
+						"FieldName": "wit_TyreType",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "20"
+					},
+					{
+						"FieldName": "wit_NoOfTyre",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					},
+					{
+						"FieldName": "wit_ManufactureYear",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					},
+					{
+						"FieldName": "wit_WeekendVehicleIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_COEExpiryDate",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_RoadTaxExpiryDate",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_PrimaryColour",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "Colour"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_SecondaryColour",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "Colour"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleSystemUIDNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "20"
+					},
+					{
+						"FieldName": "wit_Value",
+						"IsMultiple": false,
+						"FieldType": "Decimal"
+					},
+					{
+						"FieldName": "wit_HirePurchaseIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_InstalmentPerMonth",
+						"IsMultiple": false,
+						"FieldType": "Decimal"
+					},
+					{
+						"FieldName": "wit_InsuranceCompany",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "66"
+					},
+					{
+						"FieldName": "wit_AmountInsured",
+						"IsMultiple": false,
+						"FieldType": "Decimal"
+					},
+					{
+						"FieldName": "wit_EngravedIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_AlarmIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_CentralLockIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_OwnerType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "OwnerTypeCode"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_OwnerName",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "66"
+					},
+					{
+						"FieldName": "wit_OwnerDirectorName",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "66"
+					},
+					{
+						"FieldName": "wit_TransferDate",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_LinkedOwnerLegalOrg",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ELegalOrganization"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedPerson",
+						"IsMultiple": true
+					},
+					{
+						"FieldName": "wit_Status",
+						"IsMultiple": true
+					},
+					{
+						"FieldName": "wit_DateOfRecovery",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_DivisionVehRecovery",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "DivisionCode"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleRecoveryStatus",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "VehicleRecoveryStatus"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_CostOfDamage",
+						"IsMultiple": false,
+						"FieldType": "Decimal"
+					},
+					{
+						"FieldName": "wit_DetailsOfDamage",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "300"
+					},
+					{
+						"FieldName": "wit_DamageRecoveryRemarks",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "301"
+					},
+					{
+						"FieldName": "wit_PlaceOfRecovery",
+						"IsMultiple": false,
+						"FieldType": "Address"
+					},
+					{
+						"FieldName": "wit_EventVehicleRelation",
+						"IsMultiple": false
+					},
+					{
+						"FieldName": "wit_LinkedCheck",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ECheck"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_DateChecked",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_PropertyID",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "100"
+					},
+					{
+						"FieldName": "wit_StolenIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_DamagedIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_StolenFromVehicleIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_RecoveredIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_InvolvedIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_UpdatedbyCRIMES",
+						"IsMultiple": false,
+						"FieldType": "Boolean"
+					},
+					{
+						"FieldName": "wit_UpdatedByUser",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "Pos",
+						"IsMultiple": true,
+						"FieldType": "Location"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUVehicleMain",
+				"IsSingle": true,
+				"IsMandatory": true,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_VehicleRegistrationNo",
+						"IsMultiple": false
+					},
+					{
+						"FieldName": "wit_FalseNoPlateIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_refToRecord",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EVehicle"
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

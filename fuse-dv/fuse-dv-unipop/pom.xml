@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>fuse-dv</artifactId>
-        <groupId>com.kayhut</groupId>
+        <groupId>com.yangdb</groupId>
         <version>0.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -19,19 +19,19 @@
     <dependencies>
         <!-- runtime -->
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-geojson</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>unipop-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-model</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-core</artifactId>
         </dependency>
         <dependency>
@@ -78,7 +78,7 @@
 
         <!-- tests-->
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-model</artifactId>
             <type>test-jar</type>
             <scope>test</scope>
@@ -99,7 +99,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-test-framework</artifactId>
             <scope>test</scope>
         </dependency>

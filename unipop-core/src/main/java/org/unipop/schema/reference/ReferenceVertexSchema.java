@@ -2,7 +2,7 @@ package org.unipop.schema.reference;
 
 /*-
  * #%L
- * ReferenceVertexSchema.java - unipop-core - kayhut - 2,016
+ * ReferenceVertexSchema.java - unipop-core - yangdb - 2,016
  * org.codehaus.mojo-license-maven-plugin-1.16
  * $Id$
  * $HeadURL$

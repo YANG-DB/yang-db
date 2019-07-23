@@ -1,11 +1,11 @@
 package providers.test;
 
-import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
-import com.kayhut.fuse.unipop.structure.ElementType;
-import com.kayhut.test.data.DragonsOntologyPhysicalIndexProviderFactory;
+import com.yangdb.fuse.unipop.schemaProviders.PhysicalIndexProvider;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
+import com.yangdb.fuse.unipop.structure.ElementType;
+import com.yangdb.test.data.DragonsOntologyPhysicalIndexProviderFactory;
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 
-import static com.kayhut.fuse.model.OntologyTestUtils.createDragonsOntologyLong;
+import static com.yangdb.fuse.model.OntologyTestUtils.createDragonsOntologyLong;
 
 /**
  * Created by lior.perry on 6/5/2017.

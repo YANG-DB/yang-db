@@ -24,19 +24,13 @@ import com.fuse.domain.knowledge.datagen.model.Einsight;
 import com.fuse.domain.knowledge.datagen.model.Entity;
 import com.fuse.domain.knowledge.datagen.model.Insight;
 import com.fuse.domain.knowledge.datagen.model.KnowledgeEntityBase;
-import com.kayhut.fuse.unipop.controller.search.DefaultSearchOrderProvider;
-import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
-import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * Created by Roman on 6/27/2018.

@@ -1,4 +1,4 @@
-package com.kayhut.es.plugins.script;
+package com.yangdb.es.plugins.script;
 
 import org.junit.Test;
 

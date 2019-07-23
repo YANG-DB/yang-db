@@ -20,21 +20,19 @@ package com.fuse.domain.knowledge.datagen;
  * #L%
  */
 
-import com.kayhut.fuse.unipop.controller.search.DefaultSearchOrderProvider;
-import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
-import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
+import com.yangdb.fuse.unipop.controller.search.DefaultSearchOrderProvider;
+import com.yangdb.fuse.unipop.controller.utils.CollectionUtil;
+import com.yangdb.fuse.unipop.converter.SearchHitScrollIterable;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.metrics.cardinality.Cardinality;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;

@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.kayhut</groupId>
+    <groupId>com.yangdb</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
     <version>0.5-SNAPSHOT</version>
@@ -28,7 +28,7 @@
         <developer>
             <id>fuse</id>
             <name>The fuse Team</name>
-            <organization>Kayhut.com</organization>
+            <organization>yangdb.com</organization>
         </developer>
     </developers>
 
@@ -51,7 +51,7 @@
         <version.minor>11</version.minor>
 
         <project.inceptionYear>2016</project.inceptionYear>
-        <project.organization.name>kayhut</project.organization.name>
+        <project.organization.name>yangdb</project.organization.name>
         <license.licenseName>apache_v2</license.licenseName>
         <!-- plugins -->
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
@@ -165,88 +165,88 @@
         <dependencies>
             <!-- fuse -->
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-model</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-asg</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-dv-epb</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-dv-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-dv-stat</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-dv-gta</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-dv-unipop</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-dv-asg</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-service</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>unipop-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-geojson</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-domain-knowledge-ext</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-domain-knowledge-tutorial</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-domain-knowledge-datagen</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-domain-knowledge-test</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
 <!--
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-domain-knowledge-poc</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
@@ -550,47 +550,47 @@
             <!-- test -->
             <!-- fuse -->
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-test-framework</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-model</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-dv-unipop</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-service</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-asg</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-domain-knowledge-test</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.kayhut</groupId>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-dv-core</artifactId>
                 <type>test-jar</type>
                 <version>${fuse.version}</version>

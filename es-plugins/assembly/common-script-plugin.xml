@@ -20,7 +20,7 @@
             <scope>runtime</scope>
             <useProjectArtifact>true</useProjectArtifact>
             <includes>
-                <include>com.kayhut</include>
+                <include>com.yangdb</include>
             </includes>
         </dependencySet>
     </dependencySets>

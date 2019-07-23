@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>fuse</artifactId>
-        <groupId>com.kayhut</groupId>
+        <groupId>com.yangdb</groupId>
         <version>0.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -40,11 +40,11 @@
             <artifactId>front-end-9.0</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-model</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-core</artifactId>
         </dependency>
         <dependency>
@@ -59,7 +59,7 @@
 
         <!-- test -->
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-model</artifactId>
             <type>test-jar</type>
             <scope>test</scope>

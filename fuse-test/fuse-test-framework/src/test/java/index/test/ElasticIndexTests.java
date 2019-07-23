@@ -1,8 +1,8 @@
 package index.test;
 
-import com.kayhut.fuse.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.fuse.test.framework.populator.ElasticDataPopulator;
-import com.kayhut.fuse.test.framework.providers.FileJsonDataProvider;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
+import com.yangdb.fuse.test.framework.providers.FileJsonDataProvider;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;

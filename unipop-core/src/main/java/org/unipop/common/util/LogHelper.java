@@ -2,7 +2,7 @@ package org.unipop.common.util;
 
 /*-
  * #%L
- * LogHelper.java - unipop-core - kayhut - 2,016
+ * LogHelper.java - unipop-core - yangdb - 2,016
  * org.codehaus.mojo-license-maven-plugin-1.16
  * $Id$
  * $HeadURL$

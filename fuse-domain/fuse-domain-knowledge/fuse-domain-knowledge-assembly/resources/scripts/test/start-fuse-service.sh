@@ -60,7 +60,7 @@ if [ "${flavourName}" = "" ]; then
     exit
 fi
 
-mainClass=com.kayhut.fuse.services.FuseRunner
+mainClass=com.yangdb.fuse.services.FuseRunner
 configFile=config/application.${flavourName}.conf
 vmArgs="-Xmx10g -Xms10g"
 classPath=".:lib/*"

@@ -1,0 +1,432 @@
+[
+	{
+		"RecordName": "ENP168",
+		"DataUnits": [
+			{
+				"DataUnitName": "DUENP168Person",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedENP168",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ENP168"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedPerson",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EPerson"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_PersonCategory",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "PersonCategory"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_TrafficPersonInvolvedType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "TrafficPersonInvolvedType"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_PersonID",
+						"IsMultiple": false
+					},
+					{
+						"FieldName": "wit_InjuryDegree",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "InjuryDegree"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedTelephone",
+						"IsMultiple": true,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ETelephone"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_RelatedVehicle",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EVehicle"
+							}
+						]
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUENP168Vehicle",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedENP168",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ENP168"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedVehicle",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EVehicle"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleKey",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "20"
+					},
+					{
+						"FieldName": "wit_VehicleType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "VehicleType"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleMake",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "VehicleMake"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleColor",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "20"
+					},
+					{
+						"FieldName": "wit_VehicleCondition",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "VehicleCondition"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_NoOfPassengers",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					},
+					{
+						"FieldName": "wit_RegistrationCountry",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "Countries"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_VehicleModel",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "40"
+					},
+					{
+						"FieldName": "wit_InsuranceCompany",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "InsuranceCompany"
+							}
+						]
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUNP168TrafficRpt",
+				"IsSingle": true,
+				"IsMandatory": false,
+				"IsTemporal": true,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_ReportNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "25"
+					},
+					{
+						"FieldName": "wit_VideFromReportNo",
+						"IsMultiple": true,
+						"FieldType": "String",
+						"Length": "25"
+					},
+					{
+						"FieldName": "wit_ReportDateTime",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_AccidentType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "AccidentType"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_AccidentClassification",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "AccidentClassification"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_DrinkDriveIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_AnyAmbulanceConveyedIndicator",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_NoofPedestrainsInjured",
+						"IsMultiple": false,
+						"FieldType": "Decimal"
+					},
+					{
+						"FieldName": "wit_CrossingUsed",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_BriefDetails",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "4000"
+					},
+					{
+						"FieldName": "wit_SketchPlan",
+						"IsMultiple": false,
+						"FieldType": "Attachment"
+					},
+					{
+						"FieldName": "wit_AccidentDateTime",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_AccidentLocation",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "IncidentLocation"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_RoadName1",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "70"
+					},
+					{
+						"FieldName": "wit_RoadName2",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "70"
+					},
+					{
+						"FieldName": "wit_AccidentLocationDescription",
+						"IsMultiple": false,
+						"FieldType": "Address"
+					},
+					{
+						"FieldName": "wit_LocationType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "LocationType"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_TrafficFlow",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "TrafficFlow"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_TrafficControl",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "TrafficControl"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_TrafficVolume",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "TrafficVolume"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_RoadSpeedLimit",
+						"IsMultiple": false,
+						"FieldType": "Decimal"
+					},
+					{
+						"FieldName": "wit_RoadSurface",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "RoadSurface"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_Weather",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "Weather"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_TypeOfCollision",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "TypeOfCollision"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_TrafficOffence",
+						"IsMultiple": true
+					},
+					{
+						"FieldName": "wit_refToRecord",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ENP168"
+							}
+						]
+					},
+					{
+						"FieldName": "Pos",
+						"IsMultiple": true,
+						"FieldType": "Location"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DURecordLink",
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_linkToRecord1",
+						"IsMultiple": false,
+						"FieldType": "RecordReference"
+					},
+					{
+						"FieldName": "wit_linkToRecord2",
+						"IsMultiple": false,
+						"FieldType": "RecordReference"
+					},
+					{
+						"FieldName": "wit_linkToRecordSourceDataUnit",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					}
+				]
+			}
+		]
+	}
+]

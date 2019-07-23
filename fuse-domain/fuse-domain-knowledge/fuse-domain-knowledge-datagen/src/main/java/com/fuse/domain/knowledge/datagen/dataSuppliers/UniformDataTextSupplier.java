@@ -20,14 +20,12 @@ package com.fuse.domain.knowledge.datagen.dataSuppliers;
  * #L%
  */
 
-import com.kayhut.fuse.unipop.controller.search.DefaultSearchOrderProvider;
-import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
+import com.yangdb.fuse.unipop.controller.search.DefaultSearchOrderProvider;
+import com.yangdb.fuse.unipop.converter.SearchHitScrollIterable;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

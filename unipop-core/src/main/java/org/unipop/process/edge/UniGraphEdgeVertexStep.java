@@ -2,7 +2,7 @@ package org.unipop.process.edge;
 
 /*-
  * #%L
- * UniGraphEdgeVertexStep.java - unipop-core - kayhut - 2,016
+ * UniGraphEdgeVertexStep.java - unipop-core - yangdb - 2,016
  * org.codehaus.mojo-license-maven-plugin-1.16
  * $Id$
  * $HeadURL$

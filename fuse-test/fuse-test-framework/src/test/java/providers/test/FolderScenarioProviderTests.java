@@ -1,6 +1,6 @@
 package providers.test;
 
-import com.kayhut.fuse.test.framework.providers.FileJsonDataProvider;
+import com.yangdb.fuse.test.framework.providers.FileJsonDataProvider;
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Test;

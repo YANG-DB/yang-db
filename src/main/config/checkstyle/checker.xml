@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 /*
- * Licensed to the Kayhut.com under one or more contributor license agreements.
+ * Licensed to the yangdb.com under one or more contributor license agreements.
  * See the NOTICE file distributed with
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -117,7 +117,7 @@
     <module name="IllegalImport" />
     <module name="AvoidStarImport" />
     <module name="ImportOrder">
-      <property name="groups" value="org.kayhut.fuse,org.apache,au.com.,com.,io.,mondrian.,net.,org.,scala.,/^javax?\./"/>
+      <property name="groups" value="org.yangdb.fuse,org.apache,au.com.,com.,io.,mondrian.,net.,org.,scala.,/^javax?\./"/>
       <property name="ordered" value="true"/>
       <property name="separated" value="true"/>
       <property name="option" value="bottom"/>

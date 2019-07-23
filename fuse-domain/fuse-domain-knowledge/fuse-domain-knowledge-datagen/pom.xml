@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>fuse-domain-knowledge</artifactId>
-        <groupId>com.kayhut</groupId>
+        <groupId>com.yangdb</groupId>
         <version>0.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -29,7 +29,7 @@
             <artifactId>transport</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-dv-unipop</artifactId>
         </dependency>
     </dependencies>

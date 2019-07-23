@@ -1,0 +1,858 @@
+[
+	{
+		"RecordName": "EObservationReport",
+		"DataUnits": [
+			{
+				"DataUnitName": "DUContactNote",
+				"IsTemporal": true,
+				"IsIndexed": true,
+				"CanOverridePermissions": true,
+				"fields": [
+					{
+						"FieldName": "wit_SourceAgentCode",
+						"IsMultiple": false,
+						"FieldType": "String"
+					},
+					{
+						"FieldName": "wit_ContactNoteNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "30"
+					},
+					{
+						"FieldName": "wit_ContactNoteRegistrationNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "30"
+					},
+					{
+						"FieldName": "wit_ContactNoteDate",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_EvaluationOfSource",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "GradingOfSource"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_EvaluationOfContent",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "EvaluationofContent"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_ReportingOfficer",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "User"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_Designation",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "UserDesignation"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_Date",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_Place",
+						"IsMultiple": false,
+						"FieldType": "Address"
+					},
+					{
+						"FieldName": "wit_TimeStarted",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_TimeEnded",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_IntelligenceGathered",
+						"IsMultiple": false,
+						"FieldType": "RichTextField"
+					},
+					{
+						"FieldName": "wit_TaskingOfSource",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "500"
+					},
+					{
+						"FieldName": "wit_MotivationAndWelfareRequests",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "500"
+					},
+					{
+						"FieldName": "wit_IsAnyPaymentToSource",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_Payments",
+						"IsMultiple": true
+					},
+					{
+						"FieldName": "wit_ExpensesIncurred",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "100"
+					},
+					{
+						"FieldName": "wit_CommentsByImmediateSupervisor",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "500"
+					},
+					{
+						"FieldName": "wit_CommentsBySeniorHeadIntelSupervisor",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "500"
+					},
+					{
+						"FieldName": "wit_AcknowledgementBySHO",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "50"
+					},
+					{
+						"FieldName": "wit_FollowUpActionsBySHO",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "500"
+					},
+					{
+						"FieldName": "wit_DateSubmitted",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_ContactMode",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "ContactMode"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinktoIRT",
+						"IsMultiple": true,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EInformationReport"
+							},
+							{
+								"Dictionary": "EObservationReport"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_ToSubmit",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "YesNo"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinktoDailyContact",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EDailyContactSchedule"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_Codename",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "66"
+					},
+					{
+						"FieldName": "wit_refToRecord",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ESource"
+							}
+						]
+					},
+					{
+						"FieldName": "Pos",
+						"IsMultiple": true,
+						"FieldType": "Location"
+					},
+					{
+						"FieldName": "wit_ExtractedEntitiesXML",
+						"IsMultiple": false,
+						"FieldType": "RichTextField"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUIRLinkedEntity",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedEntity",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EBankAccount"
+							},
+							{
+								"Dictionary": "EGang"
+							},
+							{
+								"Dictionary": "ECheck"
+							},
+							{
+								"Dictionary": "EEvent"
+							},
+							{
+								"Dictionary": "ELegalOrganization"
+							},
+							{
+								"Dictionary": "ENonLegalOrganization"
+							},
+							{
+								"Dictionary": "EObservationReport"
+							},
+							{
+								"Dictionary": "EInterestGroup"
+							},
+							{
+								"Dictionary": "EPerson"
+							},
+							{
+								"Dictionary": "EPlace"
+							},
+							{
+								"Dictionary": "ETelephone"
+							},
+							{
+								"Dictionary": "EUMLStall"
+							},
+							{
+								"Dictionary": "EVehicle"
+							},
+							{
+								"Dictionary": "EVessel"
+							},
+							{
+								"Dictionary": "EInformationReport"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkDescription",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "linkedirtdic"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedIRT",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EInformationReport"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_Remarks",
+						"IsMultiple": false,
+						"FieldType": "String"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUMinuting",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"CanOverridePermissions": true,
+				"fields": [
+					{
+						"FieldName": "wit_SN",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					},
+					{
+						"FieldName": "wit_Content",
+						"IsMultiple": false,
+						"FieldType": "RichTextField"
+					},
+					{
+						"FieldName": "wit_To",
+						"IsMultiple": true,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "User"
+							},
+							{
+								"Dictionary": "EDistributionList"
+							},
+							{
+								"Dictionary": "RoleKind"
+							},
+							{
+								"Dictionary": "OrganizationUnit"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_CC",
+						"IsMultiple": true,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "User"
+							},
+							{
+								"Dictionary": "EDistributionList"
+							},
+							{
+								"Dictionary": "RoleKind"
+							},
+							{
+								"Dictionary": "OrganizationUnit"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_BCC",
+						"IsMultiple": true,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "User"
+							},
+							{
+								"Dictionary": "EDistributionList"
+							},
+							{
+								"Dictionary": "RoleKind"
+							},
+							{
+								"Dictionary": "OrganizationUnit"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_SourceMinutingType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "SourceMinutingType"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_Subject",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "500"
+					},
+					{
+						"FieldName": "wit_Sender",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "User"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_ReplyByDate",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_SentDate",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_LinkedEntity",
+						"IsMultiple": true,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EBankAccount"
+							},
+							{
+								"Dictionary": "ECase"
+							},
+							{
+								"Dictionary": "EDailyContactSchedule"
+							},
+							{
+								"Dictionary": "EGang"
+							},
+							{
+								"Dictionary": "ECheck"
+							},
+							{
+								"Dictionary": "ECriminalLaw"
+							},
+							{
+								"Dictionary": "EEvent"
+							},
+							{
+								"Dictionary": "EInformationReport"
+							},
+							{
+								"Dictionary": "ELegalOrganization"
+							},
+							{
+								"Dictionary": "ENonLegalOrganization"
+							},
+							{
+								"Dictionary": "ENP168"
+							},
+							{
+								"Dictionary": "EObservationReport"
+							},
+							{
+								"Dictionary": "EInterestGroup"
+							},
+							{
+								"Dictionary": "EPerson"
+							},
+							{
+								"Dictionary": "EPlace"
+							},
+							{
+								"Dictionary": "ETelephone"
+							},
+							{
+								"Dictionary": "EUMLStall"
+							},
+							{
+								"Dictionary": "EVehicle"
+							},
+							{
+								"Dictionary": "EVessel"
+							},
+							{
+								"Dictionary": "EMessage"
+							},
+							{
+								"Dictionary": "EDistributionList"
+							},
+							{
+								"Dictionary": "EDevice"
+							},
+							{
+								"Dictionary": "ETelcoRequest"
+							},
+							{
+								"Dictionary": "EResourceLibraryItem"
+							},
+							{
+								"Dictionary": "EResponse"
+							},
+							{
+								"Dictionary": "ESource"
+							},
+							{
+								"Dictionary": "EICF"
+							},
+							{
+								"Dictionary": "EMapper"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedMessage",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EMessage"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_MinutingSent",
+						"IsMultiple": false,
+						"FieldType": "Boolean"
+					},
+					{
+						"FieldName": "wit_AttachmentsIndicator",
+						"IsMultiple": false,
+						"FieldType": "Boolean"
+					},
+					{
+						"FieldName": "wit_MinutingType",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					},
+					{
+						"FieldName": "wit_refToRecord",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ESource"
+							},
+							{
+								"Dictionary": "EObservationReport"
+							},
+							{
+								"Dictionary": "EInformationReport"
+							},
+							{
+								"Dictionary": "EEvent"
+							},
+							{
+								"Dictionary": "EICF"
+							},
+							{
+								"Dictionary": "ECheck"
+							},
+							{
+								"Dictionary": "ECriminalLaw"
+							}
+						]
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUObservationRptDetails",
+				"IsSingle": true,
+				"IsMandatory": true,
+				"IsTemporal": true,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_ObservationReportNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "18"
+					},
+					{
+						"FieldName": "wit_ReferenceNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "15"
+					},
+					{
+						"FieldName": "wit_DateOfRequest",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_RequestedBy",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "66"
+					},
+					{
+						"FieldName": "wit_ProjectName",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "66"
+					},
+					{
+						"FieldName": "wit_LinkedPersonOfInterest",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EPerson"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedVehicleOfInterest",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EVehicle"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LocationOfInterest",
+						"IsMultiple": false,
+						"FieldType": "Address"
+					},
+					{
+						"FieldName": "wit_PreparedByBranch",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "BranchTeam"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_PreparedByTeam",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "BranchTeam"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_OperationDateRange",
+						"IsMultiple": false,
+						"FieldType": "DateRange"
+					},
+					{
+						"FieldName": "wit_ReportText",
+						"IsMultiple": false,
+						"FieldType": "RichTextField"
+					},
+					{
+						"FieldName": "wit_DateReportSubmitted",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_EnrichmentStatus",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "Status"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_refToRecord",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EObservationReport"
+							}
+						]
+					},
+					{
+						"FieldName": "Pos",
+						"IsMultiple": true,
+						"FieldType": "Location"
+					},
+					{
+						"FieldName": "wit_ExtractedEntitiesXML",
+						"IsMultiple": false,
+						"FieldType": "RichTextField"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUObservationRptPhoto",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": true,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_PhotoNo",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "100"
+					},
+					{
+						"FieldName": "wit_Photo",
+						"IsMultiple": false,
+						"FieldType": "Attachment"
+					},
+					{
+						"FieldName": "wit_PhotoType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "PersonPhotoTypeOB"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_Remarks",
+						"IsMultiple": false,
+						"FieldType": "String"
+					},
+					{
+						"FieldName": "wit_DateTaken",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_refToRecord",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EObservationReport"
+							}
+						]
+					}
+				]
+			},
+			{
+				"DataUnitName": "DURecordLink",
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_linkToRecord1",
+						"IsMultiple": false,
+						"FieldType": "RecordReference"
+					},
+					{
+						"FieldName": "wit_linkToRecord2",
+						"IsMultiple": false,
+						"FieldType": "RecordReference"
+					},
+					{
+						"FieldName": "wit_linkToRecordSourceDataUnit",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUResourceLibItemLinkedEntity",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedEntity",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EBankAccount"
+							},
+							{
+								"Dictionary": "EGang"
+							},
+							{
+								"Dictionary": "ECheck"
+							},
+							{
+								"Dictionary": "EEvent"
+							},
+							{
+								"Dictionary": "ELegalOrganization"
+							},
+							{
+								"Dictionary": "ENonLegalOrganization"
+							},
+							{
+								"Dictionary": "EObservationReport"
+							},
+							{
+								"Dictionary": "EInterestGroup"
+							},
+							{
+								"Dictionary": "EPerson"
+							},
+							{
+								"Dictionary": "EPlace"
+							},
+							{
+								"Dictionary": "EICF"
+							},
+							{
+								"Dictionary": "ETelephone"
+							},
+							{
+								"Dictionary": "EUMLStall"
+							},
+							{
+								"Dictionary": "EVehicle"
+							},
+							{
+								"Dictionary": "EVessel"
+							},
+							{
+								"Dictionary": "EInformationReport"
+							},
+							{
+								"Dictionary": "EResourceLibraryItem"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkRemarks",
+						"IsMultiple": false,
+						"FieldType": "String",
+						"Length": "500"
+					},
+					{
+						"FieldName": "wit_LinkedResourceLibrary",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EResourceLibraryItem"
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

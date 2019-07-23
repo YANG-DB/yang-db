@@ -1,5 +1,5 @@
 #!/bin/bash
-mainClass=com.kayhut.fuse.services.FuseRunner
+mainClass=com.yangdb.fuse.services.FuseRunner
 configFile=config/application.conf
 classPath=".:lib/*"
 activeProfile=activeProfile

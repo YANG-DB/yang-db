@@ -1,0 +1,321 @@
+	{
+		"RecordName": "EDevice",
+		"DataUnits": [
+			{
+				"DataUnitName": "DUDevice",
+				"IsSingle": true,
+				"IsMandatory": true,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_EIDBrand",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "PhoneBrand"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_EIDModel",
+						"IsMultiple": false,
+						"FieldType": "String"
+					},
+					{
+						"FieldName": "wit_EID",
+						"IsMultiple": false,
+						"FieldType": "String"
+					},
+					{
+						"FieldName": "wit_ProjectToLa",
+						"IsMultiple": false,
+						"FieldType": "Boolean"
+					},
+					{
+						"FieldName": "wit_refToRecord",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EDevice"
+							}
+						]
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUDeviceLinkedTelephone",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": true,
+				"IsIndexed": true,
+				"CanOverridePermissions": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedEID",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EDevice"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedTelephone",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ETelephone"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_StartDate",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_EndDate",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DURecordLink",
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_linkToRecord1",
+						"IsMultiple": false,
+						"FieldType": "RecordReference"
+					},
+					{
+						"FieldName": "wit_linkToRecord2",
+						"IsMultiple": false,
+						"FieldType": "RecordReference"
+					},
+					{
+						"FieldName": "wit_linkToRecordSourceDataUnit",
+						"IsMultiple": false,
+						"FieldType": "Int"
+					}
+				]
+			},
+			{
+				"DataUnitName": "DURequestDetails",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": false,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_TelephoneNoOrEID",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ETelephone"
+							},
+							{
+								"Dictionary": "EDevice"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_RequestType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "RequestType"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_ContactNoType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "ContactNumberType"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_ServiceProviders",
+						"IsMultiple": true,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "Telco"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_PeriodRequested",
+						"IsMultiple": false,
+						"FieldType": "DateRange"
+					},
+					{
+						"FieldName": "wit_RequestPeriodLeft",
+						"IsMultiple": true
+					},
+					{
+						"FieldName": "wit_NRPeriod",
+						"IsMultiple": true
+					},
+					{
+						"FieldName": "wit_LinkedResponse",
+						"IsMultiple": true,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EResponse"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_LinkedRequest",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ETelcoRequest"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_Status",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "ResponsesStatus"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_IsExtensionOrCancellation",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "ExtensionOrCancellation"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_ActivationDatebyIOD",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_ActivationDateByCollection",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_CTCCollection",
+						"IsMultiple": true
+					},
+					{
+						"FieldName": "wit_InformationRequiredfromTelco",
+						"IsMultiple": true,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "InformationRequiredfromTelco"
+							}
+						]
+					}
+				]
+			},
+			{
+				"DataUnitName": "DUTTAResponse",
+				"IsSingle": false,
+				"IsMandatory": false,
+				"IsTemporal": true,
+				"IsIndexed": true,
+				"fields": [
+					{
+						"FieldName": "wit_LinkedResponse",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "EResponse"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_SubscriberNoEID",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "ETelephone"
+							},
+							{
+								"Dictionary": "EDevice"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_ReceivedPeriod",
+						"IsMultiple": false,
+						"FieldType": "DateRange"
+					},
+					{
+						"FieldName": "wit_ServiceProvider",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "Telco"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_FileName",
+						"IsMultiple": false,
+						"FieldType": "String"
+					},
+					{
+						"FieldName": "wit_FileType",
+						"IsMultiple": false,
+						"FieldType": "Dictionary",
+						"Dictionary": [
+							{
+								"Dictionary": "TTAFileType"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_ResponseDateTime",
+						"IsMultiple": false,
+						"FieldType": "DateTime"
+					},
+					{
+						"FieldName": "wit_UploadUser",
+						"IsMultiple": false,
+						"FieldType": "RecordReference",
+						"Dictionary": [
+							{
+								"Dictionary": "User"
+							}
+						]
+					},
+					{
+						"FieldName": "wit_TTADetails",
+						"IsMultiple": true
+					}
+				]
+			}
+		]
+	}

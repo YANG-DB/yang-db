@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>fuse</artifactId>
-        <groupId>com.kayhut</groupId>
+        <groupId>com.yangdb</groupId>
         <version>0.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -16,34 +16,34 @@
         <build.timestamp>${maven.build.timestamp}</build.timestamp>
 
         <!-- Startup class -->
-        <application.class>com.kayhut.fuse.services.FuseApp</application.class>
+        <application.class>com.yangdb.fuse.services.FuseApp</application.class>
     </properties>
 
 
     <dependencies>
         <!-- runtime -->
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-asg</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-dv-asg</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-dv-epb</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-dv-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-dv-gta</artifactId>
         </dependency>
         <dependency>
@@ -121,12 +121,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-test-framework</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.kayhut</groupId>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-model</artifactId>
             <type>test-jar</type>
             <scope>test</scope>
@@ -176,7 +176,7 @@
                         <manifest>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <mainClass>com.kayhut.fuse.services.FuseRunner</mainClass>
+                            <mainClass>com.yangdb.fuse.services.FuseRunner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
