@@ -58,6 +58,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //endregion
 
     //region Members
+    private final boolean deleteOnLoad;
     private final int httpPort;
     private final String esWorkingDir;
     private final int numberOfShards;
@@ -92,10 +93,11 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards,boolean deleteOnLoad, ElasticIndexConfigurer... configurers) throws Exception {
         ElasticEmbeddedNode.httpTransportPort = httpTransportPort;
         ElasticEmbeddedNode.nodeName = nodeName;
+        this.deleteOnLoad = deleteOnLoad;
         this.esWorkingDir = esWorkingDir;
         this.httpPort = httpPort;
         this.numberOfShards = numberOfShards;
-        prepare(deleteOnLoad);
+        prepare();
 
         for (ElasticIndexConfigurer configurer : configurers) {
             configurer.configure(getClient(nodeName,httpTransportPort));
@@ -135,7 +137,9 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         }
 
 
-        deleteFolder(esWorkingDir);
+        if(deleteOnLoad) {
+            deleteFolder(esWorkingDir);
+        }
     }
 
     public static void closeClient() {
@@ -149,7 +153,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         }
     }
 
-    private void prepare(boolean deleteOnLoad) throws Exception {
+    private void prepare() throws Exception {
         if(deleteOnLoad) {
             this.close();
         }
@@ -173,7 +177,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         ));
 
         this.node = this.node.start();
-        System.out.println("Node started successfully");
+        System.out.println("Node started successfully on " + esWorkingDir);
     }
 
     private static void deleteFolder(String folder) {

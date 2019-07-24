@@ -9,9 +9,9 @@ package com.yangdb.fuse.assembly.knowledge;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.model.Range;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
@@ -36,6 +37,7 @@ import org.elasticsearch.index.engine.VersionConflictEngineException;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.yangdb.fuse.executor.ExecutorModule.globalClient;
@@ -88,25 +90,35 @@ public class KnowledgeIdGenerator implements IdGeneratorDriver<Range> {
                         }
                     } catch (VersionConflictEngineException ex) {
                         //retry
-                        int x = 5;
                     }
                 } catch (IndexNotFoundException ex) {
                     //retry
-                    generateIndex(genName);
+                    generateIndex();
+                    addFirstSequenceId(genName);
                 }
             }
         }
+    }
+
+    @Override
+    public boolean init(List<String> names) {
+        try {
+            generateIndex();
+        } catch (ElasticsearchException error){
+            //index already exists
+        }
+        names.forEach(this::addFirstSequenceId);
+        return true;
     }
 
     private void addFirstSequenceId(String genName) {
         this.client.index(new IndexRequest(this.indexName).id(genName).type(IDSEQUENCE).source(Collections.singletonMap("value", 1l))).actionGet();
     }
 
-    private void generateIndex(String genName) {
+    private void generateIndex() {
         this.client.admin().indices()
                 .create(new CreateIndexRequest()
                         .index(this.indexName)).actionGet();
-        addFirstSequenceId(genName);
     }
 
     //endregion

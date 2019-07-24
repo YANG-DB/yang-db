@@ -27,12 +27,24 @@ import com.yangdb.fuse.model.Range;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 
+import java.util.List;
+
 /**
  * Created by roman.margolis on 20/03/2018.
  */
 public class DefaultIdGenModule extends ModuleBase {
     @Override
     protected void configureInner(Env env, Config config, Binder binder) {
-        binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>(){}).toInstance((genName, numIds) -> new Range(1l,2l));
+        binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>(){}).toInstance(new IdGeneratorDriver<Range>() {
+            @Override
+            public Range getNext(String genName, int numIds) {
+                return new Range(1l,2l);
+            }
+
+            @Override
+            public boolean init(List<String> names) {
+                return true;
+            }
+        });
     }
 }

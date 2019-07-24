@@ -37,6 +37,31 @@
         }
       }
     },
+    "/idgen/init": {
+      "get": {
+        "tags": [
+          "management"
+        ],
+        "summary": "Init DB id Sequencer",
+        "description": "Initialize DB id Sequencer tables",
+        "parameters": [
+          {
+            "name": "names",
+            "in": "query",
+            "description": "Sequence names [Entity,Relation,Evalue,Rvalue,workerId]  ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SequenceNames"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Initiated"
+          }
+        }
+      }
+    },
     "/internal/version": {
       "get": {
         "tags": [
@@ -776,6 +801,10 @@
     }
   },
   "definitions": {
+    "SequenceNames": {
+      "type":"string",
+      "example":"Entity,Relation,Evalue,Rvalue"
+    },
     "CypherQueryRequest": {
       "type": "object",
       "properties": {

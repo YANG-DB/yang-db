@@ -68,7 +68,7 @@ public class KnowledgeDataLoader implements GraphDataLoader {
     private ObjectMapper mapper;
 
     @Inject
-    public KnowledgeDataLoader(Config config, Client client, RawSchema schema, OntologyTransformerProvider transformerProvider) {
+    public KnowledgeDataLoader(Config config, Client client, RawSchema schema, OntologyTransformerProvider transformerProvider, KnowledgeIdGenerator idGenerator) {
         this.schema = schema;
         this.mapper = new ObjectMapper();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -77,8 +77,7 @@ public class KnowledgeDataLoader implements GraphDataLoader {
         final Optional<OntologyTransformer> assembly = transformerProvider.transformer(config.getString("assembly"));
         if(!assembly.isPresent())
             throw new IllegalArgumentException("No transformer provider found for selected ontology "+config.getString("assembly"));
-        //todo check how to use the injected idGenerator
-        transformer = new KnowledgeTransformer(assembly.get(),schema,new KnowledgeStatelessIdGenerator());
+        this.transformer = new KnowledgeTransformer(assembly.get(),schema,idGenerator );
         this.client = client;
     }
 

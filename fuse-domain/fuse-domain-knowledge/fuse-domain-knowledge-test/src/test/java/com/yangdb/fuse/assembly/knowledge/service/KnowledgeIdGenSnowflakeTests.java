@@ -10,13 +10,18 @@ import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.typesafe.config.ConfigValueFactory;
 import javaslang.Tuple;
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.client.Client;
 import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
+import static com.yangdb.fuse.services.controllers.IdGeneratorController.IDGENERATOR_INDEX;
 
 
 @Ignore("Quartz Job: cant instansiate two (same) jobs within one scheduler")
@@ -26,6 +31,16 @@ public class KnowledgeIdGenSnowflakeTests {
 
     public static FuseClient fuseClient1 = null;
     public static FuseClient fuseClient2 = null;
+
+    private static void createIdGeneratorIndex(Client client) {
+        try {
+            client.admin().indices().create(client.admin().indices().prepareCreate(IDGENERATOR_INDEX).request()).actionGet();
+        }catch (ElasticsearchException err) {}
+
+        Map<String, Object> doc = new HashMap<>();
+        doc.put("value", 1);
+        client.index(client.prepareIndex(IDGENERATOR_INDEX, "idsequence").setId("workerId").setSource(doc).request()).actionGet();
+    }
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -65,7 +80,7 @@ public class KnowledgeIdGenSnowflakeTests {
     @AfterClass
     public static void tearDown() throws Exception {
         System.out.println("KnowledgeIdGenSnowflakeTests - teardown");
-        client.admin().indices().delete(client.admin().indices().prepareDelete(Setup.IDGENERATOR_INDEX).request()).actionGet();
+        client.admin().indices().delete(client.admin().indices().prepareDelete(IDGENERATOR_INDEX).request()).actionGet();
         app1.stop();
         app2.stop();
     }

@@ -23,7 +23,11 @@ package com.yangdb.fuse.services.controllers;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.model.transport.ContentResponse;
+import org.elasticsearch.client.Client;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.jooby.Status.CREATED;
@@ -35,7 +39,7 @@ import static org.jooby.Status.SERVER_ERROR;
 public class StandardIdGeneratorController<TId> implements IdGeneratorController<TId> {
     //region Constructors
     @Inject
-    public StandardIdGeneratorController(IdGeneratorDriver<TId> driver) {
+    public StandardIdGeneratorController(IdGeneratorDriver<TId> driver ) {
         this.driver = driver;
     }
     //endregion
@@ -45,6 +49,13 @@ public class StandardIdGeneratorController<TId> implements IdGeneratorController
     public ContentResponse<TId> getNext(String genName, int numIds) {
         return ContentResponse.Builder.<TId>builder(CREATED, SERVER_ERROR )
                 .data(Optional.of(this.driver.getNext(genName, numIds)))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<Boolean> init(List<String> names) {
+        return ContentResponse.Builder.<Boolean>builder(CREATED, SERVER_ERROR )
+                .data(Optional.of(this.driver.init(names)))
                 .compose();
     }
     //endregion

@@ -20,6 +20,7 @@ package com.yangdb.fuse.assembly.knowledge.load;
  * #L%
  */
 
+import com.google.inject.Inject;
 import com.yangdb.fuse.assembly.knowledge.load.builder.*;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
@@ -49,19 +50,18 @@ import static java.util.regex.Pattern.matches;
 
 public class KnowledgeTransformer {
     public static final String TECHNICAL_ID = "techId";
+    private static Map<String, StatefulRange> ranges = new HashMap<>();
 
     private OntologyTransformer transformer;
     private RawSchema schema;
     private IdGeneratorDriver<Range> idGenerator;
-    private Map<String, StatefulRange> ranges;
     private KnowledgeWriterContext writerContext;
 
+    @Inject
     public KnowledgeTransformer(OntologyTransformer transformer, RawSchema schema, IdGeneratorDriver<Range> idGenerator) {
         this.transformer = transformer;
         this.schema = schema;
         this.idGenerator = idGenerator;
-        this.ranges = new HashMap<>();
-
     }
 
     public KnowledgeContext transform(LogicalGraphModel graph) {

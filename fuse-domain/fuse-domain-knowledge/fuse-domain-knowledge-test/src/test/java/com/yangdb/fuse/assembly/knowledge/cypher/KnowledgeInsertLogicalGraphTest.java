@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.yangdb.fuse.assembly.knowledge.Setup.client;
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.nextPage;

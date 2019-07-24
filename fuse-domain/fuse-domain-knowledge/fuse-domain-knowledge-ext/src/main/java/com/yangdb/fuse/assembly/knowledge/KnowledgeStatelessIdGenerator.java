@@ -28,20 +28,24 @@ import com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.model.Range;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class KnowledgeStatelessIdGenerator implements IdGeneratorDriver<Range> {
 
-    private AtomicInteger eCounter = new AtomicInteger(0);
-    private AtomicInteger evCounter = new AtomicInteger(0);
-    private AtomicInteger fCounter = new AtomicInteger(0);
-    private AtomicInteger refCounter = new AtomicInteger(0);
-    private AtomicInteger relCounter = new AtomicInteger(0);
-    private AtomicInteger iCounter = new AtomicInteger(0);
+    private AtomicInteger eCounter;
+    private AtomicInteger evCounter;
+    private AtomicInteger fCounter;
+    private AtomicInteger refCounter;
+    private AtomicInteger relCounter;
+    private AtomicInteger iCounter;
 
     //region Constructors
     @Inject
-    public KnowledgeStatelessIdGenerator() {}
+    public KnowledgeStatelessIdGenerator() {
+        init(Collections.emptyList());
+    }
     //endregion
 
     //region IdGenerator Implementation
@@ -59,6 +63,17 @@ public class KnowledgeStatelessIdGenerator implements IdGeneratorDriver<Range> {
             default:
                 return new Range(0,1000);
         }
+    }
+
+    @Override
+    public boolean init(List<String> names) {
+        eCounter = new AtomicInteger(0);
+        evCounter = new AtomicInteger(0);
+        fCounter = new AtomicInteger(0);
+        refCounter = new AtomicInteger(0);
+        relCounter = new AtomicInteger(0);
+        iCounter = new AtomicInteger(0);
+        return true;
     }
 
 }
