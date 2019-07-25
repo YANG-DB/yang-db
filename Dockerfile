@@ -1,35 +1,33 @@
 # Dockerfile for YANG-DB graph database
 # MAINTAINER Lior Perry<www.youngdb.org>
-
 # Java
-FROM java:8
+FROM openjdk:8
 # Cerebro
-FROM lmenezes/cerebro:0.8.3
-# node
-FROM node:8
+#FROM lmenezes/cerebro:0.8.3
+RUN wget https://github.com/lmenezes/cerebro/releases/download/v0.8.4/cerebro-0.8.4.tgz -O /cerebro-0.8.4.tgz
+RUN tar -xvf /cerebro-0.8.4.tgz -C /
+RUN rm /cerebro-0.8.4.tgz
 
+RUN apt update
+RUN apt install maven -y
 #
 # Build stage
 #
-FROM maven:3.6.0-jdk-11-slim AS build
-COPY . /home/app
-RUN mvn -f /home/app/pom.xml clean package -DskipTests
+COPY . /var/tmp
+RUN cd /var/tmpvn clean package -DskipTests
 
-# https://www.npmjs.com/package/elasticsearch-tools
-# node elasticsearch export/loader tool
-#
-# npm install -g elasticsearch-tools
-# es-import-bulk --url http://localhost:9200 --file ~/dataFile.json
-#
-# Package stage
-#
-COPY /fuse-domain/fuse-domain-knowledge/fuse-domain-knowledge-assembly/target/assembly-fuse-knowledge /opt/engine
+COPY fuse-domain/fuse-domain-knowledge/fuse-domain-knowledge-assembly/target/assembly-fuse-knowledge /opt/engine
 WORKDIR /opt/engine
+RUN chmod 755 /opt/engine/start-fuse-service.sh
 
-# Remove the spurious windoews CR characters.
-CMD ["sed -i -e 's/\r$//' start-fuse-service.sh"]
+# clean
+RUN rm -rf /var/tmp/* ; apt-get autoclean
 
-CMD ["./start-fuse-service.sh"]
+
+# Run cerebro
+CMD ["/cerebro-0.8.4/bin/cerebro"]
+# Rum fuse
+CMD ["/opt/engine/start-fuse-service.sh"]
 
 EXPOSE 8888
 EXPOSE 9000
