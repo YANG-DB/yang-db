@@ -49,6 +49,7 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -164,6 +165,11 @@ public class SnifferFuseClient implements FuseClient{
     @Override
     public QueryResourceInfo loadData(String ontology, URL resource) throws IOException {
         return selectNode().loadData(ontology,resource);
+    }
+
+    @Override
+    public QueryResourceInfo uploadFile(String ontology, URL resource) throws IOException, URISyntaxException {
+        return selectNode().uploadFile(ontology,resource);
     }
 
     @Override

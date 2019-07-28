@@ -9,9 +9,9 @@ package com.yangdb.fuse.assembly.knowledge.load;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,6 +33,7 @@ import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
 import com.yangdb.fuse.model.ontology.transformer.TransformerEntityType;
 import com.yangdb.fuse.model.ontology.transformer.TransformerProperties;
 import com.yangdb.fuse.model.ontology.transformer.TransformerRelationType;
+import org.elasticsearch.client.Client;
 import org.geojson.Point;
 
 import java.text.ParseException;
@@ -41,6 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.ENTITY;
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.format;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder.*;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder.*;
@@ -55,13 +57,15 @@ public class KnowledgeTransformer {
     private OntologyTransformer transformer;
     private RawSchema schema;
     private IdGeneratorDriver<Range> idGenerator;
+    private Client client;
     private KnowledgeWriterContext writerContext;
 
     @Inject
-    public KnowledgeTransformer(OntologyTransformer transformer, RawSchema schema, IdGeneratorDriver<Range> idGenerator) {
+    public KnowledgeTransformer(OntologyTransformer transformer, RawSchema schema, IdGeneratorDriver<Range> idGenerator, Client client) {
         this.transformer = transformer;
         this.schema = schema;
         this.idGenerator = idGenerator;
+        this.client = client;
     }
 
     public KnowledgeContext transform(LogicalGraphModel graph) {
@@ -79,7 +83,7 @@ public class KnowledgeTransformer {
                 case EntityBuilder.type:
                     StatefulRange range = ranges.computeIfAbsent(EntityBuilder.type,
                             s -> new StatefulRange(idGenerator.getNext(EntityBuilder.type, 1000)));
-                    context.add(createEntity(context,range, type, node));
+                    context.add(createEntity(context, range, type, node));
                     break;
                 case RefBuilder.type:
                     break;
@@ -102,7 +106,7 @@ public class KnowledgeTransformer {
                 case RelationBuilder.type:
                     StatefulRange range = ranges.computeIfAbsent(RelationBuilder.type,
                             s -> new StatefulRange(idGenerator.getNext(RelationBuilder.type, 1000)));
-                    context.add(createEdge(context,range, type, edge));
+                    context.add(createEdge(context, range, type, edge));
                     break;
             }
         });
@@ -110,28 +114,63 @@ public class KnowledgeTransformer {
     }
 
     private RelationBuilder createEdge(KnowledgeContext context, StatefulRange range, TransformerRelationType type, LogicalEdge edge) {
-        RelationBuilder builder = _rel(writerContext.nextRelId(schema,range.next()));
+        RelationBuilder builder = _rel(writerContext.nextRelId(schema, range.next()));
         String physicalLabelKey = type.getLabel();
         String labelValue = edge.getLabel();
         builder.putProperty(physicalLabelKey, labelValue);
-        //set sides ids
-        Optional<EntityBuilder> sideA = writerContext.getContext().findEntityByProperty(TECHNICAL_ID, edge.getSource());
-        if(!sideA.isPresent())
-            //todo search Elastic for the given node
-            throw new IllegalArgumentException(String.format("Source node %s for edge not found %s",edge.getSource(),edge.toString()));
-        builder.entityAId(sideA.get().id());
-        builder.entityACategory(sideA.get().category);
 
-        Optional<EntityBuilder> sideB = writerContext.getContext().findEntityByProperty(TECHNICAL_ID, edge.getTarget());
-        if(!sideB.isPresent())
+        //set sides ids
+        Optional<EntityBuilder> sideA = writerContext.getContext().findEntityById(edge.getSource()).isPresent()
+                ? writerContext.getContext().findEntityById(edge.getSource())
+                : writerContext.getContext().findEntityByTechId(edge.getSource());
+
+        if (!sideA.isPresent()) {
             //todo search Elastic for the given node
-            throw new IllegalArgumentException(String.format("Source node %s for edge not found %s",edge.getTarget(),edge.toString()));
-        builder.entityBId(sideB.get().id());
-        builder.entityBCategory(sideB.get().category);
+            Optional<Map> node = StoreAccessor.findEntityById(TECHNICAL_ID, edge.getSource(), ENTITY, schema, client);
+
+            if (node.isPresent()) {
+                builder.entityAId(node.get().get("id").toString());
+                builder.entityATechId(node.get().get("techId").toString());
+                builder.entityACategory(node.get().get("category").toString());
+            } else
+                throw new IllegalArgumentException(String.format("Source node %s for edge not found %s", edge.getSource(), edge.toString()));
+        } else {
+            builder.entityAId(sideA.get().id());
+            builder.entityATechId(sideA.get().techId);
+            builder.entityACategory(sideA.get().category);
+        }
+
+
+        Optional<EntityBuilder> sideB = writerContext.getContext().findEntityById(edge.getTarget()).isPresent()
+                ? writerContext.getContext().findEntityById(edge.getTarget())
+                : writerContext.getContext().findEntityByTechId(edge.getTarget());
+
+        if (!sideB.isPresent()) {
+            //search Elastic for the given node
+            Optional<Map> node = StoreAccessor.findEntityById(TECHNICAL_ID, edge.getTarget(), ENTITY, schema, client);
+
+            if (node.isPresent()) {
+                builder.entityBId(node.get().get("id").toString());
+                builder.entityBTechId(node.get().get("techId").toString());
+                builder.entityBCategory(node.get().get("category").toString());
+            } else
+                throw new IllegalArgumentException(String.format("Target node %s for edge not found %s", edge.getSource(), edge.toString()));
+        } else {
+            builder.entityBId(sideB.get().id());
+            builder.entityBTechId(sideB.get().techId);
+            builder.entityBCategory(sideB.get().category);
+        }
 
         //populate side with relation builder hasEntityRelation
-        sideA.get().rel(builder,"out");
-        sideB.get().rel(builder,"in");
+        if(sideA.isPresent())
+            sideA.get().rel(builder, "out");
+        else
+            context.add(new RelationBuilder.EntityRelationBuilder(builder.entityAId, builder, "out"));
+
+        if(sideB.isPresent())
+            sideB.get().rel(builder, "in");
+        else
+            context.add(new RelationBuilder.EntityRelationBuilder(builder.entityBId, builder, "in"));
 
         //set metadata properties
         edge.getMetadata().getProperties().forEach((logicalKey, value) -> {
@@ -159,11 +198,11 @@ public class KnowledgeTransformer {
         return builder;
     }
 
-    private EntityBuilder createEntity(KnowledgeContext context,StatefulRange range, TransformerEntityType type, LogicalNode node) {
-        //todo what if the "id" field is present -> should we use it instead of the auto id generator ??
+    private EntityBuilder createEntity(KnowledgeContext context, StatefulRange range, TransformerEntityType type, LogicalNode node) {
+        //if the "id" field is present -> use it in the techId section
         EntityBuilder builder = _e(writerContext.nextLogicalId(schema, range.next()));
         //technical Id to find the node by (real id is given by the engine sequencer)
-        builder.putProperty(TECHNICAL_ID,node.getId());
+        builder.putProperty(TECHNICAL_ID, node.getId());
         String physicalLabelKey = type.getLabel();
         String labelValue = node.getLabel();
         builder.putProperty(physicalLabelKey, labelValue);
@@ -211,6 +250,7 @@ public class KnowledgeTransformer {
 
         return valueBuilder;
     }
+
     private RvalueBuilder createRValueBuilder(StatefulRange propRange, TransformerProperties properties, String key, Object value) {
         RvalueBuilder valueBuilder = _r(writerContext.nextValueId(schema, propRange.next()));
         //todo think if TransformerProperties.label pattern is still relevant

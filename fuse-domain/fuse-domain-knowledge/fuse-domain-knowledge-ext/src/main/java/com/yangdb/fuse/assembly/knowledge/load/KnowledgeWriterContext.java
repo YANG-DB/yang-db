@@ -211,6 +211,8 @@ public class KnowledgeWriterContext {
     public static int commit(Client client, RawSchema schema, ObjectMapper mapper, KnowledgeContext context) throws JsonProcessingException {
         int count = 0;
         count += commit(client,schema.getPartition(ENTITY).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getEntities());
+        count += commit(client,schema.getPartition(ENTITY).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getRelationBuilders());
+
         count += commit(client,schema.getPartition(EVALUE).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.geteValues());
         count += commit(client,schema.getPartition(RELATION).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getRelations());
         count += commit(client,schema.getPartition(RVALUE).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getrValues());

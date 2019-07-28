@@ -77,7 +77,7 @@ public class KnowledgeDataLoader implements GraphDataLoader {
         final Optional<OntologyTransformer> assembly = transformerProvider.transformer(config.getString("assembly"));
         if(!assembly.isPresent())
             throw new IllegalArgumentException("No transformer provider found for selected ontology "+config.getString("assembly"));
-        this.transformer = new KnowledgeTransformer(assembly.get(),schema,idGenerator );
+        this.transformer = new KnowledgeTransformer(assembly.get(),schema,idGenerator,client );
         this.client = client;
     }
 

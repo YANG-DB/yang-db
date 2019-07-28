@@ -37,6 +37,7 @@ import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.function.Predicate;
 
@@ -67,7 +68,7 @@ public interface FuseClient {
     }
 
     static String postRequest(String url, Object body) throws IOException {
-        return given().contentType("application/json")
+      return given().contentType("application/json")
                 .body(body)
                 .post(url)
                 .thenReturn()
@@ -97,6 +98,8 @@ public interface FuseClient {
     QueryResourceInfo loadData(String ontology, LogicalGraphModel resource) throws IOException;
 
     QueryResourceInfo loadData(String ontology, URL resource) throws IOException;
+
+    QueryResourceInfo uploadFile(String ontology, URL resource) throws IOException, URISyntaxException;
 
     QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException;
 

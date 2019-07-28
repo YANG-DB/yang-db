@@ -6,6 +6,7 @@ import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
+import org.elasticsearch.client.Client;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -14,8 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -118,18 +119,19 @@ public class KnowledgeTransformerTest {
      */
     @Test
     public void transform() {
+        Client client = Mockito.mock(Client.class);
         IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
         when(idGeneratorDriver.getNext(anyString(),anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
 
-        final KnowledgeTransformer transformer = new KnowledgeTransformer(ontTransformer,new KnowledgeRawSchema(), idGeneratorDriver);
+        final KnowledgeTransformer transformer = new KnowledgeTransformer(ontTransformer,new KnowledgeRawSchema(), idGeneratorDriver,client);
         final KnowledgeContext transform = transformer.transform(graphModel);
         assertNotNull(transform);
         assertEquals(2,transform.getEntities().size());
-        assertEquals(3,transform.getEntities().get(0).additionalProperties.size());
+        assertEquals(2,transform.getEntities().get(0).additionalProperties.size());
         assertEquals(2,transform.getEntities().get(0).additional.size());
         assertEquals(2,transform.getEntities().get(0).hasRel.size());
-        assertEquals(3,transform.getEntities().get(1).additionalProperties.size());
+        assertEquals(2,transform.getEntities().get(1).additionalProperties.size());
         assertEquals(2,transform.getEntities().get(1).additional.size());
         assertEquals(2,transform.getEntities().get(1).hasRel.size());
 

@@ -39,6 +39,11 @@ public abstract class Setup {
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
     }
 
+    public static void setup(boolean embedded, boolean init,boolean startFuse) throws Exception {
+        init(embedded,init,startFuse);
+        fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
+    }
+
     public static void setup(boolean embedded, boolean init, boolean startFuse, FuseClient givenFuseClient) throws Exception {
         init(embedded,init,startFuse);
         //set fuse client

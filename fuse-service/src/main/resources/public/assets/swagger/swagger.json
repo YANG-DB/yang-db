@@ -195,7 +195,7 @@
             "description": "cypher query",
             "required": true,
             "type": "string",
-            "default": "match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue), (e:Entity)-[hasRelEn:relatedEntity]->(e2:Entity) return *"
+            "default": "Match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue) Where (v.fieldId = \"name\" AND v.stringValue = \"Napoleon\") Return *"
           },
           {
             "name": "ontology",
@@ -786,6 +786,40 @@
             "schema": {
               "$ref": "#/definitions/LogicalGraph"
             }
+          }
+        ],
+        "description": "Load Logical graph into DB according to specific ontology Transformer ",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/upload": {
+      "post": {
+        "tags": [
+          "upload"
+        ],
+        "summary": "Upload Zip File with Logical graph into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "upfile",
+            "description": "file",
+            "required": true,
+            "type": "file"
           }
         ],
         "description": "Load Logical graph into DB according to specific ontology Transformer ",

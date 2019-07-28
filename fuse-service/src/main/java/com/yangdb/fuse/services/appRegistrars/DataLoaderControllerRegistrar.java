@@ -41,11 +41,11 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
         app.get("/fuse/load/ontology/:id/init",
                 req -> Results.with(this.getController(app).init(req.param("id").value())));
 
-        app.get("/fuse/load/ontology/:id/upload",
+        app.post("/fuse/load/ontology/:id/upload",
                 req -> {
                     Upload upload = req.file("file");
                     try {
-                        //process zipped file
+                        //todo check file type -> process zipped file
                         return Results.with(this.getController(app).load(req.param("id").value(), upload.file()));
                     } finally {
                         upload.close();

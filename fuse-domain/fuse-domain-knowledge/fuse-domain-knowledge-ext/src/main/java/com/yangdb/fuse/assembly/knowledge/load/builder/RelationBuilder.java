@@ -81,6 +81,8 @@ public class RelationBuilder extends Metadata {
                 return cat(value.toString());
             case "context":
                 return ctx(value.toString());
+            case "techId":
+                return techId(value.toString());
             default:
                 // suppose a property is set on the metadata (supper) entity it will also be added to
                 // the additional properties but the serialization to jsonObject is map based so duplicates

@@ -1,0 +1,45 @@
+{
+  "nodes": [
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "hezi",
+      "properties": {
+        "name": "Hezi-markov"
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "moti",
+      "properties": {
+        "name": "moti-moti"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "hezi",
+      "target": "Myriel",
+      "metadata": {
+        "value": 1
+      }
+    },
+    {
+      "source": "Mlle.Baptistine",
+      "target": "moti",
+      "metadata": {
+        "value": 8
+      }
+    },
+    {
+      "source": "hezi",
+      "target": "moti",
+      "metadata": {
+        "value": 10
+      }
+    }
+  ]
+}

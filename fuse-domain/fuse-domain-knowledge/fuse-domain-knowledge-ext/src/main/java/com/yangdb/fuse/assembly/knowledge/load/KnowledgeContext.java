@@ -33,12 +33,14 @@ public class KnowledgeContext {
     private List<ValueBuilder> eValues;
     private List<RelationBuilder> relations;
     private List<RvalueBuilder> rValues;
+    private List<RelationBuilder.EntityRelationBuilder> relationBuilders;
 
     public KnowledgeContext() {
         entities = new ArrayList<>();
         eValues = new ArrayList<>();
         relations = new ArrayList<>();
         rValues = new ArrayList<>();
+        relationBuilders = new ArrayList<>();
         failed = new ArrayList<>();
     }
 
@@ -52,6 +54,10 @@ public class KnowledgeContext {
 
     public void add(EntityBuilder builder) {
         entities.add(builder);
+    }
+
+    public void add(RelationBuilder.EntityRelationBuilder builder) {
+        relationBuilders.add(builder);
     }
 
     public void add(RelationBuilder builder) {
@@ -70,6 +76,10 @@ public class KnowledgeContext {
         return entities;
     }
 
+    public List<RelationBuilder.EntityRelationBuilder> getRelationBuilders() {
+        return relationBuilders;
+    }
+
     public List<ValueBuilder> geteValues() {
         return eValues;
     }
@@ -84,6 +94,10 @@ public class KnowledgeContext {
 
     public Optional<EntityBuilder> findEntityById(String id) {
         return entities.stream().filter(e->e.logicalId.equals(id)).findAny();
+    }
+
+    public Optional<EntityBuilder> findEntityByTechId(String id) {
+        return entities.stream().filter(e->e.techId.equals(id)).findAny();
     }
 
     public Optional<EntityBuilder> findEntityByProperty(String property,String value) {

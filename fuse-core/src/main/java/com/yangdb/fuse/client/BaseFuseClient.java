@@ -40,20 +40,26 @@ import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.Entity;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.results.Relationship;
-import com.yangdb.fuse.model.transport.*;
+import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
+import com.yangdb.fuse.model.transport.CreatePageRequest;
+import com.yangdb.fuse.model.transport.CreateQueryRequest;
+import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.jooby.MediaType;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 import java.util.UUID;
 
-import static io.restassured.RestAssured.given;
 import static com.yangdb.fuse.client.FuseClient.*;
+import static io.restassured.RestAssured.given;
 
 /**
  * Created by Roman on 11/05/2017.
@@ -95,6 +101,25 @@ public class BaseFuseClient implements FuseClient {
     @Override
     public QueryResourceInfo loadData(String ontology, URL resource) throws IOException {
         return loadData(ontology,objectMapper.readValue(resource,LogicalGraphModel.class));
+    }
+
+    @Override
+    public QueryResourceInfo uploadFile(String ontology, URL resourceFile) throws URISyntaxException {
+        final File file = new File(resourceFile.getFile());
+        final URI uri = resourceFile.toURI();
+
+        String resourceURl = String.format("%s/load/ontology/%s/upload", this.fuseUrl, ontology);
+
+        String result = given()
+                .multiPart("file", file)
+                .formParam("file", uri.toASCIIString())
+                .contentType("multipart/form-data")
+                .post(resourceURl)
+                .thenReturn()
+                .print();
+
+        return new QueryResourceInfo(QueryMetadata.Type.concrete, resourceURl,ontology,result);
+
     }
 
     @Override
