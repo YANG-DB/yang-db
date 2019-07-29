@@ -39,6 +39,7 @@ import com.yangdb.fuse.model.validation.ValidationResult;
 import com.yangdb.fuse.services.controllers.QueryController;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.jooby.*;
+import org.jooby.Response;
 import org.jooby.apitool.ApiTool;
 
 import java.util.HashMap;
@@ -76,31 +77,31 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
          * @return newly created query resource information
          **/
         app.post(appUrlSupplier.queryStoreUrl() ,
-                req -> postV1(app,req,this));
+                req -> postV1(app,req, this.getController(app)));
 
         /** validate a v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1/validate",req -> validateV1(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/validate",req -> validateV1(app,req,this.getController(app)));
 
         /** get the plan from v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1/plan",req -> plan(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/plan",req -> plan(app,req,this.getController(app)));
 
         /** get the traversal from v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1/traversal",req -> traversal(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/traversal",req -> traversal(app,req,this.getController(app)));
 
         /** create a v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1",req -> postV1(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1",req -> postV1(app,req,this.getController(app)));
 
         /** create a v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1/run",req -> runV1(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/run",req -> runV1(app,req,this.getController(app)));
 
         /** create a cypher query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/cypher",req -> postCypher(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/cypher",req -> postCypher(app,req,this.getController(app)));
         /** run a cypher query */
-        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/run",req -> runCypher(app,req,this));
+        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/run",req -> runCypher(app,req,this.getController(app)));
 
 
         /** call a query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/call",req -> API.call(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/call",req -> API.call(app,req,this.getController(app)));
 
         /** call a query */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/nextPageData",
@@ -199,8 +200,8 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
     //endregion
 
 
-    static class API {
-        public static Result postCypher(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+    public static class API {
+        public static Result postCypher(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("postCypher").write();
 
             CreateJsonQueryRequest createQueryRequest = req.body(CreateJsonQueryRequest.class);
@@ -211,47 +212,47 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
 
             ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
-                    registrar.getController(app).create(createQueryRequest) :
-                    registrar.getController(app).createAndFetch(createQueryRequest);
+                    controller.create(createQueryRequest) :
+                    controller.createAndFetch(createQueryRequest);
 
             return Results.with(response, response.status());
 
         }
 
-        public static Result validateV1(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+        public static Result validateV1(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("validateQuery").write();
 
             Query query = req.body(Query.class);
             req.set(Query.class, query);
-            ContentResponse<ValidationResult> response = registrar.getController(app).validate(query);
+            ContentResponse<ValidationResult> response = controller.validate(query);
 
             return Results.json(response.getData());
 
         }
 
-        public static Result plan(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+        public static Result plan(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("planByQuery").write();
 
             Query query = req.body(Query.class);
             req.set(Query.class, query);
-            ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = registrar.getController(app).plan(query);
+            ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = controller.plan(query);
 
             return Results.json(response.getData().toString());
 
         }
 
-        public static Result traversal(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+        public static Result traversal(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("traversal").write();
 
             Query query = req.body(Query.class);
             req.set(Query.class, query);
-            ContentResponse<GraphTraversal> response = registrar.getController(app).traversal(query);
+            ContentResponse<GraphTraversal> response = controller.traversal(query);
 
             return Results.with(response.getData().explain().prettyPrint());
 
         }
 
-        public static Result postV1(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+        public static Result postV1(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("postQuery").write();
 
             CreateQueryRequest createQueryRequest = req.body(CreateQueryRequest.class);
@@ -262,37 +263,38 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
 
             ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
-                    registrar.getController(app).create(createQueryRequest) :
-                    registrar.getController(app).createAndFetch(createQueryRequest);
+                    controller.create(createQueryRequest) :
+                    controller.createAndFetch(createQueryRequest);
 
             return Results.with(response, response.status());
         }
 
-        public static Result runV1(Jooby app, final Request req, QueryControllerRegistrar registrar  ) throws Exception {
+        public static Result runV1(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("runQuery").write();
 
             Query query = req.body(Query.class);
             req.set(Query.class, query);
             req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
 
-            ContentResponse<Object> response = registrar.getController(app).run(query);
+            ContentResponse<Object> response = controller.run(query);
 
             return Results.with(response, response.status());
         }
 
-        public static Result runCypher(Jooby app, final Request req, QueryControllerRegistrar registrar  ) {
+        public static Result runCypher(Jooby app, final Request req, QueryController controller) throws Throwable {
             Route.of("runCypher").write();
 
             String query = req.param("cypher").value();
             String ontology = req.param("ontology").value();
             req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
 
-            ContentResponse<Object> response = registrar.getController(app).run(query,ontology);
+            ContentResponse<Object> response = controller.run(query,ontology);
 
             return Results.with(response, response.status());
         }
 
-        public static Result call(Jooby app, Request req, QueryControllerRegistrar registrar) throws Exception {
+
+        public static Result call(Jooby app, Request req, QueryController controller) throws Exception {
             Route.of("callQuery").write();
 
             ExecuteStoredQueryRequest callQueryRequest = req.body(ExecuteStoredQueryRequest.class);
@@ -301,8 +303,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             final long maxExecTime = callQueryRequest.getCreateCursorRequest() != null
                     ? callQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
             req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
-            ContentResponse<QueryResourceInfo> response = registrar.getController(app).callAndFetch(callQueryRequest);
+            ContentResponse<QueryResourceInfo> response = controller.callAndFetch(callQueryRequest);
 
+//            return with(req,response);
             return Results.with(response, response.status());
 
         }

@@ -23,6 +23,8 @@ package com.yangdb.fuse.assembly.knowledge;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 
+import java.util.Collections;
+
 public class KnowledgeLogicalGraphCursorRequest extends CreateGraphHierarchyCursorRequest {
     public static final String CursorType = "knowledgeLogicalGraphCursorRequest";
 
@@ -34,6 +36,11 @@ public class KnowledgeLogicalGraphCursorRequest extends CreateGraphHierarchyCurs
 
     public KnowledgeLogicalGraphCursorRequest(Iterable<String> countTags) {
         super(countTags);
+        this.setCursorType(CursorType);
+    }
+
+    public KnowledgeLogicalGraphCursorRequest(CreatePageRequest createPageRequest) {
+        super(Collections.emptyList(),createPageRequest);
         this.setCursorType(CursorType);
     }
 

@@ -23,6 +23,8 @@ package com.yangdb.fuse.assembly.knowledge;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 
+import java.util.Collections;
+
 /**
  * Created by Roman on 7/7/2018.
  */
@@ -37,6 +39,11 @@ public class KnowledgeGraphHierarchyCursorRequest extends CreateGraphHierarchyCu
 
     public KnowledgeGraphHierarchyCursorRequest(Iterable<String> countTags) {
         super(countTags);
+        this.setCursorType(CursorType);
+    }
+
+    public KnowledgeGraphHierarchyCursorRequest(CreatePageRequest createPageRequest) {
+        super(Collections.emptyList(),createPageRequest);
         this.setCursorType(CursorType);
     }
 

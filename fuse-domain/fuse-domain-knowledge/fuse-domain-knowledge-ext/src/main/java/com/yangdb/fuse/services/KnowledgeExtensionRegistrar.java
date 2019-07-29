@@ -28,14 +28,16 @@ import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 import com.yangdb.fuse.model.transport.ExecutionScope;
 import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.services.appRegistrars.AppControllerRegistrarBase;
-import org.jooby.Jooby;
-import org.jooby.Request;
-import org.jooby.Result;
-import org.jooby.Results;
+import com.yangdb.fuse.services.controllers.QueryController;
+import org.jooby.*;
 import org.json.JSONObject;
 
 import java.util.Collections;
 import java.util.Map;
+
+import static com.yangdb.fuse.services.appRegistrars.QueryControllerRegistrar.API.runCypher;
+import static com.yangdb.fuse.services.appRegistrars.QueryControllerRegistrar.API.runV1;
+
 
 public class KnowledgeExtensionRegistrar extends AppControllerRegistrarBase<KnowledgeExtensionQueryController> {
 
@@ -51,13 +53,17 @@ public class KnowledgeExtensionRegistrar extends AppControllerRegistrarBase<Know
         app.get("ext", () -> Results.redirect("/public/assets/swagger/swagger-ext.json"));
 
         /** create a clause query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/clause",req -> postClause(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/clause",req -> postClause(app,req,this.getController(app)));
         /** run a clause query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/clause/run",req -> runClause(app,req,this));
+        app.post(appUrlSupplier.queryStoreUrl() + "/clause/run",req -> runClause(app,req,this.getController(app)));
+        /** run a cypher query */
+        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/logical/run",req -> runCypher(app,req, this.getController(app)));
+        /** run a cypher query */
+        app.get(appUrlSupplier.queryStoreUrl() + "/query/v1/logical/run",req-> runV1(app,req, this.getController(app)));
 
     }
 
-    public static Result postClause(Jooby app, final Request req, KnowledgeExtensionRegistrar registrar  ) throws Exception {
+    public static Result postClause(Jooby app, final Request req, QueryController controller) throws Exception {
         Route.of("postClause").write();
 
         Map<String,Object> createQueryRequest = req.body(Map.class);
@@ -76,14 +82,15 @@ public class KnowledgeExtensionRegistrar extends AppControllerRegistrarBase<Know
         req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
 
         ContentResponse<QueryResourceInfo> response = request.getCreateCursorRequest() == null ?
-                registrar.getController(app).create(request) :
-                registrar.getController(app).createAndFetch(request);
+                controller.create(request) :
+                controller.createAndFetch(request);
 
         return Results.with(response, response.status());
 
     }
 
-    public static Result runClause(Jooby app, final Request req, KnowledgeExtensionRegistrar registrar  ) throws Exception {
+
+    public static Result runClause(Jooby app, final Request req, QueryController controller) throws Exception {
         Route.of("runClause").write();
 
         Map<String,Object> createQueryRequest = req.body(Map.class);
@@ -91,7 +98,7 @@ public class KnowledgeExtensionRegistrar extends AppControllerRegistrarBase<Know
         String ontology = req.param("ontology").value();
         req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
 
-        ContentResponse<Object> response = registrar.getController(app).run(query,ontology);
+        ContentResponse<Object> response = controller.run(query,ontology);
 
         return Results.with(response, response.status());
     }

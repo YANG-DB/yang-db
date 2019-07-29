@@ -95,7 +95,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> run(Query query) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateQueryRequest queryRequest = new CreateQueryRequest(id, id, query, new CreateGraphCursorRequest(new CreatePageRequest()));
+            CreateQueryRequest queryRequest = createQueryRequest(query, id);
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -111,11 +111,15 @@ public abstract class QueryDriverBase implements QueryDriver {
 
     }
 
+    protected CreateQueryRequest createQueryRequest(Query query, String id) {
+        return new CreateQueryRequest(id, id, query, new CreateGraphCursorRequest(new CreatePageRequest()));
+    }
+
     @Override
     public Optional<Object> run(String cypher, String ontology) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, cypher, ontology, new CreateGraphCursorRequest(new CreatePageRequest()));
+            CreateJsonQueryRequest queryRequest = createJsonQueryRequest(cypher, ontology, id);
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -128,6 +132,10 @@ public abstract class QueryDriverBase implements QueryDriver {
             //remove stateless query
             delete(id);
         }
+    }
+
+    protected CreateJsonQueryRequest createJsonQueryRequest(String cypher, String ontology, String id) {
+        return new CreateJsonQueryRequest(id, id, cypher, ontology, new CreateGraphCursorRequest(new CreatePageRequest()));
     }
 
 

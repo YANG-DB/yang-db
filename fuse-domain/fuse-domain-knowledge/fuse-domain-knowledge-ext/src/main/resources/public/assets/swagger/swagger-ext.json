@@ -18,7 +18,9 @@
     "application/json"
   ],
   "produces": [
-    "application/json"
+    "application/json",
+    "application/xml"
+
   ],
   "paths": {
     "/load/ontology/{id}/init": {
@@ -175,6 +177,96 @@
               "items": {
                 "$ref": "#/definitions/QueryInfo"
               }
+            }
+          }
+        }
+      }
+    },
+    "/query/cypher/logical/run": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run cypher query directly  ",
+        "description": "submit & run a query to the engine",
+        "parameters": [
+          {
+            "name": "cypher",
+            "in": "query",
+            "description": "cypher query",
+            "required": true,
+            "type": "string",
+            "default": "Match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue) Where (v.fieldId = \"name\" AND v.stringValue = \"Napoleon\") Return *"
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/logical/run": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit a (V1) query request",
+        "description": "submit a query to the engine",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "V1 Query json request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/QueryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery (HATEOAS Rest Specification).",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/validate": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & validate V1 query directly  ",
+        "description": "submit & validate a query to the engine",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "V1 Query json ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Query"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query validation summery ",
+            "schema": {
+              "$ref": "#/definitions/QueryValidation"
             }
           }
         }
@@ -560,6 +652,111 @@
         "group_by": []
       }
     },
+    "CypherQueryRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "id": "1",
+        "name": "Q1",
+        "ontology": "Knowledge",
+        "query": "match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue), (e:Entity)-[hasRelEn:relatedEntity]->(e2:Entity) return *"
+      }
+    },
+    "QueryRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "query": {
+          "$ref": "#/definitions/Query"
+        },
+        "createCursorRequest": {
+          "$ref": "#/definitions/CreateCursorRequest"
+        }
+      },
+      "example": {
+        "id": "1",
+        "name": "Q1",
+        "query": {
+          "ont": "Knowledge",
+          "elements": [
+            {
+              "type": "Start",
+              "eNum": 0,
+              "next": 1
+            },
+            {
+              "type": "ETyped",
+              "eNum": 1,
+              "next": 2,
+              "eTag": "A",
+              "eType": "Entity"
+            },
+            {
+              "eNum": 2,
+              "type": "Quant1",
+              "qType": "all",
+              "next": [
+                3,
+                5
+              ]
+            },
+            {
+              "type": "Rel",
+              "dir": "R",
+              "eNum": 3,
+              "next": 4,
+              "rType": "relatedEntity"
+            },
+            {
+              "type": "ETyped",
+              "eNum": 4,
+              "eTag": "B",
+              "eType": "Entity"
+            },
+            {
+              "type": "Rel",
+              "dir": "R",
+              "eNum": 5,
+              "next": 6,
+              "rType": "hasEvalue"
+            },
+            {
+              "type": "ETyped",
+              "eNum": 6,
+              "eTag": "Ev",
+              "eType": "Evalue"
+            }
+          ]
+        },
+        "createCursorRequest": {
+          "maxExecutionTime": 600000,
+          "cursorType": "knowledgeLogicalGraphCursorRequest",
+          "format": "XML",
+          "createPageRequest": {
+            "pageSize": 100,
+            "fetch": false
+          },
+          "include": "all"
+        }
+      }
+    },
     "CreateCursorRequest": {
       "type": "object",
       "properties": {
@@ -603,6 +800,93 @@
         "fetch": false
       }
     },
+    "Query": {
+      "type": "object",
+      "properties": {
+        "ont": {
+          "type": "string"
+        },
+        "elements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Element"
+          }
+        }
+      },
+      "example": {
+        "ont": "Knowledge",
+        "elements": [
+          {
+            "type": "Start",
+            "eNum": 0,
+            "next": 1
+          },
+          {
+            "type": "ETyped",
+            "eNum": 1,
+            "next": 2,
+            "eTag": "A",
+            "eType": "Entity"
+          },
+          {
+            "eNum": 2,
+            "type": "Quant1",
+            "qType": "all",
+            "next": [
+              3,
+              5
+            ]
+          },
+          {
+            "type": "Rel",
+            "dir": "R",
+            "eNum": 3,
+            "next": 4,
+            "rType": "relatedEntity"
+          },
+          {
+            "type": "ETyped",
+            "eNum": 4,
+            "eTag": "B",
+            "eType": "Entity"
+          },
+          {
+            "type": "Rel",
+            "dir": "R",
+            "eNum": 5,
+            "next": 6,
+            "rType": "hasEvalue"
+          },
+          {
+            "type": "ETyped",
+            "eNum": 6,
+            "eTag": "Ev",
+            "eType": "Evalue"
+          }
+        ]
+      }
+    },
+    "Element": {
+      "type": "object",
+      "properties": {
+        "eNum": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string"
+        },
+        "eTag": {
+          "type": "string"
+        },
+        "eType": {
+          "type": "string"
+        },
+        "eID": {
+          "type": "string"
+        }
+      }
+    },
     "QueryInfo": {
       "type": "object",
       "properties": {
@@ -611,6 +895,21 @@
           "format": "int32"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "QueryValidation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "error": {
           "type": "string"
         }
       }

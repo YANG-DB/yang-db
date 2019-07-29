@@ -304,7 +304,7 @@ public class KnowledgeInsertLogicalGraphTest {
     }
 
     @Test
-    public void testFetchEntityWithGraphCursor() throws IOException, InterruptedException {
+    public void testFetchEntityWithLogicalGraphCursor() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         String query =

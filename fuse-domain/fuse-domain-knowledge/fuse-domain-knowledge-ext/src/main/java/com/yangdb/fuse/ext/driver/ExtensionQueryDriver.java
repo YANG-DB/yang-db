@@ -21,6 +21,8 @@ package com.yangdb.fuse.ext.driver;
  */
 
 import com.google.inject.Inject;
+import com.yangdb.fuse.assembly.knowledge.KnowledgeGraphHierarchyCursorRequest;
+import com.yangdb.fuse.assembly.knowledge.KnowledgeLogicalGraphCursorRequest;
 import com.yangdb.fuse.assembly.knowledge.asg.AsgClauseTransformer;
 import com.yangdb.fuse.assembly.knowledge.parser.JsonQueryTranslator;
 import com.yangdb.fuse.assembly.knowledge.parser.model.BusinessTypesProvider;
@@ -72,8 +74,7 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
 
     //region Implementation
 
-    @Override
-    public Optional<QueryResourceInfo> create(CreateJsonQueryRequest request) {
+    public Optional<QueryResourceInfo> createClause(CreateJsonQueryRequest request) {
         try {
             QueryMetadata metadata = getQueryMetadata(request);
             Optional<QueryResourceInfo> queryResourceInfo = Optional.empty();
@@ -94,8 +95,7 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
         }
     }
 
-    @Override
-    public Optional<Object> run(String clause, String ontology) {
+    public Optional<Object> runClause(String clause, String ontology) {
         String id = UUID.randomUUID().toString();
         try {
             CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CLAUSE, clause, ontology,new CreateGraphCursorRequest(new CreatePageRequest()));
@@ -113,6 +113,15 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
             delete(id);
         }
     }
+
+    protected CreateJsonQueryRequest createJsonQueryRequest(String cypher, String ontology, String id) {
+        return new CreateJsonQueryRequest(id, id, cypher, ontology, new KnowledgeLogicalGraphCursorRequest(new CreatePageRequest()));
+    }
+
+    protected CreateQueryRequest createQueryRequest(Query query, String id) {
+        return new CreateQueryRequest(id, id, query, new KnowledgeLogicalGraphCursorRequest(new CreatePageRequest()));
+    }
+
 
     //endregion
     private QueryTransformer<String, Query> transformer;

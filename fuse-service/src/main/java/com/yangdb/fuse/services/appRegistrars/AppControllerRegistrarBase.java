@@ -21,7 +21,12 @@ package com.yangdb.fuse.services.appRegistrars;
  */
 
 import com.google.inject.TypeLiteral;
+import com.yangdb.fuse.model.transport.ContentResponse;
 import org.jooby.*;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public abstract class AppControllerRegistrarBase<TController> implements AppRegistrar{
     //region Constructors
@@ -46,8 +51,6 @@ public abstract class AppControllerRegistrarBase<TController> implements AppRegi
 
         return null;
     }
-
-
     //endregion
 
     //region Fields
