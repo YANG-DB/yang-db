@@ -66,6 +66,14 @@ public class EProp extends BaseProp {
         return clone;
     }
 
+    public boolean isProjection() {
+        return getProj()!=null;
+    }
+
+    public boolean isConstraint() {
+        return getCon()!=null;
+    }
+
     //region Static
     public static EProp of(int eNum, String pType, Constraint con) {
         return new EProp(eNum, pType, con);

@@ -1,4 +1,4 @@
-package com.yangdb.fuse.assembly.knowledge;
+package com.yangdb.fuse.assembly.knowledge.asg;
 
 /*-
  * #%L
@@ -24,6 +24,7 @@ import com.yangdb.fuse.asg.strategy.AsgPredicateRoutingStrategy;
 import com.yangdb.fuse.asg.strategy.RuleBoostProvider;
 import com.yangdb.fuse.asg.strategy.schema.LikeAnyConstraintTransformationAsgStrategy;
 import com.yangdb.fuse.asg.strategy.schema.LikeConstraintTransformationAsgStrategy;
+import com.yangdb.fuse.assembly.knowledge.KnowledgeRankingAsgStrategy;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;

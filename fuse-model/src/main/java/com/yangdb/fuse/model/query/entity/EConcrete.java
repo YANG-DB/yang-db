@@ -98,5 +98,10 @@ public class EConcrete extends ETyped implements Typed.eTyped{
     //region Fields
     private String eID;
     private String eName;
+
+    @Override
+    public String getTyped() {
+        return geteType();
+    }
     //endregion
 }

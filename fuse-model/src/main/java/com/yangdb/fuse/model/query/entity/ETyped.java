@@ -72,6 +72,10 @@ public class ETyped extends EEntityBase implements Typed.eTyped {
         return result;
     }
 
+    @Override
+    public String getTyped() {
+        return geteType();
+    }
 
     @Override
     public EBase clone() {

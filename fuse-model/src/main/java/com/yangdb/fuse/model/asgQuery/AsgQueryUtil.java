@@ -78,6 +78,10 @@ public class AsgQueryUtil {
                 .max().getOrElse(0);
     }
 
+    public static int max(AsgQuery query) {
+        return Stream.ofAll(AsgQueryUtil.eNums(query)).max().get();
+    }
+
     public static int maxQuantNum(AsgQuery query) {
         return Stream.ofAll(AsgQueryUtil.eNums(query,
                 asgEBase -> QuantBase.class.isAssignableFrom(asgEBase.geteBase().getClass()))).max().getOrElse(0);

@@ -28,6 +28,8 @@ package com.yangdb.fuse.model.query.entity;
  */
 public interface Typed {
 
+    String getTyped();
+
     interface eTyped extends Typed{
         void seteType(String eType);
 

@@ -35,7 +35,7 @@ public class DragonKingdomQuery4Test extends TestCase {
         /*Query query = Query.Builder.instance().withName(NAME.name).withOnt(ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new EConcrete(1, "A", ont.eType$(OntologyTestUtils.DRAGON.name), "Dragon_100", "D0", singletonList(NAME.type), 2, 0),
-                new Rel(2, ont.rType$(FIRE.getType()), Rel.Direction.R, null, 3, 0),
+                new Rel(2, ont.rType$(FIRE.getTyped()), Rel.Direction.R, null, 3, 0),
                 new ETyped(3, "B", ont.eType$(OntologyTestUtils.DRAGON.name), singletonList(NAME.type), 0, 0)
         )).build();*/
 

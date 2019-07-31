@@ -1,4 +1,4 @@
-package com.yangdb.fuse.services.appRegistrars;
+    package com.yangdb.fuse.services.appRegistrars;
 
 /*-
  * #%L

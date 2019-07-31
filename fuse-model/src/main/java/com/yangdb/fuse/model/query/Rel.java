@@ -40,6 +40,11 @@ import com.yangdb.fuse.model.query.entity.Typed;
         @JsonSubTypes.Type(name = "RelPattern", value = RelPattern.class)})
 public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.rTyped{
 
+    @Override
+    public String getTyped() {
+        return getrType();
+    }
+
     public enum Direction {
         R,
         L,

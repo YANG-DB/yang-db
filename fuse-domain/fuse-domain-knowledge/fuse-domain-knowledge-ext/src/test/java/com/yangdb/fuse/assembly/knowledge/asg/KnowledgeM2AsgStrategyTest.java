@@ -1,14 +1,22 @@
 package com.yangdb.fuse.assembly.knowledge.asg;
 
 import com.yangdb.fuse.asg.AsgQueryTransformer;
+import com.yangdb.fuse.asg.strategy.AsgNamedParametersStrategy;
+import com.yangdb.fuse.asg.strategy.AsgStrategy;
+import com.yangdb.fuse.asg.strategy.AsgStrategyRegistrar;
 import com.yangdb.fuse.asg.strategy.RuleBoostProvider;
-import com.yangdb.fuse.asg.strategy.constraint.ConstraintExpCharEscapeTransformationAsgStrategy;
-import com.yangdb.fuse.assembly.knowledge.KnowledgeM2AsgStrategyRegistrar;
+import com.yangdb.fuse.asg.strategy.constraint.*;
+import com.yangdb.fuse.asg.strategy.propertyGrouping.*;
+import com.yangdb.fuse.asg.strategy.schema.ExactConstraintTransformationAsgStrategy;
+import com.yangdb.fuse.asg.strategy.selection.DefaultRelationSelectionAsgStrategy;
+import com.yangdb.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
+import com.yangdb.fuse.asg.strategy.type.RelationPatternRangeAsgStrategy;
+import com.yangdb.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
 import com.yangdb.fuse.assembly.knowledge.KnowledgeRuleBoostProvider;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.Property;
@@ -27,6 +35,9 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static com.yangdb.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.SchemaFields.*;
+import static com.yangdb.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.SchemaFields.DESCRIPTION;
+import static com.yangdb.fuse.assembly.knowledge.consts.physicalElementProperties.PhysicalReferenceProperties.CONTENT;
 import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.yangdb.fuse.model.query.quant.QuantType.all;
@@ -88,7 +99,30 @@ public class KnowledgeM2AsgStrategyTest {
 
         GraphElementSchemaProviderFactory schemaProviderFactory = ontology1 -> schemaProvider;
 
-        asgStrategy = new AsgQueryTransformer(new KnowledgeM2AsgStrategyRegistrar(ontologyProvider, schemaProviderFactory, boostProvider), ontologyProvider);
+        asgStrategy = new AsgQueryTransformer(() -> Arrays.asList(new AsgNamedParametersStrategy(),
+                new RelationPatternRangeAsgStrategy(),
+                new UntypedInferTypeLeftSideRelationAsgStrategy(),
+                new EPropGroupingAsgStrategy(),
+                new HQuantPropertiesGroupingAsgStrategy(),
+                new Quant1PropertiesGroupingAsgStrategy(),
+                new RelPropGroupingAsgStrategy(),
+                new ConstraintTypeTransformationAsgStrategy(),
+                new ConstraintIterableTransformationAsgStrategy(),
+                new RedundantLikeConstraintAsgStrategy(),
+                new RedundantLikeAnyConstraintAsgStrategy(),
+                new LikeToEqTransformationAsgStrategy(),
+                new ConstraintExpLowercaseTransformationAsgStrategy(Arrays.asList(STRING_VALUE,CONTENT,TITLE,DISPLAY_NAME,DESCRIPTION)),
+                new ExactConstraintTransformationAsgStrategy(ontologyProvider, schemaProviderFactory),
+                //knowledge ranking asg strategies
+                new KnowledgeLikeCombinerStrategy(boostProvider, ontologyProvider, schemaProviderFactory),
+                new ConstraintExpCharEscapeTransformationAsgStrategy(),
+                new RankingPropertiesPropagationAsgStrategy(),
+                new RedundantInSetConstraintAsgStrategy(),
+                new RedundantInRangeConstraintAsgStrategy(),
+                new RedundantPropGroupAsgStrategy(),
+                new DefaultSelectionAsgStrategy(ontologyProvider),
+                new DefaultRelationSelectionAsgStrategy(ontologyProvider)
+        ), ontologyProvider);
     }
     //endregion
 

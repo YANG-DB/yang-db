@@ -1,4 +1,4 @@
-package com.yangdb.fuse.assembly.knowledge;
+package com.yangdb.fuse.assembly.knowledge.asg;
 
 /*-
  * #%L

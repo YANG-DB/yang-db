@@ -1,4 +1,4 @@
-package com.yangdb.fuse.assembly.knowledge;
+package com.yangdb.fuse.assembly.knowledge.asg;
 
 /*-
  * #%L
@@ -32,8 +32,10 @@ import com.yangdb.fuse.asg.strategy.selection.DefaultRelationSelectionAsgStrateg
 import com.yangdb.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.RelationPatternRangeAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
+import com.yangdb.fuse.assembly.knowledge.KnowledgeRuleBoostProvider;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
+import com.yangdb.fuse.model.query.entity.EEntityBase;
 
 import java.util.Arrays;
 
@@ -63,6 +65,7 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
     @Override
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
+                new KnowledgeLogicalEntityGraphTranslatorStrategy(this.ontologyProvider,"Evalue", EEntityBase.class),
                 new AsgNamedParametersStrategy(),
                 new RelationPatternRangeAsgStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
@@ -86,7 +89,6 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new RedundantPropGroupAsgStrategy(),
                 new DefaultSelectionAsgStrategy(this.ontologyProvider),
                 new DefaultRelationSelectionAsgStrategy(this.ontologyProvider)
-
         );
     }
     //endregion
