@@ -52,7 +52,7 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
     @Test
     public void asgLogicalGraphQueryTransformationTest() throws Exception {
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
-        KnowledgeLogicalEntityGraphTranslatorStrategy translatorStrategy = new KnowledgeLogicalEntityGraphTranslatorStrategy(provider, "Evalue", EEntityBase.class);
+        KnowledgeLogicalEntityGraphTranslatorStrategy translatorStrategy = new KnowledgeLogicalEntityGraphTranslatorStrategy(provider, "Entity","Evalue", EEntityBase.class);
 
         String before = AsgQueryDescriptor.print(QIgnore());
         AsgQuery query = QIgnore();
@@ -63,7 +63,9 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         query = QE0();
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity A#1]──Q[3:all]:{4}, \n" +
-                "                                └-> Rel(:hasEvalue null#4)──Typ[:Evalue V.2#5]──?[2]:[fName<like,*>]]";
+                "                                └-> Rel(:hasEvalue null#4)──Typ[:Evalue V.2#5]──?[..][2], \n" +
+                "                                                                                    └─?[5]:[fieldId<eq,fName>], \n" +
+                "                                                                                    └─?[2]:[stringValue<like,*>]]";
 
         //Applying the Strategy on the Eprop with the Epoch time
         translatorStrategy.apply(query, asgStrategyContext);
@@ -71,7 +73,9 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
 
         expected = "[└── Start, \n" +
                 "    ──Typ[:Entity A#1]──Q[2:all]:{4}, \n" +
-                "                                └-> Rel(:hasEvalue null#4)──Typ[:Evalue V.3#5]──?[3]:[fName<like,*>]]";
+                "                                └-> Rel(:hasEvalue null#4)──Typ[:Evalue V.3#5]──?[..][3], \n" +
+                "                                                                                    └─?[5]:[fieldId<eq,fName>], \n" +
+                "                                                                                    └─?[3]:[stringValue<like,*>]]";
         asgStrategyContext = new AsgStrategyContext(ont);
 
         query = QE1();
@@ -82,7 +86,9 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         expected = "[└── Start, \n" +
                 "    ──Typ[:Entity A#1]──Q[2:all]:{5|6}, \n" +
                 "                                  └─?[5]:[creationTime<like,*>], \n" +
-                "                                  └-> Rel(:hasEvalue null#6)──Typ[:Evalue V.4#7]──?[4]:[fName<like,a>]]";
+                "                                  └-> Rel(:hasEvalue null#6)──Typ[:Evalue V.4#7]──?[..][4], \n" +
+                "                                                                                      └─?[7]:[fieldId<eq,fName>], \n" +
+                "                                                                                      └─?[4]:[stringValue<like,a>]]";
         asgStrategyContext = new AsgStrategyContext(ont);
         query = QE2();
         //Applying the Strategy on the Eprop with the Epoch time
@@ -93,7 +99,9 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         expected = "[└── Start, \n" +
                 "    ──Typ[:Entity A#1]──Q[3:all]:{5|6}, \n" +
                 "                                  └─?[5]:[creationTime<like,*>], \n" +
-                "                                  └-> Rel(:hasEvalue null#6)──Typ[:Evalue V.4#7]──?[4]:[fName<like,a>]]";
+                "                                  └-> Rel(:hasEvalue null#6)──Typ[:Evalue V.4#7]──?[..][4], \n" +
+                "                                                                                      └─?[7]:[fieldId<eq,age>], \n" +
+                "                                                                                      └─?[4]:[intValue<gt,10>]]";
         asgStrategyContext = new AsgStrategyContext(ont);
 
         query = QE3();
@@ -106,8 +114,12 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         expected = "[└── Start, \n" +
                 "    ──Typ[:Entity A#1]--> Rel(:hasEntity null#4)──Typ[:Entity B#5]──Q[6:all]:{9|10|12}, \n" +
                 "                                                                                  └─?[9]:[creationTime<like,b*>], \n" +
-                "                                                                                  └-> Rel(:hasEvalue null#10)──Typ[:Evalue V.7#11]──?[7]:[fName<like,a>], \n" +
-                "                                                                                  └-> Rel(:hasEvalue null#12)──Typ[:Evalue V.8#13]──?[8]:[lName<ne,alice>]]";
+                "                                                                                  └-> Rel(:hasEvalue null#10)──Typ[:Evalue V.7#11]──?[..][7], \n" +
+                "                                                                                                                                        └─?[11]:[fieldId<eq,fName>]──Typ[:Evalue V.8#13]──?[..][8], \n" +
+                "                                                                                                                                        └─?[7]:[stringValue<like,a>], \n" +
+                "                                                                                  └-> Rel(:hasEvalue null#12), \n" +
+                "                                                                                                         └─?[13]:[fieldId<eq,birth>], \n" +
+                "                                                                                                         └─?[8]:[dateValue<lt,12/10/2000>]]";
         asgStrategyContext = new AsgStrategyContext(ont);
 
         query = QE4();
@@ -116,11 +128,18 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         assertEquals(expected, AsgQueryDescriptor.print(query));
 
         expected = "[└── Start, \n" +
-                "    ──Typ[:Entity A#1]──Q[2:all]:{4|8|9|11}, \n" +
-                "                                       └-> Rel(:hasEntity null#4)──Typ[:Entity B#5], \n" +
-                "                                       └─?[8]:[creationTime<like,b*>], \n" +
-                "                                       └-> Rel(:hasEvalue null#9)──Typ[:Evalue V.6#10]──?[6]:[fName<like,a>], \n" +
-                "                                       └-> Rel(:hasEvalue null#11)──Typ[:Evalue V.7#12]──?[7]:[lName<ne,alice>]]";
+                "    ──Typ[:Entity A#1]──Q[2:all]:{4|9|10|12|14}, \n" +
+                "                                           └-> Rel(:hasEntity null#4)──Typ[:Entity B#5], \n" +
+                "                                           └─?[9]:[creationTime<like,b*>], \n" +
+                "                                           └-> Rel(:hasEvalue null#10)──Typ[:Evalue V.6#11]──?[..][6], \n" +
+                "                                                                                                 └─?[11]:[fieldId<eq,fName>]──Typ[:Evalue V.7#13]──?[..][7], \n" +
+                "                                                                                                 └─?[6]:[stringValue<like,a>]──Typ[:Evalue V.8#15]──?[..][8], \n" +
+                "                                           └-> Rel(:hasEvalue null#12), \n" +
+                "                                                                  └─?[13]:[fieldId<eq,birth>], \n" +
+                "                                                                  └─?[7]:[dateValue<lt,12/10/2000>], \n" +
+                "                                           └-> Rel(:hasEvalue null#14), \n" +
+                "                                                                  └─?[15]:[fieldId<eq,fName>], \n" +
+                "                                                                  └─?[8]:[creationTime<lt,12/10/2000>]]";
         asgStrategyContext = new AsgStrategyContext(ont);
 
         query = QE5();
@@ -129,16 +148,46 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         assertEquals(expected, AsgQueryDescriptor.print(query));
 
         expected = "[└── Start, \n" +
-                "    ──Typ[:Entity A#1]──Q[2:all]:{3|12|15|17}, \n" +
-                "                                         └-> Rel(:hasEntity null#3)──Typ[:Entity B#4]──Q[7:all]:{8|13}, \n" +
-                "                                                                                                  └─?[8]:[creationUser<like,b*>], \n" +
-                "                                                                                                  └-> Rel(:hasEvalue null#13)──Typ[:Evalue V.9#14]──?[9]:[fName<like,a>]──Typ[:Evalue V.10#16]──?[10]:[fName<like,a>], \n" +
-                "                                         └─?[12]:[creationTime<like,b*>]──Typ[:Evalue V.11#18]──?[11]:[lName<ne,alice>], \n" +
-                "                                         └-> Rel(:hasEvalue null#15), \n" +
-                "                                         └-> Rel(:hasEvalue null#17)]";
+                "    ──Typ[:Entity A#1]──Q[2:all]:{3|13|16|18|20}, \n" +
+                "                                            └-> Rel(:hasEntity null#3)──Typ[:Entity B#4]──Q[7:all]:{8|14}, \n" +
+                "                                                                                                     └─?[8]:[creationUser<like,b*>], \n" +
+                "                                                                                                     └-> Rel(:hasEvalue null#14)──Typ[:Evalue V.9#15]──?[..][9]──Typ[:Evalue V.10#17]──?[..][10], \n" +
+                "                                                                                                                                                           └─?[15]:[fieldId<eq,fName>]──Typ[:Evalue V.11#19]──?[..][11], \n" +
+                "                                                                                                                                                           └─?[9]:[stringValue<like,a>]──Typ[:Evalue V.12#21]──?[..][12], \n" +
+                "                                            └─?[13]:[creationTime<like,b*>], \n" +
+                "                                            └-> Rel(:hasEvalue null#16), \n" +
+                "                                                                   └─?[17]:[fieldId<eq,fName>], \n" +
+                "                                                                   └─?[10]:[stringValue<like,a>], \n" +
+                "                                            └-> Rel(:hasEvalue null#18), \n" +
+                "                                                                   └─?[19]:[fieldId<eq,birth>], \n" +
+                "                                                                   └─?[11]:[dateValue<lt,12/10/2000>], \n" +
+                "                                            └-> Rel(:hasEvalue null#20), \n" +
+                "                                                                   └─?[21]:[fieldId<eq,fName>], \n" +
+                "                                                                   └─?[12]:[creationTime<lt,12/10/2000>]]";
         asgStrategyContext = new AsgStrategyContext(ont);
 
         query = QE6();
+        //Applying the Strategy on the Eprop with the Epoch time
+        translatorStrategy.apply(query, asgStrategyContext);
+        assertEquals(expected, AsgQueryDescriptor.print(query));
+
+        expected = "[└── Start, \n" +
+                "    ──Typ[:Entity A#1]──Q[3:all]:{4}, \n" +
+                "                                └-> Rel(:hasEvalue null#4)──Typ[:Evalue V.2#5]──?[2]:[stringValue<like,*>]]";
+        asgStrategyContext = new AsgStrategyContext(ont);
+
+        query = QE7();
+        //Applying the Strategy on the Eprop with the Epoch time
+        translatorStrategy.apply(query, asgStrategyContext);
+        assertEquals(expected, AsgQueryDescriptor.print(query));
+
+
+        expected = "[└── Start, \n" +
+                "    ──Typ[:Entity A#1]──Q[3:all]:{5}, \n" +
+                "                                └-> Rel(:hasEvalue null#5)──Typ[:Evalue V.4#6]──?[4]:[stringValue<like,*>]]";
+        asgStrategyContext = new AsgStrategyContext(ont);
+
+        query = QE8();
         //Applying the Strategy on the Eprop with the Epoch time
         translatorStrategy.apply(query, asgStrategyContext);
         assertEquals(expected, AsgQueryDescriptor.print(query));
@@ -148,23 +197,31 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
     private AsgQuery QIgnore() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "Knowledge")
                 .next(typed(1, "Evalue", "A"))
-                .next(eProp(2, "fName", Constraint.of(ConstraintOp.like, "*")))
+                .next(eProp(2, "fieldId", Constraint.of(ConstraintOp.like, "*")))
                 .build();
         return asgQuery;
     }
 
-    private AsgQuery QR0() {
-        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "Knowledge")
-                .next(typed(1, "Rel", "A"))
-                .next(eProp(2, "fName", Constraint.of(ConstraintOp.like, "*")))
-                .build();
-        return asgQuery;
-    }
 
     private AsgQuery QE0() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "Knowledge")
                 .next(typed(1, "Entity", "A"))
-                .next(eProp(2, "fName", Constraint.of(ConstraintOp.like, "*")))
+                .next(eProp(2, "fName.stringValue", Constraint.of(ConstraintOp.like, "*")))
+                .build();
+        return asgQuery;
+    }
+
+    private AsgQuery QE7() {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "Knowledge")
+                .next(typed(1, "Entity", "A"))
+                .next(eProp(2, "stringValue", Constraint.of(ConstraintOp.like, "*")))
+                .build();
+        return asgQuery;
+    }
+    private AsgQuery QE8() {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "Knowledge")
+                .next(typed(1, "Entity", "A"))
+                .next(ePropGroup(2,EProp.of(3, "stringValue", Constraint.of(ConstraintOp.like, "*"))))
                 .build();
         return asgQuery;
     }
@@ -173,7 +230,7 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "Knowledge")
                 .next(typed(1, "Entity", "A"))
                 .next(quant1(2, all))
-                .in(eProp(3, "fName", Constraint.of(ConstraintOp.like, "*")))
+                .in(eProp(3, "fName.stringValue", Constraint.of(ConstraintOp.like, "*")))
                 .build();
         return asgQuery;
     }
@@ -182,7 +239,7 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "Knowledge")
                 .next(typed(1, "Entity", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of(3, "fName", Constraint.of(ConstraintOp.like, "a")),
+                .in(ePropGroup(3, EProp.of(3, "fName.stringValue", Constraint.of(ConstraintOp.like, "a")),
                         EProp.of(3, "creationTime", Constraint.of(ConstraintOp.like, "*"))))
                 .build();
         return asgQuery;
@@ -192,7 +249,7 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "Knowledge")
                 .next(typed(1, "Entity", "A"))
                 .next(ePropGroup(2,
-                        EProp.of(2, "fName", Constraint.of(ConstraintOp.like, "a")),
+                        EProp.of(2, "age.intValue", Constraint.of(ConstraintOp.gt, 10)),
                         EProp.of(2, "creationTime", Constraint.of(ConstraintOp.like, "*"))))
                 .build();
         return asgQuery;
@@ -204,8 +261,8 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
                 .next(rel(4, "hasEntity", Rel.Direction.R))
                 .next(typed(5, "Entity", "B"))
                 .next(ePropGroup(3,
-                        EProp.of(3, "fName", Constraint.of(ConstraintOp.like, "a")),
-                        EProp.of(3, "lName", Constraint.of(ConstraintOp.ne, "alice")),
+                        EProp.of(3, "fName.stringValue", Constraint.of(ConstraintOp.like, "a")),
+                        EProp.of(3, "birth.dateValue", Constraint.of(ConstraintOp.lt, "12/10/2000")),
                         EProp.of(3, "creationTime", Constraint.of(ConstraintOp.like, "b*"))))
                 .build();
         return asgQuery;
@@ -218,8 +275,9 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
                 .in(
                         rel(4, "hasEntity", Rel.Direction.R).next(typed(5, "Entity", "B")),
                         ePropGroup(3,
-                                EProp.of(3, "fName", Constraint.of(ConstraintOp.like, "a")),
-                                EProp.of(3, "lName", Constraint.of(ConstraintOp.ne, "alice")),
+                                EProp.of(3, "fName.stringValue", Constraint.of(ConstraintOp.like, "a")),
+                                EProp.of(3, "birth.dateValue", Constraint.of(ConstraintOp.lt, "12/10/2000")),
+                                EProp.of(3, "fName.creationTime", Constraint.of(ConstraintOp.lt, "12/10/2000")),
                                 EProp.of(3, "creationTime", Constraint.of(ConstraintOp.like, "b*"))))
                 .build();
         return asgQuery;
@@ -233,10 +291,11 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
                         rel(3, "hasEntity", Rel.Direction.R).next(typed(4, "Entity", "B")
                                 .next(ePropGroup(5,
                                         EProp.of(5, "creationUser", Constraint.of(ConstraintOp.like, "b*")),
-                                        EProp.of(5, "fName", Constraint.of(ConstraintOp.like, "a"))))),
+                                        EProp.of(5, "fName.stringValue", Constraint.of(ConstraintOp.like, "a"))))),
                         ePropGroup(6,
-                                EProp.of(6, "fName", Constraint.of(ConstraintOp.like, "a")),
-                                EProp.of(6, "lName", Constraint.of(ConstraintOp.ne, "alice")),
+                                EProp.of(6, "fName.stringValue", Constraint.of(ConstraintOp.like, "a")),
+                                EProp.of(6, "birth.dateValue", Constraint.of(ConstraintOp.lt, "12/10/2000")),
+                                EProp.of(6, "fName.creationTime", Constraint.of(ConstraintOp.lt, "12/10/2000")),
                                 EProp.of(6, "creationTime", Constraint.of(ConstraintOp.like, "b*"))))
                 .build();
         return asgQuery;

@@ -31,9 +31,10 @@ import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.Typed;
-import com.yangdb.fuse.model.query.properties.CalculatedEProp;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.EPropGroup;
+import com.yangdb.fuse.model.query.properties.constraint.Constraint;
+import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantBase;
 import com.yangdb.fuse.model.query.quant.QuantType;
@@ -50,8 +51,9 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
     //region Constructors
 
     public KnowledgeLogicalEntityGraphTranslatorStrategy(OntologyProvider ontologyProvider,
-                                                         String pType,Class<? extends EBase> clazz) {
+                                                         String eType, String pType, Class<? extends EBase> clazz) {
         this.ontologyProvider = ontologyProvider;
+        this.eType = eType;
         this.pType = pType;
         this.clazz = clazz;
     }
@@ -75,13 +77,13 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
             //if group has no quant parent -> make one ...
             if (group.getParents().stream().noneMatch(p -> p.geteBase() instanceof QuantBase)) {
                 //create quant as parent to group
-                group.getParents().forEach(p->AsgQueryUtil.addAsNext(new AsgEBase<>(new Quant1(counter.incrementAndGet(), QuantType.all)),p));
+                group.getParents().forEach(p -> AsgQueryUtil.addAsNext(new AsgEBase<>(new Quant1(counter.incrementAndGet(), QuantType.all)), p));
             }
             AsgEBase<? extends EBase> quant = group.getParents().stream().filter(p -> p.geteBase() instanceof QuantBase).findAny().get();
             //add eprops directly under quant
-            g.findAll(p->true).forEach(p->quant.addNext(p.isProjection() ?
-                    new AsgEBase<>(new EProp(counter.incrementAndGet(),p.getpType(),p.getProj())) :
-                    new AsgEBase<>(new EProp(counter.incrementAndGet(),p.getpType(),p.getCon()))));
+            g.findAll(p -> true).forEach(p -> quant.addNext(p.isProjection() ?
+                    new AsgEBase<>(new EProp(counter.incrementAndGet(), p.getpType(), p.getProj())) :
+                    new AsgEBase<>(new EProp(counter.incrementAndGet(), p.getpType(), p.getCon()))));
 
             quant.removeNextChild(group);
         });
@@ -89,27 +91,41 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
         //process Fields (EProps)
         AsgQueryUtil.getEprops(query)
                 .stream()
-                //skip metadata properties
-                .filter(eProp -> !ont.pType(eProp.getpType()).isPresent())
-                .filter(eProp -> !(eProp instanceof CalculatedEProp))
+                //skip entity (metadata) properties
+                .filter(eProp -> !ont.entity$(eType).getProperties().contains(eProp.getpType()))
                 .forEach(eProp -> {
                     //this eprop is not metadata -> should be moved to EValue step
                     Optional<AsgEBase<EBase>> asgEprop = AsgQueryUtil.get(query.getStart(), eProp.geteNum());
                     //replace Evalue
-                    replace(query, counter, eProp, asgEprop, AsgQueryUtil.pathToAncestor(asgEprop.get(), clazz), pType);
+                    replace(counter, ont, eProp, asgEprop, AsgQueryUtil.pathToAncestor(asgEprop.get(), clazz), pType);
                 });
     }
 
-    private void replace(AsgQuery query, AtomicInteger counter, EProp eProp, Optional<AsgEBase<EBase>> asgEprop, List<AsgEBase<? extends EBase>> path, String pType) {
+    private void replace(AtomicInteger counter, Ontology.Accessor ont, EProp eProp, Optional<AsgEBase<EBase>> asgEprop, List<AsgEBase<? extends EBase>> path, String pType) {
         if (path.isEmpty())
             return;
-        //exit if base is of Evalue / Rvalue
-        if (path.stream()
-                .filter(p->p instanceof Typed)
-                .anyMatch(e->((Typed)e.geteBase()).getTyped().equals(pType))) return;
 
         //property must be directly under EEntityBase or under QuantBase which in turn is under EEntityBase - total max 2 hops
         AsgEBase<EBase> eBase = (AsgEBase<EBase>) path.get(path.size() - 1);
+
+        //only manage eType entities according to ctor param
+        if(!((Typed) eBase.geteBase()).getTyped().equals(eType))
+            return;
+
+        //exit if base is of Evalue / Rvalue
+        if (path.stream()
+                .filter(p -> p instanceof Typed)
+                .anyMatch(e -> ((Typed) e.geteBase()).getTyped().equals(pType))) return;
+
+
+        // skip unmatched properties which are not a composite propertyType structure ${fieldId}.pType
+        if (!eProp.getpType().contains(".") && !ont.entity$(pType).getProperties().contains(eProp.getpType()))
+            return;
+
+        // skip unmatched properties which are a composite propertyType structure ${fieldId}.pType and second property is not unmatched
+        if (eProp.getpType().contains("[.]") && !ont.entity$(pType).getProperties().contains(eProp.getpType().split("[.]")[1]))
+            return;
+
 
         if (path.size() <= 3) {
             //add the EValue type node to the quant with hasEvalue rel in between
@@ -126,8 +142,21 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
             AsgEBase<Rel> hasValue = new AsgEBase<>(new Rel(counter.incrementAndGet(), "has" + pType, Rel.Direction.R, null, counter.incrementAndGet()));
             AsgEBase<EBase> value = new AsgEBase<>(new ETyped(counter.get(), "V." + eProp.geteNum(), pType, asgEprop.get().geteNum()));
             hasValue.addNext(value);
-            value.addNext(asgEprop.get());
 
+            //in case of composite eProp name -> add fieldId & ***Value as EpropGroup
+            if (eProp.getpType().contains(".")) {
+                String fieldIdName = eProp.getpType().split("[.]")[0];
+                String fieldType = eProp.getpType().split("[.]")[1];
+                //change composite field type to specific field type
+                eProp.setpType(fieldType);
+
+                EPropGroup group = new EPropGroup(asgEprop.get().geteNum(),
+                        new EProp(counter.get(), "fieldId", Constraint.of(ConstraintOp.eq, fieldIdName)),
+                        eProp);
+                asgEprop.get().seteBase(group);
+            }
+
+            value.addNext(asgEprop.get());
             //add chain to quant
             quant.get().addNext(hasValue);
         }
@@ -141,6 +170,7 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
 
     //region Fields
     private OntologyProvider ontologyProvider;
+    private String eType;
     private String pType;
     private Class<? extends EBase> clazz;
     //endregion

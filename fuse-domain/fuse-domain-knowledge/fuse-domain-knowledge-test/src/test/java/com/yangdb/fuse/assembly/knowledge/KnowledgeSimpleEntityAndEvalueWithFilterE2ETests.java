@@ -139,6 +139,33 @@ public class KnowledgeSimpleEntityAndEvalueWithFilterE2ETests {
         // Check if expected results and actual results are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
+    @Test
+    public void testLogicalQueryEqByEntityCategoryAndEvalueFieldId() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Entity", 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
+                        new EProp(3, "category", Constraint.of(ConstraintOp.eq, e1.category)),
+                        new Rel(4, "hasEvalue", R, null, 5, 0),
+                        new ETyped(5, "V", "Evalue", 6, 0),
+                        new EProp(6, "fieldId", Constraint.of(ConstraintOp.eq, v1.fieldId))
+                )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
+                .withAssignment(Assignment.Builder.instance()
+                        .withEntity(e1.toEntity())
+                        .withEntity(v1.toEntity())
+                        .withRelationships(e1.withRelations("hasEvalue", v1.id()))
+                        .build())
+                .build();
+
+        // Check if expected results and actual results are equal
+        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
 
     @Test
     public void testEqByEvalueFieldIdAndEntity() throws IOException, InterruptedException {
