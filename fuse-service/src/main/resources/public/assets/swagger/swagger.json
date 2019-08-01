@@ -804,8 +804,8 @@
         "tags": [
           "upload"
         ],
-        "summary": "Upload Zip File with Logical graph into DB according to specific ontology Transformer (see /catalog/ontology)",
-        "consumes": ["multipart/form-data"],
+        "summary": "Upload json/zip File with Logical graph into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "consumes": ["multipart/form-data","application/x-www-form-urlencoded"],
         "parameters": [
           {
             "name": "id",
@@ -816,7 +816,7 @@
           },
           {
             "in": "formData",
-            "name": "upfile",
+            "name": "file",
             "description": "file",
             "required": true,
             "type": "file"
