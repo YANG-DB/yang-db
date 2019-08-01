@@ -23,6 +23,8 @@ package com.yangdb.fuse.assembly.knowledge;
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
 import com.yangdb.fuse.assembly.knowledge.cursor.KnowledgeGraphHierarchyTraversalCursor;
 import com.yangdb.fuse.assembly.knowledge.cursor.KnowledgeLogicalGraphCursor;
 import com.yangdb.fuse.assembly.knowledge.parser.FolderBasedTypeProvider;
@@ -33,8 +35,6 @@ import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.ext.driver.ExtensionQueryDriver;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.services.KnowledgeExtensionQueryController;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigException;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 

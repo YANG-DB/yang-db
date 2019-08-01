@@ -1015,6 +1015,16 @@ public class AsgQueryUtil {
         return newValues;
     }
 
+    public static  <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz) {
+        final List<AsgEBase<? extends EBase>> path = AsgQueryUtil.pathToAncestor(eProp, clazz);
+        Optional<AsgEBase<T>> element = Optional.empty();
+        if(!path.isEmpty() && path.size()==2)
+            element = Optional.of((AsgEBase<T>) path.get(1));
+        if(!path.isEmpty() && path.size()==3 && QuantBase.class.isAssignableFrom(path.get(1).geteBase().getClass()))
+            element = Optional.of((AsgEBase<T>) path.get(2));
+        return element;
+    }
+
     public static List<AsgEBase<? extends EBase>> path(
             AsgEBase<? extends EBase> asgEBase,
             Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> elementProvider,

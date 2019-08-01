@@ -41,6 +41,7 @@ import javaslang.collection.Stream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.model.asgQuery.AsgQueryUtil.calculateNextAncestor;
 import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.ignorableConstraints;
 import static com.yangdb.fuse.model.validation.ValidationResult.OK;
 import static com.yangdb.fuse.model.validation.ValidationResult.print;
@@ -83,14 +84,14 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
     }
     //endregion
 
-    private List<String> check(Ontology.Accessor accessor, AsgEBase<EEntityBase> base, EPropGroup property) {
+    protected List<String> check(Ontology.Accessor accessor, AsgEBase<EEntityBase> base, EPropGroup property) {
         return property.getProps().stream()
                 .filter(prop->!CalculatedEProp.class.isAssignableFrom(prop.getClass()))
                 .map(prop->check(accessor,base,prop))
                 .flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    private List<String> check(Ontology.Accessor accessor, AsgEBase<EEntityBase> base, EProp property) {
+    protected List<String> check(Ontology.Accessor accessor, AsgEBase<EEntityBase> base, EProp property) {
         List<String> errors = new ArrayList<>();
         if (base.geteBase() instanceof Typed.eTyped) {
             EntityType entityType = accessor.$entity$(((Typed.eTyped) base.geteBase()).geteType());
@@ -139,13 +140,4 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
         return errors;
     }
 
-    public static  <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz) {
-        final List<AsgEBase<? extends EBase>> path = AsgQueryUtil.pathToAncestor(eProp, clazz);
-        Optional<AsgEBase<T>> element = Optional.empty();
-        if(!path.isEmpty() && path.size()==2)
-            element = Optional.of((AsgEBase<T>) path.get(1));
-        if(!path.isEmpty() && path.size()==3 && QuantBase.class.isAssignableFrom(path.get(1).geteBase().getClass()))
-            element = Optional.of((AsgEBase<T>) path.get(2));
-        return element;
-    }
 }
