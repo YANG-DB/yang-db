@@ -27,6 +27,8 @@ import org.jooby.Jooby;
 import org.jooby.Results;
 import org.jooby.Upload;
 
+import java.io.File;
+
 public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<DataLoaderController> {
     //region Constructors
     public DataLoaderControllerRegistrar() {
@@ -46,7 +48,8 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                     Upload upload = req.file("file");
                     try {
                         //todo check file type -> process zipped file
-                        return Results.with(this.getController(app).load(req.param("id").value(), upload.file()));
+                        File file = upload.file();
+                        return Results.with(this.getController(app).load(req.param("id").value(), file));
                     } finally {
                         upload.close();
                     }

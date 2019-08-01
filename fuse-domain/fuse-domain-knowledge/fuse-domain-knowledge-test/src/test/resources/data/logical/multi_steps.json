@@ -5,6 +5,7 @@
         "group": 1
       },
       "id": "Myriel",
+      "label": "Person",
       "properties": {
         "name": "Myriel"
       }
@@ -14,6 +15,7 @@
         "group": 1
       },
       "id": "Napoleon",
+      "label": "Person",
       "properties": {
         "name": "Napoleon"
       }
@@ -23,6 +25,7 @@
         "group": 1
       },
       "id": "Mlle.Baptistine",
+      "label": "Person",
       "properties": {
         "name": "Mlle.Baptistine"
       }
@@ -32,6 +35,7 @@
         "group": 1
       },
       "id": "Mme.Magloire",
+      "label": "Person",
       "properties": {
         "name": "Mme.Magloire"
       }
@@ -41,6 +45,7 @@
         "group": 1
       },
       "id": "CountessdeLo",
+      "label": "Person",
       "properties": {
         "name": "CountessdeLo"
       }
@@ -50,6 +55,7 @@
         "group": 1
       },
       "id": "Geborand",
+      "label": "Person",
       "properties": {
         "name": "Geborand"
       }
@@ -59,6 +65,7 @@
         "group": 1
       },
       "id": "Champtercier",
+      "label": "Person",
       "properties": {
         "name": "Champtercier"
       }
@@ -68,6 +75,7 @@
         "group": 1
       },
       "id": "Cravatte",
+      "label": "Person",
       "properties": {
         "name": "Cravatte"
       }
@@ -77,6 +85,7 @@
         "group": 1
       },
       "id": "Count",
+      "label": "Person",
       "properties": {
         "name": "Count"
       }
@@ -86,6 +95,7 @@
         "group": 1
       },
       "id": "OldMan",
+      "label": "Person",
       "properties": {
         "name": "OldMan"
       }

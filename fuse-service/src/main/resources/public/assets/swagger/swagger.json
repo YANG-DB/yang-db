@@ -1148,6 +1148,7 @@
               "group": 1
             },
             "id": "Myriel",
+            "label": "Person",
             "properties": {
               "name": "Myriel"
             }
@@ -1157,6 +1158,7 @@
               "group": 1
             },
             "id": "Napoleon",
+            "label": "Person",
             "properties": {
               "name": "Napoleon"
             }
@@ -1166,6 +1168,7 @@
               "group": 1
             },
             "id": "Mlle.Baptistine",
+            "label": "Person",
             "properties": {
               "name": "Mlle.Baptistine"
             }
@@ -1175,6 +1178,7 @@
               "group": 1
             },
             "id": "Mme.Magloire",
+            "label": "Person",
             "properties": {
               "name": "Mme.Magloire"
             }
@@ -1184,6 +1188,7 @@
               "group": 1
             },
             "id": "CountessdeLo",
+            "label": "Person",
             "properties": {
               "name": "CountessdeLo"
             }
@@ -1193,6 +1198,7 @@
               "group": 1
             },
             "id": "Geborand",
+            "label": "Person",
             "properties": {
               "name": "Geborand"
             }
@@ -1202,6 +1208,7 @@
               "group": 1
             },
             "id": "Champtercier",
+            "label": "Person",
             "properties": {
               "name": "Champtercier"
             }
@@ -1211,6 +1218,7 @@
               "group": 1
             },
             "id": "Cravatte",
+            "label": "Person",
             "properties": {
               "name": "Cravatte"
             }
@@ -1220,6 +1228,7 @@
               "group": 1
             },
             "id": "Count",
+            "label": "Person",
             "properties": {
               "name": "Count"
             }
@@ -1229,6 +1238,7 @@
               "group": 1
             },
             "id": "OldMan",
+            "label": "Person",
             "properties": {
               "name": "OldMan"
             }
@@ -1238,6 +1248,7 @@
               "group": 2
             },
             "id": "Labarre",
+            "label": "Person",
             "properties": {
               "name": "Labarre"
             }
@@ -1247,6 +1258,7 @@
               "group": 2
             },
             "id": "Valjean",
+            "label": "Person",
             "properties": {
               "name": "Valjean"
             }
@@ -1256,6 +1268,7 @@
               "group": 3
             },
             "id": "Marguerite",
+            "label": "Person",
             "properties": {
               "name": "Marguerite"
             }
@@ -1265,6 +1278,7 @@
               "group": 2
             },
             "id": "Mme.deR",
+            "label": "Person",
             "properties": {
               "name": "Mme.deR"
             }
@@ -1274,6 +1288,7 @@
               "group": 2
             },
             "id": "Isabeau",
+            "label": "Person",
             "properties": {
               "name": "Isabeau"
             }
@@ -1283,6 +1298,7 @@
               "group": 2
             },
             "id": "Gervais",
+            "label": "Person",
             "properties": {
               "name": "Gervais"
             }
@@ -1292,6 +1308,7 @@
               "group": 3
             },
             "id": "Tholomyes",
+            "label": "Person",
             "properties": {
               "name": "Tholomyes"
             }
@@ -1301,6 +1318,7 @@
               "group": 3
             },
             "id": "Listolier",
+            "label": "Person",
             "properties": {
               "name": "Listolier"
             }
@@ -1310,6 +1328,7 @@
               "group": 3
             },
             "id": "Fameuil",
+            "label": "Person",
             "properties": {
               "name": "Fameuil"
             }
@@ -1319,6 +1338,7 @@
               "group": 3
             },
             "id": "Blacheville",
+            "label": "Person",
             "properties": {
               "name": "Blacheville"
             }
@@ -1328,6 +1348,7 @@
               "group": 3
             },
             "id": "Favourite",
+            "label": "Person",
             "properties": {
               "name": "Favourite"
             }
@@ -1337,6 +1358,7 @@
               "group": 3
             },
             "id": "Dahlia",
+            "label": "Person",
             "properties": {
               "name": "Dahlia"
             }
@@ -1346,6 +1368,7 @@
               "group": 3
             },
             "id": "Zephine",
+            "label": "Person",
             "properties": {
               "name": "Zephine"
             }
@@ -1355,6 +1378,7 @@
               "group": 3
             },
             "id": "Fantine",
+            "label": "Person",
             "properties": {
               "name": "Fantine"
             }
@@ -1364,6 +1388,7 @@
               "group": 4
             },
             "id": "Mme.Thenardier",
+            "label": "Person",
             "properties": {
               "name": "Mme.Thenardier"
             }
@@ -1373,6 +1398,7 @@
               "group": 4
             },
             "id": "Thenardier",
+            "label": "Person",
             "properties": {
               "name": "Thenardier"
             }
@@ -1382,6 +1408,7 @@
               "group": 5
             },
             "id": "Cosette",
+            "label": "Person",
             "properties": {
               "name": "Cosette"
             }
@@ -1391,6 +1418,7 @@
               "group": 4
             },
             "id": "Javert",
+            "label": "Person",
             "properties": {
               "name": "Javert"
             }
@@ -1400,6 +1428,7 @@
               "group": 0
             },
             "id": "Fauchelevent",
+            "label": "Person",
             "properties": {
               "name": "Fauchelevent"
             }
@@ -1409,6 +1438,7 @@
               "group": 2
             },
             "id": "Bamatabois",
+            "label": "Person",
             "properties": {
               "name": "Bamatabois"
             }
@@ -1418,6 +1448,7 @@
               "group": 3
             },
             "id": "Perpetue",
+            "label": "Person",
             "properties": {
               "name": "Perpetue"
             }
@@ -1427,6 +1458,7 @@
               "group": 2
             },
             "id": "Simplice",
+            "label": "Person",
             "properties": {
               "name": "Simplice"
             }
@@ -1436,6 +1468,7 @@
               "group": 2
             },
             "id": "Scaufflaire",
+            "label": "Person",
             "properties": {
               "name": "Scaufflaire"
             }
@@ -1445,6 +1478,7 @@
               "group": 2
             },
             "id": "Woman1",
+            "label": "Person",
             "properties": {
               "name": "Woman1"
             }
@@ -1454,6 +1488,7 @@
               "group": 2
             },
             "id": "Judge",
+            "label": "Person",
             "properties": {
               "name": "Judge"
             }
@@ -1463,6 +1498,7 @@
               "group": 2
             },
             "id": "Champmathieu",
+            "label": "Person",
             "properties": {
               "name": "Champmathieu"
             }
@@ -1472,6 +1508,7 @@
               "group": 2
             },
             "id": "Brevet",
+            "label": "Person",
             "properties": {
               "name": "Brevet"
             }
@@ -1481,6 +1518,7 @@
               "group": 2
             },
             "id": "Chenildieu",
+            "label": "Person",
             "properties": {
               "name": "Chenildieu"
             }
@@ -1490,6 +1528,7 @@
               "group": 2
             },
             "id": "Cochepaille",
+            "label": "Person",
             "properties": {
               "name": "Cochepaille"
             }
@@ -1499,6 +1538,7 @@
               "group": 4
             },
             "id": "Pontmercy",
+            "label": "Person",
             "properties": {
               "name": "Pontmercy"
             }
@@ -1508,6 +1548,7 @@
               "group": 6
             },
             "id": "Boulatruelle",
+            "label": "Person",
             "properties": {
               "name": "Boulatruelle"
             }
@@ -1517,6 +1558,7 @@
               "group": 4
             },
             "id": "Eponine",
+            "label": "Person",
             "properties": {
               "name": "Eponine"
             }
@@ -1526,6 +1568,7 @@
               "group": 4
             },
             "id": "Anzelma",
+            "label": "Person",
             "properties": {
               "name": "Anzelma"
             }
@@ -1535,6 +1578,7 @@
               "group": 5
             },
             "id": "Woman2",
+            "label": "Person",
             "properties": {
               "name": "Woman2"
             }
@@ -1544,6 +1588,7 @@
               "group": 0
             },
             "id": "MotherInnocent",
+            "label": "Person",
             "properties": {
               "name": "MotherInnocent"
             }
@@ -1553,6 +1598,7 @@
               "group": 0
             },
             "id": "Gribier",
+            "label": "Person",
             "properties": {
               "name": "Gribier"
             }
@@ -1562,6 +1608,7 @@
               "group": 7
             },
             "id": "Jondrette",
+            "label": "Person",
             "properties": {
               "name": "Jondrette"
             }
@@ -1571,6 +1618,7 @@
               "group": 7
             },
             "id": "Mme.Burgon",
+            "label": "Person",
             "properties": {
               "name": "Mme.Burgon"
             }
@@ -1580,6 +1628,7 @@
               "group": 8
             },
             "id": "Gavroche",
+            "label": "Person",
             "properties": {
               "name": "Gavroche"
             }
@@ -1589,6 +1638,7 @@
               "group": 5
             },
             "id": "Gillenormand",
+            "label": "Person",
             "properties": {
               "name": "Gillenormand"
             }
@@ -1598,6 +1648,7 @@
               "group": 5
             },
             "id": "Magnon",
+            "label": "Person",
             "properties": {
               "name": "Magnon"
             }
@@ -1607,6 +1658,7 @@
               "group": 5
             },
             "id": "Mlle.Gillenormand",
+            "label": "Person",
             "properties": {
               "name": "Mlle.Gillenormand"
             }
@@ -1616,6 +1668,7 @@
               "group": 5
             },
             "id": "Mme.Pontmercy",
+            "label": "Person",
             "properties": {
               "name": "Mme.Pontmercy"
             }
@@ -1625,6 +1678,7 @@
               "group": 5
             },
             "id": "Mlle.Vaubois",
+            "label": "Person",
             "properties": {
               "name": "Mlle.Vaubois"
             }
@@ -1634,6 +1688,7 @@
               "group": 5
             },
             "id": "Lt.Gillenormand",
+            "label": "Person",
             "properties": {
               "name": "Lt.Gillenormand"
             }
@@ -1643,6 +1698,7 @@
               "group": 8
             },
             "id": "Marius",
+            "label": "Person",
             "properties": {
               "name": "Marius"
             }
@@ -1652,6 +1708,7 @@
               "group": 5
             },
             "id": "BaronessT",
+            "label": "Person",
             "properties": {
               "name": "BaronessT"
             }
@@ -1661,6 +1718,7 @@
               "group": 8
             },
             "id": "Mabeuf",
+            "label": "Person",
             "properties": {
               "name": "Mabeuf"
             }
@@ -1670,6 +1728,7 @@
               "group": 8
             },
             "id": "Enjolras",
+            "label": "Person",
             "properties": {
               "name": "Enjolras"
             }
@@ -1679,6 +1738,7 @@
               "group": 8
             },
             "id": "Combeferre",
+            "label": "Person",
             "properties": {
               "name": "Combeferre"
             }
@@ -1688,6 +1748,7 @@
               "group": 8
             },
             "id": "Prouvaire",
+            "label": "Person",
             "properties": {
               "name": "Prouvaire"
             }
@@ -1697,6 +1758,7 @@
               "group": 8
             },
             "id": "Feuilly",
+            "label": "Person",
             "properties": {
               "name": "Feuilly"
             }
@@ -1706,6 +1768,7 @@
               "group": 8
             },
             "id": "Courfeyrac",
+            "label": "Person",
             "properties": {
               "name": "Courfeyrac"
             }
@@ -1715,6 +1778,7 @@
               "group": 8
             },
             "id": "Bahorel",
+            "label": "Person",
             "properties": {
               "name": "Bahorel"
             }
@@ -1724,6 +1788,7 @@
               "group": 8
             },
             "id": "Bossuet",
+            "label": "Person",
             "properties": {
               "name": "Bossuet"
             }
@@ -1733,6 +1798,7 @@
               "group": 8
             },
             "id": "Joly",
+            "label": "Person",
             "properties": {
               "name": "Joly"
             }
@@ -1742,6 +1808,7 @@
               "group": 8
             },
             "id": "Grantaire",
+            "label": "Person",
             "properties": {
               "name": "Grantaire"
             }
@@ -1751,6 +1818,7 @@
               "group": 9
             },
             "id": "MotherPlutarch",
+            "label": "Person",
             "properties": {
               "name": "MotherPlutarch"
             }
@@ -1760,6 +1828,7 @@
               "group": 4
             },
             "id": "Gueulemer",
+            "label": "Person",
             "properties": {
               "name": "Gueulemer"
             }
@@ -1769,6 +1838,7 @@
               "group": 4
             },
             "id": "Babet",
+            "label": "Person",
             "properties": {
               "name": "Babet"
             }
@@ -1778,6 +1848,7 @@
               "group": 4
             },
             "id": "Claquesous",
+            "label": "Person",
             "properties": {
               "name": "Claquesous"
             }
@@ -1787,6 +1858,7 @@
               "group": 4
             },
             "id": "Montparnasse",
+            "label": "Person",
             "properties": {
               "name": "Montparnasse"
             }
@@ -1796,6 +1868,7 @@
               "group": 5
             },
             "id": "Toussaint",
+            "label": "Person",
             "properties": {
               "name": "Toussaint"
             }
@@ -1805,6 +1878,7 @@
               "group": 10
             },
             "id": "Child1",
+            "label": "Person",
             "properties": {
               "name": "Child1"
             }
@@ -1814,6 +1888,7 @@
               "group": 10
             },
             "id": "Child2",
+            "label": "Person",
             "properties": {
               "name": "Child2"
             }
@@ -1823,6 +1898,7 @@
               "group": 4
             },
             "id": "Brujon",
+            "label": "Person",
             "properties": {
               "name": "Brujon"
             }
@@ -1832,6 +1908,7 @@
               "group": 8
             },
             "id": "Mme.Hucheloup",
+            "label": "Person",
             "properties": {
               "name": "Mme.Hucheloup"
             }

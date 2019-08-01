@@ -46,12 +46,18 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.TimeZone;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;
 
@@ -131,6 +137,37 @@ public class KnowledgeDataLoader implements GraphDataLoader {
 
     @Override
     public long load(File data) throws IOException {
-        return 0;
+        String contentType = Files.probeContentType(data.toPath());
+        if(Arrays.asList("application/gzip","application/zip").contains(contentType)) {
+            ByteArrayOutputStream stream = null; //unzip
+            switch (contentType) {
+                case "application/gzip":
+                    stream = extractFile(new GZIPInputStream(Files.newInputStream(data.toPath())));
+                    break;
+                case "application/zip":
+                    stream = extractFile(new ZipInputStream(Files.newInputStream(data.toPath())));
+                    break;
+            }
+
+            String graph = new String(stream.toByteArray());
+            return load(mapper.readValue(graph,LogicalGraphModel.class));
+        }
+        String graph = new String(Files.readAllBytes(data.toPath()));
+        //read
+        LogicalGraphModel root = mapper.readValue(graph, LogicalGraphModel.class);
+        return load(root);
     }
+
+    private ByteArrayOutputStream extractFile(InflaterInputStream zipIn) throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        BufferedOutputStream bos = new BufferedOutputStream(stream);
+        byte[] bytesIn = new byte[4096];
+        int read = 0;
+        while ((read = zipIn.read(bytesIn)) != -1) {
+            bos.write(bytesIn, 0, read);
+        }
+        bos.close();
+        return stream;
+    }
+
 }

@@ -58,8 +58,8 @@ public class KnowledgeExtensionRegistrar extends AppControllerRegistrarBase<Know
         app.post(appUrlSupplier.queryStoreUrl() + "/clause/run",req -> runClause(app,req,this.getController(app)));
         /** run a cypher query */
         app.get(appUrlSupplier.queryStoreUrl() + "/cypher/logical/run",req -> runCypher(app,req, this.getController(app)));
-        /** run a cypher query */
-        app.get(appUrlSupplier.queryStoreUrl() + "/query/v1/logical/run",req-> runV1(app,req, this.getController(app)));
+        /** run a v1 query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/query/v1/logical/run",req-> runV1(app,req, this.getController(app)));
 
     }
 
