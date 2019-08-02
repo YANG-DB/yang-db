@@ -71,11 +71,11 @@ public class KnowledgeMassInsertionPathTest {
             relations.addAll(tuple3._3);
         });
 
-        final int entitiesCount = commit(ctx.client, INDEX, mapper, entities);
+        final int entitiesCount = commit(ctx.client, INDEX, mapper, entities).getSuccesses().size();
         System.out.println("completed writing " + entitiesCount + " entities");
-        valuesCount = commit(ctx.client, INDEX,mapper, values);
+        valuesCount = commit(ctx.client, INDEX,mapper, values).getSuccesses().size();
         System.out.println("completed writing " + valuesCount + " e.values");
-        relationCount = commit(ctx.client, REL_INDEX,mapper, relations);
+        relationCount = commit(ctx.client, REL_INDEX,mapper, relations).getSuccesses().size();
         System.out.println("completed writing " + relationCount + " relations");
     }
 

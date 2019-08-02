@@ -330,7 +330,11 @@ public class RelationBuilder extends Metadata {
 
         @Override
         public Optional<String> routing() {
-            return Optional.of(this.builder.entityAId.split("\\.")[0]);
+            try {
+                return Optional.of(this.builder.entityAId.split("\\.")[0]);
+            }catch (Throwable err) {
+                throw new RuntimeException(err);
+            }
         }
     }
 

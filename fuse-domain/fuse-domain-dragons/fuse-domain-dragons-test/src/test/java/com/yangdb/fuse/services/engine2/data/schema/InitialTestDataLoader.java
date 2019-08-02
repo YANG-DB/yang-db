@@ -2,6 +2,7 @@ package com.yangdb.fuse.services.engine2.data.schema;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.typesafe.config.Config;
@@ -27,13 +28,13 @@ public class InitialTestDataLoader implements GraphDataLoader {
     }
 
     @Override
-    public long load(LogicalGraphModel root) throws IOException {
-        return 0;
+    public LoadResponse load(LogicalGraphModel root) throws IOException {
+        return LoadResponse.EMPTY;
     }
 
     @Override
-    public long load(File data) throws IOException {
-        return 0;
+    public LoadResponse load(File data) throws IOException {
+        return LoadResponse.EMPTY;
     }
 
     @Override

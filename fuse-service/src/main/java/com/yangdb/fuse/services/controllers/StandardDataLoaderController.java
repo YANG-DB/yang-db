@@ -23,12 +23,16 @@ package com.yangdb.fuse.services.controllers;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.ContentResponse.Builder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.jooby.Status.*;
@@ -49,15 +53,35 @@ public class StandardDataLoaderController implements DataLoaderController {
     //region CatalogController Implementation
 
     @Override
-    public ContentResponse<String> load(String ontology, LogicalGraphModel data) {
+    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, LogicalGraphModel data) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
-                return Builder.<String>builder(OK, NOT_FOUND)
-                        .data(Optional.of("Elements loaded:" + this.graphDataLoader.load(data)))
+                return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
+                        .data(Optional.of(this.graphDataLoader.load(data)))
                         .compose();
             } catch (IOException e) {
-                return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)
-                        .data(Optional.of(e.getMessage()))
+                return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
+                        .data(Optional.of(new LoadResponse<String, FuseError>() {
+                            @Override
+                            public List<CommitResponse<String, FuseError>> getResponses() {
+                                return Collections.singletonList(new CommitResponse<String, FuseError>() {
+                                    @Override
+                                    public List<String> getSuccesses() {
+                                        return Collections.emptyList();
+                                    }
+
+                                    @Override
+                                    public List<FuseError> getFailures() {
+                                        return Collections.singletonList(new FuseError(e.getMessage(),e));
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public LoadResponse response(CommitResponse<String, FuseError> response) {
+                                return this;
+                            }
+                        }))
                         .compose();
             }
         }
@@ -74,15 +98,35 @@ public class StandardDataLoaderController implements DataLoaderController {
      *      - convert into bulk set
      *      - commit to repository
      */
-    public ContentResponse<String> load(String ontology, File data) {
+    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, File data) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
-                return Builder.<String>builder(OK, NOT_FOUND)
-                        .data(Optional.of("Elements loaded:" + this.graphDataLoader.load(data)))
+                return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
+                        .data(Optional.of(this.graphDataLoader.load(data)))
                         .compose();
             } catch (IOException e) {
-                return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)
-                        .data(Optional.of(e.getMessage()))
+                return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
+                        .data(Optional.of(new LoadResponse<String, FuseError>() {
+                            @Override
+                            public List<CommitResponse<String, FuseError>> getResponses() {
+                                return Collections.singletonList(new CommitResponse<String, FuseError>() {
+                                    @Override
+                                    public List<String> getSuccesses() {
+                                        return Collections.emptyList();
+                                    }
+
+                                    @Override
+                                    public List<FuseError> getFailures() {
+                                        return Collections.singletonList(new FuseError(e.getMessage(),e));
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public LoadResponse response(CommitResponse<String, FuseError> response) {
+                                return this;
+                            }
+                        }))
                         .compose();
             }
         }

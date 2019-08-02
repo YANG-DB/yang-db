@@ -20,10 +20,14 @@ package com.yangdb.fuse.assembly.knowledge.load;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.assembly.knowledge.load.builder.*;
+import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
@@ -181,21 +185,17 @@ public class KnowledgeWriterContext {
         }
     }
 
-    public static <T extends KnowledgeDomainBuilder> int commit(Client client, String index, ObjectMapper mapper, List<T> builders) throws JsonProcessingException {
-        int count = 0;
+    public static <T extends KnowledgeDomainBuilder> LoadResponse.CommitResponse commit(Client client, String index, ObjectMapper mapper, List<T> builders) throws JsonProcessingException {
         if(builders.isEmpty())
-            return count;
+            return LoadResponse.CommitResponse.EMPTY;
 
         final BulkRequestBuilder bulk = client.prepareBulk();
-        count = process(client, index, count, bulk, builders,mapper);
-        return count;
+        return process(client, index, bulk, builders,mapper);
     }
 
-    public static <T extends KnowledgeDomainBuilder> int commit(Client client, String index, ObjectMapper mapper, T... builders) throws JsonProcessingException {
-        int count = 0;
+    public static <T extends KnowledgeDomainBuilder> Response commit(Client client, String index, ObjectMapper mapper, T... builders) throws JsonProcessingException {
         final BulkRequestBuilder bulk = client.prepareBulk();
-        count = process(client, index, count, bulk, Arrays.asList(builders),mapper);
-        return count;
+        return process(client, index, bulk, Arrays.asList(builders),mapper);
     }
 
     /**
@@ -208,19 +208,20 @@ public class KnowledgeWriterContext {
      * @return
      * @throws JsonProcessingException
      */
-    public static int commit(Client client, RawSchema schema, ObjectMapper mapper, KnowledgeContext context) throws JsonProcessingException {
-        int count = 0;
-        count += commit(client,schema.getPartition(ENTITY).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getEntities());
-        count += commit(client,schema.getPartition(ENTITY).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getRelationBuilders());
+    public static LoadResponse<String, FuseError> commit(Client client, RawSchema schema, ObjectMapper mapper, KnowledgeContext context) throws JsonProcessingException {
+        LoadResponse<String, FuseError> responses = new LoadResponseImpl();
+        responses.response(commit(client,schema.getPartition(ENTITY).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getEntities()));
+        responses.response(commit(client,schema.getPartition(ENTITY).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getRelationBuilders()));
 
-        count += commit(client,schema.getPartition(EVALUE).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.geteValues());
-        count += commit(client,schema.getPartition(RELATION).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getRelations());
-        count += commit(client,schema.getPartition(RVALUE).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getrValues());
+        responses.response(commit(client,schema.getPartition(EVALUE).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.geteValues()));
+        responses.response(commit(client,schema.getPartition(RELATION).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getRelations()));
+        responses.response(commit(client,schema.getPartition(RVALUE).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getrValues()));
         //todo populate insight and references
-        return count;
+        return responses;
     }
 
-    private static <T extends KnowledgeDomainBuilder> int process(Client client, String index, int count, BulkRequestBuilder bulk, List<T> builders, ObjectMapper mapper) throws JsonProcessingException {
+    private static <T extends KnowledgeDomainBuilder> Response process(Client client, String index, BulkRequestBuilder bulk, List<T> builders, ObjectMapper mapper) throws JsonProcessingException {
+        Response response = new Response(index);
         populateBulk(bulk,index,client, (List<KnowledgeDomainBuilder>) builders,mapper);
         builders.forEach(builder -> {
             try {
@@ -233,12 +234,16 @@ public class KnowledgeWriterContext {
         final BulkItemResponse[] items = bulk.get().getItems();
         for (BulkItemResponse item : items) {
             if (!item.isFailed()) {
-                count++;
+                response.success(item.getId());
+            }else {
+                //todo log error
+                BulkItemResponse.Failure failure = item.getFailure();
+                response.failure(new FuseError("commit",failure.toString()));
             }
 
         }
         client.admin().indices().prepareRefresh(index).get();
-        return count;
+        return response;
     }
 
     public static class Items {
@@ -251,5 +256,80 @@ public class KnowledgeWriterContext {
             this.type = type;
             this.id = id;
         }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class LoadResponseImpl implements LoadResponse<String,FuseError> {
+
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private List<CommitResponse<String,FuseError>> responses;
+
+        public LoadResponseImpl() {
+            this.responses = new ArrayList<>();
+        }
+
+        public LoadResponse response(LoadResponse.CommitResponse<String,FuseError> response) {
+            this.responses.add(response);
+            return this;
+        }
+
+        @Override
+        public List<CommitResponse<String,FuseError>> getResponses() {
+            return responses;
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Response implements LoadResponse.CommitResponse<String,FuseError> {
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private List<FuseError> failures;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private List<String> success;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private String index;
+
+        public Response() {
+        }
+
+        public Response(String index) {
+            this.index = index;
+            this.failures = new ArrayList<>();
+            this.success = new ArrayList<>();
+        }
+
+        public Response failure(FuseError err) {
+            failures.add(err);
+            return this;
+        }
+
+        public Response failure(List<FuseError> failed) {
+            this.failures.addAll(failed);
+            return this;
+        }
+
+        public Response success(String itemId) {
+            success.add(itemId);
+            return this;
+        }
+
+        public Response success(List<String> itemIds) {
+            success.addAll(itemIds);
+            return this;
+        }
+
+        public List<FuseError> getFailures() {
+            return failures;
+        }
+
+        public List<String> getSuccesses() {
+            return success;
+        }
+
+        public String getIndex() {
+            return index;
+        }
+
     }
 }

@@ -87,9 +87,32 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
     public <T extends Metadata> T putProperty(String key, Object value) {
         switch (key) {
             case "lastUpdateTime":
-                return lastUpdateTime((Date) value);
+                try {
+                    return lastUpdateTime((Date) value);
+                } catch (Exception e) {
+                    try {
+                        return lastUpdateTime(sdf.parse(value.toString()));
+                    } catch (ParseException e1) {
+                        //error parsing value as date
+                        try {
+                            return lastUpdateTime(new Date(value.toString()));
+                        }catch (Exception err){}
+                    }
+                }
             case "deleteTime":
-                return deleteTime((Date) value);
+                try {
+                    return deleteTime((Date) value);
+                } catch (Exception e) {
+                    try {
+                        return deleteTime(sdf.parse(value.toString()));
+                    } catch (ParseException e1) {
+                        //error parsing value as date
+                        try {
+                            return deleteTime(new Date(value.toString()));
+                        }catch (Exception err){}
+
+                    }
+                }
             case "creationTime":
                 try {
                     return creationTime((Date) value);
@@ -98,7 +121,10 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
                         return creationTime(sdf.parse(value.toString()));
                     } catch (ParseException e1) {
                         //error parsing value as date
-                        return creationTime(new Date(value.toString()));
+                        try {
+                            return creationTime(new Date(value.toString()));
+                        }catch (Exception err){}
+
                     }
                 }
             case "creationUser":

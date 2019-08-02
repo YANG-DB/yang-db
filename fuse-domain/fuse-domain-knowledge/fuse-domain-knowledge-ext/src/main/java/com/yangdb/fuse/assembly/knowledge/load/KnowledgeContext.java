@@ -92,6 +92,10 @@ public class KnowledgeContext {
         return rValues;
     }
 
+    public List<FuseError> getFailed() {
+        return failed;
+    }
+
     public Optional<EntityBuilder> findEntityById(String id) {
         return entities.stream().filter(e->e.logicalId.equals(id)).findAny();
     }

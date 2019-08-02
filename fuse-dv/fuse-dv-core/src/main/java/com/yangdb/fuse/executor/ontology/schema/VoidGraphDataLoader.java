@@ -33,13 +33,13 @@ public class VoidGraphDataLoader implements GraphDataLoader {
     }
 
     @Override
-    public long load(LogicalGraphModel root) throws IOException {
-        return 0;
+    public LoadResponse load(LogicalGraphModel root) throws IOException {
+        return LoadResponse.EMPTY;
     }
 
     @Override
-    public long load(File data) throws IOException {
-        return 0;
+    public LoadResponse load(File data) throws IOException {
+        return LoadResponse.EMPTY;
     }
 
     @Override

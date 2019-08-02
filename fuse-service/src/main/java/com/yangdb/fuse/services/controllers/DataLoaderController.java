@@ -20,7 +20,9 @@ package com.yangdb.fuse.services.controllers;
  * #L%
  */
 
+import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;
 
 import java.io.File;
@@ -31,7 +33,7 @@ import java.io.File;
 public interface DataLoaderController {
 
     ContentResponse<String> init(String ontology);
-    ContentResponse<String> load(String ontology, LogicalGraphModel data);
-    ContentResponse<String> load(String ontology, File data);
+    ContentResponse<LoadResponse<String, FuseError>> load(String ontology, LogicalGraphModel data);
+    ContentResponse<LoadResponse<String, FuseError>> load(String ontology, File data);
     ContentResponse<String> drop(String ontology);
 }

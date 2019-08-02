@@ -37,17 +37,13 @@ import org.elasticsearch.client.Client;
 import org.geojson.Point;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.ENTITY;
-import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.format;
-import static com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder.*;
-import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder.*;
-import static com.yangdb.fuse.assembly.knowledge.load.builder.RvalueBuilder.*;
-import static com.yangdb.fuse.assembly.knowledge.load.builder.RelationBuilder.*;
+import static com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder._e;
+import static com.yangdb.fuse.assembly.knowledge.load.builder.RelationBuilder._rel;
+import static com.yangdb.fuse.assembly.knowledge.load.builder.RvalueBuilder._r;
+import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder._v;
 import static java.util.regex.Pattern.matches;
 
 public class KnowledgeTransformer {
@@ -72,11 +68,13 @@ public class KnowledgeTransformer {
         KnowledgeContext context = new KnowledgeContext();
         this.writerContext = new KnowledgeWriterContext(context);
         //populate context according to given json graph
-        graph.getNodes().forEach(node -> {
+        for (LogicalNode node : graph.getNodes()) {
             Optional<TransformerEntityType> entityType = transformer.getEntityTypes().stream()
                     .filter(e -> matches(e.getPattern(), node.getLabel())).findFirst();
-            if (!entityType.isPresent())
+            if (!entityType.isPresent()) {
                 context.failed("Entity type not matched", node.toString());
+                continue;
+            }
 
             TransformerEntityType type = entityType.get();
             switch (type.geteType()) {
@@ -93,23 +91,29 @@ public class KnowledgeTransformer {
                     break;
 
             }
-        });
+        }
 
-        graph.getEdges().forEach(edge -> {
+        for (LogicalEdge edge : graph.getEdges()) {
             Optional<TransformerRelationType> edgeType = transformer.getRelationTypes().stream()
                     .filter(e -> matches(e.getPattern(), edge.getLabel())).findFirst();
-            if (!edgeType.isPresent())
+            if (!edgeType.isPresent()) {
                 context.failed("Edge type not matched", edge.toString());
+                continue;
+            }
 
             TransformerRelationType type = edgeType.get();
             switch (type.getrType()) {
                 case RelationBuilder.type:
                     StatefulRange range = ranges.computeIfAbsent(RelationBuilder.type,
                             s -> new StatefulRange(idGenerator.getNext(RelationBuilder.type, 1000)));
-                    context.add(createEdge(context, range, type, edge));
+                    try {
+                        context.add(createEdge(context, range, type, edge));
+                    }catch (Throwable err) {
+                        //error while creating edge
+                    }
                     break;
             }
-        });
+        }
         return context;
     }
 
@@ -125,15 +129,17 @@ public class KnowledgeTransformer {
                 : writerContext.getContext().findEntityByTechId(edge.getSource());
 
         if (!sideA.isPresent()) {
-            //todo search Elastic for the given node
+            // search Elastic for the given node
             Optional<Map> node = StoreAccessor.findEntityById(TECHNICAL_ID, edge.getSource(), ENTITY, schema, client);
 
             if (node.isPresent()) {
                 builder.entityAId(node.get().get("id").toString());
                 builder.entityATechId(node.get().get("techId").toString());
                 builder.entityACategory(node.get().get("category").toString());
-            } else
+            } else {
+                context.failed(edge.getSource(),String.format("Source node %s for edge not found %s", edge.getSource(), edge.toString()));
                 throw new IllegalArgumentException(String.format("Source node %s for edge not found %s", edge.getSource(), edge.toString()));
+            }
         } else {
             builder.entityAId(sideA.get().id());
             builder.entityATechId(sideA.get().techId);
@@ -153,8 +159,10 @@ public class KnowledgeTransformer {
                 builder.entityBId(node.get().get("id").toString());
                 builder.entityBTechId(node.get().get("techId").toString());
                 builder.entityBCategory(node.get().get("category").toString());
-            } else
+            } else {
+                context.failed(edge.getSource(),String.format("Target node %s for edge not found %s", edge.getTarget(), edge.toString()));
                 throw new IllegalArgumentException(String.format("Target node %s for edge not found %s", edge.getSource(), edge.toString()));
+            }
         } else {
             builder.entityBId(sideB.get().id());
             builder.entityBTechId(sideB.get().techId);
@@ -162,12 +170,12 @@ public class KnowledgeTransformer {
         }
 
         //populate side with relation builder hasEntityRelation
-        if(sideA.isPresent())
+        if (sideA.isPresent())
             sideA.get().rel(builder, "out");
         else
             context.add(new RelationBuilder.EntityRelationBuilder(builder.entityAId, builder, "out"));
 
-        if(sideB.isPresent())
+        if (sideB.isPresent())
             sideB.get().rel(builder, "in");
         else
             context.add(new RelationBuilder.EntityRelationBuilder(builder.entityBId, builder, "in"));
@@ -235,19 +243,21 @@ public class KnowledgeTransformer {
         ValueBuilder valueBuilder = _v(writerContext.nextValueId(schema, propRange.next()));
         //todo think if TransformerProperties.label pattern is still relevant
         valueBuilder.field(key);
-        //todo think if TransformerProperties.concreteType is still relevant
-        String type = properties.getConcreteType();
-        //find value explicit type according to pattern
-        Optional<Map<String, String>> valueType = properties.getValuePatterns().stream()
-                .filter(p -> value.toString().matches(p.values().iterator().next()))
-                .findFirst();
-        if (valueType.isPresent()) {
-            String explicitType = valueType.get().keySet().iterator().next();
-            valueBuilder.value(toValue(explicitType, value));
-        } else {
-            valueBuilder.value(value);
+        if(value!=null) {
+            //todo think if TransformerProperties.concreteType is still relevant
+            String type = properties.getConcreteType();
+            //find value explicit type according to pattern
+            Optional<Map<String, String>> valueType = properties.getValuePatterns().stream()
+                    .filter(Objects::nonNull)
+                    .filter(p -> value.toString().matches(p.values().iterator().next()))
+                    .findFirst();
+            if (valueType.isPresent()) {
+                String explicitType = valueType.get().keySet().iterator().next();
+                valueBuilder.value(toValue(explicitType, value));
+            } else {
+                valueBuilder.value(value);
+            }
         }
-
         return valueBuilder;
     }
 
@@ -275,16 +285,36 @@ public class KnowledgeTransformer {
             case "stringValue":
                 return value.toString();
             case "intValue":
-                return Integer.valueOf(value.toString());
+                try {
+                    return Integer.valueOf(value.toString());
+                } catch (NumberFormatException e) {
+                    try {
+                        return Long.valueOf(value.toString());
+                    } catch (NumberFormatException e1) {
+                        return value.toString();
+                    }
+                }
             case "longValue":
-                return Long.valueOf(value.toString());
+                try {
+                    return Long.valueOf(value.toString());
+                } catch (NumberFormatException e) {
+                    return value.toString();
+                }
             case "floatValue":
-                return Float.valueOf(value.toString());
+                try {
+                    return Float.valueOf(value.toString());
+                } catch (NumberFormatException e) {
+                    return value.toString();
+                }
             case "dateValue":
                 try {
                     return Metadata.sdf.parse(value.toString());
                 } catch (ParseException e) {
-                    return new Date(value.toString());
+                    try {
+                        return new Date(value.toString());
+                    }catch (Throwable e1) {
+                        return value.toString();
+                    }
                 }
             case "geoValue":
                 return new Point(

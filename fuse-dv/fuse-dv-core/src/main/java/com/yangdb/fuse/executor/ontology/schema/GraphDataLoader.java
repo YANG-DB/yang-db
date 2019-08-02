@@ -21,6 +21,7 @@ package com.yangdb.fuse.executor.ontology.schema;
  */
 
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.io.IOException;
 /**
  * Created by lior.perry on 2/11/2018.
  */
-public interface GraphDataLoader {
+public interface GraphDataLoader<S,F> {
     /**
      * create the indexTemplates
      * create the vertices and edges indices according to schema
@@ -120,7 +121,7 @@ public interface GraphDataLoader {
      * @return
      * @throws IOException
      */
-    long load(LogicalGraphModel root) throws IOException;
+    LoadResponse<S, F> load(LogicalGraphModel root) throws IOException;
 
     /**
      * does:
@@ -130,7 +131,7 @@ public interface GraphDataLoader {
      *      - convert into bulk set
      *      - commit to repository
      */
-    long load(File data) throws IOException;
+    LoadResponse<S, F> load(File data) throws IOException;
 
     /**
      * drop the vertices and edges indices to schema

@@ -49,14 +49,16 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                     try {
                         //todo check file type -> process zipped file
                         File file = upload.file();
-                        return Results.with(this.getController(app).load(req.param("id").value(), file));
+                        return Results.json(this.getController(app)
+                                .load(req.param("id").value(), file));
                     } finally {
                         upload.close();
                     }
                 });
 
         app.post("/fuse/load/ontology/:id/load",
-                req -> Results.with(this.getController(app).load(req.param("id").value(), req.body(LogicalGraphModel.class))));
+                req -> Results.json(this.getController(app)
+                        .load(req.param("id").value(), req.body(LogicalGraphModel.class))));
 
         app.get("/fuse/load/ontology/:id/drop",
                 req -> Results.with(this.getController(app).drop(req.param("id").value())));

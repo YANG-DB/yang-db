@@ -24,7 +24,9 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.logging.*;
+import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.services.controllers.DataLoaderController;
 import com.yangdb.fuse.services.suppliers.RequestExternalMetadataSupplier;
@@ -59,8 +61,8 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
 
     //region CatalogController Implementation
     @Override
-    public ContentResponse<String> load(String ontology, LogicalGraphModel data) {
-        return new LoggingSyncMethodDecorator<ContentResponse<String>>(
+    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, LogicalGraphModel data) {
+        return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
                 load,
@@ -71,8 +73,8 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
     }
 
     @Override
-    public ContentResponse<String> load(String ontology, File data) {
-        return new LoggingSyncMethodDecorator<ContentResponse<String>>(
+    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, File data) {
+        return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
                 load,
