@@ -65,6 +65,7 @@ public class Range {
 
         public StatefulRange(Range range) {
             this.range = range;
+            this.index = range.lower;
         }
 
         public long current() {
@@ -75,6 +76,10 @@ public class Range {
             if(index>=range.upper)
                 return -1;
             return index++;
+        }
+
+        public boolean hasNext() {
+            return index<range.upper;
         }
     }
 }

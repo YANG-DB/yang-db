@@ -79,8 +79,7 @@ public class KnowledgeTransformer {
             TransformerEntityType type = entityType.get();
             switch (type.geteType()) {
                 case EntityBuilder.type:
-                    StatefulRange range = ranges.computeIfAbsent(EntityBuilder.type,
-                            s -> new StatefulRange(idGenerator.getNext(EntityBuilder.type, 1000)));
+                    StatefulRange range = getRange(EntityBuilder.type);
                     context.add(createEntity(context, range, type, node));
                     break;
                 case RefBuilder.type:
@@ -104,17 +103,29 @@ public class KnowledgeTransformer {
             TransformerRelationType type = edgeType.get();
             switch (type.getrType()) {
                 case RelationBuilder.type:
-                    StatefulRange range = ranges.computeIfAbsent(RelationBuilder.type,
-                            s -> new StatefulRange(idGenerator.getNext(RelationBuilder.type, 1000)));
+                    StatefulRange range = getRange(RelationBuilder.type);
                     try {
                         context.add(createEdge(context, range, type, edge));
-                    }catch (Throwable err) {
+                    } catch (Throwable err) {
                         //error while creating edge
                     }
                     break;
             }
         }
         return context;
+    }
+
+    public StatefulRange getRange(String type) {
+        //init ranges
+        StatefulRange statefulRange = ranges.computeIfAbsent(type,
+                s -> new StatefulRange(idGenerator.getNext(type, 1000)));
+
+        if (statefulRange.hasNext())
+            return statefulRange;
+        //update ranges
+        ranges.put(type, new StatefulRange(idGenerator.getNext(type, 1000)));
+        //return next range
+        return ranges.get(type);
     }
 
     private RelationBuilder createEdge(KnowledgeContext context, StatefulRange range, TransformerRelationType type, LogicalEdge edge) {
@@ -137,7 +148,7 @@ public class KnowledgeTransformer {
                 builder.entityATechId(node.get().get("techId").toString());
                 builder.entityACategory(node.get().get("category").toString());
             } else {
-                context.failed(edge.getSource(),String.format("Source node %s for edge not found %s", edge.getSource(), edge.toString()));
+                context.failed(edge.getSource(), String.format("Source node %s for edge not found %s", edge.getSource(), edge.toString()));
                 throw new IllegalArgumentException(String.format("Source node %s for edge not found %s", edge.getSource(), edge.toString()));
             }
         } else {
@@ -160,7 +171,7 @@ public class KnowledgeTransformer {
                 builder.entityBTechId(node.get().get("techId").toString());
                 builder.entityBCategory(node.get().get("category").toString());
             } else {
-                context.failed(edge.getSource(),String.format("Target node %s for edge not found %s", edge.getTarget(), edge.toString()));
+                context.failed(edge.getSource(), String.format("Target node %s for edge not found %s", edge.getTarget(), edge.toString()));
                 throw new IllegalArgumentException(String.format("Target node %s for edge not found %s", edge.getSource(), edge.toString()));
             }
         } else {
@@ -194,8 +205,7 @@ public class KnowledgeTransformer {
 
         });
         //transform regular properties (RValue)
-        StatefulRange propRange = ranges.computeIfAbsent(RvalueBuilder.type,
-                s -> new StatefulRange(idGenerator.getNext(RvalueBuilder.type, 1000)));
+        StatefulRange propRange = getRange(RvalueBuilder.type);
         edge.getProperties().getProperties().forEach((key, value) -> {
             RvalueBuilder valueBuilder = createRValueBuilder(propRange, type.getProperties(), key, value);
             context.add(valueBuilder);
@@ -228,8 +238,7 @@ public class KnowledgeTransformer {
 
         });
         //transform regular properties (EValue)
-        StatefulRange propRange = ranges.computeIfAbsent(ValueBuilder.type,
-                s -> new StatefulRange(idGenerator.getNext(ValueBuilder.type, 1000)));
+        StatefulRange propRange = getRange(ValueBuilder.type);
         node.getProperties().getProperties().forEach((key, value) -> {
             ValueBuilder valueBuilder = createValueBuilder(propRange, type.getProperties(), key, value);
             context.add(valueBuilder);
@@ -243,7 +252,7 @@ public class KnowledgeTransformer {
         ValueBuilder valueBuilder = _v(writerContext.nextValueId(schema, propRange.next()));
         //todo think if TransformerProperties.label pattern is still relevant
         valueBuilder.field(key);
-        if(value!=null) {
+        if (value != null) {
             //todo think if TransformerProperties.concreteType is still relevant
             String type = properties.getConcreteType();
             //find value explicit type according to pattern
@@ -312,7 +321,7 @@ public class KnowledgeTransformer {
                 } catch (ParseException e) {
                     try {
                         return new Date(value.toString());
-                    }catch (Throwable e1) {
+                    } catch (Throwable e1) {
                         return value.toString();
                     }
                 }

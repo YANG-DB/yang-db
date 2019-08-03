@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yangdb.fuse.model.results.Property;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -92,7 +91,7 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
                 } catch (Exception e) {
                     try {
                         return lastUpdateTime(sdf.parse(value.toString()));
-                    } catch (ParseException e1) {
+                    } catch (Throwable e1) {
                         //error parsing value as date
                         try {
                             return lastUpdateTime(new Date(value.toString()));
@@ -105,7 +104,7 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
                 } catch (Exception e) {
                     try {
                         return deleteTime(sdf.parse(value.toString()));
-                    } catch (ParseException e1) {
+                    } catch (Throwable e1) {
                         //error parsing value as date
                         try {
                             return deleteTime(new Date(value.toString()));
@@ -119,7 +118,7 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
                 } catch (Exception e) {
                     try {
                         return creationTime(sdf.parse(value.toString()));
-                    } catch (ParseException e1) {
+                    } catch (Throwable e1) {
                         //error parsing value as date
                         try {
                             return creationTime(new Date(value.toString()));
