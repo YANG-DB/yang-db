@@ -14,7 +14,7 @@ RUN apt install maven -y
 # Build stage
 #
 COPY . /var/tmp
-RUN cd /var/tmp clean install
+RUN cd /var/tmp; mvn clean install
 
 COPY fuse-domain/fuse-domain-knowledge/fuse-domain-knowledge-assembly/target/assembly-fuse-knowledge /opt/engine
 WORKDIR /opt/engine
