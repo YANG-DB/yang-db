@@ -1,10 +1,13 @@
 #!/bin/bash
 
+
 tagname=$1
 
-echo "docker build . -t tom4tomato/yang.db:${tagname}"
 cd $(dirname "$0")
+echo "mvn clean install"
+mvn clean install
 
+echo "docker build . -t tom4tomato/yang.db:${tagname}"
 docker build . -t tom4tomato/yang.db:${tagname}
 
 echo "docker push tom4tomato/yang.db:${tagname}"
