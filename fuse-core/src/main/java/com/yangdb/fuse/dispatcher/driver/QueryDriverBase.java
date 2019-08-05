@@ -48,6 +48,7 @@ import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.transport.*;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -112,7 +113,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     }
 
     protected CreateQueryRequest createQueryRequest(Query query, String id) {
-        return new CreateQueryRequest(id, id, query, new CreateGraphCursorRequest(new CreatePageRequest()));
+        return new CreateQueryRequest(id, id, query, new LogicalGraphCursorRequest(new CreatePageRequest()));
     }
 
     @Override
@@ -135,7 +136,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     }
 
     protected CreateJsonQueryRequest createJsonQueryRequest(String cypher, String ontology, String id) {
-        return new CreateJsonQueryRequest(id, id, cypher, ontology, new CreateGraphCursorRequest(new CreatePageRequest()));
+        return new CreateJsonQueryRequest(id, id, cypher, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
     }
 
 
@@ -354,8 +355,7 @@ public abstract class QueryDriverBase implements QueryDriver {
             return getQueryResourceInfo(request, queryResourceInfo);
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(),
-                            err.getMessage())));
+                    new FuseError(Query.class.getSimpleName(),err)));
 
         }
     }

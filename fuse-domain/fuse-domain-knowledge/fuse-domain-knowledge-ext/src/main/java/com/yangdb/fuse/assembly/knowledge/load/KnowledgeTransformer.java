@@ -327,8 +327,8 @@ public class KnowledgeTransformer {
                 }
             case "geoValue":
                 return new Point(
-                        Double.valueOf(value.toString().split("[,]")[0]),
-                        Double.valueOf(value.toString().split("[,]")[1]));
+                        Double.valueOf(value.toString().split("[,]")[1]),
+                        Double.valueOf(value.toString().split("[,]")[0]));
         }
         return value.toString();
     }

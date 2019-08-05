@@ -1,10 +1,6 @@
 package com.yangdb.fuse.assembly.knowledge.cypher;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.yangdb.fuse.assembly.knowledge.KnowledgeLogicalGraphCursorRequest;
 import com.yangdb.fuse.assembly.knowledge.Setup;
-import com.yangdb.fuse.model.logical.LogicalEdge;
-import com.yangdb.fuse.model.logical.LogicalNode;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
@@ -13,20 +9,15 @@ import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import com.yangdb.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
-import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;

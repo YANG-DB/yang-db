@@ -34,6 +34,7 @@ import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.ext.driver.ExtensionQueryDriver;
 import com.yangdb.fuse.model.Range;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.services.KnowledgeExtensionQueryController;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
@@ -59,8 +60,8 @@ public class KnowledgeModule extends ModuleBase {
 
         //KnowledgeGraphHierarchyCursor
         bindingMultibinder.addBinding().toInstance(new CompositeCursorFactory.Binding(
-                KnowledgeLogicalGraphCursorRequest.CursorType,
-                KnowledgeLogicalGraphCursorRequest.class,
+                LogicalGraphCursorRequest.CursorType,
+                LogicalGraphCursorRequest.class,
                 new KnowledgeLogicalGraphCursor.Factory()));
 
         binder.bind(BusinessTypesProvider.class).toInstance(provider(conf));

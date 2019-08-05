@@ -747,7 +747,7 @@
         },
         "createCursorRequest": {
           "maxExecutionTime": 600000,
-          "cursorType": "knowledgeLogicalGraphCursorRequest",
+          "cursorType": "LogicalGraphCursorRequest",
           "format": "XML",
           "createPageRequest": {
             "pageSize": 100,

@@ -1,7 +1,6 @@
 package com.yangdb.fuse.assembly.knowledge.cypher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.yangdb.fuse.assembly.knowledge.KnowledgeLogicalGraphCursorRequest;
 import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.model.logical.LogicalEdge;
 import com.yangdb.fuse.model.logical.LogicalNode;
@@ -15,6 +14,7 @@ import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.yangdb.fuse.assembly.knowledge.Setup.client;
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.nextPage;
@@ -316,7 +315,7 @@ public class KnowledgeInsertLogicalGraphTest {
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, KNOWLEDGE);
         // Press on Cursor
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(),
-                new KnowledgeLogicalGraphCursorRequest(Arrays.asList("e1","e2","e3","e4"),new CreatePageRequest(100)));
+                new LogicalGraphCursorRequest(Arrays.asList("e1","e2","e3","e4"),new CreatePageRequest(100)));
 
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
         TypeReference<AssignmentsQueryResult<LogicalNode, LogicalEdge>> typeReference = new TypeReference<AssignmentsQueryResult<LogicalNode, LogicalEdge>>() {};

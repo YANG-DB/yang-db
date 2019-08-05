@@ -21,8 +21,6 @@ package com.yangdb.fuse.ext.driver;
  */
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.assembly.knowledge.KnowledgeGraphHierarchyCursorRequest;
-import com.yangdb.fuse.assembly.knowledge.KnowledgeLogicalGraphCursorRequest;
 import com.yangdb.fuse.assembly.knowledge.asg.AsgClauseTransformer;
 import com.yangdb.fuse.assembly.knowledge.parser.JsonQueryTranslator;
 import com.yangdb.fuse.assembly.knowledge.parser.model.BusinessTypesProvider;
@@ -45,6 +43,7 @@ import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -115,11 +114,11 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
     }
 
     protected CreateJsonQueryRequest createJsonQueryRequest(String cypher, String ontology, String id) {
-        return new CreateJsonQueryRequest(id, id, cypher, ontology, new KnowledgeLogicalGraphCursorRequest(new CreatePageRequest()));
+        return new CreateJsonQueryRequest(id, id, cypher, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
     }
 
     protected CreateQueryRequest createQueryRequest(Query query, String id) {
-        return new CreateQueryRequest(id, id, query, new KnowledgeLogicalGraphCursorRequest(new CreatePageRequest()));
+        return new CreateQueryRequest(id, id, query, new LogicalGraphCursorRequest(new CreatePageRequest()));
     }
 
 

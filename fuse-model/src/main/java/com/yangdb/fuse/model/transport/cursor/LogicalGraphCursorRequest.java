@@ -1,4 +1,4 @@
-package com.yangdb.fuse.assembly.klpd;
+package com.yangdb.fuse.model.transport.cursor;
 
 /*-
  * #%L
@@ -21,37 +21,43 @@ package com.yangdb.fuse.assembly.klpd;
  */
 
 import com.yangdb.fuse.model.transport.CreatePageRequest;
-import com.yangdb.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
 
-public class KnowledgeLogicalGraphCursorRequest extends CreateGraphHierarchyCursorRequest {
-    public static final String CursorType = "knowledgeLogicalGraphCursorRequest";
+import java.util.Collections;
+
+public class LogicalGraphCursorRequest extends CreateGraphHierarchyCursorRequest {
+    public static final String CursorType = "LogicalGraphCursorRequest";
 
     //region Constructors
-    public KnowledgeLogicalGraphCursorRequest() {
+    public LogicalGraphCursorRequest() {
         super();
         this.setCursorType(CursorType);
     }
 
-    public KnowledgeLogicalGraphCursorRequest(Iterable<String> countTags) {
+    public LogicalGraphCursorRequest(Iterable<String> countTags) {
         super(countTags);
         this.setCursorType(CursorType);
     }
 
-    public KnowledgeLogicalGraphCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest) {
+    public LogicalGraphCursorRequest(CreatePageRequest createPageRequest) {
+        super(Collections.emptyList(),createPageRequest);
+        this.setCursorType(CursorType);
+    }
+
+    public LogicalGraphCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest) {
         this(countTags,createPageRequest, GraphFormat.JSON);
     }
 
-    public KnowledgeLogicalGraphCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest,GraphFormat format ) {
+    public LogicalGraphCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest, GraphFormat format ) {
         super(countTags, createPageRequest);
         this.format = format;
         this.setCursorType(CursorType);
     }
 
-    public KnowledgeLogicalGraphCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest) {
-        this(include,countTags,createPageRequest,GraphFormat.JSON);
+    public LogicalGraphCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest) {
+        this(include,countTags,createPageRequest, GraphFormat.JSON);
     }
 
-    public KnowledgeLogicalGraphCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest, GraphFormat format) {
+    public LogicalGraphCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest, GraphFormat format) {
         super(include, countTags, createPageRequest);
         this.format = format;
         this.setCursorType(CursorType);

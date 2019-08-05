@@ -20,8 +20,6 @@ package com.yangdb.fuse.assembly.knowledge.cursor;
  * #L%
  */
 
-import com.yangdb.fuse.assembly.knowledge.KnowledgeLogicalGraphCursorRequest;
-import com.yangdb.fuse.assembly.knowledge.KnowledgeLogicalGraphCursorRequest.GraphFormat;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
@@ -31,6 +29,7 @@ import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.Entity;
 import com.yangdb.fuse.model.results.Property;
 import com.yangdb.fuse.model.results.Relationship;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -41,7 +40,7 @@ import static com.yangdb.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFa
 
 public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversalCursor {
 
-    private final GraphFormat format;
+    private final LogicalGraphCursorRequest.GraphFormat format;
 
     //region Factory
     public static class Factory implements CursorFactory {
@@ -50,13 +49,13 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
         public Cursor createCursor(Context context) {
             return new KnowledgeLogicalGraphCursor(
                     (TraversalCursorContext) context,
-                    ((KnowledgeLogicalGraphCursorRequest) context.getCursorRequest()).getCountTags(),
-                    ((KnowledgeLogicalGraphCursorRequest) context.getCursorRequest()).getFormat());
+                    ((LogicalGraphCursorRequest) context.getCursorRequest()).getCountTags(),
+                    ((LogicalGraphCursorRequest) context.getCursorRequest()).getFormat());
         }
         //endregion
     }
 
-    public KnowledgeLogicalGraphCursor(TraversalCursorContext context, Iterable<String> countTags, GraphFormat format) {
+    public KnowledgeLogicalGraphCursor(TraversalCursorContext context, Iterable<String> countTags, LogicalGraphCursorRequest.GraphFormat format) {
         super(context, countTags);
         this.format = format;
     }
