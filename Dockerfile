@@ -14,7 +14,7 @@ RUN apt install maven -y
 # Build stage
 #
 COPY . /var/tmp
-RUN cd /var/tmpvn clean package -DskipTests
+RUN cd /var/tmp clean package -DskipTests
 
 COPY fuse-domain/fuse-domain-knowledge/fuse-domain-knowledge-assembly/target/assembly-fuse-knowledge /opt/engine
 WORKDIR /opt/engine
