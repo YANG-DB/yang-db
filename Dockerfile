@@ -8,6 +8,7 @@ RUN wget https://github.com/lmenezes/cerebro/releases/download/v0.8.4/cerebro-0.
 RUN tar -xvf /cerebro-0.8.4.tgz -C /
 RUN rm /cerebro-0.8.4.tgz
 
+RUN apk add --no-cache bash
 RUN mkdir -p /opt/engine
 WORKDIR /opt/engine
 
