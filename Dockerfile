@@ -14,7 +14,7 @@ RUN apt install maven -y
 # Build stage
 #
 COPY . /var/tmp
-#RUN cd /var/tmp; mvn clean install
+RUN cd /var/tmp; mvn clean install
 
 RUN mkdir -p /opt/engine
 WORKDIR /var/tmp
