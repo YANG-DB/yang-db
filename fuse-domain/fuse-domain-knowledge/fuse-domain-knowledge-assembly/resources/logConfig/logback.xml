@@ -151,11 +151,11 @@
 
   <!-- Ignore loggers -->
   <logger name="org.jooby" additivity="false"/>
-  <logger name="org.elasticsearch" additivity="false"/>
+  <logger name="org.elasticsearch" additivity="true"/>
   <logger name="io.netty" additivity="false"/>
   <logger name="org.unipop" additivity="false"/>
   <logger name="com.yangdb.fuse.dispatcher.resource" additivity="false"/>
-  <logger name="com.yangdb.fuse.executor.elasticsearch.logging.LoggingClient.Verbose" additivity="false"/>
+  <logger name="com.yangdb.fuse.executor.elasticsearch.logging.LoggingClient.Verbose" additivity="true"/>
   <logger name="com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider.Verbose" additivity="false"/>
   <!-- Ignore loggers -->
 
