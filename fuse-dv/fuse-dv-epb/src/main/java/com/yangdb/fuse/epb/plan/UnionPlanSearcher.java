@@ -85,8 +85,13 @@ public class UnionPlanSearcher implements PlanSearcher<Plan, PlanDetailedCost, A
                 .filter(Objects::nonNull)
                 .toJavaList();
 
+
         if (!Stream.ofAll(plans).filter(Objects::isNull).isEmpty()) {
             throw new IllegalStateException("UnionPlanSearcher - One of the plans is empty");
+        }
+
+        if (plans.size() == 0) {
+            throw new IllegalStateException("UnionPlanSearcher - No valid plan was found");
         }
 
         if (plans.size() == 1) {
