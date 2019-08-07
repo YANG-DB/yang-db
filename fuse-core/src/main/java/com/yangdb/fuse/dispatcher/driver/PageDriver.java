@@ -22,6 +22,7 @@ package com.yangdb.fuse.dispatcher.driver;
 
 import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.StoreResourceInfo;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 
 import java.util.Optional;
 
@@ -34,4 +35,5 @@ public interface PageDriver {
     Optional<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId);
     Optional<Boolean> delete(String queryId, String cursorId, String pageId);
     Optional<Object> getData(String queryId, String cursorId, String pageId);
+    Optional<Object> format(String queryId, String cursorId, String pageId, LogicalGraphCursorRequest.GraphFormat format);
 }

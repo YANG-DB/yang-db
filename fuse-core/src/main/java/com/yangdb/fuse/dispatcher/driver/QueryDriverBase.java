@@ -107,7 +107,7 @@ public abstract class QueryDriverBase implements QueryDriver {
             return Optional.of(resourceInfo.get());
         } finally {
             //remove stateless query
-            delete(id);
+//            delete(id);
         }
 
     }
@@ -131,7 +131,7 @@ public abstract class QueryDriverBase implements QueryDriver {
             return Optional.of(resourceInfo.get());
         } finally {
             //remove stateless query
-            delete(id);
+//            delete(id);
         }
     }
 

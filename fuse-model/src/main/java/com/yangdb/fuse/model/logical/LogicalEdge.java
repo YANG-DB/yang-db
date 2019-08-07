@@ -51,7 +51,7 @@ import java.util.Map;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LogicalEdge {
+public class LogicalEdge implements Edge {
     public static final String EDGE = "Edge";
     private String id;
     private String label = EDGE;
@@ -121,6 +121,36 @@ public class LogicalEdge {
                 ", metadata=" + metadata +
                 ", properties=" + properties +
                 '}';
+    }
+
+    @Override
+    public String id() {
+        return getId();
+    }
+
+    @Override
+    public String label() {
+        return getLabel();
+    }
+
+    @Override
+    public Map<String, Object> metadata() {
+        return getMetadata().getProperties();
+    }
+
+    @Override
+    public Map<String, Object> fields() {
+        return getProperties().getProperties();
+    }
+
+    @Override
+    public String source() {
+        return getSource();
+    }
+
+    @Override
+    public String target() {
+        return getTarget();
     }
 
     public static class EdgeMetadata {

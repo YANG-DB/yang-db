@@ -26,17 +26,19 @@ package com.yangdb.fuse.model.results;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yangdb.fuse.model.logical.Vertex;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 21-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Entity {
+public class Entity implements Vertex {
     //region Constructors
     public Entity() {
         this.properties = new HashMap<>();
@@ -93,7 +95,32 @@ public class Entity {
     public void setAttachedProperties(List<AttachedProperty> attachedProperties) {
         this.attachedProperties = attachedProperties;
     }
-    //endregion
+
+    @Override
+    public String id() {
+        return geteID();
+    }
+
+    @Override
+    public String label() {
+        return geteType();
+    }
+
+    @Override
+    public Map<String,Object> metadata() {
+        return getProperties().stream().collect(
+                Collectors.toMap(Property::getpType, Property::getValue));
+    }
+
+    @Override
+    public Map<String,Object> fields() {
+        return getAttachedProperties().stream().collect(
+                Collectors.toMap(AttachedProperty::getpName, AttachedProperty::getValue));
+
+    }
+
+
+//endregion
 
     //region Override Methods
     @Override

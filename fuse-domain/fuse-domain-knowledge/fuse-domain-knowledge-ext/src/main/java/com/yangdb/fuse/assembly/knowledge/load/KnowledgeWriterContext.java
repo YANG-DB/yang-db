@@ -28,6 +28,7 @@ import com.yangdb.fuse.assembly.knowledge.load.builder.*;
 import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
@@ -227,7 +228,7 @@ public class KnowledgeWriterContext {
             try {
                 populateBulk(bulk,index,client,builder.additional(),mapper);
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                response.failure(new FuseError("commit build proccess failed",e));
             }
         });
 
@@ -236,9 +237,11 @@ public class KnowledgeWriterContext {
             if (!item.isFailed()) {
                 response.success(item.getId());
             }else {
-                //todo log error
+                //log error
                 BulkItemResponse.Failure failure = item.getFailure();
-                response.failure(new FuseError("commit",failure.toString()));
+                DocWriteRequest<?> request = bulk.request().requests().get(item.getItemId());
+                //todo - get TechId from request
+                response.failure(new FuseError("commit failed",failure.toString()));
             }
 
         }

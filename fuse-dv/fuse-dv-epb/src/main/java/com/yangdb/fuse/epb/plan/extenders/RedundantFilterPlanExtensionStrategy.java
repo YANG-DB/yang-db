@@ -122,7 +122,7 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
         /*Set<String> vTypeNames = Stream.ofAll(vTypes).map(vType -> $ont.$entity$(vType).getTyped()).toJavaSet();
         Optional<GraphEdgeSchema> edgeSchema = Stream.ofAll(edgeSchemas)
                 .filter(edgeSchema1 -> edgeSchema1.getDirection().isPresent() ?
-                        vTypeNames.contains(edgeSchema1.getSource().get().getLabel().get()) :
+                        vTypeNames.contains(edgeSchema1.getSource().get().label().get()) :
                         true)
                 .toJavaOptional();*/
         // THIS IS A TEMPORARY PATCH!!!

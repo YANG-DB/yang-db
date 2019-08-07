@@ -27,6 +27,7 @@ import com.yangdb.fuse.model.resourceInfo.StoreResourceInfo;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.ContentResponse.Builder;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 
 import java.util.Optional;
 
@@ -95,6 +96,13 @@ public class StandardPageController implements PageController<PageController,Pag
     public ContentResponse<Object> getData(String queryId, String cursorId, String pageId) {
         return builder(OK, NOT_FOUND)
                 .data(driver().getData(queryId, cursorId, pageId))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<Object> format(String queryId, String cursorId, String pageId, LogicalGraphCursorRequest.GraphFormat format) {
+        return builder(OK, NOT_FOUND)
+                .data(driver().format(queryId, cursorId, pageId,format))
                 .compose();
     }
 

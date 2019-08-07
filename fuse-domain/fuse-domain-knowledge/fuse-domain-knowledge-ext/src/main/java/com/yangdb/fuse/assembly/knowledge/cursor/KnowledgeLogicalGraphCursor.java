@@ -29,6 +29,7 @@ import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.Entity;
 import com.yangdb.fuse.model.results.Property;
 import com.yangdb.fuse.model.results.Relationship;
+import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 
 import java.util.ArrayList;
@@ -60,7 +61,6 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
         this.format = format;
     }
 
-
     @Override
     protected Assignment compose(Assignment.Builder builder) {
         Assignment<LogicalNode, LogicalEdge> newAssignment = new Assignment<>();
@@ -69,18 +69,18 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
         Map<String, LogicalEdge> edgeMap = assignment.getRelationships().stream()
                 .filter(r -> r.getrType().equals(RELATED_ENTITY))
                 .map(r ->
-                        new LogicalEdge(r.getrID(), r.getProperty(CATEGORY).get().getValue().toString(),
-                                r.geteID1(), r.geteID2(), r.isDirectional())
+                        new LogicalEdge(r.id(), r.label(),
+                                r.source(), r.target(), r.isDirectional())
                                 .withMetadata(r.getProperties())
                 )
-                .collect(Collectors.toMap(LogicalEdge::getId, p -> p));
+                .collect(Collectors.toMap(LogicalEdge::id, p -> p));
 
         Map<String, LogicalNode> entityMap = assignment.getEntities()
                 .stream().filter(e -> e.geteType().equals(ENTITY))
                 .map(e ->
                         new LogicalNode(
-                                e.getProperty(LOGICAL_ID).orElse(new Property(LOGICAL_ID, e.geteID())).getValue().toString(),
-                                e.getProperty(CATEGORY).orElse(new Property(CATEGORY, CATEGORY)).getValue().toString())
+                                e.id(),
+                                e.label())
                                 .withMetadata(e.getProperties())
                 )
                 .collect(Collectors.toMap(LogicalNode::getId, p -> p));
@@ -88,10 +88,9 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
         assignment.getEntities()
                 .stream().filter(e -> e.geteType().equals(EVALUE))
                 .forEach(p -> {
-                    if (p.getProperty(LOGICAL_ID).isPresent() &&
-                            entityMap.containsKey(p.getProperty(LOGICAL_ID).get().getValue().toString())) {
+                    if (entityMap.containsKey(fieldId(p))) {
                         //populate properties
-                        entityMap.get(p.getProperty(LOGICAL_ID).get().getValue().toString())
+                        entityMap.get(fieldId(p))
                                 .withProperty(p.getProperty(FIELD_ID).get().getValue().toString(), value(p));
 
                     }
@@ -99,11 +98,10 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
         assignment.getEntities()
                 .stream().filter(e -> e.geteType().equals(RVALUE))
                 .forEach(p -> {
-                    if (p.getProperty(RELATION_ID).isPresent() &&
-                            edgeMap.containsKey(p.getProperty(RELATION_ID).get().getValue().toString())) {
+                    if (edgeMap.containsKey(p.id())) {
                         //populate properties
-                        edgeMap.get(p.getProperty(RELATION_ID).get().getValue().toString())
-                                .withProperty(p.getProperty(RELATION_ID).get().getValue().toString(), value(p));
+                        edgeMap.get(p.id())
+                                .withProperty(p.id(), value(p));
 
                     }
                 });
@@ -112,6 +110,10 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
         newAssignment.setEntities(new ArrayList<>(entityMap.values()));
         newAssignment.setRelationships(new ArrayList<>(edgeMap.values()));
         return newAssignment;
+    }
+
+    private String fieldId(Entity p) {
+        return String.format("%s.%s", p.getProperty(LOGICAL_ID).get().getValue().toString(), p.getProperty(CONTEXT).get().getValue().toString());
     }
 
     private Object value(Entity entity) {

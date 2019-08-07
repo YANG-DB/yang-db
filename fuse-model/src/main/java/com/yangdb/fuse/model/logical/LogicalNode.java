@@ -55,7 +55,7 @@ import java.util.Map;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LogicalNode {
+public class LogicalNode implements Vertex {
     public static final String NODE = "Node";
 
     private String id;
@@ -69,7 +69,6 @@ public class LogicalNode {
         this.id = id;
         this.label = label;
     }
-
 
     public String getLabel() {
         return label;
@@ -85,6 +84,26 @@ public class LogicalNode {
 
     public NodeProperties getProperties() {
         return properties;
+    }
+
+    @Override
+    public String id() {
+        return getId();
+    }
+
+    @Override
+    public String label() {
+        return getLabel();
+    }
+
+    @Override
+    public Map<String, Object> metadata() {
+        return getMetadata().getProperties();
+    }
+
+    @Override
+    public Map<String, Object> fields() {
+        return getProperties().getProperties();
     }
 
     @Override

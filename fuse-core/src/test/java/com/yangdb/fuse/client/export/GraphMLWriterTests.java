@@ -23,11 +23,9 @@ public class GraphMLWriterTests {
             "    <graph id=\"G\" edgedefault=\"directed\">\n" +
             "        <node id=\"e0000002\">\n" +
             "            <data key=\"Entity\">EValue</data>\n" +
-            "            <data key=\"name\">you</data>\n" +
             "        </node>\n" +
             "        <node id=\"e0000001\">\n" +
             "            <data key=\"Entity\">Entity</data>\n" +
-            "            <data key=\"name\">me</data>\n" +
             "        </node>\n" +
             "        <edge id=\"r000001\" source=\"e0000001\" target=\"e0000002\">\n" +
             "            <data key=\"Relation\">hasEvalue</data>\n" +

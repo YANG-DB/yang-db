@@ -1,6 +1,8 @@
 package com.yangdb.fuse.services.dispatcher.driver;
 
 import com.google.inject.Inject;
+import com.yangdb.fuse.client.export.GraphWriter;
+import com.yangdb.fuse.client.export.GraphWriterStrategy;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.driver.*;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
@@ -18,8 +20,10 @@ import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -112,8 +116,8 @@ public class MockDriver {
     public static class Page extends PageDriverBase {
         //region Constructors
         @Inject
-        public Page(ResourceStore resourceStore, AppUrlSupplier urlSupplier) {
-            super(resourceStore, urlSupplier);
+        public Page(ResourceStore resourceStore, AppUrlSupplier urlSupplier, GraphWriterStrategy writerMap) {
+            super(resourceStore, urlSupplier,writerMap);
         }
         //endregion
 

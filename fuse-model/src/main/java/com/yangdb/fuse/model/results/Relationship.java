@@ -26,10 +26,13 @@ package com.yangdb.fuse.model.results;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yangdb.fuse.model.logical.Edge;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 21-Feb-17.
@@ -37,7 +40,7 @@ import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Relationship {
+public class Relationship implements Edge {
     //region Constructors
     public Relationship() {
         this.properties = Collections.emptyList();
@@ -150,6 +153,39 @@ public class Relationship {
     private String eTag2;
     private List<Property> properties;
     private List<AttachedProperty> attachedProperties;
+
+    @Override
+    public String source() {
+        return eID1;
+    }
+
+    @Override
+    public String target() {
+        return eID2;
+    }
+
+    @Override
+    public String id() {
+        return rID;
+    }
+
+    @Override
+    public String label() {
+        return rType;
+    }
+
+    @Override
+    public Map<String,Object> metadata() {
+        return getProperties().stream().collect(
+                Collectors.toMap(Property::getpType, Property::getValue));
+    }
+
+    @Override
+    public Map<String,Object> fields() {
+        return getAttachedProperties().stream().collect(
+                Collectors.toMap(AttachedProperty::getpName, AttachedProperty::getValue));
+
+    }
     //endregion
 
 

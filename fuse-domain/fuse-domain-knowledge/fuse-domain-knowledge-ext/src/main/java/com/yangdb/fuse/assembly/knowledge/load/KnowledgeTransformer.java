@@ -23,6 +23,7 @@ package com.yangdb.fuse.assembly.knowledge.load;
 import com.google.inject.Inject;
 import com.yangdb.fuse.assembly.knowledge.load.builder.*;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.Range.StatefulRange;
@@ -46,7 +47,7 @@ import static com.yangdb.fuse.assembly.knowledge.load.builder.RvalueBuilder._r;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder._v;
 import static java.util.regex.Pattern.matches;
 
-public class KnowledgeTransformer {
+public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
     public static final String TECHNICAL_ID = "techId";
     private static Map<String, StatefulRange> ranges = new HashMap<>();
 
@@ -64,13 +65,14 @@ public class KnowledgeTransformer {
         this.client = client;
     }
 
+    @Override
     public KnowledgeContext transform(LogicalGraphModel graph) {
         KnowledgeContext context = new KnowledgeContext();
         this.writerContext = new KnowledgeWriterContext(context);
         //populate context according to given json graph
         for (LogicalNode node : graph.getNodes()) {
             Optional<TransformerEntityType> entityType = transformer.getEntityTypes().stream()
-                    .filter(e -> matches(e.getPattern(), node.getLabel())).findFirst();
+                    .filter(e -> matches(e.getPattern(), node.label())).findFirst();
             if (!entityType.isPresent()) {
                 context.failed("Entity type not matched", node.toString());
                 continue;
@@ -222,10 +224,10 @@ public class KnowledgeTransformer {
         //technical Id to find the node by (real id is given by the engine sequencer)
         builder.putProperty(TECHNICAL_ID, node.getId());
         String physicalLabelKey = type.getLabel();
-        String labelValue = node.getLabel();
+        String labelValue = node.label();
         builder.putProperty(physicalLabelKey, labelValue);
         //for each metadata property in the logical graph
-        node.getMetadata().getProperties().forEach((logicalKey, value) -> {
+        node.metadata().forEach((logicalKey, value) -> {
             if (type.hasMetadataProperty(logicalKey)) {
                 final Map.Entry<String, String> entry = type.metadataProperty(logicalKey).get().entrySet().iterator().next();
                 final String physicalKey = entry.getValue();
@@ -239,7 +241,7 @@ public class KnowledgeTransformer {
         });
         //transform regular properties (EValue)
         StatefulRange propRange = getRange(ValueBuilder.type);
-        node.getProperties().getProperties().forEach((key, value) -> {
+        node.fields().forEach((key, value) -> {
             ValueBuilder valueBuilder = createValueBuilder(propRange, type.getProperties(), key, value);
             context.add(valueBuilder);
             builder.value(valueBuilder);

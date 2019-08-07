@@ -47,6 +47,11 @@ public class DefaultAppUrlSupplier implements AppUrlSupplier {
     }
 
     @Override
+    public String resourceUrl(String queryId, String cursorId, String pageId, String format) {
+        return new ResourceUrlSupplier(this.baseUrl).queryId(queryId).cursorId(cursorId).pageId(pageId).format(format).get();
+    }
+
+    @Override
     public String baseUrl() {
         return baseUrl;
     }

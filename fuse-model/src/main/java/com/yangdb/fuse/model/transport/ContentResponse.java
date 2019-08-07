@@ -99,7 +99,7 @@ public class ContentResponse<T> implements Response, TextContent {
         if(this.data != null && TextContent.class.isAssignableFrom(this.data.getClass())){
             return ((TextContent)this.data).content();
         }else{
-            return this.toString();
+            return this.getData().toString();
         }
     }
     //endregion

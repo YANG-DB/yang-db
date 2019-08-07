@@ -24,6 +24,7 @@ import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.StoreResourceInfo;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 
 /**
  * Created by lior.perry on 19/02/2017.
@@ -33,6 +34,7 @@ public interface PageController<C,D> extends Controller<C,D>{
     ContentResponse<PageResourceInfo> createAndFetch(String queryId, String cursorId, CreatePageRequest createPageRequest);
     ContentResponse<StoreResourceInfo> getInfo(String queryId, String cursorId);
     ContentResponse<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId);
-    ContentResponse<Object> getData(String queryId, String cursorId, String pageId);
     ContentResponse<Boolean> delete(String queryId, String cursorId, String pageId);
+    ContentResponse<Object> getData(String queryId, String cursorId, String pageId);
+    ContentResponse<Object> format(String queryId, String cursorId, String pageId, LogicalGraphCursorRequest.GraphFormat format);
 }

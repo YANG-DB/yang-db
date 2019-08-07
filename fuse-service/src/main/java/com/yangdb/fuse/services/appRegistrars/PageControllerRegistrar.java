@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.appRegistrars;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import com.yangdb.fuse.logging.Route;
 import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
+import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.services.controllers.PageController;
 import org.jooby.Jooby;
 import org.jooby.Results;
@@ -81,6 +82,24 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
 
                     ContentResponse response = this.getController(app).getData(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
                     return Results.with(response, response.status());
+                });
+
+        /** get page data by format */
+        app.get(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId", ":format") + "/data",
+                req -> {
+                    Route.of("getDataWithFormat").write();
+                    CreateGraphCursorRequest.GraphFormat format = CreateGraphCursorRequest.GraphFormat.valueOf(req.param("format").value());
+                    ContentResponse response = this.getController(app).format(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value(), format);
+                    switch (format) {
+                        case JSON:
+                            return Results.with(response);
+
+                        case XML:
+                            return Results.xml(response.content());
+
+                        default:
+                            return Results.with(response);
+                    }
                 });
 
         /** get page data by id */

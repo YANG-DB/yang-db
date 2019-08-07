@@ -644,6 +644,53 @@
         }
       }
     },
+    "/query/{id}/cursor/{cursorId}/page/{pageId}/format/{format}/data": {
+      "get": {
+        "tags": [
+          "page"
+        ],
+        "summary": "Fetch Page data with format ",
+        "description": "Fetch Page data with format ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "path",
+            "description": "data format",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/dashboard/entities": {
       "get": {
         "tags": [

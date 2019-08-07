@@ -43,5 +43,25 @@ public class CreateGraphCursorRequest extends CreateCursorRequest {
     public CreateGraphCursorRequest(Include include, CreatePageRequest createPageRequest) {
         super(CursorType, include, createPageRequest);
     }
+
+    public CreateGraphCursorRequest(String cursorType, Include include, CreatePageRequest createPageRequest) {
+        super(cursorType,include,createPageRequest);
+    }
+
+    public CreateGraphCursorRequest(String cursorType, Include include, CreatePageRequest createPageRequest,GraphFormat format) {
+        super(cursorType,include,createPageRequest);
+        this.format = format;
+    }
+
+    public GraphFormat getFormat() {
+        return format;
+    }
+
+    //endregion
+    private GraphFormat format = GraphFormat.JSON;
+
+    public enum GraphFormat {
+        JSON,XML
+    }
     //endregion
 }

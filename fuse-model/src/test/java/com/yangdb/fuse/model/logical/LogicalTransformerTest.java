@@ -29,9 +29,9 @@ public class LogicalTransformerTest {
         assertEquals(2,graphModel.getNodes().size());
         assertEquals("0",graphModel.getNodes().get(0).getId());
         assertEquals("10",graphModel.getNodes().get(1).getId());
-        assertEquals(3,graphModel.getNodes().get(0).getMetadata().getProperties().size());
+        assertEquals(3,graphModel.getNodes().get(0).metadata().size());
         assertEquals(6,graphModel.getNodes().get(0).getProperties().getProperties().size());
-        assertEquals(2,graphModel.getNodes().get(1).getMetadata().getProperties().size());
+        assertEquals(2,graphModel.getNodes().get(1).metadata().size());
         assertEquals(6,graphModel.getNodes().get(1).getProperties().getProperties().size());
     }
 

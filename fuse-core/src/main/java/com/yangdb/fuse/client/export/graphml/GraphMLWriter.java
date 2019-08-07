@@ -39,6 +39,8 @@ package com.yangdb.fuse.client.export.graphml;
  */
 
 import com.yangdb.fuse.client.export.GraphWriter;
+import com.yangdb.fuse.model.logical.Edge;
+import com.yangdb.fuse.model.logical.Vertex;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.Entity;
@@ -197,7 +199,7 @@ public final class GraphMLWriter implements GraphWriter {
 
             writer.flush();
             writer.close();
-        } catch (XMLStreamException xse) {
+        } catch (Throwable xse) {
             throw new IOException(xse);
         }
     }
@@ -234,29 +236,29 @@ public final class GraphMLWriter implements GraphWriter {
         }
     }
 
-    private void writeEdges(final XMLStreamWriter writer, final Assignment<Entity,Relationship> graph) throws XMLStreamException {
-        final List<Relationship> edges = new ArrayList<>(graph.getRelationships());
-        Collections.sort(edges, Comparator.comparing(e -> e.getrID(), String.CASE_INSENSITIVE_ORDER));
+    private void writeEdges(final XMLStreamWriter writer, final Assignment<Vertex, Edge> graph) throws XMLStreamException {
+        final List<Edge> edges = new ArrayList<>(graph.getRelationships());
+        Collections.sort(edges, Comparator.comparing(e -> e.id(), String.CASE_INSENSITIVE_ORDER));
 
-        for (Relationship edge : edges) {
+        for (Edge edge : edges) {
             writer.writeStartElement(GraphMLTokens.EDGE);
-            writer.writeAttribute(GraphMLTokens.ID, edge.getrID());
-            writer.writeAttribute(GraphMLTokens.SOURCE, edge.geteID1());
-            writer.writeAttribute(GraphMLTokens.TARGET, edge.geteID2());
+            writer.writeAttribute(GraphMLTokens.ID, edge.id());
+            writer.writeAttribute(GraphMLTokens.SOURCE, edge.source());
+            writer.writeAttribute(GraphMLTokens.TARGET, edge.target());
 
             writer.writeStartElement(GraphMLTokens.DATA);
             writer.writeAttribute(GraphMLTokens.KEY, this.edgeLabelKey);
-            writer.writeCharacters(edge.getrType());
+            writer.writeCharacters(edge.label());
             writer.writeEndElement();
 
-            final List<Property> keys = new ArrayList<>(edge.getProperties());
+            final List<Map.Entry<String,Object>> keys = new ArrayList<>(edge.fields().entrySet());
 
-            for (Property key : keys) {
+            for (Map.Entry<String,Object> key : keys) {
                 writer.writeStartElement(GraphMLTokens.DATA);
-                writer.writeAttribute(GraphMLTokens.KEY, key.getpType());
+                writer.writeAttribute(GraphMLTokens.KEY, key.getKey());
                 // technically there can't be a null here as gremlin structure forbids that occurrence even if Graph
                 // implementations support it, but out to empty string just in case.
-                writer.writeCharacters(key.getValue().toString());
+                writer.writeCharacters(key.getValue()!=null ? key.getValue().toString() : "Null");
                 writer.writeEndElement();
             }
             writer.writeEndElement();
@@ -264,23 +266,23 @@ public final class GraphMLWriter implements GraphWriter {
     }
 
     private void writeVertices(final XMLStreamWriter writer, final Assignment graph) throws XMLStreamException {
-        final Iterable<Entity> vertices = graph.getEntities();
-        for (Entity vertex : vertices) {
+        final Iterable<Vertex> vertices = graph.getEntities();
+        for (Vertex vertex : vertices) {
             writer.writeStartElement(GraphMLTokens.NODE);
-            writer.writeAttribute(GraphMLTokens.ID, vertex.geteID());
-            final Collection<Property> keys = vertex.getProperties();
+            writer.writeAttribute(GraphMLTokens.ID, vertex.id());
 
             writer.writeStartElement(GraphMLTokens.DATA);
             writer.writeAttribute(GraphMLTokens.KEY, this.vertexLabelKey);
-            writer.writeCharacters(vertex.geteType());
+            writer.writeCharacters(vertex.label());
             writer.writeEndElement();
 
-            for (Property key : keys) {
+            final Collection<Map.Entry<String,Object>> keys = vertex.fields().entrySet();
+            for (Map.Entry<String,Object> key : keys) {
                 writer.writeStartElement(GraphMLTokens.DATA);
-                writer.writeAttribute(GraphMLTokens.KEY, key.getpType());
+                writer.writeAttribute(GraphMLTokens.KEY, key.getKey());
                 // technically there can't be a null here as gremlin structure forbids that occurrence even if Graph
                 // implementations support it, but out to empty string just in case.
-                writer.writeCharacters(key.getValue().toString());
+                writer.writeCharacters(key.getValue()!=null ? key.getValue().toString() : "Null");
                 writer.writeEndElement();
             }
             writer.writeEndElement();

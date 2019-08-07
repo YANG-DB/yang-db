@@ -30,7 +30,7 @@ import java.util.Collections;
 /**
  * Created by roman.margolis on 11/03/2018.
  */
-public class CreateGraphHierarchyCursorRequest extends CreateCursorRequest {
+public class CreateGraphHierarchyCursorRequest extends CreateGraphCursorRequest {
     public static final String CursorType = "graphHierarchy";
 
     //region Constructors
@@ -46,8 +46,17 @@ public class CreateGraphHierarchyCursorRequest extends CreateCursorRequest {
         this(Include.all, countTags, createPageRequest);
     }
 
+    public CreateGraphHierarchyCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest,GraphFormat format) {
+        this(Include.all, countTags, createPageRequest,format);
+    }
+
     public CreateGraphHierarchyCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest) {
         super(CursorType, include, createPageRequest);
+        this.countTags = countTags;
+    }
+
+    public CreateGraphHierarchyCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest,GraphFormat format) {
+        super(CursorType, include, createPageRequest,format);
         this.countTags = countTags;
     }
     //endregion

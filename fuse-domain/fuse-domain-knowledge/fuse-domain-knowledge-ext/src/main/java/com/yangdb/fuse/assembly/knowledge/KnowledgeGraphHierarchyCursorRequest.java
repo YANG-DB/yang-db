@@ -52,8 +52,18 @@ public class KnowledgeGraphHierarchyCursorRequest extends CreateGraphHierarchyCu
         this.setCursorType(CursorType);
     }
 
+    public KnowledgeGraphHierarchyCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest,GraphFormat format) {
+        super(countTags, createPageRequest,format);
+        this.setCursorType(CursorType);
+    }
+
     public KnowledgeGraphHierarchyCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest) {
         super(include, countTags, createPageRequest);
+        this.setCursorType(CursorType);
+    }
+
+    public KnowledgeGraphHierarchyCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest,GraphFormat format) {
+        super(include, countTags, createPageRequest,format);
         this.setCursorType(CursorType);
     }
     //endregion

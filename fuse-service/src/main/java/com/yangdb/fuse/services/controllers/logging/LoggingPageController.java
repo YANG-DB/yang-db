@@ -30,6 +30,7 @@ import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.StoreResourceInfo;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.services.controllers.PageController;
 import com.yangdb.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.yangdb.fuse.services.suppliers.RequestIdSupplier;
@@ -119,6 +120,18 @@ public class LoggingPageController extends LoggingControllerBase<PageController>
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
                 .decorate(() -> this.controller.getData(queryId, cursorId, pageId), this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<Object> format(String queryId, String cursorId, String pageId, LogicalGraphCursorRequest.GraphFormat format) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                getData,
+                Composite.of(this.primerMdcWriter(), RequestIdByScope.of(query(queryId).cursor(cursorId).page(pageId).get())),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.format(queryId, cursorId, pageId,format), this.resultHandler());
     }
 
     @Override

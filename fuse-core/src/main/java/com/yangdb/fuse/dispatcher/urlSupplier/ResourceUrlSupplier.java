@@ -32,6 +32,7 @@ public class ResourceUrlSupplier extends UrlSupplierBase {
         this.queryId = Optional.empty();
         this.cursorId = Optional.empty();
         this.pageId = Optional.empty();
+        this.format = Optional.empty();
     }
     //endregion
 
@@ -53,6 +54,12 @@ public class ResourceUrlSupplier extends UrlSupplierBase {
         clone.pageId = Optional.of(pageId);
         return clone;
     }
+
+    public ResourceUrlSupplier format(String format) {
+        ResourceUrlSupplier clone = cloneImpl();
+        clone.format = Optional.of(format);
+        return clone;
+    }
     //endregion
 
     //region UrlSupplierBase Implementation
@@ -70,7 +77,11 @@ public class ResourceUrlSupplier extends UrlSupplierBase {
             return this.baseUrl + "/query/" + this.queryId.get() + "/cursor/" + this.cursorId.get();
         }
 
-        return this.baseUrl + "/query/" + this.queryId.get() + "/cursor/" + this.cursorId.get() + "/page/" + this.pageId.get();
+        if (!this.format.isPresent()) {
+            return this.baseUrl + "/query/" + this.queryId.get() + "/cursor/" + this.cursorId.get() + "/page/" + this.pageId.get();
+        }
+
+        return this.baseUrl + "/query/" + this.queryId.get() + "/cursor/" + this.cursorId.get() + "/page/" + this.pageId.get() +"/format/"+this.format.get();
     }
     //endregion
 
@@ -80,6 +91,7 @@ public class ResourceUrlSupplier extends UrlSupplierBase {
         clone.queryId = this.queryId;
         clone.cursorId = this.cursorId;
         clone.pageId = this.pageId;
+        clone.format = this.format;
         return clone;
     }
     //endregion
@@ -88,5 +100,6 @@ public class ResourceUrlSupplier extends UrlSupplierBase {
     protected Optional<String> queryId;
     protected Optional<String> cursorId;
     protected Optional<String> pageId;
+    protected Optional<String> format;
     //endregion
 }

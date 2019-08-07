@@ -24,6 +24,8 @@ import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
 import com.google.inject.internal.SingletonScope;
 import com.google.inject.name.Names;
+import com.typesafe.config.Config;
+import com.yangdb.fuse.client.export.GraphWriterStrategy;
 import com.yangdb.fuse.core.driver.StandardCursorDriver;
 import com.yangdb.fuse.core.driver.StandardPageDriver;
 import com.yangdb.fuse.core.driver.StandardQueryDriver;
@@ -49,7 +51,6 @@ import com.yangdb.fuse.executor.ontology.schema.*;
 import com.yangdb.fuse.executor.resource.PersistantResourceStore;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
-import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.elasticsearch.client.Client;
@@ -72,6 +73,7 @@ public class ExecutorModule extends ModuleBase {
     //region Jooby.Module Implementation
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
+        bindGraphWriters(env, conf, binder);
         bindResourceManager(env, conf, binder);
         bindInitialDataLoader(env, conf, binder);
         bindCursorFactory(env, conf, binder);
@@ -89,6 +91,9 @@ public class ExecutorModule extends ModuleBase {
     //endregion
 
     //region Private Methods
+    protected void bindGraphWriters(Env env, Config conf, Binder binder) {
+        binder.bind(GraphWriterStrategy.class).toInstance(new GraphWriterStrategy());
+    }
 
     protected void bindResourceManager(Env env, Config conf, Binder binder) {
         // resource store and persist processor
@@ -202,7 +207,7 @@ public class ExecutorModule extends ModuleBase {
                 this.bind(Client.class)
                         .annotatedWith(named(LoggingClient.clientParameter))
                         .toInstance(client);
-                        //.toProvider(ClientProvider.class).asEagerSingleton();
+                //.toProvider(ClientProvider.class).asEagerSingleton();
 
                 this.bind(Logger.class)
                         .annotatedWith(named(LoggingClient.loggerParameter))
@@ -273,15 +278,15 @@ public class ExecutorModule extends ModuleBase {
     }
 
     private Class<? extends RawSchema> getRawElasticSchemaClass(Config conf) throws ClassNotFoundException {
-        return (Class<? extends RawSchema>) Class.forName(conf.getString(conf.getString("assembly")+".physical_raw_schema"));
+        return (Class<? extends RawSchema>) Class.forName(conf.getString(conf.getString("assembly") + ".physical_raw_schema"));
     }
 
     private Class<? extends GraphDataLoader> getInitialDataLoader(Config conf) throws ClassNotFoundException {
-        return (Class<? extends GraphDataLoader>) (Class.forName(conf.getString(conf.getString("assembly")+".physical_schema_data_loader")));
+        return (Class<? extends GraphDataLoader>) (Class.forName(conf.getString(conf.getString("assembly") + ".physical_schema_data_loader")));
     }
 
     private Class<? extends SearchOrderProviderFactory> getSearchOrderProvider(Config conf) throws ClassNotFoundException {
-        return (Class<? extends SearchOrderProviderFactory>) (Class.forName(conf.getString(conf.getString("assembly")+".search_order_provider")));
+        return (Class<? extends SearchOrderProviderFactory>) (Class.forName(conf.getString(conf.getString("assembly") + ".search_order_provider")));
     }
 
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {
@@ -311,24 +316,24 @@ public class ExecutorModule extends ModuleBase {
     }
 
     protected Class<? extends GraphElementSchemaProviderFactory> getSchemaProviderFactoryClass(Config conf) throws ClassNotFoundException {
-        return (Class<? extends GraphElementSchemaProviderFactory>) Class.forName(conf.getString(conf.getString("assembly")+".physical_schema_provider_factory_class"));
+        return (Class<? extends GraphElementSchemaProviderFactory>) Class.forName(conf.getString(conf.getString("assembly") + ".physical_schema_provider_factory_class"));
     }
 
     protected Class<? extends UniGraphProvider> getUniGraphProviderClass(Config conf) throws ClassNotFoundException {
-        return (Class<? extends  UniGraphProvider>)Class.forName(conf.getString(conf.getString("assembly")+".unigraph_provider"));
+        return (Class<? extends UniGraphProvider>) Class.forName(conf.getString(conf.getString("assembly") + ".unigraph_provider"));
     }
 
     protected Class<? extends CursorFactory> getCursorFactoryClass(Config conf) throws ClassNotFoundException {
-        return (Class<? extends  CursorFactory>)Class.forName(conf.getString(conf.getString("assembly")+".cursor_factory"));
+        return (Class<? extends CursorFactory>) Class.forName(conf.getString(conf.getString("assembly") + ".cursor_factory"));
     }
 
     private List<String> getStringList(Config conf, String key) {
-         try {
-             return conf.getStringList(key);
-         } catch (Exception ex) {
-             String strList = conf.getString(key);
-             return Stream.of(strList.split(",")).toJavaList();
-         }
+        try {
+            return conf.getStringList(key);
+        } catch (Exception ex) {
+            String strList = conf.getString(key);
+            return Stream.of(strList.split(",")).toJavaList();
+        }
     }
     //endregion
 }

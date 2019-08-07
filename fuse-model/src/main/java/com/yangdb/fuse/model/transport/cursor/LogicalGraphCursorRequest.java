@@ -49,7 +49,6 @@ public class LogicalGraphCursorRequest extends CreateGraphHierarchyCursorRequest
 
     public LogicalGraphCursorRequest(Iterable<String> countTags, CreatePageRequest createPageRequest, GraphFormat format ) {
         super(countTags, createPageRequest);
-        this.format = format;
         this.setCursorType(CursorType);
     }
 
@@ -58,19 +57,8 @@ public class LogicalGraphCursorRequest extends CreateGraphHierarchyCursorRequest
     }
 
     public LogicalGraphCursorRequest(Include include, Iterable<String> countTags, CreatePageRequest createPageRequest, GraphFormat format) {
-        super(include, countTags, createPageRequest);
-        this.format = format;
+        super(include, countTags, createPageRequest,format);
         this.setCursorType(CursorType);
     }
 
-    public GraphFormat getFormat() {
-        return format;
-    }
-
-    //endregion
-    private GraphFormat format = GraphFormat.JSON;
-
-    public enum GraphFormat {
-        JSON,XML
-    }
 }
