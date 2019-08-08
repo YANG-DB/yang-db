@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.yangdb.fuse.client.export.graphml.GraphMLTokens.GRAPHML_XMLNS;
+import static com.yangdb.fuse.client.export.graphml.GraphMLTokens.LABEL;
 import static java.util.Collections.emptyMap;
 
 public class GraphWriterStrategy {
@@ -35,7 +37,7 @@ public class GraphWriterStrategy {
     public GraphWriterStrategy() {
         this.writerMap = new HashMap<>();
         this.writerMap.put(LogicalGraphCursorRequest.GraphFormat.XML,
-                new GraphMLWriter(true, emptyMap(), emptyMap(), "www.yangdb.org", "Relation", "Entity"));
+                new GraphMLWriter(true, emptyMap(), emptyMap(), GRAPHML_XMLNS, LABEL, LABEL));
 
     }
 

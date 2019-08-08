@@ -38,7 +38,7 @@ package com.yangdb.fuse.client.export.graphml;
  * #L%
  */
 
-final class GraphMLTokens {
+public final class GraphMLTokens {
     private GraphMLTokens() {}
 
     public static final String XML_SCHEMA_NAMESPACE_TAG = "xsi";
@@ -53,6 +53,7 @@ final class GraphMLTokens {
     public static final String KEY = "key";
     public static final String FOR = "for";
     public static final String ID = "id";
+    public static final String LABEL = "label";
     public static final String ATTR_NAME = "attr.name";
     public static final String ATTR_TYPE = "attr.type";
     public static final String GRAPH = "graph";

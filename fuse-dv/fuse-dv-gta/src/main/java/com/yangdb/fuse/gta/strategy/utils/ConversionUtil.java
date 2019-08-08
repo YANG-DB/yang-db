@@ -59,6 +59,8 @@ public class ConversionUtil {
             case match_phrase: return Text.matchPhrase((V)constraint.getExpr());
             case like: return Text.like((V)constraint.getExpr());
             case likeAny: return Text.like((V)constraint.getExpr());
+            case startsWith: return Text.prefix((V)constraint.getExpr());
+            case endsWith: return Text.like((V)constraint.getExpr());
             default: throw new RuntimeException(constraint.getOp() +" not supported constraint");
         }
     }
