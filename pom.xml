@@ -159,6 +159,9 @@
         <hamcrest-all.version>1.3</hamcrest-all.version>
         <hamcrest.version>1.3</hamcrest.version>
         <hamcres-json.version>0.2</hamcres-json.version>
+
+        <!-- jmx monitoring        -->
+        <jolokia>1.6.2</jolokia>
     </properties>
 
     <dependencyManagement>
@@ -244,14 +247,19 @@
                 <artifactId>fuse-domain-knowledge-test</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
-<!--
+
+            <!-- jmx monitoring    -->
             <dependency>
-                <groupId>com.yangdb</groupId>
-                <artifactId>fuse-domain-knowledge-poc</artifactId>
-                <version>${fuse.version}</version>
+                <groupId>org.jolokia</groupId>
+                <artifactId>jolokia-core</artifactId>
+                <version>${jolokia}</version>
             </dependency>
--->
-            <!-- fuse -->
+            <dependency>
+                <groupId>org.jolokia</groupId>
+                <artifactId>jolokia-jvm</artifactId>
+                <classifier>agent</classifier>
+                <version>${jolokia}</version>
+            </dependency>
 
             <!-- geo -->
             <dependency>
@@ -907,7 +915,6 @@
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
-
 
 
     <!-- todo profiles -->

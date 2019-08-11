@@ -85,6 +85,17 @@
             <groupId>com.internetitem</groupId>
             <artifactId>logback-elasticsearch-appender</artifactId>
         </dependency>
+        <!--  jmx monitoring      -->
+        <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-jvm</artifactId>
+            <classifier>agent</classifier>
+        </dependency>
+
         <!--Tests-->
         <dependency>
             <groupId>io.rest-assured</groupId>
@@ -123,6 +134,31 @@
     <build>
         <finalName>assembly</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-jokolia</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.jolokia</groupId>
+                                    <artifactId>jolokia-jvm</artifactId>
+                                    <version>${jolokia}</version>
+                                    <classifier>agent</classifier>
+                                    <destFileName>jolokia-agent.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
