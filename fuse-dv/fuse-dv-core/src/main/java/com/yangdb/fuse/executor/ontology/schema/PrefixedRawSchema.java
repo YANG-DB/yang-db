@@ -70,6 +70,11 @@ public class PrefixedRawSchema implements RawSchema {
     }
 
     @Override
+    public String getPrefix(String type) {
+        return rawSchema.getPrefix(type);
+    }
+
+    @Override
     public List<IndexPartitions.Partition> getPartitions(String type) {
         return Stream.ofAll(this.rawSchema.getPartitions(type))
                 .map(partition -> prefixPartition(partition)).toJavaList();

@@ -28,6 +28,8 @@ import com.yangdb.fuse.assembly.knowledge.load.builder.*;
 import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import javaslang.collection.Stream;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -39,7 +41,9 @@ import org.elasticsearch.common.xcontent.XContentType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.*;
 
@@ -173,10 +177,11 @@ public class KnowledgeWriterContext {
         return context;
     }
 
-    private static void populateBulk(BulkRequestBuilder bulk,String index,Client client,List<KnowledgeDomainBuilder> builders,ObjectMapper mapper) throws JsonProcessingException {
+    private static void populateBulk(BulkRequestBuilder bulk, RawSchema schema, String indexCategory, Client client, List<KnowledgeDomainBuilder> builders, ObjectMapper mapper) throws JsonProcessingException {
         for (KnowledgeDomainBuilder builder : builders) {
             IndexRequestBuilder request = client.prepareIndex()
-                    .setIndex(index)
+                    .setIndex(resolveIndexByLabelAndId(indexCategory,
+                            builder.routing().orElseGet(builder::id),schema))
                     .setType(PGE)
                     .setId(builder.id())
                     .setOpType(IndexRequest.OpType.INDEX)
@@ -186,18 +191,15 @@ public class KnowledgeWriterContext {
         }
     }
 
-    public static <T extends KnowledgeDomainBuilder> LoadResponse.CommitResponse commit(Client client, String index, ObjectMapper mapper, List<T> builders) throws JsonProcessingException {
+    public static <T extends KnowledgeDomainBuilder> LoadResponse.CommitResponse commit(Client client, RawSchema schema, String indexCategory, ObjectMapper mapper, List<T> builders) throws JsonProcessingException {
         if(builders.isEmpty())
             return LoadResponse.CommitResponse.EMPTY;
 
         final BulkRequestBuilder bulk = client.prepareBulk();
-        return process(client, index, bulk, builders,mapper);
+        return process(client, schema, indexCategory, bulk, builders,mapper);
     }
 
-    public static <T extends KnowledgeDomainBuilder> Response commit(Client client, String index, ObjectMapper mapper, T... builders) throws JsonProcessingException {
-        final BulkRequestBuilder bulk = client.prepareBulk();
-        return process(client, index, bulk, Arrays.asList(builders),mapper);
-    }
+
 
     /**
      * commit all entities and relations with their properties to the DB according to schema partition
@@ -211,22 +213,22 @@ public class KnowledgeWriterContext {
      */
     public static LoadResponse<String, FuseError> commit(Client client, RawSchema schema, ObjectMapper mapper, KnowledgeContext context) throws JsonProcessingException {
         LoadResponse<String, FuseError> responses = new LoadResponseImpl();
-        responses.response(commit(client,schema.getPartition(ENTITY).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getEntities()));
-        responses.response(commit(client,schema.getPartition(ENTITY).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getRelationBuilders()));
+        responses.response(commit(client,schema,ENTITY,mapper,context.getEntities()));
+        responses.response(commit(client,schema,ENTITY,mapper,context.getRelationBuilders()));
 
-        responses.response(commit(client,schema.getPartition(EVALUE).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.geteValues()));
-        responses.response(commit(client,schema.getPartition(RELATION).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getRelations()));
-        responses.response(commit(client,schema.getPartition(RVALUE).getPartitions().iterator().next().getIndices().iterator().next(),mapper,context.getrValues()));
+        responses.response(commit(client,schema,ENTITY,mapper,context.geteValues()));
+        responses.response(commit(client,schema,RELATION,mapper,context.getRelations()));
+        responses.response(commit(client,schema,RELATION,mapper,context.getrValues()));
         //todo populate insight and references
         return responses;
     }
 
-    private static <T extends KnowledgeDomainBuilder> Response process(Client client, String index, BulkRequestBuilder bulk, List<T> builders, ObjectMapper mapper) throws JsonProcessingException {
-        Response response = new Response(index);
-        populateBulk(bulk,index,client, (List<KnowledgeDomainBuilder>) builders,mapper);
+    private static <T extends KnowledgeDomainBuilder> Response process(Client client, RawSchema schema, String indexCategory, BulkRequestBuilder bulk, List<T> builders, ObjectMapper mapper) throws JsonProcessingException {
+        Response response = new Response(indexCategory);
+        populateBulk(bulk,schema, indexCategory,client, (List<KnowledgeDomainBuilder>) builders,mapper);
         builders.forEach(builder -> {
             try {
-                populateBulk(bulk,index,client,builder.additional(),mapper);
+                populateBulk(bulk,schema, indexCategory,client,builder.additional(),mapper);
             } catch (JsonProcessingException e) {
                 response.failure(new FuseError("commit build proccess failed",e));
             }
@@ -245,9 +247,20 @@ public class KnowledgeWriterContext {
             }
 
         }
-        client.admin().indices().prepareRefresh(index).get();
+        Set<String> indices = Arrays.stream(bulk.get().getItems()).map(BulkItemResponse::getIndex).collect(Collectors.toSet());
+        client.admin().indices().prepareRefresh(indices.toArray(new String[0])).get();
         return response;
+
     }
+
+    private static String resolveIndexByLabelAndId(String indexCategory, String id, RawSchema schema) {
+        return Stream.ofAll(schema.getPartitions(indexCategory))
+                .map(partition -> (IndexPartitions.Partition.Range) partition)
+                .filter(partition -> partition.isWithin(id))
+                .map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
+    }
+
+
 
     public static class Items {
         public String index;

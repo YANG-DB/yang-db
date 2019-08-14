@@ -9,9 +9,9 @@ package com.yangdb.fuse.assembly.knowledge.load.builder;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -95,7 +95,8 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
                         //error parsing value as date
                         try {
                             return lastUpdateTime(new Date(value.toString()));
-                        }catch (Exception err){}
+                        } catch (Exception err) {
+                        }
                     }
                 }
             case "deleteTime":
@@ -108,7 +109,9 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
                         //error parsing value as date
                         try {
                             return deleteTime(new Date(value.toString()));
-                        }catch (Exception err){}
+                        } catch (Exception err) {
+                            //error formatting date - todo log and report
+                        }
 
                     }
                 }
@@ -122,7 +125,9 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
                         //error parsing value as date
                         try {
                             return creationTime(new Date(value.toString()));
-                        }catch (Exception err){}
+                        } catch (Exception err) {
+                            //error formatting date - todo log and report
+                        }
 
                     }
                 }
@@ -172,7 +177,6 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
         node.put("creationUser", creationUser);
         node.put("creationTime", sdf.format(creationTime));
         node.put("lastUpdateUser", lastUpdateUser);
-        node.put("lastUpdateTime", sdf.format(lastUpdateTime));
         //delete time is not mandatory
         if (deleteTime != null) node.put("deleteTime", sdf.format(deleteTime));
         return node;

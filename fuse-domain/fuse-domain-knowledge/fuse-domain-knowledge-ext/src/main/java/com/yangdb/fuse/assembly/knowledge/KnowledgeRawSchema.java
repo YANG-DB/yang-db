@@ -72,6 +72,22 @@ public class KnowledgeRawSchema implements RawSchema {
     }
 
     @Override
+    public String getPrefix(String type) {
+        switch (type) {
+            case ENTITY:
+                return "e";
+            case RELATION:
+                return "rel";
+            case INSIGHT:
+                return "i";
+            case REFERENCE:
+                return "ref";
+
+        }
+        return "e";
+    }
+
+    @Override
     public IndexPartitions getPartition(String type) {
         switch (type) {
             case ENTITY:

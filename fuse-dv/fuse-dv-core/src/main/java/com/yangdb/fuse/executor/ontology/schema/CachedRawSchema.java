@@ -62,6 +62,11 @@ public class CachedRawSchema implements RawSchema {
     }
 
     @Override
+    public String getPrefix(String type) {
+        return rawSchema.getPrefix(type);
+    }
+
+    @Override
     public List<IndexPartitions.Partition> getPartitions(String type) {
         return this.indexPartitionsPartitions.computeIfAbsent(type, t -> this.rawSchema.getPartitions(t));
     }

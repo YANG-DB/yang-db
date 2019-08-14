@@ -32,7 +32,7 @@ public class StatusReportedJob {
             this.statusResource = statusResource;
         }
 
-        @Scheduled("15s; delay=20s; repeat=*")
+        @Scheduled("30s; delay=20s; repeat=*")
         public void report() {
             this.statusResource.report();
     }

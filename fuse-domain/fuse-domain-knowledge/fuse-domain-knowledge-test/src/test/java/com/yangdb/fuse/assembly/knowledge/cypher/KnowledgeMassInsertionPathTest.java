@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchemaProd.*;
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeStaticRuleBasedStatisticalProvider.KNOWLEDGE;
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.nextPage;
@@ -73,11 +74,11 @@ public class KnowledgeMassInsertionPathTest {
             relations.addAll(tuple3._3);
         });
 
-        final int entitiesCount = commit(ctx.client, INDEX, mapper, entities).getSuccesses().size();
+        final int entitiesCount = commit(ctx.client, manager.getSchema(),ENTITY, mapper, entities).getSuccesses().size();
         System.out.println("completed writing " + entitiesCount + " entities");
-        valuesCount = commit(ctx.client, INDEX,mapper, values).getSuccesses().size();
+        valuesCount = commit(ctx.client, manager.getSchema(),EVALUE, mapper, values).getSuccesses().size();
         System.out.println("completed writing " + valuesCount + " e.values");
-        relationCount = commit(ctx.client, REL_INDEX,mapper, relations).getSuccesses().size();
+        relationCount = commit(ctx.client, manager.getSchema(),RELATION,mapper, relations).getSuccesses().size();
         System.out.println("completed writing " + relationCount + " relations");
     }
 

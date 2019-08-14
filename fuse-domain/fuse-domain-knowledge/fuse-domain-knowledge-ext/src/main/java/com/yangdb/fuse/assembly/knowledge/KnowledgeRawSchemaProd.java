@@ -72,6 +72,23 @@ public class KnowledgeRawSchemaProd implements RawSchema {
     }
 
     @Override
+    public String getPrefix(String type) {
+        switch (type) {
+            case ENTITY:
+                return "e";
+            case RELATION:
+                return "rel";
+            case INSIGHT:
+                return "i";
+            case REFERENCE:
+                return "ref";
+
+        }
+        return "e";
+    }
+
+
+    @Override
     public IndexPartitions getPartition(String type) {
         switch (type) {
             case ENTITY:
@@ -98,24 +115,24 @@ public class KnowledgeRawSchemaProd implements RawSchema {
         switch (type) {
             case ENTITY:
                 return Arrays.asList(
-                        new IndexPartitions.Partition.Range.Impl<>("e000000000000", "e000010000000", "e-0"),
-                        new IndexPartitions.Partition.Range.Impl<>("e000010000000", "e000020000000", "e-1"),
-                        new IndexPartitions.Partition.Range.Impl<>("e000020000000", "e000030000000", "e-2"));
+                        new IndexPartitions.Partition.Range.Impl<>("e000000000000", "e000010000000", "e0"),
+                        new IndexPartitions.Partition.Range.Impl<>("e000010000000", "e000020000000", "e1"),
+                        new IndexPartitions.Partition.Range.Impl<>("e000020000000", "e000030000000", "e2"));
             case RELATION:
                 return Arrays.asList(
-                        new IndexPartitions.Partition.Range.Impl<>("r000000000000", "r000010000000", "rel-0"),
-                        new IndexPartitions.Partition.Range.Impl<>("r000010000000", "r000020000000", "rel-1"),
-                        new IndexPartitions.Partition.Range.Impl<>("r000020000000", "r000030000000", "rel-2"));
+                        new IndexPartitions.Partition.Range.Impl<>("r000000000000", "r000010000000", "rel0"),
+                        new IndexPartitions.Partition.Range.Impl<>("r000010000000", "r000020000000", "rel1"),
+                        new IndexPartitions.Partition.Range.Impl<>("r000020000000", "r000030000000", "rel2"));
             case INSIGHT:
                 return Arrays.asList(
-                        new IndexPartitions.Partition.Range.Impl<>("i000000000000", "i000010000000", "i-0"),
-                        new IndexPartitions.Partition.Range.Impl<>("i000010000000", "i000020000000", "i-1"),
-                        new IndexPartitions.Partition.Range.Impl<>("i000020000000", "i000030000000", "i-2"));
+                        new IndexPartitions.Partition.Range.Impl<>("i000000000000", "i000010000000", "i0"),
+                        new IndexPartitions.Partition.Range.Impl<>("i000010000000", "i000020000000", "i1"),
+                        new IndexPartitions.Partition.Range.Impl<>("i000020000000", "i000030000000", "i2"));
             case REFERENCE:
                 return Arrays.asList(
-                        new IndexPartitions.Partition.Range.Impl<>("ref000000000000", "ref000010000000", "ref-0"),
-                        new IndexPartitions.Partition.Range.Impl<>("ref000010000000", "ref000020000000", "ref-1"),
-                        new IndexPartitions.Partition.Range.Impl<>("ref000020000000", "ref000030000000", "ref-2"));
+                        new IndexPartitions.Partition.Range.Impl<>("ref000000000000", "ref000010000000", "ref0"),
+                        new IndexPartitions.Partition.Range.Impl<>("ref000010000000", "ref000020000000", "ref1"),
+                        new IndexPartitions.Partition.Range.Impl<>("ref000020000000", "ref000030000000", "ref2"));
 
         }
         return Collections.emptyList();
