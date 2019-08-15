@@ -6,6 +6,7 @@ import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
+import com.yangdb.fuse.model.results.Entity;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
@@ -13,6 +14,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.management.relation.Relation;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -50,14 +52,12 @@ public class KnowledgeLoadMergeLogicalGraphTest {
     @Test
     public void testFetchEntityWithRelationGraph() throws IOException, InterruptedException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("./data/logical/les_miserables_append.json");
-        QueryResourceInfo info = fuseClient.loadData(KNOWLEDGE, resource);
+        QueryResourceInfo info = fuseClient.upsertData(KNOWLEDGE, resource);
         Assert.assertNotNull(info);
 
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        String query = "Match (e:Entity)-[r:hasRelation]->(rel:Relation) Return *";
-
-
+        String query = "Match (e:Entity)-[r:hasEvalue]->(ev:Evalue) where e.techId = 'Napoleon' AND ev.stringValue IN ['Napoleon_1','Napoleon'] Return *";
         // get Query URL
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, KNOWLEDGE);
         // Press on Cursor
@@ -65,20 +65,57 @@ public class KnowledgeLoadMergeLogicalGraphTest {
 
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
         QueryResultBase pageData = nextPage(fuseClient, cursorResourceInfo, 100);
-        long totalGraphSize = 0;
-        while (countGraphElements(pageData) > totalGraphSize  ) {
-            List<Assignment> assignments = ((AssignmentsQueryResult) pageData).getAssignments();
+        //validate merge did add new property 'Napoleon_1' without removing the former propery 'Napoleon'
+        List<Entity> entities = ((AssignmentsQueryResult<Entity, Relation>) pageData).getAssignments().get(0).getEntities();
+        Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Entity"))
+                .filter(e->e.getProperty("techId").get().getValue().toString().equals("Napoleon")).count());
+        Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Evalue"))
+                .filter(e->e.getProperty("stringValue").get().getValue().toString().equals("Napoleon")).count());
+        Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Evalue"))
+                .filter(e->e.getProperty("stringValue").get().getValue().toString().equals("Napoleon_1")).count());
 
-            // Check Entity Response
-            Assert.assertEquals(1, pageData.getSize());
-            Assert.assertEquals(1, assignments.size());
-            Assert.assertEquals(false, assignments.get(0).getRelationships().isEmpty());
-            Assert.assertEquals(false, assignments.get(0).getEntities().isEmpty());
+        query = "Match (e:Entity)-[r:hasEvalue]->(ev:Evalue) where e.techId = 'Myriel' AND ev.stringValue in ['Myriel','female'] Return *";
+        // get Query URL
+        queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, KNOWLEDGE);
+        // Press on Cursor
+        cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(100)));
 
-            totalGraphSize = countGraphElements(pageData);
-            pageData = nextPage(fuseClient, cursorResourceInfo, 100);
-        }
-        Assert.assertEquals(850, totalGraphSize);
+//        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
+        pageData = nextPage(fuseClient, cursorResourceInfo, 100);
+        //validate merge did add new property 'Napoleon_1' without removing the former propery 'Napoleon'
+        entities = ((AssignmentsQueryResult<Entity, Relation>) pageData).getAssignments().get(0).getEntities();
+        Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Entity"))
+                .filter(e->e.getProperty("techId").get().getValue().toString().equals("Myriel")).count());
+        Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Evalue"))
+                .filter(e->e.getProperty("fieldId").get().getValue().toString().equals("name")).count());
+        Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Evalue"))
+                .filter(e->e.getProperty("fieldId").get().getValue().toString().equals("sex")).count());
+
+
+        query = "Match (e:Entity)-[r:relatedEntity]->(eOut:Entity) where e.techId = 'hezi' Return *";
+        // get Query URL
+        queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, KNOWLEDGE);
+        // Press on Cursor
+        cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(100)));
+
+//        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
+        pageData = nextPage(fuseClient, cursorResourceInfo, 100);
+        //validate merge did add new property 'Napoleon_1' without removing the former propery 'Napoleon'
+        List<Relation> relations = ((AssignmentsQueryResult<Entity, Relation>) pageData).getAssignments().get(0).getRelationships();
+        Assert.assertEquals(2,relations.size());
+
+        query = "Match (e:Entity)-[r:relatedEntity]->(eOut:Entity) where eOut.techId = 'moti' Return *";
+        // get Query URL
+        queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, KNOWLEDGE);
+        // Press on Cursor
+        cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(100)));
+
+//        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
+        pageData = nextPage(fuseClient, cursorResourceInfo, 100);
+        //validate merge did add new property 'Napoleon_1' without removing the former propery 'Napoleon'
+        relations = ((AssignmentsQueryResult<Entity, Relation>) pageData).getAssignments().get(0).getRelationships();
+        Assert.assertEquals(2,relations.size());
     }
+
 
 }

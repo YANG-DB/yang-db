@@ -21,6 +21,7 @@ package com.yangdb.fuse.services.appRegistrars;
  */
 
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.services.controllers.DataLoaderController;
 import org.jooby.Jooby;
@@ -50,7 +51,9 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                         //todo check file type -> process zipped file
                         File file = upload.file();
                         return Results.json(this.getController(app)
-                                .load(req.param("id").value(), file));
+                                .load(req.param("id").value(), file,
+                                        req.param("directive").isSet() ?
+                                                GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT ));
                     } finally {
                         upload.close();
                     }
@@ -58,7 +61,9 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
 
         app.post("/fuse/load/ontology/:id/load",
                 req -> Results.json(this.getController(app)
-                        .load(req.param("id").value(), req.body(LogicalGraphModel.class))));
+                        .load(req.param("id").value(), req.body(LogicalGraphModel.class),
+                                req.param("directive").isSet() ?
+                                        GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT )));
 
         app.get("/fuse/load/ontology/:id/drop",
                 req -> Results.with(this.getController(app).drop(req.param("id").value())));

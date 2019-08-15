@@ -20,10 +20,7 @@ package com.yangdb.fuse.model.logical;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 import com.yangdb.fuse.model.results.Property;
 
 import java.util.Collection;
@@ -112,7 +109,7 @@ public class LogicalEdge implements Edge {
 
     @Override
     public String toString() {
-        return "LogicalEdge{" +
+        return getClass().getSimpleName()+"{" +
                 "id='" + id + '\'' +
                 "label='" + label + '\'' +
                 ", source='" + source + '\'' +
@@ -125,7 +122,7 @@ public class LogicalEdge implements Edge {
 
     @Override
     public String id() {
-        return getId();
+        return getId()!=null ? id : String.format("%s.%s",source,target);
     }
 
     @Override
@@ -172,7 +169,7 @@ public class LogicalEdge implements Edge {
 
         @Override
         public String toString() {
-            return "EdgeMetadata{" +
+            return getClass().getSimpleName()+"{" +
                     ", properties=" + properties +
                     '}';
         }
@@ -193,7 +190,7 @@ public class LogicalEdge implements Edge {
 
         @Override
         public String toString() {
-            return "EdgeProperties{" +
+            return getClass().getSimpleName()+"{" +
                     "properties=" + properties +
                     '}';
         }

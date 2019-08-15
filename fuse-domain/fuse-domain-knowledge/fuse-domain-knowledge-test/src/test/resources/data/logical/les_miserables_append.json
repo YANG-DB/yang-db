@@ -4,6 +4,37 @@
       "metadata": {
         "group": 1
       },
+      "id": "Myriel",
+      "label": "Person",
+      "properties": {
+        "sex": "female"
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
+      "id": "Napoleon",
+      "label": "Person",
+      "properties": {
+        "name": "Napoleon_1",
+        "sex": "male"
+      }
+    },
+    {
+      "metadata": {
+        "group": 2
+      },
+      "id": "Mlle.Baptistine",
+      "label": "Person",
+      "properties": {
+        "sex": "some..."
+      }
+    },
+    {
+      "metadata": {
+        "group": 1
+      },
       "id": "hezi",
       "label": "Person",
       "properties": {
@@ -24,13 +55,13 @@
   "edges": [
     {
       "source": "hezi",
-      "target": "Myriel",
+      "target": "Champtercier",
       "metadata": {
         "value": 1
       }
     },
     {
-      "source": "Mlle.Baptistine",
+      "source": "CountessdeLo",
       "target": "moti",
       "metadata": {
         "value": 8

@@ -7,6 +7,7 @@ import com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext;
 import com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder;
 import com.yangdb.fuse.assembly.knowledge.load.builder.RelationBuilder;
 import com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder;
+import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
@@ -31,11 +32,10 @@ import static com.yangdb.fuse.assembly.knowledge.KnowledgeStaticRuleBasedStatist
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.nextPage;
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;
-import static com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder._e;
-import static com.yangdb.fuse.assembly.knowledge.load.builder.RelationBuilder.REL_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.RelationBuilder._rel;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder._v;
+import static com.yangdb.fuse.executor.ontology.schema.GraphDataLoader.Directive.INSERT;
 import static java.time.temporal.ChronoField.EPOCH_DAY;
 
 @Ignore("todo fix amounts according to page size")
@@ -74,11 +74,11 @@ public class KnowledgeMassInsertionPathTest {
             relations.addAll(tuple3._3);
         });
 
-        final int entitiesCount = commit(ctx.client, manager.getSchema(),ENTITY, mapper, entities).getSuccesses().size();
+        final int entitiesCount = commit(ctx.client, manager.getSchema(),ENTITY, mapper, entities, INSERT).getSuccesses().size();
         System.out.println("completed writing " + entitiesCount + " entities");
-        valuesCount = commit(ctx.client, manager.getSchema(),EVALUE, mapper, values).getSuccesses().size();
+        valuesCount = commit(ctx.client, manager.getSchema(),EVALUE, mapper, values, INSERT).getSuccesses().size();
         System.out.println("completed writing " + valuesCount + " e.values");
-        relationCount = commit(ctx.client, manager.getSchema(),RELATION,mapper, relations).getSuccesses().size();
+        relationCount = commit(ctx.client, manager.getSchema(),RELATION,mapper, relations, INSERT).getSuccesses().size();
         System.out.println("completed writing " + relationCount + " relations");
     }
 

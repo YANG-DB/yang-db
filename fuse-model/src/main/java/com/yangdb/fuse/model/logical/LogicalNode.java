@@ -20,10 +20,9 @@ package com.yangdb.fuse.model.logical;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
+import com.yangdb.fuse.model.results.AssignmentsQueryResult;
+import com.yangdb.fuse.model.results.CsvQueryResult;
 import com.yangdb.fuse.model.results.Property;
 
 import java.util.Collection;
@@ -108,7 +107,7 @@ public class LogicalNode implements Vertex {
 
     @Override
     public String toString() {
-        return "LogicalNode{" +
+        return getClass().getSimpleName()+"{" +
                 "id='" + id + '\'' +
                 "label='" + label + '\'' +
                 ", metadata=" + metadata +
@@ -142,7 +141,7 @@ public class LogicalNode implements Vertex {
 
         @Override
         public String toString() {
-            return "NodeMetadata{" +
+            return getClass().getSimpleName()+"{" +
                     ", properties=" + properties +
                     '}';
         }
@@ -163,7 +162,7 @@ public class LogicalNode implements Vertex {
 
         @Override
         public String toString() {
-            return "NodeProperties{" +
+            return getClass().getSimpleName()+"{" +
                     "properties=" + properties +
                     '}';
         }

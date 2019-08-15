@@ -95,11 +95,13 @@ public interface FuseClient {
 
     Object getId(String name, int numIds) throws IOException;
 
-    QueryResourceInfo loadData(String ontology, LogicalGraphModel resource) throws IOException;
+    QueryResourceInfo upsertData(String ontology, URL resource) throws IOException;
 
     QueryResourceInfo loadData(String ontology, URL resource) throws IOException;
 
     QueryResourceInfo uploadFile(String ontology, URL resource) throws IOException, URISyntaxException;
+
+    QueryResourceInfo upsertFile(String ontology, URL resource) throws IOException, URISyntaxException;
 
     QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException;
 

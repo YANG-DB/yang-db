@@ -38,9 +38,9 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 public class StoreAccessor {
 
-    public static Optional<Map> findEntityById(String fieldName, String id, String label, RawSchema schema, Client client) {
+    public static Optional<Map> findEntityById(String fieldName, String id, String indexCategory, RawSchema schema, Client client) {
         //get all indices that accommodate the label
-        List<String> indices = schema.getPartitions(label).stream()
+        List<String> indices = schema.getPartitions(indexCategory).stream()
                 .flatMap(partition -> StreamSupport.stream(partition.getIndices().spliterator(), false))
                 .collect(Collectors.toList());
 

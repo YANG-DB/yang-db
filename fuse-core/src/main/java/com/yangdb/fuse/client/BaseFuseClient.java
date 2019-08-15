@@ -90,25 +90,39 @@ public class BaseFuseClient implements FuseClient {
         return this.objectMapper.readValue(unwrap(getRequest(this.fuseUrl + "/idgen/" + name + "?numIds=" + numIds)), Map.class);
     }
 
-    @Override
-    public QueryResourceInfo loadData(String ontology, LogicalGraphModel root) throws IOException {
+    private QueryResourceInfo loadData(String ontology,String resourceURl, LogicalGraphModel root) throws IOException {
         // URL:/fuse/load/ontology/:id/load
-        String resourceURl = String.format("%s/load/ontology/%s/load", this.fuseUrl, ontology);
         String result = unwrap(postRequest(resourceURl, root));
-        return new QueryResourceInfo(QueryMetadata.Type.concrete, resourceURl,ontology,result);
+        return new QueryResourceInfo(QueryMetadata.Type.concrete, resourceURl, ontology, result);
+    }
+
+
+    @Override
+    public QueryResourceInfo upsertData(String ontology, URL resource) throws IOException {
+        return loadData(ontology,String.format("%s/load/ontology/%s/load?directive=%s", this.fuseUrl, ontology,"UPSERT"),
+                objectMapper.readValue(resource,LogicalGraphModel.class));
     }
 
     @Override
     public QueryResourceInfo loadData(String ontology, URL resource) throws IOException {
-        return loadData(ontology,objectMapper.readValue(resource,LogicalGraphModel.class));
+        return loadData(ontology,String.format("%s/load/ontology/%s/load?directive=%s", this.fuseUrl, ontology,"INSERT"),
+                objectMapper.readValue(resource,LogicalGraphModel.class));
     }
 
     @Override
     public QueryResourceInfo uploadFile(String ontology, URL resourceFile) throws URISyntaxException {
+        return uploadFile(ontology, resourceFile, String.format("%s/load/ontology/%s/upload?directive=%s", this.fuseUrl, ontology,"INSERT"));
+    }
+
+    @Override
+    public QueryResourceInfo upsertFile(String ontology, URL resourceFile) throws IOException, URISyntaxException {
+        return uploadFile(ontology, resourceFile, String.format("%s/load/ontology/%s/upload?directive=%s", this.fuseUrl, ontology,"UPSERT"));
+    }
+
+    private QueryResourceInfo uploadFile(String ontology, URL resourceFile, String resourceURl) throws URISyntaxException {
         final File file = new File(resourceFile.getFile());
         final URI uri = resourceFile.toURI();
 
-        String resourceURl = String.format("%s/load/ontology/%s/upload", this.fuseUrl, ontology);
 
         String result = given()
                 .multiPart("file", file)
@@ -119,7 +133,6 @@ public class BaseFuseClient implements FuseClient {
                 .print();
 
         return new QueryResourceInfo(QueryMetadata.Type.concrete, resourceURl,ontology,result);
-
     }
 
     @Override

@@ -24,6 +24,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.logging.*;
+import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -61,7 +62,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
 
     //region CatalogController Implementation
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, LogicalGraphModel data) {
+    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive) {
         return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
@@ -69,11 +70,11 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.load(ontology, data), this.resultHandler());
+                .decorate(() -> this.controller.load(ontology, data,directive ), this.resultHandler());
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, File data) {
+    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, File data, GraphDataLoader.Directive directive) {
         return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
@@ -81,7 +82,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.load(ontology, data), this.resultHandler());
+                .decorate(() -> this.controller.load(ontology, data,directive ), this.resultHandler());
     }
 
     @Override

@@ -9,9 +9,9 @@ package com.yangdb.fuse.assembly.knowledge.load;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.assembly.knowledge.load.builder.*;
+import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -45,7 +46,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.*;
+import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.ENTITY;
+import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.RELATION;
 
 
 public class KnowledgeWriterContext {
@@ -72,19 +74,19 @@ public class KnowledgeWriterContext {
         this.context = context;
     }
 
-    public ValueBuilder v(){
+    public ValueBuilder v() {
         final ValueBuilder builder = ValueBuilder._v(nextValueId());
         context.add(builder);
         return builder;
     }
 
-    public RvalueBuilder r(){
+    public RvalueBuilder r() {
         final RvalueBuilder builder = RvalueBuilder._r(nextRvalueId());
         context.add(builder);
         return builder;
     }
 
-    public RelationBuilder rel(){
+    public RelationBuilder rel() {
         final RelationBuilder builder = RelationBuilder._rel(nextRelId());
         context.add(builder);
         return builder;
@@ -110,10 +112,10 @@ public class KnowledgeWriterContext {
     }
 
     public String nextLogicalId() {
-        return nextLogicalId(schema,eCounter.incrementAndGet());
+        return nextLogicalId(schema, eCounter.incrementAndGet());
     }
 
-    public String nextValueId(RawSchema schema,long index) {
+    public String nextValueId(RawSchema schema, long index) {
         return format(schema, index, "ev", "entity");
     }
 
@@ -121,31 +123,31 @@ public class KnowledgeWriterContext {
         return nextValueId(schema, evCounter.incrementAndGet());
     }
 
-    public String nextRvalueId(RawSchema schema,long index) {
+    public String nextRvalueId(RawSchema schema, long index) {
         return format(schema, index, "rv", "relation");
     }
 
     public String nextRvalueId() {
-        return nextRvalueId( schema,evCounter.incrementAndGet());
+        return nextRvalueId(schema, evCounter.incrementAndGet());
     }
 
-    public String nextRefId(RawSchema schema,long index) {
+    public String nextRefId(RawSchema schema, long index) {
         return format(schema, index, "ref", "reference");
     }
 
     public String nextRefId() {
-        return nextRefId(schema,refCounter.incrementAndGet());
+        return nextRefId(schema, refCounter.incrementAndGet());
     }
 
-    public String nextInsightId(RawSchema schema,long index) {
+    public String nextInsightId(RawSchema schema, long index) {
         return format(schema, index, "i", "insight");
     }
 
     public String nextInsightId() {
-        return  nextInsightId(schema,iCounter.incrementAndGet());
+        return nextInsightId(schema, iCounter.incrementAndGet());
     }
 
-    public String nextRelId(RawSchema schema,long index) {
+    public String nextRelId(RawSchema schema, long index) {
         return format(schema, index, "r", "relation");
     }
 
@@ -161,12 +163,12 @@ public class KnowledgeWriterContext {
         return nextRelId(schema, relCounter.incrementAndGet());
     }
 
-    public String nextFileId(RawSchema schema,long index) {
+    public String nextFileId(RawSchema schema, long index) {
         return format(schema, index, "f", "e.file");
     }
 
     public String nextFileId() {
-        return nextFileId(schema,fCounter.incrementAndGet());
+        return nextFileId(schema, fCounter.incrementAndGet());
     }
 
     public static KnowledgeWriterContext init(Client client, RawSchema schema) {
@@ -177,11 +179,11 @@ public class KnowledgeWriterContext {
         return context;
     }
 
-    private static void populateBulk(BulkRequestBuilder bulk, RawSchema schema, String indexCategory, Client client, List<KnowledgeDomainBuilder> builders, ObjectMapper mapper) throws JsonProcessingException {
+    private static void populateBulk(BulkRequestBuilder bulk, RawSchema schema, String indexCategory, Client client, List<KnowledgeDomainBuilder> builders, ObjectMapper mapper, GraphDataLoader.Directive directive) throws JsonProcessingException {
         for (KnowledgeDomainBuilder builder : builders) {
             IndexRequestBuilder request = client.prepareIndex()
                     .setIndex(resolveIndexByLabelAndId(indexCategory,
-                            builder.routing().orElseGet(builder::id),schema))
+                            builder.routing().orElseGet(builder::id), schema))
                     .setType(PGE)
                     .setId(builder.id())
                     .setOpType(IndexRequest.OpType.INDEX)
@@ -191,46 +193,47 @@ public class KnowledgeWriterContext {
         }
     }
 
-    public static <T extends KnowledgeDomainBuilder> LoadResponse.CommitResponse commit(Client client, RawSchema schema, String indexCategory, ObjectMapper mapper, List<T> builders) throws JsonProcessingException {
-        if(builders.isEmpty())
+    public static <T extends KnowledgeDomainBuilder> LoadResponse.CommitResponse commit(Client client, RawSchema schema, String indexCategory, ObjectMapper mapper, List<T> builders, GraphDataLoader.Directive directive) throws JsonProcessingException {
+        if (builders.isEmpty())
             return LoadResponse.CommitResponse.EMPTY;
 
         final BulkRequestBuilder bulk = client.prepareBulk();
-        return process(client, schema, indexCategory, bulk, builders,mapper);
+        return process(client, schema, indexCategory, bulk, builders, mapper, directive);
     }
-
 
 
     /**
      * commit all entities and relations with their properties to the DB according to schema partition
      * - currently only first partition is uses
+     *
      * @param client
      * @param schema
      * @param mapper
      * @param context
+     * @param directive
      * @return
      * @throws JsonProcessingException
      */
-    public static LoadResponse<String, FuseError> commit(Client client, RawSchema schema, ObjectMapper mapper, KnowledgeContext context) throws JsonProcessingException {
+    public static LoadResponse<String, FuseError> commit(Client client, RawSchema schema, ObjectMapper mapper, KnowledgeContext context, GraphDataLoader.Directive directive) throws JsonProcessingException {
         LoadResponse<String, FuseError> responses = new LoadResponseImpl();
-        responses.response(commit(client,schema,ENTITY,mapper,context.getEntities()));
-        responses.response(commit(client,schema,ENTITY,mapper,context.getRelationBuilders()));
+        responses.response(commit(client, schema, ENTITY, mapper, context.getEntities(), directive));
+        responses.response(commit(client, schema, ENTITY, mapper, context.getRelationBuilders(), directive));
 
-        responses.response(commit(client,schema,ENTITY,mapper,context.geteValues()));
-        responses.response(commit(client,schema,RELATION,mapper,context.getRelations()));
-        responses.response(commit(client,schema,RELATION,mapper,context.getrValues()));
+        responses.response(commit(client, schema, ENTITY, mapper, context.geteValues(), directive));
+        responses.response(commit(client, schema, RELATION, mapper, context.getRelations(), directive));
+        responses.response(commit(client, schema, RELATION, mapper, context.getrValues(), directive));
         //todo populate insight and references
         return responses;
     }
 
-    private static <T extends KnowledgeDomainBuilder> Response process(Client client, RawSchema schema, String indexCategory, BulkRequestBuilder bulk, List<T> builders, ObjectMapper mapper) throws JsonProcessingException {
+    private static <T extends KnowledgeDomainBuilder> Response process(Client client, RawSchema schema, String indexCategory, BulkRequestBuilder bulk, List<T> builders, ObjectMapper mapper, GraphDataLoader.Directive directive) throws JsonProcessingException {
         Response response = new Response(indexCategory);
-        populateBulk(bulk,schema, indexCategory,client, (List<KnowledgeDomainBuilder>) builders,mapper);
+        populateBulk(bulk, schema, indexCategory, client, (List<KnowledgeDomainBuilder>) builders, mapper, directive);
         builders.forEach(builder -> {
             try {
-                populateBulk(bulk,schema, indexCategory,client,builder.additional(),mapper);
+                populateBulk(bulk, schema, indexCategory, client, builder.additional(), mapper, directive);
             } catch (JsonProcessingException e) {
-                response.failure(new FuseError("commit build proccess failed",e));
+                response.failure(new FuseError("commit build proccess failed", e));
             }
         });
 
@@ -238,12 +241,12 @@ public class KnowledgeWriterContext {
         for (BulkItemResponse item : items) {
             if (!item.isFailed()) {
                 response.success(item.getId());
-            }else {
+            } else {
                 //log error
                 BulkItemResponse.Failure failure = item.getFailure();
                 DocWriteRequest<?> request = bulk.request().requests().get(item.getItemId());
                 //todo - get TechId from request
-                response.failure(new FuseError("commit failed",failure.toString()));
+                response.failure(new FuseError("commit failed", failure.toString()));
             }
 
         }
@@ -261,7 +264,6 @@ public class KnowledgeWriterContext {
     }
 
 
-
     public static class Items {
         public String index;
         public String type;
@@ -275,29 +277,29 @@ public class KnowledgeWriterContext {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class LoadResponseImpl implements LoadResponse<String,FuseError> {
+    public static class LoadResponseImpl implements LoadResponse<String, FuseError> {
 
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        private List<CommitResponse<String,FuseError>> responses;
+        private List<CommitResponse<String, FuseError>> responses;
 
         public LoadResponseImpl() {
             this.responses = new ArrayList<>();
         }
 
-        public LoadResponse response(LoadResponse.CommitResponse<String,FuseError> response) {
+        public LoadResponse response(LoadResponse.CommitResponse<String, FuseError> response) {
             this.responses.add(response);
             return this;
         }
 
         @Override
-        public List<CommitResponse<String,FuseError>> getResponses() {
+        public List<CommitResponse<String, FuseError>> getResponses() {
             return responses;
         }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Response implements LoadResponse.CommitResponse<String,FuseError> {
+    public static class Response implements LoadResponse.CommitResponse<String, FuseError> {
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private List<FuseError> failures;

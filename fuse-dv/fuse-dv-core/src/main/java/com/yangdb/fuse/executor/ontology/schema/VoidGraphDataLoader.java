@@ -33,12 +33,12 @@ public class VoidGraphDataLoader implements GraphDataLoader {
     }
 
     @Override
-    public LoadResponse load(LogicalGraphModel root) throws IOException {
+    public LoadResponse load(LogicalGraphModel root, Directive directive) throws IOException {
         return LoadResponse.EMPTY;
     }
 
     @Override
-    public LoadResponse load(File data) throws IOException {
+    public LoadResponse load(File data, Directive directive) throws IOException {
         return LoadResponse.EMPTY;
     }
 

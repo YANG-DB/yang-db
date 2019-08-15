@@ -158,8 +158,8 @@ public class SnifferFuseClient implements FuseClient{
     }
 
     @Override
-    public QueryResourceInfo loadData(String ontology, LogicalGraphModel root) throws IOException {
-        return selectNode().loadData(ontology,root);
+    public QueryResourceInfo upsertData(String ontology, URL resource) throws IOException {
+        return selectNode().upsertData(ontology,resource);
     }
 
     @Override
@@ -170,6 +170,11 @@ public class SnifferFuseClient implements FuseClient{
     @Override
     public QueryResourceInfo uploadFile(String ontology, URL resource) throws IOException, URISyntaxException {
         return selectNode().uploadFile(ontology,resource);
+    }
+
+    @Override
+    public QueryResourceInfo upsertFile(String ontology, URL resource) throws IOException, URISyntaxException {
+        return selectNode().upsertFile(ontology,resource);
     }
 
     @Override

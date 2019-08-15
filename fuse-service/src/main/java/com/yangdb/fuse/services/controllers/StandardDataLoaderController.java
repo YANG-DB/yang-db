@@ -53,11 +53,11 @@ public class StandardDataLoaderController implements DataLoaderController {
     //region CatalogController Implementation
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, LogicalGraphModel data) {
+    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                        .data(Optional.of(this.graphDataLoader.load(data)))
+                        .data(Optional.of(this.graphDataLoader.load(data, directive )))
                         .compose();
             } catch (IOException e) {
                 return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
@@ -98,11 +98,11 @@ public class StandardDataLoaderController implements DataLoaderController {
      *      - convert into bulk set
      *      - commit to repository
      */
-    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, File data) {
+    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, File data, GraphDataLoader.Directive directive) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                        .data(Optional.of(this.graphDataLoader.load(data)))
+                        .data(Optional.of(this.graphDataLoader.load(data, directive)))
                         .compose();
             } catch (IOException e) {
                 return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)

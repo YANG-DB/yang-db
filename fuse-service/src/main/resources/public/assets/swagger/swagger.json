@@ -819,6 +819,13 @@
         "summary": "Load Logical graph into DB according to specific ontology Transformer (see /catalog/ontology)",
         "parameters": [
           {
+            "name": "directive",
+            "in": "query",
+            "description": "Directive [UPSERT/INSERT] ",
+            "required": true,
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "path",
             "description": "ontology ID.",
@@ -854,6 +861,13 @@
         "summary": "Upload json/zip File with Logical graph into DB according to specific ontology Transformer (see /catalog/ontology)",
         "consumes": ["multipart/form-data","application/x-www-form-urlencoded"],
         "parameters": [
+          {
+            "name": "directive",
+            "in": "query",
+            "description": "Directive [UPSERT/INSERT] ",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "path",

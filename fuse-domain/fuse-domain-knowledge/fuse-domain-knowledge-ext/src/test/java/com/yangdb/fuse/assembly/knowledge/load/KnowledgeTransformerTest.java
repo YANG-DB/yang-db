@@ -3,6 +3,7 @@ package com.yangdb.fuse.assembly.knowledge.load;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
@@ -125,7 +126,7 @@ public class KnowledgeTransformerTest {
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
 
         final KnowledgeTransformer transformer = new KnowledgeTransformer(ontTransformer,new KnowledgeRawSchema(), idGeneratorDriver,client);
-        final KnowledgeContext transform = transformer.transform(graphModel);
+        final KnowledgeContext transform = transformer.transform(graphModel, GraphDataLoader.Directive.INSERT);
         assertNotNull(transform);
         assertEquals(2,transform.getEntities().size());
         assertEquals(2,transform.getEntities().get(0).additionalProperties.size());
