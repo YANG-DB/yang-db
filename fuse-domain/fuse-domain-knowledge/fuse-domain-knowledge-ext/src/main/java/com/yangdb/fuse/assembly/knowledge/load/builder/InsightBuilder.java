@@ -30,6 +30,7 @@ import javaslang.collection.Stream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class InsightBuilder extends EntityId {
     public static final String INSIGHT_INDEX = "i0";
@@ -119,6 +120,11 @@ public class InsightBuilder extends EntityId {
             this.logicalId = logicalId;
             this.context = context;
             this.insightId = insightId;
+        }
+
+        @Override
+        public Optional<String> routing() {
+            return Optional.of(logicalId);
         }
 
         @Override

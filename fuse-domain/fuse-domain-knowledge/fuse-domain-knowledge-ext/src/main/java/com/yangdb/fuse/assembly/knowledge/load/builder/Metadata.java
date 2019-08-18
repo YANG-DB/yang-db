@@ -177,6 +177,7 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
         node.put("creationUser", creationUser);
         node.put("creationTime", sdf.format(creationTime));
         node.put("lastUpdateUser", lastUpdateUser);
+        node.put("lastUpdateTime", sdf.format(lastUpdateTime));
         //delete time is not mandatory
         if (deleteTime != null) node.put("deleteTime", sdf.format(deleteTime));
         return node;

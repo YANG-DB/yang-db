@@ -210,7 +210,7 @@ public class KnowledgeInsertLogicalGraphTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(103, totalGraphSize);
+        Assert.assertEquals(555, totalGraphSize);
     }
 
     @Test
@@ -240,7 +240,7 @@ public class KnowledgeInsertLogicalGraphTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(659, totalGraphSize);
+        Assert.assertEquals(692, totalGraphSize);
     }
 
     @Test
