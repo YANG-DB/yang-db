@@ -34,15 +34,18 @@ import javaslang.collection.Stream;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.rest.RestStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -178,6 +181,25 @@ public class KnowledgeWriterContext {
         context.created = new ArrayList<>();
         return context;
     }
+
+    public int removeCreated() {
+        int[] count = new int[]{0};
+        List<String> indices = created.stream().map(item -> item.index).collect(Collectors.toList());
+        created.forEach(entity -> {
+            try {
+                final DeleteResponse deleteResponse = client.delete(client.prepareDelete().setIndex(entity.index).setType(entity.type).setId(entity.id).request()).get();
+                count[0] += deleteResponse.status() == RestStatus.OK ? 1 : 0;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        });
+        client.admin().indices().prepareRefresh(indices.toArray(new String[indices.size()])).get();
+        created.clear();
+        return count[0];
+    }
+
 
     private static void populateBulk(BulkRequestBuilder bulk, RawSchema schema, String indexCategory, Client client, List<KnowledgeDomainBuilder> builders, ObjectMapper mapper, GraphDataLoader.Directive directive) throws JsonProcessingException {
         for (KnowledgeDomainBuilder builder : builders) {
