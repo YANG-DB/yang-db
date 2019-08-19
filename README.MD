@@ -1,7 +1,6 @@
 From Graph to Elastic - A tail of a Yang-DB...
 =========================================================================================
-[![Release](https://jitpack.io/v/YANG-DB/Repo.svg)]
-(https://jitpack.io/#YANG-DB/yang-db)
+
 ### Use 
 * Add [yang.db](https://github.com/YANG-DB/yang-db) as maven dependency https://jitpack.io/#YANG-DB/yang-db
 * Download [yang.db](https://github.com/YANG-DB/yang-db) latest docker release  https://cloud.docker.com/repository/docker/tom4tomato/yang.db
