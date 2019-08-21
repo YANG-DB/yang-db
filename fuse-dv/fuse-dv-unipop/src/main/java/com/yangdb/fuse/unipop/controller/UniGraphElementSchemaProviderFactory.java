@@ -22,6 +22,6 @@ package com.yangdb.fuse.unipop.controller;
 
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 
-public interface GraphElementSchemaProviderFactory {
+public interface UniGraphElementSchemaProviderFactory {
     GraphElementSchemaProvider getSchemaProvider();
 }

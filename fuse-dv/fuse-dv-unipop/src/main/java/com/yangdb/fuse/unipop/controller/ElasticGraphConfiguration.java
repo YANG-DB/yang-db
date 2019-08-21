@@ -105,11 +105,11 @@ public class ElasticGraphConfiguration extends BaseConfiguration {
         super.addProperty(ELASTIC_GRAPH_INDEX_NAME, value);
     }
 
-    public GraphElementSchemaProviderFactory getElasticGraphSchemaProviderFactory() {
-        return (GraphElementSchemaProviderFactory)super.getProperty(ELASTIC_GRAPH_SCHEMA_PROVIDER_FACTORY);
+    public UniGraphElementSchemaProviderFactory getElasticGraphSchemaProviderFactory() {
+        return (UniGraphElementSchemaProviderFactory)super.getProperty(ELASTIC_GRAPH_SCHEMA_PROVIDER_FACTORY);
     }
 
-    public void setElasticGraphSchemaProviderFactory(GraphElementSchemaProviderFactory value) {
+    public void setElasticGraphSchemaProviderFactory(UniGraphElementSchemaProviderFactory value) {
         super.addProperty(ELASTIC_GRAPH_SCHEMA_PROVIDER_FACTORY, value);
     }
 

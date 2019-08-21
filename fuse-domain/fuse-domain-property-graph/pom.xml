@@ -3,19 +3,18 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>fuse</artifactId>
+        <artifactId>fuse-domain</artifactId>
         <groupId>com.yangdb</groupId>
         <version>0.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>fuse-domain</artifactId>
+    <artifactId>fuse-domain-property-graph</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>fuse-domain-dragons</module>
-        <module>fuse-domain-knowledge</module>
-        <module>fuse-domain-property-graph</module>
+        <module>fuse-domain-property-graph-ext</module>
+        <module>fuse-domain-property-graph-assembly</module>
     </modules>
 
     <properties>
