@@ -227,6 +227,8 @@
                 <artifactId>fuse-geojson</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
+
+            <!-- Knowledge Deployment Assemblies   -->
             <dependency>
                 <groupId>com.yangdb</groupId>
                 <artifactId>fuse-domain-knowledge-ext</artifactId>
@@ -247,6 +249,15 @@
                 <artifactId>fuse-domain-knowledge-test</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
+
+            <!-- Dragons Deployment Assemblies   -->
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-dragons-ext</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+
+            <!-- Property Graph Deployment Assemblies   -->
 
             <!-- jmx monitoring    -->
             <dependency>
