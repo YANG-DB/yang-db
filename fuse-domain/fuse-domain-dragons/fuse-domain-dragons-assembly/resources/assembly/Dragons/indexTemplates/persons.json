@@ -1,0 +1,64 @@
+{
+  "order": 0,
+  "template": "person*",
+  "settings": {
+    "index": {
+      "number_of_shards": "5",
+      "number_of_replicas": "0",
+      "refresh_interval": "1s",
+      "sort.field": "id",
+      "sort.order": "asc"
+    }
+  },
+  "mappings": {
+    "pge": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "id": {
+          "type": "keyword"
+        },
+        "firstName": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "lastName": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "gender": {
+          "type": "keyword"
+        },
+        "height": {
+          "type": "int"
+        },
+        "birthDate": {
+          "type": "date",
+          "format": "epoch_millis||yyyy-MM-dd HH:mm:ss.SSS"
+        },
+        "deathhDate": {
+          "type": "date",
+          "format": "epoch_millis||yyyy-MM-dd HH:mm:ss.SSS"
+        }
+      }
+    }
+},
+"aliases": {}
+}

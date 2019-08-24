@@ -1,0 +1,57 @@
+{
+  "order": 0,
+  "template": "kingdome*",
+  "settings": {
+    "index": {
+      "number_of_shards": "5",
+      "number_of_replicas": "0",
+      "refresh_interval": "1s",
+      "sort.field": "id",
+      "sort.order": "asc"
+    }
+  },
+  "mappings": {
+    "pge": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "id": {
+          "type": "keyword"
+        },
+        "name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "king": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "queen": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "funds": {
+          "type": "int"
+        },
+        "independenceDay": {
+          "type": "date",
+          "format": "epoch_millis||yyyy-MM-dd HH:mm:ss.SSS"
+        }
+      }
+    }
+  },
+  "aliases": {}
+}

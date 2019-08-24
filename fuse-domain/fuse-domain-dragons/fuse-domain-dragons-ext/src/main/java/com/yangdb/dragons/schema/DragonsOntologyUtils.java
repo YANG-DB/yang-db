@@ -1,24 +1,39 @@
-package com.yangdb.fuse.model;
+package com.yangdb.dragons.schema;
+
+/*-
+ * #%L
+ * fuse-domain-dragons-ext
+ * %%
+ * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import com.yangdb.fuse.model.ontology.*;
-import org.apache.commons.io.IOUtils;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.yangdb.fuse.model.OntologyTestUtils.Color.TYPE_COLOR;
-import static com.yangdb.fuse.model.OntologyTestUtils.Gender.TYPE_GENDER;
 import static com.yangdb.fuse.model.ontology.Property.Builder.get;
 import static java.util.Collections.emptyList;
 
 /**
  * Created by lior.perry on 4/27/2017.
  */
-public class OntologyTestUtils {
+public class DragonsOntologyUtils {
 
     public static final String DATE = "date";
     public static final String INT = "int";
@@ -27,12 +42,12 @@ public class OntologyTestUtils {
 
     public static Property FIRST_NAME = new Property("firstName", STRING, "firstName");
     public static Property LAST_NAME = new Property("lastName", STRING, "lastName");
-    public static Property GENDER = new Property("gender", TYPE_GENDER, "gender");
+    public static Property GENDER = new Property("gender", STRING, "gender");
     public static Property BIRTH_DATE = new Property("birthDate", STRING, "birthDate");
     public static Property DEATH_DATE = new Property("deathDate", STRING, "deathDate");
     public static Property HEIGHT = new Property("height", INT, "height");
     public static Property NAME = new Property("name", STRING, "name");
-    public static Property COLOR = new Property("color", TYPE_COLOR, "color");
+    public static Property COLOR = new Property("color", STRING, "color");
     public static Property POWER = new Property("power", INT, "power");
 
     public static Property START_DATE = new Property("startDate", DATE, "startDate");
@@ -249,15 +264,17 @@ public class OntologyTestUtils {
         Ontology ontologyShortObj = new Ontology();
         ontologyShortObj.setOnt("Dragons");
         //enums
+/*
         ontologyShortObj.setEnumeratedTypes(Arrays.asList(
                 EnumeratedType.from(TYPE_GENDER, Gender.values()),
                 EnumeratedType.from(TYPE_COLOR, Color.values())));
+*/
 
         //properties
         ontologyShortObj.setProperties(Arrays.asList(
                 get().build(FIRST_NAME.type,FIRST_NAME.name,STRING),
                 get().build(LAST_NAME.type,LAST_NAME.name,STRING),
-                get().build(GENDER.type,GENDER.name,TYPE_GENDER),
+                get().build(GENDER.type,GENDER.name,STRING),
                 get().build(BIRTH_DATE.type,BIRTH_DATE.name,DATE),
                 get().build(DEATH_DATE.type,DEATH_DATE.name,DATE),
                 get().build(HEIGHT.type,HEIGHT.name,INT),
@@ -266,7 +283,7 @@ public class OntologyTestUtils {
                 get().build(END_DATE.type,END_DATE.name,DATE),
                 get().build(TIMESTAMP.type,TIMESTAMP.name,DATE),
                 get().build(TEMPERATURE.type,TEMPERATURE.name,INT),
-                get().build(COLOR.type, COLOR.name, TYPE_COLOR)));
+                get().build(COLOR.type, COLOR.name, STRING)));
 
         ontologyShortObj.setRelationshipTypes(Arrays.asList(
                 KNOW,
@@ -289,13 +306,13 @@ public class OntologyTestUtils {
         return OntologyFinalizer.finalize(ontologyShortObj);
     }
 
-    public static enum Gender {
+    public enum Gender {
         MALE, FEMALE, OTHER;
         public static final String TYPE_GENDER = "TYPE_Gender";
 
     }
 
-    public static enum Color {
+    public enum Color {
         RED, BLUE, GREEN, YELLOW;
         public static final String TYPE_COLOR = "TYPE_Color";
 

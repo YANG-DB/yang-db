@@ -169,8 +169,8 @@
                         </manifestEntries>
                     </archive>
                     <descriptors>
-                        <descriptor>assembly/fuse.test.service.engine3.knowledge.xml</descriptor>
-                        <descriptor>assembly/fuse.test.service.engine3.knowledge.source.xml</descriptor>
+                        <descriptor>assembly/fuse.test.service.engine3.dragons.graph.source.xml</descriptor>
+                        <descriptor>assembly/fuse.test.service.engine3.dragons.graph.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
