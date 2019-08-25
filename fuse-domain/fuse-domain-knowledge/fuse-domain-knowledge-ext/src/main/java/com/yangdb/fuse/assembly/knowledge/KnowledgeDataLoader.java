@@ -27,60 +27,52 @@ import com.typesafe.config.Config;
 import com.yangdb.fuse.assembly.knowledge.load.KnowledgeContext;
 import com.yangdb.fuse.assembly.knowledge.load.KnowledgeTransformer;
 import com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext;
+import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerProvider;
+import com.yangdb.fuse.executor.ontology.schema.DataLoaderUtils;
 import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
-import javaslang.collection.Stream;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
-import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateRequest;
-import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
-import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;
+import static com.yangdb.fuse.executor.ontology.schema.DataLoaderUtils.*;
 
 /**
  * Created by lior.perry on 2/11/2018.
  */
 public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     private static final Logger logger = LoggerFactory.getLogger(KnowledgeDataLoader.class);
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+    static {
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
 
     private Client client;
-    private SimpleDateFormat sdf;
     private RawSchema schema;
     private KnowledgeTransformer transformer;
     private ObjectMapper mapper;
 
     @Inject
-    public KnowledgeDataLoader(Config config, Client client, RawSchema schema, OntologyTransformerProvider transformerProvider, KnowledgeIdGenerator idGenerator) {
+    public KnowledgeDataLoader(Config config, Client client, RawSchema schema, OntologyTransformerProvider transformerProvider, IdGeneratorDriver<Range> idGenerator) {
         this.schema = schema;
         this.mapper = new ObjectMapper();
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         //load knowledge transformer
         final Optional<OntologyTransformer> assembly = transformerProvider.transformer(config.getString("assembly"));
         if (!assembly.isPresent())
@@ -91,39 +83,12 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
 
 
     public long init() throws IOException {
-        String workingDir = System.getProperty("user.dir");
-        File templates = Paths.get(workingDir, "indexTemplates").toFile();
-        File[] templateFiles = templates.listFiles();
-        if (templateFiles != null) {
-            for (File templateFile : templateFiles) {
-                String templateName = FilenameUtils.getBaseName(templateFile.getName());
-                String template = FileUtils.readFileToString(templateFile, "utf-8");
-                if (!client.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
-                    final AcknowledgedResponse acknowledgedResponse = client.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet(1500);
-                    if (!acknowledgedResponse.isAcknowledged()) return -1;
-                }
-                final AcknowledgedResponse acknowledgedResponse = client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet(1500);
-                if (!acknowledgedResponse.isAcknowledged()) return -1;
-            }
-        }
-
-        Iterable<String> allIndices = schema.indices();
-
-        Stream.ofAll(allIndices)
-                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
-                .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-        Stream.ofAll(allIndices).forEach(index -> client.admin().indices().create(new CreateIndexRequest(index)).actionGet());
-
-        return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
+        return DataLoaderUtils.init(client,schema);
     }
 
     @Override
     public long drop() throws IOException {
-        Iterable<String> indices = schema.indices();
-        Stream.ofAll(indices)
-                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
-                .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-        return Stream.ofAll(indices).count(s -> !s.isEmpty());
+        return DataLoaderUtils.drop(client,schema);
     }
 
     /**
@@ -172,16 +137,5 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
         return load(root, directive);
     }
 
-    private ByteArrayOutputStream extractFile(InflaterInputStream zipIn) throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        BufferedOutputStream bos = new BufferedOutputStream(stream);
-        byte[] bytesIn = new byte[4096];
-        int read = 0;
-        while ((read = zipIn.read(bytesIn)) != -1) {
-            bos.write(bytesIn, 0, read);
-        }
-        bos.close();
-        return stream;
-    }
 
 }

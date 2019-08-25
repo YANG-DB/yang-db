@@ -28,7 +28,7 @@
           }
         },
         "power": {
-          "type": "int"
+          "type": "long"
         },
         "gender": {
           "type": "keyword"

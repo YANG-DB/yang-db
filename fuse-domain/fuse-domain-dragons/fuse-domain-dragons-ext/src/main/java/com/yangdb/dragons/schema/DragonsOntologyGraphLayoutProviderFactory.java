@@ -20,15 +20,27 @@ package com.yangdb.dragons.schema;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import com.typesafe.config.Config;
 import com.yangdb.fuse.executor.ontology.GraphLayoutProviderFactory;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.ontology.OntologyFinalizer;
+import com.yangdb.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.yangdb.fuse.unipop.schemaProviders.GraphLayoutProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
+import javaslang.Tuple2;
+import javaslang.collection.Stream;
 import net.minidev.json.JSONArray;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -40,18 +52,30 @@ import static com.yangdb.fuse.model.Utils.readJsonFile;
  */
 public class DragonsOntologyGraphLayoutProviderFactory implements GraphLayoutProviderFactory {
 
-    public static final String STRING = "string";
 
-    //region Constructors
-    public DragonsOntologyGraphLayoutProviderFactory() throws IOException {
-        this("DragonsGraphLayoutProviderFactory.json");
-    }
+    public static final String INDEX_PROVIDER_CONF = "DragonsIndexProvider.conf";
 
     @Inject
-    public DragonsOntologyGraphLayoutProviderFactory(String configFile) throws IOException {
+    public DragonsOntologyGraphLayoutProviderFactory(String dirName) throws IOException, URISyntaxException {
+        String currentDir = System.getProperty("user.dir");
+        File dir = new File(Paths.get(currentDir, dirName).toString());
+        if(!dir.exists()) {
+            dir = new File(Thread.currentThread().getContextClassLoader().getResource(dirName).toURI());
+        }
+
+        File file = new File(String.format("%s/%s", dir.getAbsolutePath(), INDEX_PROVIDER_CONF));
+        if(!file.exists()) {
+            throw new IllegalArgumentException("No Index provider file found "+file.getAbsolutePath());
+        }
+
         this.graphLayoutProviders = new HashMap<>();
-        String conf = readJsonFile("schema/" + configFile);
-        this.graphLayoutProviders.put("Dragons", (edgeType, property) -> {
+        String conf = IOUtils.toString(new FileInputStream(file));
+        GraphLayoutProvider provider = getGraphLayoutProvider(conf);
+        this.graphLayoutProviders.put("Dragons", provider);
+    }
+
+    private GraphLayoutProvider getGraphLayoutProvider(String conf) {
+        return (edgeType, property) -> {
             try {
                 JSONArray array = JsonPath.read(conf, "$['entities'][?(@.type == '" + edgeType + "')]['redundant']");
                 Optional<Object> first = array.stream().flatMap(v -> ((JSONArray) v).stream()).filter(p -> ((Map) p).get("name").equals(property.getName())).findFirst();
@@ -65,7 +89,7 @@ public class DragonsOntologyGraphLayoutProviderFactory implements GraphLayoutPro
             } catch (Exception e) {
                 return Optional.empty();
             }
-        });
+        };
     }
     //endregion
 

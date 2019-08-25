@@ -47,7 +47,7 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
             case "Kingdom":
             case "Horse":
             case "Guild":
-                return Collections.singletonList(new GraphVertexSchema.Impl(label, new StaticIndexPartitions()));
+                return Collections.singletonList(new GraphVertexSchema.Impl(label, new StaticIndexPartitions(label.toLowerCase())));
         }
 
         return Collections.emptyList();

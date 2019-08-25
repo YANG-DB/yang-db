@@ -47,7 +47,7 @@
           "type": "keyword"
         },
         "height": {
-          "type": "int"
+          "type": "long"
         },
         "birthDate": {
           "type": "date",

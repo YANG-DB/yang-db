@@ -28,13 +28,13 @@
           }
         },
         "weight": {
-          "type": "int"
+          "type": "long"
         },
         "maxSpeed": {
-          "type": "int"
+          "type": "long"
         },
         "distance": {
-          "type": "int"
+          "type": "long"
         }
       }
     }

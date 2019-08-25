@@ -14,7 +14,7 @@
 
     <modules>
         <module>fuse-domain-property-graph-ext</module>
-        <module>fuse-domain-property-graph-assembly</module>
+<!--        <module>fuse-domain-property-graph-assembly</module>-->
     </modules>
 
     <properties>

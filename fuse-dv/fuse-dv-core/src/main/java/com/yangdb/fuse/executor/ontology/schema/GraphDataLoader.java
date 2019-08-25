@@ -140,7 +140,7 @@ public interface GraphDataLoader<S,F> {
      */
     long drop() throws IOException;
 
-    public static enum Directive {
+    enum Directive {
         INSERT,UPSERT
     }
 

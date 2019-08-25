@@ -1,4 +1,4 @@
-package com.yangdb.fuse.assembly.knowledge;
+package com.yangdb.fuse.core.driver;
 
 /*-
  * #%L
@@ -45,13 +45,13 @@ import static com.yangdb.fuse.executor.ExecutorModule.globalClient;
 /**
  * Created by roman.margolis on 20/03/2018.
  */
-public class KnowledgeIdGenerator implements IdGeneratorDriver<Range> {
-    public static final String indexNameParameter = "KnowledgeIdGenerator.@indexName";
+public class BasicIdGenerator implements IdGeneratorDriver<Range> {
+    public static final String indexNameParameter = "BasicIdGenerator.@indexName";
     public static final String IDSEQUENCE = "idsequence";
 
     //region Constructors
     @Inject
-    public KnowledgeIdGenerator(
+    public BasicIdGenerator(
             @Named(globalClient) Client client,
             @Named(indexNameParameter) String indexName) {
         this.client = client;

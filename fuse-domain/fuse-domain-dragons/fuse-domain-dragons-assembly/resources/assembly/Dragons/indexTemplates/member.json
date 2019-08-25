@@ -16,6 +16,9 @@
         "enabled": false
       },
       "properties": {
+        "id": {
+          "type": "keyword"
+        },
         "directionSchema": {
           "type": "keyword"
         },

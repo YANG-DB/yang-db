@@ -3,6 +3,7 @@ package com.yangdb.fuse.assembly.knowledge;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
 import com.yangdb.fuse.client.BaseFuseClient;
 import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.core.driver.BasicIdGenerator;
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
@@ -56,7 +57,7 @@ public abstract class Setup {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("knowledge");
             client = elasticEmbeddedNode.getClient();
             try {
-                new KnowledgeIdGenerator(client,IDGENERATOR_INDEX).init(Arrays.asList("Entity","Relation","Evalue","Rvalue","workerId"));
+                new BasicIdGenerator(client,IDGENERATOR_INDEX).init(Arrays.asList("Entity","Relation","Evalue","Rvalue","workerId"));
             } catch (Exception e) {
                 //probably index already exists
                 System.out.println(e.getMessage());

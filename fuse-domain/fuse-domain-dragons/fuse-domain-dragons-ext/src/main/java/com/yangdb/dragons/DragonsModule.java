@@ -21,16 +21,36 @@ package com.yangdb.dragons;
  */
 
 import com.google.inject.Binder;
+import com.google.inject.TypeLiteral;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
+import com.yangdb.dragons.schema.DragonsOntologyGraphLayoutProviderFactory;
+import com.yangdb.fuse.core.driver.BasicIdGenerator;
+import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.dragons.services.DragonsExtensionQueryController;
+import com.yangdb.fuse.dispatcher.ontology.DirectoryOntologyProvider;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.executor.ontology.GraphLayoutProviderFactory;
+import com.yangdb.fuse.model.Range;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+
+import static com.google.inject.name.Names.named;
+
 public class DragonsModule extends ModuleBase {
     @Override
-    protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
+    protected void configureInner(Env env, Config conf, Binder binder) throws Throwable {
+        String indexName = conf.getString(conf.getString("assembly") + ".idGenerator_indexName");
+        binder.bindConstant().annotatedWith(named(BasicIdGenerator.indexNameParameter)).to(indexName);
+        binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>() {}).to(BasicIdGenerator.class).asEagerSingleton();
+
+        binder.bind(GraphLayoutProviderFactory.class).toInstance(new DragonsOntologyGraphLayoutProviderFactory(conf.getString("fuse.ontology_provider_dir")));
         binder.bind(DragonsExtensionQueryController.class).in(RequestScoped.class);
 
     }
+
 }

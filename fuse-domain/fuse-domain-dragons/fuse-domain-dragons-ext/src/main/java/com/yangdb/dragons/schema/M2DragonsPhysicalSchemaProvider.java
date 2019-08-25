@@ -44,8 +44,8 @@ public class M2DragonsPhysicalSchemaProvider extends GraphElementSchemaProvider.
                         new GraphVertexSchema.Impl("Person", new StaticIndexPartitions("person")),
                         new GraphVertexSchema.Impl("Dragon", new StaticIndexPartitions("dragon")),
                         new GraphVertexSchema.Impl("Kingdom", new StaticIndexPartitions("kingdom")),
-                        new GraphVertexSchema.Impl("Horse", new StaticIndexPartitions()),
-                        new GraphVertexSchema.Impl("Guild", new StaticIndexPartitions())
+                        new GraphVertexSchema.Impl("Horse", new StaticIndexPartitions("horse")),
+                        new GraphVertexSchema.Impl("Guild", new StaticIndexPartitions("guild"))
                 ),
                 Arrays.asList(
                         new GraphEdgeSchema.Impl(
@@ -68,10 +68,7 @@ public class M2DragonsPhysicalSchemaProvider extends GraphElementSchemaProvider.
                                 Direction.OUT,
                                 Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
-                                Optional.of(new StaticIndexPartitions(Arrays.asList(
-                                        FIRE.getName().toLowerCase() + "20170511",
-                                        FIRE.getName().toLowerCase() + "20170512",
-                                        FIRE.getName().toLowerCase() + "20170513"))),
+                                Optional.of(new StaticIndexPartitions(Collections.singletonList(FIRE.getName().toLowerCase()))),
                                 Collections.emptyList(),
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
@@ -94,10 +91,7 @@ public class M2DragonsPhysicalSchemaProvider extends GraphElementSchemaProvider.
                                 Direction.IN,
                                 Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
-                                Optional.of(new StaticIndexPartitions(Arrays.asList(
-                                        FIRE.getName().toLowerCase() + "20170511",
-                                        FIRE.getName().toLowerCase() + "20170512",
-                                        FIRE.getName().toLowerCase() + "20170513"))),
+                                Optional.of(new StaticIndexPartitions(Collections.singletonList(FIRE.getName().toLowerCase()))),
                                 Collections.emptyList(),
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
