@@ -18,7 +18,7 @@
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/resources/assembly/Dragons/dataset</directory>
-            <outputDirectory>./rules</outputDirectory>
+            <outputDirectory>./dataset</outputDirectory>
         </fileSet>
     </fileSets>
 

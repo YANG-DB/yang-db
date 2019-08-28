@@ -37,7 +37,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 
@@ -86,4 +88,5 @@ public class DragonsDataLoader implements GraphDataLoader {
     public long drop() throws IOException {
         return DataLoaderUtils.drop(client,schema);
     }
+
 }
