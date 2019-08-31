@@ -1,0 +1,16 @@
+version: '3'
+services:
+  yang.db:
+    build:
+      image: tom4tomato/yang.db
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        elasticsearch.hosts: 1.1.1.1
+        elasticsearch.cluster_name: nnono
+    container_name: YANG-DB
+    volumes:
+      - ../:/app
+    ports:
+      - "8888:8888"
+    restart: always

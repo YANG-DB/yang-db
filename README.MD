@@ -3,8 +3,17 @@ From Graph to Elastic - A tail of a Yang-DB...
 
 ### Use 
 * Add [yang.db](https://github.com/YANG-DB/yang-db) as maven dependency https://jitpack.io/#YANG-DB/yang-db
-* Download [yang.db](https://github.com/YANG-DB/yang-db) latest docker release  https://cloud.docker.com/repository/docker/tom4tomato/yang.db
+* Download [yang.db](https://github.com/YANG-DB/yang-db) get latest docker release  docker pull tom4tomato/yang.db
 
+### Run 
+* Download [yang.db] (https://github.com/YANG-DB/yang-db) latest docker release docker pull tom4tomato/yang.db
+* Run: docker run -p 8888:88 -it tom4tomato/yang.db:Sep-2019-RC1
+* Changing yang.db's configuration using docker environment variable: <br> 
+
+> docker run \ <br>
+> -e ELASTICSEARCH_HOST=1.1.1.1 \ <br>
+> -e ELASTICSEARCH_CLUSTER_NAME='staging' \ <br>
+> -p 8888:88 -it tom4tomato/yang.db:Sep-2019-RC1    
 
 #### Project YANG-DB
 
