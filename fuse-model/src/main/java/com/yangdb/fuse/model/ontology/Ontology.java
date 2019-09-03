@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 /**
  * Created by benishue on 22-Feb-17.
  */
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"primitiveTypes"})
 public class Ontology {
     public Ontology() {
@@ -128,6 +128,7 @@ public class Ontology {
     private List<EntityType> entityTypes;
     private List<RelationshipType> relationshipTypes;
     private List<Property> properties;
+    private List<Property> metadata;
     private List<EnumeratedType> enumeratedTypes;
     private List<CompositeType> compositeTypes;
     private List<PrimitiveType> primitiveTypes;
@@ -317,6 +318,10 @@ public class Ontology {
             return Stream.ofAll(ontology.getEntityTypes()).toJavaList();
         }
 
+        public boolean containsMetadata(String pType) {
+            return Stream.ofAll(ontology.entityTypes).flatMap(EntityType::getMetadata).toJavaSet().contains(pType);
+        }
+
         public Iterable<String> eNames() {
             return Stream.ofAll(entities()).map(EntityType::getName).toJavaList();
         }
@@ -369,6 +374,7 @@ public class Ontology {
 
         private Map<String, Property> propertiesByName;
         private Map<String, Property> propertiesByPtype;
+
         //endregion
     }
     //endregion

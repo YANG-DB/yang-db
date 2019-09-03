@@ -4,6 +4,16 @@
     {
       "eType": "Person",
       "name": "Person",
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
+      ],
       "properties": [
         "id",
         "firstName",
@@ -18,6 +28,16 @@
     {
       "eType": "Horse",
       "name": "Horse",
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
+      ],
       "properties": [
         "id",
         "name",
@@ -29,6 +49,16 @@
     {
       "eType": "Dragon",
       "name": "Dragon",
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
+      ],
       "properties": [
         "id",
         "name",
@@ -41,6 +71,16 @@
     {
       "eType": "Kingdom",
       "name": "Kingdom",
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
+      ],
       "properties": [
         "id",
         "name",
@@ -53,6 +93,16 @@
     {
       "eType": "Guild",
       "name": "Guild",
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
+      ],
       "properties": [
         "id",
         "name",
@@ -78,6 +128,16 @@
           "eTypeB": "Horse"
         }
       ],
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
+      ],
       "properties": [
         "id",
         "startDate",
@@ -94,6 +154,16 @@
           "eTypeB": "Person"
         }
       ],
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
+      ],
       "properties": [
         "id",
         "startDate"
@@ -108,6 +178,16 @@
           "eTypeA": "Person",
           "eTypeB": "Guild"
         }
+      ],
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
       ],
       "properties": [
         "id",
@@ -125,6 +205,16 @@
           "eTypeB": "Dragon"
         }
       ],
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
+      ],
       "properties": [
         "id",
         "date",
@@ -140,6 +230,16 @@
           "eTypeA": "Dragon",
           "eTypeB": "Dragon"
         }
+      ],
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
       ],
       "properties": [
         "id",
@@ -157,6 +257,16 @@
           "eTypeB": "Kingdom"
         }
       ],
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
+      ],
       "properties": [
         "id",
         "startDate"
@@ -171,6 +281,16 @@
           "eTypeA": "Person",
           "eTypeB": "Kingdom"
         }
+      ],
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
       ],
       "properties": [
         "id",
@@ -187,9 +307,23 @@
           "eTypeB": "Kingdom"
         },
         {
+          "eTypeA": "Dragon",
+          "eTypeB": "Guild"
+        },
+        {
           "eTypeA": "Horse",
-          "eTypeB": "Kingdom"
+          "eTypeB": "Guild"
         }
+      ],
+      "metadata": [
+        "techId",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
       ],
       "properties": [
         "id",
@@ -199,6 +333,46 @@
   ],
   "properties": [
     {
+      "pType": "techId",
+      "name": "techId",
+      "type": "string"
+    },
+   {
+      "pType": "authorization",
+      "name": "authorization",
+      "type": "string"
+    },
+   {
+      "pType": "lastUpdateTime",
+      "name": "lastUpdateTime",
+      "type": "date"
+    },
+   {
+      "pType": "creationTime",
+      "name": "creationTime",
+      "type": "date"
+    },
+  {
+      "pType": "lastUpdateUser",
+      "name": "lastUpdateUser",
+      "type": "string"
+    },
+  {
+      "pType": "creationUser",
+      "name": "creationUser",
+      "type": "string"
+    },
+  {
+      "pType": "deleteTime",
+      "name": "deleteTime",
+      "type": "date"
+    },
+  {
+      "pType": "deleteUser",
+      "name": "deleteUser",
+      "type": "string"
+    },
+    {
       "pType": "id",
       "name": "id",
       "type": "string"
@@ -206,12 +380,12 @@
     {
       "pType": "firstName",
       "name": "firstName",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "lastName",
       "name": "lastName",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "gender",
@@ -226,12 +400,12 @@
     {
       "pType": "deathDate",
       "name": "deathDate",
-      "type": "string"
+      "type": "date"
     },
     {
       "pType": "name",
       "name": "name",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "height",
@@ -261,7 +435,7 @@
     {
       "pType": "description",
       "name": "description",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "iconId",
@@ -276,12 +450,12 @@
     {
       "pType": "king",
       "name": "king",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "queen",
       "name": "queen",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "independenceDay",

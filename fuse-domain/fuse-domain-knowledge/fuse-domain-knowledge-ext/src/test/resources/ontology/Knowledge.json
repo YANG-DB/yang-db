@@ -11,9 +11,9 @@
       "name": "Entity",
       "properties": [
         "logicalId",
-        "techId",
         "context",
         "category",
+        "techId",
         "authorization",
         "lastUpdateUser",
         "lastUpdateTime",

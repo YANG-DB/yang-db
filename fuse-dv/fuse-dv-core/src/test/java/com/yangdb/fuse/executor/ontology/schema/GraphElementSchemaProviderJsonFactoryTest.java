@@ -7,6 +7,7 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -15,6 +16,7 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Ignore("Not implemented yet")
 public class GraphElementSchemaProviderJsonFactoryTest {
     private ObjectMapper mapper = new ObjectMapper();
     private IndexProvider provider;
