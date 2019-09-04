@@ -105,8 +105,6 @@ public class LikeUtil {
     }
 
     public static Optional<EProp> getWildcardNgramsInsetProp(EProp eProp, GraphElementPropertySchema propertySchema) {
-        if(!eProp.isConstraint()) return Optional.empty();
-
         List<String> words = getWildcardNgrams(propertySchema, eProp.getCon().getExpr().toString());
         if (words.isEmpty()) {
             return Optional.empty();

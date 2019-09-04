@@ -66,16 +66,10 @@ public class StandardQueryDriver extends QueryDriverBase {
     //region QueryDriverBase Implementation
     @Override
     protected QueryResource createResource(CreateQueryRequest request, Query query, AsgQuery asgQuery, QueryMetadata metadata) {
-        AsgQuery newAsgQuery = rewrite(asgQuery);
-        ValidationResult result = validateAsgQuery(newAsgQuery);
-        if (!result.valid()) {
-            throw new FuseError.FuseErrorException(new FuseError(Query.class.getSimpleName(),
-                    "Asg Query rewrite validation error " + result.toString()));
-        }
 
-        PlanWithCost<Plan, PlanDetailedCost> planWithCost = planWithCost(metadata, newAsgQuery);
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = planWithCost(metadata, asgQuery);
 
-        return new QueryResource(request, query, newAsgQuery, metadata, planWithCost, null);
+        return new QueryResource(request, query, asgQuery, metadata, planWithCost, null);
     }
 
     protected PlanWithCost<Plan, PlanDetailedCost> planWithCost(QueryMetadata metadata, AsgQuery query) {
