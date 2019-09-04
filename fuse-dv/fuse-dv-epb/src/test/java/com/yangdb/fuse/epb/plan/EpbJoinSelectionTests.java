@@ -174,6 +174,11 @@ public class EpbJoinSelectionTests {
                     public Collection<Ontology> getAll() {
                         return Collections.singleton(ont.get());
                     }
+
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                return ontology;
+             }
                 },
                 null);
         EntityJoinPatternCostEstimator entityJoinPatternCostEstimator = (EntityJoinPatternCostEstimator)m2PatternCostEstimator.getEstimators().get(EntityJoinPattern.class);
@@ -201,6 +206,11 @@ public class EpbJoinSelectionTests {
                     public Collection<Ontology> getAll() {
                         return Collections.singleton(ont.get());
                     }
+
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                return ontology;
+             }
                 }, ont -> graphElementSchemaProvider),
                 globalPruner,
                 localPruner,

@@ -21,6 +21,7 @@ package com.yangdb.fuse.services.appRegistrars;
  */
 
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.yangdb.fuse.logging.Route;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.services.controllers.CatalogController;
@@ -39,6 +40,16 @@ public class CatalogControllerRegistrar extends AppControllerRegistrarBase<Catal
     //region AppControllerRegistrarBase Implementation
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
+        /** create new ontology*/
+        app.post("/fuse/catalog/ontology"
+                ,req -> {
+                    Route.of("postPage").write();
+                    Ontology ontology = req.body(Ontology.class);
+                    req.set(Ontology.class, ontology);
+                    ContentResponse<Ontology> response = this.getController(app).addOntology(ontology);
+                    return Results.with(response, response.status());
+                });
+
         /** get available ontologies*/
         app.get("/fuse/catalog/ontology"
                 ,req -> {

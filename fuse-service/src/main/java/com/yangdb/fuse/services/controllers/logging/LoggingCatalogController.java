@@ -71,6 +71,19 @@ public class LoggingCatalogController extends LoggingControllerBase<CatalogContr
     }
 
     @Override
+    public ContentResponse<Ontology> addOntology(Ontology ontology) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Ontology>>(
+                this.logger,
+                this.metricRegistry,
+                addOntology,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.addOntology(ontology), this.resultHandler());
+
+    }
+
+    @Override
     public ContentResponse<List<Ontology>> getOntologies() {
         return new LoggingSyncMethodDecorator<ContentResponse<List<Ontology>>>(
                 this.logger,
@@ -110,6 +123,7 @@ public class LoggingCatalogController extends LoggingControllerBase<CatalogContr
     //region Fields
     private static MethodName.MDCWriter getOntology = MethodName.of("getOntology");
     private static MethodName.MDCWriter getOntologies = MethodName.of("getOntologies");
+    private static MethodName.MDCWriter addOntology = MethodName.of("addOntology");
     private static MethodName.MDCWriter getSchema = MethodName.of("getSchema");
     private static MethodName.MDCWriter getSchemas = MethodName.of("getSchemas");
     //endregion

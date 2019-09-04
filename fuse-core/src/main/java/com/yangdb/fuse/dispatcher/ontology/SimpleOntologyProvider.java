@@ -55,4 +55,9 @@ public class SimpleOntologyProvider implements OntologyProvider {
     public Collection<Ontology> getAll() {
         return ontologyMap.values();
     }
+
+    @Override
+    public Ontology add(Ontology ontology) {
+        return ontologyMap.put(ontology.getOnt(),ontology);
+    }
 }

@@ -65,6 +65,11 @@ public class SmartEpbTests {
                     public Collection<Ontology> getAll() {
                         return Collections.singleton(scenarioMockUtil.getOntologyAccessor().get());
                     }
+
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                return ontology;
+             }
                 }));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();

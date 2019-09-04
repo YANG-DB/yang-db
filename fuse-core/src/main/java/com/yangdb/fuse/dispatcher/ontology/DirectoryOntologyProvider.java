@@ -74,6 +74,11 @@ public class DirectoryOntologyProvider implements OntologyProvider {
     public Collection<Ontology> getAll() {
         return ontologies.values();
     }
+
+    @Override
+    public Ontology add(Ontology ontology) {
+        return ontologies.put(ontology.getOnt(),ontology);
+    }
     //endregion
 
     //region Fields

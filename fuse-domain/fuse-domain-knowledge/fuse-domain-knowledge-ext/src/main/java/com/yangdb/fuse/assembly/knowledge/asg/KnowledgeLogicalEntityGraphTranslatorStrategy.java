@@ -49,13 +49,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * replace logical graph query (fields within the Entity) into knowledge graph query (RDF structure - fields as separate nodes)
  */
 public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrategy {
+    public static final String KNOWLEDGE = "Knowledge";
     public static final String ENTITY = "Entity";
-    public static final String RELATED_ENTITY = "relatedEntity";
     public static final String EVALUE = "Evalue";
-    public static final String RVALUE = "Rvalue";
+    public static final String RELATED_ENTITY = "relatedEntity";
 
     public static final String CATEGORY = "category";
-    public static final String KNOWLEDGE = "Knowledge";
     //region Constructors
 
     public KnowledgeLogicalEntityGraphTranslatorStrategy(OntologyProvider ontologyProvider,
@@ -86,6 +85,8 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
         //break logical relations to knowledge entity with constraint on Category (label)
         translateLogicalRelation(query, counter, knowledgeOntAccessor);
 
+       // after logical transformation finished, change ontology to Knowledge
+       query.setOnt(KNOWLEDGE);
     }
 
 

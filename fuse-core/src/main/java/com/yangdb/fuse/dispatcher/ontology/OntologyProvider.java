@@ -21,6 +21,7 @@ package com.yangdb.fuse.dispatcher.ontology;
  */
 
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.transport.ContentResponse;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -32,4 +33,6 @@ public interface OntologyProvider {
     Optional<Ontology> get(String id);
 
     Collection<Ontology> getAll();
+
+    Ontology add(Ontology ontology);
 }

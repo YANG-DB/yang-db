@@ -55,6 +55,11 @@ public class DefaultSelectionAsgStrategyTest {
             public Collection<Ontology> getAll() {
                 return Collections.singleton(ontology);
             }
+
+            @Override
+            public Ontology add(Ontology ontology) {
+                return ontology;
+             }
         });
 
         selectionAsgStrategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
@@ -87,6 +92,11 @@ public class DefaultSelectionAsgStrategyTest {
             public Collection<Ontology> getAll() {
                 return Collections.singleton(ontology);
             }
+
+            @Override
+            public Ontology add(Ontology ontology) {
+                return ontology;
+             }
         });
 
         selectionAsgStrategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));

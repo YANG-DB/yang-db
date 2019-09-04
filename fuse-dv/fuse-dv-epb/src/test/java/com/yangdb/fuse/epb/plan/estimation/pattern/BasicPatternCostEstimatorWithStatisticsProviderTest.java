@@ -96,6 +96,11 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
                     public Collection<Ontology> getAll() {
                         return Collections.singleton(ont.get());
                     }
+
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                        return ontology;
+                    }
                 });
 
         AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(ont.get().getOnt()).build();
@@ -139,6 +144,11 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
                     public Collection<Ontology> getAll() {
                         return Collections.singleton(ont.get());
                     }
+
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                return ontology;
+             }
                 });
 
         AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(ont.get().getOnt()).build();

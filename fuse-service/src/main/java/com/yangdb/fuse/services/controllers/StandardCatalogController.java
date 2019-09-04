@@ -69,6 +69,13 @@ public class StandardCatalogController implements CatalogController {
     }
 
     @Override
+    public ContentResponse<Ontology> addOntology(Ontology ontology) {
+        return Builder.<Ontology>builder(OK, NOT_FOUND)
+                .data(Optional.of(this.ontologyProvider.add(ontology)))
+                .compose();
+    }
+
+    @Override
     public ContentResponse<String> getSchema(String id) {
         Optional<Ontology> ontology = this.ontologyProvider.get(id);
         if (!ontology.isPresent()) {

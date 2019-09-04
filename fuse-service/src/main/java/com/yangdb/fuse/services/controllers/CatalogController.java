@@ -32,6 +32,8 @@ public interface CatalogController {
 
     ContentResponse<Ontology> getOntology(String id);
 
+    ContentResponse<Ontology> addOntology(Ontology ontology);
+
     ContentResponse<List<Ontology>> getOntologies();
 
     ContentResponse<String> getSchema(String id);

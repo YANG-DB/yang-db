@@ -1,9 +1,7 @@
 package com.yangdb.fuse.assembly.knowledge.asg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yangdb.fuse.asg.AsgValidationModule;
 import com.yangdb.fuse.asg.validation.AsgQueryValidator;
-import com.yangdb.fuse.asg.validation.AsgValidatorStrategyRegistrar;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
@@ -27,8 +25,7 @@ import java.util.*;
 
 import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.yangdb.fuse.model.query.quant.QuantType.all;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by benishue on 09-May-17.
@@ -59,6 +56,11 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
             public Collection<Ontology> getAll() {
                 return Collections.singleton(knowledgeOnt.get());
             }
+
+            @Override
+            public Ontology add(Ontology ontology) {
+                return ontology;
+             }
         };
 
         validator = new AsgQueryValidator(new AsgKnowledgeValidatorStrategyRegistrar(), provider);
@@ -225,6 +227,20 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         assertEquals(before, AsgQueryDescriptor.print(query));
 
         String expected = "[└── Start, \n" +
+                "    ──Typ[:Entity A#1]──Q[3:all]:{2|4}, \n" +
+                "                                  └-> Rel(:relatedEntity null#2), \n" +
+                "                                  └─?[4]:[category<eq,Person>]]";
+        asgStrategyContext = new AsgStrategyContext(knowledgeOnt);
+
+        //Applying the Strategy on the Eprop with the Epoch time
+        query = QFail();
+        translatorStrategy.apply(query, asgStrategyContext);
+        assertEquals(expected, AsgQueryDescriptor.print(query));
+        assertFalse(validator.validate(query).valid());
+        assertEquals(validator.validate(query).errors().iterator().next(),"Ontology doesn't Allow Relation with No entity Attached to :Asg(Rel(2))");
+
+
+        expected = "[└── Start, \n" +
                 "    ──Typ[:Entity A#1]──Q[4:all]:{2|5}, \n" +
                 "                                  └-> Rel(:relatedEntity null#2)──Typ[:Entity B#3]──Q[6:all]:{7}, \n" +
                 "                                                                                            └─?[7]:[category<eq,Horse>], \n" +
@@ -360,6 +376,13 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "Knowledge")
                 .next(typed(1, "Evalue", "A"))
                 .next(eProp(2, "fieldId", Constraint.of(ConstraintOp.like, "*")))
+                .build();
+        return asgQuery;
+    }
+    private AsgQuery QFail() {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "Dragons")
+                .next(typed(1, "Person", "A"))
+                .next(rel(2, "own", Rel.Direction.R))
                 .build();
         return asgQuery;
     }
