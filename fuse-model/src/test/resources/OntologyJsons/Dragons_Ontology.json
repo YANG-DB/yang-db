@@ -4,6 +4,7 @@
     {
       "eType": "Person",
       "name": "Person",
+      "metadata": [],
       "properties": [
         "firstName",
         "lastName",
@@ -16,6 +17,7 @@
     {
       "eType": "Horse",
       "name": "Horse",
+      "metadata": [],
       "properties": [
         "name",
         "gender"
@@ -24,6 +26,7 @@
     {
       "eType": "Dragon",
       "name": "Dragon",
+      "metadata": [],
       "properties": [
         "name",
         "gender"
@@ -32,6 +35,7 @@
     {
       "eType": "Kingdom",
       "name": "kingdom",
+      "metadata": [],
       "properties": [
         "name"
       ]
@@ -39,6 +43,7 @@
     {
       "eType": "Guild",
       "name": "Guild",
+      "metadata": [],
       "properties": [
         "name"
       ]
@@ -63,6 +68,7 @@
           "eTypeB": "Guild"
         }
       ],
+      "metadata": [],
       "properties": [
         "startDate",
         "endDate"
@@ -78,6 +84,7 @@
           "eTypeB": "Kingdom"
         }
       ],
+      "metadata": [],
       "properties": [
         "startDate",
         "endDate"
@@ -93,8 +100,8 @@
           "eTypeB": "Kingdom"
         }
       ],
+      "metadata": [],
       "properties": [
-
       ]
     },
     {
@@ -107,6 +114,7 @@
           "eTypeB": "Dragon"
         }
       ],
+      "metadata": [],
       "properties": [
         "startDate",
         "endDate",
@@ -123,6 +131,7 @@
           "eTypeB": "Dragon"
         }
       ],
+      "metadata": [],
       "properties": [
         "startDate",
         "endDate",
@@ -140,6 +149,7 @@
           "eTypeB": "Guild"
         }
       ],
+      "metadata": [],
       "properties": [
         "startDate",
         "endDate"
@@ -159,6 +169,7 @@
           "eTypeB": "Horse"
         }
       ],
+      "metadata": [],
       "properties": [
         "startDate",
         "endDate"

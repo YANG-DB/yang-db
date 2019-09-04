@@ -4,7 +4,8 @@
     {
       "eType": "Person",
       "name": "Person",
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "firstName",
         "lastName",
@@ -18,7 +19,8 @@
     {
       "eType": "Horse",
       "name": "Horse",
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "name",
         "weight",
@@ -29,7 +31,8 @@
     {
       "eType": "Dragon",
       "name": "Dragon",
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "name",
         "birthDate",
@@ -41,7 +44,8 @@
     {
       "eType": "Kingdom",
       "name": "Kingdom",
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "name",
         "king",
@@ -53,7 +57,8 @@
     {
       "eType": "Guild",
       "name": "Guild",
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "name",
         "description",
@@ -78,7 +83,8 @@
           "eTypeB": "Horse"
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "startDate",
         "endDate"
@@ -94,7 +100,8 @@
           "eTypeB": "Person"
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "startDate"
       ]
@@ -109,7 +116,8 @@
           "eTypeB": "Guild"
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "startDate",
         "endDate"
@@ -125,7 +133,8 @@
           "eTypeB": "Dragon"
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "date",
         "temperature"
@@ -141,7 +150,8 @@
           "eTypeB": "Dragon"
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "startDate",
         "endDate"
@@ -157,7 +167,8 @@
           "eTypeB": "Kingdom"
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "startDate"
       ]
@@ -172,7 +183,8 @@
           "eTypeB": "Kingdom"
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "startDate"
       ]
@@ -197,7 +209,8 @@
       ]
     }
   ],
-  "properties": [
+   "metadata": [],
+ "properties": [
     {
       "pType": "id",
       "name": "id",
