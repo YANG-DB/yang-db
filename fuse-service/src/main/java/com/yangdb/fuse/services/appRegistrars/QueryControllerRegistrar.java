@@ -220,7 +220,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         }
 
         public static Result validateV1(Jooby app, final Request req, QueryController controller) throws Exception {
-            Route.of("validateQuery").write();
+            Route.of("validateAndRewriteQuery").write();
 
             Query query = req.body(Query.class);
             req.set(Query.class, query);

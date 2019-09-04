@@ -18,8 +18,8 @@
   ],
   "relationshipTypes": [
     {
-      "rType": "know",
-      "name": "know",
+      "rType": "knows",
+      "name": "knows",
       "directional": true,
       "ePairs": [
         {

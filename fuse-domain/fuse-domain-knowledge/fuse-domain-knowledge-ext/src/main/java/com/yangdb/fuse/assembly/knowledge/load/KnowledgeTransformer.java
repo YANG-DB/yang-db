@@ -51,7 +51,10 @@ import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder._v;
 import static java.util.regex.Pattern.matches;
 
 public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
-    public static final String TECHNICAL_ID = "techId";
+    public static final String TECH_ID = "techId";
+    public static final String ID = "id";
+    public static final String CATEGORY = "category";
+
     private static Map<String, StatefulRange> ranges = new HashMap<>();
 
     private OntologyTransformer transformer;
@@ -145,12 +148,12 @@ public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
             builder.set(_rel(writerContext.nextRelId(schema, range.next())));
         } else {
             //check by techId for existence of edge entity in DB
-            Optional<Map> node = StoreAccessor.findEntityById(TECHNICAL_ID, edge.id(), RELATION, schema, client);
+            Optional<Map> node = StoreAccessor.findEntityById(TECH_ID, edge.id(), RELATION, schema, client);
             //the insert part of the upsert
             if(!node.isPresent()) {
                 builder.set(_rel(writerContext.nextRelId(schema, range.next())));
             } else {
-                builder.set(_rel(node.get().get("id").toString().split("[.]")[0]));
+                builder.set(_rel(node.get().get(ID).toString().split("[.]")[0]));
             }
         }
 
@@ -166,12 +169,12 @@ public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
 
         if (!sideA.isPresent()) {
             // search Elastic for the given node
-            Optional<Map> node = StoreAccessor.findEntityById(TECHNICAL_ID, edge.getSource(), ENTITY, schema, client);
+            Optional<Map> node = StoreAccessor.findEntityById(TECH_ID, edge.getSource(), ENTITY, schema, client);
 
             if (node.isPresent()) {
-                builder.get().entityAId(node.get().get("id").toString());
-                builder.get().entityATechId(node.get().get("techId").toString());
-                builder.get().entityACategory(node.get().get("category").toString());
+                builder.get().entityAId(node.get().get(ID).toString());
+                builder.get().entityATechId(node.get().get(TECH_ID).toString());
+                builder.get().entityACategory(node.get().get(CATEGORY).toString());
             } else {
                 context.failed(edge.getSource(), String.format("Source node %s for edge not found %s", edge.getSource(), edge.toString()));
                 throw new IllegalArgumentException(String.format("Source node %s for edge not found %s", edge.getSource(), edge.toString()));
@@ -189,12 +192,12 @@ public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
 
         if (!sideB.isPresent()) {
             //search Elastic for the given node
-            Optional<Map> node = StoreAccessor.findEntityById(TECHNICAL_ID, edge.getTarget(), ENTITY, schema, client);
+            Optional<Map> node = StoreAccessor.findEntityById(TECH_ID, edge.getTarget(), ENTITY, schema, client);
 
             if (node.isPresent()) {
-                builder.get().entityBId(node.get().get("id").toString());
-                builder.get().entityBTechId(node.get().get("techId").toString());
-                builder.get().entityBCategory(node.get().get("category").toString());
+                builder.get().entityBId(node.get().get(ID).toString());
+                builder.get().entityBTechId(node.get().get(TECH_ID).toString());
+                builder.get().entityBCategory(node.get().get(CATEGORY).toString());
             } else {
                 context.failed(edge.getSource(), String.format("Target node %s for edge not found %s", edge.getTarget(), edge.toString()));
                 throw new IllegalArgumentException(String.format("Target node %s for edge not found %s", edge.getSource(), edge.toString()));
@@ -248,16 +251,16 @@ public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
             builder.set(_e(writerContext.nextLogicalId(schema, range.next())));
         } else {
             //check by techId for existence of edge entity in DB
-            Optional<Map> source = StoreAccessor.findEntityById(TECHNICAL_ID, node.getId(), ENTITY, schema, client);
+            Optional<Map> source = StoreAccessor.findEntityById(TECH_ID, node.getId(), ENTITY, schema, client);
             //the insert part of the upsert
             if(!source.isPresent()) {
                 builder.set(_e(writerContext.nextLogicalId(schema, range.next())));
             } else {
-                builder.set(_e(source.get().get("id").toString().split("[.]")[0]));
+                builder.set(_e(source.get().get(ID).toString().split("[.]")[0]));
             }
         }
         //technical Id to find the node by (real id is given by the engine sequencer)
-        builder.get().putProperty(TECHNICAL_ID, node.getId());
+        builder.get().putProperty(TECH_ID, node.getId());
         String physicalLabelKey = type.getLabel();
         String labelValue = node.label();
         builder.get().putProperty(physicalLabelKey, labelValue);

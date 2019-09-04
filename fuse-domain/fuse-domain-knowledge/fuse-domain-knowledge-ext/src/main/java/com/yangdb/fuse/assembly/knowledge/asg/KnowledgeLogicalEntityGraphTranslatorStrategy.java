@@ -68,7 +68,7 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
         //only transform logical ontologies
-        if(query.getOnt().equals("Knowledge"))
+        if (query.getOnt().equals("Knowledge"))
             return;
 
         Ontology.Accessor logicalOntAccessor = new Ontology.Accessor(this.ontologyProvider.get(query.getOnt()).get());
@@ -77,7 +77,7 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
         AtomicInteger counter = new AtomicInteger(AsgQueryUtil.max(query));
 
         //break logical properties consteraints to knowledge entity constraint (Evalue)
-        translateLogicalProperties(query, counter,logicalOntAccessor);
+        translateLogicalProperties(query, counter, logicalOntAccessor);
 
         //break logical entity to knowledge entity with constraint on Category (label)
         translateLogicalEntity(query, counter, knowledgeOntAccessor);
@@ -85,13 +85,14 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
         //break logical relations to knowledge entity with constraint on Category (label)
         translateLogicalRelation(query, counter, knowledgeOntAccessor);
 
-       // after logical transformation finished, change ontology to Knowledge
-       query.setOnt(KNOWLEDGE);
+        // after logical transformation finished, change ontology to Knowledge
+        query.setOnt(KNOWLEDGE);
     }
 
 
     /**
      * translate logical entity to knowledge entity with constraint on Category (label)
+     *
      * @param query
      * @param counter
      * @param knowledgeOntAccessor
@@ -99,16 +100,16 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
     private void translateLogicalRelation(AsgQuery query, AtomicInteger counter, Ontology.Accessor knowledgeOntAccessor) {
         //get all relation types from query skip knowledge ontology types
         List<Rel> rTyped = Stream.ofAll(AsgQueryUtil.elements(query, Rel.class))
-                .filter(r->!knowledgeOntAccessor.rType(r.geteBase().getrType()).isPresent())
+                .filter(r -> !knowledgeOntAccessor.rType(r.geteBase().getrType()).isPresent())
                 .map(AsgEBase::geteBase).toJavaList();
 
-        rTyped.forEach(e-> {
+        rTyped.forEach(e -> {
             AsgEBase<EBase> rel = AsgQueryUtil.get(query.getStart(), e.geteNum()).get();
             //change logical type to Knowledge type
             String logicalType = ((Rel) rel.geteBase()).getrType();
-            ((Rel)rel.geteBase()).setrType(RELATED_ENTITY);
+            ((Rel) rel.geteBase()).setrType(RELATED_ENTITY);
             //set logical type as label constraint
-            rel.addBChild(new AsgEBase<>(new RelProp(counter.incrementAndGet(), CATEGORY, Constraint.of(ConstraintOp.eq,logicalType))));
+            rel.addBChild(new AsgEBase<>(new RelProp(counter.incrementAndGet(), CATEGORY, Constraint.of(ConstraintOp.eq, logicalType))));
 
         });
 
@@ -116,6 +117,7 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
 
     /**
      * translate logical entity to knowledge entity with constraint on Category (label)
+     *
      * @param query
      * @param counter
      * @param knowledgeOntAccessor
@@ -123,10 +125,10 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
     private void translateLogicalEntity(AsgQuery query, AtomicInteger counter, Ontology.Accessor knowledgeOntAccessor) {
         //get all entity types from query skip knowledge ontology types
         List<ETyped> eTyped = Stream.ofAll(AsgQueryUtil.elements(query, ETyped.class))
-                .filter(r->!knowledgeOntAccessor.eType(r.geteBase().geteType()).isPresent())
+                .filter(r -> !knowledgeOntAccessor.eType(r.geteBase().geteType()).isPresent())
                 .map(AsgEBase::geteBase).toJavaList();
 
-        eTyped.forEach(e-> {
+        eTyped.forEach(e -> {
             AsgEBase<EBase> entity = AsgQueryUtil.get(query.getStart(), e.geteNum()).get();
             //if group has no quant children -> make one ...
             if (entity.getNext().stream().noneMatch(p -> p.geteBase() instanceof QuantBase)) {
@@ -137,16 +139,16 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
 
             //change logical type to Knowledge type
             String logicalType = ((ETyped) entity.geteBase()).geteType();
-            ((ETyped)entity.geteBase()).seteType(ENTITY);
+            ((ETyped) entity.geteBase()).seteType(ENTITY);
 
             //get property group if exists
-            if(quant.getNext().stream().anyMatch(c->c.geteBase() instanceof EPropGroup)) {
+            if (quant.getNext().stream().anyMatch(c -> c.geteBase() instanceof EPropGroup)) {
                 //find or create property group
                 AsgEBase<? extends EBase> group = quant.getNext().stream().filter(p -> p.geteBase() instanceof EPropGroup).findAny().get();
-                ((EPropGroup)group.geteBase()).getProps().add(new EProp(counter.incrementAndGet(), CATEGORY, Constraint.of(ConstraintOp.eq,logicalType)));
+                ((EPropGroup) group.geteBase()).getProps().add(new EProp(counter.incrementAndGet(), CATEGORY, Constraint.of(ConstraintOp.eq, logicalType)));
             } else {
                 //add property constraint directly to quant
-                quant.next(new AsgEBase<>(new EProp(counter.incrementAndGet(), CATEGORY,Constraint.of(ConstraintOp.eq,logicalType))));
+                quant.next(new AsgEBase<>(new EProp(counter.incrementAndGet(), CATEGORY, Constraint.of(ConstraintOp.eq, logicalType))));
             }
 
         });
@@ -154,6 +156,7 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
 
     /**
      * translate logical properties into Evalue constraints
+     *
      * @param query
      * @param counter
      * @param logicalOntAccessor
@@ -207,7 +210,6 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
                 .anyMatch(e -> ((Typed) e.geteBase()).getTyped().equals(pType))) return;
 
 
-
         if (path.size() <= 3) {
             //add the EValue type node to the quant with hasEvalue rel in between
             Optional<AsgEBase<? extends EBase>> quant = path.stream().filter(e -> e.geteBase() instanceof QuantBase).findAny();
@@ -226,7 +228,7 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
 
             //change logical field type to knowledge field type according to logical ontology
             String fieldIdName = eProp.getpType();
-            String fieldType = String.format("%sValue",ont.property$(fieldIdName).getType());
+            String fieldType = String.format("%sValue", ont.property$(fieldIdName).getType());
             eProp.setpType(fieldType);
 
             EPropGroup group = new EPropGroup(asgEprop.get().geteNum(),

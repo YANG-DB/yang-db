@@ -42,6 +42,8 @@ public class LikeUtil {
     public static Iterable<EProp> applyWildcardRules(EProp eProp, GraphElementPropertySchema propertySchema) {
         Optional<GraphElementPropertySchema.ExactIndexingSchema> exactIndexingSchema = propertySchema.getIndexingSchema(exact);
 
+        if(!eProp.isConstraint()) return Collections::emptyIterator;
+
         String expr = (String) eProp.getCon().getExpr();
         if (expr == null || expr.equals("")) {
             return Collections.singletonList(new SchematicEProp(
@@ -103,6 +105,8 @@ public class LikeUtil {
     }
 
     public static Optional<EProp> getWildcardNgramsInsetProp(EProp eProp, GraphElementPropertySchema propertySchema) {
+        if(!eProp.isConstraint()) return Optional.empty();
+
         List<String> words = getWildcardNgrams(propertySchema, eProp.getCon().getExpr().toString());
         if (words.isEmpty()) {
             return Optional.empty();

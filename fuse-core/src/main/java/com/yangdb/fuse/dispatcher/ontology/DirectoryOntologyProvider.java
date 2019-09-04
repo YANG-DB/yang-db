@@ -77,7 +77,8 @@ public class DirectoryOntologyProvider implements OntologyProvider {
 
     @Override
     public Ontology add(Ontology ontology) {
-        return ontologies.put(ontology.getOnt(),ontology);
+        ontologies.put(ontology.getOnt(),ontology);
+        return ontology;
     }
     //endregion
 

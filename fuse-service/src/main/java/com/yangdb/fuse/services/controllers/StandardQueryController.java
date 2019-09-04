@@ -95,7 +95,7 @@ public class StandardQueryController implements QueryController<QueryController,
     @Override
     public ContentResponse<ValidationResult> validate(Query query) {
         return Builder.<ValidationResult>builder(CREATED, SERVER_ERROR )
-                .data(Optional.of(driver().validateQuery(query)))
+                .data(Optional.of(driver().validateAndRewriteQuery(query)))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }

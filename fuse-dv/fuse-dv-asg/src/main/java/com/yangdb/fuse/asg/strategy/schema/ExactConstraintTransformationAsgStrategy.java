@@ -122,7 +122,7 @@ public class ExactConstraintTransformationAsgStrategy implements AsgStrategy {
                         exactIndexingSchema.get().getName(),
                         eProp.getCon(),
                         ((RankingProp) eProp).getBoost()));
-            }else {
+            }else if(eProp.isConstraint()){
                 ePropGroup.getProps().add(new SchematicEProp(
                         0,
                         eProp.getpType(),

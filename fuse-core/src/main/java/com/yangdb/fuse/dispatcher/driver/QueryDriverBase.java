@@ -47,12 +47,11 @@ import com.yangdb.fuse.model.results.AssignmentUtils;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.transport.*;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
-import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import javaslang.control.Option;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -180,6 +179,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     private Optional<QueryResourceInfo> create(CreateQueryRequest request, QueryMetadata metadata, Query query) {
         try {
             AsgQuery asgQuery = transform(query);
+            asgQuery = rewrite(asgQuery);
 
             ValidationResult validationResult = this.queryValidator.validate(asgQuery);
 
@@ -287,6 +287,9 @@ public abstract class QueryDriverBase implements QueryDriver {
             AsgQuery asgQuery = transform(query);
             asgQuery.setName(metadata.getName());
             asgQuery.setOnt(request.getOntology());
+            //rewrite query
+            asgQuery = rewrite(asgQuery);
+
 
             ValidationResult validationResult = validateAsgQuery(asgQuery);
             if (!validationResult.valid()) {
@@ -296,7 +299,7 @@ public abstract class QueryDriverBase implements QueryDriver {
             }
 
             Query build = Query.Builder.instance()
-                    .withOnt(request.getOntology())
+                    .withOnt(asgQuery.getOnt())
                     .withName(query).build();
 
             //create inner query
@@ -322,8 +325,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                     .withInnerQueryResources(getQueryResourceInfos(innerQuery)));
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(),
-                            err.getMessage())));
+                    new FuseError(Query.class.getSimpleName(),err)));
         }
     }
 
@@ -331,7 +333,7 @@ public abstract class QueryDriverBase implements QueryDriver {
         return this.queryValidator.validate(query);
     }
 
-    public ValidationResult validateQuery(Query query) {
+    public ValidationResult validateAndRewriteQuery(Query query) {
         AsgQuery asgQuery = transform(query);
         if (!validateAsgQuery(asgQuery).valid())
             return validateAsgQuery(asgQuery);
@@ -355,7 +357,7 @@ public abstract class QueryDriverBase implements QueryDriver {
             return getQueryResourceInfo(request, queryResourceInfo);
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(),err)));
+                    new FuseError(Query.class.getSimpleName(), err)));
 
         }
     }
@@ -369,7 +371,7 @@ public abstract class QueryDriverBase implements QueryDriver {
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(),
-                            err.getMessage())));
+                            err)));
 
         }
 
@@ -528,8 +530,7 @@ public abstract class QueryDriverBase implements QueryDriver {
             return info;
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(),
-                            err.getMessage())));
+                    new FuseError(Query.class.getSimpleName(),err)));
         }
     }
 
@@ -576,7 +577,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                         urlSupplier.cursorStoreUrl(queryId),
                         cursorDriver.getInfo(resource.getQueryMetadata().getId(), resource.getCurrentCursorId()).isPresent() ?
                                 Collections.singletonList(
-                                        cursorDriver.getInfo(resource.getQueryMetadata().getId(),resource.getCurrentCursorId()).get())
+                                        cursorDriver.getInfo(resource.getQueryMetadata().getId(), resource.getCurrentCursorId()).get())
                                 : EMPTY_LIST)
                         .withInnerQueryResources(collect);
         return Optional.of(resourceInfo);

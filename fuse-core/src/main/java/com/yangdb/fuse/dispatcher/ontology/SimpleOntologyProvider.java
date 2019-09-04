@@ -58,6 +58,7 @@ public class SimpleOntologyProvider implements OntologyProvider {
 
     @Override
     public Ontology add(Ontology ontology) {
-        return ontologyMap.put(ontology.getOnt(),ontology);
+        ontologyMap.put(ontology.getOnt(),ontology);
+        return ontology;
     }
 }

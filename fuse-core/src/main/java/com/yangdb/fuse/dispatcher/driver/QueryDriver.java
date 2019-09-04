@@ -41,7 +41,7 @@ import java.util.Optional;
  */
 public interface QueryDriver {
 
-    ValidationResult validateQuery(Query query);
+    ValidationResult validateAndRewriteQuery(Query query);
 
     Optional<QueryResourceInfo> create(CreateQueryRequest queryRequest);
 

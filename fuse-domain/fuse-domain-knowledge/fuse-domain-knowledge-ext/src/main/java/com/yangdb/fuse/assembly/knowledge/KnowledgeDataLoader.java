@@ -57,8 +57,12 @@ import static com.yangdb.fuse.executor.ontology.schema.DataLoaderUtils.*;
  * Created by lior.perry on 2/11/2018.
  */
 public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
-    private static final Logger logger = LoggerFactory.getLogger(KnowledgeDataLoader.class);
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+    public static final String ENTITIES = "Entities";
+    public static final String RELATIONS = "Relations";
+    public static final String E_VALUES = "eValues";
+    public static final String R_VALUES = "rValues";
 
     static {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -101,10 +105,10 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     public LoadResponse<String, FuseError> load(LogicalGraphModel root, Directive directive) throws JsonProcessingException {
         final KnowledgeContext context = transformer.transform(root, directive);
         List<String> success = new ArrayList<>();
-        success.add("Entities:"+context.getEntities().size());
-        success.add("Relations:"+context.getRelations().size());
-        success.add("eValues:"+context.geteValues().size());
-        success.add("rValues:"+context.getrValues().size());
+        success.add(ENTITIES + ":" +context.getEntities().size());
+        success.add(RELATIONS + ":" +context.getRelations().size());
+        success.add(E_VALUES + ":" +context.geteValues().size());
+        success.add(R_VALUES + ":" +context.getrValues().size());
 
         KnowledgeWriterContext.Response transformationFailed = new KnowledgeWriterContext.Response("logicalTransformation")
                 .success(success).failure(context.getFailed());

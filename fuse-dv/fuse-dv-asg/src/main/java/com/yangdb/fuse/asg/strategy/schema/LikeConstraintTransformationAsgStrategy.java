@@ -87,7 +87,7 @@ public class LikeConstraintTransformationAsgStrategy implements AsgStrategy, Asg
 
         for (EProp eProp : new ArrayList<>(ePropGroupAsgEBase.geteBase().getProps())) {
 
-            if (eProp.getCon() == null || !eProp.getCon().getOp().equals(ConstraintOp.like)) {
+            if (!eProp.isConstraint() || !eProp.getCon().getOp().equals(ConstraintOp.like)) {
                 continue;
             }
 
