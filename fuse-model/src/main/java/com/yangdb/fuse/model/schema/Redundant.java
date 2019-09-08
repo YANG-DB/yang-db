@@ -20,7 +20,9 @@ package com.yangdb.fuse.model.schema;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -33,7 +35,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
         "redundant_name",
         "name",
-        "type"
+        "type",
+        "side"
 })
 public class Redundant {
 
@@ -43,8 +46,21 @@ public class Redundant {
     private String name;
     @JsonProperty("type")
     private String type;
+    @JsonProperty("side")
+    private List<String> side = new ArrayList<>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+
+    @JsonProperty("side")
+    public List<String> getSide() {
+        return side;
+    }
+
+    @JsonProperty("side")
+    public void setSide(List<String> side) {
+        this.side = side;
+    }
 
     @JsonProperty("redundant_name")
     public String getRedundantName() {

@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.ontology.schema;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,40 +25,44 @@ import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.model.ontology.EPair;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.RelationshipType;
-import com.yangdb.fuse.model.schema.Entity;
-import com.yangdb.fuse.model.schema.IndexProvider;
-import com.yangdb.fuse.model.schema.Relation;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.schema.*;
 import com.yangdb.fuse.unipop.schemaProviders.*;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
+import static com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endB;
 
 public class GraphElementSchemaProviderJsonFactory implements GraphElementSchemaProviderFactory {
 
-    public static final String ENTITY_A_ID = "entityA.id";
     public static final String ID = "id";
+    public static final String ENTITY_A = "entityA";
+    public static final String ENTITY_A_ID = "entityA.id";
+    public static final String ENTITY_B = "entityB";
     public static final String ENTITY_B_ID = "entityB.id";
     public static final String DIRECTION = "direction";
     public static final String OUT = "out";
     public static final String IN = "in";
+
+    public static final String STATIC = "static";
+    public static final String TIME = "time";
+
     private IndexProvider indexProvider;
-    private Ontology ontology;
-    private Ontology.Accessor accessor = new Ontology.Accessor(ontology);
+    private Ontology.Accessor accessor;
 
     @Inject
     public GraphElementSchemaProviderJsonFactory(IndexProvider indexProvider, Ontology ontology) {
         this.indexProvider = indexProvider;
-        this.ontology = ontology;
+        this.accessor = new Ontology.Accessor(ontology);
     }
 
     @Override
@@ -76,15 +80,12 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
     private List<GraphEdgeSchema> generateGraphEdgeSchema(Relation r) {
         switch (r.getPartition()) {
-            case "static":
-                return
-                        r.getProps().getValues().stream()
-                                .flatMap(v -> generateGraphEdgeSchema(r, v).stream())
-                                .collect(Collectors.toList());
-            case "time":
-                //todo
-                break;
+            case STATIC:
+                return generateGraphEdgeSchema(r, r.getType());
+            case TIME:
+                return generateGraphEdgeSchema(r, r.getType());
         }
+
         return Collections.singletonList(new GraphEdgeSchema.Impl(r.getType(),
                 new StaticIndexPartitions(r.getProps().getValues().isEmpty() ? r.getType() : r.getProps().getValues().get(0))));
     }
@@ -96,20 +97,20 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
     private List<GraphVertexSchema> generateGraphVertexSchema(Entity e) {
         switch (e.getPartition()) {
-            case "static":
+            case STATIC:
                 return
                         e.getProps().getValues().stream()
-                                .map(v -> createGraphVertexSchema(e, v))
+                                .map(v -> new GraphVertexSchema.Impl(e.getType(), new StaticIndexPartitions(v)))
                                 .collect(Collectors.toList());
-            case "time":
-                //todo
+            case TIME:
+                e.getProps().getValues().stream()
+                        .map(v -> new GraphVertexSchema.Impl(e.getType(), new TimeBasedIndexPartitions(e.getProps())))
+                        .collect(Collectors.toList());
                 break;
         }
-        return Collections.singletonList(createGraphVertexSchema(e, e.getProps().getValues().isEmpty() ? e.getType() : e.getProps().getValues().get(0)));
-    }
 
-    private GraphVertexSchema.Impl createGraphVertexSchema(Entity e, String v) {
-        return new GraphVertexSchema.Impl(e.getType(), new StaticIndexPartitions(v));
+        String v = e.getProps().getValues().isEmpty() ? e.getType() : e.getProps().getValues().get(0);
+        return Collections.singletonList(new GraphVertexSchema.Impl(e.getType(), new StaticIndexPartitions(v)));
     }
 
     private Optional<List<EPair>> getEdgeSchemaOntologyPairs(String edge) {
@@ -117,60 +118,151 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
         return relation.map(RelationshipType::getePairs);
     }
 
-    private List<GraphEdgeSchema.Impl> generateGraphEdgeSchema(Relation r, String v) {
+    private List<GraphEdgeSchema> generateGraphEdgeSchema(Relation r, String v) {
         Optional<List<EPair>> pairs = getEdgeSchemaOntologyPairs(v);
+
+        if (!pairs.isPresent())
+            throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", "No edges pairs are found for given relation name " + v));
+
         List<EPair> pairList = pairs.get();
+        validateSchema(pairList);
+
         return pairList.stream().map(p -> new GraphEdgeSchema.Impl(
                 v,
                 new GraphElementConstraint.Impl(__.has(T.label, v)),
                 Optional.of(new GraphEdgeSchema.End.Impl(
                         Collections.singletonList(ENTITY_A_ID),
                         Optional.of(p.geteTypeA()),
-                        getGraphRedundantPropertySchemas(ENTITY_A_ID, p.geteTypeA()))),
+                        getGraphRedundantPropertySchemas(ENTITY_A, p.geteTypeA(), r))),
                 Optional.of(new GraphEdgeSchema.End.Impl(
                         Collections.singletonList(ENTITY_B_ID),
                         Optional.of(p.geteTypeB()),
-                        getGraphRedundantPropertySchemas(ENTITY_B_ID, p.geteTypeB()))),
+                        getGraphRedundantPropertySchemas(ENTITY_B, p.geteTypeB(), r))),
                 Direction.OUT,
                 Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(DIRECTION, OUT, IN)),
                 Optional.empty(),
                 Optional.of(new StaticIndexPartitions(Collections.singletonList(v))),
                 Collections.emptyList(),
-                Stream.of(endA).toJavaSet()))
+                r.isSymmetric() ? Stream.of(endA, endB).toJavaSet() : Stream.of(endA).toJavaSet()))
                 .collect(Collectors.toList());
     }
 
-    private List<GraphRedundantPropertySchema> getGraphRedundantPropertySchemas(String idName, String typeName) {
+    private void validateSchema(List<EPair> pairList) {
+        pairList.forEach(pair->{
+                    if(!accessor.entity(pair.geteTypeA()).isPresent() ||
+                        !accessor.entity(pair.geteTypeB()).isPresent())
+                        throw new FuseError.FuseErrorException(new FuseError("Schema generation exception"," Pair containing "+pair.toString() + " was not matched against the current ontology"));
+                });
+    }
+
+    private List<GraphRedundantPropertySchema> getGraphRedundantPropertySchemas(String entitySide,String entityType, Relation rel) {
         List<GraphRedundantPropertySchema> redundantPropertySchemas = new ArrayList<>();
-        redundantPropertySchemas.add(new GraphRedundantPropertySchema.Impl(ID, ENTITY_B_ID, "string"));
-        //todo add all RedundantProperty according to schema
+
+        if(!accessor.entity(entityType).get().getProperties().contains(ID))
+            throw new FuseError.FuseErrorException(new FuseError("Schema generation exception"," Entity "+ entityType+"not containing "+ID + " property "));
+
+        validateRedundant(entityType,entitySide,rel.getRedundant());
+        redundantPropertySchemas.add(new GraphRedundantPropertySchema.Impl(ID, String.format("%s.%s", entitySide, ID), "string"));
+        //add all RedundantProperty according to schema
+        validateRedundant(entityType,entitySide,rel.getRedundant());
+        rel.getRedundant()
+                .stream()
+                .filter(r -> r.getSide().contains(entitySide))
+                .forEach(r -> {
+                    redundantPropertySchemas.add(new GraphRedundantPropertySchema.Impl(r.getName(), String.format("%s.%s", entitySide, r.getName()), r.getType()));
+                });
         return redundantPropertySchemas;
     }
 
+    private void validateRedundant(String entityType, String entitySide, List<Redundant> redundant) {
+        redundant.stream()
+                .filter(r -> r.getSide().contains(entitySide))
+                .forEach(r-> {
+                        if(!accessor.entity(entityType).get().getProperties().contains(r.getName()))
+                            throw new FuseError.FuseErrorException(new FuseError("Schema generation exception"," Entity "+ entityType + " not containing "+r.getName() + " property (as redundant ) "  ));
+                });
+    }
+
     /**
-     *                         new GraphEdgeSchema.Impl(
-     *                                 "fire",
-     *                                 new GraphElementConstraint.Impl(__.has(T.label, "fire")),
-     *                                 Optional.of(new GraphEdgeSchema.End.Impl(
-     *                                         Collections.singletonList("entityA.id"),
-     *                                         Optional.of("Dragon"),
-     *                                         Arrays.asList(
-     *                                                 new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-     *                                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
-     *                                         ))),
-     *                                 Optional.of(new GraphEdgeSchema.End.Impl(
-     *                                         Collections.singletonList("entityB.id"),
-     *                                         Optional.of("Dragon"),
-     *                                         Arrays.asList(
-     *                                                 new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-     *                                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
-     *                                         ))),
-     *                                 Direction.OUT,
-     *                                 Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
-     *                                 Optional.empty(),
-     *                                 Optional.of(new StaticIndexPartitions(Collections.singletonList(FIRE.getName().toLowerCase()))),
-     *                                 Collections.emptyList(),
-     *                                 Stream.of(endA).toJavaSet())
+     * new GraphEdgeSchema.Impl(
+     * "fire",
+     * new GraphElementConstraint.Impl(__.has(T.label, "fire")),
+     * Optional.of(new GraphEdgeSchema.End.Impl(
+     * Collections.singletonList("entityA.id"),
+     * Optional.of("Dragon"),
+     * Arrays.asList(
+     * new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+     * new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+     * ))),
+     * Optional.of(new GraphEdgeSchema.End.Impl(
+     * Collections.singletonList("entityB.id"),
+     * Optional.of("Dragon"),
+     * Arrays.asList(
+     * new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+     * new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+     * ))),
+     * Direction.OUT,
+     * Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+     * Optional.empty(),
+     * Optional.of(new StaticIndexPartitions(Collections.singletonList(FIRE.getName().toLowerCase()))),
+     * Collections.emptyList(),
+     * Stream.of(endA).toJavaSet())
      */
+
+    public static class TimeBasedIndexPartitions implements TimeSeriesIndexPartitions {
+        private Props props;
+        private SimpleDateFormat dateFormat;
+
+        TimeBasedIndexPartitions(Props props) {
+            this.props = props;
+            this.dateFormat = new SimpleDateFormat(getDateFormat());
+        }
+
+
+        @Override
+        public String getDateFormat() {
+            return props.getDateFormat();
+        }
+
+        @Override
+        public String getIndexPrefix() {
+            return props.getPrefix();
+        }
+
+        @Override
+        public String getIndexFormat() {
+            return props.getIndexFormat();
+        }
+
+        @Override
+        public String getTimeField() {
+            return props.getPartitionField();
+        }
+
+        @Override
+        public String getIndexName(Date date) {
+            String format = String.format(getIndexFormat(), dateFormat.format(date));
+            List<String> indices = Stream.ofAll(getPartitions())
+                    .flatMap(Partition::getIndices)
+                    .filter(index -> index.equals(format))
+                    .toJavaList();
+
+            return indices.isEmpty() ? null : indices.get(0);
+        }
+
+        @Override
+        public Optional<String> getPartitionField() {
+            return Optional.of(getTimeField());
+        }
+
+        @Override
+        public Iterable<Partition> getPartitions() {
+            return Collections.singletonList(() -> Stream.ofAll(props.getValues())
+                    .map(p -> String.format(getIndexFormat(), p))
+                    .distinct().sorted()
+                    .toJavaList());
+        }
+    }
+
 
 }

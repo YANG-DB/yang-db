@@ -20,9 +20,8 @@ package com.yangdb.fuse.model.schema;
  * #L%
  */
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
         "type",
         "partition",
+        "symmetric",
         "props",
         "redundant"
 })
@@ -45,12 +45,25 @@ public class Relation {
     private String partition;
     @JsonProperty("mapping")
     private String mapping;
+    @JsonProperty("symmetric")
+    private boolean symmetric = false;
     @JsonProperty("props")
     private Props props;
     @JsonProperty("redundant")
-    private List<Redundant> redundant = null;
+    private List<Redundant> redundant = Collections.EMPTY_LIST;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+
+    @JsonProperty("symmetric")
+    public boolean isSymmetric() {
+        return symmetric;
+    }
+
+    @JsonProperty("symmetric")
+    public void setSymmetric(boolean symmetric) {
+        this.symmetric = symmetric;
+    }
 
     @JsonProperty("type")
     public String getType() {

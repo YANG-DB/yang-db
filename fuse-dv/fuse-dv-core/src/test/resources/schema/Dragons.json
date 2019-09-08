@@ -71,7 +71,7 @@
   "relationshipTypes": [
     {
       "rType": "own",
-      "name": "own",
+      "name": "Own",
       "directional": true,
       "ePairs": [
         {
@@ -92,7 +92,7 @@
     },
     {
       "rType": "know",
-      "name": "know",
+      "name": "Know",
       "directional": true,
       "ePairs": [
         {
@@ -108,7 +108,7 @@
     },
     {
       "rType": "memberOf",
-      "name": "memberOf",
+      "name": "MemberOf",
       "directional": true,
       "ePairs": [
         {
@@ -125,7 +125,7 @@
     },
     {
       "rType": "fire",
-      "name": "fire",
+      "name": "Fire",
       "directional": true,
       "ePairs": [
         {
@@ -142,7 +142,7 @@
     },
     {
       "rType": "freeze",
-      "name": "freeze",
+      "name": "Freeze",
       "directional": true,
       "ePairs": [
         {
@@ -159,7 +159,7 @@
     },
     {
       "rType": "originatedIn",
-      "name": "originatedIn",
+      "name": "OriginatedIn",
       "directional": true,
       "ePairs": [
         {
@@ -175,7 +175,7 @@
     },
     {
       "rType": "subjectOf",
-      "name": "subjectOf",
+      "name": "SubjectOf",
       "directional": true,
       "ePairs": [
         {
@@ -191,7 +191,7 @@
     },
     {
       "rType": "registeredIn",
-      "name": "registeredIn",
+      "name": "RegisteredIn",
       "directional": true,
       "ePairs": [
         {
