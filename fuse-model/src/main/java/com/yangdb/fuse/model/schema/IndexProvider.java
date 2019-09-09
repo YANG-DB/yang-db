@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -73,5 +74,13 @@ public class IndexProvider {
         this.additionalProperties.put(name, value);
     }
 
+    @JsonIgnore
+    public Optional<Entity> getEntity(String label) {
+        return getEntities().stream().filter(e->e.getType().equals(label)).findAny();
+    }
 
+    @JsonIgnore
+    public Optional<Relation> getRelation(String label) {
+        return getRelations().stream().filter(relation->relation.getType().equals(label)).findAny();
+    }
 }

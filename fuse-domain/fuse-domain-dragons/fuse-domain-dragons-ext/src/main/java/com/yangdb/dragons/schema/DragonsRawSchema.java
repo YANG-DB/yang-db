@@ -24,16 +24,13 @@ import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
-import com.yangdb.fuse.executor.ontology.GraphLayoutProviderFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphLayoutProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -41,15 +38,12 @@ import java.util.stream.StreamSupport;
 public class DragonsRawSchema implements RawSchema {
 
     private Ontology ontology;
-    private GraphLayoutProvider layoutProvider;
     private GraphElementSchemaProvider schemaProvider;
-//    private GraphElementSchemaProvider schemaProvider;
 
     @Inject
-    public DragonsRawSchema(Config config, OntologyProvider ontologyProvider, GraphElementSchemaProviderFactory schemaProvider, GraphLayoutProviderFactory layoutProviderFactory) {
+    public DragonsRawSchema(Config config, OntologyProvider ontologyProvider, GraphElementSchemaProviderFactory schemaProvider) {
         this.ontology = ontologyProvider.get(config.getString("assembly")).get();
         this.schemaProvider = schemaProvider.get(ontology);
-        this.layoutProvider = layoutProviderFactory.get(ontology);
     }
 
     @Override
@@ -64,7 +58,7 @@ public class DragonsRawSchema implements RawSchema {
 
     @Override
     public String getPrefix(String type) {
-        return "";
+        return type.toLowerCase();
     }
 
     @Override

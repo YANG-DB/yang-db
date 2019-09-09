@@ -158,8 +158,8 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     private List<GraphRedundantPropertySchema> getGraphRedundantPropertySchemas(String entitySide,String entityType, Relation rel) {
         List<GraphRedundantPropertySchema> redundantPropertySchemas = new ArrayList<>();
 
-        if(!accessor.entity(entityType).get().getProperties().contains(ID))
-            throw new FuseError.FuseErrorException(new FuseError("Schema generation exception"," Entity "+ entityType+"not containing "+ID + " property "));
+        if(!accessor.entity(entityType).get().getMetadata().contains(ID))
+            throw new FuseError.FuseErrorException(new FuseError("Schema generation exception"," Entity "+ entityType+" not containing "+ID + " metadata property "));
 
         validateRedundant(entityType,entitySide,rel.getRedundant());
         redundantPropertySchemas.add(new GraphRedundantPropertySchema.Impl(ID, String.format("%s.%s", entitySide, ID), "string"));

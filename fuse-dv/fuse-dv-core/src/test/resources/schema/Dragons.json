@@ -4,9 +4,10 @@
     {
       "eType": "Person",
       "name": "Person",
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "firstName",
         "lastName",
         "gender",
@@ -19,9 +20,10 @@
     {
       "eType": "Horse",
       "name": "Horse",
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "name",
         "weight",
         "maxSpeed",
@@ -31,9 +33,10 @@
     {
       "eType": "Dragon",
       "name": "Dragon",
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "name",
         "birthDate",
         "power",
@@ -44,9 +47,10 @@
     {
       "eType": "Kingdom",
       "name": "Kingdom",
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "name",
         "king",
         "queen",
@@ -57,9 +61,10 @@
     {
       "eType": "Guild",
       "name": "Guild",
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "name",
         "description",
         "iconId",
@@ -83,9 +88,10 @@
           "eTypeB": "Horse"
         }
       ],
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "startDate",
         "endDate"
       ]
@@ -100,9 +106,10 @@
           "eTypeB": "Person"
         }
       ],
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "startDate"
       ]
     },
@@ -116,9 +123,10 @@
           "eTypeB": "Guild"
         }
       ],
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "startDate",
         "endDate"
       ]
@@ -133,9 +141,10 @@
           "eTypeB": "Dragon"
         }
       ],
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "date",
         "temperature"
       ]
@@ -150,9 +159,10 @@
           "eTypeB": "Dragon"
         }
       ],
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "startDate",
         "endDate"
       ]
@@ -167,9 +177,10 @@
           "eTypeB": "Kingdom"
         }
       ],
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "startDate"
       ]
     },
@@ -183,9 +194,10 @@
           "eTypeB": "Kingdom"
         }
       ],
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "startDate"
       ]
     },
@@ -203,9 +215,10 @@
           "eTypeB": "Kingdom"
         }
       ],
-      "metadata": [],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "startDate"
       ]
     }
