@@ -13,10 +13,11 @@ import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
+import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
+import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
+import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesResponse;
 import org.elasticsearch.client.Client;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 
 import java.io.InputStream;
@@ -26,17 +27,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-
+@Ignore
 public class IndexProviderMappingFactoryTests extends BaseModuleInjectionTest {
     public static final String ES_TEST = "es-test";
-    private ElasticEmbeddedNode elasticEmbeddedNode;
-    private Client client;
-    private RawSchema schema;
-    private ObjectMapper mapper = new ObjectMapper();
-    private IndexProvider provider;
-    private Ontology ontology;
+    private static ElasticEmbeddedNode elasticEmbeddedNode;
+    private static Client client;
+    private static RawSchema schema;
+    private static ObjectMapper mapper = new ObjectMapper();
+    private static IndexProvider provider;
+    private static Ontology ontology;
 
-    private void init(boolean embedded) throws Exception {
+    private static void init(boolean embedded) throws Exception {
         // Start embedded ES
         if(embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance(ES_TEST);
@@ -48,8 +49,8 @@ public class IndexProviderMappingFactoryTests extends BaseModuleInjectionTest {
 
     }
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         init(true);
         InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
@@ -97,23 +98,31 @@ public class IndexProviderMappingFactoryTests extends BaseModuleInjectionTest {
         };
     }
 
+    @AfterClass
+    public static void tearDown() throws Exception {
+        elasticEmbeddedNode.close();
+    }
+
     @Test
     public void testGenerate() {
         IndexProviderMappingFactory mappingFactory = new IndexProviderMappingFactory(client, schema, ontology, provider);
         List<Tuple2<String, Boolean>> list = mappingFactory.generateMappings();
         Assert.assertEquals(list.size(),11);
-        Assert.assertEquals(list.stream().map(i->i._1).collect(Collectors.toList()),Arrays.asList("people", "horses", "dragons",
-                "kingdoms", "guilds", "own", "know", "memberOf", "originatedIn", "subjectOf", "registeredIn"));
-    }
+        List<String> indices = Arrays.asList("people", "horses", "dragons",
+                "kingdoms", "guilds", "own", "know", "memberOf", "originatedIn", "subjectOf", "registeredIn");
 
-    @Test
-    public void testMappingGenerateAndFetched() {
-        IndexProviderMappingFactory mappingFactory = new IndexProviderMappingFactory(client, schema, ontology, provider);
-        List<Tuple2<String, Boolean>> list = mappingFactory.generateMappings();
-        Assert.assertEquals(list.size(),11);
-        Assert.assertEquals(list.stream().map(i->i._1).collect(Collectors.toList()),Arrays.asList("people", "horses", "dragons",
-                "kingdoms", "guilds", "own", "know", "memberOf", "originatedIn", "subjectOf", "registeredIn"));
-    }
+        Assert.assertEquals(list.stream().map(i->i._1).collect(Collectors.toList()), indices);
 
+        indices.forEach(index ->{
+            switch (index){
+                case "people":
+                    GetIndexTemplatesResponse response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index)).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("people"),"{\"people\":{\"properties\":{\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"lastName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"gender\":{\"type\":\"keyword\"},\"deathDate\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"birthDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"height\":{\"type\":\"integer\"}}}}");
+            }
+        });
+    }
 
 }
