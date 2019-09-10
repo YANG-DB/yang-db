@@ -1,16 +1,82 @@
-version: '3'
+version: '3.3'
+
 services:
-  yang.db:
-    build:
-      image: tom4tomato/yang.db
-      context: .
-      dockerfile: ./Dockerfile
-      args:
-        elasticsearch.hosts: 1.1.1.1
-        elasticsearch.cluster_name: nnono
-    container_name: YANG-DB
-    volumes:
-      - ../:/app
+  fuse:
+    image: tom4tomato/yang.db:Sep-2019-RC1
     ports:
-      - "8888:8888"
-    restart: always
+      - 8888:8888
+    environment:
+      - "elasticsearchHosts=10.6.91.1"
+      - "elasticsearchClusterName=Knowledge"
+    networks:
+      - network
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    environment:
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - "discovery.zen.minimum_master_nodes=1"
+      - "discovery.zen.ping.unicast.hosts=es-master"
+      - "node.master=false"
+      - "node.data=false"
+      - "node.ingest=false"
+      - "network.publish_host=10.6.91.1"
+      - "cluster.name=Knowledge"
+    networks:
+      - network
+    ports:
+      - target: 9200
+        published: 9200
+        protocol: tcp
+        mode: host
+      - target: 9300
+        published: 9300
+        protocol: tcp
+        mode: host
+    deploy:
+      endpoint_mode: dnsrr
+      mode: 'global'
+
+  es-master:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    environment:
+      - "ES_JAVA_OPTS=-Xms7g -Xmx7g"
+      - "discovery.zen.minimum_master_nodes=1"
+      - "discovery.zen.ping.unicast.hosts=es-master"
+      - "node.master=true"
+      - "node.data=false"
+      - "node.ingest=false"
+      - "cluster.name=Knowledge"
+    networks:
+      - network
+    deploy:
+      endpoint_mode: dnsrr
+      mode: 'replicated'
+      replicas: 3
+  es-data:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    environment:
+      - "ES_JAVA_OPTS=-Xms13g -Xmx13g"
+      - "discovery.zen.minimum_master_nodes=1"
+      - "discovery.zen.ping.unicast.hosts=es-master"
+      - "node.master=false"
+      - "node.data=true"
+      - "node.ingest=false"
+      - "cluster.name=fusepoc"
+    volumes:
+      - es-fuse-data:/usr/share/elasticsearch/data
+    networks:
+      - network
+    deploy:
+      endpoint_mode: dnsrr
+      mode: 'global'
+
+volumes:
+  es-fuse-data:
+    driver: local
+  es-fuse-master-data2:
+    driver: local
+
+networks:
+  network:
+    driver: overlay
+    attachable: true
