@@ -20,33 +20,34 @@ package com.yangdb.fuse.executor.elasticsearch;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.IndexProvider;
-import com.yangdb.fuse.model.schema.Relation;
-import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.Tuple2;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 
-import javax.management.relation.RelationType;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.Collections.singletonMap;
 
-public class IndexProviderMappingFactory {
+/**
+ * generate elastic mapping template according to ontology and index provider schema
+ * generate the indices according to the index provider partitions
+ */
+public class ElasticIndexProviderMappingFactory {
 
-    private ObjectMapper mapper = new ObjectMapper();
+    public static final String PROPERTIES = "properties";
 
     private Client client;
     private RawSchema schema;
@@ -54,21 +55,45 @@ public class IndexProviderMappingFactory {
     private Ontology.Accessor ontology;
 
     @Inject
-    public IndexProviderMappingFactory(Client client, RawSchema schema, Ontology ontology, IndexProvider indexProvider) {
+    public ElasticIndexProviderMappingFactory(Client client, RawSchema schema, Ontology ontology, IndexProvider indexProvider) {
         this.client = client;
         this.schema = schema;
         this.indexProvider = indexProvider;
         this.ontology = new Ontology.Accessor(ontology);
     }
 
+    /**
+     * create indices according to ontology
+     * @return
+     */
+    public List<String> createIndices() {
+        List<CreateIndexResponse> responses = new ArrayList<>();
+        StreamSupport.stream(ontology.relations().spliterator(), false).forEach(r->{
+            CreateIndexRequest request = new CreateIndexRequest(r.getName().toLowerCase());
+            responses.add(client.admin().indices().create(request).actionGet());
+        });
+
+        StreamSupport.stream(ontology.entities().spliterator(), false).forEach(e->{
+            CreateIndexRequest request = new CreateIndexRequest(e.getName().toLowerCase());
+            responses.add(client.admin().indices().create(request).actionGet());
+        });
+
+        return responses.stream().map(CreateIndexResponse::index).collect(Collectors.toList());
+    }
+
     public List<Tuple2<String, Boolean>> generateMappings() {
         List<Tuple2<String,AcknowledgedResponse>> responses = new ArrayList<>();
-        mapEntities(responses);
-        mapRelations(responses);
+        responses.addAll(mapEntities());
+        responses.addAll(mapRelations());
         return responses.stream().map(r->new Tuple2<>(r._1,r._2.isAcknowledged())).collect(Collectors.toList());
     }
 
-    private void mapRelations(List<Tuple2<String, AcknowledgedResponse>> responses) {
+    /**
+     * add the mapping part of the template according to the ontology relations
+     * @return
+     */
+    private List<Tuple2<String, AcknowledgedResponse>> mapRelations() {
+        List<Tuple2<String,AcknowledgedResponse>> responses = new ArrayList<>();
         StreamSupport.stream(ontology.relations().spliterator(), false).forEach(r -> {
             String mapping = indexProvider.getRelation(r.getName()).orElseThrow(
                     () -> new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + r + " found in ontology")))
@@ -91,9 +116,15 @@ public class IndexProviderMappingFactory {
                     break;
             }
         });
+        return responses;
     }
 
-    private void mapEntities(List<Tuple2<String, AcknowledgedResponse>> responses) {
+    /**
+     * add the mapping part of the template according to the ontology entities
+     * @return
+     */
+    private List<Tuple2<String, AcknowledgedResponse>> mapEntities() {
+        List<Tuple2<String, AcknowledgedResponse>> responses = new ArrayList<>();
         StreamSupport.stream(ontology.entities().spliterator(), false).forEach(e -> {
             String mapping = indexProvider.getEntity(e.getName()).orElseThrow(
                     () -> new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + e + " found in ontology")))
@@ -116,8 +147,15 @@ public class IndexProviderMappingFactory {
                     break;
             }
         });
+        return responses;
     }
 
+    /**
+     * generate specific entity type mapping
+     * @param entityType
+     * @param label
+     * @return
+     */
     public Map<String, Object> generateMapping(EntityType entityType, String label) {
         Optional<EntityType> entity = ontology.entity(entityType.getName());
         if (!entity.isPresent())
@@ -136,6 +174,12 @@ public class IndexProviderMappingFactory {
         return jsonMap;
     }
 
+    /**
+     * generate specific relation type mapping
+     * @param relationshipType
+     * @param label
+     * @return
+     */
     public Map<String, Object> generateMapping(RelationshipType relationshipType, String label) {
         Optional<RelationshipType> relation = ontology.relation(relationshipType.getName());
         if (!relation.isPresent())
@@ -145,7 +189,7 @@ public class IndexProviderMappingFactory {
 
         Map<String, Object> properties = new HashMap<>();
         Map<String, Object> mapping = new HashMap<>();
-        mapping.put("properties", properties);
+        mapping.put(PROPERTIES, properties);
         //populate fields & metadata
         relation.get().getMetadata().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
         relation.get().getProperties().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
@@ -154,6 +198,11 @@ public class IndexProviderMappingFactory {
         return jsonMap;
     }
 
+    /**
+     * parse ontology primitive type to elastic primitive type
+     * @param type
+     * @return
+     */
     private Map<String, Object> parseType(String type) {
         Map<String, Object> map = new HashMap<>();
         switch (type) {
@@ -187,6 +236,10 @@ public class IndexProviderMappingFactory {
         return map;
     }
 
+    /**
+     * add the index entity settings part of the template according to the ontology relations
+     * @return
+     */
     public Settings generateSettings(EntityType entityType,String label) {
 
         if(!ontology.entity(entityType.getName()).get().getMetadata().contains("id"))
@@ -195,6 +248,10 @@ public class IndexProviderMappingFactory {
         return builder();
     }
 
+    /**
+     * add the index relation settings part of the template according to the ontology relations
+     * @return
+     */
     public Settings generateSettings(RelationshipType relationType, String label) {
 
         if(!ontology.relation(relationType.getName()).get().getMetadata().contains("id"))

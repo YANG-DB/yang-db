@@ -1,0 +1,235 @@
+package com.yangdb.fuse.executor.elasticsearch;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.executor.BaseModuleInjectionTest;
+import com.yangdb.fuse.executor.ontology.schema.GraphElementSchemaProviderJsonFactory;
+import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.schema.IndexProvider;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
+import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import javaslang.Tuple2;
+import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
+import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
+import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
+import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
+import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesResponse;
+import org.elasticsearch.client.Client;
+import org.junit.*;
+
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+@Ignore
+public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjectionTest {
+    public static final String ES_TEST = "es-test";
+    private static ElasticEmbeddedNode elasticEmbeddedNode;
+    private static Client client;
+    private static RawSchema schema;
+    private static ObjectMapper mapper = new ObjectMapper();
+    private static IndexProvider provider;
+    private static Ontology ontology;
+
+    private static void init(boolean embedded) throws Exception {
+        // Start embedded ES
+        if(embedded) {
+            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance(ES_TEST);
+            client = elasticEmbeddedNode.getClient();
+        } else {
+            //use existing running ES
+            client = elasticEmbeddedNode.getClient(ES_TEST, 9300);
+        }
+
+    }
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        init(true);
+        InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
+        InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
+
+        provider = mapper.readValue(providerStream, IndexProvider.class);
+        ontology = mapper.readValue(ontologyStream, Ontology.class);
+
+        GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProviderJsonFactory(provider, ontology).get(ontology);
+
+        schema = new RawSchema() {
+            @Override
+            public IndexPartitions getPartition(String type) {
+                return schemaProvider.getVertexSchemas(type).iterator().next().getIndexPartitions().get();
+            }
+
+            @Override
+            public String getIdFormat(String type) {
+                return "";
+            }
+
+            @Override
+            public String getPrefix(String type) {
+                return "";
+            }
+
+            @Override
+            public List<IndexPartitions.Partition> getPartitions(String type) {
+                return StreamSupport.stream(getPartition(type).getPartitions().spliterator(), false)
+                        .collect(Collectors.toList());
+
+            }
+
+            @Override
+            public Iterable<String> indices() {
+                Stream<String> edges = StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
+                        .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
+                        .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
+                Stream<String> vertices = StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
+                        .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
+                        .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
+
+                return Stream.concat(edges,vertices)
+                        .collect(Collectors.toSet());
+            }
+        };
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        elasticEmbeddedNode.close();
+    }
+
+    @Test
+    public void testGenerateMapping() {
+        ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ontology, provider);
+        List<Tuple2<String, Boolean>> list = mappingFactory.generateMappings();
+        Assert.assertEquals(list.size(),13);
+        List<String> indices = Arrays.asList("people", "horses", "dragons","fire","freeze",
+                "kingdoms", "guilds", "own", "know", "memberOf", "originatedIn", "subjectOf", "registeredIn");
+
+        Assert.assertEquals(list.stream().map(i->i._1).collect(Collectors.toList()), indices);
+
+        indices.forEach(index ->{
+            switch (index){
+                case "people":
+                    GetIndexTemplatesResponse response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index)).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("people").toString(),"{\"people\":{\"properties\":{\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"lastName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"gender\":{\"type\":\"keyword\"},\"deathDate\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"birthDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"height\":{\"type\":\"integer\"}}}}");
+                    break;
+                case "horses":
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index)).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("horses").toString(),"{\"horses\":{\"properties\":{\"distance\":{\"type\":\"integer\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"weight\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"maxSpeed\":{\"type\":\"integer\"}}}}");
+                    break;
+                case "dragons":
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index)).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("dragons").toString(),"{\"dragons\":{\"properties\":{\"gender\":{\"type\":\"keyword\"},\"color\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"power\":{\"type\":\"integer\"},\"birthDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    break;
+                case "kingdoms":
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index)).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("kingdoms").toString(),"{\"kingdoms\":{\"properties\":{\"independenceDay\":{\"type\":\"keyword\"},\"king\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"queen\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"funds\":{\"type\":\"float\"},\"id\":{\"type\":\"keyword\"}}}}");
+                    break;
+                case "guilds":
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index)).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("guilds").toString(),"{\"guilds\":{\"properties\":{\"iconId\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"description\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"establishDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"url\":{\"type\":\"keyword\"}}}}");
+                    break;
+                case "own":
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index)).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("own").toString(),"{\"own\":{\"properties\":{\"endDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    break;
+                case "know":
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index)).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("know").toString(),"{\"know\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    break;
+                case "memberOf":
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index.toLowerCase())).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("memberOf").toString(),"{\"memberOf\":{\"properties\":{\"endDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    break;
+                case "originatedIn":
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index.toLowerCase())).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("originatedIn").toString(),"{\"originatedIn\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    break;
+                case "subjectOf":
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index.toLowerCase())).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("subjectOf").toString(),"{\"subjectOf\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    break;
+                case "registeredIn":
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names(index.toLowerCase())).actionGet();
+                    Assert.assertEquals(response.getIndexTemplates().size(),1);
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("registeredIn").toString(),"{\"registeredIn\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    break;
+            }
+        });
+    }
+
+    @Test
+    public void createIndicesTest() {
+        ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ontology, provider);
+        List<Tuple2<String, Boolean>> list = mappingFactory.generateMappings();
+        Assert.assertEquals(list.size(),11);
+        List<String> labels = Arrays.asList("people", "horses", "dragons","fire","freeze",
+                "kingdoms", "guilds", "own", "know", "memberOf", "originatedIn", "subjectOf", "registeredIn");
+
+        Assert.assertEquals(list.stream().map(i->i._1).collect(Collectors.toList()), labels);
+
+        List<String> indices = mappingFactory.createIndices();
+        List<String> names = Arrays.asList("own", "know", "memberof", "fire", "freeze", "originatedin","subjectof",
+                "registeredin", "person", "horse", "dragon", "kingdom", "guild");
+
+        Assert.assertEquals(indices, names);
+        indices.forEach(index -> {
+            GetMappingsRequest request = new GetMappingsRequest();
+            request.indices(index);
+            GetMappingsResponse response = client.admin().indices().getMappings(request).actionGet();
+            switch (index) {
+                case "own":
+                    Assert.assertEquals(response.toString(),"{\"own\":{\"properties\":{\"endDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    break;
+                case "know":
+                    Assert.assertEquals(response.toString(),"{\"know\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    break;
+                case "memberof":
+                    Assert.assertEquals(response.toString(),"{\"memberOf\":{\"properties\":{\"endDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    break;
+                case "fire":
+                    Assert.assertEquals(response.toString(),"{\"memberOf\":{\"properties\":{\"endDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    break;
+            }
+        });
+
+
+    }
+}
