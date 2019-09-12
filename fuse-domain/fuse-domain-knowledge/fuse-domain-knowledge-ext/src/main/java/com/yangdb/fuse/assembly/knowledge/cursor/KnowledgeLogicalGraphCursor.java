@@ -113,7 +113,11 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
     }
 
     private String fieldId(Entity p) {
-        return String.format("%s.%s", p.getProperty(LOGICAL_ID).get().getValue().toString(), p.getProperty(CONTEXT).get().getValue().toString());
+        if(p.getProperty(CONTEXT).isPresent())
+            return String.format("%s.%s", p.getProperty(LOGICAL_ID).get().getValue().toString(), p.getProperty(CONTEXT).get().getValue().toString());
+        else
+            return p.getProperty(LOGICAL_ID).get().getValue().toString();
+
     }
 
     private Object value(Entity entity) {

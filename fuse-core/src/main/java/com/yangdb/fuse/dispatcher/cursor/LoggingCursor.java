@@ -22,6 +22,7 @@ package com.yangdb.fuse.dispatcher.cursor;
 
 import com.codahale.metrics.MetricRegistry;
 import com.yangdb.fuse.dispatcher.logging.*;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import org.slf4j.Logger;
 
@@ -59,7 +60,7 @@ public class LoggingCursor implements Cursor {
             thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed getNextResults", sequence, LogType.of(failure), getNextResults, ElapsedFrom.now())
                     .with(ex).log();
-            throw ex;
+            throw new FuseError.FuseErrorException(new FuseError("Cursor Error",ex));
         } finally {
             metricRegistry.counter(CURSOR_COUNT).dec(1);
             if (!thrownException) {
