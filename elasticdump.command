@@ -47,4 +47,5 @@ elasticdump \
 # https://kb.objectrocket.com/elasticsearch/how-to-bulk-import-into-elasticsearch-using-curl
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
 
-curl -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/e0/pge/_bulk?pretty' --data-binary @accounts.json
+curl -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/e0/pge/_bulk?pretty' --data-binary @e0.json
+curl -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/rel0/pge/_bulk?pretty' --data-binary @rel0.json
