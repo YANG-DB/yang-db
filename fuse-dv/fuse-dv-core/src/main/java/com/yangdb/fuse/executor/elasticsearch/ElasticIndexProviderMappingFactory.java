@@ -26,7 +26,9 @@ import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.schema.Entity;
 import com.yangdb.fuse.model.schema.IndexProvider;
+import com.yangdb.fuse.model.schema.Relation;
 import javaslang.Tuple2;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -99,12 +101,13 @@ public class ElasticIndexProviderMappingFactory {
                     () -> new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + r + " found in ontology")))
                     .getPartition();
 
+            Relation relation = indexProvider.getRelation(r.getName()).get();
             switch (mapping) {
                 case "static":
                     //static index
-                    indexProvider.getRelation(r.getName()).get().getProps().getValues().forEach(v -> {
+                    relation.getProps().getValues().forEach(v -> {
                         PutIndexTemplateRequest request = new PutIndexTemplateRequest(v.toLowerCase());
-                        request.patterns(Arrays.asList(r.getName(), String.format("%s%s", v, "*")))
+                        request.patterns(Arrays.asList(r.getName().toLowerCase(),r.getName(), String.format("%s%s", v, "*")))
                                 .settings(generateSettings(r,v))
                                 .mapping(v,generateMapping(r,v));
                         //add response to list of responses
@@ -112,7 +115,12 @@ public class ElasticIndexProviderMappingFactory {
                     });
                     break;
                 case "time":
-                    //todo implement time partition
+                    PutIndexTemplateRequest request = new PutIndexTemplateRequest(relation.getType().toLowerCase());
+                    request.patterns(Arrays.asList(r.getName().toLowerCase(),r.getName(),String.format(relation.getProps().getIndexFormat(),"*")))
+                            .settings(generateSettings(r,relation.getType()))
+                            .mapping(r.getrType().toLowerCase(),generateMapping(r,relation.getType().toLowerCase()));
+                    //add response to list of responses
+                    responses.add(new Tuple2<>(r.getrType(),client.admin().indices().putTemplate(request).actionGet()));
                     break;
             }
         });
@@ -130,12 +138,13 @@ public class ElasticIndexProviderMappingFactory {
                     () -> new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + e + " found in ontology")))
                     .getPartition();
 
+            Entity entity = indexProvider.getEntity(e.getName()).get();
             switch (mapping) {
                 case "static":
                     //static index
-                    indexProvider.getEntity(e.getName()).get().getProps().getValues().forEach(v -> {
+                    entity.getProps().getValues().forEach(v -> {
                         PutIndexTemplateRequest request = new PutIndexTemplateRequest(v.toLowerCase());
-                        request.patterns(Arrays.asList(e.getName(), String.format("%s%s", v, "*")))
+                        request.patterns(Arrays.asList(e.getName().toLowerCase(),e.getName(), String.format("%s%s", v, "*")))
                                 .settings(generateSettings(e,v))
                                 .mapping(v,generateMapping(e,v));
                         //add response to list of responses
@@ -143,7 +152,12 @@ public class ElasticIndexProviderMappingFactory {
                     });
                     break;
                 case "time":
-                    //todo implement time partition
+                    PutIndexTemplateRequest request = new PutIndexTemplateRequest(e.getName().toLowerCase());
+                    request.patterns(Arrays.asList(e.getName().toLowerCase(),e.getName(),String.format(entity.getProps().getIndexFormat(),"*")))
+                            .settings(generateSettings(e,entity.getType()))
+                            .mapping(entity.getType().toLowerCase(),generateMapping(e,entity.getType().toLowerCase()));
+                    //add response to list of responses
+                    responses.add(new Tuple2<>(entity.getType(),client.admin().indices().putTemplate(request).actionGet()));
                     break;
             }
         });

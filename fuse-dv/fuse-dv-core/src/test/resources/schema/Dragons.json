@@ -364,45 +364,5 @@
       "name": "type",
       "type": "string"
     }
-  ],
-  "enumeratedTypes": [
-    {
-      "eType": "TYPE_Gender",
-      "values": [
-        {
-          "val": 0,
-          "name": "MALE"
-        },
-        {
-          "val": 1,
-          "name": "FEMALE"
-        },
-        {
-          "val": 2,
-          "name": "OTHER"
-        }
-      ]
-    },
-    {
-      "eType": "TYPE_Color",
-      "values": [
-        {
-          "val": 0,
-          "name": "RED"
-        },
-        {
-          "val": 1,
-          "name": "BLUE"
-        },
-        {
-          "val": 2,
-          "name": "GREEN"
-        },
-        {
-          "val": 3,
-          "name": "YELLOW"
-        }
-      ]
-    }
   ]
 }
