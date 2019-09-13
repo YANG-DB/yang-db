@@ -21,6 +21,7 @@ package com.yangdb.fuse.model.schema;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -124,6 +125,11 @@ public class Relation {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
+    }
+
+    @JsonIgnore
+    public List<Redundant> getRedundant(String side) {
+        return getRedundant().stream().filter(r->r.getSide().contains(side)).collect(Collectors.toList());
     }
 
 }

@@ -57,12 +57,12 @@ import static com.yangdb.fuse.executor.ontology.schema.DataLoaderUtils.*;
  * Created by lior.perry on 2/11/2018.
  */
 public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
-    public static final String ENTITIES = "Entities";
     public static final String RELATIONS = "Relations";
+    public static final String ENTITIES = "Entities";
     public static final String E_VALUES = "eValues";
     public static final String R_VALUES = "rValues";
+
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     static {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -86,6 +86,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     }
 
 
+    @Override
     public long init() throws IOException {
         return DataLoaderUtils.init(client,schema);
     }

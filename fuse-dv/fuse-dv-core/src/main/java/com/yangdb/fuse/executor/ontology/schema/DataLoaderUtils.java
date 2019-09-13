@@ -71,7 +71,8 @@ public interface DataLoaderUtils {
         Stream.ofAll(allIndices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-        Stream.ofAll(allIndices).forEach(index -> client.admin().indices().create(new CreateIndexRequest(index)).actionGet());
+        Stream.ofAll(allIndices).forEach(index -> client.admin().indices()
+                .create(new CreateIndexRequest(index)).actionGet());
 
         return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
     }
