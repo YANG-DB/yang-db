@@ -17,7 +17,7 @@
   <!-- Ignore loggers -->
 
   <!-- root -->
-  <root level="debug">
+  <root level="error">
     <appender-ref ref="stdout" />
   </root>
   <!-- root -->
