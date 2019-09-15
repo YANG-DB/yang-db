@@ -21,7 +21,7 @@ RUN rm -rf /var/tmp/*
 # Run cerebro
 CMD ["/cerebro-0.8.4/bin/cerebro"]
 # Run fuse
-CMD ["/opt/engine/start-fuse-service.sh --"]
+CMD ["/opt/engine/start-fuse-service.sh"]
 
 EXPOSE 8888
 EXPOSE 9000
