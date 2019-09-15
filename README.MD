@@ -1,12 +1,10 @@
 From Graph to Elastic - A tail of a Yang-DB...
 =========================================================================================
 
-[![Build Status](https://api.travis-ci.org/apache/opennlp.svg?branch=master)](https://travis-ci.org/apache/opennlp)
+[![Build Status](https://api.travis-ci.org/repos/YANG-DB/yang-db.svg?branch=master)](https://api.travis-ci.org/repos/YANG-DB/yang-db)
 [![Coverage Status](https://coveralls.io/repos/github/apache/opennlp/badge.svg?branch=master)](https://coveralls.io/github/apache/opennlp?branch=master)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.opennlp/opennlp/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/org.apache.opennlp/opennlp)
-[![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](http://opennlp.apache.org/docs/index.html)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
-[![Twitter Follow](https://img.shields.io/twitter/follow/ApacheOpennlp.svg?style=social)](https://twitter.com/ApacheOpenNLP)
+[![Twitter Follow](https://img.shields.io/twitter/follow/db_yang.svg?style=social)](https://twitter.com/db_yang)
 
 ### Use 
 * Add [yang.db](https://github.com/YANG-DB/yang-db) as maven dependency https://jitpack.io/#YANG-DB/yang-db

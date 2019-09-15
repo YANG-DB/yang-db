@@ -11,7 +11,7 @@
     <mailingLists>
 
         <mailingList>
-            <name>Apache OpenNLP Developers</name>
+            <name>Apache Yang.DB Developers</name>
             <post>yang.db.dev@gmail.com</post>
         </mailingList>
 
@@ -35,18 +35,15 @@
 
     <developers>
         <developer>
-            <id>fuse</id>
-            <name>The fuse Team</name>
-            <organization>yangdb.com</organization>
+            <id>Yang.DB</id>
+            <name>The Yang.DB Team</name>
+            <organization>www.yangdb.com</organization>
         </developer>
     </developers>
 
     <profiles>
         <profile>
             <id>jacoco</id>
-            <properties>
-                <opennlp.forkCount>1</opennlp.forkCount>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -93,6 +90,7 @@
         <maven-pmd-plugin.version>3.10.0</maven-pmd-plugin.version>
         <jacoco-maven-plugin.version>0.8.2</jacoco-maven-plugin.version>
         <snapshot-replace-maven-plugin.version>1.0</snapshot-replace-maven-plugin.version>
+        <coveralls.maven.plugin>4.3.0</coveralls.maven.plugin>
 
         <!-- fuse -->
         <fuse.version>${project.version}</fuse.version>
@@ -740,6 +738,10 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
             <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
             </plugin>
@@ -804,6 +806,11 @@
                         <argLine>${surefireArgLine} -Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}
                         </argLine>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>${coveralls.maven.plugin}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>

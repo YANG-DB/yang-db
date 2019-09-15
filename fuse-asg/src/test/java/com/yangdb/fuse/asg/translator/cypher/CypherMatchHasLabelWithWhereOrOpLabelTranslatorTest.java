@@ -5,11 +5,14 @@ import com.yangdb.fuse.asg.translator.cypher.strategies.MatchCypherTranslatorStr
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.properties.RelProp;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -31,7 +34,10 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
-        match = new CypherTestUtils().setUp(readJsonToString("src/test/resources/Dragons_Ontology.json")).match;
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("Dragons_Ontology.json");
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(stream, writer);
+        match = new CypherTestUtils().setUp(writer.toString()).match;
     }
     //endregion
 
@@ -568,17 +574,6 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
     }
 
 
-    //region Private Methods
-    private static String readJsonToString(String jsonRelativePath) {
-        String contents = "";
-        try {
-            contents = new String(Files.readAllBytes(Paths.get(jsonRelativePath)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return contents;
-    }
-    //endregion
 
     //region Fields
     private MatchCypherTranslatorStrategy match;
