@@ -8,6 +8,15 @@
     <packaging>pom</packaging>
     <version>0.5-SNAPSHOT</version>
 
+    <mailingLists>
+
+        <mailingList>
+            <name>Apache OpenNLP Developers</name>
+            <post>yang.db.dev@gmail.com</post>
+        </mailingList>
+
+    </mailingLists>
+
     <organization>
         <name>The Fuse Graph Database Project</name>
     </organization>
@@ -31,6 +40,23 @@
             <organization>yangdb.com</organization>
         </developer>
     </developers>
+
+    <profiles>
+        <profile>
+            <id>jacoco</id>
+            <properties>
+                <opennlp.forkCount>1</opennlp.forkCount>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <modules>
         <module>unipop-core</module>
@@ -916,9 +942,6 @@
         </repository>
     </repositories>
 
-
-    <!-- todo profiles -->
-    <profiles/>
 
     <distributionManagement>
         <site>
