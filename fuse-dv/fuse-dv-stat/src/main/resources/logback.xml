@@ -8,7 +8,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.yangdb.fuse.stat" level="warn" additivity="false">
+    <logger name="com.yangdb.fuse.stat" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 
