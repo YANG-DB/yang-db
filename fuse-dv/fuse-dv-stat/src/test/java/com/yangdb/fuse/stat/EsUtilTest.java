@@ -19,6 +19,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.*;
 
 import static com.yangdb.fuse.stat.StatTestSuite.dataClient;
@@ -238,7 +239,8 @@ public class EsUtilTest {
                 DRAGON_GENDERS,
                 DRAGON_ADDRESS_LENGTH);
 
-        new MappingFileElasticConfigurer(DATA_INDEX_NAME, StatTestSuite.MAPPING_DATA_FILE_DRAGON_PATH).configure(dataClient);
+            new MappingFileElasticConfigurer(DATA_INDEX_NAME, StatTestSuite.MAPPING_DATA_FILE_DRAGON_PATH).configure(dataClient);
+
 
         new ElasticDataPopulator(
                 dataClient,

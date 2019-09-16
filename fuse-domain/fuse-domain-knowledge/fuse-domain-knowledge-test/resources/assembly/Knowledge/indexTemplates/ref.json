@@ -31,7 +31,7 @@
           "knowledge_ngram_tokenizer": {
             "type": "ngram",
             "min_gram": "1",
-            "max_gram": "10",
+            "max_gram": "2",
             "token_chars": [ "letter", "digit", "punctuation" ]
           }
         },
@@ -46,10 +46,7 @@
   },
   "mappings": {
     "pge": {
-      "_all": {
-        "enabled": false
-      },
-      "properties": {
+"properties": {
         "type": {
           "type": "keyword"
         },

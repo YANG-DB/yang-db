@@ -34,6 +34,8 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -46,14 +48,10 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
-        public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
-            super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins,false);
+        public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins, Path path, String nodeName) {
+            super(InternalSettingsPreparer.prepareEnvironment(settings, null, path, () -> nodeName), classpathPlugins,false);
         }
 
-        @Override
-        protected void registerDerivedNodeNameWithLogger(String nodeName) {
-            LogConfigurator.setNodeName(nodeName);
-        }
     }
     //endregion
 
@@ -174,7 +172,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         this.node = new PluginConfigurableNode(settings, Arrays.asList(
                 Netty4Plugin.class,
                 CommonAnalysisPlugin.class
-        ));
+        ), Paths.get(esWorkingDir), nodeName);
 
         this.node = this.node.start();
         System.out.println("Node started successfully on " + esWorkingDir);

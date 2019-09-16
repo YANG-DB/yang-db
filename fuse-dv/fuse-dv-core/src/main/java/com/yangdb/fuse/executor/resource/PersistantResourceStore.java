@@ -135,7 +135,7 @@ public class PersistantResourceStore implements ResourceStore {
                     .create(new CreateIndexRequest()
                             .waitForActiveShards(ActiveShardCount.ALL)
                             .index(SYSTEM)).actionGet();
-            if(response.isShardsAcked()) {
+            if(response.isShardsAcknowledged()) {
                 if (client.prepareGet(SYSTEM, RESOURCE, queryId).get().isExists()) {
                     try {
                         return Optional.of(buildQueryResource(queryId, client.prepareGet(SYSTEM, RESOURCE, queryId).get().getSource()));

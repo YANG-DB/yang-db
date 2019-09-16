@@ -125,7 +125,7 @@ public class DiscreteTraversalTest {
                 }, new NewStandardStrategyProvider());
 
         client.admin().indices().preparePutTemplate("all")
-                .setTemplate("*")
+                .setPatterns(Arrays.asList("*"))
                 .setSettings(Settings.builder()
                         .put("number_of_shards", 1)
                         .put("number_of_replicas", 0).build())

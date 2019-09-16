@@ -5,6 +5,7 @@ import com.yangdb.fuse.executor.BaseModuleInjectionTest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.TimeoutException;
@@ -31,6 +32,7 @@ public class TimeoutAdvisorClientTests extends BaseModuleInjectionTest {
     }
 
     @Test
+    @Ignore
     public void testClientNoTimeout() {
         init(new ModuleBase[]{new TestExecutorModule(100,200)});
         setup();

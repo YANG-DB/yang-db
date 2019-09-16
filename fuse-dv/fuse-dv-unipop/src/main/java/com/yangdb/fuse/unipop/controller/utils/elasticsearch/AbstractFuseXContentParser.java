@@ -223,10 +223,10 @@ public abstract class AbstractFuseXContentParser implements XContentParser {
         return readMapStrings(this);
     }
 
-    @Override
-    public Map<String, String> mapStringsOrdered() throws IOException {
-        return readOrderedMapStrings(this);
-    }
+//    @Override
+//    public Map<String, String> mapStringsOrdered() throws IOException {
+//        return readOrderedMapStrings(this);
+//    }
 
     @Override
     public List<Object> list() throws IOException {

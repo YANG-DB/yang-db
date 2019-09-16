@@ -1,8 +1,5 @@
 {
-      "_all": {
-        "enabled": false
-      },
-      "properties": {
+"properties": {
         "directionSchema": {
           "type": "string",
           "index": "not_analyzed"

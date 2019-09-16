@@ -680,7 +680,9 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
     @Test
     public void testLikeByRelationCategoryAndEntity_NotExist() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
+        System.out.println("test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        System.out.println("test1!!" + fuseResourceInfo.getQueryStoreUrl());
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
                 .withElements(Arrays.asList(
                         new Start(0, 1),
@@ -690,13 +692,14 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
                         new Rel(4, "hasRelation", L, null, 5, 0),
                         new ETyped(5, "A", "Entity", 6, 0)
                 )).build();
+        System.out.println("test2!!" +query.toString());
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
-
+        System.out.println("test3!!" +pageData.toString());
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
                         .build())
                 .build();
-
+        System.out.println("test4!!" +expectedResult.toString());
         // Check if expected results and actual results are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }

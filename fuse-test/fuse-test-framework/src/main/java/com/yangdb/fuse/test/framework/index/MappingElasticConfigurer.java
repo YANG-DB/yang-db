@@ -84,6 +84,8 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
             } catch (ResourceAlreadyExistsException ex) {
                 client.admin().indices().prepareDelete(indexName).execute().actionGet();
                 createIndexRequestBuilder.execute().actionGet();
+            } catch (Throwable t){
+                System.out.println(t);
             }
         }
     }

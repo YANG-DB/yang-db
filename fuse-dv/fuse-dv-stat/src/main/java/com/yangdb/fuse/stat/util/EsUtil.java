@@ -49,9 +49,9 @@ import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregationBui
 import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregator;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
 import org.elasticsearch.search.aggregations.bucket.range.RangeAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.cardinality.InternalCardinality;
-import org.elasticsearch.search.aggregations.metrics.stats.extended.ExtendedStats;
-import org.elasticsearch.search.aggregations.metrics.stats.extended.ExtendedStatsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.ExtendedStats;
+import org.elasticsearch.search.aggregations.metrics.ExtendedStatsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.InternalCardinality;
 
 import java.util.*;
 
@@ -328,7 +328,7 @@ public class EsUtil {
                 .setSize(1)
                 .execute().actionGet();
 
-        return response.getHits().getTotalHits() > 0;
+        return response.getHits().getTotalHits().value > 0;
     }
 
     public static boolean isDocExists(Client client, String index, String type, String docId) {
