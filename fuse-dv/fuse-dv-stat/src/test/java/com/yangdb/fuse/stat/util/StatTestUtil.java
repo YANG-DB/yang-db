@@ -1,6 +1,7 @@
 package com.yangdb.fuse.stat.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.stat.model.configuration.Field;
 import com.yangdb.fuse.stat.model.configuration.StatContainer;
 import com.yangdb.fuse.stat.model.configuration.Type;
@@ -10,6 +11,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.junit.Assert;
 
 import java.text.ParseException;
 import java.util.*;
@@ -169,7 +171,10 @@ public class StatTestUtil {
             for (Map.Entry<String, Object> entry : doc.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue().toString();
-                System.out.println(key + ": " + value);
+//                System.out.println(key + ": " + value);
+                Assert.assertNotNull(key);
+                Assert.assertNotNull(value);
+
                 // do stuff
             }
         }

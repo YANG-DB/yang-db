@@ -8,11 +8,11 @@
         </encoder>
     </appender>
 
-    <logger name="com.yangdb.fuse.stat" level="INFO" additivity="false">
+    <logger name="com.yangdb.fuse.stat" level="warn" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <root level="INFO">
+    <root level="warn">
         <appender-ref ref="STDOUT"/>
     </root>
 

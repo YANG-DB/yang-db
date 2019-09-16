@@ -16,6 +16,7 @@ import com.yangdb.fuse.model.resourceInfo.*;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.client.FuseClient;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -233,8 +234,9 @@ public class RealClusterTest {
         }
 
         AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        Assert.assertNotNull(actualAssignmentsQueryResult);
         long elapsed = System.currentTimeMillis() - start;
-        System.out.println(elapsed);
+//        System.out.println(elapsed);
     }
 
     @Test
@@ -274,9 +276,10 @@ public class RealClusterTest {
         }
 
         AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        Assert.assertNotNull(actualAssignmentsQueryResult);
 
         long elapsed = System.currentTimeMillis() - start;
-        System.out.println(elapsed);
+//        System.out.println(elapsed);
     }
 
 
@@ -318,9 +321,10 @@ public class RealClusterTest {
         }
 
         AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        Assert.assertNotNull(actualAssignmentsQueryResult);
 
         long elapsed = System.currentTimeMillis() - start;
-        System.out.println(elapsed);
+//        System.out.println(elapsed);
     }
 
     @Test
@@ -395,9 +399,10 @@ public class RealClusterTest {
         }
 
         AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        Assert.assertNotNull(actualAssignmentsQueryResult);
 
         long elapsed = System.currentTimeMillis() - start;
-        System.out.println(elapsed);
+//        System.out.println(elapsed);
     }
 
     @Test
@@ -428,9 +433,10 @@ public class RealClusterTest {
         }
 
         AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        Assert.assertNotNull(actualAssignmentsQueryResult);
 
         long elapsed = System.currentTimeMillis() - start;
-        System.out.println(elapsed);
+//        System.out.println(elapsed);
     }
 
     @Test
@@ -464,9 +470,10 @@ public class RealClusterTest {
         }
 
         AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        Assert.assertNotNull(actualAssignmentsQueryResult);
 
         long elapsed = System.currentTimeMillis() - start;
-        System.out.println(elapsed);
+//        System.out.println(elapsed);
     }
 
     @Test
@@ -500,9 +507,10 @@ public class RealClusterTest {
         }
 
         AssignmentsQueryResult actualAssignmentsQueryResult = (AssignmentsQueryResult) fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        Assert.assertNotNull(actualAssignmentsQueryResult);
 
         long elapsed = System.currentTimeMillis() - start;
-        System.out.println(elapsed);
+//        System.out.println(elapsed);
     }
 
     @Test

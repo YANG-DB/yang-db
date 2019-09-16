@@ -130,7 +130,7 @@ public class PersonsGeneratorTest {
         });
 
 
-        dupDragons.forEach(dragonId -> System.out.println(dragonId));
+//        dupDragons.forEach(dragonId -> System.out.println(dragonId));
         assertFalse(TestUtil.hasDuplicate(allDragons));
 
     }
@@ -171,12 +171,12 @@ public class PersonsGeneratorTest {
         }
         double avgHorsesPerPerson = sum / (double) count;
         assertEquals(meanHorsesPerPerson, avgHorsesPerPerson, sdHorsesPerPerson);
-        System.out.println(sum / (double) count);
+//        System.out.println(sum / (double) count);
 
         //We should have less assigned dragons to persons.
         assertTrue(allHorses.size() <= NUM_OF_DRAGONS);
-        System.out.println(allHorses.size());
-        System.out.println(horsesToPersonsSet.size());
+//        System.out.println(allHorses.size());
+//        System.out.println(horsesToPersonsSet.size());
 
         //We should not have duplicate dragons assigned simultaneously to several persons
         Set<String> dupHorses = TestUtil.findDuplicates(allHorses);
@@ -194,7 +194,7 @@ public class PersonsGeneratorTest {
         });
 
 
-        dupHorses.forEach(dragonId -> System.out.println(dragonId));
+//        dupHorses.forEach(dragonId -> System.out.println(dragonId));
         assertFalse(TestUtil.hasDuplicate(allHorses));
 
     }
