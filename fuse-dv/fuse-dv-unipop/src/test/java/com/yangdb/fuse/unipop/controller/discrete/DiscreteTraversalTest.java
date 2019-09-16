@@ -281,7 +281,7 @@ public class DiscreteTraversalTest {
         final GraphTraversal<Vertex, Vertex> traversal = g.V()
                 .has(CONSTRAINT, Constraint.by(__.has("age", P.eq(103))))
                 .has("age", SelectP.raw("age"));
-        System.out.println(traversal.explain().prettyPrint());
+//        System.out.println(traversal.explain().prettyPrint());
         List<Vertex> vertices = traversal.toList();
 
         Assert.assertEquals(1, vertices.size());
@@ -760,7 +760,7 @@ public class DiscreteTraversalTest {
                         __.has("color", "red"))))
                 .has("color", SelectP.raw("color"));
         final TraversalExplanation explain = traversal.explain();
-        System.out.println(explain.prettyPrint());
+//        System.out.println(explain.prettyPrint());
         List<Vertex> vertices = traversal.toList();
 
         Assert.assertEquals(3, vertices.size());
@@ -791,7 +791,7 @@ public class DiscreteTraversalTest {
                 g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "silver"))).outV().outE("fire").inV(),
                 g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "bronze"))).outV().outE("fire").inV()
         );
-        System.out.println(unionTraversal.explain().prettyPrint());
+//        System.out.println(unionTraversal.explain().prettyPrint());
         List<Vertex> unionVertices = unionTraversal.toList();
 
         List<Vertex> expected = new ArrayList<>();

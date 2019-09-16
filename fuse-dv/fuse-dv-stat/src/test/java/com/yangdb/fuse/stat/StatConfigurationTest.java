@@ -24,7 +24,7 @@ public class StatConfigurationTest {
 
         ObjectMapper mapper = new ObjectMapper();
         String statActualJson = mapper.writeValueAsString(statContainer);
-        System.out.println(statActualJson);
+//        System.out.println(statActualJson);
         String statExpectedJson = StatUtil.readJsonToString("src/test/resources/stats_fields_test_with_dynamics.json");
 
         JSONAssert.assertEquals(statExpectedJson, statActualJson, false);

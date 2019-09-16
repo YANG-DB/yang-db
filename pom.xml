@@ -8,6 +8,15 @@
     <packaging>pom</packaging>
     <version>0.5-SNAPSHOT</version>
 
+    <mailingLists>
+
+        <mailingList>
+            <name>Apache Yang.DB Developers</name>
+            <post>yang.db.dev@gmail.com</post>
+        </mailingList>
+
+    </mailingLists>
+
     <organization>
         <name>The Fuse Graph Database Project</name>
     </organization>
@@ -26,11 +35,25 @@
 
     <developers>
         <developer>
-            <id>fuse</id>
-            <name>The fuse Team</name>
-            <organization>yangdb.com</organization>
+            <id>Yang.DB</id>
+            <name>The Yang.DB Team</name>
+            <organization>www.yangdb.com</organization>
         </developer>
     </developers>
+
+    <profiles>
+        <profile>
+            <id>jacoco</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <modules>
         <module>unipop-core</module>
@@ -67,6 +90,7 @@
         <maven-pmd-plugin.version>3.10.0</maven-pmd-plugin.version>
         <jacoco-maven-plugin.version>0.8.2</jacoco-maven-plugin.version>
         <snapshot-replace-maven-plugin.version>1.0</snapshot-replace-maven-plugin.version>
+        <coveralls.maven.plugin>4.3.0</coveralls.maven.plugin>
 
         <!-- fuse -->
         <fuse.version>${project.version}</fuse.version>
@@ -714,6 +738,10 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
             <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
             </plugin>
@@ -780,6 +808,14 @@
                     </configuration>
                 </plugin>
                 <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>${coveralls.maven.plugin}</version>
+                    <configuration>
+                        <repoToken>4rxwIVZN1Pn7Bpb0LqiTN0PpSfoZvywKS</repoToken>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco-maven-plugin.version}</version>
@@ -792,6 +828,19 @@
                             <configuration>
                                 <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
                                 <propertyName>surefireArgLine</propertyName>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>post-unit-test</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                            <configuration>
+                                <!-- Sets the path to the file which contains the execution data. -->
+                                <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+                                <!-- Sets the output directory for the code coverage report. -->
+                                <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
                             </configuration>
                         </execution>
                     </executions>
@@ -916,9 +965,6 @@
         </repository>
     </repositories>
 
-
-    <!-- todo profiles -->
-    <profiles/>
 
     <distributionManagement>
         <site>

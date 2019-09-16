@@ -40,16 +40,11 @@ public class AsgQuerySupplierTest {
 
     @Test
     public void queryPrints() throws Exception {
-        System.out.print(QueryDescriptor.print(q5Obj));
-        System.out.println("\n\n\n");
-        System.out.print(QueryDescriptor.print(q9Obj));
-        System.out.println("\n\n\n");
-        System.out.print(QueryDescriptor.print(q11Obj));
-        System.out.println("\n\n\n");
-        System.out.print(QueryDescriptor.print(q187Obj));
-        System.out.println("\n\n\n");
-        System.out.print(QueryDescriptor.print(q3_1Obj));
-        System.out.println("\n\n\n");
+        Assert.assertNotNull(QueryDescriptor.print(q5Obj));
+        Assert.assertNotNull(QueryDescriptor.print(q9Obj));
+        Assert.assertNotNull(QueryDescriptor.print(q11Obj));
+        Assert.assertNotNull(QueryDescriptor.print(q187Obj));
+        Assert.assertNotNull(QueryDescriptor.print(q3_1Obj));
     }
 
     @Test
@@ -74,7 +69,7 @@ public class AsgQuerySupplierTest {
 
         //No next for the last element
         assertEquals(elementEbaseAsgEBase3.getNext().size() ,0);
-        System.out.println(AsgQueryDescriptor.print(asgQuery));
+        Assert.assertNotNull(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -99,7 +94,7 @@ public class AsgQuerySupplierTest {
         }
         HashSet<Integer> expectedNextSet = new HashSet<>(Arrays.asList(3,5,11));
         Assert.assertEquals(expectedNextSet, setOfNext);
-        System.out.println(AsgQueryDescriptor.print(asgQuery));
+        Assert.assertNotNull(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -129,7 +124,7 @@ public class AsgQuerySupplierTest {
 
         //Parent of enum=5 is enum=4
         assertEquals(asgEBase5.getParents().get(0).geteBase().geteNum(),3);
-        System.out.println(AsgQueryDescriptor.print(asgQuery));
+        Assert.assertNotNull(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -173,7 +168,7 @@ public class AsgQuerySupplierTest {
         //Entity Enum 7
         AsgEBase asgEBase7 = asgEBase5.getB().get(1);
         assertEquals(asgEBase7.geteBase().geteNum(),7);
-        System.out.println(AsgQueryDescriptor.print(asgQuery));
+        Assert.assertNotNull(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -197,7 +192,7 @@ public class AsgQuerySupplierTest {
         AsgEBase<? extends EBase> asgEBase3 = asgEBase2.getNext().get(0);
         assertEquals(asgEBase3.geteBase().geteNum(),3);
         assertEquals(asgEBase3.getNext().get(0).getParents().get(0).geteNum(),3);
-        System.out.println(AsgQueryDescriptor.print(asgQuery));
+        Assert.assertNotNull(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -205,7 +200,7 @@ public class AsgQuerySupplierTest {
         Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q11Obj);
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
-        System.out.println(AsgQueryDescriptor.print(asgQuery));
+        Assert.assertNotNull(AsgQueryDescriptor.print(asgQuery));
     }
 
 

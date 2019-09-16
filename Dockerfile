@@ -12,7 +12,7 @@ RUN apk add --no-cache bash
 RUN mkdir -p /opt/engine
 WORKDIR /opt/engine
 
-COPY     fuse-domain/fuse-domain-knowledge/fuse-domain-knowledge-assembly/target/assembly-fuse-knowledge /opt/engine
+COPY fuse-domain/fuse-domain-knowledge/fuse-domain-knowledge-assembly/target/assembly-fuse-knowledge /opt/engine
 
 RUN chmod 755 /opt/engine/start-fuse-service.sh
 # clean

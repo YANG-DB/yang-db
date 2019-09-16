@@ -1,10 +1,24 @@
 From Graph to Elastic - A tail of a Yang-DB...
 =========================================================================================
 
+[![Build Status](https://api.travis-ci.org/repos/YANG-DB/yang-db.svg?branch=master)](https://api.travis-ci.org/repos/YANG-DB/yang-db)
+[![Coverage Status](https://coveralls.io/repos/github/YANG-DB/yang-db/badge.svg?branch=develop)](https://coveralls.io/github/YANG-DB/yang-db?branch=develop)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
+[![Twitter Follow](https://img.shields.io/twitter/follow/db_yang.svg?style=social)](https://twitter.com/db_yang)
+
 ### Use 
 * Add [yang.db](https://github.com/YANG-DB/yang-db) as maven dependency https://jitpack.io/#YANG-DB/yang-db
-* Download [yang.db](https://github.com/YANG-DB/yang-db) latest docker release  https://cloud.docker.com/repository/docker/tom4tomato/yang.db
+* Download [yang.db](https://github.com/YANG-DB/yang-db) get latest docker release  docker pull tom4tomato/yang.db
 
+### Run 
+* Download [yang.db] (https://github.com/YANG-DB/yang-db) latest docker release docker pull tom4tomato/yang.db
+* Run: docker run -p 8888:88 -it tom4tomato/yang.db:Sep-2019-RC1
+* Changing yang.db's configuration using docker environment variable: <br> 
+
+> docker run \ <br>
+> -e ELASTICSEARCH_HOST=1.1.1.1 \ <br>
+> -e ELASTICSEARCH_CLUSTER_NAME='staging' \ <br>
+> -p 8888:88 -it tom4tomato/yang.db:Sep-2019-RC1    
 
 #### Project YANG-DB
 
@@ -30,8 +44,11 @@ From Graph to Elastic - A tail of a Yang-DB...
  
 * [Yaniv Eliash](https://www.linkedin.com/in/yaniv-eliash-4039a951)
 ##### License:
+[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 
-[Apache License 2](http://www.apache.org/licenses/LICENSE-2.0.html)
+##### Code Coverage:
+[![Coverage Status](https://coveralls.io/repos/github/YANG-DB/yang-db/badge.svg?branch=develop)](https://coveralls.io/github/YANG-DB/yang-db?branch=develop)
+
 
 Infrastructure Technologies  
 -----------------------------------------------------------------------------------------------

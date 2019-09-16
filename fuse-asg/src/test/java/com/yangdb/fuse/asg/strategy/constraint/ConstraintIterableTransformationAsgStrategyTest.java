@@ -15,11 +15,14 @@ import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -41,8 +44,10 @@ public class ConstraintIterableTransformationAsgStrategyTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
-        String ontologyExpectedJson = readJsonToString("src/test/resources/Dragons_Ontology.json");
-        ont = new Ontology.Accessor(new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class));
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("Dragons_Ontology.json");
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(stream, writer);
+        ont = new Ontology.Accessor(new ObjectMapper().readValue(writer.toString(), Ontology.class));
 
     }
 
@@ -385,18 +390,6 @@ public class ConstraintIterableTransformationAsgStrategyTest {
         Object expr8 = ((RelProp) AsgQueryUtil.element(asgQueryWithRelProps2, 5).get().geteBase()).getCon().getExpr();
         assertThat(expr8, instanceOf(List.class));
         assertThat(((ArrayList) expr8).get(0), instanceOf(Date.class));
-    }
-    //endregion
-
-    //region Private Methods
-    private static String readJsonToString(String jsonRelativePath) throws Exception {
-        String contents = "";
-        try {
-            contents = new String(Files.readAllBytes(Paths.get(jsonRelativePath)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return contents;
     }
     //endregion
 

@@ -8,6 +8,7 @@ import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.client.FuseClient;
+import org.junit.Assert;
 
 public abstract class TestCase {
 
@@ -34,14 +35,14 @@ public abstract class TestCase {
 
         long end = System.currentTimeMillis();
 
-        System.out.println(actualPlan);
+//        System.out.println(actualPlan);
         System.out.println("Total time: " + (end -start));
         totalTime = end-start;
         planTime = queryEnd - queryStart;
         assignments = actualAssignmentsQueryResult.getAssignments().size();
-
-        System.out.println("Assignments: " + assignments);
-        System.out.println(actualAssignmentsQueryResult);
+        Assert.assertNotNull(actualAssignmentsQueryResult);
+//        System.out.println("Assignments: " + assignments);
+//        System.out.println(actualAssignmentsQueryResult);
     }
 
     public long getTotalTime() {
