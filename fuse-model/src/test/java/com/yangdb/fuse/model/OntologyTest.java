@@ -50,8 +50,8 @@ public class OntologyTest {
         elapsed = System.currentTimeMillis() - start;
 
         System.out.println("parsing loop elapsed: " + elapsed);
-        System.out.println(a);
-        System.out.println(b);
+//        System.out.println(a);
+//        System.out.println(b);
     }
 
     @Test
@@ -174,8 +174,8 @@ public class OntologyTest {
                 "\t\t9]\n" +
                 "\t}]\n" +
                 "}";
-        System.out.println("ontologyExpectedJSONString:" + ontologyExpectedJSONString);
-        System.out.println("ontologyActualJSON:" + ontologyActualJSON);
+//        System.out.println("ontologyExpectedJSONString:" + ontologyExpectedJSONString);
+//        System.out.println("ontologyActualJSON:" + ontologyActualJSON);
         JSONAssert.assertEquals(ontologyExpectedJSONString, ontologyActualJSON, false);
     }
 

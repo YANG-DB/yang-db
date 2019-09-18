@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 
 
 public class RelationBuilder extends Metadata {
-    public static final String REL_INDEX = "rel0";
 
     public static final String type = "Relation";
     public static String physicalType = "relation";

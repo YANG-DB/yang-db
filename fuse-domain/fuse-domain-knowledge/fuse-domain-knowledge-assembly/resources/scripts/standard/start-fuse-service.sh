@@ -1,10 +1,14 @@
 #!/bin/bash
+
 mainClass=com.yangdb.fuse.services.FuseRunner
 configFile=config/application.conf
 classPath=".:lib/*"
 activeProfile=activeProfile
 logbackConfigurationFilename=config/logback.xml
 heapSize=1g
+
+elasticsearchHosts="${ELASTICSEARCH_HOST:-localhost}"
+elasticsearchClusterName="${ELASTICSEARCH_CLUSTER_NAME}"
 
 argName=
 for var in "$@"
@@ -44,10 +48,12 @@ fi
 
 if [ "${elasticsearchHosts}" != "" ]; then
 	systemProperties="${systemProperties} -Delasticsearch.hosts=${elasticsearchHosts}"
+	echo ElasticSearch hosts param: -Delasticsearch.hosts=${elasticsearchHosts}
 fi
 
 if [ "${elasticsearchClusterName}" != "" ]; then
 	systemProperties="${systemProperties} -Delasticsearch.cluster_name=${elasticsearchClusterName}"
+	echo ElasticSearch cluster param: -Delasticsearch.cluster_name=${elasticsearchClusterName}
 fi
 
 #jolokia = -javaagent:lib/jolokia-jvm-1.6.2-agent.jar=port=8088,host=localhost
@@ -55,4 +61,4 @@ fi
 echo java -Xmx${heapSize} -Xms${heapSize} ${systemProperties} ${debugParams} -cp ${classPath} ${mainClass} ${configFile} ${activeProfile} ${logbackConfigurationFilename}
 
 #java ${jolokia} -Xmx${heapSize} -Xms${heapSize} ${systemProperties} ${debugParams} -cp ${classPath} ${mainClass} ${configFile} ${activeProfile} ${logbackConfigurationFilename}
-java -Xmx${heapSize} -Xms${heapSize} ${systemProperties} ${debugParams} -cp ${classPath} ${mainClass} ${configFile} ${activeProfile} ${logbackConfigurationFilename}
+java -Dconfig.override_with_env_vars=true -Xmx${heapSize} -Xms${heapSize} ${systemProperties} ${debugParams} -cp ${classPath} ${mainClass} ${configFile} ${activeProfile} ${logbackConfigurationFilename}

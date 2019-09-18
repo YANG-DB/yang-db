@@ -20,13 +20,13 @@ import com.yangdb.fuse.model.query.properties.constraint.*;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantBase;
 import com.yangdb.fuse.model.query.quant.QuantType;
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,8 +38,10 @@ public class AsgNamedParametersStrategyTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
-        String ontologyExpectedJson = readJsonToString("src/test/resources/Dragons_Ontology.json");
-        Ontology ontology = new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class);
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("Dragons_Ontology.json");
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(stream, writer);
+        Ontology ontology = new ObjectMapper().readValue(writer.toString(), Ontology.class);
         ont = new Ontology.Accessor(ontology);
         asgSupplier = new QueryToCompositeAsgTransformer(new OntologyProvider() {
             @Override
@@ -202,16 +204,6 @@ public class AsgNamedParametersStrategyTest {
                 .map(p->p.getCon().getExpr().toString())
                 .collect(Collectors.toList());
         Assert.assertTrue(expressions.containsAll(words));
-    }
-
-    public static String readJsonToString(String jsonRelativePath) throws Exception {
-        String contents = "";
-        try {
-            contents = new String(Files.readAllBytes(Paths.get(jsonRelativePath)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return contents;
     }
 
     //region Fields

@@ -105,6 +105,14 @@ public class EntityType {
     private List<String> properties;
     private List<String> metadata;
     private List<String> display;
+
+    public boolean containsMetadata(String key) {
+        return metadata.contains(key);
+    }
+
+    public boolean containsProperty(String key) {
+        return properties.contains(key);
+    }
     //endregion
 
     //region Builder

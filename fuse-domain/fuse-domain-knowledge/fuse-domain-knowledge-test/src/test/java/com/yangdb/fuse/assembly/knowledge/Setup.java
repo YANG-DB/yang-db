@@ -1,16 +1,20 @@
 package com.yangdb.fuse.assembly.knowledge;
 
+import com.typesafe.config.Config;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
 import com.yangdb.fuse.client.BaseFuseClient;
 import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.core.driver.BasicIdGenerator;
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
+import com.yangdb.fuse.services.FuseUtils;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
+import org.jooby.Jooby;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -76,13 +80,24 @@ public abstract class Setup {
             manager.init();
         }
 
+        //load configuration
+        Config config = FuseUtils.loadConfig(new File(confFilePath),"activeProfile" );
+        String[] joobyArgs = new String[]{
+                "logback.configurationFile="+Paths.get("src", "test", "config", "logback.xml").toString() ,
+                "server.join=false"
+        };
+
+
         // Start fuse app (based on Jooby app web server)
         if(startFuse) {
-            app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                    .conf(path.toFile(), "activeProfile");
-            app.start("server.join=false");
+            //load jooby App
+            Jooby.run(() -> app != null ?
+                            app :
+                            new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                                    .conf(config)
+                                    .throwBootstrapException(),
+                    joobyArgs);
         }
-
     }
 
 

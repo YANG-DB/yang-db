@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 usage ()
 {
     echo Usage: start-fuse-service.bat [-flavour id] [-debug]

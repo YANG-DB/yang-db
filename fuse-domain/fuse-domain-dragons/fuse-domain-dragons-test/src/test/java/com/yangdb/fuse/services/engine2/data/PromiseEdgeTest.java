@@ -133,7 +133,7 @@ public class PromiseEdgeTest {
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
-        edges.forEach(e -> System.out.println("Promise edge: " + e));
+        edges.forEach(Assert::assertNotNull);
 
     }
 
@@ -198,7 +198,7 @@ public class PromiseEdgeTest {
 
         edges.forEach(e -> {
             //Verify that the edge's endpoint is the correct vertex
-            System.out.println("Promise Filter edge: " + e);
+            edges.forEach(Assert::assertNotNull);
             Assert.assertEquals("d11", e.inVertex().id());
         });
 

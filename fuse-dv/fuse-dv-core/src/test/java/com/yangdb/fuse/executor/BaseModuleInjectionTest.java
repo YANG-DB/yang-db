@@ -53,19 +53,11 @@ public abstract class BaseModuleInjectionTest {
     protected void init(ModuleBase[] modules) {
         this.modules = Arrays.asList(modules);
         config = Mockito.mock(Config.class);
-        Mockito.when(config.getString(argThat(new ArgumentMatcher<String>() {
-            @Override
-            public boolean matches(Object argument) {
-                return argument.toString().equals("application.profile");
-            }
-        }))).thenReturn("test");
+        Mockito.when(config.getString(argThat(argument -> argument.equals("application.profile"))))
+                .thenReturn("test");
 
-        Mockito.when(config.getStringList(argThat(new ArgumentMatcher<String>() {
-            @Override
-            public boolean matches(Object argument) {
-                return argument.toString().equals("modules.test");
-            }
-        }))).thenReturn(Arrays.stream(modules).map(m -> m.getClass().getName()).collect(toList()));
+        Mockito.when(config.getStringList(argThat(argument -> argument.equals("modules.test"))))
+                .thenReturn(Arrays.stream(modules).map(m -> m.getClass().getName()).collect(toList()));
     }
 
     public RequestScope setup() {

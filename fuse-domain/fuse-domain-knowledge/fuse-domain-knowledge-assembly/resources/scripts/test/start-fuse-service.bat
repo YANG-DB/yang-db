@@ -87,6 +87,6 @@ if "%debug%"=="-debug" (
 )
 
 echo java %debugParams% -cp %classPath% %mainClass% %configFile% %activeProfile% %logbackConfigurationFilename%
-java %debugParams% -cp %classPath% %mainClass% %configFile% %activeProfile% %logbackConfigurationFilename%
+java -Dconfig.override_with_env_vars=true %debugParams% -cp %classPath% %mainClass% %configFile% %activeProfile% %logbackConfigurationFilename%
 
 :exit

@@ -19,13 +19,14 @@ import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.constraint.*;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,8 +45,10 @@ public class AsgInnerQueryCompositeTransformerTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
-        String ontologyExpectedJson = readJsonToString("src/test/resources/Dragons_Ontology.json");
-        ont = new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class);
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("Dragons_Ontology.json");
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(stream, writer);
+        ont = new ObjectMapper().readValue(writer.toString(), Ontology.class);
 
     }
     //endregion
@@ -365,18 +368,6 @@ public class AsgInnerQueryCompositeTransformerTest {
     }
 
 
-    //endregion
-
-    //region Private Methods
-    private static String readJsonToString(String jsonRelativePath) throws Exception {
-        String contents = "";
-        try {
-            contents = new String(Files.readAllBytes(Paths.get(jsonRelativePath)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return contents;
-    }
     //endregion
 
     //region Fields

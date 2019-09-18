@@ -218,8 +218,10 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
         Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
-        System.out.println("testLikeWithoutAsterisks:"+"LIKE["+"Sherley windzor"+"]");
-        System.out.println(AsgQueryDescriptor.print(asgQuery));
+//        System.out.println("testLikeWithoutAsterisks:"+"LIKE["+"Sherley windzor"+"]");
+//        System.out.println(AsgQueryDescriptor.print(asgQuery));
+        Assert.assertNotNull(AsgQueryDescriptor.print(asgQuery));
+
     }
 
     @Test
@@ -353,8 +355,9 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
         Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
-        System.out.println("testLikeWithAsterisksInMiddle:"+"LIKE["+"Sherley* windzor"+"]");
-        System.out.println(AsgQueryDescriptor.print(asgQuery));
+//        System.out.println("testLikeWithAsterisksInMiddle:"+"LIKE["+"Sherley* windzor"+"]");
+//        System.out.println(AsgQueryDescriptor.print(asgQuery));
+        Assert.assertNotNull(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -485,8 +488,9 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(rule4Group.getGroups().get(1).getProps().get(0).getCon().getOp(), inSet);
         Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("Sherley"));
         Assert.assertTrue(((List) rule4Group.getGroups().get(1).getProps().get(0).getCon().getExpr()).contains("windzor"));
-        System.out.println("testLikeWithAsterisksAllAround:" +"LIKE["+"*Sherley*windzor*"+"]" );
-        System.out.println(AsgQueryDescriptor.print(asgQuery));
+//        System.out.println("testLikeWithAsterisksAllAround:" +"LIKE["+"*Sherley*windzor*"+"]" );
+//        System.out.println(AsgQueryDescriptor.print(asgQuery));
+        Assert.assertNotNull(AsgQueryDescriptor.print(asgQuery));
     }
 
     @Test
@@ -788,8 +792,9 @@ public class KnowledgeScoreAsgStrategyTest {
         Assert.assertEquals(((RankingProp) titleRule.getGroups().get(0).getProps().get(0)).getBoost(), 2000000);
         Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getpType(), "stringValue");
         Assert.assertEquals(titleRule.getGroups().get(0).getProps().get(0).getCon().getExpr().toString(), "Sherley windzor");
-        System.out.println("testEqual:" +"EQ["+"Sherley windzor"+"]" );
-        System.out.println(AsgQueryDescriptor.print(asgQuery));
+//        System.out.println("testEqual:" +"EQ["+"Sherley windzor"+"]" );
+//        System.out.println(AsgQueryDescriptor.print(asgQuery));
+        Assert.assertNotNull(AsgQueryDescriptor.print(asgQuery));
 
 
     }

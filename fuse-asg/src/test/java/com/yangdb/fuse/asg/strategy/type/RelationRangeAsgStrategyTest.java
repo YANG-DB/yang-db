@@ -108,7 +108,7 @@ public class RelationRangeAsgStrategyTest {
         Assert.assertEquals(0, AsgQueryUtil.elements(query, EProp.class).size());
         Assert.assertEquals(0, AsgQueryUtil.elements(query, EPropGroup.class).size());
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
-        System.out.println(AsgQueryDescriptor.print(query));
+        Assert.assertNotNull(AsgQueryDescriptor.print(query));
 
     }
 
@@ -148,7 +148,7 @@ public class RelationRangeAsgStrategyTest {
 
 
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
-        System.out.println(AsgQueryDescriptor.print(query));
+        Assert.assertNotNull(AsgQueryDescriptor.print(query));
     }
 
     @Test
@@ -188,7 +188,7 @@ public class RelationRangeAsgStrategyTest {
         Assert.assertEquals(3, AsgQueryUtil.elements(query, EProp.class).stream().filter(ep -> ep.geteBase().getpType().equals(OntologyTestUtils.LAST_NAME.type)).count());
 
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
-        System.out.println(AsgQueryDescriptor.print(query));
+        Assert.assertNotNull(AsgQueryDescriptor.print(query));
     }
 
     @Test
@@ -225,7 +225,7 @@ public class RelationRangeAsgStrategyTest {
         Assert.assertEquals(0, AsgQueryUtil.elements(query, EProp.class).size());
 
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
-        System.out.println(AsgQueryDescriptor.print(query));
+        Assert.assertNotNull(AsgQueryDescriptor.print(query));
 
     }
 
@@ -267,7 +267,7 @@ public class RelationRangeAsgStrategyTest {
         Assert.assertEquals(3, AsgQueryUtil.elements(query, EPropGroup.class).stream().filter(ep -> ep.geteBase().getProps().size() == 1).count());
 
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
-        System.out.println(AsgQueryDescriptor.print(query));
+        Assert.assertNotNull(AsgQueryDescriptor.print(query));
     }
 
     @Test
@@ -307,7 +307,7 @@ public class RelationRangeAsgStrategyTest {
         Assert.assertEquals(1, AsgQueryUtil.elements(query, EPropGroup.class).size());
 
         Assert.assertTrue(queryValidator.validate(query).toString(),queryValidator.validate(query).valid());
-        System.out.println(AsgQueryDescriptor.print(query));
+        Assert.assertNotNull(AsgQueryDescriptor.print(query));
 
     }
 

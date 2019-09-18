@@ -37,8 +37,8 @@ public class CypherUtilsTest {
 
         final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
 
-        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
-        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+//        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+//        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
         Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
 
     }
@@ -59,8 +59,8 @@ public class CypherUtilsTest {
 
         final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
 
-        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
-        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+//        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+//        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
         Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
 
     }
@@ -81,8 +81,8 @@ public class CypherUtilsTest {
 
         final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
 
-        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
-        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+//        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+//        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
         Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
 
     }
@@ -103,8 +103,8 @@ public class CypherUtilsTest {
 
         final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
 
-        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
-        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+//        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+//        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
         Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
 
     }
@@ -126,8 +126,8 @@ public class CypherUtilsTest {
 
         final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
 
-        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
-        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+//        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+//        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
         Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
 
     }
@@ -148,8 +148,8 @@ public class CypherUtilsTest {
 
         final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
 
-        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
-        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+//        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+//        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
         Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
 
     }
@@ -171,8 +171,8 @@ public class CypherUtilsTest {
 
         final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
 
-        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
-        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+//        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+//        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
         Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
 
     }
@@ -192,8 +192,8 @@ public class CypherUtilsTest {
 
         final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
 
-        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
-        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+//        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+//        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
         Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
 
     }
@@ -213,8 +213,8 @@ public class CypherUtilsTest {
 
         final com.bpodgursky.jbool_expressions.Expression reWriteWhere = CypherUtils.reWrite(where.expression());
 
-        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
-        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
+//        System.out.println("Origin:"+where.expression().asCanonicalStringVal());
+//        System.out.println("Simplified:"+reWriteWhere.toLexicographicString());
         Assert.assertEquals(expectedWhere,reWriteWhere.toLexicographicString());
 
     }

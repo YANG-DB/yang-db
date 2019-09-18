@@ -3,6 +3,9 @@
 
 tagname=$1
 
+echo "docker login "
+docker login
+
 cd $(dirname "$0")
 echo "mvn clean install"
 mvn clean install

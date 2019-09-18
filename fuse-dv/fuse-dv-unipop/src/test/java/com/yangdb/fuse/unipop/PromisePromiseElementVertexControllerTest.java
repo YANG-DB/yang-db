@@ -140,7 +140,7 @@ public class PromisePromiseElementVertexControllerTest {
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
-        edges.forEach(edge -> System.out.println(edge));
+        edges.forEach(Assert::assertNotNull);
 
         Assert.assertEquals(1, edges.size());
         Assert.assertEquals(1000L, edges.get(0).property(GlobalConstants.HasKeys.COUNT).value());

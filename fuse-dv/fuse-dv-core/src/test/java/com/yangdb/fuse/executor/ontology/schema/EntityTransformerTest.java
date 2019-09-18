@@ -29,37 +29,25 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-public class IndexProviderBasedGraphLoaderTest {
-    public static final String ES_TEST = "es-test";
-    private static ElasticEmbeddedNode elasticEmbeddedNode;
-    private static Client client;
+public class EntityTransformerTest {
 
     private static ObjectMapper mapper = new ObjectMapper();
     private static IndexProvider provider;
     private static Ontology ontology;
     private static RawSchema schema;
+    private static Client client;
 
-
-    private static void init(boolean embedded) throws Exception {
-        // Start embedded ES
-        if(embedded) {
-            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance(ES_TEST);
-            client = elasticEmbeddedNode.getClient();
-        } else {
-            //use existing running ES
-            client = elasticEmbeddedNode.getClient(ES_TEST, 9300);
-        }
-
-    }
 
     @BeforeClass
     public static void setUp() throws Exception {
-        init(true);
+        client = Mockito.mock(Client.class);
+
         InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
 
         provider = mapper.readValue(providerStream, IndexProvider.class);
         ontology = mapper.readValue(ontologyStream, Ontology.class);
+
         GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProviderJsonFactory(provider, ontology).get(ontology);
 
         schema = new RawSchema() {
@@ -101,26 +89,17 @@ public class IndexProviderBasedGraphLoaderTest {
     }
 
 
+
     @Test
-    public void testInit() throws IOException {
+    public void testTransform() throws IOException {
         IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
         when(idGeneratorDriver.getNext(anyString(),anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
-        IndexProviderBasedGraphLoader graphLoader = new IndexProviderBasedGraphLoader(client,ontology, schema, provider,idGeneratorDriver);
-        Assert.assertEquals(13,graphLoader.init());
-    }
 
-
-    @Test
-    @Ignore
-    public void testLoad() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(),anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0,1000));
-        IndexProviderBasedGraphLoader graphLoader = new IndexProviderBasedGraphLoader(client,ontology, schema, provider,idGeneratorDriver);
+        EntityTransformer transformer = new EntityTransformer(schema, idGeneratorDriver,client);
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/LogicalDragonsGraph.json");
         LogicalGraphModel graphModel = mapper.readValue(stream, LogicalGraphModel.class);
-        LoadResponse<String, FuseError> response = graphLoader.load(graphModel, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(10,response.getResponses().size());
+        Object transform = transformer.transform(graphModel, GraphDataLoader.Directive.INSERT);
+        Assert.assertNotNull(transform);
     }
 }
