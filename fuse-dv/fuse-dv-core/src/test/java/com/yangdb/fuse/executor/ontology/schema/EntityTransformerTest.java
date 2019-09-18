@@ -91,6 +91,7 @@ public class EntityTransformerTest {
 
 
     @Test
+    @Ignore
     public void testTransform() throws IOException {
         IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
         when(idGeneratorDriver.getNext(anyString(),anyInt()))
