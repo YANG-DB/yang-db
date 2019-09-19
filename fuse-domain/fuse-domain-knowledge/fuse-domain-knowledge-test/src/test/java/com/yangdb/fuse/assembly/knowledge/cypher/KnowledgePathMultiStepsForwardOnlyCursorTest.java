@@ -28,7 +28,7 @@ public class KnowledgePathMultiStepsForwardOnlyCursorTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true);
+//        Setup.setup(true);
         //load data
         loadData();
     }

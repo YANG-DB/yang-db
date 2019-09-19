@@ -43,7 +43,7 @@ public class KnowledgeInsertLogicalGraphTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true);
+//        Setup.setup(true);
         //load data
         loadData();
     }
@@ -210,7 +210,7 @@ public class KnowledgeInsertLogicalGraphTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(555, totalGraphSize);
+        Assert.assertEquals(440, totalGraphSize);
     }
 
     @Test

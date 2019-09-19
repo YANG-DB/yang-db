@@ -151,10 +151,7 @@
         <jooq.version>0.9.12</jooq.version>
 
         <!--jooby plugin -->
-        <jooby.version>1.6.0</jooby.version>
-
-        <!--netty -->
-        <netty.version>4.1.30</netty.version>
+        <jooby.version>1.6.2</jooby.version>
 
         <!-- fastutil -->
         <fastutil.version>8.1.1</fastutil.version>
