@@ -28,6 +28,7 @@ import com.yangdb.fuse.model.results.Property;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * //example
@@ -115,14 +116,21 @@ public class LogicalNode implements Vertex {
                 '}';
     }
 
+    @JsonIgnore
     public LogicalNode withMetadata(Collection<Property> properties) {
         properties.forEach(p->this.metadata.addProperties(p.getpType(),p.getValue()));
         return this;
     }
 
+    @JsonIgnore
     public LogicalNode withProperty(String property, Object value) {
         properties.addProperties(property,value);
         return this;
+    }
+
+    @JsonIgnore
+    public Optional<Object> getPropertyValue(String name) {
+        return properties.properties.containsKey(name) ? Optional.of(properties.properties.get(name)) : Optional.empty();
     }
 
     public static class NodeMetadata {

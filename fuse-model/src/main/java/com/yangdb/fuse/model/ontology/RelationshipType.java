@@ -23,6 +23,7 @@ package com.yangdb.fuse.model.ontology;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -179,6 +180,16 @@ public class RelationshipType {
     private List<EPair> ePairs;
     private List<String> properties;
     private List<String> metadata;
+
+    @JsonIgnore
+    public boolean containsMetadata(String key) {
+        return metadata.contains(key);
+    }
+
+    @JsonIgnore
+    public boolean containsProperty(String key) {
+        return properties.contains(key);
+    }
 
     //endregion
 

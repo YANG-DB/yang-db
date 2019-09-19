@@ -23,6 +23,7 @@ package com.yangdb.fuse.model.ontology;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -106,10 +107,12 @@ public class EntityType {
     private List<String> metadata;
     private List<String> display;
 
+    @JsonIgnore
     public boolean containsMetadata(String key) {
         return metadata.contains(key);
     }
 
+    @JsonIgnore
     public boolean containsProperty(String key) {
         return properties.contains(key);
     }

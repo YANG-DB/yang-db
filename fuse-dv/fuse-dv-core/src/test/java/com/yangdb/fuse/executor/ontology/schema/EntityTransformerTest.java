@@ -91,16 +91,77 @@ public class EntityTransformerTest {
 
 
     @Test
-    @Ignore
     public void testTransform() throws IOException {
         IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
         when(idGeneratorDriver.getNext(anyString(),anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
 
-        EntityTransformer transformer = new EntityTransformer(schema, idGeneratorDriver,client);
+        EntityTransformer transformer = new EntityTransformer(ontology,provider,schema, idGeneratorDriver,client);
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/LogicalDragonsGraph.json");
         LogicalGraphModel graphModel = mapper.readValue(stream, LogicalGraphModel.class);
-        Object transform = transformer.transform(graphModel, GraphDataLoader.Directive.INSERT);
+        DataTransformerContext transform = transformer.transform(graphModel, GraphDataLoader.Directive.INSERT);
+
         Assert.assertNotNull(transform);
+        Assert.assertEquals(transform.getEntities().size(),graphModel.getNodes().size());
+        transform.getEntities().forEach(e->{
+            Assert.assertNotNull(e.get("type"));
+            //"people", "horses", "dragons","fire","freeze"
+            switch (e.get("type").asText()) {
+                case "Person":
+                    //check all fields exist
+                    break;
+                case "Dragon":
+                    //check all fields exist
+                    break;
+                case "Horse":
+                    //check all fields exist
+                    break;
+                case "Guild":
+                    //check all fields exist
+                    break;
+                case "Kingdom":
+                    //check all fields exist
+                    break;
+                default:
+                    Assert.fail("Not expecting non registered type "+e.get("type").toString());
+            }
+        });
+
+        Assert.assertEquals(transform.getRelations().size(),graphModel.getEdges().size());
+        transform.getRelations().forEach(r->{
+            Assert.assertNotNull(r.get("type"));
+            //"fire" "freeze" "own", "know", "memberOf", "originatedIn", "subjectOf", "registeredIn"
+            switch (r.get("type").asText()) {
+                case "Fire":
+                    //check all fields exist
+                    break;
+                case "Freeze":
+                    //check all fields exist
+                    break;
+                case "Own":
+                    //check all fields exist
+                    break;
+                case "Know":
+                    //check all fields exist
+                    break;
+                case "MemberOf":
+                    //check all fields exist
+                    break;
+                case "OriginatedIn":
+                    //check all fields exist
+                    break;
+                case "SubjectOf":
+                    //check all fields exist
+                    break;
+                case "RegisteredIn":
+                    //check all fields exist
+                    break;
+                default:
+                    Assert.fail("Not expecting non registered type "+r.get("type").toString());
+            }
+        });
+
+
+
     }
 }
