@@ -23,7 +23,6 @@ package com.yangdb.fuse.client;
 import com.cedarsoftware.util.io.JsonReader;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
-import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
@@ -35,6 +34,7 @@ import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
+import io.restassured.response.Response;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -72,7 +72,7 @@ public interface FuseClient {
                 .body(body)
                 .post(url)
                 .thenReturn()
-                .print();
+                .asString();
     }
 
     static String getRequest(String url) {
@@ -83,7 +83,7 @@ public interface FuseClient {
         return given().contentType(contentType)
                 .get(url)
                 .thenReturn()
-                .print();
+                .asString();
     }
 
     static <T> T unwrapDouble(String response) throws IOException {

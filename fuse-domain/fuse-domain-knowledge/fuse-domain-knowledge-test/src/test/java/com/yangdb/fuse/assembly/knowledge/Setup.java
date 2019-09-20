@@ -83,7 +83,7 @@ public abstract class Setup {
         //load configuration
         Config config = FuseUtils.loadConfig(new File(confFilePath),"activeProfile" );
         String[] joobyArgs = new String[]{
-                "logback.configurationFile="+Paths.get("src", "test", "config", "logback.xml").toString() ,
+                "logback.configurationFile="+Paths.get("src", "test","resources", "config", "logback.xml").toString() ,
                 "server.join=false"
         };
 
