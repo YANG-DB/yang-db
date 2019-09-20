@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.ontology.schema;
+package com.yangdb.fuse.executor.ontology.schema.load;
 
 /*-
  * #%L
@@ -20,6 +20,7 @@ package com.yangdb.fuse.executor.ontology.schema;
  * #L%
  */
 
+import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;

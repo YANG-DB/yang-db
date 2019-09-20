@@ -13,7 +13,7 @@ import com.yangdb.fuse.executor.cursor.discrete.GraphTraversalCursor;
 import com.yangdb.fuse.executor.cursor.discrete.PathsTraversalCursor;
 import com.yangdb.fuse.executor.mock.elasticsearch.MockClient;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
-import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.yangdb.fuse.services.dispatcher.driver.MockDriver;

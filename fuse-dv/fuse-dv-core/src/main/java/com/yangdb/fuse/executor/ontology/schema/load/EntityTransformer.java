@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.ontology.schema;
+package com.yangdb.fuse.executor.ontology.schema.load;
 
 /*-
  * #%L
@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.ontology.schema;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
+import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalEdge;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
@@ -76,53 +77,63 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
 
     /**
      * translate edge to document
+     *
      * @param context
      * @param edge
      * @return
      */
-    private ObjectNode translate(DataTransformerContext context, LogicalEdge edge) {
-        ObjectNode element = mapper.createObjectNode();
-        Relation relation = indexProvider.getRelation(edge.label())
-                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Logical Graph Transformation Error", "No matching edge found with label " + edge.label())));
-        //put classifiers
-        element.put(ID,edge.getId());
-        element.put(TYPE,relation.getType());
+    private DocumentBuilder translate(DataTransformerContext context, LogicalEdge edge) {
+        try {
+            ObjectNode element = mapper.createObjectNode();
+            Relation relation = indexProvider.getRelation(edge.label())
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Logical Graph Transformation Error", "No matching edge found with label " + edge.label())));
+            //put classifiers
+            element.put(ID, edge.getId());
+            element.put(TYPE, relation.getType());
 
-        //populate metadata
-        populateMetadataFields(context, edge, element);
-        //populate fields
-        populateFields(context, edge, relation, element );
+            //populate metadata
+            populateMetadataFields(context, edge, element);
+            //populate fields
+            populateFields(context, edge, relation, element);
 
-        return element;
-
+            return new DocumentBuilder(element, edge.getId(), relation.getType(), Optional.empty());
+        } catch (FuseError.FuseErrorException e) {
+            return new DocumentBuilder(e.getError());
+        }
     }
 
 
     /**
      * translate vertex to document
+     *
      * @param context
      * @param node
      * @return
      */
-    private ObjectNode translate(DataTransformerContext context, LogicalNode node) {
-        ObjectNode element = mapper.createObjectNode();
-        Entity entity = indexProvider.getEntity(node.label())
-                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Logical Graph Transformation Error", "No matching node found with label " + node.label())));
-        //put classifiers
-        element.put(ID,node.getId());
-        element.put(TYPE,entity.getType());
+    private DocumentBuilder translate(DataTransformerContext context, LogicalNode node) {
+        try {
+            ObjectNode element = mapper.createObjectNode();
+            Entity entity = indexProvider.getEntity(node.label())
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Logical Graph Transformation Error", "No matching node found with label " + node.label())));
+            //put classifiers
+            element.put(ID, node.getId());
+            element.put(TYPE, entity.getType());
 
-        //populate metadata
-        populateMetadataFields(context, node, element);
+            //populate metadata
+            populateMetadataFields(context, node, element);
 
-        //populate fields
-        populateFields(context, node, entity, element );
+            //populate fields
+            populateFields(context, node, entity, element);
 
-        return element;
+            return new DocumentBuilder(element, node.getId(), entity.getType(), Optional.empty());
+        } catch (FuseError.FuseErrorException e) {
+            return new DocumentBuilder(e.getError());
+        }
     }
 
     /**
      * metadata edge populator
+     *
      * @param context
      * @param edge
      * @param element
@@ -132,11 +143,12 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 .stream()
                 .filter(m -> accessor.relation$(edge.getLabel()).containsMetadata(m.getKey()))
                 .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(),m.getValue())));
+                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue())));
     }
 
     /**
      * metadata vertex populator
+     *
      * @param context
      * @param node
      * @param element
@@ -146,12 +158,13 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 .stream()
                 .filter(m -> accessor.entity$(node.getLabel()).containsMetadata(m.getKey()))
                 .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(),m.getValue())));
+                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue())));
     }
 
 
     /**
      * fields vertex populator
+     *
      * @param context
      * @param node
      * @param entity
@@ -166,7 +179,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                         .stream()
                         .filter(m -> accessor.entity$(node.getLabel()).containsProperty(m.getKey()))
                         .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                                parseValue(accessor.property$(m.getKey()).getType(),m.getValue())));
+                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue())));
                 break;
             // todo manage nested index fields
             default:
@@ -181,7 +194,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param relation
      * @param element
      */
-    private ObjectNode populateFields(DataTransformerContext context, LogicalEdge edge, Relation relation, ObjectNode element ) {
+    private ObjectNode populateFields(DataTransformerContext context, LogicalEdge edge, Relation relation, ObjectNode element) {
         //populate redundant fields A
         element.put(ENTITY_A, populateSide(ENTITY_A, context, edge.getSource(), relation));
         //populate redundant fields B
@@ -195,7 +208,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                         .stream()
                         .filter(m -> accessor.relation$(edge.getLabel()).containsProperty(m.getKey()))
                         .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                                parseValue(accessor.property$(m.getKey()).getType(),m.getValue())));
+                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue())));
                 ;
                 break;
             // todo manage nested index fields
@@ -208,6 +221,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
 
     /**
      * populate edge redundant side - as a json object
+     *
      * @param side
      * @param context
      * @param sideId
@@ -226,8 +240,8 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Logical Graph Transformation Error", "No matching node found with label " + source.get().label())));
 
         //put classifiers
-        entitySide.put(ID,source.get().getId());
-        entitySide.put(TYPE,entity.getType());
+        entitySide.put(ID, source.get().getId());
+        entitySide.put(TYPE, entity.getType());
 
         List<Redundant> redundant = relation.getRedundant(side);
         redundant.forEach(r -> populateRedundantField(r, source.get(), entitySide));

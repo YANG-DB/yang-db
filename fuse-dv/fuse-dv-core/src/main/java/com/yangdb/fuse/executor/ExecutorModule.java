@@ -48,6 +48,7 @@ import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.UniGraphProvider;
 import com.yangdb.fuse.executor.ontology.schema.*;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.resource.PersistantResourceStore;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;

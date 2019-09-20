@@ -20,14 +20,14 @@ package com.yangdb.fuse.assembly.knowledge.load;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.assembly.knowledge.load.builder.*;
-import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
-import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
-import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.executor.ontology.schema.*;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
+import com.yangdb.fuse.executor.ontology.schema.load.LoadResponseImpl;
+import com.yangdb.fuse.executor.ontology.schema.load.Response;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
@@ -298,78 +298,4 @@ public class KnowledgeWriterContext {
         }
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class LoadResponseImpl implements LoadResponse<String, FuseError> {
-
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        private List<CommitResponse<String, FuseError>> responses;
-
-        public LoadResponseImpl() {
-            this.responses = new ArrayList<>();
-        }
-
-        public LoadResponse response(LoadResponse.CommitResponse<String, FuseError> response) {
-            this.responses.add(response);
-            return this;
-        }
-
-        @Override
-        public List<CommitResponse<String, FuseError>> getResponses() {
-            return responses;
-        }
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Response implements LoadResponse.CommitResponse<String, FuseError> {
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        private List<FuseError> failures;
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        private List<String> success;
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        private String index;
-
-        public Response() {
-        }
-
-        public Response(String index) {
-            this.index = index;
-            this.failures = new ArrayList<>();
-            this.success = new ArrayList<>();
-        }
-
-        public Response failure(FuseError err) {
-            failures.add(err);
-            return this;
-        }
-
-        public Response failure(List<FuseError> failed) {
-            this.failures.addAll(failed);
-            return this;
-        }
-
-        public Response success(String itemId) {
-            success.add(itemId);
-            return this;
-        }
-
-        public Response success(List<String> itemIds) {
-            success.addAll(itemIds);
-            return this;
-        }
-
-        public List<FuseError> getFailures() {
-            return failures;
-        }
-
-        public List<String> getSuccesses() {
-            return success;
-        }
-
-        public String getIndex() {
-            return index;
-        }
-
-    }
 }

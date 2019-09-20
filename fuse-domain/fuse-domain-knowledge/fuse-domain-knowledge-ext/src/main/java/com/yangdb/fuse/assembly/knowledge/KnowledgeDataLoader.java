@@ -26,20 +26,18 @@ import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.assembly.knowledge.load.KnowledgeContext;
 import com.yangdb.fuse.assembly.knowledge.load.KnowledgeTransformer;
-import com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerProvider;
-import com.yangdb.fuse.executor.ontology.schema.DataLoaderUtils;
-import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
-import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
-import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.executor.ontology.schema.*;
+import com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
+import com.yangdb.fuse.executor.ontology.schema.load.Response;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import org.elasticsearch.client.Client;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -51,7 +49,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;
-import static com.yangdb.fuse.executor.ontology.schema.DataLoaderUtils.*;
+import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.*;
 
 /**
  * Created by lior.perry on 2/11/2018.
@@ -111,7 +109,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
         success.add(E_VALUES + ":" +context.geteValues().size());
         success.add(R_VALUES + ":" +context.getrValues().size());
 
-        KnowledgeWriterContext.Response transformationFailed = new KnowledgeWriterContext.Response("logicalTransformation")
+        Response transformationFailed = new Response("logicalTransformation")
                 .success(success).failure(context.getFailed());
 
         //load all data to designated indices according to schema

@@ -20,8 +20,8 @@ package com.yangdb.dragons.load;
  * #L%
  */
 
-import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
-import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 
 import java.io.File;

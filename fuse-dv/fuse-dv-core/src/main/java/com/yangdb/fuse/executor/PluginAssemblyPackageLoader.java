@@ -20,7 +20,7 @@ package com.yangdb.fuse.executor;
  * #L%
  */
 
-import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.typesafe.config.Config;
 

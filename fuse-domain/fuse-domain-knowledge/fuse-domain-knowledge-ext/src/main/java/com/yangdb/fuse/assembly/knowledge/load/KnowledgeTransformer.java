@@ -24,7 +24,7 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.assembly.knowledge.load.builder.*;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
-import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.Range.StatefulRange;

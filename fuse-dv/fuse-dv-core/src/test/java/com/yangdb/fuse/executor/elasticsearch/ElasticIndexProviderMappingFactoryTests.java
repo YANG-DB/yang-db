@@ -12,6 +12,8 @@ import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-@Ignore
+//@Ignore
 public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjectionTest {
     public static final String ES_TEST = "es-test";
     private static ElasticEmbeddedNode elasticEmbeddedNode;
@@ -110,7 +112,7 @@ public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjection
         List<Tuple2<String, Boolean>> list = mappingFactory.generateMappings();
         Assert.assertEquals(list.size(),13);
         List<String> indices = Arrays.asList("people", "horses", "dragons","fire","freeze",
-                "kingdoms", "guilds", "own", "know", "memberOf", "originatedIn", "subjectOf", "registeredIn");
+                "kingdoms", "guilds", "own", "know", "memberof", "originatedin", "subjectof", "registeredin");
 
         Assert.assertEquals(list.stream().map(i->i._1).collect(Collectors.toSet()), new HashSet<>(indices));
 
@@ -205,7 +207,7 @@ public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjection
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
                     Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("freeze").toString(),"{\"freeze\":{\"properties\":{\"entityA\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"}}},\"endDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("freeze").toString(),"{\"freeze\":{\"properties\":{\"date\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"entityA\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"}}},\"temperature\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"}}}}");
                     break;
             }
         });
@@ -217,9 +219,14 @@ public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjection
         List<Tuple2<String, Boolean>> list = mappingFactory.generateMappings();
         Assert.assertEquals(list.size(),13);
         HashSet<String> labels = Sets.newHashSet("people", "horses", "dragons", "fire", "freeze",
-                "kingdoms", "guilds", "own", "know", "memberOf", "originatedIn", "subjectOf", "registeredIn");
+                "kingdoms", "guilds", "own", "know", "memberof", "originatedin", "subjectof", "registeredin");
 
         Assert.assertEquals(list.stream().map(i->i._1).collect(Collectors.toSet()), labels);
+
+        Iterable<String> allIndices = schema.indices();
+        javaslang.collection.Stream.ofAll(allIndices)
+                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
+                .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
 
         List<String> indices = mappingFactory.createIndices();
         List<String> names = Arrays.asList("own", "know", "memberof", "fire", "freeze", "originatedin","subjectof",
@@ -244,16 +251,16 @@ public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjection
                     Assert.assertEquals(response.toString(),"{\"fire\":{\"mappings\":{\"fire\":{\"properties\":{\"date\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"entityA\":{\"properties\":{\"color\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}}}},\"entityB\":{\"properties\":{\"color\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}}}},\"id\":{\"type\":\"keyword\"},\"temperature\":{\"type\":\"integer\"}}}}}}");
                     break;
                 case "freeze":
-                    Assert.assertEquals(response.toString(),"{\"freeze\":{\"mappings\":{\"freeze\":{\"properties\":{\"endDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}}}},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"freeze\":{\"mappings\":{\"freeze\":{\"properties\":{\"date\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}}}},\"id\":{\"type\":\"keyword\"},\"temperature\":{\"type\":\"integer\"}}}}}}");
                     break;
                 case "originatedin":
-                    Assert.assertEquals(response.toString(),"{\"originatedin\":{\"mappings\":{\"originatedIn\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"originatedin\":{\"mappings\":{\"originatedin\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"}}}}}}");
                     break;
                 case "subjectof":
-                    Assert.assertEquals(response.toString(),"{\"subjectof\":{\"mappings\":{\"subjectOf\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"subjectof\":{\"mappings\":{\"subjectof\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"}}}}}}");
                     break;
                 case "registeredin":
-                    Assert.assertEquals(response.toString(),"{\"registeredin\":{\"mappings\":{\"registeredIn\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"registeredin\":{\"mappings\":{\"registeredin\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"}}}}}}");
                     break;
                 case "person":
                     Assert.assertEquals(response.toString(),"{\"person\":{\"mappings\":{\"people\":{\"properties\":{\"birthDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"deathDate\":{\"type\":\"keyword\"},\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"gender\":{\"type\":\"keyword\"},\"height\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"lastName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}}}}}}}");

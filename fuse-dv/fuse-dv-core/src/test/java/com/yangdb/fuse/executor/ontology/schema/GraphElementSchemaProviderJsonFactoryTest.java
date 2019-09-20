@@ -147,7 +147,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
         GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(provider,ontology);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
-        Assert.assertEquals(10, StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
+        Assert.assertEquals(12, StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
                 .filter(p->p.getIndexPartitions().isPresent())
                 .filter(p->p.getIndexPartitions().get().getPartitions().iterator().hasNext())
                 .count());
@@ -166,7 +166,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
                     Assert.assertEquals(schemaProvider.getEdgeSchemas("SubjectOf").spliterator().estimateSize(), 1);
                     break;
                 case "OriginatedIn":
-                    Assert.assertEquals(schemaProvider.getEdgeSchemas("OriginatedIn").spliterator().estimateSize(), 1);
+                    Assert.assertEquals(schemaProvider.getEdgeSchemas("OriginatedIn").spliterator().estimateSize(), 3);
                     break;
                 case "RegisteredIn":
                     Assert.assertEquals(schemaProvider.getEdgeSchemas("RegisteredIn").spliterator().estimateSize(), 2);

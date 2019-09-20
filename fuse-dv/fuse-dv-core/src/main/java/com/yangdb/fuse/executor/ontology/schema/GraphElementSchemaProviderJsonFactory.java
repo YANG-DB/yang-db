@@ -28,6 +28,7 @@ import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.*;
 import com.yangdb.fuse.unipop.schemaProviders.*;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
@@ -81,9 +82,11 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     private List<GraphEdgeSchema> generateGraphEdgeSchema(Relation r) {
         switch (r.getPartition()) {
             case STATIC:
-                return generateGraphEdgeSchema(r, r.getType());
+                return r.getProps().getValues().stream()
+                        .flatMap(v -> generateGraphEdgeSchema(r, r.getType(), new StaticIndexPartitions(v)).stream())
+                        .collect(Collectors.toList());
             case TIME:
-                return generateGraphEdgeSchema(r, r.getType());
+                return generateGraphEdgeSchema(r, r.getType(),new TimeBasedIndexPartitions(r.getProps()));
         }
 
         return Collections.singletonList(new GraphEdgeSchema.Impl(r.getType(),
@@ -118,7 +121,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
         return relation.map(RelationshipType::getePairs);
     }
 
-    private List<GraphEdgeSchema> generateGraphEdgeSchema(Relation r, String v) {
+    private List<GraphEdgeSchema> generateGraphEdgeSchema(Relation r, String v, IndexPartitions partitions) {
         Optional<List<EPair>> pairs = getEdgeSchemaOntologyPairs(v);
 
         if (!pairs.isPresent())
@@ -141,7 +144,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
                 Direction.OUT,
                 Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(DIRECTION, OUT, IN)),
                 Optional.empty(),
-                Optional.of(new StaticIndexPartitions(Collections.singletonList(v))),
+                Optional.of(partitions),
                 Collections.emptyList(),
                 r.isSymmetric() ? Stream.of(endA, endB).toJavaSet() : Stream.of(endA).toJavaSet()))
                 .collect(Collectors.toList());

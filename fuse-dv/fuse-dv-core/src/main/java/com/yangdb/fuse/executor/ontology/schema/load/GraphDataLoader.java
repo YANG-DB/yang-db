@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.ontology.schema;
+package com.yangdb.fuse.executor.ontology.schema.load;
 
 /*-
  * #%L

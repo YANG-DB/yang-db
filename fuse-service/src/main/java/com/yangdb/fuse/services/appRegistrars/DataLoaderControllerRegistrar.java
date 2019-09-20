@@ -21,7 +21,7 @@ package com.yangdb.fuse.services.appRegistrars;
  */
 
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
-import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.services.controllers.DataLoaderController;
 import org.jooby.Jooby;

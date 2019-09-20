@@ -7,7 +7,6 @@ import com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext;
 import com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder;
 import com.yangdb.fuse.assembly.knowledge.load.builder.RelationBuilder;
 import com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder;
-import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
@@ -32,7 +31,7 @@ import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.com
 import static com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.RelationBuilder._rel;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder._v;
-import static com.yangdb.fuse.executor.ontology.schema.GraphDataLoader.Directive.INSERT;
+import static com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader.Directive.INSERT;
 import static java.time.temporal.ChronoField.EPOCH_DAY;
 
 @Ignore("[ERROR]   KnowledgeMassInsertionPathTest.setup:61->loadData:78 » IndexOutOfBounds get(0)...")
