@@ -105,22 +105,72 @@ public class EntityTransformerTest {
         Assert.assertEquals(transform.getEntities().size(),graphModel.getNodes().size());
         transform.getEntities().forEach(e->{
             Assert.assertNotNull(e.get("type"));
+            Assert.assertNotNull(e.get("id"));
             //"people", "horses", "dragons","fire","freeze"
             switch (e.get("type").asText()) {
                 case "Person":
                     //check all fields exist
+                    //        "firstName",
+                    //        "lastName",
+                    //        "gender",
+                    //        "birthDate",
+                    //        "deathDate",
+                    //        "height",
+                    //        "name"
+                    Assert.assertNotNull(e.get("firstName"));
+                    Assert.assertNotNull(e.get("lastName"));
+                    Assert.assertNotNull(e.get("gender"));
+                    Assert.assertNotNull(e.get("birthDate"));
+                    Assert.assertNotNull(e.get("deathDate"));
+                    Assert.assertNotNull(e.get("height"));
+                    Assert.assertNotNull(e.get("name"));
                     break;
                 case "Dragon":
                     //check all fields exist
+                    //         "name",
+                    //        "birthDate",
+                    //        "power",
+                    //        "gender",
+                    //        "color"
+                    Assert.assertNotNull(e.get("name"));
+                    Assert.assertNotNull(e.get("birthDate"));
+                    Assert.assertNotNull(e.get("power"));
+                    Assert.assertNotNull(e.get("gender"));
+                    Assert.assertNotNull(e.get("color"));
                     break;
                 case "Horse":
                     //check all fields exist
+                    //        "name",
+                    //        "weight",
+                    //        "maxSpeed",
+                    //        "distance"
+                    Assert.assertNotNull(e.get("name"));
+                    Assert.assertNotNull(e.get("weight"));
+                    Assert.assertNotNull(e.get("maxSpeed"));
+                    Assert.assertNotNull(e.get("distance"));
                     break;
                 case "Guild":
                     //check all fields exist
+                    //        "name",
+                    //        "description",
+                    //        "iconId",
+                    //        "url",
+                    //        "establishDate"
+                    Assert.assertNotNull(e.get("name"));
+                    Assert.assertNotNull(e.get("description"));
+                    Assert.assertNotNull(e.get("establishDate"));
                     break;
                 case "Kingdom":
                     //check all fields exist
+                    //        "name",
+                    //        "king",
+                    //        "queen",
+                    //        "independenceDay",
+                    //        "funds"
+                    Assert.assertNotNull(e.get("name"));
+                    Assert.assertNotNull(e.get("king")!=null ?  e.get("king") : e.get("queen"));
+                    Assert.assertNotNull(e.get("funds"));
+                    Assert.assertNotNull(e.get("independenceDay"));
                     break;
                 default:
                     Assert.fail("Not expecting non registered type "+e.get("type").toString());
@@ -130,31 +180,137 @@ public class EntityTransformerTest {
         Assert.assertEquals(transform.getRelations().size(),graphModel.getEdges().size());
         transform.getRelations().forEach(r->{
             Assert.assertNotNull(r.get("type"));
+            Assert.assertNotNull(r.get("id"));
+
+            Assert.assertNotNull(r.get("entityA"));
+            Assert.assertNotNull(r.get("entityA").get("id"));
+            Assert.assertNotNull(r.get("entityA").get("type"));
+
+            Assert.assertNotNull(r.get("entityB"));
+            Assert.assertNotNull(r.get("entityB").get("id"));
+            Assert.assertNotNull(r.get("entityB").get("type"));
+
             //"fire" "freeze" "own", "know", "memberOf", "originatedIn", "subjectOf", "registeredIn"
             switch (r.get("type").asText()) {
                 case "Fire":
                     //check all fields exist
+                    //         "date",
+                    //        "temperature"
+
+                    Assert.assertNotNull(r.get("date"));
+                    Assert.assertNotNull(r.get("temperature"));
+
+                    //side A redundant
+                    Assert.assertEquals(r.get("entityA").get("type").asText(),"Dragon");
+                    Assert.assertNotNull(r.get("entityA").get("name"));
+                    Assert.assertNotNull(r.get("entityA").get("color"));
+
+                    //side B redundant
+                    Assert.assertEquals(r.get("entityB").get("type").asText(),"Dragon");
+                    Assert.assertNotNull(r.get("entityB").get("name"));
+                    Assert.assertNotNull(r.get("entityB").get("color"));
                     break;
                 case "Freeze":
                     //check all fields exist
+                    //         "date",
+                    //        "temperature"
+
+                    Assert.assertNotNull(r.get("date"));
+                    Assert.assertNotNull(r.get("temperature"));
+
+                    //side A redundant
+                    Assert.assertEquals(r.get("entityA").get("type").asText(),"Dragon");
+                    Assert.assertNotNull(r.get("entityA").get("name"));
+
+                    //side B redundant
+                    Assert.assertEquals(r.get("entityB").get("type").asText(),"Dragon");
+                    Assert.assertNotNull(r.get("entityB").get("name"));
                     break;
                 case "Own":
+                    //         "startDate",
+                    //        "endDate"
                     //check all fields exist
+
+                    Assert.assertNotNull(r.get("startDate"));
+
+                    //side A redundant
+                    Assert.assertEquals(r.get("entityA").get("type").asText(),"Person");
+                    Assert.assertNotNull(r.get("entityA").get("name"));
+                    Assert.assertNotNull(r.get("entityA").get("firstName"));
+
+                    //side B redundant
+                    Assert.assertTrue(r.get("entityB").get("type").asText().equals("Horse") ||
+                            r.get("entityB").get("type").asText().equals("Dragon"));
+                    Assert.assertNotNull(r.get("entityB").get("name"));
                     break;
                 case "Know":
+                    //         "startDate",
                     //check all fields exist
+
+                    Assert.assertNotNull(r.get("startDate"));
+
+                    //side A redundant
+                    Assert.assertEquals(r.get("entityA").get("type").asText(),"Person");
+
+                    //side B redundant
+                    Assert.assertEquals("Person", r.get("entityB").get("type").asText());
                     break;
                 case "MemberOf":
+                    //         "startDate",
+                    //         "endDate",
                     //check all fields exist
+
+                    Assert.assertNotNull(r.get("startDate"));
+
+                    //side A redundant
+                    Assert.assertEquals(r.get("entityA").get("type").asText(),"Person");
+
+                    //side B redundant
+                    Assert.assertEquals("Guild", r.get("entityB").get("type").asText());
                     break;
                 case "OriginatedIn":
                     //check all fields exist
+                    //         "startDate",
+                    //check all fields exist
+
+                    Assert.assertNotNull(r.get("startDate"));
+
+                    //side A redundant
+                    Assert.assertTrue(r.get("entityA").get("type").asText().equals("Dragon") ||
+                            r.get("entityA").get("type").asText().equals("Person") ||
+                            r.get("entityA").get("type").asText().equals("Horse"));
+
+                    //side B redundant
+                    Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
                     break;
                 case "SubjectOf":
                     //check all fields exist
+                    //check all fields exist
+                    //         "startDate",
+                    //check all fields exist
+
+                    Assert.assertNotNull(r.get("startDate"));
+
+                    //side A redundant
+                    Assert.assertEquals("Person", r.get("entityA").get("type").asText());
+
+                    //side B redundant
+                    Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
                     break;
                 case "RegisteredIn":
                     //check all fields exist
+                    //check all fields exist
+                    //         "startDate",
+                    //check all fields exist
+
+                    Assert.assertNotNull(r.get("startDate"));
+
+                    //side A redundant
+                    Assert.assertTrue(r.get("entityA").get("type").asText().equals("Guild") ||
+                            r.get("entityA").get("type").asText().equals("Horse"));
+
+                    //side B redundant
+                    Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
                     break;
                 default:
                     Assert.fail("Not expecting non registered type "+r.get("type").toString());

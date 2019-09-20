@@ -151,7 +151,7 @@
       "properties": {
         "name": "South",
         "king": "Jimmy",
-        "Queen": "Mercy",
+        "queen": "Mercy",
         "independenceDay" : "12/4/1670",
         "funds": 7650000
       }
@@ -391,7 +391,7 @@
         "value": 1
       },
       "properties": {
-        "date": "1/1/500"
+        "startDate": "1/1/500"
       }
 
     },
@@ -404,7 +404,7 @@
         "value": 1
       },
       "properties": {
-        "date": "12/10/1743"
+        "startDate": "12/10/1743"
       }
 
     },
@@ -417,7 +417,7 @@
         "value": 1
       },
       "properties": {
-        "date": "1/2/1723"
+        "startDate": "1/2/1723"
       }
 
     },
@@ -430,7 +430,7 @@
         "value": 1
       },
       "properties": {
-        "date": "12/22/1599"
+        "startDate": "12/22/1599"
       }
 
     },
@@ -443,7 +443,7 @@
         "value": 1
       },
       "properties": {
-        "date": "12/22/1799"
+        "startDate": "12/22/1799"
       }
 
     },
@@ -456,7 +456,7 @@
         "value": 1
       },
       "properties": {
-        "date": "2/1/1759"
+        "startDate": "2/1/1759"
       }
 
     },
@@ -469,7 +469,7 @@
         "value": 1
       },
       "properties": {
-        "date": "31/1/1749"
+        "startDate": "31/1/1749"
       }
 
     },
@@ -482,7 +482,7 @@
         "value": 1
       },
       "properties": {
-        "date": "31/1/1749"
+        "startDate": "31/1/1749"
       }
 
     },
@@ -495,7 +495,7 @@
         "value": 1
       },
       "properties": {
-        "date": "31/1/1000"
+        "startDate": "31/1/1000"
       }
 
     },
@@ -508,7 +508,7 @@
         "value": 1
       },
       "properties": {
-        "date": "31/1/1000"
+        "startDate": "31/1/1000"
       }
 
     },
@@ -521,7 +521,7 @@
         "value": 1
       },
       "properties": {
-        "date": "1/1/1100"
+        "startDate": "1/1/1100"
       }
 
     }
