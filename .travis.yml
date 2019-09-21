@@ -15,7 +15,7 @@ before_install:
   - export PATH=$M2_HOME/bin:$PATH
 
 script:
- - mvn -q clean install -Pjacoco &>/dev/null
+ - mvn -q clean install -Pjacoco
 
 after_success:
  - mvn jacoco:report coveralls:report

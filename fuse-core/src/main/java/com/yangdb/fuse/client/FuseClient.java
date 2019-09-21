@@ -72,7 +72,7 @@ public interface FuseClient {
                 .body(body)
                 .post(url)
                 .thenReturn()
-                .print();
+                .asString();
     }
 
     static String getRequest(String url) {
@@ -83,7 +83,7 @@ public interface FuseClient {
         return given().contentType(contentType)
                 .get(url)
                 .thenReturn()
-                .print();
+                .asString();
     }
 
     static <T> T unwrapDouble(String response) throws IOException {
