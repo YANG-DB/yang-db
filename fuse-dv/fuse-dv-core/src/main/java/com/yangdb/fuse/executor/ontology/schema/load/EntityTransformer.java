@@ -37,19 +37,30 @@ import com.yangdb.fuse.model.schema.Redundant;
 import com.yangdb.fuse.model.schema.Relation;
 import org.elasticsearch.client.Client;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory.*;
+import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;
 
 /**
  * translator that takes the specific ontology with the actual schema and translates the logical graph model into a set of (schematic according to real mapping) elastic documents
  */
 public class EntityTransformer implements DataTransformer<DataTransformerContext> {
-
     public static final String INDEX = "Index";
     public static final String TYPE = "type";
+    public static SimpleDateFormat sdf;
+
+    static {
+                                     //yyyy-MM-dd HH:mm:ss.SSS
+        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
+
     private final Ontology.Accessor accessor;
     private IndexProvider indexProvider;
     private final RawSchema schema;
@@ -143,7 +154,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 .stream()
                 .filter(m -> accessor.relation$(edge.getLabel()).containsMetadata(m.getKey()))
                 .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue())));
+                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(),sdf).toString()));
     }
 
     /**
@@ -158,7 +169,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 .stream()
                 .filter(m -> accessor.entity$(node.getLabel()).containsMetadata(m.getKey()))
                 .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue())));
+                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(),sdf).toString()));
     }
 
 
@@ -179,7 +190,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                         .stream()
                         .filter(m -> accessor.entity$(node.getLabel()).containsProperty(m.getKey()))
                         .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue())));
+                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue(),sdf).toString()));
                 break;
             // todo manage nested index fields
             default:
@@ -208,7 +219,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                         .stream()
                         .filter(m -> accessor.relation$(edge.getLabel()).containsProperty(m.getKey()))
                         .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue())));
+                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue(),sdf).toString()));
                 ;
                 break;
             // todo manage nested index fields
@@ -250,22 +261,14 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
 
     private void populateRedundantField(Redundant redundant, LogicalNode logicalNode, ObjectNode map) {
         Optional<Object> prop = logicalNode.getPropertyValue(redundant.getRedundantName());
-        prop.ifPresent(o -> map.put(redundant.getRedundantName(), parseValue(redundant.getType(), o.toString())));
+        prop.ifPresent(o -> map.put(redundant.getRedundantName(),
+                parseValue(redundant.getType(), o.toString(),sdf).toString()));
     }
 
     private Optional<LogicalNode> nodeById(DataTransformerContext context, String id) {
         return context.getGraph().getNodes().stream().filter(n -> n.getId().equals(id)).findAny();
     }
 
-    /**
-     * parse value according to actual field type mapping
-     *
-     * @param value
-     * @return
-     */
-    public static String parseValue(String type, Object value) {
-        return value.toString();
-    }
 
 
 }

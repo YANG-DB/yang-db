@@ -33,12 +33,16 @@ import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateReque
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.geojson.Point;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.zip.InflaterInputStream;
 
 public interface DataLoaderUtils {
@@ -111,4 +115,55 @@ public interface DataLoaderUtils {
         bos.close();
         return stream;
     }
+
+    static Object parseValue(String explicitType, Object value, DateFormat sdf) {
+        switch (explicitType) {
+            case "string":
+            case "stringValue":
+                return value.toString();
+            case "int":
+            case "intValue":
+                try {
+                    return Integer.valueOf(value.toString());
+                } catch (NumberFormatException e) {
+                    try {
+                        return Long.valueOf(value.toString());
+                    } catch (NumberFormatException e1) {
+                        return value.toString();
+                    }
+                }
+            case "long":
+            case "longValue":
+                try {
+                    return Long.valueOf(value.toString());
+                } catch (NumberFormatException e) {
+                    return value.toString();
+                }
+            case "float":
+            case "floatValue":
+                try {
+                    return Float.valueOf(value.toString());
+                } catch (NumberFormatException e) {
+                    return value.toString();
+                }
+            case "date":
+            case "dateValue":
+                try {
+                    return sdf.parse(value.toString());
+                } catch (ParseException e) {
+                    try {
+                        return sdf.format(new Date(value.toString()));
+                    } catch (Throwable e1) {
+                        return value.toString();
+                    }
+                }
+            case "geo":
+            case "geoValue":
+                return new Point(
+                        Double.valueOf(value.toString().split("[,]")[1]),
+                        Double.valueOf(value.toString().split("[,]")[0]));
+        }
+        return value.toString();
+    }
+
 }

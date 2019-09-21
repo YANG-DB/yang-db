@@ -38,6 +38,7 @@ import com.yangdb.fuse.model.ontology.transformer.TransformerRelationType;
 import org.elasticsearch.client.Client;
 import org.geojson.Point;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,9 +46,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.ENTITY;
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.RELATION;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder._e;
+import static com.yangdb.fuse.assembly.knowledge.load.builder.Metadata.sdf;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.RelationBuilder._rel;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.RvalueBuilder._r;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder._v;
+import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;
 import static java.util.regex.Pattern.matches;
 
 public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
@@ -302,7 +305,7 @@ public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
                     .findFirst();
             if (valueType.isPresent()) {
                 String explicitType = valueType.get().keySet().iterator().next();
-                valueBuilder.value(toValue(explicitType, value));
+                valueBuilder.value(parseValue(explicitType, value, sdf));
             } else {
                 valueBuilder.value(value);
             }
@@ -322,14 +325,14 @@ public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
                 .findFirst();
         if (valueType.isPresent()) {
             String explicitType = valueType.get().keySet().iterator().next();
-            valueBuilder.value(toValue(explicitType, value));
+            valueBuilder.value(parseValue(explicitType, value, sdf));
         } else {
             valueBuilder.value(value);
         }
         return valueBuilder;
     }
 
-    private Object toValue(String explicitType, Object value) {
+    private Object parseValue(String explicitType, Object value, DateFormat sdf) {
         switch (explicitType) {
             case "stringValue":
                 return value.toString();

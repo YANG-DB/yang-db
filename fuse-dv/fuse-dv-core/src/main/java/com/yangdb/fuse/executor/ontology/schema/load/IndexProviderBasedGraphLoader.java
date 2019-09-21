@@ -149,7 +149,7 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
                     .setType(node.getType())
                     .setId(node.getId())
                     .setOpType(IndexRequest.OpType.INDEX)
-                    .setSource(node.getNode(), XContentType.JSON);
+                    .setSource(mapper.writeValueAsString(node.getNode()), XContentType.JSON);
             node.getRouting().ifPresent(request::setRouting);
             bulk.add(request);
             return request;
