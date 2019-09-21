@@ -1,12 +1,13 @@
-  {
+{
   "ont": "Dragons",
   "entityTypes": [
     {
       "eType": "Person",
       "name": "Person",
-       "metadata": [],
- "properties": [
-        "id",
+      "metadata": [
+        "id"
+      ],
+      "properties": [
         "firstName",
         "lastName",
         "gender",
@@ -19,9 +20,10 @@
     {
       "eType": "Horse",
       "name": "Horse",
-       "metadata": [],
- "properties": [
-        "id",
+      "metadata": [
+        "id"
+      ],
+      "properties": [
         "name",
         "weight",
         "maxSpeed",
@@ -31,9 +33,10 @@
     {
       "eType": "Dragon",
       "name": "Dragon",
-       "metadata": [],
- "properties": [
-        "id",
+      "metadata": [
+        "id"
+      ],
+      "properties": [
         "name",
         "birthDate",
         "power",
@@ -44,9 +47,10 @@
     {
       "eType": "Kingdom",
       "name": "Kingdom",
-       "metadata": [],
- "properties": [
-        "id",
+      "metadata": [
+        "id"
+      ],
+      "properties": [
         "name",
         "king",
         "queen",
@@ -57,9 +61,10 @@
     {
       "eType": "Guild",
       "name": "Guild",
-       "metadata": [],
- "properties": [
-        "id",
+      "metadata": [
+        "id"
+      ],
+      "properties": [
         "name",
         "description",
         "iconId",
@@ -71,7 +76,7 @@
   "relationshipTypes": [
     {
       "rType": "own",
-      "name": "own",
+      "name": "Own",
       "directional": true,
       "ePairs": [
         {
@@ -83,16 +88,17 @@
           "eTypeB": "Horse"
         }
       ],
-       "metadata": [],
- "properties": [
-        "id",
+      "metadata": [
+        "id"
+      ],
+      "properties": [
         "startDate",
         "endDate"
       ]
     },
     {
       "rType": "know",
-      "name": "know",
+      "name": "Know",
       "directional": true,
       "ePairs": [
         {
@@ -100,15 +106,16 @@
           "eTypeB": "Person"
         }
       ],
-       "metadata": [],
- "properties": [
-        "id",
+      "metadata": [
+        "id"
+      ],
+      "properties": [
         "startDate"
       ]
     },
     {
       "rType": "memberOf",
-      "name": "memberOf",
+      "name": "MemberOf",
       "directional": true,
       "ePairs": [
         {
@@ -116,16 +123,17 @@
           "eTypeB": "Guild"
         }
       ],
-       "metadata": [],
- "properties": [
-        "id",
+      "metadata": [
+        "id"
+      ],
+      "properties": [
         "startDate",
         "endDate"
       ]
     },
     {
       "rType": "fire",
-      "name": "fire",
+      "name": "Fire",
       "directional": true,
       "ePairs": [
         {
@@ -133,16 +141,17 @@
           "eTypeB": "Dragon"
         }
       ],
-       "metadata": [],
- "properties": [
-        "id",
+      "metadata": [
+        "id"
+      ],
+      "properties": [
         "date",
         "temperature"
       ]
     },
     {
       "rType": "freeze",
-      "name": "freeze",
+      "name": "Freeze",
       "directional": true,
       "ePairs": [
         {
@@ -150,32 +159,42 @@
           "eTypeB": "Dragon"
         }
       ],
-       "metadata": [],
- "properties": [
-        "id",
-        "startDate",
-        "endDate"
+      "metadata": [
+        "id"
+      ],
+      "properties": [
+        "date",
+        "temperature"
       ]
     },
     {
       "rType": "originatedIn",
-      "name": "originatedIn",
+      "name": "OriginatedIn",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "Dragon",
           "eTypeB": "Kingdom"
+        },
+        {
+          "eTypeA": "Horse",
+          "eTypeB": "Kingdom"
+        },
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Kingdom"
         }
       ],
-       "metadata": [],
- "properties": [
-        "id",
+      "metadata": [
+        "id"
+      ],
+      "properties": [
         "startDate"
       ]
     },
     {
       "rType": "subjectOf",
-      "name": "subjectOf",
+      "name": "SubjectOf",
       "directional": true,
       "ePairs": [
         {
@@ -183,15 +202,16 @@
           "eTypeB": "Kingdom"
         }
       ],
-       "metadata": [],
- "properties": [
-        "id",
+      "metadata": [
+        "id"
+      ],
+      "properties": [
         "startDate"
       ]
     },
     {
       "rType": "registeredIn",
-      "name": "registeredIn",
+      "name": "RegisteredIn",
       "directional": true,
       "ePairs": [
         {
@@ -203,14 +223,15 @@
           "eTypeB": "Kingdom"
         }
       ],
+      "metadata": [
+        "id"
+      ],
       "properties": [
-        "id",
         "startDate"
       ]
     }
   ],
-   "metadata": [],
- "properties": [
+  "properties": [
     {
       "pType": "id",
       "name": "id",

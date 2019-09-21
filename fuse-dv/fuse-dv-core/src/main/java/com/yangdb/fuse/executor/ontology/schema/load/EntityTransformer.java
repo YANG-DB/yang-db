@@ -30,6 +30,7 @@ import com.yangdb.fuse.model.logical.LogicalEdge;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.logical.LogicalNode;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.Entity;
 import com.yangdb.fuse.model.schema.IndexProvider;
@@ -39,6 +40,7 @@ import org.elasticsearch.client.Client;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import javaslang.Tuple2;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -107,7 +109,15 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
             //populate fields
             populateFields(context, edge, relation, element);
 
-            return new DocumentBuilder(element, edge.getId(), relation.getType(), Optional.empty());
+            //partition field in case of none static partitioning index
+            Optional<Tuple2<String,String>> partition = Optional.empty();
+
+            //in case of a partition field - set in the document builder
+            String field = relation.getProps().getPartitionField();
+            if(field !=null)
+                partition = Optional.of(new Tuple2<>(field,parseValue(accessor.property$(field).getType(),edge.getProperty(field),sdf).toString()));
+
+            return new DocumentBuilder(element, edge.getId(), relation.getType(), Optional.empty(),partition);
         } catch (FuseError.FuseErrorException e) {
             return new DocumentBuilder(e.getError());
         }

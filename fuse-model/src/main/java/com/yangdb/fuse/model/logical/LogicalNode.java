@@ -106,6 +106,11 @@ public class LogicalNode implements Vertex {
         return getProperties().getProperties();
     }
 
+    @JsonIgnore
+    public Object getProperty(String partition) {
+        return getProperties().properties.get(partition);
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName()+"{" +

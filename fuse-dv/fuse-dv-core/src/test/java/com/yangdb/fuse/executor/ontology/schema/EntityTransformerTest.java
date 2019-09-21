@@ -1,7 +1,10 @@
 package com.yangdb.fuse.executor.ontology.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.schema.load.DataTransformerContext;
 import com.yangdb.fuse.executor.ontology.schema.load.DocumentBuilder;
 import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
@@ -21,12 +24,12 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 public class EntityTransformerTest {
@@ -36,19 +39,32 @@ public class EntityTransformerTest {
     private static Ontology ontology;
     private static RawSchema schema;
     private static Client client;
+    private static Config config;
+    private static OntologyProvider ontologyProvider;
+    private static IndexProviderIfc providerIfc;
 
 
     @BeforeClass
     public static void setUp() throws Exception {
         client = Mockito.mock(Client.class);
 
+        providerIfc = Mockito.mock(IndexProviderIfc.class);
+        when(providerIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(provider));
+
+        ontologyProvider = Mockito.mock(OntologyProvider.class);
+        when(ontologyProvider.get(any())).thenAnswer(invocationOnMock -> Optional.of(ontology));
+
+        config = Mockito.mock(Config.class);
+        when(config.getString(any())).thenAnswer(invocationOnMock -> "Dragons");
+
         InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
+
 
         provider = mapper.readValue(providerStream, IndexProvider.class);
         ontology = mapper.readValue(ontologyStream, Ontology.class);
 
-        GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProviderJsonFactory(provider, ontology).get(ontology);
+        GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider).get(ontology);
 
         schema = new RawSchema() {
             @Override

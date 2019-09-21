@@ -21,8 +21,11 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  */
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import javaslang.Tuple2;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class DocumentBuilder {
@@ -30,6 +33,7 @@ public class DocumentBuilder {
     private String id;
     private String type;
     private Optional<String> routing;
+    private Optional<Tuple2<String,String>> partitionField;
     private FuseError error;
 
     public DocumentBuilder(FuseError error) {
@@ -41,10 +45,15 @@ public class DocumentBuilder {
     }
 
     public DocumentBuilder(ObjectNode node, String id, String type, Optional<String> routing) {
+        this(node,id,type,routing,Optional.empty());
+    }
+
+    public DocumentBuilder(ObjectNode node, String id, String type, Optional<String> routing, Optional<Tuple2<String,String>> partitionField) {
         this.node = node;
         this.id = id;
         this.type = type;
         this.routing = routing;
+        this.partitionField = partitionField;
     }
 
 
@@ -63,6 +72,11 @@ public class DocumentBuilder {
     public Optional<String> getRouting() {
         return routing;
     }
+
+    public Optional<Tuple2<String,String>> getPartitionField() {
+        return partitionField;
+    }
+
 
     public boolean isSuccess() {
         return getError()==null;

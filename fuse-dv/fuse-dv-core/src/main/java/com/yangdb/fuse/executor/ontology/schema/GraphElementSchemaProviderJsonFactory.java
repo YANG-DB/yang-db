@@ -21,6 +21,9 @@ package com.yangdb.fuse.executor.ontology.schema;
  */
 
 import com.google.inject.Inject;
+import com.typesafe.config.Config;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.model.ontology.EPair;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -61,9 +64,10 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     private Ontology.Accessor accessor;
 
     @Inject
-    public GraphElementSchemaProviderJsonFactory(IndexProvider indexProvider, Ontology ontology) {
-        this.indexProvider = indexProvider;
-        this.accessor = new Ontology.Accessor(ontology);
+    public GraphElementSchemaProviderJsonFactory(Config config, IndexProviderIfc indexProvider, OntologyProvider ontologyProvider) {
+        String ontology = config.getString("assembly");
+        this.indexProvider = indexProvider.get(ontology).get();
+        this.accessor = new Ontology.Accessor(ontologyProvider.get(ontology).get());
     }
 
     @Override

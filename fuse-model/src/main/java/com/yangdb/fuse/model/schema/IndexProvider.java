@@ -37,6 +37,8 @@ import java.util.Optional;
 })
 public class IndexProvider {
 
+    @JsonProperty("ontology")
+    private String ontology;
     @JsonProperty("entities")
     private List<Entity> entities = null;
     @JsonProperty("relations")
@@ -62,6 +64,16 @@ public class IndexProvider {
     @JsonProperty("relations")
     public void setRelations(List<Relation> relations) {
         this.relations = relations;
+    }
+
+    @JsonProperty("ontology")
+    public String getOntology() {
+        return ontology;
+    }
+
+    @JsonProperty("ontology")
+    public void setOntology(String ontology) {
+        this.ontology = ontology;
     }
 
     @JsonAnyGetter

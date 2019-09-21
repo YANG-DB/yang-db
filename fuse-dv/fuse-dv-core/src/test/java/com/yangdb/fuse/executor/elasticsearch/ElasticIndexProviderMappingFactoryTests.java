@@ -2,6 +2,9 @@ package com.yangdb.fuse.executor.elasticsearch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import com.typesafe.config.Config;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.BaseModuleInjectionTest;
 import com.yangdb.fuse.executor.ontology.schema.GraphElementSchemaProviderJsonFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
@@ -21,14 +24,19 @@ import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequ
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesResponse;
 import org.elasticsearch.client.Client;
 import org.junit.*;
+import org.mockito.Mockito;
 
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 //@Ignore
 public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjectionTest {
@@ -39,6 +47,9 @@ public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjection
     private static ObjectMapper mapper = new ObjectMapper();
     private static IndexProvider provider;
     private static Ontology ontology;
+    private static OntologyProvider ontologyProvider;
+    private static IndexProviderIfc providerIfc;
+    private static Config config;
 
     private static void init(boolean embedded) throws Exception {
         // Start embedded ES
@@ -61,7 +72,17 @@ public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjection
         provider = mapper.readValue(providerStream, IndexProvider.class);
         ontology = mapper.readValue(ontologyStream, Ontology.class);
 
-        GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProviderJsonFactory(provider, ontology).get(ontology);
+
+        providerIfc = Mockito.mock(IndexProviderIfc.class);
+        when(providerIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(provider));
+
+        ontologyProvider = Mockito.mock(OntologyProvider.class);
+        when(ontologyProvider.get(any())).thenAnswer(invocationOnMock -> Optional.of(ontology));
+
+        config = Mockito.mock(Config.class);
+        when(config.getString(any())).thenAnswer(invocationOnMock -> "Dragons");
+
+        GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider).get(ontology);
 
         schema = new RawSchema() {
             @Override

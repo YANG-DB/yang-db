@@ -1,6 +1,9 @@
 package com.yangdb.fuse.executor.ontology.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.typesafe.config.Config;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema;
@@ -10,20 +13,38 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class GraphElementSchemaProviderJsonFactoryTest {
     private ObjectMapper mapper = new ObjectMapper();
     private IndexProvider provider;
     private Ontology ontology;
+    private static Config config;
+    private static OntologyProvider ontologyProvider;
+    private static IndexProviderIfc providerIfc;
 
     @Before
     public void setUp() throws Exception {
+
+        providerIfc = Mockito.mock(IndexProviderIfc.class);
+        when(providerIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(provider));
+
+        ontologyProvider = Mockito.mock(OntologyProvider.class);
+        when(ontologyProvider.get(any())).thenAnswer(invocationOnMock -> Optional.of(ontology));
+
+        config = Mockito.mock(Config.class);
+        when(config.getString(any())).thenAnswer(invocationOnMock -> "Dragons");
+
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
         provider = mapper.readValue(stream, IndexProvider.class);
         stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
@@ -32,14 +53,14 @@ public class GraphElementSchemaProviderJsonFactoryTest {
 
     @Test
     public void testGraphElementSchemaProvider(){
-        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(provider,ontology);
+        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
     }
 
     @Test
     public void testGraphElementSchemaProviderLabel(){
-        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(provider,ontology);
+        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
         Assert.assertEquals(StreamSupport.stream(schemaProvider.getEdgeLabels().spliterator(),false)
@@ -50,7 +71,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
 
     @Test
     public void testGraphElementSchemaProviderVertex(){
-        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(provider,ontology);
+        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
         Assert.assertEquals(5, StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
@@ -62,7 +83,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
 
     @Test
     public void testGraphEdgeSchemaImpl(){
-        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(provider,ontology);
+        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
         Arrays.asList("Freeze","Fire","Own","SubjectOf","OriginatedIn","RegisteredIn","Know","MemberOf")
@@ -144,7 +165,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
 
     @Test
     public void testGraphElementSchemaProviderEdge(){
-        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(provider,ontology);
+        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
         Assert.assertEquals(12, StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)

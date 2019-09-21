@@ -150,6 +150,11 @@ public class LogicalEdge implements Edge {
         return getTarget();
     }
 
+    @JsonIgnore
+    public Object getProperty(String partition) {
+        return getProperties().properties.get(partition);
+    }
+
     public static class EdgeMetadata {
         private Map<String,Object> properties;
 

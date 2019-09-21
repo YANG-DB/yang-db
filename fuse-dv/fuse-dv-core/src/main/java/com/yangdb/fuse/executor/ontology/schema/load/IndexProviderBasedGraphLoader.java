@@ -27,9 +27,12 @@ import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
+import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -44,10 +47,10 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.stream.StreamSupport;
 
 public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, FuseError> {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -160,15 +163,21 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
     }
 
     /**
-     * resolve index name according to schema
+     * resolve index name according to schema and in case of range partitioned index - according to the partitioning field value
      *
      * @param node
      * @return
      */
-    private String resolveIndex(DocumentBuilder node) {
+    private String resolveIndex(DocumentBuilder node) throws ParseException {
         String nodeType = node.getType();
-        IndexPartitions partition = schema.getPartition(nodeType);
-        return partition.getPartitions().iterator().next().getIndices().iterator().next();
+        Optional<Tuple2<String,String>> field = node.getPartitionField();
+        IndexPartitions partitions = schema.getPartition(nodeType);
+        //todo validate the partitioned field is indeed the correct time field
+        if((partitions instanceof TimeSeriesIndexPartitions) && field.isPresent()) {
+            String indexName = ((TimeSeriesIndexPartitions) partitions).getIndexName(sdf.parse(field.get()._2));
+            if (indexName!=null) return indexName;
+        }
+        return partitions.getPartitions().iterator().next().getIndices().iterator().next();
     }
 
 

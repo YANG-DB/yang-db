@@ -1,7 +1,10 @@
 package com.yangdb.fuse.executor.ontology.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.IndexProviderBasedGraphLoader;
@@ -34,14 +37,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class IndexProviderBasedGraphLoaderTest {
@@ -53,6 +57,10 @@ public class IndexProviderBasedGraphLoaderTest {
     private static IndexProvider provider;
     private static Ontology ontology;
     private static RawSchema schema;
+    private static Config config;
+    private static OntologyProvider ontologyProvider;
+    private static IndexProviderIfc providerIfc;
+
 
 
     private static void init(boolean embedded) throws Exception {
@@ -73,9 +81,19 @@ public class IndexProviderBasedGraphLoaderTest {
         InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
 
+
+        providerIfc = Mockito.mock(IndexProviderIfc.class);
+        when(providerIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(provider));
+
+        ontologyProvider = Mockito.mock(OntologyProvider.class);
+        when(ontologyProvider.get(any())).thenAnswer(invocationOnMock -> Optional.of(ontology));
+
+        config = Mockito.mock(Config.class);
+        when(config.getString(any())).thenAnswer(invocationOnMock -> "Dragons");
+
         provider = mapper.readValue(providerStream, IndexProvider.class);
         ontology = mapper.readValue(ontologyStream, Ontology.class);
-        GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProviderJsonFactory(provider, ontology).get(ontology);
+        GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider).get(ontology);
 
         schema = new RawSchema() {
             @Override
