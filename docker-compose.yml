@@ -6,7 +6,7 @@ services:
     ports:
       - 8888:8888
     environment:
-      - "elasticsearchHosts=es"
+      - "elasticsearchHosts=10.6.91.1"
       - "elasticsearchClusterName=Knowledge"
     networks:
       - network
@@ -19,7 +19,7 @@ services:
       - "node.master=false"
       - "node.data=false"
       - "node.ingest=false"
-      - "network.publish_host=es"
+      - "network.publish_host=127.0.0.1"
       - "cluster.name=Knowledge"
     networks:
       - network
@@ -61,7 +61,7 @@ services:
       - "node.master=false"
       - "node.data=true"
       - "node.ingest=false"
-      - "cluster.name=fusepoc"
+      - "cluster.name=Knowledge"
     volumes:
       - es-fuse-data:/usr/share/elasticsearch/data
     networks:

@@ -13,6 +13,10 @@
             <outputDirectory>./indexTemplates</outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>${project.basedir}/resources/assembly/Dragons/indexProvider</directory>
+            <outputDirectory>./indexProvider</outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>${project.basedir}/resources/assembly/Dragons/ontology</directory>
             <outputDirectory>./ontology</outputDirectory>
         </fileSet>

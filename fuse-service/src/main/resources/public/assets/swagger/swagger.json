@@ -156,13 +156,28 @@
         }
       }
     },
-    "/catalog/ontology/{id}/schema": {
+    "/catalog/schema": {
       "get": {
         "tags": [
           "catalog"
         ],
-        "summary": "Get specific Ontology schema resource ",
+        "summary": "Get available schemas",
         "description": "Ontology schema resource",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Schema Json array"
+          }
+        }
+      }
+    },
+    "/catalog/schema/{id}": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get schemas by Id",
+        "description": "Get Ontology schema resource",
         "parameters": [
           {
             "name": "id",
@@ -174,7 +189,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Ontology Json"
+            "description": "Schema Json"
           }
         }
       }

@@ -8,7 +8,7 @@
       "id": "D01_Myriel",
       "properties": {
         "name": "Myriel",
-        "birdthDate": "02/01/0000",
+        "birthDate": "02/01/0000",
         "power": "medium",
         "gender": "female",
         "color": "gold"
@@ -18,11 +18,11 @@
       "metadata": {
         "group": 2
       },
-      "label": "Kolbert",
+      "label": "Dragon",
       "id": "D02_Kolbert",
       "properties": {
         "name": "Kolbert",
-        "birdthDate": "02/01/0400",
+        "birthDate": "02/01/0400",
         "power": "strong",
         "gender": "male",
         "color": "silver"
@@ -36,7 +36,7 @@
       "id": "D03_Neptun",
       "properties": {
         "name": "Neptun",
-        "birdthDate": "02/01/1300",
+        "birthDate": "02/01/1300",
         "power": "weak",
         "gender": "male",
         "color": "blue"
@@ -151,7 +151,7 @@
       "properties": {
         "name": "South",
         "king": "Jimmy",
-        "Queen": "Mercy",
+        "queen": "Mercy",
         "independenceDay" : "12/4/1670",
         "funds": 7650000
       }
@@ -225,7 +225,7 @@
       "id": "OWN_P01D03",
       "source": "P01_Napoleon",
       "target": "D03_Neptun",
-      "label": "own",
+      "label": "Own",
       "metadata": {
         "value": 1
       },
@@ -238,7 +238,7 @@
       "id": "OWN_P02D01",
       "source": "P02_Mlle.Baptistine",
       "target": "D01_Myriel",
-      "label": "own",
+      "label": "Own",
       "metadata": {
         "value": 1
       },
@@ -252,7 +252,7 @@
       "id": "OWN_P02D02",
       "source": "P02_Mlle.Baptistine",
       "target": "D02_Kolbert",
-      "label": "own",
+      "label": "Own",
       "metadata": {
         "value": 1
       },
@@ -265,7 +265,7 @@
       "id": "KNOW_P01P02",
       "source": "P01_Napoleon",
       "target": "P02_Mlle.Baptistine",
-      "label": "know",
+      "label": "Know",
       "metadata": {
         "value": 1
       },
@@ -278,7 +278,7 @@
       "id": "KNOW_P02P03",
       "source": "P02_Mlle.Baptistine",
       "target": "P03_CountessdeLo",
-      "label": "know",
+      "label": "Know",
       "metadata": {
         "value": 1
       },
@@ -291,7 +291,7 @@
       "id": "KNOW_P03P01",
       "source": "P03_CountessdeLo",
       "target": "P01_Napoleon",
-      "label": "know",
+      "label": "Know",
       "metadata": {
         "value": 1
       },
@@ -304,7 +304,7 @@
       "id": "MEMB_P03G01",
       "source": "P03_CountessdeLo",
       "target": "G01-masons",
-      "label": "memberOf",
+      "label": "MemberOf",
       "metadata": {
         "value": 1
       },
@@ -318,7 +318,7 @@
       "id": "MEMB_P03G03",
       "source": "P03_CountessdeLo",
       "target": "G03-craft",
-      "label": "memberOf",
+      "label": "MemberOf",
       "metadata": {
         "value": 1
       },
@@ -330,7 +330,7 @@
       "id": "MEMB_P02G02",
       "source": "P02_Mlle.Baptistine",
       "target": "G02-merchant",
-      "label": "memberOf",
+      "label": "MemberOf",
       "metadata": {
         "value": 1
       },
@@ -344,7 +344,7 @@
       "id": "FIRE_D02D01",
       "source": "D02_Kolbert",
       "target": "D01_Myriel",
-      "label": "fire",
+      "label": "Fire",
       "metadata": {
         "value": 1
       },
@@ -358,7 +358,7 @@
       "id": "FIRE_D02D03",
       "source": "D02_Kolbert",
       "target": "D03_Neptun",
-      "label": "fire",
+      "label": "Fire",
       "metadata": {
         "value": 1
       },
@@ -372,7 +372,7 @@
       "id": "FREEZ_D01D03",
       "source": "D01_Myriel",
       "target": "D03_Neptun",
-      "label": "freeze",
+      "label": "Freeze",
       "metadata": {
         "value": 1
       },
@@ -386,12 +386,12 @@
       "id": "ORIGIN_D01K01",
       "source": "D01_Myriel",
       "target": "K01-North",
-      "label": "originatedIn",
+      "label": "OriginatedIn",
       "metadata": {
         "value": 1
       },
       "properties": {
-        "date": "1/1/500"
+        "startDate": "1/1/500"
       }
 
     },
@@ -399,12 +399,12 @@
       "id": "SUBJECT_P01K01",
       "source": "P01_Napoleon",
       "target": "K01-North",
-      "label": "subjectOf",
+      "label": "SubjectOf",
       "metadata": {
         "value": 1
       },
       "properties": {
-        "date": "12/10/1743"
+        "startDate": "12/10/1743"
       }
 
     },
@@ -412,12 +412,12 @@
       "id": "SUBJECT_P02K02",
       "source": "P02_Mlle.Baptistine",
       "target": "K02-South",
-      "label": "subjectOf",
+      "label": "SubjectOf",
       "metadata": {
         "value": 1
       },
       "properties": {
-        "date": "1/2/1723"
+        "startDate": "1/2/1723"
       }
 
     },
@@ -425,12 +425,12 @@
       "id": "SUBJECT_P03K02",
       "source": "P03_CountessdeLo",
       "target": "K02-South",
-      "label": "subjectOf",
+      "label": "SubjectOf",
       "metadata": {
         "value": 1
       },
       "properties": {
-        "date": "12/22/1599"
+        "startDate": "12/22/1599"
       }
 
     },
@@ -438,12 +438,12 @@
       "id": "REGISTR_H01K02",
       "source": "H01-Dong",
       "target": "K02-South",
-      "label": "registeredIn",
+      "label": "RegisteredIn",
       "metadata": {
         "value": 1
       },
       "properties": {
-        "date": "12/22/1799"
+        "startDate": "12/22/1799"
       }
 
     },
@@ -451,12 +451,12 @@
       "id": "REGISTR_H02K02",
       "source": "H02-Jersy",
       "target": "K02-South",
-      "label": "registeredIn",
+      "label": "RegisteredIn",
       "metadata": {
         "value": 1
       },
       "properties": {
-        "date": "2/1/1759"
+        "startDate": "2/1/1759"
       }
 
     },
@@ -464,12 +464,12 @@
       "id": "REGISTR_H03K03",
       "source": "H03-Jojo",
       "target": "K03-West",
-      "label": "registeredIn",
+      "label": "RegisteredIn",
       "metadata": {
         "value": 1
       },
       "properties": {
-        "date": "31/1/1749"
+        "startDate": "31/1/1749"
       }
 
     },
@@ -477,12 +477,12 @@
       "id": "REGISTR_H03K04",
       "source": "H03-Jojo",
       "target": "K04-East",
-      "label": "registeredIn",
+      "label": "RegisteredIn",
       "metadata": {
         "value": 1
       },
       "properties": {
-        "date": "31/1/1749"
+        "startDate": "31/1/1749"
       }
 
     },
@@ -490,12 +490,12 @@
       "id": "REGISTR_G01K04",
       "source": "G01-masons",
       "target": "K03-West",
-      "label": "registeredIn",
+      "label": "RegisteredIn",
       "metadata": {
         "value": 1
       },
       "properties": {
-        "date": "31/1/1000"
+        "startDate": "31/1/1000"
       }
 
     },
@@ -503,12 +503,12 @@
       "id": "REGISTR_G02K03",
       "source": "G01-masons",
       "target": "K03-West",
-      "label": "registeredIn",
+      "label": "RegisteredIn",
       "metadata": {
         "value": 1
       },
       "properties": {
-        "date": "31/1/1000"
+        "startDate": "31/1/1000"
       }
 
     },
@@ -516,12 +516,12 @@
       "id": "REGISTR_G03K01",
       "source": "G03-craft",
       "target": "K01-North",
-      "label": "registeredIn",
+      "label": "RegisteredIn",
       "metadata": {
         "value": 1
       },
       "properties": {
-        "date": "1/1/1100"
+        "startDate": "1/1/1100"
       }
 
     }

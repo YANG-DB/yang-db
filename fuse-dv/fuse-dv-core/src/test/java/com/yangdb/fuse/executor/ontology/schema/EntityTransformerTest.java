@@ -111,7 +111,7 @@ public class EntityTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        EntityTransformer transformer = new EntityTransformer(ontology, provider, schema, idGeneratorDriver, client);
+        EntityTransformer transformer = new EntityTransformer(config, ontologyProvider,providerIfc, schema, idGeneratorDriver, client);
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/LogicalDragonsGraph.json");
         LogicalGraphModel graphModel = mapper.readValue(stream, LogicalGraphModel.class);
         DataTransformerContext transform = transformer.transform(graphModel, GraphDataLoader.Directive.INSERT);

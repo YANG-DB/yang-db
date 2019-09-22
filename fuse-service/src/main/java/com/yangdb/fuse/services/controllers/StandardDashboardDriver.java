@@ -53,6 +53,7 @@ public class StandardDashboardDriver implements DashboardDriver {
     }
 
     @Override
+    //todo - fix this to be Ontology depended
     public Map graphElementCount() {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);
@@ -65,6 +66,7 @@ public class StandardDashboardDriver implements DashboardDriver {
     }
 
     @Override
+    //todo - fix this to be Ontology depended
     public Map graphElementCreated() {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);
@@ -83,6 +85,7 @@ public class StandardDashboardDriver implements DashboardDriver {
     }
 
     @Override
+    //todo - fix this to be Ontology depended
     public Map graphFieldValuesCount() {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);

@@ -23,7 +23,10 @@ package com.yangdb.fuse.executor.ontology.schema.load;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
+import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
@@ -31,17 +34,16 @@ import com.yangdb.fuse.model.logical.LogicalEdge;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.logical.LogicalNode;
 import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.Entity;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.model.schema.Redundant;
 import com.yangdb.fuse.model.schema.Relation;
+import javaslang.Tuple2;
 import org.elasticsearch.client.Client;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-import javaslang.Tuple2;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -71,9 +73,12 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
     private final ObjectMapper mapper;
 
     @Inject
-    public EntityTransformer(Ontology ontology, IndexProvider indexProvider, RawSchema schema, IdGeneratorDriver<Range> idGenerator, Client client) {
-        this.accessor = new Ontology.Accessor(ontology);
-        this.indexProvider = indexProvider;
+    public EntityTransformer(Config config, OntologyProvider ontology, IndexProviderIfc indexProvider, RawSchema schema, IdGeneratorDriver<Range> idGenerator, Client client) {
+        String assembly = config.getString("assembly");
+        this.accessor = new Ontology.Accessor(ontology.get(assembly).orElseThrow(
+                () -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly))));
+        this.indexProvider = indexProvider.get(assembly).orElseThrow(
+                () -> new FuseError.FuseErrorException(new FuseError("No Index Provider present for assembly", "No Index Provider for assembly" + assembly)));
         this.schema = schema;
         this.idGenerator = idGenerator;
         this.client = client;
@@ -111,14 +116,14 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
             populateFields(context, edge, relation, element);
 
             //partition field in case of none static partitioning index
-            Optional<Tuple2<String,String>> partition = Optional.empty();
+            Optional<Tuple2<String, String>> partition = Optional.empty();
 
             //in case of a partition field - set in the document builder
             String field = relation.getProps().getPartitionField();
-            if(field !=null)
-                partition = Optional.of(new Tuple2<>(field,parseValue(accessor.property$(field).getType(),edge.getProperty(field),sdf).toString()));
+            if (field != null)
+                partition = Optional.of(new Tuple2<>(field, parseValue(accessor.property$(field).getType(), edge.getProperty(field), sdf).toString()));
 
-            return new DocumentBuilder(element, edge.getId(), relation.getType(), Optional.empty(),partition);
+            return new DocumentBuilder(element, edge.getId(), relation.getType(), Optional.empty(), partition);
         } catch (FuseError.FuseErrorException e) {
             return new DocumentBuilder(e.getError());
         }
@@ -165,7 +170,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 .stream()
                 .filter(m -> accessor.relation$(edge.getLabel()).containsMetadata(m.getKey()))
                 .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(),sdf).toString()));
+                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
     }
 
     /**
@@ -180,7 +185,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 .stream()
                 .filter(m -> accessor.entity$(node.getLabel()).containsMetadata(m.getKey()))
                 .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(),sdf).toString()));
+                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
     }
 
 
@@ -201,7 +206,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                         .stream()
                         .filter(m -> accessor.entity$(node.getLabel()).containsProperty(m.getKey()))
                         .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue(),sdf).toString()));
+                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
                 break;
             // todo manage nested index fields
             default:
@@ -230,7 +235,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                         .stream()
                         .filter(m -> accessor.relation$(edge.getLabel()).containsProperty(m.getKey()))
                         .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue(),sdf).toString()));
+                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
                 ;
                 break;
             // todo manage nested index fields
@@ -273,13 +278,12 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
     private void populateRedundantField(Redundant redundant, LogicalNode logicalNode, ObjectNode map) {
         Optional<Object> prop = logicalNode.getPropertyValue(redundant.getRedundantName());
         prop.ifPresent(o -> map.put(redundant.getRedundantName(),
-                parseValue(redundant.getType(), o.toString(),sdf).toString()));
+                parseValue(redundant.getType(), o.toString(), sdf).toString()));
     }
 
     private Optional<LogicalNode> nodeById(DataTransformerContext context, String id) {
         return context.getGraph().getNodes().stream().filter(n -> n.getId().equals(id)).findAny();
     }
-
 
 
 }

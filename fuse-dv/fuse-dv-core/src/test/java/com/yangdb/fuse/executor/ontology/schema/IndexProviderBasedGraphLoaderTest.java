@@ -151,7 +151,7 @@ public class IndexProviderBasedGraphLoaderTest {
         IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
         when(idGeneratorDriver.getNext(anyString(),anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
-        EntityTransformer transformer = new EntityTransformer(ontology,provider,schema,idGeneratorDriver,client);
+        EntityTransformer transformer = new EntityTransformer(config, ontologyProvider,providerIfc, schema, idGeneratorDriver, client);
         IndexProviderBasedGraphLoader graphLoader = new IndexProviderBasedGraphLoader(client,ontology, transformer,schema, provider,idGeneratorDriver);
         Assert.assertEquals(19,graphLoader.init());
     }
@@ -163,7 +163,7 @@ public class IndexProviderBasedGraphLoaderTest {
         when(idGeneratorDriver.getNext(anyString(),anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
 
-        EntityTransformer transformer = new EntityTransformer(ontology,provider,schema,idGeneratorDriver,client);
+        EntityTransformer transformer = new EntityTransformer(config, ontologyProvider,providerIfc, schema, idGeneratorDriver, client);
         IndexProviderBasedGraphLoader graphLoader = new IndexProviderBasedGraphLoader(client,ontology, transformer,schema, provider,idGeneratorDriver);
 
         Assert.assertEquals(19,graphLoader.init());
