@@ -56,7 +56,7 @@ public abstract class FuseUtils {
             if(config.hasPath("elasticsearch.workingDir"))
                 target = config.getString("elasticsearch.workingDir");
 
-            System.out.println(String.format("Loading embedded server %s on port %d on target %s",nodeName,nodePort,target));
+            System.out.println(String.format("Loading elasticsearch (embedded?%b) server %s on port %d on target %s",config.getBoolean("elasticsearch.embedded"),nodeName,nodePort,target));
             closeables.add(new ElasticEmbeddedNode(target, 9200, nodePort, nodeName, deleteOnLoad));
             return true;
         }
