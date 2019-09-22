@@ -55,7 +55,7 @@ public class DirectoryIndexProvider implements IndexProviderIfc {
         if (dir.exists()) {
             this.map =
                     Stream.of(dir.listFiles() == null ? new File[0] : dir.listFiles())
-                    .filter(file -> FilenameUtils.getExtension(file.getName()).equals("json"))
+                    .filter(file -> FilenameUtils.getExtension(file.getName()).equals("conf"))
                     .map(file -> {
                         try {
                             return mapper.readValue(file, IndexProvider.class);

@@ -22,6 +22,7 @@ package com.yangdb.fuse.executor.ontology.schema.load;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
@@ -57,7 +58,6 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
     public static SimpleDateFormat sdf;
 
     static {
-                                     //yyyy-MM-dd HH:mm:ss.SSS
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
@@ -70,6 +70,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
     private final Client client;
     private final ObjectMapper mapper;
 
+    @Inject
     public EntityTransformer(Ontology ontology, IndexProvider indexProvider, RawSchema schema, IdGeneratorDriver<Range> idGenerator, Client client) {
         this.accessor = new Ontology.Accessor(ontology);
         this.indexProvider = indexProvider;

@@ -29,9 +29,14 @@ import com.yangdb.fuse.core.driver.BasicIdGenerator;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.dragons.services.DragonsExtensionQueryController;
+import com.yangdb.fuse.dispatcher.ontology.DirectoryIndexProvider;
 import com.yangdb.fuse.dispatcher.ontology.DirectoryOntologyProvider;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.GraphLayoutProviderFactory;
+import com.yangdb.fuse.executor.ontology.schema.GraphElementSchemaProviderJsonFactory;
+import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
 import com.yangdb.fuse.model.Range;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
@@ -46,11 +51,25 @@ public class DragonsModule extends ModuleBase {
     protected void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         String indexName = conf.getString(conf.getString("assembly") + ".idGenerator_indexName");
         binder.bindConstant().annotatedWith(named(BasicIdGenerator.indexNameParameter)).to(indexName);
+        binder.bind(IndexProviderIfc.class).toInstance(getIndexProvider(conf));
         binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>() {}).to(BasicIdGenerator.class).asEagerSingleton();
+        binder.bind(EntityTransformer.class);
 
-        binder.bind(GraphLayoutProviderFactory.class).toInstance(new DragonsOntologyGraphLayoutProviderFactory(conf.getString("fuse.ontology_provider_dir")));
-        binder.bind(DragonsExtensionQueryController.class).in(RequestScoped.class);
+
+//        binder.bind(GraphLayoutProviderFactory.class).toInstance(new DragonsOntologyGraphLayoutProviderFactory(conf.getString("fuse.ontology_provider_dir")));
+//        binder.bind(DragonsExtensionQueryController.class).in(RequestScoped.class);
 
     }
+
+    private IndexProviderIfc getIndexProvider(Config conf) throws Throwable{
+        try {
+            return new DirectoryIndexProvider(conf.getString("fuse.index_provider_dir"));
+        } catch (ConfigException e) {
+            return (IndexProviderIfc) Class.forName(conf.getString("fuse.index_provider")).getConstructor().newInstance();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }

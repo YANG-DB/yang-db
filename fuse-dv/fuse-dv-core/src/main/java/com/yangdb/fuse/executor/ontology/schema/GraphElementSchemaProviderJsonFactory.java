@@ -65,9 +65,11 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
     @Inject
     public GraphElementSchemaProviderJsonFactory(Config config, IndexProviderIfc indexProvider, OntologyProvider ontologyProvider) {
-        String ontology = config.getString("assembly");
-        this.indexProvider = indexProvider.get(ontology).get();
-        this.accessor = new Ontology.Accessor(ontologyProvider.get(ontology).get());
+        String assembly = config.getString("assembly");
+        this.indexProvider = indexProvider.get(assembly).orElseThrow(() ->
+                new FuseError.FuseErrorException(new FuseError("No Index Provider present for assembly", "No Index Provider  present for assembly" + assembly)));
+        this.accessor = new Ontology.Accessor(ontologyProvider.get(assembly).orElseThrow(() ->
+                new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly))));
     }
 
     @Override
@@ -90,7 +92,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
                         .flatMap(v -> generateGraphEdgeSchema(r, r.getType(), new StaticIndexPartitions(v)).stream())
                         .collect(Collectors.toList());
             case TIME:
-                return generateGraphEdgeSchema(r, r.getType(),new TimeBasedIndexPartitions(r.getProps()));
+                return generateGraphEdgeSchema(r, r.getType(), new TimeBasedIndexPartitions(r.getProps()));
         }
 
         return Collections.singletonList(new GraphEdgeSchema.Impl(r.getType(),
@@ -155,23 +157,23 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     }
 
     private void validateSchema(List<EPair> pairList) {
-        pairList.forEach(pair->{
-                    if(!accessor.entity(pair.geteTypeA()).isPresent() ||
-                        !accessor.entity(pair.geteTypeB()).isPresent())
-                        throw new FuseError.FuseErrorException(new FuseError("Schema generation exception"," Pair containing "+pair.toString() + " was not matched against the current ontology"));
-                });
+        pairList.forEach(pair -> {
+            if (!accessor.entity(pair.geteTypeA()).isPresent() ||
+                    !accessor.entity(pair.geteTypeB()).isPresent())
+                throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Pair containing " + pair.toString() + " was not matched against the current ontology"));
+        });
     }
 
-    private List<GraphRedundantPropertySchema> getGraphRedundantPropertySchemas(String entitySide,String entityType, Relation rel) {
+    private List<GraphRedundantPropertySchema> getGraphRedundantPropertySchemas(String entitySide, String entityType, Relation rel) {
         List<GraphRedundantPropertySchema> redundantPropertySchemas = new ArrayList<>();
 
-        if(!accessor.entity(entityType).get().getMetadata().contains(ID))
-            throw new FuseError.FuseErrorException(new FuseError("Schema generation exception"," Entity "+ entityType+" not containing "+ID + " metadata property "));
+        if (!accessor.entity(entityType).get().getMetadata().contains(ID))
+            throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Entity " + entityType + " not containing " + ID + " metadata property "));
 
-        validateRedundant(entityType,entitySide,rel.getRedundant());
+        validateRedundant(entityType, entitySide, rel.getRedundant());
         redundantPropertySchemas.add(new GraphRedundantPropertySchema.Impl(ID, String.format("%s.%s", entitySide, ID), "string"));
         //add all RedundantProperty according to schema
-        validateRedundant(entityType,entitySide,rel.getRedundant());
+        validateRedundant(entityType, entitySide, rel.getRedundant());
         rel.getRedundant()
                 .stream()
                 .filter(r -> r.getSide().contains(entitySide))
@@ -184,9 +186,9 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     private void validateRedundant(String entityType, String entitySide, List<Redundant> redundant) {
         redundant.stream()
                 .filter(r -> r.getSide().contains(entitySide))
-                .forEach(r-> {
-                        if(!accessor.entity(entityType).get().getProperties().contains(r.getName()))
-                            throw new FuseError.FuseErrorException(new FuseError("Schema generation exception"," Entity "+ entityType + " not containing "+r.getName() + " property (as redundant ) "  ));
+                .forEach(r -> {
+                    if (!accessor.entity(entityType).get().getProperties().contains(r.getName()))
+                        throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Entity " + entityType + " not containing " + r.getName() + " property (as redundant ) "));
                 });
     }
 
