@@ -22,10 +22,13 @@ package com.yangdb.dragons;
 
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
+import com.google.inject.multibindings.Multibinder;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
+import com.yangdb.dragons.cursor.LogicalGraphHierarchyTraversalCursor;
 import com.yangdb.dragons.schema.DragonsOntologyGraphLayoutProviderFactory;
 import com.yangdb.fuse.core.driver.BasicIdGenerator;
+import com.yangdb.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.dragons.services.DragonsExtensionQueryController;
@@ -38,6 +41,7 @@ import com.yangdb.fuse.executor.ontology.GraphLayoutProviderFactory;
 import com.yangdb.fuse.executor.ontology.schema.GraphElementSchemaProviderJsonFactory;
 import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
 import com.yangdb.fuse.model.Range;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 
@@ -55,6 +59,11 @@ public class DragonsModule extends ModuleBase {
         binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>() {}).to(BasicIdGenerator.class).asEagerSingleton();
         binder.bind(EntityTransformer.class);
 
+        Multibinder<CompositeCursorFactory.Binding> bindingMultibinder = Multibinder.newSetBinder(binder, CompositeCursorFactory.Binding.class);
+        bindingMultibinder.addBinding().toInstance(new CompositeCursorFactory.Binding(
+                LogicalGraphCursorRequest.CursorType,
+                LogicalGraphCursorRequest.class,
+                new LogicalGraphHierarchyTraversalCursor.Factory()));
 
 //        binder.bind(GraphLayoutProviderFactory.class).toInstance(new DragonsOntologyGraphLayoutProviderFactory(conf.getString("fuse.ontology_provider_dir")));
 //        binder.bind(DragonsExtensionQueryController.class).in(RequestScoped.class);
