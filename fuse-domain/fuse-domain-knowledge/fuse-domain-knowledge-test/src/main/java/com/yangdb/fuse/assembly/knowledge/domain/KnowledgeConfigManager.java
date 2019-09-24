@@ -20,10 +20,11 @@ package com.yangdb.fuse.assembly.knowledge.domain;
  * #L%
  */
 
-import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
+import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -33,7 +34,6 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsReques
 import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateRequest;
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
 
 import java.io.File;
@@ -44,12 +44,12 @@ import java.util.TimeZone;
 
 public class KnowledgeConfigManager {
 
-    private TransportClient client;
+    private BaseFuseElasticClient client;
     private SimpleDateFormat sdf;
     private Config conf;
     private RawSchema schema;
 
-    public KnowledgeConfigManager(String confPath, TransportClient client) {
+    public KnowledgeConfigManager(String confPath, BaseFuseElasticClient client) {
         this.client = client;
         try {
             File configFile = new File(confPath);
@@ -101,7 +101,7 @@ public class KnowledgeConfigManager {
         return Stream.ofAll(indices).count(s -> !s.isEmpty());
     }
 
-    public TransportClient getClient() {
+    public BaseFuseElasticClient getClient() {
         return client;
     }
 }

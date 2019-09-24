@@ -4,21 +4,18 @@ import com.typesafe.config.Config;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
 import com.yangdb.fuse.client.BaseFuseClient;
 import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
 import com.yangdb.fuse.services.FuseUtils;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.jooby.Jooby;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.yangdb.fuse.services.controllers.IdGeneratorController.IDGENERATOR_INDEX;
 
@@ -28,7 +25,7 @@ public abstract class Setup {
     public static ElasticEmbeddedNode elasticEmbeddedNode = null;
     public static KnowledgeConfigManager manager = null;
     public static FuseClient fuseClient = null;
-    public static TransportClient client = null;
+    public static BaseFuseElasticClient client = null;
 
     public static void setup() throws Exception {
         setup(true);

@@ -2,6 +2,8 @@ package com.yangdb.fuse.services.engine2.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
@@ -9,7 +11,7 @@ import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.ETyped;
-import com.yangdb.fuse.model.query.properties.*;
+import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.quant.Quant1;
@@ -18,12 +20,12 @@ import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
-import com.yangdb.fuse.model.results.*;
+import com.yangdb.fuse.model.results.CsvQueryResult;
+import com.yangdb.fuse.model.results.QueryResultAssert;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCsvCursorRequest;
 import com.yangdb.fuse.services.TestsConfiguration;
 import com.yangdb.fuse.services.engine2.CsvCursorTestSuite;
-import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
@@ -34,7 +36,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.client.transport.TransportClient;
 import org.junit.*;
 
 import java.io.IOException;
@@ -58,7 +59,7 @@ public class CsvCursorTests {
     }
 
 
-    public static void setup(TransportClient client, boolean calcStats) throws Exception {
+    public static void setup(BaseFuseElasticClient client, boolean calcStats) throws Exception {
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
@@ -174,11 +175,11 @@ public class CsvCursorTests {
 
 
 
-    public static void cleanup(TransportClient client) throws Exception {
+    public static void cleanup(BaseFuseElasticClient client) throws Exception {
         cleanup(client, true);
     }
 
-    public static void cleanup(TransportClient client, boolean statsUsed) throws Exception {
+    public static void cleanup(BaseFuseElasticClient client, boolean statsUsed) throws Exception {
         client.admin().indices()
                 .delete(new DeleteIndexRequest(
                         PERSON.name.toLowerCase(),

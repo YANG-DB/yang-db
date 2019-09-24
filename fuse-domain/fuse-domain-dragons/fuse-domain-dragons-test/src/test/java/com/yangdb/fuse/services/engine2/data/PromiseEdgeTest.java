@@ -1,8 +1,10 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.services.TestsConfiguration;
 import com.yangdb.fuse.services.engine2.NonRedundantTestSuite;
+import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.logging.LoggingSearchVertexController;
 import com.yangdb.fuse.unipop.controller.promise.PromiseVertexController;
@@ -13,7 +15,6 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
-import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -26,7 +27,6 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.transport.TransportClient;
 import org.joda.time.DateTime;
 import org.junit.*;
 import org.unipop.query.predicates.PredicatesHolder;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
  * Created by Elad on 4/25/2017.
  */
 public class PromiseEdgeTest {
-    static TransportClient client;
+    static BaseFuseElasticClient client;
     static ElasticGraphConfiguration configuration;
     static UniGraph graph;
     static MetricRegistry registry;

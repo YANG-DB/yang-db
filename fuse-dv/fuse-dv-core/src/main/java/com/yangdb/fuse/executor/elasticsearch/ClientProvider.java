@@ -23,14 +23,13 @@ package com.yangdb.fuse.executor.elasticsearch;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
+import com.yangdb.fuse.client.elastic.TransportFuseElasticClient;
 import com.yangdb.fuse.executor.mock.elasticsearch.MockClient;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -63,7 +62,7 @@ public class ClientProvider implements Provider<Client> {
                 .put("cluster.name", this.configuration.getClusterName())
                 .put("client.transport.ignore_cluster_name", this.configuration.getClientTransportIgnoreClusterName())
                 .build();
-        TransportClient client = new PreBuiltTransportClient(settings);
+        TransportFuseElasticClient client = new TransportFuseElasticClient(settings);
         Stream.of(this.configuration.getClusterHosts()).forEach(host -> {
             try {
                 client.addTransportAddress(new TransportAddress(InetAddress.getByName(host), this.configuration.getClusterPort()));

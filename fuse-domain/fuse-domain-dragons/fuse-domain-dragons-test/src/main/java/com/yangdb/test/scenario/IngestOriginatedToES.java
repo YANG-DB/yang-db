@@ -24,10 +24,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -47,12 +47,12 @@ import static com.yangdb.test.scenario.ETLUtils.getClient;
  */
 public class IngestOriginatedToES {
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
-        TransportClient client = getClient();
+        BaseFuseElasticClient client = getClient();
         //loadHorses(client);
         loadDragons(client);
     }
 
-    private static void loadHorses(TransportClient client) {
+    private static void loadHorses(BaseFuseElasticClient client) {
         IntStream.range(1,13).forEach(p -> {
             try {
                 writeToIndex("C:\\demo_data_6June2017\\horse_originated_chunks", "kingdomsRelations_ORIGINATED_HORSE-out", "2000" +String.format("%02d", p), client);
@@ -64,7 +64,7 @@ public class IngestOriginatedToES {
         });
     }
 
-    private static void loadDragons(TransportClient client) {
+    private static void loadDragons(BaseFuseElasticClient client) {
         IntStream.range(1,13).forEach(p -> {
             try {
                 writeToIndex("C:\\demo_data_6June2017\\dragon_originated_chunks", "kingdomsRelations_ORIGINATED_DRAGON-out", "2000" +String.format("%02d", p), client);

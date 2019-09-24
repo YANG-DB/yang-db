@@ -1,10 +1,10 @@
-package com.yangdb.fuse.services.embedded;
+package com.yangdb.fuse.client.elastic;
 
 /*-
  * #%L
- * fuse-test-framework
+ * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,9 @@ package com.yangdb.fuse.services.embedded;
  * #L%
  */
 
-import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
+import org.elasticsearch.client.Client;
 
-/**
- * Created by moti on 3/21/2017.
- */
-public interface ElasticIndexConfigurer {
-    void configure(BaseFuseElasticClient client);
+public interface BaseFuseElasticClient extends Client {
+
 
 }

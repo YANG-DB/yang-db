@@ -20,16 +20,15 @@ package com.yangdb.fuse.services.embedded;
  * #L%
  */
 
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
+import com.yangdb.fuse.client.elastic.TransportFuseElasticClient;
 import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.logging.LogConfigurator;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -64,7 +63,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     static int httpTransportPort;
     static String nodeName;
-    static TransportClient client = null;
+    static BaseFuseElasticClient client = null;
     //endregion
 
     //region Constructors
@@ -105,17 +104,17 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //endregion
 
     //region Methods
-    public static TransportClient getClient() {
+    public static BaseFuseElasticClient getClient() {
         return getClient(nodeName,httpTransportPort);
     }
 
-    public static TransportClient getClient(String nodeName,int httpTransportPort) {
+    public static BaseFuseElasticClient getClient(String nodeName,int httpTransportPort) {
         if (client == null) {
             try {
                 Settings settings = Settings.builder()
                         .put("cluster.name", nodeName)
                         .build();
-                client = new PreBuiltTransportClient(settings)
+                client = new TransportFuseElasticClient(settings)
                         .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
             } catch (UnknownHostException e) {
                 throw new UnknownError(e.getMessage());

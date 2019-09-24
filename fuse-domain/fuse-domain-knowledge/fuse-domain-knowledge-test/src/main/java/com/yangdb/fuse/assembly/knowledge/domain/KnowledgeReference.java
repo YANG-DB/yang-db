@@ -22,8 +22,8 @@ package com.yangdb.fuse.assembly.knowledge.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.client.transport.TransportClient;
 
 /**
  * Created by lior.perry pc on 5/11/2018.
@@ -54,7 +54,7 @@ public class KnowledgeReference {
     }
 
 
-    public void addToBulk(BulkRequestBuilder bulk, TransportClient client) {
+    public void addToBulk(BulkRequestBuilder bulk, BaseFuseElasticClient client) {
         /*ObjectMapper mapper = new ObjectMapper();
         String index = Stream.ofAll(schema.getPartitions("reference")).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                 .filter(partition -> partition.isWithin(referenceId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);

@@ -1,6 +1,8 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.ETyped;
@@ -14,7 +16,6 @@ import com.yangdb.fuse.model.results.Entity;
 import com.yangdb.fuse.model.results.Relationship;
 import com.yangdb.fuse.services.TestsConfiguration;
 import com.yangdb.fuse.services.engine2.NonRedundantTestSuite;
-import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
@@ -24,14 +25,12 @@ import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.client.transport.TransportClient;
 import org.junit.*;
 
 import java.io.IOException;
 import java.util.*;
 
 import static com.yangdb.fuse.test.framework.index.Mappings.Mapping.Property.Type.keyword;
-import static io.restassured.RestAssured.given;
 
 /**
  * Created by Roman on 12/04/2017.
@@ -43,7 +42,7 @@ public class SingleEntityTest {
 
         String idField = "id";
 
-        TransportClient client = NonRedundantTestSuite.elasticEmbeddedNode.getClient();
+        BaseFuseElasticClient client = NonRedundantTestSuite.elasticEmbeddedNode.getClient();
 
         new MappingElasticConfigurer("person", new Mappings().addMapping("pge",
                 new Mapping().addProperty("type", new Property(keyword))

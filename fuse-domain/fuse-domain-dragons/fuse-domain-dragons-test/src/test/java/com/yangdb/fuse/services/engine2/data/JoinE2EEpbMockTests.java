@@ -1,6 +1,8 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -15,11 +17,16 @@ import com.yangdb.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
 import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.query.*;
+import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.ETyped;
-import com.yangdb.fuse.model.query.properties.*;
+import com.yangdb.fuse.model.query.properties.EProp;
+import com.yangdb.fuse.model.query.properties.EPropGroup;
+import com.yangdb.fuse.model.query.properties.RedundantRelProp;
+import com.yangdb.fuse.model.query.properties.RelPropGroup;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.properties.projection.IdentityProjection;
@@ -29,11 +36,10 @@ import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
-import com.yangdb.fuse.model.results.*;
 import com.yangdb.fuse.model.results.Entity;
+import com.yangdb.fuse.model.results.*;
 import com.yangdb.fuse.services.TestsConfiguration;
 import com.yangdb.fuse.services.engine2.JoinE2EEpbMockTestSuite;
-import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.services.engine2.mocks.EpbMockModule;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
@@ -46,7 +52,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.client.transport.TransportClient;
 import org.junit.*;
 
 import java.io.IOException;
@@ -70,7 +75,7 @@ public class JoinE2EEpbMockTests {
     }
 
 
-    public static void setup(TransportClient client, boolean calcStats) throws Exception {
+    public static void setup(BaseFuseElasticClient client, boolean calcStats) throws Exception {
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
@@ -160,11 +165,11 @@ public class JoinE2EEpbMockTests {
         }
     }
 
-    public static void cleanup(TransportClient client) throws Exception {
+    public static void cleanup(BaseFuseElasticClient client) throws Exception {
         cleanup(client, false);
     }
 
-    public static void cleanup(TransportClient client, boolean statsUsed) throws Exception {
+    public static void cleanup(BaseFuseElasticClient client, boolean statsUsed) throws Exception {
         client.admin().indices()
                 .delete(new DeleteIndexRequest(
                         PERSON.name.toLowerCase(),

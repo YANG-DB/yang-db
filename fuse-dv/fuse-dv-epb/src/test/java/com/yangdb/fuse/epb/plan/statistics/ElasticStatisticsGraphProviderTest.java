@@ -3,6 +3,7 @@ package com.yangdb.fuse.epb.plan.statistics;
 import com.codahale.metrics.MetricRegistry;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.ImmutableList;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.yangdb.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
 import com.yangdb.fuse.epb.plan.statistics.provider.ElasticStatProvider;
@@ -22,17 +23,16 @@ import com.yangdb.fuse.stat.model.result.StatRangeResult;
 import com.yangdb.fuse.stat.model.result.StatTermResult;
 import com.yangdb.fuse.stat.util.EsUtil;
 import com.yangdb.fuse.stat.util.StatUtil;
-import com.yangdb.fuse.unipop.schemaProviders.*;
-import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.MappingFileElasticConfigurer;
+import com.yangdb.fuse.unipop.schemaProviders.*;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -345,7 +345,7 @@ public class ElasticStatisticsGraphProviderTest {
     //endregion
 
     //region Fields
-    private static TransportClient statClient;
+    private static BaseFuseElasticClient statClient;
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static StatConfig statConfig;
 

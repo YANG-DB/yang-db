@@ -25,6 +25,8 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.jayway.jsonpath.JsonPath;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
+import com.yangdb.fuse.client.elastic.TransportFuseElasticClient;
 import com.yangdb.fuse.model.Utils;
 import com.yangdb.fuse.model.execution.plan.Direction;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -38,13 +40,11 @@ import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -142,9 +142,9 @@ public abstract class ETLUtils {
                 .build();
     }
 
-    public static TransportClient getClient() throws UnknownHostException {
+    public static BaseFuseElasticClient getClient() throws UnknownHostException {
         Settings settings = Settings.builder().put("cluster.name", "fuse-test").build();
-        return new PreBuiltTransportClient(settings)
+        return new TransportFuseElasticClient(settings)
                 .addTransportAddress(new TransportAddress(InetAddress.getByName("13.81.12.209"), 9300))
                 .addTransportAddress(new TransportAddress(InetAddress.getByName("13.73.165.97"), 9300))
                 .addTransportAddress(new TransportAddress(InetAddress.getByName("52.166.57.208"), 9300));

@@ -2,6 +2,8 @@ package com.yangdb.fuse.assembly.knowledge;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.client.elastic.TransportFuseElasticClient;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
@@ -21,7 +23,6 @@ import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.unipop.controller.utils.map.MapBuilder;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
@@ -39,7 +40,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -1666,7 +1666,7 @@ public class RealKnowledgeRuleBaseClusterTest {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         Settings settings = Settings.builder().put("cluster.name", "knowledge").build();
-        Client client = new PreBuiltTransportClient(settings)
+        Client client = new TransportFuseElasticClient(settings)
                 .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), 9300));
 
         String workingDir = System.getProperty("user.dir");

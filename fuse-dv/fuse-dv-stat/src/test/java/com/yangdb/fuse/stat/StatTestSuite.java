@@ -1,8 +1,8 @@
 package com.yangdb.fuse.stat;
 
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -29,8 +29,8 @@ public class StatTestSuite {
     public static final String MAPPING_STAT_FILE_PATH = Paths.get("src", "test", "resources", "elastic.test.stat.mapping.json").toString();
     public static final String STAT_INDEX_NAME = "stat";
 
-    public static TransportClient dataClient;
-    public static TransportClient statClient;
+    public static BaseFuseElasticClient dataClient;
+    public static BaseFuseElasticClient statClient;
 
     private static ElasticEmbeddedNode elasticEmbeddedNode;
 

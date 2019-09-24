@@ -24,10 +24,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -48,7 +48,7 @@ import static com.yangdb.test.scenario.ETLUtils.getClient;
 public class IngestMemberOfToES {
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 //        createIndices("mapping/owns.mapping", "own","own2000", getClient());
-        TransportClient client = getClient();
+        BaseFuseElasticClient client = getClient();
 
         IntStream.range(1,13).forEach(p -> {
             try {

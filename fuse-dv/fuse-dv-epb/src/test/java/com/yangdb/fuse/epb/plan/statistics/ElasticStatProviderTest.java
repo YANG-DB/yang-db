@@ -1,6 +1,7 @@
 package com.yangdb.fuse.epb.plan.statistics;
 
 import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.yangdb.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
 import com.yangdb.fuse.epb.plan.statistics.provider.ElasticStatProvider;
@@ -20,7 +21,6 @@ import com.yangdb.fuse.test.framework.index.MappingFileElasticConfigurer;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,9 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by benishue on 28-May-17.
@@ -41,8 +39,8 @@ import static org.junit.Assert.assertTrue;
 public class ElasticStatProviderTest {
 
     //region Parameters
-    private static TransportClient dataClient;
-    private static TransportClient statClient;
+    private static BaseFuseElasticClient dataClient;
+    private static BaseFuseElasticClient statClient;
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static StatConfig statConfig;
 

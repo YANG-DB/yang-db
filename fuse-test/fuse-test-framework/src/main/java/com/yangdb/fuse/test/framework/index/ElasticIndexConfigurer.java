@@ -20,12 +20,12 @@ package com.yangdb.fuse.test.framework.index;
  * #L%
  */
 
-import org.elasticsearch.client.transport.TransportClient;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 
 /**
  * Created by moti on 3/21/2017.
  */
 public interface ElasticIndexConfigurer {
-    void configure(TransportClient client);
+    void configure(BaseFuseElasticClient client);
 
 }

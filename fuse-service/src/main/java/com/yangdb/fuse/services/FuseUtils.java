@@ -64,7 +64,7 @@ public abstract class FuseUtils {
     }
 
     public static void onStop() {
-        System.out.println("Stopping all closeables");
+        System.out.println("Stopping all closeables: " + closeables.size());
         closeables.forEach(c-> {
             try {
                 c.close();

@@ -21,10 +21,10 @@ package com.yangdb.test.etl;
  */
 
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.model.execution.plan.Direction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
@@ -41,7 +41,7 @@ import static com.yangdb.test.scenario.ETLUtils.id;
  * Created by moti on 6/5/2017.
  */
 public class RedundantFieldTransformer implements Transformer{
-    private TransportClient client;
+    private BaseFuseElasticClient client;
     private Map<String, String> entityADupFields;
     private String entityADupIdField;
     private List<String> entityAIndices;
@@ -52,7 +52,7 @@ public class RedundantFieldTransformer implements Transformer{
     private String entityBType;
     private String direction;
 
-    public RedundantFieldTransformer(TransportClient client,
+    public RedundantFieldTransformer(BaseFuseElasticClient client,
                                      Map<String, String> entityADupFields,
                                      String entityADupIdField,
                                      List<String> entityAIndices,
@@ -73,7 +73,7 @@ public class RedundantFieldTransformer implements Transformer{
         this.entityBIndices = entityBIndices;
         this.entityBType = entityBType;
     }
-    public RedundantFieldTransformer(TransportClient client, Map<String, String> entityADupFields, String entityADupIdField, List<String> entityAIndices, String entityAType,
+    public RedundantFieldTransformer(BaseFuseElasticClient client, Map<String, String> entityADupFields, String entityADupIdField, List<String> entityAIndices, String entityAType,
                                      Map<String, String> entityBDupFields,
                                      String entityBDupIdField,
                                      List<String> entityBIndices,

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.yangdb.fuse.client.elastic.TransportFuseElasticClient;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -34,7 +35,6 @@ import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -105,7 +105,7 @@ public class IngestFreezeToES {
 
     private static Client getClient() throws UnknownHostException {
         Settings settings = Settings.builder().put("cluster.name", "fuse-test").build();
-        return new PreBuiltTransportClient(settings)
+        return new TransportFuseElasticClient(settings)
                 .addTransportAddress(new TransportAddress(InetAddress.getByName("52.174.90.109"), 9300))
                 .addTransportAddress(new TransportAddress(InetAddress.getByName("13.93.93.10"), 9300))
                 .addTransportAddress(new TransportAddress(InetAddress.getByName("13.93.93.190"), 9300));
@@ -113,7 +113,7 @@ public class IngestFreezeToES {
 
     private static Client getClientDataOnly() throws UnknownHostException {
         Settings settings = Settings.builder().put("cluster.name", "fuse-test").build();
-        return new PreBuiltTransportClient(settings)
+        return new TransportFuseElasticClient(settings)
                 .addTransportAddress(new TransportAddress(InetAddress.getByName("13.81.12.209"), 9300))
                 .addTransportAddress(new TransportAddress(InetAddress.getByName("13.73.165.97"), 9300))
                 .addTransportAddress(new TransportAddress(InetAddress.getByName("52.166.57.208"), 9300));

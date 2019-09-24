@@ -20,6 +20,7 @@ package com.yangdb.fuse.stat;
  * #L%
  */
 
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
 import com.yangdb.fuse.stat.es.client.ClientProvider;
 import com.yangdb.fuse.stat.es.populator.ElasticDataPopulator;
@@ -36,7 +37,6 @@ import com.yangdb.fuse.stat.util.StatUtil;
 import javaslang.collection.Stream;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.elasticsearch.client.transport.TransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,15 +59,15 @@ public class StatCalculator {
             throw new IllegalArgumentException("Invalid/Missing Arguments");
         }
 
-        TransportClient dataClient = null;
-        TransportClient statClient = null;
+        BaseFuseElasticClient dataClient = null;
+        BaseFuseElasticClient statClient = null;
         Configuration configuration = null;
 
         try {
             configuration = new StatConfiguration(args[0]).getInstance();
             logger.info("Loading configuration file at : '{}'", ((PropertiesConfiguration) configuration).getPath());
-            dataClient = ClientProvider.getDataClient(configuration);
-            statClient = ClientProvider.getStatClient(configuration);
+            dataClient = (BaseFuseElasticClient) ClientProvider.getDataClient(configuration);
+            statClient = (BaseFuseElasticClient) ClientProvider.getStatClient(configuration);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -86,7 +86,7 @@ public class StatCalculator {
         }
     }
 
-    public static void run(TransportClient dataClient, TransportClient statClient, Configuration configuration) {
+    public static void run(BaseFuseElasticClient dataClient, BaseFuseElasticClient statClient, Configuration configuration) {
         loadDefaultStatParameters(configuration);
 
         Optional<StatContainer> statConfiguration = StatUtil.getStatConfigurationObject(configuration);
@@ -99,8 +99,8 @@ public class StatCalculator {
 
     //region Public Methods
     public static void buildStatisticsBasedOnConfiguration(
-            TransportClient dataClient,
-            TransportClient statClient,
+            BaseFuseElasticClient dataClient,
+            BaseFuseElasticClient statClient,
             StatContainer statContainer) {
         for (Mapping mapping : statContainer.getMappings()) {
             for (String index : mapping.getIndices()) {
@@ -145,8 +145,8 @@ public class StatCalculator {
 
     //region Private Methods
     private static void buildHistogramForNumericFields(
-            TransportClient dataClient,
-            TransportClient statClient,
+            BaseFuseElasticClient dataClient,
+            BaseFuseElasticClient statClient,
             StatContainer statContainer,
             String index,
             String type) {
@@ -191,8 +191,8 @@ public class StatCalculator {
     }
 
     private static void buildHistogramForManualFields(
-            TransportClient dataClient,
-            TransportClient statClient,
+            BaseFuseElasticClient dataClient,
+            BaseFuseElasticClient statClient,
             StatContainer statContainer,
             String index,
             String type) {
@@ -244,8 +244,8 @@ public class StatCalculator {
     }
 
     private static void buildHistogramForStringFields(
-            TransportClient dataClient,
-            TransportClient statClient,
+            BaseFuseElasticClient dataClient,
+            BaseFuseElasticClient statClient,
             StatContainer statContainer,
             String index,
             String type) {
@@ -279,8 +279,8 @@ public class StatCalculator {
     }
 
     private static void buildHistogramForCompositeFields(
-            TransportClient dataClient,
-            TransportClient statClient,
+            BaseFuseElasticClient dataClient,
+            BaseFuseElasticClient statClient,
             StatContainer statContainer,
             String index,
             String type) {
@@ -351,8 +351,8 @@ public class StatCalculator {
     }
 
     private static void buildHistogramForTermFields(
-            TransportClient dataClient,
-            TransportClient statClient,
+            BaseFuseElasticClient dataClient,
+            BaseFuseElasticClient statClient,
             StatContainer statContainer,
             String index,
             String type) {
@@ -381,8 +381,8 @@ public class StatCalculator {
     }
 
     private static void buildHistogramForDynamicFields(
-            TransportClient dataClient,
-            TransportClient statClient,
+            BaseFuseElasticClient dataClient,
+            BaseFuseElasticClient statClient,
             StatContainer statContainer,
             String index,
             String type) {
@@ -413,7 +413,7 @@ public class StatCalculator {
 
     private static void populateBuckets(String statIndex,
                                         String statType,
-                                        TransportClient statClient,
+                                        BaseFuseElasticClient statClient,
                                         List<? extends StatResultBase> buckets) throws Exception {
 
         new ElasticDataPopulator(

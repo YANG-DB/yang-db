@@ -77,6 +77,10 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-core</artifactId>
+        </dependency>
 
         <!-- tests -->
     </dependencies>

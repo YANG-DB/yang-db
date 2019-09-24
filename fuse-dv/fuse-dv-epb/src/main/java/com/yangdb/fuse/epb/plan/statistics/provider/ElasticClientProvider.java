@@ -20,11 +20,11 @@ package com.yangdb.fuse.epb.plan.statistics.provider;
  * #L%
  */
 
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
+import com.yangdb.fuse.client.elastic.TransportFuseElasticClient;
 import com.yangdb.fuse.epb.plan.statistics.configuration.StatConfig;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -41,9 +41,9 @@ public class ElasticClientProvider {
     //endregion
 
     //region Public Methods
-    public TransportClient getStatClient() {
+    public BaseFuseElasticClient getStatClient() {
         Settings settings = Settings.builder().put("cluster.name", config.getStatClusterName()).build();
-        TransportClient esClient = new PreBuiltTransportClient(settings);
+        TransportFuseElasticClient esClient = new TransportFuseElasticClient(settings);
         for (String node : config.getStatNodesHosts()) {
             try {
                 esClient.addTransportAddress(new TransportAddress(InetAddress.getByName(node), config.getStatTransportPort()));

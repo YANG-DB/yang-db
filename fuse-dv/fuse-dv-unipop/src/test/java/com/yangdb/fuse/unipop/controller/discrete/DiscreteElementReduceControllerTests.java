@@ -2,6 +2,7 @@ package com.yangdb.fuse.unipop.controller.discrete;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.Mappings;
@@ -23,7 +24,6 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.*;
@@ -104,7 +104,7 @@ public class DiscreteElementReduceControllerTests {
                 },
                 new StandardStrategyProvider());
 
-        TransportClient client = elasticEmbeddedNode.getClient();
+        BaseFuseElasticClient client = elasticEmbeddedNode.getClient();
         client.admin().indices().preparePutTemplate("all")
                 .setPatterns(Arrays.asList("*"))
                 .setSettings(Settings.builder()

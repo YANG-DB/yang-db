@@ -22,6 +22,7 @@ package com.yangdb.fuse.stat.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.stat.model.bucket.BucketRange;
 import com.yangdb.fuse.stat.model.bucket.BucketTerm;
 import com.yangdb.fuse.stat.model.enums.DataType;
@@ -38,7 +39,6 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.Requests;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.collect.ImmutableOpenMap;
@@ -76,18 +76,18 @@ public class EsUtil {
      * @param field     Elastic field name
      * @return List of numeric range buckets with lower (inclusive) and upper bound (exclusive)
      */
-    public static List<StatRangeResult<? extends Number>> getNumericHistogramResults(TransportClient client,
-                                                                   String index,
-                                                                   String type,
-                                                                   String field,
-                                                                   DataType dataType,
-                                                                   List<BucketRange<? extends Number>> buckets) {
+    public static List<StatRangeResult<? extends Number>> getNumericHistogramResults(BaseFuseElasticClient client,
+                                                                                     String index,
+                                                                                     String type,
+                                                                                     String field,
+                                                                                     DataType dataType,
+                                                                                     List<BucketRange<? extends Number>> buckets) {
 
 
         return getNumericBucketsStatResults(client, index, type, field, dataType, buckets);
     }
 
-    public static <T> List<StatRangeResult<T>> getManualHistogramResults(TransportClient client,
+    public static <T> List<StatRangeResult<T>> getManualHistogramResults(BaseFuseElasticClient client,
                                                                       String index,
                                                                       String type,
                                                                       String field,
@@ -110,7 +110,7 @@ public class EsUtil {
         return Collections.emptyList();
     }
 
-    public static <T> List<StatGlobalCardinalityResult> getGlobalCardinalityHistogramResults(TransportClient client,
+    public static <T> List<StatGlobalCardinalityResult> getGlobalCardinalityHistogramResults(BaseFuseElasticClient client,
                                                                                   String index,
                                                                                   String type,
                                                                                   String field,
@@ -163,7 +163,7 @@ public class EsUtil {
      * @param buckets - String buckets ["str1", "str2")
      * @return List of String range buckets with lower (inclusive) and upper bound (exclusive)
      */
-    public static List<StatRangeResult> getStringBucketsStatResults(TransportClient client,
+    public static List<StatRangeResult> getStringBucketsStatResults(BaseFuseElasticClient client,
                                                                     String index,
                                                                     String type,
                                                                     String field,
@@ -212,7 +212,7 @@ public class EsUtil {
         return bucketStatResults;
     }
 
-    public static List<StatTermResult> getTermHistogramResults(TransportClient client,
+    public static List<StatTermResult> getTermHistogramResults(BaseFuseElasticClient client,
                                                                String index,
                                                                String type,
                                                                String field,
@@ -260,7 +260,7 @@ public class EsUtil {
      * @param numOfBins
      * @return
      */
-    public static <T> List<StatRangeResult<T>> getDynamicHistogramResults(TransportClient client,
+    public static <T> List<StatRangeResult<T>> getDynamicHistogramResults(BaseFuseElasticClient client,
                                                                    String index,
                                                                    String type,
                                                                    String field,
