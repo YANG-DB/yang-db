@@ -145,7 +145,7 @@ public class IndexProviderBasedGraphLoaderTest {
 
     @Test
     public void testSchema() throws IOException {
-        Set<String> strings = Arrays.asList("idx_fire_500","idx_freeze_2000","idx_fire_1500","idx_freeze_1000","guilds","Own","SubjectOf","idx_freeze_1500","idx_fire_2000","people","idx_fire_1000","idx_freeze_500","kingdoms","Know","OriginatedIn","RegisteredIn","MemberOf","horses","dragons").stream().collect(Collectors.toSet());
+        Set<String> strings = Arrays.asList("idx_fire_500","idx_freeze_2000","idx_fire_1500","idx_freeze_1000","guilds","own","subjectof","idx_freeze_1500","idx_fire_2000","people","idx_fire_1000","idx_freeze_500","kingdoms","know","originatedin","registeredin","memberof","horses","dragons").stream().collect(Collectors.toSet());
         Assert.assertEquals(strings,StreamSupport.stream(schema.indices().spliterator(),false).collect(Collectors.toSet()));
     }
 

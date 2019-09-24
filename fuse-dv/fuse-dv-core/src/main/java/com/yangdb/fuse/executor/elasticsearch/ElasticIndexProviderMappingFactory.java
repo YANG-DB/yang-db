@@ -53,6 +53,7 @@ public class ElasticIndexProviderMappingFactory {
 
     public static final String ID = "id";
     public static final String TYPE = "type";
+    public static final String DIRECTION = "direction";
     public static final String ENTITY_A = "entityA";
     public static final String ENTITY_B = "entityB";
     public static final String PROPERTIES = "properties";
@@ -104,7 +105,7 @@ public class ElasticIndexProviderMappingFactory {
      */
     private List<Tuple2<String, AcknowledgedResponse>> mapRelations() {
         List<Tuple2<String, AcknowledgedResponse>> responses = new ArrayList<>();
-        StreamSupport.stream(ontology.relations().spliterator(), false).forEach(r -> {
+        ontology.relations().forEach(r -> {
             String mapping = indexProvider.getRelation(r.getName()).orElseThrow(
                     () -> new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + r + " found in ontology")))
                     .getPartition();
@@ -130,7 +131,7 @@ public class ElasticIndexProviderMappingFactory {
                             .settings(generateSettings(r, label))
                             .mapping(label, generateMapping(r, label));
                     //add response to list of responses
-                    responses.add(new Tuple2<>(label, client.admin().indices().putTemplate(request).actionGet()));
+                    responses.add(new Tuple2<>(label.toLowerCase(), client.admin().indices().putTemplate(request).actionGet()));
                     break;
             }
         });
@@ -160,7 +161,7 @@ public class ElasticIndexProviderMappingFactory {
                                 .settings(generateSettings(e, label))
                                 .mapping(label, generateMapping(e, label));
                         //add response to list of responses
-                        responses.add(new Tuple2<>(label, client.admin().indices().putTemplate(request).actionGet()));
+                        responses.add(new Tuple2<>(label.toLowerCase(), client.admin().indices().putTemplate(request).actionGet()));
                     });
                     break;
                 case "time":
@@ -170,7 +171,7 @@ public class ElasticIndexProviderMappingFactory {
                             .settings(generateSettings(e, label))
                             .mapping(label, generateMapping(e, label.toLowerCase()));
                     //add response to list of responses
-                    responses.add(new Tuple2<>(label, client.admin().indices().putTemplate(request).actionGet()));
+                    responses.add(new Tuple2<>(label.toLowerCase(), client.admin().indices().putTemplate(request).actionGet()));
                     break;
             }
         });
@@ -209,7 +210,7 @@ public class ElasticIndexProviderMappingFactory {
      * @param label
      * @return
      */
-    public Map<String, Object> generateMapping(RelationshipType relationshipType, String label) {
+    public Map<String, Object> generateMapping(RelationshipType relationshipType,String label) {
         Optional<RelationshipType> relation = ontology.relation(relationshipType.getName());
         if (!relation.isPresent())
             throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No relation    with name " + label + " found in ontology"));
@@ -222,6 +223,8 @@ public class ElasticIndexProviderMappingFactory {
         //populate fields & metadata
         relation.get().getMetadata().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
         relation.get().getProperties().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
+        //set direction
+        properties.put(DIRECTION,parseType("string"));
         //populate  sideA (entityA)
         populateRedundand(ENTITY_A,relationshipType.getName(), properties);
         //populate  sideB (entityB)

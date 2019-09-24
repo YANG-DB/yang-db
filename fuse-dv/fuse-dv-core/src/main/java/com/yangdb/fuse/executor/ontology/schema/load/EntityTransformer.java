@@ -90,7 +90,10 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
         DataTransformerContext context = new DataTransformerContext(mapper);
         context.withGraph(graph);
         context.withEntities(graph.getNodes().stream().map(n -> translate(context, n)).collect(Collectors.toList()));
-        context.withRelations(graph.getEdges().stream().map(e -> translate(context, e)).collect(Collectors.toList()));
+        //out direction
+        context.withRelations(graph.getEdges().stream().map(e -> translate(context, e, "out")).collect(Collectors.toList()));
+        //in direction
+        context.withRelations(graph.getEdges().stream().map(e -> translate(context, e, "in")).collect(Collectors.toList()));
         return context;
     }
 
@@ -99,9 +102,10 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      *
      * @param context
      * @param edge
+     * @param in
      * @return
      */
-    private DocumentBuilder translate(DataTransformerContext context, LogicalEdge edge) {
+    private DocumentBuilder translate(DataTransformerContext context, LogicalEdge edge, String direction) {
         try {
             ObjectNode element = mapper.createObjectNode();
             Relation relation = indexProvider.getRelation(edge.label())
@@ -109,11 +113,12 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
             //put classifiers
             element.put(ID, edge.getId());
             element.put(TYPE, relation.getType());
+            element.put(DIRECTION, direction);
 
             //populate metadata
             populateMetadataFields(context, edge, element);
             //populate fields
-            populateFields(context, edge, relation, element);
+            populateFields(context, edge, relation,direction, element);
 
             //partition field in case of none static partitioning index
             Optional<Tuple2<String, String>> partition = Optional.empty();
@@ -221,11 +226,20 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param relation
      * @param element
      */
-    private ObjectNode populateFields(DataTransformerContext context, LogicalEdge edge, Relation relation, ObjectNode element) {
+    private ObjectNode populateFields(DataTransformerContext context, LogicalEdge edge, Relation relation,String direction, ObjectNode element) {
         //populate redundant fields A
-        element.put(ENTITY_A, populateSide(ENTITY_A, context, edge.getSource(), relation));
-        //populate redundant fields B
-        element.put(ENTITY_B, populateSide(ENTITY_B, context, edge.getTarget(), relation));
+        switch (direction) {
+            case "out":
+                element.put(ENTITY_A, populateSide(ENTITY_A, context, edge.getSource(), relation));
+                //populate redundant fields B
+                element.put(ENTITY_B, populateSide(ENTITY_B, context, edge.getTarget(), relation));
+                break;
+            case "in":
+                element.put(ENTITY_B, populateSide(ENTITY_A, context, edge.getSource(), relation));
+                //populate redundant fields B
+                element.put(ENTITY_A, populateSide(ENTITY_B, context, edge.getTarget(), relation));
+                break;
+        }
 
         //populate direct fields
         switch (relation.getMapping()) {
@@ -236,7 +250,6 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                         .filter(m -> accessor.relation$(edge.getLabel()).containsProperty(m.getKey()))
                         .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
                                 parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
-                ;
                 break;
             // todo manage nested index fields
             default:

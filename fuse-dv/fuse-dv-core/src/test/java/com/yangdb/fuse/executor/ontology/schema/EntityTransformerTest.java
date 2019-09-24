@@ -194,12 +194,13 @@ public class EntityTransformerTest {
                     }
                 });
 
-        Assert.assertEquals(transform.getRelations().size(), graphModel.getEdges().size());
+        Assert.assertEquals(transform.getRelations().size(),2* graphModel.getEdges().size());
         transform.getRelations()
                 .stream()
                 .map(DocumentBuilder::getNode)
                 .forEach(r -> {
                     Assert.assertNotNull(r.get("type"));
+                    Assert.assertNotNull(r.get("direction"));
                     Assert.assertNotNull(r.get("id"));
 
                     Assert.assertNotNull(r.get("entityA"));
@@ -254,14 +255,28 @@ public class EntityTransformerTest {
                             Assert.assertNotNull(r.get("startDate"));
 
                             //side A redundant
-                            Assert.assertEquals(r.get("entityA").get("type").asText(), "Person");
-                            Assert.assertNotNull(r.get("entityA").get("name"));
-                            Assert.assertNotNull(r.get("entityA").get("firstName"));
+                            switch (r.get("direction").asText()) {
+                                case "out":
+                                    Assert.assertEquals(r.get("entityA").get("type").asText(), "Person");
+                                    Assert.assertNotNull(r.get("entityA").get("name"));
+                                    Assert.assertNotNull(r.get("entityA").get("firstName"));
 
-                            //side B redundant
-                            Assert.assertTrue(r.get("entityB").get("type").asText().equals("Horse") ||
-                                    r.get("entityB").get("type").asText().equals("Dragon"));
-                            Assert.assertNotNull(r.get("entityB").get("name"));
+                                    //side B redundant
+                                    Assert.assertTrue(r.get("entityB").get("type").asText().equals("Horse") ||
+                                            r.get("entityB").get("type").asText().equals("Dragon"));
+                                    Assert.assertNotNull(r.get("entityB").get("name"));
+                                    break;
+                                case "in":
+                                    Assert.assertEquals(r.get("entityB").get("type").asText(), "Person");
+                                    Assert.assertNotNull(r.get("entityB").get("name"));
+                                    Assert.assertNotNull(r.get("entityB").get("firstName"));
+
+                                    //side B redundant
+                                    Assert.assertTrue(r.get("entityA").get("type").asText().equals("Horse") ||
+                                            r.get("entityA").get("type").asText().equals("Dragon"));
+                                    Assert.assertNotNull(r.get("entityA").get("name"));
+                                    break;
+                            }
                             break;
                         case "Know":
                             //         "startDate",
@@ -282,11 +297,22 @@ public class EntityTransformerTest {
 
                             Assert.assertNotNull(r.get("startDate"));
 
-                            //side A redundant
-                            Assert.assertEquals(r.get("entityA").get("type").asText(), "Person");
+                            switch (r.get("direction").asText()) {
+                                case "out":
+                                    //side A redundant
+                                    Assert.assertEquals(r.get("entityA").get("type").asText(), "Person");
 
-                            //side B redundant
-                            Assert.assertEquals("Guild", r.get("entityB").get("type").asText());
+                                    //side B redundant
+                                    Assert.assertEquals("Guild", r.get("entityB").get("type").asText());
+                                    break;
+                                case "in":
+                                    //side A redundant
+                                    Assert.assertEquals(r.get("entityB").get("type").asText(), "Person");
+
+                                    //side B redundant
+                                    Assert.assertEquals("Guild", r.get("entityA").get("type").asText());
+                                    break;
+                            }
                             break;
                         case "OriginatedIn":
                             //check all fields exist
@@ -295,13 +321,26 @@ public class EntityTransformerTest {
 
                             Assert.assertNotNull(r.get("startDate"));
 
-                            //side A redundant
-                            Assert.assertTrue(r.get("entityA").get("type").asText().equals("Dragon") ||
-                                    r.get("entityA").get("type").asText().equals("Person") ||
-                                    r.get("entityA").get("type").asText().equals("Horse"));
+                            switch (r.get("direction").asText()) {
+                                case "out":
+                                    //side A redundant
+                                    Assert.assertTrue(r.get("entityA").get("type").asText().equals("Dragon") ||
+                                            r.get("entityA").get("type").asText().equals("Person") ||
+                                            r.get("entityA").get("type").asText().equals("Horse"));
 
-                            //side B redundant
-                            Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
+                                    //side B redundant
+                                    Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
+                                    break;
+                                case "in":
+                                    //side A redundant
+                                    Assert.assertTrue(r.get("entityB").get("type").asText().equals("Dragon") ||
+                                            r.get("entityB").get("type").asText().equals("Person") ||
+                                            r.get("entityB").get("type").asText().equals("Horse"));
+
+                                    //side B redundant
+                                    Assert.assertEquals("Kingdom", r.get("entityA").get("type").asText());
+                                    break;
+                            }
                             break;
                         case "SubjectOf":
                             //check all fields exist
@@ -311,11 +350,22 @@ public class EntityTransformerTest {
 
                             Assert.assertNotNull(r.get("startDate"));
 
-                            //side A redundant
-                            Assert.assertEquals("Person", r.get("entityA").get("type").asText());
+                            switch (r.get("direction").asText()) {
+                                case "out":
+                                    //side A redundant
+                                    Assert.assertEquals("Person", r.get("entityA").get("type").asText());
 
-                            //side B redundant
-                            Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
+                                    //side B redundant
+                                    Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
+                                    break;
+                                case "in":
+                                    //side A redundant
+                                    Assert.assertEquals("Person", r.get("entityB").get("type").asText());
+
+                                    //side B redundant
+                                    Assert.assertEquals("Kingdom", r.get("entityA").get("type").asText());
+                                    break;
+                            }
                             break;
                         case "RegisteredIn":
                             //check all fields exist
@@ -324,13 +374,24 @@ public class EntityTransformerTest {
                             //check all fields exist
 
                             Assert.assertNotNull(r.get("startDate"));
+                            switch (r.get("direction").asText()) {
+                                case "out":
+                                    //side A redundant
+                                    Assert.assertTrue(r.get("entityA").get("type").asText().equals("Guild") ||
+                                            r.get("entityA").get("type").asText().equals("Horse"));
 
-                            //side A redundant
-                            Assert.assertTrue(r.get("entityA").get("type").asText().equals("Guild") ||
-                                    r.get("entityA").get("type").asText().equals("Horse"));
+                                    //side B redundant
+                                    Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
+                                    break;
+                                case "in":
+                                    //side A redundant
+                                    Assert.assertTrue(r.get("entityB").get("type").asText().equals("Guild") ||
+                                            r.get("entityB").get("type").asText().equals("Horse"));
 
-                            //side B redundant
-                            Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
+                                    //side B redundant
+                                    Assert.assertEquals("Kingdom", r.get("entityA").get("type").asText());
+                                    break;
+                            }
                             break;
                         default:
                             Assert.fail("Not expecting non registered type " + r.get("type").toString());

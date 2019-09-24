@@ -53,7 +53,8 @@ public class CachedRawSchema implements RawSchema {
     //region RawSchema Implementation
     @Override
     public IndexPartitions getPartition(String type) {
-        return this.indexPartitions.computeIfAbsent(type, t -> this.rawSchema.getPartition(t));
+        return this.indexPartitions.computeIfAbsent(type,
+                t -> this.rawSchema.getPartition(t));
     }
 
     @Override

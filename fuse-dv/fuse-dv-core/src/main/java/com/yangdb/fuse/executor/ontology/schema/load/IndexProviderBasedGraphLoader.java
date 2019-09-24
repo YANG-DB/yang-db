@@ -79,7 +79,7 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         this.transformer = transformer;
         this.schema = schema;
         this.indexProvider = indexProviderFactory.get(assembly)
-                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly)));
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Index Provider present for assembly", "No Index Provider present for assembly" + assembly)));
         Ontology ont = ontology.get(assembly)
                 .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly)));
         this.idGenerator = idGenerator;
@@ -200,7 +200,7 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
 
     @Override
     public LoadResponse<String, FuseError> load(File data, Directive directive) {
-        return null;
+        return LoadResponse.EMPTY;
     }
 
     public Range.StatefulRange getRange(String type) {

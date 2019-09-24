@@ -101,7 +101,9 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
 
     private List<GraphVertexSchema> getVertexSchemas() {
-        return indexProvider.getEntities().stream().flatMap(e -> generateGraphVertexSchema(e).stream()).collect(Collectors.toList());
+        return indexProvider.getEntities().stream()
+                .flatMap(e -> generateGraphVertexSchema(e).stream())
+                .collect(Collectors.toList());
     }
 
     private List<GraphVertexSchema> generateGraphVertexSchema(Entity e) {
