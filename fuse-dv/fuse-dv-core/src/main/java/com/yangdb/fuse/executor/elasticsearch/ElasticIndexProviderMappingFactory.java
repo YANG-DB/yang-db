@@ -52,6 +52,7 @@ import static java.util.Collections.singletonMap;
 public class ElasticIndexProviderMappingFactory {
 
     public static final String ID = "id";
+    public static final String TYPE = "type";
     public static final String ENTITY_A = "entityA";
     public static final String ENTITY_B = "entityB";
     public static final String PROPERTIES = "properties";
@@ -113,21 +114,23 @@ public class ElasticIndexProviderMappingFactory {
                 case "static":
                     //static index
                     relation.getProps().getValues().forEach(v -> {
-                        PutIndexTemplateRequest request = new PutIndexTemplateRequest(v.toLowerCase());
-                        request.patterns(Arrays.asList(r.getName().toLowerCase(), r.getName(), String.format("%s%s", v, "*")))
-                                .settings(generateSettings(r, v))
-                                .mapping(v, generateMapping(r, v));
+                        String label = r.getrType();
+                        PutIndexTemplateRequest request = new PutIndexTemplateRequest(label.toLowerCase());
+                        request.patterns(Arrays.asList(r.getName().toLowerCase(),label, r.getName(), String.format("%s%s", v, "*")))
+                                .settings(generateSettings(r, label))
+                                .mapping(label, generateMapping(r, label));
                         //add response to list of responses
                         responses.add(new Tuple2<>(v, client.admin().indices().putTemplate(request).actionGet()));
                     });
                     break;
                 case "time":
+                    String label = r.getrType();
                     PutIndexTemplateRequest request = new PutIndexTemplateRequest(relation.getType().toLowerCase());
-                    request.patterns(Arrays.asList(r.getName().toLowerCase(), r.getName(), String.format(relation.getProps().getIndexFormat(), "*")))
-                            .settings(generateSettings(r, relation.getType()))
-                            .mapping(r.getrType().toLowerCase(), generateMapping(r, relation.getType().toLowerCase()));
+                    request.patterns(Arrays.asList(r.getName().toLowerCase(),label, r.getName(), String.format(relation.getProps().getIndexFormat(), "*")))
+                            .settings(generateSettings(r, label))
+                            .mapping(label, generateMapping(r, label));
                     //add response to list of responses
-                    responses.add(new Tuple2<>(r.getrType(), client.admin().indices().putTemplate(request).actionGet()));
+                    responses.add(new Tuple2<>(label, client.admin().indices().putTemplate(request).actionGet()));
                     break;
             }
         });
@@ -151,21 +154,23 @@ public class ElasticIndexProviderMappingFactory {
                 case "static":
                     //static index
                     entity.getProps().getValues().forEach(v -> {
+                        String label = e.geteType();
                         PutIndexTemplateRequest request = new PutIndexTemplateRequest(v.toLowerCase());
-                        request.patterns(Arrays.asList(e.getName().toLowerCase(), e.getName(), String.format("%s%s", v, "*")))
-                                .settings(generateSettings(e, v))
-                                .mapping(v, generateMapping(e, v));
+                        request.patterns(Arrays.asList(e.getName().toLowerCase(),label, e.getName(), String.format("%s%s", v, "*")))
+                                .settings(generateSettings(e, label))
+                                .mapping(label, generateMapping(e, label));
                         //add response to list of responses
-                        responses.add(new Tuple2<>(v, client.admin().indices().putTemplate(request).actionGet()));
+                        responses.add(new Tuple2<>(label, client.admin().indices().putTemplate(request).actionGet()));
                     });
                     break;
                 case "time":
                     PutIndexTemplateRequest request = new PutIndexTemplateRequest(e.getName().toLowerCase());
-                    request.patterns(Arrays.asList(e.getName().toLowerCase(), e.getName(), String.format(entity.getProps().getIndexFormat(), "*")))
-                            .settings(generateSettings(e, entity.getType()))
-                            .mapping(entity.getType().toLowerCase(), generateMapping(e, entity.getType().toLowerCase()));
+                    String label = entity.getType();
+                    request.patterns(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format(entity.getProps().getIndexFormat(), "*")))
+                            .settings(generateSettings(e, label))
+                            .mapping(label, generateMapping(e, label.toLowerCase()));
                     //add response to list of responses
-                    responses.add(new Tuple2<>(entity.getType(), client.admin().indices().putTemplate(request).actionGet()));
+                    responses.add(new Tuple2<>(label, client.admin().indices().putTemplate(request).actionGet()));
                     break;
             }
         });
@@ -234,6 +239,8 @@ public class ElasticIndexProviderMappingFactory {
 
         //add side ID
         values.put(ID,parseType(ontology.property$(ID).getType()));
+        //add side TYPE
+        values.put(TYPE,parseType(ontology.property$(TYPE).getType()));
         indexProvider.getRelation(label).get().getRedundant(side)
                 .forEach(r-> values.put(r.getName(),parseType(ontology.property$(r.getName()).getType())));
     }

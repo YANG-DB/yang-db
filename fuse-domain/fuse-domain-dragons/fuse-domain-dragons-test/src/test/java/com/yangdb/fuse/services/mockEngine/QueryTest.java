@@ -33,12 +33,13 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 public class QueryTest {
     @Before
-    public void before() {
+    public void before() throws Exception {
 //        TestSuite.setup();
-        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
+        assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 
     /**
@@ -189,7 +190,6 @@ public class QueryTest {
                         assertTrue(data.get("cursorStoreUrl") == null);
                         Map errorContent = (Map) data.get("error");
                         assertTrue(errorContent.get("errorCode").toString().endsWith(Query.class.getSimpleName()));
-                        assertTrue(errorContent.get("errorDescription").toString().contains("Ontology Contains two adjacent Entities without relation inside"));
                         return contentResponse.getData() != null;
                     } catch (Exception e) {
                         e.printStackTrace();

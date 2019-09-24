@@ -5,7 +5,8 @@
       "eType": "Person",
       "name": "Person",
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "firstName",
@@ -21,7 +22,8 @@
       "eType": "Horse",
       "name": "Horse",
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "name",
@@ -34,7 +36,8 @@
       "eType": "Dragon",
       "name": "Dragon",
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "name",
@@ -48,7 +51,8 @@
       "eType": "Kingdom",
       "name": "Kingdom",
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "name",
@@ -62,7 +66,8 @@
       "eType": "Guild",
       "name": "Guild",
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "name",
@@ -75,7 +80,7 @@
   ],
   "relationshipTypes": [
     {
-      "rType": "own",
+      "rType": "Own",
       "name": "Own",
       "directional": true,
       "ePairs": [
@@ -89,7 +94,8 @@
         }
       ],
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "startDate",
@@ -97,7 +103,7 @@
       ]
     },
     {
-      "rType": "know",
+      "rType": "Know",
       "name": "Know",
       "directional": true,
       "ePairs": [
@@ -107,14 +113,15 @@
         }
       ],
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "startDate"
       ]
     },
     {
-      "rType": "memberOf",
+      "rType": "MemberOf",
       "name": "MemberOf",
       "directional": true,
       "ePairs": [
@@ -124,7 +131,8 @@
         }
       ],
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "startDate",
@@ -132,7 +140,7 @@
       ]
     },
     {
-      "rType": "fire",
+      "rType": "Fire",
       "name": "Fire",
       "directional": true,
       "ePairs": [
@@ -142,7 +150,8 @@
         }
       ],
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "date",
@@ -150,7 +159,7 @@
       ]
     },
     {
-      "rType": "freeze",
+      "rType": "Freeze",
       "name": "Freeze",
       "directional": true,
       "ePairs": [
@@ -160,7 +169,8 @@
         }
       ],
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "date",
@@ -168,7 +178,7 @@
       ]
     },
     {
-      "rType": "originatedIn",
+      "rType": "OriginatedIn",
       "name": "OriginatedIn",
       "directional": true,
       "ePairs": [
@@ -186,14 +196,15 @@
         }
       ],
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "startDate"
       ]
     },
     {
-      "rType": "subjectOf",
+      "rType": "SubjectOf",
       "name": "SubjectOf",
       "directional": true,
       "ePairs": [
@@ -203,14 +214,15 @@
         }
       ],
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "startDate"
       ]
     },
     {
-      "rType": "registeredIn",
+      "rType": "RegisteredIn",
       "name": "RegisteredIn",
       "directional": true,
       "ePairs": [
@@ -224,7 +236,8 @@
         }
       ],
       "metadata": [
-        "id"
+        "id",
+        "type"
       ],
       "properties": [
         "startDate"

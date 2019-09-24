@@ -22,12 +22,15 @@ package com.yangdb.fuse.executor.ontology.schema.load;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -38,6 +41,7 @@ import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -50,10 +54,10 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.StreamSupport;
 
 public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, FuseError> {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static Map<String, Range.StatefulRange> ranges = new HashMap<>();
 
     static {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -64,25 +68,33 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
     private RawSchema schema;
     private IndexProvider indexProvider;
     private ObjectMapper mapper;
-    private Ontology.Accessor accessor;
     private IdGeneratorDriver<Range> idGenerator;
-    private static Map<String, Range.StatefulRange> ranges = new HashMap<>();
+    private ElasticIndexProviderMappingFactory mappingFactory;
 
 
     @Inject
-    public IndexProviderBasedGraphLoader(Client client, Ontology ontology, EntityTransformer transformer, RawSchema schema, IndexProvider indexProvider, IdGeneratorDriver<Range> idGenerator) {
-        this.client = client;
+    public IndexProviderBasedGraphLoader(Config config, Client client, OntologyProvider ontology, EntityTransformer transformer, RawSchema schema, IndexProviderIfc indexProviderFactory, IdGeneratorDriver<Range> idGenerator) {
+        String assembly = config.getString("assembly");
+            this.client = client;
         this.transformer = transformer;
         this.schema = schema;
-        this.indexProvider = indexProvider;
-        this.accessor = new Ontology.Accessor(ontology);
+        this.indexProvider = indexProviderFactory.get(assembly)
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly)));
+        Ontology ont = ontology.get(assembly)
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly)));
         this.idGenerator = idGenerator;
         this.mapper = new ObjectMapper();
+        this.mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ont, indexProvider);
+
     }
 
 
     @Override
     public long init() {
+        //generate mappings
+        List<Tuple2<String, Boolean>> mappingResults = mappingFactory.generateMappings();
+        //todo log indices names
+        //create indices
         Iterable<String> allIndices = schema.indices();
 
         Stream.ofAll(allIndices)
@@ -91,6 +103,8 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         Stream.ofAll(allIndices).forEach(index -> client.admin().indices()
                 .create(new CreateIndexRequest(index.toLowerCase())).actionGet());
 
+        //refresh cluster
+        client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
         return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
 
     }
@@ -101,6 +115,9 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         Stream.ofAll(indices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
+
+        //refresh cluster
+        client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
         return Stream.ofAll(indices).count(s -> !s.isEmpty());
     }
 
@@ -148,7 +165,7 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         try {
             String index = resolveIndex(node);
             IndexRequestBuilder request = client.prepareIndex()
-                    .setIndex(index)
+                    .setIndex(index.toLowerCase())
                     .setType(node.getType())
                     .setId(node.getId())
                     .setOpType(IndexRequest.OpType.INDEX)
@@ -170,12 +187,12 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
      */
     private String resolveIndex(DocumentBuilder node) throws ParseException {
         String nodeType = node.getType();
-        Optional<Tuple2<String,String>> field = node.getPartitionField();
+        Optional<Tuple2<String, String>> field = node.getPartitionField();
         IndexPartitions partitions = schema.getPartition(nodeType);
         //todo validate the partitioned field is indeed the correct time field
-        if((partitions instanceof TimeSeriesIndexPartitions) && field.isPresent()) {
+        if ((partitions instanceof TimeSeriesIndexPartitions) && field.isPresent()) {
             String indexName = ((TimeSeriesIndexPartitions) partitions).getIndexName(sdf.parse(field.get()._2));
-            if (indexName!=null) return indexName;
+            if (indexName != null) return indexName;
         }
         return partitions.getPartitions().iterator().next().getIndices().iterator().next();
     }

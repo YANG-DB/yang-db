@@ -9,7 +9,7 @@
       "properties": {
         "name": "Myriel",
         "birthDate": "02/01/0000",
-        "power": "medium",
+        "power": 100,
         "gender": "female",
         "color": "gold"
       }
@@ -23,7 +23,7 @@
       "properties": {
         "name": "Kolbert",
         "birthDate": "02/01/0400",
-        "power": "strong",
+        "power": 200,
         "gender": "male",
         "color": "silver"
       }
@@ -37,7 +37,7 @@
       "properties": {
         "name": "Neptun",
         "birthDate": "02/01/1300",
-        "power": "weak",
+        "power": 50,
         "gender": "male",
         "color": "blue"
       }
@@ -350,7 +350,7 @@
       },
       "properties": {
         "date": "1/1/1778",
-        "temperature": "burn"
+        "temperature": 500
       }
 
     },
@@ -364,7 +364,7 @@
       },
       "properties": {
         "date": "1/1/1779",
-        "temperature": "burn"
+        "temperature": 400
       }
 
     },
@@ -378,7 +378,7 @@
       },
       "properties": {
         "date": "1/1/779",
-        "temperature": "ice"
+        "temperature": -100
       }
 
     },
