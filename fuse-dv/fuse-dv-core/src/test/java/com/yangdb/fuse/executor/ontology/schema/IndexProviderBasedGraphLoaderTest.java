@@ -190,6 +190,9 @@ public class IndexProviderBasedGraphLoaderTest {
         LoadResponse<String, FuseError> response = graphLoader.load(graphModel, GraphDataLoader.Directive.INSERT);
         Assert.assertEquals(2,response.getResponses().size());
 
+        Assert.assertEquals(62,response.getResponses().get(0).getSuccesses().size());
+        Assert.assertEquals(62,response.getResponses().get(1).getSuccesses().size());
+
         Assert.assertEquals(0,response.getResponses().get(0).getFailures().size());
         Assert.assertEquals(0,response.getResponses().get(1).getFailures().size());
 
@@ -200,7 +203,7 @@ public class IndexProviderBasedGraphLoaderTest {
         SearchRequestBuilder builder = client.prepareSearch();
         builder.setIndices(indices);
         SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
-        Assert.assertEquals(graphModel.getNodes().size() + graphModel.getEdges().size(),resp.getHits().getTotalHits());
+        Assert.assertEquals(graphModel.getNodes().size() + 2*graphModel.getEdges().size(),resp.getHits().getTotalHits());
 
     }
 }

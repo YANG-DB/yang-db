@@ -102,7 +102,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      *
      * @param context
      * @param edge
-     * @param in
+     * @param direction
      * @return
      */
     private DocumentBuilder translate(DataTransformerContext context, LogicalEdge edge, String direction) {
@@ -111,7 +111,8 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
             Relation relation = indexProvider.getRelation(edge.label())
                     .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Logical Graph Transformation Error", "No matching edge found with label " + edge.label())));
             //put classifiers
-            element.put(ID, edge.getId());
+            String id = String.format("%s.%s", edge.getId(), direction);
+            element.put(ID, id);
             element.put(TYPE, relation.getType());
             element.put(DIRECTION, direction);
 
@@ -128,7 +129,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
             if (field != null)
                 partition = Optional.of(new Tuple2<>(field, parseValue(accessor.property$(field).getType(), edge.getProperty(field), sdf).toString()));
 
-            return new DocumentBuilder(element, edge.getId(), relation.getType(), Optional.empty(), partition);
+            return new DocumentBuilder(element, id, relation.getType(), Optional.empty(), partition);
         } catch (FuseError.FuseErrorException e) {
             return new DocumentBuilder(e.getError());
         }
