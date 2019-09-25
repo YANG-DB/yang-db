@@ -53,6 +53,10 @@ public class NonRedundantTestSuite {
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println("NonRedundantTestSuite elapsed: " + elapsed);
+
+        if(elasticEmbeddedNode!=null)
+            elasticEmbeddedNode.close();
+
     }
 
     //region Fields

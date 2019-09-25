@@ -108,5 +108,9 @@ public abstract class Setup {
         if (app != null) {
             app.stop();
         }
+
+        if(elasticEmbeddedNode!=null)
+            elasticEmbeddedNode.close();
+
     }
 }

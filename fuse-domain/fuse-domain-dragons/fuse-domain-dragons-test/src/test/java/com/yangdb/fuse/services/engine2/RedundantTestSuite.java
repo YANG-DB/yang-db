@@ -45,6 +45,9 @@ public class RedundantTestSuite {
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println("RedundantTestSuite elapsed: " + elapsed);
+        if(elasticEmbeddedNode!=null)
+            elasticEmbeddedNode.close();
+
     }
 
     //region Fields

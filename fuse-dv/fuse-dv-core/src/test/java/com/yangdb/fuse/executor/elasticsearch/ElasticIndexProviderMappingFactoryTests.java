@@ -125,7 +125,9 @@ public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjection
 
     @AfterClass
     public static void tearDown() throws Exception {
-        elasticEmbeddedNode.close();
+        if(elasticEmbeddedNode!=null)
+            elasticEmbeddedNode.close();
+
     }
 
     @Test

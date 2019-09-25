@@ -23,7 +23,6 @@ import org.junit.runners.Suite;
         IndexProviderBasedGraphLoaderTest.class
 })
 public class TestSuite {
-    public static final String ES_TEST = "es-test";
 
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static Client client;
@@ -36,18 +35,20 @@ public class TestSuite {
     private static void init(boolean embedded) throws Exception {
         // Start embedded ES
         if(embedded) {
-            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance(ES_TEST);
+            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
             client = elasticEmbeddedNode.getClient();
         } else {
             //use existing running ES
-            client = elasticEmbeddedNode.getClient(ES_TEST, 9300);
+            client = elasticEmbeddedNode.getClient();
         }
 
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        elasticEmbeddedNode.close();
+        if(elasticEmbeddedNode!=null)
+            elasticEmbeddedNode.close();
+
     }
 
     //region Fields

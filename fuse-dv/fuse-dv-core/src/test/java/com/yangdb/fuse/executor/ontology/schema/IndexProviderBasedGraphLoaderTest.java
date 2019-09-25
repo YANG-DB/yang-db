@@ -75,7 +75,9 @@ public class IndexProviderBasedGraphLoaderTest {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        elasticEmbeddedNode.close();
+        if(elasticEmbeddedNode!=null)
+            elasticEmbeddedNode.close();
+
     }
 
     @BeforeClass

@@ -839,6 +839,9 @@
                     <version>${coveralls.maven.plugin}</version>
                     <configuration>
                         <repoToken>4rxwIVZN1Pn7Bpb0LqiTN0PpSfoZvywKS</repoToken>
+                        <jacocoReports>
+                            <jacocoReport>${project.build.directory}/jacoco-ut/jacoco.xml</jacocoReport>
+                        </jacocoReports>
                     </configuration>
                 </plugin>
                 <plugin>

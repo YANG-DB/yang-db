@@ -82,9 +82,12 @@ public abstract class Setup {
     }
 
 
-    public static void cleanup()  {
+    public static void cleanup() throws Exception {
         if (app != null) {
             app.stop();
         }
+
+        if(elasticEmbeddedNode!=null)
+            elasticEmbeddedNode.close();
     }
 }

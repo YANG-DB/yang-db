@@ -43,6 +43,9 @@ public class SmartEpbRedundantTestSuite {
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println("SmartEpbRedundantTestSuite elapsed: " + elapsed);
+        if(elasticEmbeddedNode!=null)
+            elasticEmbeddedNode.close();
+
     }
 
     //region Fields

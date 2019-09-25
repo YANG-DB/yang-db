@@ -33,6 +33,7 @@ public class DragonsSimpleE2ETest {
     public static final String DRAGONS = "Dragons";
     static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
+/*
     @BeforeClass
     public static void setup() throws Exception {
         Setup.setup();
@@ -44,6 +45,7 @@ public class DragonsSimpleE2ETest {
         Setup.cleanup();
     }
 
+*/
     @Test
     public void testLoadLogicalGraph() throws IOException, URISyntaxException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

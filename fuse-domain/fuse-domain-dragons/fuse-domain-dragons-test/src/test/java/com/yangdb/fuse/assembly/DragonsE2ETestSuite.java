@@ -5,7 +5,6 @@ import com.yangdb.fuse.assembly.queries.DragonsSimpleE2ETest;
 import com.yangdb.fuse.assembly.queries.DragonsSimpleFileUploadE2ETest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -14,7 +13,6 @@ import org.junit.runners.Suite;
         DragonsSimpleFileUploadE2ETest.class,
         DragonsSimpleE2ETest.class
 })
-@Ignore
 public class DragonsE2ETestSuite {
 
     @BeforeClass
