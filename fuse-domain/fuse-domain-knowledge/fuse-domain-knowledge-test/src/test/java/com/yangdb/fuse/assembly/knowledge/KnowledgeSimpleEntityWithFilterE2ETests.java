@@ -19,7 +19,7 @@ import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.Filter.filter;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KnowledgeQueryBuilder.start;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 
 

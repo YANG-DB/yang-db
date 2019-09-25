@@ -16,7 +16,7 @@ import java.util.List;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 
 public class KnowledgeSimpleCdrWithCypherQueryTests {
     static KnowledgeWriterContext ctx;

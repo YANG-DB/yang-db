@@ -15,7 +15,6 @@ import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import javaslang.Tuple3;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -29,12 +28,12 @@ import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.nextPage;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 import static com.yangdb.fuse.assembly.knowledge.domain.ValueBuilder._v;
-import static com.yangdb.fuse.client.FuseClient.countGraphElements;
+import static com.yangdb.fuse.client.FuseClientSupport.countGraphElements;
+import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 import static java.time.temporal.ChronoField.EPOCH_DAY;
 
 public class KnowledgeMassInsertionGraphTest {

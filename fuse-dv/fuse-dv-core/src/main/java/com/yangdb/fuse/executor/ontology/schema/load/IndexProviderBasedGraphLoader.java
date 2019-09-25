@@ -50,10 +50,17 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
+
+import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extractFile;
 
 public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, FuseError> {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -199,8 +206,26 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
 
 
     @Override
-    public LoadResponse<String, FuseError> load(File data, Directive directive) {
-        return LoadResponse.EMPTY;
+    public LoadResponse<String, FuseError> load(File data, Directive directive) throws IOException {
+        String contentType = Files.probeContentType(data.toPath());
+        if (Arrays.asList("application/gzip", "application/zip").contains(contentType)) {
+            ByteArrayOutputStream stream = null; //unzip
+            switch (contentType) {
+                case "application/gzip":
+                    stream = extractFile(new GZIPInputStream(Files.newInputStream(data.toPath())));
+                    break;
+                case "application/zip":
+                    stream = extractFile(new ZipInputStream(Files.newInputStream(data.toPath())));
+                    break;
+            }
+
+            String graph = new String(stream.toByteArray());
+            return load(mapper.readValue(graph, LogicalGraphModel.class), directive);
+        }
+        String graph = new String(Files.readAllBytes(data.toPath()));
+        //read
+        LogicalGraphModel root = mapper.readValue(graph, LogicalGraphModel.class);
+        return load(root, directive);
     }
 
     public Range.StatefulRange getRange(String type) {

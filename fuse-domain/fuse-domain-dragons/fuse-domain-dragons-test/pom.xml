@@ -59,6 +59,11 @@
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-dv-epb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-domain-dragons-ext</artifactId>
+            <version>${fuse.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

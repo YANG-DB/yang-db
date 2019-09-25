@@ -7,6 +7,7 @@ import com.yangdb.fuse.model.logical.LogicalNode;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
+import com.yangdb.fuse.model.resourceInfo.ResultResourceInfo;
 import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.QueryResultBase;
@@ -28,8 +29,7 @@ import java.util.Optional;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.nextPage;
-import static com.yangdb.fuse.client.FuseClient.countGraphElements;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 
 /**
  * http://web.madstudio.northwestern.edu/re-visualizing-the-novel/
@@ -50,7 +50,7 @@ public class KnowledgeInsertLogicalGraphTest {
 
     private static void loadData() throws IOException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("./data/logical/les_miserables.json");
-        QueryResourceInfo info = fuseClient.loadData(KNOWLEDGE, resource);
+        ResultResourceInfo info = fuseClient.loadData(KNOWLEDGE, resource);
         Assert.assertNotNull(info);
     }
 

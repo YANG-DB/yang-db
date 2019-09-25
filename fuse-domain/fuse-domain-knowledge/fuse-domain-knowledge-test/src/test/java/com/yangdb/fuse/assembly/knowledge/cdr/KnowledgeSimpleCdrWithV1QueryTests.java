@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.model.query.Rel.Direction.R;
 
 public class KnowledgeSimpleCdrWithV1QueryTests {

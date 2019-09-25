@@ -4,6 +4,7 @@ import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
+import com.yangdb.fuse.model.resourceInfo.ResultResourceInfo;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateForwardOnlyPathTraversalCursorRequest;
@@ -17,8 +18,8 @@ import java.text.SimpleDateFormat;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.nextPage;
-import static com.yangdb.fuse.client.FuseClient.countGraphElements;
+import static com.yangdb.fuse.client.FuseClientSupport.countGraphElements;
+import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 
 public class KnowledgePathMultiStepsForwardOnlyCursorTest {
 
@@ -35,7 +36,7 @@ public class KnowledgePathMultiStepsForwardOnlyCursorTest {
 
     private static void loadData() throws IOException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("./data/logical/multi_steps.json");
-        QueryResourceInfo info = fuseClient.loadData(KNOWLEDGE, resource);
+        ResultResourceInfo info = fuseClient.loadData(KNOWLEDGE, resource);
         Assert.assertNotNull(info);
     }
 

@@ -280,6 +280,21 @@
                 <artifactId>fuse-domain-dragons-ext</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-dragons-assembly</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-dragons-datagen</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-dragons-test</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
 
             <!-- Property Graph Deployment Assemblies   -->
 

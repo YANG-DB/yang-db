@@ -31,7 +31,7 @@ import java.util.TimeZone;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder._rel;

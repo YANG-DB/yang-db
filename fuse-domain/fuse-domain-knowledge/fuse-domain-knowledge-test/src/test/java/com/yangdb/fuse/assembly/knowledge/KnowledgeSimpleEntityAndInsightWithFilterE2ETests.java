@@ -32,7 +32,7 @@ import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.domain.InsightBuilder.INSIGHT_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.InsightBuilder._i;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.countEntitiesAndAdditionals;
 import static com.yangdb.fuse.model.query.Rel.Direction.L;

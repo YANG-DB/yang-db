@@ -26,7 +26,7 @@ import java.util.stream.IntStream;
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchemaProd.*;
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeStaticRuleBasedStatisticalProvider.KNOWLEDGE;
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.nextPage;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.RelationBuilder._rel;
