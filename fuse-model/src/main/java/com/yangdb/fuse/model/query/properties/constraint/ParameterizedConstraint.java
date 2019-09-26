@@ -58,7 +58,7 @@ public class ParameterizedConstraint extends Constraint {
     }
 
     public static ParameterizedConstraint of(ConstraintOp op, NamedParameter exp) {
-        return of(op, exp, "[]");
+        return new ParameterizedConstraint(op,null,exp);
     }
 
     public static ParameterizedConstraint of(ConstraintOp op, NamedParameter exp, String iType) {

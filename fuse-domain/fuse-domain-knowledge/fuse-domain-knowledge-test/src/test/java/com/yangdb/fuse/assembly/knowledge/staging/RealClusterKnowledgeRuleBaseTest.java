@@ -1,4 +1,4 @@
-package com.yangdb.fuse.assembly.knowledge;
+package com.yangdb.fuse.assembly.knowledge.staging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.client.BaseFuseClient;

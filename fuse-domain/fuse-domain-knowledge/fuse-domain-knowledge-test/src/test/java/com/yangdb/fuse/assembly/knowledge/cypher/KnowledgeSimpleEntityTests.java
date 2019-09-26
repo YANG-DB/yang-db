@@ -56,9 +56,9 @@ public class KnowledgeSimpleEntityTests {
     }
 
     @AfterClass
+
     public static void after() {
-        ctx.removeCreated();
-        ctx.clearCreated();
+        if(ctx!=null) Assert.assertEquals(6,ctx.removeCreated());
     }
 
     @Test

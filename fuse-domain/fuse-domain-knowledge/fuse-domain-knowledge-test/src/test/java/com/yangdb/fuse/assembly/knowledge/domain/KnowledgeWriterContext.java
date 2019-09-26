@@ -3,8 +3,10 @@ package com.yangdb.fuse.assembly.knowledge.domain;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -12,12 +14,10 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeDataInfraManager.PGE;
 
@@ -46,19 +46,19 @@ public class KnowledgeWriterContext {
         rValues = new ArrayList<>();
     }
 
-    public ValueBuilder v(){
+    public ValueBuilder v() {
         final ValueBuilder builder = ValueBuilder._v(nextValueId());
         eValues.add(builder);
         return builder;
     }
 
-    public RvalueBuilder r(){
+    public RvalueBuilder r() {
         final RvalueBuilder builder = RvalueBuilder._r(nextRvalueId());
         rValues.add(builder);
         return builder;
     }
 
-    public RelationBuilder rel(){
+    public RelationBuilder rel() {
         final RelationBuilder builder = RelationBuilder._rel(nextRelId());
         relations.add(builder);
         return builder;
@@ -77,18 +77,19 @@ public class KnowledgeWriterContext {
 
     public int removeCreated() {
         int[] count = new int[]{0};
-        List<String> indices = created.stream().map(item -> item.index).collect(Collectors.toList());
+        Set<String> indices = created.stream().map(item -> item.index).collect(Collectors.toSet());
         created.forEach(entity -> {
-            try {
-                final DeleteResponse deleteResponse = client.delete(client.prepareDelete().setIndex(entity.index).setType(entity.type).setId(entity.id).request()).get();
-                count[0] += deleteResponse.status() == RestStatus.OK ? 1 : 0;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+            DeleteRequestBuilder requestBuilder = client.prepareDelete()
+                    .setIndex(entity.index)
+                    .setType(entity.type)
+                    .setId(entity.id);
+            entity.route.ifPresent(requestBuilder::setRouting);
+
+            final DeleteResponse deleteResponse = client.delete(requestBuilder.request()).actionGet();
+            count[0] += deleteResponse.status() == RestStatus.OK ? 1 : 0;
+
         });
-        client.admin().indices().prepareRefresh(indices.toArray(new String[indices.size()])).get();
+        client.admin().indices().prepareRefresh(indices.toArray(new String[]{})).get();
         clearCreated();
         return count[0];
     }
@@ -130,7 +131,7 @@ public class KnowledgeWriterContext {
         return context;
     }
 
-    private static void populateBulk(BulkRequestBuilder bulk,String index,KnowledgeWriterContext ctx,List<KnowledgeDomainBuilder> builders) throws JsonProcessingException {
+    private static void populateBulk(BulkRequestBuilder bulk, String index, KnowledgeWriterContext ctx, List<KnowledgeDomainBuilder> builders) throws JsonProcessingException {
         for (KnowledgeDomainBuilder builder : builders) {
             IndexRequestBuilder request = ctx.client.prepareIndex()
                     .setIndex(index)
@@ -144,7 +145,7 @@ public class KnowledgeWriterContext {
     }
 
     public static long countEntitiesAndAdditionals(EntityBuilder... builders) {
-        return builders.length+Arrays.stream(builders).mapToInt(b->b.additional().size()).sum();
+        return builders.length + Arrays.stream(builders).mapToInt(b -> b.additional().size()).sum();
     }
 
     public static <T extends KnowledgeDomainBuilder> int commit(KnowledgeWriterContext ctx, String index, List<T> builders) throws JsonProcessingException {
@@ -162,10 +163,10 @@ public class KnowledgeWriterContext {
     }
 
     private static <T extends KnowledgeDomainBuilder> int process(KnowledgeWriterContext ctx, String index, int count, BulkRequestBuilder bulk, List<T> builders) throws JsonProcessingException {
-        populateBulk(bulk,index,ctx, (List<KnowledgeDomainBuilder>) builders);
+        populateBulk(bulk, index, ctx, (List<KnowledgeDomainBuilder>) builders);
         builders.forEach(builder -> {
             try {
-                populateBulk(bulk,index,ctx,builder.additional());
+                populateBulk(bulk, index, ctx, builder.additional());
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
@@ -174,13 +175,19 @@ public class KnowledgeWriterContext {
         final BulkItemResponse[] items = bulk.get().getItems();
         for (BulkItemResponse item : items) {
             if (!item.isFailed()) {
-                ctx.created.add(new Items(item.getIndex(), item.getType(), item.getId()));
+                ctx.created.add(new Items(item.getIndex(), item.getType(), item.getId(), getBuilder(builders, item.getId()) != null ? getBuilder(builders, item.getId()).routing() : Optional.empty()));
                 count++;
             }
 
         }
-        ctx.client.admin().indices().prepareRefresh(index).get();
+        RefreshResponse refreshResponse = ctx.client.admin().indices().prepareRefresh(index).get();
         return count;
+    }
+
+    private static <T extends KnowledgeDomainBuilder> KnowledgeDomainBuilder getBuilder(List<T> builders, String id) {
+        return Stream.concat(builders.stream(), builders.stream().flatMap(b -> b.additional().stream()))
+                .filter(b -> b.id().equals(id))
+                .findAny().orElse(null);
     }
 
     public List<EntityBuilder> getEntities() {
@@ -205,13 +212,15 @@ public class KnowledgeWriterContext {
 
     public static class Items {
         public String index;
+        public Optional<String> route;
         public String type;
         public String id;
 
-        public Items(String index, String type, String id) {
+        public Items(String index, String type, String id, Optional<String> route) {
             this.index = index;
             this.type = type;
             this.id = id;
+            this.route = route;
         }
     }
 }

@@ -83,9 +83,10 @@ public class KnowledgeSimpleReferenceWithFilterE2ETests {
     }
 
     @AfterClass
+
     public static void after() {
-        ctx.removeCreated();
-    }
+        if(ctx!=null) Assert.assertEquals(8,ctx.removeCreated());
+}
 
     // STRING_VALUE, CONTENT, TITLE, DISPLAY_NAME, DESCRIPTION => Find lower and Upper
 

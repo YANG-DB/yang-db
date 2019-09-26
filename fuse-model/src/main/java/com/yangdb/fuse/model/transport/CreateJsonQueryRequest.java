@@ -148,8 +148,8 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
         this.createCursorRequest = createCursorRequest;
     }
 
-    public String getQueryType() {
-        return queryType;
+    public QueryType getQueryType() {
+        return QueryType.concrete;
     }
 
     public long getTtl() {

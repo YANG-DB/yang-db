@@ -1,41 +1,20 @@
 package com.yangdb.fuse.assembly.knowledge.cdr;
 
-import com.yangdb.fuse.assembly.knowledge.Setup;
-import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.QueryResultBase;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 
-import static com.yangdb.fuse.assembly.knowledge.Setup.*;
+import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.client.FuseClientSupport.*;
+import static com.yangdb.fuse.client.FuseClientSupport.query;
 
 public class KnowledgeSimpleCdrWithCypherQueryTests {
-    static KnowledgeWriterContext ctx;
-
-    @BeforeClass
-    public static void setup() throws Exception {
-        Setup.setup();
-        ctx = KnowledgeWriterContext.init(client, manager.getSchema());
-        long start = System.currentTimeMillis();
-        long amount = DataLoader.load( ctx, "data/cdr/cdr-small.csv");
-        System.out.println(String.format("Loaded %d rows in %s ",amount,(System.currentTimeMillis()-start)/1000));
-    }
-
-    @AfterClass
-    public static void after() {
-        ctx.removeCreated();
-        ctx.clearCreated();
-        fuseClient.shutdown();
-    }
 
     @Test
     public void testFetchPhonePropertiesAndRelationsWithMultiVertices() throws IOException, InterruptedException {

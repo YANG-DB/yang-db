@@ -24,10 +24,12 @@ package com.yangdb.fuse.model.query;
  */
 
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType;
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.StorageType;
 
 import java.util.UUID;
 
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.concrete;
 
 
 /**
@@ -45,10 +47,10 @@ public final class QueryMetadata {
 
     //region Properties
     public QueryMetadata(StorageType storageType, String id, String name, boolean searchPlan , long creationTime, long ttl) {
-        this(Type.concrete, storageType, id, name, searchPlan, creationTime, ttl);
+        this(concrete, storageType, id, name, searchPlan, creationTime, ttl);
     }
 
-    public QueryMetadata(Type type,StorageType storageType, String id, String name, boolean searchPlan , long creationTime, long ttl) {
+    public QueryMetadata(QueryType type,StorageType storageType, String id, String name, boolean searchPlan , long creationTime, long ttl) {
         this.storageType = storageType;
         this.id = id;
         this.name = name;
@@ -70,7 +72,7 @@ public final class QueryMetadata {
         return id;
     }
 
-    public Type getType() {
+    public QueryType getType() {
         return type;
     }
 
@@ -94,7 +96,7 @@ public final class QueryMetadata {
         this.storageType = storageType;
     }
 
-    public void setType(Type type) {
+    public void setType(QueryType type) {
         this.type = type;
     }
 
@@ -112,13 +114,7 @@ public final class QueryMetadata {
     private String name;
     private boolean searchPlan = true;
     private StorageType storageType;
-    private Type type;
+    private QueryType type;
     //endregion
 
-    public enum Type {
-        concrete,
-        parameterized
-
-
-    }
 }

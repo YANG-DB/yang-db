@@ -85,9 +85,10 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
     }
 
     @AfterClass
+
     public static void after() {
-        ctx.removeCreated();
-    }
+        if(ctx!=null) Assert.assertEquals(7,ctx.removeCreated());
+}
 
     // Start Tests:
     @Test

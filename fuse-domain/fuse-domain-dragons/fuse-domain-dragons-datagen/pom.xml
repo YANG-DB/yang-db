@@ -120,11 +120,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>org/yangdb/**/*.java</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
 
             <!-- Parent module has the same plugin and does the work of

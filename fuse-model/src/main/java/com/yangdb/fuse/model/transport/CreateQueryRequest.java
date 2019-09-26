@@ -27,7 +27,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.QueryMetadata.Type;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 
 /**
@@ -76,8 +75,8 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
         return this;
     }
 
-    public CreateQueryRequest type(Type type) {
-        this.type = type;
+    public CreateQueryRequest type(QueryType queryType) {
+        this.queryType = queryType;
         return this;
     }
 
@@ -88,7 +87,7 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
 
     @Override
     public boolean isSearchPlan() {
-        return searchPlan;
+        return searchPlan ;
     }
 
     @Override
@@ -145,12 +144,12 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
         this.createCursorRequest = createCursorRequest;
     }
 
-    public Type getType() {
-        return type;
+    public QueryType getQueryType() {
+        return queryType;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setQueryType(QueryType queryType) {
+        this.queryType = queryType;
     }
 
     @Override
@@ -179,7 +178,7 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
     private String id;
     //default type is volatile
     private StorageType storageType = StorageType._volatile;
-    private Type type = Type.concrete;
+    private QueryType queryType = QueryType.concrete;
     private String name;
     private Query query;
     private long ttl;

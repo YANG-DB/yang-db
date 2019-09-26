@@ -39,7 +39,10 @@ import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 import com.yangdb.fuse.model.validation.ValidationResult;
+
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.concrete;
 
 /**
  * Created by lior.perry on 20/02/2017.
@@ -75,8 +78,8 @@ public class StandardQueryDriver extends QueryDriverBase {
     protected PlanWithCost<Plan, PlanDetailedCost> planWithCost(QueryMetadata metadata, AsgQuery query) {
         PlanWithCost<Plan, PlanDetailedCost> planWithCost = PlanWithCost.EMPTY_PLAN;
 
-        //calculate execution plan
-        if (metadata.isSearchPlan()) {
+        //calculate execution plan - only when explicitly asked and type is not parameterized - cant count of evaluate "named" parameters
+        if (metadata.isSearchPlan() && metadata.getType().equals(concrete)) {
             planWithCost = this.planSearcher.search(query);
 
             if (planWithCost == null) {

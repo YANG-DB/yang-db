@@ -45,11 +45,4 @@ public class QueryNamedParameter extends NamedParameter {
         return query;
     }
 
-    @Override
-    public String toString() {
-        return "Q.NamedParameter{" +
-                "name='" + getName() + '\'' +
-                "query='" + query + '\'' +
-                '}';
-    }
 }

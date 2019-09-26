@@ -1,7 +1,5 @@
 package com.yangdb.fuse.assembly.knowledge.cdr;
 
-import com.yangdb.fuse.assembly.knowledge.Setup;
-import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
@@ -17,33 +15,16 @@ import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.results.QueryResultBase;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.yangdb.fuse.assembly.knowledge.Setup.*;
-import static com.yangdb.fuse.client.FuseClientSupport.*;
+import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.model.query.Rel.Direction.R;
 
 public class KnowledgeSimpleCdrWithV1QueryTests {
-    static KnowledgeWriterContext ctx;
-
-    @BeforeClass
-    public static void setup() throws Exception {
-        Setup.setup();
-        ctx = KnowledgeWriterContext.init(client, manager.getSchema());
-        long start = System.currentTimeMillis();
-        long amount = DataLoader.load( ctx, "./data/cdr/cdr-small.csv");
-        System.out.println(String.format("Loaded %d rows in %s ",amount,(System.currentTimeMillis()-start)/1000));
-    }
-
-    @AfterClass
-    public static void after() {
-        ctx.removeCreated();
-        ctx.clearCreated();
-        fuseClient.shutdown();
-    }
 
     @Test
     public void testSimpleQuery() throws IOException, InterruptedException {

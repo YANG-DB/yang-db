@@ -20,17 +20,24 @@ package com.yangdb.fuse.unipop.controller.utils.elasticsearch;
  * #L%
  */
 
+import com.yangdb.fuse.model.query.properties.constraint.Constraint;
+import com.yangdb.fuse.model.query.properties.constraint.NamedParameter;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentBuilderExtension;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 public class FuseXContentBuilderExtension implements XContentBuilderExtension {
     @Override
     public Map<Class<?>, XContentBuilder.Writer> getXContentWriters() {
-        return Collections.singletonMap(Character.class, (builder, value) -> builder.value(value.toString()));
+        HashMap<Class<?>, XContentBuilder.Writer> map = new HashMap<>();
+        map.put(Character.class, (builder, value) -> builder.value(value.toString()));
+        map.put(Constraint.class, (builder, value) -> builder.value(value.toString()));
+        map.put(NamedParameter.class, (builder, value) -> builder.value(value.toString()));
+        return map;
     }
 
     @Override

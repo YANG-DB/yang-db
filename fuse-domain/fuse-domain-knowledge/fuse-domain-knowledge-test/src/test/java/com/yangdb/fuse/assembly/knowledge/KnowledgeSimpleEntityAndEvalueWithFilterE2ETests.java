@@ -45,7 +45,7 @@ public class KnowledgeSimpleEntityAndEvalueWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true,true);
+//        Setup.setup(true,true);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -99,14 +99,14 @@ public class KnowledgeSimpleEntityAndEvalueWithFilterE2ETests {
         e4.value(v10);
 
         // Insert Entity and Evalue entities to ES
-        Assert.assertEquals(4, commit(ctx, INDEX, e1, e2, e3, e4));
-        Assert.assertEquals(10, commit(ctx, INDEX, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10));
+        Assert.assertEquals("error loading data ",4, commit(ctx, INDEX, e1, e2, e3, e4));
+        Assert.assertEquals("error loading data ",10, commit(ctx, INDEX, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10));
     }
 
 
     @AfterClass
     public static void after() {
-        ctx.removeCreated();
+        if(ctx!=null) Assert.assertEquals(14,ctx.removeCreated());
     }
 
     // STRING_VALUE, CONTENT, TITLE, DISPLAY_NAME, DESCRIPTION => Find lower and Upper

@@ -1,4 +1,4 @@
-package com.yangdb.fuse.assembly.knowledge;
+package com.yangdb.fuse.assembly.knowledge.staging;
 
 import com.yangdb.fuse.client.BaseFuseClient;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;

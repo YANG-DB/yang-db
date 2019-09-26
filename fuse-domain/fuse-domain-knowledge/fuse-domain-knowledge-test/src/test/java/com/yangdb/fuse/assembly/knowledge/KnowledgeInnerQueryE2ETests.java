@@ -56,7 +56,7 @@ public class KnowledgeInnerQueryE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true, true);
+//        Setup.setup(true, true);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -169,16 +169,16 @@ public class KnowledgeInnerQueryE2ETests {
         e3.rel(rel3, "in");
 
         // Insert Entity and Evalue entities to ES
-        Assert.assertEquals(10, commit(ctx, INDEX, e1, e2, e3, e4));
-        Assert.assertEquals(10, commit(ctx, INDEX, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10));
-        Assert.assertEquals(5, commit(ctx, REL_INDEX, rel1, rel2, rel3, rel4, rel5));
-        Assert.assertEquals(9, commit(ctx, REL_INDEX, rv1, rv2, rv3, rv4, rv5, rv6, rv7, rv8, rv9));
+        Assert.assertEquals("error loading data ",10, commit(ctx, INDEX, e1, e2, e3, e4));
+        Assert.assertEquals("error loading data ",10, commit(ctx, INDEX, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10));
+        Assert.assertEquals("error loading data ",5, commit(ctx, REL_INDEX, rel1, rel2, rel3, rel4, rel5));
+        Assert.assertEquals("error loading data ",9, commit(ctx, REL_INDEX, rv1, rv2, rv3, rv4, rv5, rv6, rv7, rv8, rv9));
     }
 
 
     @AfterClass
     public static void after() {
-        ctx.removeCreated();
+        if(ctx!=null) Assert.assertEquals(34,ctx.removeCreated());
     }
 
 

@@ -1,7 +1,5 @@
 package com.yangdb.fuse.assembly.knowledge.cdr;
 
-import com.yangdb.fuse.assembly.knowledge.Setup;
-import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.query.ParameterizedQuery;
 import com.yangdb.fuse.model.query.Query;
@@ -15,36 +13,21 @@ import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.yangdb.fuse.assembly.knowledge.Setup.*;
-import static com.yangdb.fuse.client.FuseClientSupport.*;
+import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
+import static com.yangdb.fuse.client.FuseClientSupport.query;
 import static com.yangdb.fuse.model.query.Rel.Direction.R;
 
 public class KnowledgeSimpleCdrWithV1InnerQueryTests {
     public static final long YEAR_2000 = 946684800000l;
-    static KnowledgeWriterContext ctx;
 
-    @BeforeClass
-    public static void setup() throws Exception {
-        Setup.setup(true, true);
-        ctx = KnowledgeWriterContext.init(client, manager.getSchema());
-        long start = System.currentTimeMillis();
-        long amount = DataLoader.load(ctx, "./data/cdr/cdr-small.csv");
-        System.out.println(String.format("Loaded %d rows in %s ", amount, (System.currentTimeMillis() - start) / 1000));
-    }
-
-    @AfterClass
-    public static void after() {
-        ctx.removeCreated();
-        ctx.clearCreated();
-        fuseClient.shutdown();
-    }
 
     @Test
     public void testInnerQueryInSet() throws IOException, InterruptedException {

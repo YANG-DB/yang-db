@@ -31,15 +31,14 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false,false);
+//        Setup.setup(false,false);
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
 
     @After
     public void after() {
-        ctx.removeCreated();
-        ctx.clearCreated();
+        if(ctx!=null) ctx.removeCreated();
     }
 
     @Test
@@ -295,14 +294,17 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
         // Create value query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Query query = start().withEntity(e1.getETag()).withGlobalEntity(global.getETag()).build();
+        Query query = start()
+                .withEntity(e1.getETag())
+                .withGlobalEntity(global.getETag())
+                .build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
 
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
         Assert.assertEquals(1, ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().size());
         Assert.assertEquals(4, ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().get(0).getEntities().size());
-        Assert.assertEquals(4, ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().get(0).getRelationships().size());
+        Assert.assertEquals(3, ((AssignmentsQueryResult<Entity,Relationship>) pageData).getAssignments().get(0).getRelationships().size());
 
     }
 
@@ -422,11 +424,6 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
         //bug logicalId returns on Reference entity
         List<Entity> subEntities = e1.subEntities();
-        Entity reference = Stream.ofAll(subEntities).find(entity -> entity.geteType().equals("Reference")).get();
-        List<Property> newProps = new ArrayList<>(reference.getProperties());
-        newProps.add(new Property("logicalId", "raw", e1.logicalId));
-        reference.setProperties(newProps);
-
         //verify assignments return as expected
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()

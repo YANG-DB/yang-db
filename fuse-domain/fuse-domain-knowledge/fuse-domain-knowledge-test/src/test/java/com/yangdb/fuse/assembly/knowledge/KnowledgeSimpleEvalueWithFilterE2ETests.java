@@ -42,7 +42,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
     @BeforeClass
     public static void setup() throws Exception
     {
-        Setup.setup();
+//        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Evalue entities for tests
@@ -91,9 +91,10 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
 
 
     @AfterClass
+
     public static void after() {
-        ctx.removeCreated();
-    }
+        if(ctx!=null) Assert.assertEquals(10,ctx.removeCreated());
+}
 
 
     // Start Tests:

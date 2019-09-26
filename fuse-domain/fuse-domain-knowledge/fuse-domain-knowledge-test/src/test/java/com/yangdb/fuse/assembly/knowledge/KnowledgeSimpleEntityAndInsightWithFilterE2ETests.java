@@ -113,14 +113,15 @@ public class KnowledgeSimpleEntityAndInsightWithFilterE2ETests {
         e4.insight(i8);
         e4.insight(i9);
         // Insert Entity and Insight entities to ES
-        Assert.assertEquals(countEntitiesAndAdditionals(e1, e2, e3, e4), commit(ctx, INDEX, e1, e2, e3, e4));
-        Assert.assertEquals(9, commit(ctx, INSIGHT_INDEX, i1, i2, i3, i4, i5, i6, i7, i8, i9));
+        Assert.assertEquals("error loading data ", 13, commit(ctx, INDEX, e1, e2, e3, e4));
+        Assert.assertEquals("error loading data ",9, commit(ctx, INSIGHT_INDEX, i1, i2, i3, i4, i5, i6, i7, i8, i9));
     }
 
     @AfterClass
+
     public static void after() {
-        ctx.removeCreated();
-    }
+        if(ctx!=null) Assert.assertEquals(22,ctx.removeCreated());
+}
 
     // STRING_VALUE, CONTENT, TITLE, DISPLAY_NAME, DESCRIPTION => Find lower and Upper
 

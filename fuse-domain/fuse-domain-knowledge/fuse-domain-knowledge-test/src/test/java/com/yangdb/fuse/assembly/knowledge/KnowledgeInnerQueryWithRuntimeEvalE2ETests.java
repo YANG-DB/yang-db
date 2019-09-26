@@ -49,7 +49,7 @@ public class KnowledgeInnerQueryWithRuntimeEvalE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true, true);
+//        Setup.setup(true, true);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -174,8 +174,8 @@ public class KnowledgeInnerQueryWithRuntimeEvalE2ETests {
 
     @AfterClass
     public static void after() {
-        ctx.removeCreated();
-    }
+        if(ctx!=null) Assert.assertEquals(34,ctx.removeCreated());
+}
 
 
     // Start Tests:
@@ -237,7 +237,6 @@ public class KnowledgeInnerQueryWithRuntimeEvalE2ETests {
                 QueryDescriptor.print(query));
         Assert.assertEquals(4, ((List) ((List<NamedParameter>) query.getParams()).get(0).getValue()).size());
         Assert.assertEquals(1, ((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments")).size());
-        Assert.assertEquals(0, (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).size());
 
 
         // return the relevant data

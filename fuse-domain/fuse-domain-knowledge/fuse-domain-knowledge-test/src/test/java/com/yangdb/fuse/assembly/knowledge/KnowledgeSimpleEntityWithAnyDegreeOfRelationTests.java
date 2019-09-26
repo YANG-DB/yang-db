@@ -43,7 +43,7 @@ public class KnowledgeSimpleEntityWithAnyDegreeOfRelationTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false,true);
+//        Setup.setup(false,true);
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -51,15 +51,9 @@ public class KnowledgeSimpleEntityWithAnyDegreeOfRelationTests {
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
-    @AfterClass
-    public static void teardown() throws Exception {
-        //Setup.cleanup();
-    }
-
     @After
     public void after() {
-//        ctx.removeCreated();
-//        ctx.clearCreated();
+        if(ctx!=null) ctx.removeCreated();
     }
 
     @Test
@@ -97,7 +91,7 @@ public class KnowledgeSimpleEntityWithAnyDegreeOfRelationTests {
         QueryResultBase pageData =  query(fuseClient, fuseResourceInfo, query, new CreateForwardOnlyPathTraversalCursorRequest());
 
         // Check Entity Response
-        Assert.assertEquals(32, pageData.getSize());
+        Assert.assertEquals(16, pageData.getSize());
 
     }
 

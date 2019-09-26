@@ -105,14 +105,15 @@ public class KnowledgeSimpleEntityAndEfileWithFilterE2ETests {
         e4.file(f7);
         e4.file(f8);
         // Insert Entity and Evalue entities to ES
-        Assert.assertEquals(4, commit(ctx, INDEX, e1, e2, e3, e4));
-        Assert.assertEquals(8, commit(ctx, INDEX, f1, f2, f3, f4, f5, f6, f7, f8));
+        Assert.assertEquals("error loading data ",4, commit(ctx, INDEX, e1, e2, e3, e4));
+        Assert.assertEquals("error loading data ",8, commit(ctx, INDEX, f1, f2, f3, f4, f5, f6, f7, f8));
     }
 
     @AfterClass
+
     public static void after() {
-        ctx.removeCreated();
-    }
+        if(ctx!=null) Assert.assertEquals(12,ctx.removeCreated());
+}
 
     // STRING_VALUE, CONTENT, TITLE, DISPLAY_NAME, DESCRIPTION => Find lower and Upper
 

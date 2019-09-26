@@ -60,7 +60,8 @@ public class KnowledgeMassInsertionPathTest {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        ctx.removeCreated();
+        if(ctx!=null) ctx.removeCreated();
+
     }
 
     private static void loadData() throws JsonProcessingException {

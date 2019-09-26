@@ -72,6 +72,7 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
     protected void manageParameterizedConstraint(List<NamedParameter> params, EProp eProp) {
         ParameterizedConstraint expr = (ParameterizedConstraint) eProp.getCon();
         String name = expr.getParameter().getName();
+
         Optional<NamedParameter> parameter = params.stream().filter(p -> p.getName().equals(name)).findAny();
         //in case of singular operator and list of operands - use union of conditions for each query pattern
         if (isArrayOrIterable(parameter.get().getValue()) && isForEachJoin(expr)) {
@@ -137,8 +138,14 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
         return isSingleElementOp(expr.getOp());
     }
 
+    /**
+     *
+     * @param params
+     * @param eProp
+     */
     protected void manageOptionalUnaryParameterizedConstraint(List<NamedParameter> params, EProp eProp) {
-        String name = ((Map<String, Object>) eProp.getCon().getExpr()).values().iterator().next().toString();
+        NamedParameter namedParameter = ((OptionalUnaryParameterizedConstraint) eProp.getCon()).getParameter();
+        String name = namedParameter.getName();
         Optional<NamedParameter> parameter = params.stream().filter(p -> p.getName().equals(name)).findAny();
         if (parameter.isPresent()) {
             final Optional<ConstraintOp> optional = ((OptionalUnaryParameterizedConstraint) eProp.getCon()).getOperations().stream()
