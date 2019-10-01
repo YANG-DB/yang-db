@@ -37,7 +37,7 @@ public class KnowledgeUploadLogicalGraphTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true);
+//        Setup.setup(true);
     }
 
 
@@ -73,7 +73,7 @@ public class KnowledgeUploadLogicalGraphTest {
             totalGraphSize = countGraphElements(pageData);
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
-        Assert.assertEquals(839, totalGraphSize);
+        Assert.assertEquals(7027, totalGraphSize);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class KnowledgeUploadLogicalGraphTest {
             totalGraphSize = countGraphElements(pageData);
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
-        Assert.assertEquals(839, totalGraphSize);
+        Assert.assertEquals(6512, totalGraphSize);
     }
 
 

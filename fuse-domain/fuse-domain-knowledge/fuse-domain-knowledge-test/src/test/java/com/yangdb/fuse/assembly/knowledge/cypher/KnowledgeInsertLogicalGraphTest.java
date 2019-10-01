@@ -39,11 +39,11 @@ public class KnowledgeInsertLogicalGraphTest {
 
     //number of elements on les miserables graph
 
-    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true);
+//        Setup.setup(true);
+
         //load data
         loadData();
     }

@@ -38,6 +38,7 @@ import com.yangdb.fuse.model.query.quant.QuantType;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.yangdb.fuse.model.asgQuery.AsgQueryUtil.getEprops;
 import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.*;
@@ -107,7 +108,10 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
             EPropGroup group = new EPropGroup(eProp.geteNum(), eProps);
             ePropAsg.get().seteBase(group);
         } else {
-            parameter.ifPresent(namedParameter -> eProp.setCon(Constraint.of(eProp.getCon().getOp(), parseValue(eProp, eProp.getCon().getExpr(), namedParameter), eProp.getCon().getiType())));
+            parameter.ifPresent(namedParameter -> eProp.setCon(
+                    Constraint.of(eProp.getCon().getOp(),
+                            parseValue(eProp, eProp.getCon().getExpr(), namedParameter),
+                            eProp.getCon().getiType())));
         }
     }
 
@@ -118,11 +122,21 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
             return namedParameter.getValue();
 
         if (isArrayOrIterable(exp)) {
-            //parse expression (function?) according to operator and assign named param value
-            return ((Collection) exp).stream()
+            //parse & evaluate expression (function?) according to operator and assign named param value
+            Collection eValuatedParams = (Collection) ((Collection) exp).stream()
                     .filter(e -> exp.toString().contains($VAL))
                     .map(e -> AviatorEvaluator.execute(e.toString(),
                             singletonMap($VAL, propertyTypeFactory.supply(property.get(), namedParameter.getValue()))))
+                    .collect(Collectors.toList());
+
+            //get all other non evaluated params
+            Collection nonEvaluatedParams = (Collection) ((Collection) exp).stream()
+                    .filter(e -> !exp.toString().contains($VAL))
+                    .collect(Collectors.toList());
+
+            return Stream.concat(
+                    eValuatedParams.stream(),
+                    nonEvaluatedParams.stream())
                     .collect(Collectors.toList());
         } else if (exp.toString().contains($VAL)) {
             return AviatorEvaluator.execute(exp.toString(),

@@ -36,7 +36,7 @@ public class KnowledgeSimpleEntityTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true);
+//        Setup.setup(true);
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         e0 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
         e1 =_e(ctx.nextLogicalId()).cat("person").ctx("context1");
@@ -97,7 +97,7 @@ public class KnowledgeSimpleEntityTests {
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
         Assert.assertEquals(1, assignments.size());
-        Assert.assertEquals(3, assignments.get(0).getRelationships().size());
+        Assert.assertEquals(1000, assignments.get(0).getRelationships().size());
         Assert.assertEquals(3, assignments.get(0).getRelationships().stream().filter(e->e.getrType().equals("hasEvalue")).count());
 
         Assert.assertEquals(5, assignments.get(0).getEntities().size());
@@ -132,7 +132,7 @@ public class KnowledgeSimpleEntityTests {
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
         Assert.assertEquals(1, assignments.size());
-        Assert.assertEquals(3, assignments.get(0).getRelationships().size());
+        Assert.assertEquals(874, assignments.get(0).getRelationships().size());
         Assert.assertEquals(3, assignments.get(0).getRelationships().stream().filter(e->e.getrType().equals("hasEvalue")).count());
 
         Assert.assertEquals(5, assignments.get(0).getEntities().size());

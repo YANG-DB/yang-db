@@ -29,6 +29,7 @@ public class AsgKnowledgeValidatorStrategyRegistrar implements AsgValidatorStrat
     @Override
     public Iterable<AsgValidatorStrategy> register() {
         return Collections.singletonList(new CompositeValidatorStrategy(
+                new AsgConstraintExpressionValidatorStrategy(),
                 new AsgCycleValidatorStrategy(),
                 new AsgCompositeQueryValidatorStrategy(),
                 new AsgEntityDuplicateEnumValidatorStrategy(),

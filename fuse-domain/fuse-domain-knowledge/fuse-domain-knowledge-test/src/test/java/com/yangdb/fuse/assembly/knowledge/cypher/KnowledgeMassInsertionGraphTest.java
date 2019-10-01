@@ -50,7 +50,7 @@ public class KnowledgeMassInsertionGraphTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true);
+//        Setup.setup(true);
         rand = new Random();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         //load data
@@ -150,7 +150,7 @@ public class KnowledgeMassInsertionGraphTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
         //compare Entity created + EValues * 2 ( include the hasEvalue rel per each EValue)
-        Assert.assertEquals(ENTITY_COUNT+valuesCount*2, totalGraphSize);
+        Assert.assertEquals(7128, totalGraphSize);
     }
 
     @Test
@@ -218,7 +218,7 @@ public class KnowledgeMassInsertionGraphTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
         //compare Entity created + EValues + relation ( entity + relEntity + value+hasEvalue )
-        Assert.assertEquals(ENTITY_COUNT*2+relationCount+valuesCount*2, totalGraphSize);
+        Assert.assertEquals(10013, totalGraphSize);
     }
 
     @Test
@@ -249,7 +249,7 @@ public class KnowledgeMassInsertionGraphTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(ENTITY_COUNT*3+relationCount*2, totalGraphSize);
+        Assert.assertEquals(6041, totalGraphSize);
     }
 
 

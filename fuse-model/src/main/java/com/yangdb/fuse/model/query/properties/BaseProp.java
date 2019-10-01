@@ -51,6 +51,7 @@ public abstract class BaseProp extends EBase{
     }
     //endregion
 
+
     //region Override Methods
     @Override
     public boolean equals(Object o) {
@@ -144,6 +145,14 @@ public abstract class BaseProp extends EBase{
 
     public void setF(String f) {
         this.f = f;
+    }
+
+    public boolean isProjection() {
+        return getProj()!=null;
+    }
+
+    public boolean isConstraint() {
+        return getCon()!=null;
     }
     //endregion
 

@@ -50,8 +50,8 @@ public class KnowledgeMassInsertionPathTest {
 
     @BeforeClass
     public static void setup() throws Exception {
+//        Setup.setup(true);
         mapper = new ObjectMapper();
-        Setup.setup(true);
         rand = new Random();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         //load data

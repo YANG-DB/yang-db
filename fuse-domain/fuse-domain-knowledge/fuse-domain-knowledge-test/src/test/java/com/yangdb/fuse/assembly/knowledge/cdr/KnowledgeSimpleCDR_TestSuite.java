@@ -16,12 +16,12 @@ import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 @Suite.SuiteClasses({
         KnowledgeSimpleCdrWithCypherQueryTests.class,
         KnowledgeSimpleCdrWithJsonQueryTests.class,
-        KnowledgeSimpleCdrWithV1InnerQueryTests.class,
-        KnowledgeSimpleCdrWithV1QueryTests.class
+        KnowledgeSimpleCdrWithV1InnerQueryTests.class
 })
 
-public class KnowledgeCypherCDRTestSuite {
+public class KnowledgeSimpleCDR_TestSuite {
     public static KnowledgeWriterContext ctx;
+
 
     @BeforeClass
     public static void setup() throws Exception {

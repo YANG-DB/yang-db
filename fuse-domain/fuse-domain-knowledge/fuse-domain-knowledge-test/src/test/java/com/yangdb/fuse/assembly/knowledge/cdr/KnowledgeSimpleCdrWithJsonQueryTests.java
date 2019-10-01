@@ -11,6 +11,7 @@ import com.yangdb.fuse.model.results.QueryResultBase;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -21,12 +22,15 @@ import java.util.List;
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.client.FuseClientSupport.query;
 
+@Ignore("Non supported clause based ")
 public class KnowledgeSimpleCdrWithJsonQueryTests {
     static JsonQueryTranslator translator;
     static BusinessTypesProvider typesProvider;
 
     @BeforeClass
     public static void setup() throws Exception {
+//        KnowledgeSimpleCDR_TestSuite.setup();
+
         translator = new JsonQueryTranslator();
         typesProvider = new FolderBasedTypeProvider("ontology");
     }

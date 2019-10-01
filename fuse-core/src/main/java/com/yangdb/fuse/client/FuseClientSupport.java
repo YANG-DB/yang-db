@@ -85,21 +85,7 @@ public interface FuseClientSupport {
         // get Query URL
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         if(queryResourceInfo.getError()!=null) {
-            return new AssignmentsQueryResult<E,R>() {
-                @Override
-                public int getSize() {
-                    return -1;
-                }
-
-                public FuseError error() {
-                    return queryResourceInfo.getError();
-                }
-
-                @Override
-                public String toString() {
-                    return error().getErrorDescription();
-                }
-            };
+            return new AssignmentsErrorQueryResult(queryResourceInfo.getError());
         }
 
         // Press on Cursor
@@ -115,21 +101,7 @@ public interface FuseClientSupport {
         // get Query URL
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query,ontology);
         if(queryResourceInfo.getError()!=null) {
-            return new AssignmentsQueryResult<E,R>() {
-                @Override
-                public int getSize() {
-                    return -1;
-                }
-
-                public FuseError error() {
-                    return queryResourceInfo.getError();
-                }
-
-                @Override
-                public String toString() {
-                    return error().getErrorDescription();
-                }
-            };
+            return new AssignmentsErrorQueryResult(queryResourceInfo.getError());
         }
 
         // Press on Cursor

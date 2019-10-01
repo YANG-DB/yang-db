@@ -13,10 +13,12 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         KnowledgeInsertLogicalGraphTest.class,
-        KnowledgeMassInsertionGraphTest.class,
+        KnowledgeLoadMergeLogicalGraphTest.class,
         KnowledgeMassInsertionPathTest.class,
         KnowledgePathMultiStepsForwardOnlyCursorTest.class,
-        KnowledgeSimpleEntityTests.class
+        KnowledgeSimpleEntityTests.class,
+        KnowledgeUploadLogicalGraphTest.class,
+        KnowledgeMassInsertionGraphTest.class,
 })
 
 public class KnowledgeSimpleCypherTestSuite {
@@ -34,3 +36,6 @@ public class KnowledgeSimpleCypherTestSuite {
         Setup.cleanup();
     }
 }
+
+
+

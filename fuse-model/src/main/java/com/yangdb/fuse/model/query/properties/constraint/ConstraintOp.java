@@ -115,17 +115,24 @@ public enum ConstraintOp {
     likeAny;
 
     public static Set<Class<? extends Constraint>> ignorableConstraints;
+    public static Set<ConstraintOp> noValueOps;
     public static Set<ConstraintOp> singleValueOps;
     public static Set<ConstraintOp> multiValueOps;
+    public static Set<ConstraintOp> exactlyTwoValueOps;
 
     static {
-        ignorableConstraints = Stream.of(ParameterizedConstraint.class,JoinParameterizedConstraint.class,
+        ignorableConstraints = Stream.of(ParameterizedConstraint.class,
+                JoinParameterizedConstraint.class,
                 InnerQueryConstraint.class).toJavaSet();
+
+        noValueOps = Stream.of(empty,notEmpty).toJavaSet();
 
         singleValueOps = Stream.of(eq, ne, gt, ge, lt, le, contains, startsWith, notContains, notStartsWith, notEndsWith,
                 fuzzyEq, fuzzyNe, match, match_phrase, notMatch, empty, notEmpty).toJavaSet();
 
-        multiValueOps = Stream.of(inRange, notInRange, inSet, notInSet, empty, notEmpty, likeAny, query_string).toJavaSet();
+        multiValueOps = Stream.of(inRange, notInRange, inSet, notInSet, likeAny, query_string).toJavaSet();
+
+        exactlyTwoValueOps = Stream.of(inRange, notInRange).toJavaSet();
     }
 
 }
