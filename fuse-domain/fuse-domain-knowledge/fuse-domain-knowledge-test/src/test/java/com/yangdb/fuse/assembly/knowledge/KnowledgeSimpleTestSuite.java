@@ -55,7 +55,7 @@ public class KnowledgeSimpleTestSuite {
     @AfterClass
     public static void tearDown() throws Exception {
         System.out.println("KnowledgeSimpleTestSuite - teardown");
-//        Setup.cleanup();
+        Setup.cleanup(true,false);
     }
 }
 

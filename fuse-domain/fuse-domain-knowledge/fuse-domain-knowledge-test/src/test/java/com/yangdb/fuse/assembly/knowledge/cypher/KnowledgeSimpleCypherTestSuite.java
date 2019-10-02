@@ -42,7 +42,7 @@ public class KnowledgeSimpleCypherTestSuite {
     @AfterClass
     public static void tearDown() throws Exception {
         System.out.println("KnowledgeSimpleCypherTestSuite - teardown");
-//        Setup.cleanup();
+        Setup.cleanup(true,false);
     }
 
     private static void loadData() throws IOException {

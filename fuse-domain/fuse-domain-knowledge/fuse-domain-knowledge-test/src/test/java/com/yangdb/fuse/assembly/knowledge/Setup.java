@@ -20,7 +20,7 @@ import java.util.Arrays;
 import static com.yangdb.fuse.services.controllers.IdGeneratorController.IDGENERATOR_INDEX;
 
 public abstract class Setup {
-    public static final Path path = Paths.get( "resources", "assembly", "Knowledge", "config", "application.test.engine3.m1.dfs.knowledge.public.conf");
+    public static final Path path = Paths.get("resources", "assembly", "Knowledge", "config", "application.test.engine3.m1.dfs.knowledge.public.conf");
     public static FuseApp app = null;
     public static ElasticEmbeddedNode elasticEmbeddedNode = null;
     public static KnowledgeConfigManager manager = null;
@@ -32,32 +32,32 @@ public abstract class Setup {
     }
 
     public static void setup(boolean embedded) throws Exception {
-        setup(embedded,true);
+        setup(embedded, true);
     }
 
     public static void setup(boolean embedded, boolean init) throws Exception {
-        init(embedded,init,true);
+        init(embedded, init, true);
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
     }
 
-    public static void setup(boolean embedded, boolean init,boolean startFuse) throws Exception {
-        init(embedded,init,startFuse);
+    public static void setup(boolean embedded, boolean init, boolean startFuse) throws Exception {
+        init(embedded, init, startFuse);
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
     }
 
     public static void setup(boolean embedded, boolean init, boolean startFuse, FuseClient givenFuseClient) throws Exception {
-        init(embedded,init,startFuse);
+        init(embedded, init, startFuse);
         //set fuse client
         fuseClient = givenFuseClient;
     }
 
     private static void init(boolean embedded, boolean init, boolean startFuse) throws Exception {
         // Start embedded ES
-        if(embedded) {
+        if (embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("knowledge");
             client = elasticEmbeddedNode.getClient();
             try {
-                new BasicIdGenerator(client,IDGENERATOR_INDEX).init(Arrays.asList("Entity","Relation","Evalue","Rvalue","workerId"));
+                new BasicIdGenerator(client, IDGENERATOR_INDEX).init(Arrays.asList("Entity", "Relation", "Evalue", "Rvalue", "workerId"));
             } catch (Exception e) {
                 //probably index already exists
                 System.out.println(e.getMessage());
@@ -72,20 +72,20 @@ public abstract class Setup {
         manager = new KnowledgeConfigManager(confFilePath, client);
         // Connect to elastic
         // Create indexes by templates
-        if(init) {
+        if (init) {
             manager.init();
         }
 
         //load configuration
-        Config config = FuseUtils.loadConfig(new File(confFilePath),"activeProfile" );
+        Config config = FuseUtils.loadConfig(new File(confFilePath), "activeProfile");
         String[] joobyArgs = new String[]{
-                "logback.configurationFile="+Paths.get("src", "test","resources", "config", "logback.xml").toString() ,
+                "logback.configurationFile=" + Paths.get("src", "test", "resources", "config", "logback.xml").toString(),
                 "server.join=false"
         };
 
 
         // Start fuse app (based on Jooby app web server)
-        if(startFuse) {
+        if (startFuse) {
             app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                     .conf(path.toFile(), "activeProfile");
             app.start("server.join=false");
@@ -93,16 +93,18 @@ public abstract class Setup {
     }
 
 
-    public static void cleanup() throws Exception {
+    public static void cleanup(boolean fuse, boolean elastic) throws Exception {
         if (manager != null) {
             manager.drop();
         }
-        if (app != null) {
-            app.stop();
+        if (fuse) {
+            if (app != null) {
+                app.stop();
+            }
         }
-
-        if(elasticEmbeddedNode!=null)
-            elasticEmbeddedNode.close();
-
+        if (elastic) {
+            if (elasticEmbeddedNode != null)
+                elasticEmbeddedNode.close();
+        }
     }
 }

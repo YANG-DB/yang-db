@@ -36,7 +36,7 @@ public class KnowledgeSimpleCDR_TestSuite {
     public static void tearDown() throws Exception {
         System.out.println("KnowledgeSimpleTestSuite - teardown");
         if(ctx!=null) ctx.removeCreated();
-//        Setup.cleanup();
+        Setup.cleanup(true,false);
     }
 }
 
