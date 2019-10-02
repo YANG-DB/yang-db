@@ -10,16 +10,12 @@ import com.yangdb.fuse.services.FuseApp;
 import com.yangdb.fuse.services.FuseUtils;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
-import org.jooby.Jooby;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.yangdb.fuse.services.controllers.IdGeneratorController.IDGENERATOR_INDEX;
 
@@ -90,13 +86,9 @@ public abstract class Setup {
 
         // Start fuse app (based on Jooby app web server)
         if(startFuse) {
-            //load jooby App
-            Jooby.run(() -> app != null ?
-                            app :
-                            new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                                    .conf(config)
-                                    .throwBootstrapException(),
-                    joobyArgs);
+            app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                    .conf(path.toFile(), "activeProfile");
+            app.start("server.join=false");
         }
     }
 

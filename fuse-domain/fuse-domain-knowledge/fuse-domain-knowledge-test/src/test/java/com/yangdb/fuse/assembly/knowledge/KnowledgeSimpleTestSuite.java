@@ -49,13 +49,13 @@ public class KnowledgeSimpleTestSuite {
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("KnowledgeSimpleTestSuite - setup");
-        Setup.setup(false,true,false);
+        Setup.setup();
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
         System.out.println("KnowledgeSimpleTestSuite - teardown");
-        Setup.cleanup();
+//        Setup.cleanup();
     }
 }
 

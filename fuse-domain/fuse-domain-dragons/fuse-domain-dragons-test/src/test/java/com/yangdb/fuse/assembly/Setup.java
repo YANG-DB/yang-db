@@ -71,13 +71,9 @@ public abstract class Setup {
 
         // Start fuse app (based on Jooby app web server)
         if(startFuse) {
-            //load jooby App
-            Jooby.run(() -> app != null ?
-                            app :
-                            new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                                    .conf(config)
-                                    .throwBootstrapException(),
-                    joobyArgs);
+            app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                    .conf(path.toFile(), "activeProfile");
+            app.start("server.join=false");
         }
     }
 
