@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.yangdb.fuse.model.Below;
 import com.yangdb.fuse.model.Next;
+import com.yangdb.fuse.model.Tagged;
 import com.yangdb.fuse.model.query.entity.Typed;
 
 /**
@@ -38,11 +39,21 @@ import com.yangdb.fuse.model.query.entity.Typed;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(name = "RelPattern", value = RelPattern.class)})
-public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.rTyped{
+public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.rTyped, Tagged {
 
     @Override
     public String getTyped() {
         return getrType();
+    }
+
+    @Override
+    public String geteTag() {
+        return getWrapper();
+    }
+
+    @Override
+    public void seteTag(String eTag) {
+        this.setWrapper(eTag);
     }
 
     public enum Direction {

@@ -80,7 +80,9 @@ public class OrExpression implements ExpressionStrategies {
                     //base quant to add onto
                     final AsgEBase<? extends EBase> base = context.getScope();
                     //duplicate query from scope to end
-                    final AsgEBase<? extends EBase> clone = AsgQueryUtil.deepCloneWithEnums(new int[] {newMaxEnum}, finalChain.get(0), e -> true, e -> true);
+                    final AsgEBase<? extends EBase> clone = AsgQueryUtil.deepCloneWithEnums(new int[] {newMaxEnum}, finalChain.get(0),
+                            e -> true,
+                            e -> true);
                     //add duplication to scope
                     context.getScope().addNext(clone);
                     //run strategies on current scope

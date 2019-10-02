@@ -33,7 +33,7 @@ public class AsgKnowledgeValidatorStrategyRegistrar implements AsgValidatorStrat
                 new AsgCycleValidatorStrategy(),
                 new AsgCompositeQueryValidatorStrategy(),
                 new AsgEntityDuplicateEnumValidatorStrategy(),
-                new AsgEntityDuplicateETagValidatorStrategy(),
+//                new AsgEntityDuplicateETagValidatorStrategy(),
                 new AsgKnowledgeEntityPropertiesValidatorStrategy("Entity","Evalue"),
                 new AsgOntologyEntityValidatorStrategy(),
                 new AsgOntologyRelValidatorStrategy(),

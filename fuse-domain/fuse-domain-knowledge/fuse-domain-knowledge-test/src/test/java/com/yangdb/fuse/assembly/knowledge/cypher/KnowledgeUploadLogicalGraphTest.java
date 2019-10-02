@@ -73,7 +73,7 @@ public class KnowledgeUploadLogicalGraphTest {
             totalGraphSize = countGraphElements(pageData);
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
-        Assert.assertEquals(7027, totalGraphSize);
+        Assert.assertEquals(1726, totalGraphSize);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class KnowledgeUploadLogicalGraphTest {
             totalGraphSize = countGraphElements(pageData);
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
-        Assert.assertEquals(6512, totalGraphSize);
+        Assert.assertEquals(887, totalGraphSize);
     }
 
 

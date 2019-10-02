@@ -53,7 +53,7 @@ public class AsgEntityDuplicateETagValidatorStrategy implements AsgValidatorStra
         if (inValid.isEmpty())
             return OK;
 
-        errors.add(ERROR_1 + ":" + inValid.stream().map(Map.Entry::getKey).collect(Collectors.toList()));
+        errors.add(ERROR_1 + ":" + inValid.stream().map(Map.Entry::getKey).collect(Collectors.toList()) +" when under 'Or' expression try using tagSeq(...) as tag name ");
 
         return new ValidationResult(false, this.getClass().getSimpleName(), errors.toArray(new String[errors.size()]));
     }

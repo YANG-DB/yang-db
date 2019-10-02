@@ -38,8 +38,7 @@ public class KnowledgeLoadMergeLogicalGraphTest {
     @BeforeClass
     public static void setup() throws Exception {
 //        Setup.setup(true);
-        //load data
-        loadData();
+//        loadData();
     }
 
     private static void loadData() throws IOException {
@@ -67,9 +66,9 @@ public class KnowledgeLoadMergeLogicalGraphTest {
         QueryResultBase pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         //validate merge did add new property 'Napoleon_1' without removing the former propery 'Napoleon'
         List<Entity> entities = ((AssignmentsQueryResult<Entity, Relation>) pageData).getAssignments().get(0).getEntities();
-        Assert.assertEquals(2,entities.stream().filter(e->e.geteType().equals("Entity"))
+        Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Entity"))
                 .filter(e->e.getProperty("techId").get().getValue().toString().equals("Napoleon")).count());
-        Assert.assertEquals(2,entities.stream().filter(e->e.geteType().equals("Evalue"))
+        Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Evalue"))
                 .filter(e->e.getProperty("stringValue").get().getValue().toString().equals("Napoleon")).count());
         Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Evalue"))
                 .filter(e->e.getProperty("stringValue").get().getValue().toString().equals("Napoleon_1")).count());
@@ -84,9 +83,9 @@ public class KnowledgeLoadMergeLogicalGraphTest {
         pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         //validate merge did add new property 'Napoleon_1' without removing the former propery 'Napoleon'
         entities = ((AssignmentsQueryResult<Entity, Relation>) pageData).getAssignments().get(0).getEntities();
-        Assert.assertEquals(2,entities.stream().filter(e->e.geteType().equals("Entity"))
+        Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Entity"))
                 .filter(e->e.getProperty("techId").get().getValue().toString().equals("Myriel")).count());
-        Assert.assertEquals(2,entities.stream().filter(e->e.geteType().equals("Evalue"))
+        Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Evalue"))
                 .filter(e->e.getProperty("fieldId").get().getValue().toString().equals("name")).count());
         Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Evalue"))
                 .filter(e->e.getProperty("fieldId").get().getValue().toString().equals("sex")).count());

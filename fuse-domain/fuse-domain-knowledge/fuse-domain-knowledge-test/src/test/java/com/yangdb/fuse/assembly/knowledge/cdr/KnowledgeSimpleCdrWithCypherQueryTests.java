@@ -19,7 +19,7 @@ import static com.yangdb.fuse.client.FuseClientSupport.query;
 public class KnowledgeSimpleCdrWithCypherQueryTests {
     @BeforeClass
     public static void setup() throws Exception {
-        KnowledgeSimpleCDR_TestSuite.setup();
+//        KnowledgeSimpleCDR_TestSuite.setup();
 
     }
 

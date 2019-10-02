@@ -120,6 +120,21 @@ public class AsgQueryUtil {
                 , truePredicate);
     }
 
+    public static <T extends EBase, S extends EBase> Map<String, List<AsgEBase<EBase>>> groupByTags(AsgEBase<T> asgEBase) {
+        List<AsgEBase<EBase>> elements = elements(asgEBase,
+                emptyIterableFunction,
+                AsgEBase::getNext,
+                p -> (EEntityBase.class.isAssignableFrom(p.geteBase().getClass()) && ((EEntityBase) p.geteBase()).geteTag() != null)
+                        || (Rel.class.isAssignableFrom(p.geteBase().getClass()) && ((Rel) p.geteBase()).getWrapper() != null),
+                truePredicate,
+                Collections.emptyList());
+
+        return elements
+                .stream()
+                .collect(Collectors.groupingBy(o->((Tagged) o.geteBase()).geteTag()));
+
+    }
+
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
         return element(
                 asgEBase,
@@ -715,13 +730,16 @@ public class AsgQueryUtil {
             clone = (T) asgEBase.geteBase().clone(++max[0]);
         }
         //update etag
-        //this code will cause creation of new tags that will not assiciated with former tags that was cloned from and therefore will not be found
-        if (clone instanceof Tagged &&
-                ((Tagged) clone).geteTag() != null) {
-            if (isSeq((Tagged) clone) || cloneTags) {
+        //this will cause creation of new tags that will not be associated with former tags that was cloned from and therefore will not be found
+        if ((clone instanceof Tagged) && (((Tagged) clone).geteTag() != null) && cloneTags) {
+            if (isSeq((Tagged) clone) ) {
                 Tagged.setSeq(clone.geteNum(), (Tagged) clone);
+            } else {
+                //clone tag according to running sequence
+                ((Tagged) clone).seteTag(String.format("%s:%d",((Tagged) clone).geteTag(),clone.geteNum()));
             }
         }
+
         eBaseBuilder.withEBase(clone);
 
         List<AsgEBase<? extends EBase>> next = Stream.ofAll(asgEBase.getNext()).filter(nextPredicate).toJavaList();

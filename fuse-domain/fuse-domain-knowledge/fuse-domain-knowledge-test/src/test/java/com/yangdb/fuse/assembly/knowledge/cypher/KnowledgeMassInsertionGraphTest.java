@@ -15,6 +15,7 @@ import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import javaslang.Tuple3;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -36,6 +37,7 @@ import static com.yangdb.fuse.client.FuseClientSupport.countGraphElements;
 import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 import static java.time.temporal.ChronoField.EPOCH_DAY;
 
+@Ignore("Remove random to disable non predictive assert result numbers")
 public class KnowledgeMassInsertionGraphTest {
     public static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     public static final String[] words = LOREM_IPSUM.split(" ");

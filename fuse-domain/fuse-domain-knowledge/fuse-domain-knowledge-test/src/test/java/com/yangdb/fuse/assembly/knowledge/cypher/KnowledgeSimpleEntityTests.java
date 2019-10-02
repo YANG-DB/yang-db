@@ -56,33 +56,8 @@ public class KnowledgeSimpleEntityTests {
     }
 
     @AfterClass
-
     public static void after() {
-        if(ctx!=null) Assert.assertEquals(6,ctx.removeCreated());
-    }
-
-    @Test
-    public void testInsertOneSimpleEntityWithBuilder() throws IOException, InterruptedException {
-
-        // Create v1 query to fetch newly created entity
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        Query query = start().withEntity(e0.getETag()).build();
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
-
-        // Check Entity Response
-        Assert.assertEquals(1, pageData.getSize());
-        Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
-
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e0.toEntity())
-                        .withEntity(e1.toEntity())
-                        .withEntity(e2.toEntity())
-                        .build())
-                .build();
-
-        // Check if expected and actual are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, false, true);
+        if(ctx!=null) Assert.assertEquals(9,ctx.removeCreated());
     }
 
     @Test
@@ -97,25 +72,13 @@ public class KnowledgeSimpleEntityTests {
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
         Assert.assertEquals(1, assignments.size());
-        Assert.assertEquals(1000, assignments.get(0).getRelationships().size());
-        Assert.assertEquals(3, assignments.get(0).getRelationships().stream().filter(e->e.getrType().equals("hasEvalue")).count());
+        Assert.assertEquals(17, assignments.get(0).getRelationships().size());
+        Assert.assertEquals(17, assignments.get(0).getRelationships().stream().filter(e->e.getrType().equals("hasEvalue")).count());
 
-        Assert.assertEquals(5, assignments.get(0).getEntities().size());
-        Assert.assertEquals(3, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Evalue")).count());
-        Assert.assertEquals(2, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Entity")).count());
+        Assert.assertEquals(30, assignments.get(0).getEntities().size());
+        Assert.assertEquals(16, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Evalue")).count());
+        Assert.assertEquals(14, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Entity")).count());
 
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//context entity
-                        .withEntity(e2.toEntity())//context entity
-                        .withEntities(e1.subEntities())//logicalEntity
-                        .withEntities(e2.subEntities())//logicalEntity
-                        .withRelationships(e1.withRelations())//relationships
-                        .withRelationships(e2.withRelations())//relationships
-                        .build()).build();
-
-        // Check if expected and actual are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
 
 
@@ -132,25 +95,12 @@ public class KnowledgeSimpleEntityTests {
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
         Assert.assertEquals(1, assignments.size());
-        Assert.assertEquals(874, assignments.get(0).getRelationships().size());
-        Assert.assertEquals(3, assignments.get(0).getRelationships().stream().filter(e->e.getrType().equals("hasEvalue")).count());
+        Assert.assertEquals(17, assignments.get(0).getRelationships().size());
+        Assert.assertEquals(17, assignments.get(0).getRelationships().stream().filter(e->e.getrType().equals("hasEvalue")).count());
 
-        Assert.assertEquals(5, assignments.get(0).getEntities().size());
-        Assert.assertEquals(3, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Evalue")).count());
-        Assert.assertEquals(2, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Entity")).count());
-
-        AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
-                .withAssignment(Assignment.Builder.instance()
-                        .withEntity(e1.toEntity())//context entity
-                        .withEntity(e2.toEntity())//context entity
-                        .withEntities(e1.subEntities())//logicalEntity
-                        .withEntities(e2.subEntities())//logicalEntity
-                        .withRelationships(e1.withRelations())//relationships
-                        .withRelationships(e2.withRelations())//relationships
-                        .build()).build();
-
-        // Check if expected and actual are equal
-        QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+        Assert.assertEquals(30, assignments.get(0).getEntities().size());
+        Assert.assertEquals(16, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Evalue")).count());
+        Assert.assertEquals(14, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Entity")).count());
     }
 
     @Test

@@ -34,7 +34,8 @@ import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder._v;
 import static com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader.Directive.INSERT;
 import static java.time.temporal.ChronoField.EPOCH_DAY;
 
-@Ignore("[ERROR]   KnowledgeMassInsertionPathTest.setup:61->loadData:78 » IndexOutOfBounds get(0)...")
+@Ignore("Remove random to disable non predictive assert result numbers")
+
 public class KnowledgeMassInsertionPathTest {
     public static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     public static final String[] words = LOREM_IPSUM.split(" ");
