@@ -128,9 +128,9 @@ public enum ConstraintOp {
         noValueOps = Stream.of(empty,notEmpty).toJavaSet();
 
         singleValueOps = Stream.of(eq, ne, gt, ge, lt, le, contains, startsWith, notContains, notStartsWith, notEndsWith,
-                fuzzyEq, fuzzyNe, match, match_phrase, notMatch, empty, notEmpty).toJavaSet();
+                fuzzyEq, fuzzyNe, match, match_phrase, notMatch, empty, notEmpty, query_string).toJavaSet();
 
-        multiValueOps = Stream.of(inRange, notInRange, inSet, notInSet, likeAny, query_string).toJavaSet();
+        multiValueOps = Stream.of(inRange, notInRange, inSet, notInSet, likeAny).toJavaSet();
 
         exactlyTwoValueOps = Stream.of(inRange, notInRange).toJavaSet();
     }

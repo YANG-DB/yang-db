@@ -3,6 +3,7 @@ package com.yangdb.fuse.core.driver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Key;
 import com.google.inject.Provider;
+import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.FileBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
@@ -33,9 +34,11 @@ import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
 import org.jooby.internal.RequestScope;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -54,11 +57,15 @@ import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.emp
 import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.notEmpty;
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.*;
 
-//@Ignore("Todo fix serialization issues named parameter")
 public class StoredQueryDriverTest extends BaseModuleInjectionTest {
     static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     static KnowledgeWriterContext ctx;
     static FileBuilder f1, f2;
+
+    @BeforeClass
+    public static void setupTest() throws Exception {
+//        Setup.setup();
+    }
 
     public void setupData(Client client, RawSchema schema) throws ParseException, JsonProcessingException {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -138,6 +145,9 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
                 .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
 
+        //force indices refresh
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
+
         final Optional<StoreResourceInfo> info = driver.getInfo();
         Assert.assertTrue(info.isPresent());
         Assert.assertTrue(info.get().getResourceUrl().endsWith("/fuse/query"));
@@ -183,6 +193,8 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
                 .storageType(CreateQueryRequest.StorageType._stored)
                 .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
+        //force indices refresh
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         final Optional<StoreResourceInfo> info = driver.getInfo();
         Assert.assertTrue(info.isPresent());
