@@ -42,7 +42,7 @@ public class NonRedundantTestSuite {
                 .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.conf").toString()),
                         "m1.dfs.non_redundant");
 
-        new FuseRunner().run(app, new FuseRunner.Options(Paths.get("src", "test", "conf", "logback.xml").toString(), false));
+        app.start("server.join=false");
     }
 
     @AfterClass

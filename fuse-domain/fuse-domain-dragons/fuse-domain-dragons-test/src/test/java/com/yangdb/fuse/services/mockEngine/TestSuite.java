@@ -55,7 +55,8 @@ public class TestSuite {
                     }
                 })));
 
-        new FuseRunner().run(app, new FuseRunner.Options(Paths.get("src", "test", "conf", "logback.xml").toString(), false));
+        app.start("server.join=false");
+
     }
 
     @AfterClass

@@ -54,6 +54,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
         @Override
         protected void registerDerivedNodeNameWithLogger(String nodeName) {
+            LogConfigurator.loadLog4jPlugins();
             LogConfigurator.setNodeName(nodeName);
         }
     }
@@ -174,6 +175,8 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         ));
 
         this.node = this.node.start();
+        System.out.println("Started E/S Embedded");
+
     }
     //endregion
 

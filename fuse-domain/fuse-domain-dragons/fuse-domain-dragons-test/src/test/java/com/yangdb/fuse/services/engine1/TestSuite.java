@@ -27,8 +27,8 @@ public class TestSuite {
     public static void setup() throws Exception {
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(Paths.get("src", "test", "conf", "application.engine1.dev.conf").toString()));
-
-        new FuseRunner().run(app, new FuseRunner.Options(Paths.get("src", "test", "conf", "logback.xml").toString(), false));
+        //start app
+        app.start("server.join=false");
     }
 
     @AfterClass

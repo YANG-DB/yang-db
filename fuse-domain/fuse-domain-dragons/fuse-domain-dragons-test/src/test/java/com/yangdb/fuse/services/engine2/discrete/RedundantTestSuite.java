@@ -34,7 +34,8 @@ public class RedundantTestSuite {
                 .conf(new File(Paths.get("src", "test", "conf", "application.engine3.dev.conf").toString()),
                         "m1.dfs.redundant");
 
-        new FuseRunner().run(app, new FuseRunner.Options(Paths.get("src", "test", "conf", "logback.xml").toString(), false));
+        app.start("server.join=false");
+
     }
 
     @AfterClass

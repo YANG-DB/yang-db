@@ -34,7 +34,8 @@ public class FuseManager {
 
         fuseApp = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(Paths.get("fuse-test", "fuse-benchmarks-test", "src", "main", "resources", "conf", confFile).toString()), activeProfile);
-        new FuseRunner().run(fuseApp, new FuseRunner.Options(Paths.get("fuse-test", "fuse-benchmarks-test", "src", "main", "resources", "conf", "logback.xml").toString(), false));
+
+        fuseApp.start("server.join=false");
 
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
     }
