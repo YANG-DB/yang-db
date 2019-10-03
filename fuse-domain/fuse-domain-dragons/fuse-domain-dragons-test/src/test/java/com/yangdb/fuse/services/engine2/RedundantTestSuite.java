@@ -28,7 +28,7 @@ public class RedundantTestSuite {
         System.out.println("RedundantTestSuite start");
         start = System.currentTimeMillis();
 
-        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("Dragons");
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.conf").toString()),
@@ -45,8 +45,6 @@ public class RedundantTestSuite {
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println("RedundantTestSuite elapsed: " + elapsed);
-        if(elasticEmbeddedNode!=null)
-            elasticEmbeddedNode.close();
 
     }
 

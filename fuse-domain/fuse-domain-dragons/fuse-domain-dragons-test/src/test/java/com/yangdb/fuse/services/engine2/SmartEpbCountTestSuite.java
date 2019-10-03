@@ -28,7 +28,7 @@ public class SmartEpbCountTestSuite {
         System.out.println("JoinE2ETestSuite start");
         start = System.currentTimeMillis();
 
-        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("Dragons");
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.M2.discrete.count.conf").toString()), "m2.smartEpb");

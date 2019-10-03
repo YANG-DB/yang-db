@@ -115,8 +115,10 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     public static TransportClient getClient(String nodeName,int httpTransportPort) {
         if (client == null) {
             try {
+                System.out.println("Setting client "+nodeName);
                 Settings settings = Settings.builder()
                         .put("cluster.name", nodeName)
+                        .put("node.name", nodeName)
                         .build();
                 client = new PreBuiltTransportClient(settings)
                         .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
@@ -130,7 +132,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        System.out.println("Closing");
+        System.out.println("Closing E/S embedded");
         closeClient();
         if (this.node != null) {
             this.node.close();
@@ -157,6 +159,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
         Settings settings = Settings.builder()
                 .put("cluster.name", nodeName)
+                .put("node.name", nodeName)
                 .put("path.home", esWorkingDir)
                 .put("path.data", esWorkingDir)
                 .put("path.logs", esWorkingDir)
@@ -168,6 +171,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("transport.tcp.port", httpTransportPort)
                 .build();
 
+        System.out.println("Setting E/S embedded "+nodeName);
         this.node = new PluginConfigurableNode(settings, Arrays.asList(
                 Netty4Plugin.class,
 //                CommonScriptPlugin.class,

@@ -24,6 +24,6 @@ public class DragonsE2ETestSuite {
     @AfterClass
     public static void tearDown() throws Exception {
         System.out.println("DragonsE2ETestSuite - teardown");
-        Setup.cleanup();
+//        Setup.cleanup();
     }
 }

@@ -27,7 +27,7 @@ public class SmartEpbM2RedundantTestSuite {
         System.out.println("SmartEpbRedundantTestSuite start");
         start = System.currentTimeMillis();
 
-        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("Dragons");
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.M2.conf").toString()), "m2.smartEpb");
@@ -43,9 +43,6 @@ public class SmartEpbM2RedundantTestSuite {
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println("SmartEpbM2RedundantTestSuite elapsed: " + elapsed);
-
-        if(elasticEmbeddedNode!=null)
-            elasticEmbeddedNode.close();
     }
 
     //region Fields

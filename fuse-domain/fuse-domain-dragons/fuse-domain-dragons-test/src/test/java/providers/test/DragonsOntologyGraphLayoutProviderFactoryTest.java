@@ -25,6 +25,7 @@ public class DragonsOntologyGraphLayoutProviderFactoryTest {
         Assert.assertEquals(property.get().getPropertyRedundantName(),"entityB.name");
         Assert.assertEquals(property.get().getType(),"string");
         Assert.assertEquals(property.get().getName(),"name");
+        System.out.println("testSingleRedundantProp-Completed");
     }
 
     @Test
@@ -41,6 +42,7 @@ public class DragonsOntologyGraphLayoutProviderFactoryTest {
         Assert.assertEquals(property.get().getPropertyRedundantName(),"entityB.name");
         Assert.assertEquals(property.get().getType(),"string");
         Assert.assertEquals(property.get().getName(),"name");
+        System.out.println("testDoubleRedundantProp-Completed");
     }
 
 }

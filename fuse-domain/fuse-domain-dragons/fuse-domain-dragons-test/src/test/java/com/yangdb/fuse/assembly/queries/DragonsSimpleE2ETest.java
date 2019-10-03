@@ -12,6 +12,7 @@ import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.ResultResourceInfo;
 import com.yangdb.fuse.model.results.*;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -33,19 +34,17 @@ public class DragonsSimpleE2ETest {
     public static final String DRAGONS = "Dragons";
     static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-/*
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
+//        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     @AfterClass
     public static void after() {
-        Setup.cleanup();
+//        Setup.cleanup();
     }
 
-*/
     @Test
     public void testLoadLogicalGraph() throws IOException, URISyntaxException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -54,9 +53,14 @@ public class DragonsSimpleE2ETest {
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
         Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
 
+        //refresh cluster
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
+
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
         ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
         Assert.assertFalse(info.isError());
+        //refresh cluster
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         map = (Map) new ObjectMapper().readValue(info.getResult(), Map.class).get("data");
         Assert.assertFalse(map.isEmpty());
@@ -75,10 +79,14 @@ public class DragonsSimpleE2ETest {
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
         Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        //refresh cluster
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
         ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
         Assert.assertFalse(info.isError());
+        //refresh cluster
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         Query query = Query.Builder.instance().withName("query").withOnt(DRAGONS)
                 .withElements(Arrays.asList(

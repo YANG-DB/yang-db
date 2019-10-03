@@ -24,18 +24,16 @@ public class DragonsSimpleFileUploadE2ETest {
 
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-/*
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
+//        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     @AfterClass
     public static void after() {
-        Setup.cleanup();
+//        Setup.cleanup();
     }
-*/
 
     @Test
     public void testLoadLogicalGraph() throws IOException, URISyntaxException {
