@@ -46,6 +46,11 @@ import static com.yangdb.fuse.test.framework.TestUtil.deleteFolder;
  */
 public class ElasticEmbeddedNode implements AutoCloseable {
 
+    static {
+        //see https://github.com/testcontainers/testcontainers-java/issues/1009 issue with netty & E/S
+        System.setProperty("es.set.netty.runtime.available.processors", "false");
+    }
+
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
         public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
