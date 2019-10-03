@@ -31,7 +31,9 @@ import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -174,4 +176,14 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         this.node = this.node.start();
     }
     //endregion
+
+    public static boolean isAvailable(int portNr) {
+        boolean portFree;
+        try (ServerSocket ignored = new ServerSocket(portNr)) {
+            portFree = true;
+        } catch (IOException e) {
+            portFree = false;
+        }
+        return portFree;
+    }
 }

@@ -132,7 +132,9 @@ public class KnowledgeSimpleCdrWithV1InnerQueryTests {
         Assert.assertEquals("[└── Start, \n" +
                         "    ──Typ[Entity:1]--> Rel(hasEvalue:2)──Typ[Evalue:3]──?[4]:[creationTime<inRange,[01-Jan-2000, 01-Jan-2025]>]]",
                 QueryDescriptor.print(query));
-        Assert.assertEquals(8, ((List) ((List<NamedParameter>) query.getParams()).get(0).getValue()).size());
+
+        //
+        //        Assert.assertEquals(8, ((List) ((List<NamedParameter>) query.getParams()).get(0).getValue()).size());
         Assert.assertEquals(1, ((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments")).size());
         Assert.assertEquals(42, ((List) ((Map) (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("entities")).size());
         Assert.assertEquals(21, ((List) ((Map) (((List) ((Map) graphResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().get(0).getData()).get("assignments"))).get(0)).get("relationships")).size());
