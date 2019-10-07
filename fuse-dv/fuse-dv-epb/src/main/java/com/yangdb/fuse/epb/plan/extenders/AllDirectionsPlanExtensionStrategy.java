@@ -33,7 +33,6 @@ import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.properties.RelProp;
 import javaslang.Tuple2;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
@@ -128,7 +127,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
             RelationFilterOp op = new RelationFilterOp(element);
             return op;
         }
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
 

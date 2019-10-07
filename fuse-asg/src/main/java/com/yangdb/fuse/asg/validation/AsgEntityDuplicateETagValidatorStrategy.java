@@ -20,15 +20,16 @@ package com.yangdb.fuse.asg.validation;
  * #L%
  */
 
+import com.yangdb.fuse.model.Tagged;
+import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.asgQuery.AsgStrategyContext;
+import com.yangdb.fuse.model.query.EBase;
+import com.yangdb.fuse.model.query.entity.Typed;
 import com.yangdb.fuse.model.validation.ValidationResult;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,24 +37,28 @@ import static com.yangdb.fuse.model.validation.ValidationResult.OK;
 import static java.util.stream.Collectors.groupingBy;
 
 public class AsgEntityDuplicateETagValidatorStrategy implements AsgValidatorStrategy {
-    public static final String ERROR_1 = "ETag appears in more than one entity";
+    public static final String ERROR_1 = "ETag %s appears in more than one entity with a different type (label)";
 
     @Override
     public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {
         List<String> errors = new ArrayList<>();
 
-        Map<String, List<String>> collect = AsgQueryUtil.eTags(query)
+        Map<String, List<AsgEBase<EBase>>> map = AsgQueryUtil.groupByTags(query.getStart());
+
+        map.entrySet().stream()
+                .filter(e -> e.getValue().size() > 1)
+                .forEach(e -> {
+                    if(e.getValue()
                             .stream()
-                            .filter(Objects::nonNull)
-                            .collect(groupingBy(Function.identity()));
+                            .filter(v->v.geteBase() instanceof Typed)
+                            .collect(groupingBy(o -> ((Typed) o.geteBase()).getTyped())).size() > 1) {
+                        errors.add(String.format(ERROR_1,e.getKey()));
+                    }
+                });
 
-        List<Map.Entry<String, List<String>>> inValid = collect.entrySet().stream().filter(v -> v.getValue().size() > 1)
-                .collect(Collectors.toList());
-
-        if (inValid.isEmpty())
+        if (errors.isEmpty())
             return OK;
 
-        errors.add(ERROR_1 + ":" + inValid.stream().map(Map.Entry::getKey).collect(Collectors.toList()) +" when under 'Or' expression try using tagSeq(...) as tag name ");
 
         return new ValidationResult(false, this.getClass().getSimpleName(), errors.toArray(new String[errors.size()]));
     }

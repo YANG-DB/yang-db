@@ -57,20 +57,25 @@ public abstract class Setup {
             //use existing running ES
             client = elasticEmbeddedNode.getClient("Dragons", 9300);
         }
-        // Load fuse engine config file
-        String confFilePath = path.toString();
-        //load configuration
-        Config config = FuseUtils.loadConfig(new File(confFilePath),"activeProfile" );
-        String[] joobyArgs = new String[]{
-                "logback.configurationFile="+Paths.get("src", "test","resources", "config", "logback.xml").toString() ,
-                "server.join=false"
-        };
+
+        if(init) {
+            //todo some init stuff
+        }
 
         //set location aware user directory
         System.setProperty("user.dir",userDir);
 
         // Start fuse app (based on Jooby app web server)
         if(startFuse) {
+            // Load fuse engine config file
+            String confFilePath = path.toString();
+            //load configuration
+            Config config = FuseUtils.loadConfig(new File(confFilePath),"activeProfile" );
+            String[] joobyArgs = new String[]{
+                    "logback.configurationFile="+Paths.get("src", "test","resources", "config", "logback.xml").toString() ,
+                    "server.join=false"
+            };
+
             app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                     .conf(path.toFile(), "activeProfile");
             app.start("server.join=false");

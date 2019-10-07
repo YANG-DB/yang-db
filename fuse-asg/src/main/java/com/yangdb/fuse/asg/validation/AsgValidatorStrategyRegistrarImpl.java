@@ -31,7 +31,7 @@ public class AsgValidatorStrategyRegistrarImpl implements AsgValidatorStrategyRe
                 new AsgCycleValidatorStrategy(),
                 new AsgCompositeQueryValidatorStrategy(),
                 new AsgEntityDuplicateEnumValidatorStrategy(),
-//                new AsgEntityDuplicateETagValidatorStrategy(),
+                new AsgEntityDuplicateETagValidatorStrategy(),
                 new AsgEntityPropertiesValidatorStrategy(),
                 new AsgOntologyEntityValidatorStrategy(),
                 new AsgOntologyRelValidatorStrategy(),

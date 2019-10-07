@@ -9,6 +9,8 @@ import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
+import com.yangdb.fuse.model.query.quant.Quant1;
+import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.ResultResourceInfo;
 import com.yangdb.fuse.model.results.*;
@@ -36,7 +38,7 @@ public class DragonsSimpleE2ETest {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup();
+        Setup.setup(false,true,false);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
@@ -100,6 +102,87 @@ public class DragonsSimpleE2ETest {
         Assert.assertEquals(1,((AssignmentsQueryResult)pageData).getAssignments().size());
         Assert.assertEquals(3,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getEntities().size());
         Assert.assertEquals(3,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getRelationships().size());
+
+    }
+
+    @Test
+    public void testPersonOwnsDragonAndKnowsPerson() throws IOException, InterruptedException, URISyntaxException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Assert.assertNotNull(fuseResourceInfo);
+
+        Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        //refresh cluster
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
+
+        URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
+        ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
+        Assert.assertFalse(info.isError());
+        //refresh cluster
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
+
+        Query query = Query.Builder.instance().withName("query").withOnt(DRAGONS)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "p1", "Person", 100, 0),
+                        new Quant1(100, QuantType.all,Arrays.asList(2,4)),
+                        new Rel(2, "Know", Rel.Direction.R, "know",3),
+                        new ETyped(3, "p2", "Person", 0, 0),
+                        new Rel(4, "Own", Rel.Direction.R, "own",5),
+                        new ETyped(5, "d2", "Dragon", 0, 0)
+                )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, 1000, query);
+
+        Assert.assertEquals(1,((AssignmentsQueryResult)pageData).getAssignments().size());
+        Assert.assertEquals(6,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getEntities().size());
+        Assert.assertEquals(5,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getRelationships().size());
+
+        Assert.assertEquals(3,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getRelationships().stream().filter(e->((Relationship)e).getrType().equals("Own")).count());
+        Assert.assertEquals(2,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getRelationships().stream().filter(e->((Relationship)e).getrType().equals("Know")).count());
+
+        Assert.assertEquals(3,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getEntities().stream().filter(e->((Entity)e).geteType().equals("Dragon")).count());
+        Assert.assertEquals(3,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getEntities().stream().filter(e->((Entity)e).geteType().equals("Person")).count());
+
+    }
+    @Test
+    public void testPersonOwnsDragonOrKnowsPerson() throws IOException, InterruptedException, URISyntaxException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Assert.assertNotNull(fuseResourceInfo);
+
+        Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        //refresh cluster
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
+
+        URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
+        ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
+        Assert.assertFalse(info.isError());
+        //refresh cluster
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
+
+        Query query = Query.Builder.instance().withName("query").withOnt(DRAGONS)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "p1", "Person", 100, 0),
+                        new Quant1(100, QuantType.some,Arrays.asList(2,4)),
+                        new Rel(2, "Know", Rel.Direction.R, "know",3),
+                        new ETyped(3, "p2", "Person", 0, 0),
+                        new Rel(4, "Own", Rel.Direction.R, "own",5),
+                        new ETyped(5, "d2", "Dragon", 0, 0)
+                )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, 1000, query);
+
+        Assert.assertEquals(1,((AssignmentsQueryResult)pageData).getAssignments().size());
+        Assert.assertEquals(3,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getEntities().size());
+        Assert.assertEquals(5,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getRelationships().size());
+
+        Assert.assertEquals(3,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getRelationships().stream().filter(e->((Relationship)e).getrType().equals("Own")).count());
+        Assert.assertEquals(2,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getRelationships().stream().filter(e->((Relationship)e).getrType().equals("Know")).count());
+
+        Assert.assertEquals(3,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getEntities().stream().filter(e->((Entity)e).geteType().equals("Dragon")).count());
+        Assert.assertEquals(2,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getEntities().stream().filter(e->((Entity)e).geteType().equals("Person")).count());
 
     }
 }

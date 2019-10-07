@@ -23,7 +23,6 @@ package org.unipop.util;
  * #L%
  */
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.text.*;
 import java.util.ArrayList;
@@ -62,6 +61,6 @@ public class MultiDateFormat extends DateFormat {
 
     @Override
     public Date parse(String source, ParsePosition pos) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 }
