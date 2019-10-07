@@ -30,7 +30,7 @@ public class UnionETagDedupTransformationAsgStrategyTest {
                 .in(ePropGroup(5, EProp.of(5, "prop1", Constraint.of(eq, "value1")), EProp.of(5, "prop2", Constraint.of(gt, "value3"))),
                         rel(6, "rel2", R,"R1").next(typed(7, "entity3", "C")),
                         optional(11).next(rel(12, "rel4", R,"R2").next(typed(13, "entity4", "E")
-                                .next(optional(14).next(rel(15, "rel4", R,"R2").next(typed(16, "entity4", "F")))))))
+                                .next(optional(14).next(rel(15, "rel5", R,"R2").next(typed(16, "entity4", "F")))))))
                 .build();
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgEntityDuplicateETagValidatorStrategy validatorStrategy = new AsgEntityDuplicateETagValidatorStrategy();

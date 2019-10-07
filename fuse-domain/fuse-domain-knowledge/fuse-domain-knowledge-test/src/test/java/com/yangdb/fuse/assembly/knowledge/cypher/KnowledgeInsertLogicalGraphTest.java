@@ -1,7 +1,6 @@
 package com.yangdb.fuse.assembly.knowledge.cypher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.model.logical.LogicalEdge;
 import com.yangdb.fuse.model.logical.LogicalNode;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
@@ -22,14 +21,14 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.client.FuseClientSupport.*;
+import static com.yangdb.fuse.client.FuseClientSupport.countGraphElements;
+import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 
 /**
  * http://web.madstudio.northwestern.edu/re-visualizing-the-novel/
@@ -148,8 +147,8 @@ public class KnowledgeInsertLogicalGraphTest {
     public void testFetchEntityWithRelationGraphForSpecificName() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        String query = "Match (e:Entity)-[r:hasEvalue]->(ev:Evalue {stringValue: 'Myriel'}),  " +
-                              "(e:Entity)-[r:hasRelation]->(rel:Relation) "+
+        String query = "Match (e:Entity)-[rHasEv:hasEvalue]->(ev:Evalue {stringValue: 'Myriel'}),  " +
+                              "(e:Entity)-[rHasRel:hasRelation]->(rel:Relation) "+
                               " Return *";
 
 

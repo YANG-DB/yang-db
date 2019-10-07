@@ -16,13 +16,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public abstract class Setup {
-    public static final Path path = Paths.get( "src","resources", "assembly", "Dragons", "config", "application.test.engine3.m1.dfs.dragons.public.conf");
-    public static final String userDir = Paths.get( "src","resources", "assembly", "Dragons").toFile().getAbsolutePath();
+    public static Path path = Paths.get( "src","resources", "assembly", "Dragons", "config", "application.test.engine3.m1.dfs.dragons.public.conf");
+    public static String userDir = Paths.get( "src","resources", "assembly", "Dragons").toFile().getAbsolutePath();
 
     public static FuseApp app = null;
     public static ElasticEmbeddedNode elasticEmbeddedNode = null;
     public static FuseClient fuseClient = null;
     public static TransportClient client = null;
+
+    public static void withPath(Path path) {
+        Setup.path = path;
+    }
 
     public static void setup() throws Exception {
         setup(true);

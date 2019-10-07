@@ -19,7 +19,7 @@ import static com.yangdb.fuse.client.FuseClientSupport.query;
 public class KnowledgeSimpleCdrWithCypherQueryTests {
     @BeforeClass
     public static void setup() throws Exception {
-//        KnowledgeSimpleCDR_TestSuite.setup();
+        KnowledgeSimpleCDR_TestSuite.setup();
 
     }
 
@@ -84,7 +84,7 @@ public class KnowledgeSimpleCdrWithCypherQueryTests {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         String query = "Match (phone:Entity)-[hasRel:hasRelation]->(rel:Relation)-[hasRv:hasRvalue]->(rValue:Rvalue), " +
-                        " (phone:Entity)-[rel:hasEvalue]->(value:Evalue {stringValue:'6671870408'}) " +
+                        " (phone:Entity)-[relHasEv:hasEvalue]->(value:Evalue {stringValue:'6671870408'}) " +
                         " Where (rValue.fieldId = 'duration' AND rValue.stringValue = 58) Return *";
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query, KNOWLEDGE);
         Assert.assertFalse(pageData.toString(),pageData instanceof AssignmentsErrorQueryResult);

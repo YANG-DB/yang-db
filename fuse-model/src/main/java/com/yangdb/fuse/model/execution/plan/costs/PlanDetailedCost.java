@@ -98,8 +98,9 @@ public class PlanDetailedCost implements Cost, Cloneable {
     //endregion
 
     //region Fields
-    private DoubleCost globalCost;
-    private Iterable<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts;
+    //default cost
+    private DoubleCost globalCost = DoubleCost.of(0); ;
+    private Iterable<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts = Collections.EMPTY_LIST;
     //endregion
 
 
