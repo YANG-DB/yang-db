@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 public class PageCompositeTest {
     @Before
     public void before() throws Exception {
-        TestSuiteAPI.setup();
+        TestSuiteAPISuite.setup();
         //Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 

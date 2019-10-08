@@ -15,16 +15,15 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
-import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.test.BaseITMarker;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.MatchAllQueryBuilder;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,7 +42,7 @@ import java.util.stream.StreamSupport;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-public class IndexProviderBasedGraphLoaderTest {
+public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
     private static Client client;
 
     private static ObjectMapper mapper = new ObjectMapper();

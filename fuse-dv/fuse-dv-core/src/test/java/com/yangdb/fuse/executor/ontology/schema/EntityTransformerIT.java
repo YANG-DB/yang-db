@@ -15,6 +15,7 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.test.BaseITMarker;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -32,7 +33,7 @@ import java.util.stream.StreamSupport;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-public class EntityTransformerTest {
+public class EntityTransformerIT implements BaseITMarker {
 
     private static ObjectMapper mapper = new ObjectMapper();
     private static IndexProvider provider;

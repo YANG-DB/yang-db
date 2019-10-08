@@ -21,7 +21,7 @@ package com.yangdb.test;
  */
 
 /**
- * Marker interface for Test Suite classes
+ * Marker interface for Integration tests classes
  */
-public interface BaseSuiteMarker {
+public interface BaseITMarker {
 }

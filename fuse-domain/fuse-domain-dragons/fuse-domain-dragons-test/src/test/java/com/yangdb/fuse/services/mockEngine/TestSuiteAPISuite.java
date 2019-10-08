@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
         QueryTest.class,
         SearchTest.class
 })
-public class TestSuiteAPI implements BaseSuiteMarker {
+public class TestSuiteAPISuite implements BaseSuiteMarker {
     @BeforeClass
     public static void setup() throws Exception {
         Cursor cursor = mock(Cursor.class);

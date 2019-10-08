@@ -24,7 +24,7 @@ import java.io.File;
         DataGeneratorTest.class,
         RandomUtilTest.class
 })
-public class TestSuiteDragons implements BaseSuiteMarker {
+public class TestSuiteDragonsSuite implements BaseSuiteMarker {
 
     static final String CONFIGURATION_FILE_PATH = "test.generator.properties";
 

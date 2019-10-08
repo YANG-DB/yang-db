@@ -1,7 +1,7 @@
 package com.yangdb.fuse.executor;
 
-import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactoryTests;
-import com.yangdb.fuse.executor.ontology.schema.IndexProviderBasedGraphLoaderTest;
+import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactoryIT;
+import com.yangdb.fuse.executor.ontology.schema.IndexProviderBasedGraphLoaderIT;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.test.BaseSuiteMarker;
@@ -9,7 +9,6 @@ import org.elasticsearch.client.Client;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -18,10 +17,10 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        IndexProviderBasedGraphLoaderTest.class,
-        ElasticIndexProviderMappingFactoryTests.class
+        IndexProviderBasedGraphLoaderIT.class,
+        ElasticIndexProviderMappingFactoryIT.class
 })
-public class TestSuiteIndexProvider implements BaseSuiteMarker {
+public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
 
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static Client client;

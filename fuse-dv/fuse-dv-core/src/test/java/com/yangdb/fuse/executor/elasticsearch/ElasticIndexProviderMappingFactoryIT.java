@@ -14,6 +14,7 @@ import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.test.BaseITMarker;
 import javaslang.Tuple2;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
@@ -38,9 +39,7 @@ import java.util.stream.StreamSupport;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-//todo "add TestSuite for both [IndexProviderBasedGraphLoaderTest,ElasticIndexProviderMappingFactoryTests]"
-@Ignore("add TestSuite for both [IndexProviderBasedGraphLoaderTest,ElasticIndexProviderMappingFactoryTests]")
-public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjectionTest {
+public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTest implements BaseITMarker {
     private static Client client;
     private static RawSchema schema;
     private static ObjectMapper mapper = new ObjectMapper();
