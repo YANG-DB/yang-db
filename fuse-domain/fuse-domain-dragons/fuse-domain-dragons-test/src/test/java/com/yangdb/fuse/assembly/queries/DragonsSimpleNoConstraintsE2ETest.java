@@ -180,6 +180,7 @@ public class DragonsSimpleNoConstraintsE2ETest {
         Assert.assertEquals(2,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getEntities().stream().filter(e->((Entity)e).geteType().equals("Person")).count());
 
     }
+
     @Test
     public void testPersonOwnsDragon() throws IOException, InterruptedException, URISyntaxException {
         // Create v1 query to fetch newly created entity
@@ -217,6 +218,7 @@ public class DragonsSimpleNoConstraintsE2ETest {
         Assert.assertEquals(2,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getEntities().stream().filter(e->((Entity)e).geteType().equals("Person")).count());
 
     }
+
     @Test
     public void testDragonOwnsPerson() throws IOException, InterruptedException, URISyntaxException {
         // Create v1 query to fetch newly created entity

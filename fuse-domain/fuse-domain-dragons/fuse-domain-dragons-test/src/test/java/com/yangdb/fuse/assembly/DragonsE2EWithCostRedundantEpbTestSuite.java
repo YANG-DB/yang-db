@@ -18,8 +18,6 @@ import java.nio.file.Paths;
         DragonsSimpleNoConstraintsE2ETest.class,
 
 })
-//todo "Fix reverse schema direction fetching - GraphElementSchemaProviderJsonFactory.generateGraphEdgeSchema()"
-@Ignore("Fix reverse schema direction fetching - GraphElementSchemaProviderJsonFactory.generateGraphEdgeSchema()")
 public class DragonsE2EWithCostRedundantEpbTestSuite implements BaseSuiteMarker {
 
     @BeforeClass
