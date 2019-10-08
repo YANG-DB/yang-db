@@ -18,6 +18,7 @@ import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.yangdb.fuse.services.TestsConfiguration;
+import com.yangdb.test.BaseITMarker;
 import com.yangdb.test.data.DragonsOntology;
 import io.restassured.http.Header;
 import org.apache.commons.lang.StringUtils;
@@ -35,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
-public class QueryTest {
+public class QueryIT implements BaseITMarker {
     @Before
     public void before() throws Exception {
 //        TestSuite.setup();

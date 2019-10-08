@@ -2,6 +2,7 @@ package providers.test;
 
 import com.yangdb.fuse.unipop.schemaProviders.GraphLayoutProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
+import com.yangdb.test.BaseITMarker;
 import com.yangdb.test.data.DragonsOntologyGraphLayoutProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,7 +15,7 @@ import static com.yangdb.fuse.model.OntologyTestUtils.createDragonsOntologyLong;
 /**
  * Created by lior.perry on 6/4/2017.
  */
-public class DragonsOntologyGraphLayoutProviderFactoryTest {
+public class DragonsOntologyGraphLayoutProviderFactoryIT implements BaseITMarker {
 
     @Test
     public void testSingleRedundantProp() throws IOException {

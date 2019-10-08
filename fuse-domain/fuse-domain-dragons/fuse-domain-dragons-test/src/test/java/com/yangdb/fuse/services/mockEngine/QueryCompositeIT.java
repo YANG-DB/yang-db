@@ -12,6 +12,7 @@ import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
+import com.yangdb.test.BaseITMarker;
 import com.yangdb.test.data.DragonsOntology;
 import io.restassured.http.Header;
 import org.apache.commons.lang.StringUtils;
@@ -29,7 +30,7 @@ import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class QueryCompositeTest {
+public class QueryCompositeIT implements BaseITMarker {
     @Before
     public void before() throws Exception {
         TestSuiteAPISuite.setup();

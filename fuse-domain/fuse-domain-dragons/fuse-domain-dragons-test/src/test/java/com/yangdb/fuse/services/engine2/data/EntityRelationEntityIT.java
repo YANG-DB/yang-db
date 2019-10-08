@@ -36,6 +36,7 @@ import com.yangdb.fuse.test.framework.index.Mappings.Mapping;
 import com.yangdb.fuse.test.framework.index.Mappings.Mapping.Property;
 import com.yangdb.fuse.test.framework.index.Mappings.Mapping.Property.Type;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
+import com.yangdb.test.BaseITMarker;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -59,7 +60,7 @@ import static java.util.Collections.singletonList;
 /**
  * Created by Roman on 11/05/2017.
  */
-public abstract class EntityRelationEntityTest {
+public abstract class EntityRelationEntityIT implements BaseITMarker {
     public static void setup(TransportClient client) throws Exception {
         setup(client, false);
     }

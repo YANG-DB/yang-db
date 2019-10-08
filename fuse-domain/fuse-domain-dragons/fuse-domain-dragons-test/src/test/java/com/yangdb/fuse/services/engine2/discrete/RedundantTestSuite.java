@@ -2,7 +2,6 @@ package com.yangdb.fuse.services.engine2.discrete;
 
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
-import com.yangdb.fuse.services.FuseRunner;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.test.BaseSuiteMarker;
@@ -20,8 +19,8 @@ import java.nio.file.Paths;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        SingleEntityTest.class,
-        EntityRelationEntityTest.class
+        SingleEntityIT.class,
+        EntityRelationEntityIT.class
 })
 public class RedundantTestSuite implements BaseSuiteMarker {
     @BeforeClass

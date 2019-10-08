@@ -16,6 +16,7 @@ import com.yangdb.fuse.model.results.Relationship;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
+import com.yangdb.test.BaseITMarker;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -30,7 +31,7 @@ import static com.yangdb.fuse.test.framework.index.Mappings.Mapping.Property.Typ
 /**
  * Created by roman.margolis on 02/10/2017.
  */
-public class SingleEntityTest {
+public class SingleEntityIT implements BaseITMarker {
     //region setup
     @BeforeClass
     public static void setup() throws Exception {

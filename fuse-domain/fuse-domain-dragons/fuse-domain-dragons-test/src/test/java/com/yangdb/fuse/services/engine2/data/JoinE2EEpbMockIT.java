@@ -41,6 +41,7 @@ import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.MappingFileElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
+import com.yangdb.test.BaseITMarker;
 import javaslang.collection.Stream;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -58,7 +59,7 @@ import java.util.function.Function;
 import static com.yangdb.fuse.model.OntologyTestUtils.*;
 import static java.util.Collections.singleton;
 
-public class JoinE2EEpbMockTests {
+public class JoinE2EEpbMockIT implements BaseITMarker {
     @BeforeClass
     public static void setup() throws Exception {
         setup(JoinE2EEpbMockTestSuite.elasticEmbeddedNode.getClient(), false);

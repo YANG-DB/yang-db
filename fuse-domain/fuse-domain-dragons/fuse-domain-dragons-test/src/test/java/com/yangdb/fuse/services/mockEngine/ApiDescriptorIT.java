@@ -1,6 +1,7 @@
 package com.yangdb.fuse.services.mockEngine;
 
 import com.yangdb.fuse.services.TestsConfiguration;
+import com.yangdb.test.BaseITMarker;
 import io.restassured.http.Header;
 import org.junit.Assume;
 import org.junit.Before;
@@ -11,7 +12,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
-public class ApiDescriptorTest {
+public class ApiDescriptorIT implements BaseITMarker {
     @Before
     public void before() {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));

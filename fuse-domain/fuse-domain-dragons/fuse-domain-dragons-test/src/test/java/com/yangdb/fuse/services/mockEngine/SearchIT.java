@@ -1,6 +1,7 @@
 package com.yangdb.fuse.services.mockEngine;
 
 import com.yangdb.fuse.services.TestsConfiguration;
+import com.yangdb.test.BaseITMarker;
 import io.restassured.http.Header;
 import org.junit.*;
 
@@ -9,7 +10,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 
 @Ignore
-public class SearchTest {
+public class SearchIT implements BaseITMarker {
     @Before
     public void before() {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));

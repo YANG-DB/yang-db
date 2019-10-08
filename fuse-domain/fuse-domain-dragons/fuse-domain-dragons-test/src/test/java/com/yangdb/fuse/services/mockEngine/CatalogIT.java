@@ -5,6 +5,7 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.OntologyFinalizer;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.services.TestsConfiguration;
+import com.yangdb.test.BaseITMarker;
 import io.restassured.http.Header;
 import org.junit.Assume;
 import org.junit.Before;
@@ -16,7 +17,7 @@ import static io.restassured.RestAssured.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 
-public class CatalogTest {
+public class CatalogIT implements BaseITMarker {
     @Before
     public void before() {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));

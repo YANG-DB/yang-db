@@ -6,9 +6,8 @@ import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import com.yangdb.fuse.services.TestsConfiguration;
+import com.yangdb.test.BaseITMarker;
 import io.restassured.http.Header;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,13 +16,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.yangdb.fuse.services.mockEngine.CompositeQueryTestUtils.Q4;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 
-public class PageTest {
+public class PageCompositeIT implements BaseITMarker {
     @Before
-    public void before() {
-        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
+    public void before() throws Exception {
+        TestSuiteAPISuite.setup();
+        //Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 
     @Test
@@ -35,7 +36,7 @@ public class PageTest {
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
-        request.setQuery(TestUtils.loadQuery("Q001.json"));
+        request.setQuery(Q4());
         //submit query
         given()
                 .contentType("application/json")
@@ -173,7 +174,7 @@ public class PageTest {
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
-        request.setQuery(TestUtils.loadQuery("Q001.json"));
+        request.setQuery(Q4());
         //submit query
         given()
                 .contentType("application/json")
@@ -303,12 +304,15 @@ public class PageTest {
     }
 
     @Test
+    /**
+     *
+     */
     public void pages() throws IOException {
         //query request
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
-        request.setQuery(TestUtils.loadQuery("Q001.json"));
+        request.setQuery(Q4());
         //submit query
         given()
                 .contentType("application/json")

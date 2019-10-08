@@ -5,6 +5,7 @@ import com.yangdb.fuse.client.BaseFuseClient;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.services.TestsConfiguration;
+import com.yangdb.test.BaseITMarker;
 import io.restassured.http.Header;
 import org.junit.Assume;
 import org.junit.Before;
@@ -16,7 +17,7 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 
-public class PlanTest {
+public class PlanIT implements BaseITMarker {
     @Before
     public void before() {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));

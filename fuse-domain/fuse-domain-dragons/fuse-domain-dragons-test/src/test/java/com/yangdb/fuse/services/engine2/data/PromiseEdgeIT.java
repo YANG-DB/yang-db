@@ -14,6 +14,7 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
+import com.yangdb.test.BaseITMarker;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Elad on 4/25/2017.
  */
-public class PromiseEdgeTest {
+public class PromiseEdgeIT implements BaseITMarker {
     static TransportClient client;
     static ElasticGraphConfiguration configuration;
     static UniGraph graph;

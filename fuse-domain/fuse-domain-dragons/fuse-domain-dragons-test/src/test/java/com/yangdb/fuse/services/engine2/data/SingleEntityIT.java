@@ -21,6 +21,7 @@ import com.yangdb.fuse.test.framework.index.Mappings;
 import com.yangdb.fuse.test.framework.index.Mappings.Mapping;
 import com.yangdb.fuse.test.framework.index.Mappings.Mapping.Property;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
+import com.yangdb.test.BaseITMarker;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -36,7 +37,7 @@ import static io.restassured.RestAssured.given;
 /**
  * Created by Roman on 12/04/2017.
  */
-public class SingleEntityTest {
+public class SingleEntityIT implements BaseITMarker {
     @BeforeClass
     public static void setup() throws Exception {
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");

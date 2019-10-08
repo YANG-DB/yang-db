@@ -8,7 +8,6 @@ import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.services.FuseApp;
-import com.yangdb.fuse.services.FuseRunner;
 import com.yangdb.test.BaseSuiteMarker;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
@@ -29,14 +28,15 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ApiDescriptorTest.class,
-        CatalogTest.class,
-        CursorTest.class,
-        DataTest.class,
-        PageTest.class,
-        PlanTest.class,
-        QueryTest.class,
-        SearchTest.class
+        ApiDescriptorIT.class,
+        CatalogIT.class,
+        CursorIT.class,
+        CursorCompositeIT.class,
+        DataIT.class,
+        PageIT.class,
+        PlanIT.class,
+        QueryIT.class,
+        SearchIT.class
 })
 public class TestSuiteAPISuite implements BaseSuiteMarker {
     @BeforeClass

@@ -2,9 +2,8 @@ package com.yangdb.fuse.services.engine2;
 
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
-import com.yangdb.fuse.services.engine2.data.JoinE2ETests;
+import com.yangdb.fuse.services.engine2.data.JoinE2EIT;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
-import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.test.BaseSuiteMarker;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
@@ -20,7 +19,7 @@ import java.nio.file.Paths;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        JoinE2ETests.class
+        JoinE2EIT.class
 })
 public class JoinE2ETestSuite implements BaseSuiteMarker {
 

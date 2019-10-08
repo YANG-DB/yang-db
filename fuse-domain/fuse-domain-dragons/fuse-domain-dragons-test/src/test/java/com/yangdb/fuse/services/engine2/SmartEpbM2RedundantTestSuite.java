@@ -2,7 +2,7 @@ package com.yangdb.fuse.services.engine2;
 
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
-import com.yangdb.fuse.services.engine2.data.SmartEpbM2RedundantEntityRelationEntityTest;
+import com.yangdb.fuse.services.engine2.data.SmartEpbM2RedundantEntityRelationEntityIT;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.test.BaseSuiteMarker;
@@ -20,7 +20,7 @@ import java.nio.file.Paths;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        SmartEpbM2RedundantEntityRelationEntityTest.class
+        SmartEpbM2RedundantEntityRelationEntityIT.class
 })
 public class SmartEpbM2RedundantTestSuite implements BaseSuiteMarker {
     @BeforeClass

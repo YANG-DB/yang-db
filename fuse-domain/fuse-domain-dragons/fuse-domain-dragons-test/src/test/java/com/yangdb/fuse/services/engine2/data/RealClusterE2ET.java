@@ -33,7 +33,7 @@ import static com.yangdb.test.data.DragonsOntology.*;
  * Created by Roman on 07/06/2017.
  */
 @Ignore
-public class RealClusterTest {
+public class RealClusterE2ET {
     @Before
     public void setup() throws IOException {
         //fuseClient = new FuseClient("http://40.118.108.95:8888/fuse");

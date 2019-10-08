@@ -1,6 +1,6 @@
 package com.yangdb.fuse.services.engine2.data;
 
-import com.yangdb.fuse.services.engine2.NonRedundantTestSuite;
+import com.yangdb.fuse.services.engine2.SmartEpbRedundantTestSuite;
 import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
@@ -19,15 +19,15 @@ import java.util.List;
 /**
  * Created by Roman on 22/05/2017.
  */
-public class DfsNonRedundantEntityRelationEntityTest extends EntityRelationEntityTest {
+public class SmartEpbRedundantEntityRelationEntityIT extends EntityRelationEntityIT {
     @BeforeClass
     public static void setup() throws Exception {
-        EntityRelationEntityTest.setup(NonRedundantTestSuite.elasticEmbeddedNode.getClient());
+        EntityRelationEntityIT.setup(SmartEpbRedundantTestSuite.elasticEmbeddedNode.getClient(), true);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        EntityRelationEntityTest.cleanup(NonRedundantTestSuite.elasticEmbeddedNode.getClient());
+        EntityRelationEntityIT.cleanup(SmartEpbRedundantTestSuite.elasticEmbeddedNode.getClient());
     }
 
     @Override
@@ -47,6 +47,19 @@ public class DfsNonRedundantEntityRelationEntityTest extends EntityRelationEntit
             traversals.add(__.has(relProperty, relPropertyPredicate));
         }
 
+        if (entityBTypes != null && !Stream.ofAll(entityBTypes).isEmpty()) {
+            traversals.add(__.has("entityB.type", P.within(Stream.ofAll(entityBTypes).toJavaArray(String.class))));
+        }
+
+        if (entityBId != null) {
+            traversals.add(__.has("entityB.id", P.eq(entityBId)));
+        }
+
         return Constraint.by(__.and(Stream.ofAll(traversals).toJavaArray(Traversal.class)));
+    }
+
+    @Override
+    protected boolean shouldIgnoreRelId() {
+        return true;
     }
 }

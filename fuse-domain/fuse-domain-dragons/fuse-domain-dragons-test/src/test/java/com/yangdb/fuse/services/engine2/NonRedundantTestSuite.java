@@ -6,10 +6,9 @@ package com.yangdb.fuse.services.engine2;
 
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
-import com.yangdb.fuse.services.FuseRunner;
-import com.yangdb.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest;
-import com.yangdb.fuse.services.engine2.data.PromiseEdgeTest;
-import com.yangdb.fuse.services.engine2.data.SingleEntityTest;
+import com.yangdb.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityIT;
+import com.yangdb.fuse.services.engine2.data.PromiseEdgeIT;
+import com.yangdb.fuse.services.engine2.data.SingleEntityIT;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.test.BaseSuiteMarker;
@@ -24,12 +23,12 @@ import java.nio.file.Paths;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        CursorTest.class,
-        PageTest.class,
-        QueryTest.class,
-        SingleEntityTest.class,
-        PromiseEdgeTest.class,
-        DfsNonRedundantEntityRelationEntityTest.class
+        CursorIT.class,
+        PageIT.class,
+        QueryIT.class,
+        SingleEntityIT.class,
+        PromiseEdgeIT.class,
+        DfsNonRedundantEntityRelationEntityIT.class
 })
 public class NonRedundantTestSuite implements BaseSuiteMarker {
     @BeforeClass

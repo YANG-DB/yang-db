@@ -19,15 +19,15 @@ import java.util.List;
 /**
  * Created by Roman on 22/05/2017.
  */
-public class DfsRedundantEntityRelationEntityTest extends EntityRelationEntityTest {
+public class DfsRedundantEntityRelationEntityIT extends EntityRelationEntityIT {
     @BeforeClass
     public static void setup() throws Exception {
-        EntityRelationEntityTest.setup(RedundantTestSuite.elasticEmbeddedNode.getClient());
+        EntityRelationEntityIT.setup(RedundantTestSuite.elasticEmbeddedNode.getClient());
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        EntityRelationEntityTest.cleanup(RedundantTestSuite.elasticEmbeddedNode.getClient());
+        EntityRelationEntityIT.cleanup(RedundantTestSuite.elasticEmbeddedNode.getClient());
     }
 
     @Override

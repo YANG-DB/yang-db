@@ -11,7 +11,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        DragonsOntologyGraphLayoutProviderFactoryTest.class
+        DragonsOntologyGraphLayoutProviderFactoryIT.class
 })
 public class DragonsOntologyLayoutProviderTestSuite implements BaseSuiteMarker {
     @BeforeClass

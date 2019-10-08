@@ -11,6 +11,7 @@ import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.ResultResourceInfo;
 import com.yangdb.fuse.model.results.*;
+import com.yangdb.test.BaseITMarker;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -29,7 +30,7 @@ import java.util.TimeZone;
 import static com.yangdb.fuse.assembly.Setup.fuseClient;
 import static com.yangdb.fuse.client.FuseClientSupport.query;
 
-public class DragonsSimpleNoConstraintsE2ETest {
+public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
     public static final String DRAGONS = "Dragons";
     static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 

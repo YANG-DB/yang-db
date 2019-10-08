@@ -1,6 +1,6 @@
 package com.yangdb.fuse.services.engine2.data;
 
-import com.yangdb.fuse.services.engine2.SmartEpbRedundantTestSuite;
+import com.yangdb.fuse.services.engine2.SmartEpbM2RedundantTestSuite;
 import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
@@ -19,15 +19,15 @@ import java.util.List;
 /**
  * Created by Roman on 22/05/2017.
  */
-public class SmartEpbRedundantEntityRelationEntityTest extends EntityRelationEntityTest {
+public class SmartEpbM2RedundantEntityRelationEntityIT extends EntityRelationEntityIT {
     @BeforeClass
     public static void setup() throws Exception {
-        EntityRelationEntityTest.setup(SmartEpbRedundantTestSuite.elasticEmbeddedNode.getClient(), true);
+        EntityRelationEntityIT.setup(SmartEpbM2RedundantTestSuite.elasticEmbeddedNode.getClient(), true);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        EntityRelationEntityTest.cleanup(SmartEpbRedundantTestSuite.elasticEmbeddedNode.getClient());
+        EntityRelationEntityIT.cleanup(SmartEpbM2RedundantTestSuite.elasticEmbeddedNode.getClient());
     }
 
     @Override
