@@ -3,6 +3,7 @@ package com.yangdb.fuse.assembly.knowledge;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.core.driver.StoredQueryDriverTest;
 import com.yangdb.fuse.core.driver.UnionQueryDriverTest;
+import com.yangdb.test.BaseSuiteMarker;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -43,7 +44,7 @@ import org.junit.runners.Suite;
         UnionQueryDriverTest.class
 })
 
-public class KnowledgeSimpleTestSuite {
+public class KnowledgeSimpleTestSuite implements BaseSuiteMarker {
     public static KnowledgeWriterContext ctx;
 
     @BeforeClass

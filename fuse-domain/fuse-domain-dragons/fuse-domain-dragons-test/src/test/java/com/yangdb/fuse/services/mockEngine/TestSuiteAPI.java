@@ -9,6 +9,7 @@ import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.services.FuseApp;
 import com.yangdb.fuse.services.FuseRunner;
+import com.yangdb.test.BaseSuiteMarker;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.when;
         QueryTest.class,
         SearchTest.class
 })
-public class TestSuite {
+public class TestSuiteAPI implements BaseSuiteMarker {
     @BeforeClass
     public static void setup() throws Exception {
         Cursor cursor = mock(Cursor.class);

@@ -5,6 +5,7 @@ import com.yangdb.fuse.services.FuseApp;
 import com.yangdb.fuse.services.engine2.data.SmartEpbRedundantEntityRelationEntityTest;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.yangdb.test.BaseSuiteMarker;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -21,7 +22,7 @@ import java.nio.file.Paths;
 @Suite.SuiteClasses({
         SmartEpbRedundantEntityRelationEntityTest.class
 })
-public class SmartEpbRedundantTestSuite {
+public class SmartEpbRedundantTestSuite implements BaseSuiteMarker {
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("SmartEpbRedundantTestSuite start");

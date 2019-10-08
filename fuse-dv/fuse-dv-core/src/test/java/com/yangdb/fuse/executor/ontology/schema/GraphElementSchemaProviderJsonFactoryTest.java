@@ -109,7 +109,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
                             break;
                         case "Own":
                             Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 1);
+                            Assert.assertEquals(schema.getApplications().size(), 2);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 3);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 2);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(Own)])]");
@@ -117,7 +117,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
                             break;
                         case "SubjectOf":
                             Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 1);
+                            Assert.assertEquals(schema.getApplications().size(), 2);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(SubjectOf)])]");
@@ -125,7 +125,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
                             break;
                         case "OriginatedIn":
                             Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 1);
+                            Assert.assertEquals(schema.getApplications().size(), 2);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(OriginatedIn)])]");
@@ -133,7 +133,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
                             break;
                         case "RegisteredIn":
                             Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 1);
+                            Assert.assertEquals(schema.getApplications().size(), 2);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(RegisteredIn)])]");
@@ -150,7 +150,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
 
                         case "MemberOf":
                             Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 1);
+                            Assert.assertEquals(schema.getApplications().size(), 2);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(MemberOf)])]");

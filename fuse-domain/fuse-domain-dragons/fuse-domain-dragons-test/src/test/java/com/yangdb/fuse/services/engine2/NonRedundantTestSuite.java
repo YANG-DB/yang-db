@@ -12,6 +12,7 @@ import com.yangdb.fuse.services.engine2.data.PromiseEdgeTest;
 import com.yangdb.fuse.services.engine2.data.SingleEntityTest;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.yangdb.test.BaseSuiteMarker;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -30,7 +31,7 @@ import java.nio.file.Paths;
         PromiseEdgeTest.class,
         DfsNonRedundantEntityRelationEntityTest.class
 })
-public class NonRedundantTestSuite {
+public class NonRedundantTestSuite implements BaseSuiteMarker {
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("NonRedundantTestSuite start");

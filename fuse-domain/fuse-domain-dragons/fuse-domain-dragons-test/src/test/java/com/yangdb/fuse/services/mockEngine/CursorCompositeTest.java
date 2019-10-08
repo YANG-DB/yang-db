@@ -24,7 +24,7 @@ import static com.yangdb.fuse.services.mockEngine.CompositeQueryTestUtils.*;
 public class CursorCompositeTest {
     @Before
     public void before() throws Exception {
-        TestSuite.setup();
+        TestSuiteAPI.setup();
 //        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 

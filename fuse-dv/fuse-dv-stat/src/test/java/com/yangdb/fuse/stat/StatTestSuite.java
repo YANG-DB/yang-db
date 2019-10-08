@@ -2,6 +2,7 @@ package com.yangdb.fuse.stat;
 
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
+import com.yangdb.test.BaseSuiteMarker;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -21,7 +22,7 @@ import java.nio.file.Paths;
         StatCalculatorTest.class,
         StatConfigurationTest.class
 })
-public class StatTestSuite {
+public class StatTestSuite implements BaseSuiteMarker {
     private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
 
     public static final String MAPPING_DATA_FILE_DRAGON_PATH = Paths.get("src", "test", "resources", "elastic.test.data.dragon.mapping.json").toString();

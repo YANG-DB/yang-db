@@ -1,5 +1,6 @@
 package com.yangdb.fuse.assembly.knowledge.service;
 
+import com.yangdb.test.BaseSuiteMarker;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -7,5 +8,5 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         KnowledgeIdGenSnowflakeTests.class
 })
-public class KnowledgeIdGenTestSuite {
+public class KnowledgeIdGenTestSuite implements BaseSuiteMarker {
 }

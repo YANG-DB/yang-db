@@ -2,6 +2,7 @@ package com.yangdb.fuse.generator;
 
 import com.yangdb.fuse.generator.configuration.DataGenConfiguration;
 import com.yangdb.fuse.generator.helper.TestUtil;
+import com.yangdb.test.BaseSuiteMarker;
 import org.apache.commons.configuration.Configuration;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -23,7 +24,7 @@ import java.io.File;
         DataGeneratorTest.class,
         RandomUtilTest.class
 })
-public class TestSuite {
+public class TestSuiteDragons implements BaseSuiteMarker {
 
     static final String CONFIGURATION_FILE_PATH = "test.generator.properties";
 

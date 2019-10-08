@@ -77,7 +77,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
         Iterator<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(this.contextVertexLabel, context.getDirection(), this.contextEdgeLabel).iterator();
         if (!edgeSchemas.hasNext()) {
-            return null;
+                return null;
         }
 
         //currently assuming only one relevant edge schema

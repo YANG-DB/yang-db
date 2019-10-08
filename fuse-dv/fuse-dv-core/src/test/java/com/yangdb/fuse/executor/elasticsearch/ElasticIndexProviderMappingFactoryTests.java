@@ -41,8 +41,6 @@ import static org.mockito.Mockito.when;
 //todo "add TestSuite for both [IndexProviderBasedGraphLoaderTest,ElasticIndexProviderMappingFactoryTests]"
 @Ignore("add TestSuite for both [IndexProviderBasedGraphLoaderTest,ElasticIndexProviderMappingFactoryTests]")
 public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjectionTest {
-    public static final String ES_TEST = "es-test";
-    private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static Client client;
     private static RawSchema schema;
     private static ObjectMapper mapper = new ObjectMapper();
@@ -52,21 +50,10 @@ public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjection
     private static IndexProviderIfc providerIfc;
     private static Config config;
 
-    private static void init(boolean embedded) throws Exception {
-        // Start embedded ES
-        if(embedded) {
-            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance(ES_TEST);
-            client = elasticEmbeddedNode.getClient();
-        } else {
-            //use existing running ES
-            client = elasticEmbeddedNode.getClient(ES_TEST, 9300);
-        }
-
-    }
 
     @BeforeClass
     public static void setUp() throws Exception {
-        init(true);
+        client = ElasticEmbeddedNode.getClient();
         InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
 
@@ -121,13 +108,6 @@ public class ElasticIndexProviderMappingFactoryTests extends BaseModuleInjection
                         .collect(Collectors.toSet());
             }
         };
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        if(elasticEmbeddedNode!=null)
-            elasticEmbeddedNode.close();
-
     }
 
     @Test

@@ -5,6 +5,7 @@ import com.yangdb.fuse.services.FuseApp;
 import com.yangdb.fuse.services.FuseRunner;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.yangdb.test.BaseSuiteMarker;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -22,7 +23,7 @@ import java.nio.file.Paths;
         SingleEntityTest.class,
         EntityRelationEntityTest.class
 })
-public class RedundantTestSuite {
+public class RedundantTestSuite implements BaseSuiteMarker {
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("RedundantTestSuite start");

@@ -20,15 +20,14 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.MatchAllQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.SearchHit;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -37,18 +36,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class IndexProviderBasedGraphLoaderTest {
-    public static final String ES_TEST = "es-test";
-    private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static Client client;
 
     private static ObjectMapper mapper = new ObjectMapper();
@@ -60,29 +55,11 @@ public class IndexProviderBasedGraphLoaderTest {
     private static IndexProviderIfc providerIfc;
 
 
-
-    private static void init(boolean embedded) throws Exception {
-        // Start embedded ES
-        if(embedded) {
-            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance(ES_TEST);
-            client = elasticEmbeddedNode.getClient();
-        } else {
-            //use existing running ES
-            client = elasticEmbeddedNode.getClient(ES_TEST, 9300);
-        }
-
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        if(elasticEmbeddedNode!=null)
-            elasticEmbeddedNode.close();
-
-    }
-
     @BeforeClass
     public static void setUp() throws Exception {
-        init(true);
+        //use existing running ES client connection
+        client = ElasticEmbeddedNode.getClient();
+
         InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
 

@@ -1,5 +1,6 @@
 package providers.test;
 
+import com.yangdb.test.BaseSuiteMarker;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -12,7 +13,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         DragonsOntologyGraphLayoutProviderFactoryTest.class
 })
-public class DragonsOntologyLayoutProviderTestSuite {
+public class DragonsOntologyLayoutProviderTestSuite implements BaseSuiteMarker {
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("DragonsOntologyLayoutProviderTestSuite start");

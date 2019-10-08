@@ -3,6 +3,7 @@ package com.yangdb.fuse.assembly.knowledge.cypher;
 import com.yangdb.fuse.assembly.knowledge.*;
 import com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext;
 import com.yangdb.fuse.model.resourceInfo.ResultResourceInfo;
+import com.yangdb.test.BaseSuiteMarker;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -28,7 +29,7 @@ import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.K
         KnowledgeMassInsertionGraphTest.class
 })
 
-public class KnowledgeSimpleCypherTestSuite {
+public class KnowledgeSimpleCypherTestSuite implements BaseSuiteMarker {
     public static KnowledgeWriterContext ctx;
 
     @BeforeClass

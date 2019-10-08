@@ -2,6 +2,7 @@ package com.yangdb.fuse.assembly.knowledge.cdr;
 
 import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
+import com.yangdb.test.BaseSuiteMarker;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -19,7 +20,7 @@ import static com.yangdb.fuse.assembly.knowledge.Setup.*;
         KnowledgeSimpleCdrWithV1InnerQueryTests.class
 })
 
-public class KnowledgeSimpleCDR_TestSuite {
+public class KnowledgeSimpleCDR_TestSuite implements BaseSuiteMarker {
     public static KnowledgeWriterContext ctx;
 
 

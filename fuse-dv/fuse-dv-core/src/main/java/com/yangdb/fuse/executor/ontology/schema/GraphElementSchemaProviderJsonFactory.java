@@ -154,7 +154,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
                 Optional.empty(),
                 Optional.of(partitions),
                 Collections.emptyList(),
-                r.isSymmetric() ? Stream.of(endA, endB).toJavaSet() : Stream.of(endA).toJavaSet()))
+                Stream.of(endA, endB).toJavaSet()))
                 .collect(Collectors.toList());
     }
 

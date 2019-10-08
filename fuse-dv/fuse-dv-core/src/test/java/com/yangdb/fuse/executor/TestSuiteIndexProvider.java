@@ -4,6 +4,7 @@ import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory
 import com.yangdb.fuse.executor.ontology.schema.IndexProviderBasedGraphLoaderTest;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
+import com.yangdb.test.BaseSuiteMarker;
 import org.elasticsearch.client.Client;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
@@ -15,14 +16,12 @@ import org.junit.runners.Suite;
 /**
  * Created by Roman on 21/06/2017.
  */
-//todo "add TestSuite for both [IndexProviderBasedGraphLoaderTest,ElasticIndexProviderMappingFactoryTests]"
-@Ignore("add TestSuite for both [IndexProviderBasedGraphLoaderTest,ElasticIndexProviderMappingFactoryTests]")
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ElasticIndexProviderMappingFactoryTests.class,
-        IndexProviderBasedGraphLoaderTest.class
+        IndexProviderBasedGraphLoaderTest.class,
+        ElasticIndexProviderMappingFactoryTests.class
 })
-public class TestSuite {
+public class TestSuiteIndexProvider implements BaseSuiteMarker {
 
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static Client client;
@@ -49,6 +48,10 @@ public class TestSuite {
         if(elasticEmbeddedNode!=null)
             elasticEmbeddedNode.close();
 
+    }
+
+    public static Client getClient() {
+        return client;
     }
 
     //region Fields

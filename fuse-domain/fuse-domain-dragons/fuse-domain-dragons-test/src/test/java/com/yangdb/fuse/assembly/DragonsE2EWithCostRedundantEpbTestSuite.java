@@ -1,8 +1,9 @@
 package com.yangdb.fuse.assembly;
 
 
-import com.yangdb.fuse.assembly.queries.DragonsSimpleE2ETest;
+import com.yangdb.fuse.assembly.queries.DragonsSimpleNoConstraintsE2ETest;
 import com.yangdb.fuse.assembly.queries.DragonsSimpleFileUploadE2ETest;
+import com.yangdb.test.BaseSuiteMarker;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -14,11 +15,12 @@ import java.nio.file.Paths;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         DragonsSimpleFileUploadE2ETest.class,
-        DragonsSimpleE2ETest.class
+        DragonsSimpleNoConstraintsE2ETest.class,
+
 })
 //todo "Fix reverse schema direction fetching - GraphElementSchemaProviderJsonFactory.generateGraphEdgeSchema()"
 @Ignore("Fix reverse schema direction fetching - GraphElementSchemaProviderJsonFactory.generateGraphEdgeSchema()")
-public class DragonsE2EWithCostRedundantEpbTestSuite {
+public class DragonsE2EWithCostRedundantEpbTestSuite implements BaseSuiteMarker {
 
     @BeforeClass
     public static void setup() throws Exception {

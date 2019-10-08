@@ -229,6 +229,12 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      */
     private ObjectNode populateFields(DataTransformerContext context, LogicalEdge edge, Relation relation,String direction, ObjectNode element) {
         //populate redundant fields A
+
+        element.put(ENTITY_A, populateSide(ENTITY_A, context, edge.getSource(), relation));
+        //populate redundant fields B
+        element.put(ENTITY_B, populateSide(ENTITY_B, context, edge.getTarget(), relation));
+
+        /*
         switch (direction) {
             case "out":
                 element.put(ENTITY_A, populateSide(ENTITY_A, context, edge.getSource(), relation));
@@ -241,6 +247,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 element.put(ENTITY_A, populateSide(ENTITY_B, context, edge.getTarget(), relation));
                 break;
         }
+*/
 
         //populate direct fields
         switch (relation.getMapping()) {
