@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
 import static com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endB;
+import static java.util.stream.Stream.concat;
 
 public class GraphElementSchemaProviderJsonFactory implements GraphElementSchemaProviderFactory {
 
@@ -138,24 +139,54 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
         List<EPair> pairList = pairs.get();
         validateSchema(pairList);
 
-        return pairList.stream().map(p -> new GraphEdgeSchema.Impl(
-                v,
-                new GraphElementConstraint.Impl(__.has(T.label, v)),
-                Optional.of(new GraphEdgeSchema.End.Impl(
-                        Collections.singletonList(ENTITY_A_ID),
-                        Optional.of(p.geteTypeA()),
-                        getGraphRedundantPropertySchemas(ENTITY_A, p.geteTypeA(), r))),
-                Optional.of(new GraphEdgeSchema.End.Impl(
-                        Collections.singletonList(ENTITY_B_ID),
-                        Optional.of(p.geteTypeB()),
-                        getGraphRedundantPropertySchemas(ENTITY_B, p.geteTypeB(), r))),
-                Direction.OUT,
-                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(DIRECTION, OUT, IN)),
-                Optional.empty(),
-                Optional.of(partitions),
-                Collections.emptyList(),
-                Stream.of(endA, endB).toJavaSet()))
-                .collect(Collectors.toList());
+        return concat(
+                pairList.stream().map(p -> constructEdgeSchema(r, v, partitions, p,Direction.OUT)),
+                pairList.stream().map(p -> constructEdgeSchema(r, v, partitions, p,Direction.IN)))
+            .collect(Collectors.toList());
+    }
+
+    private GraphEdgeSchema.Impl constructEdgeSchema(Relation r, String v, IndexPartitions partitions, EPair p, Direction direction) {
+        switch (direction) {
+            case IN:
+                return new GraphEdgeSchema.Impl(
+                        v,
+                        new GraphElementConstraint.Impl(__.has(T.label, v)),
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                Collections.singletonList(ENTITY_A_ID),
+                                Optional.of(p.geteTypeB()),
+                                getGraphRedundantPropertySchemas(ENTITY_B, p.geteTypeB(), r))),
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                Collections.singletonList(ENTITY_B_ID),
+                                Optional.of(p.geteTypeA()),
+                                getGraphRedundantPropertySchemas(ENTITY_A, p.geteTypeA(), r))),
+                        direction,
+                        Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(DIRECTION, OUT, IN)),
+                        Optional.empty(),
+                        Optional.of(partitions),
+                        Collections.emptyList(),
+                        Stream.of(endA).toJavaSet());
+            //Also IN case:
+            default:
+                return new GraphEdgeSchema.Impl(
+                        v,
+                        new GraphElementConstraint.Impl(__.has(T.label, v)),
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                Collections.singletonList(ENTITY_A_ID),
+                                Optional.of(p.geteTypeA()),
+                                getGraphRedundantPropertySchemas(ENTITY_A, p.geteTypeA(), r))),
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                Collections.singletonList(ENTITY_B_ID),
+                                Optional.of(p.geteTypeB()),
+                                getGraphRedundantPropertySchemas(ENTITY_B, p.geteTypeB(), r))),
+                        direction,
+                        Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(DIRECTION, OUT, IN)),
+                        Optional.empty(),
+                        Optional.of(partitions),
+                        Collections.emptyList(),
+                        Stream.of(endA).toJavaSet());
+
+        }
+
     }
 
     private void validateSchema(List<EPair> pairList) {

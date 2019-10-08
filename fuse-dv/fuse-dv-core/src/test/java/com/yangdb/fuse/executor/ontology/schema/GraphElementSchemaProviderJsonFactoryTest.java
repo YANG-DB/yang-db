@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -86,62 +87,57 @@ public class GraphElementSchemaProviderJsonFactoryTest {
         GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
-        Arrays.asList("Freeze","Fire","Own","SubjectOf","OriginatedIn","RegisteredIn","Know","MemberOf")
+        Assert.assertEquals( 24,StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(),false).count());
+        Arrays.asList("Freeze", "Fire", "Own", "SubjectOf", "OriginatedIn", "RegisteredIn", "Know", "MemberOf")
                 .forEach(label->{
-                    Assert.assertNotNull(schemaProvider.getEdgeSchemas(label));
-                    GraphEdgeSchema schema = schemaProvider.getEdgeSchemas(label).iterator().next();
+                    Iterable<GraphEdgeSchema> edgeSchemas = schemaProvider.getEdgeSchemas(label);
+                    Assert.assertNotNull(edgeSchemas);
+                    GraphEdgeSchema schema = edgeSchemas.iterator().next();
                     switch (schema.getLabel()) {
                         case "Freeze":
-                            Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 2);
+                            Assert.assertEquals(schema.getApplications().size(), 1);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 2);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 2);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(Freeze)])]");
                             Assert.assertEquals(schema.getIndexPartitions().get().getPartitions().spliterator().estimateSize(), 1);
                             break;
                         case "Fire":
-                            Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 2);
+                            Assert.assertEquals(schema.getApplications().size(), 1);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 3);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 3);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(Fire)])]");
                             Assert.assertEquals(schema.getIndexPartitions().get().getPartitions().spliterator().estimateSize(), 1);
                             break;
                         case "Own":
-                            Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 2);
+                            Assert.assertEquals(schema.getApplications().size(), 1);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 3);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 2);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(Own)])]");
                             Assert.assertEquals(schema.getIndexPartitions().get().getPartitions().spliterator().estimateSize(), 1);
                             break;
                         case "SubjectOf":
-                            Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 2);
+                            Assert.assertEquals(schema.getApplications().size(), 1);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(SubjectOf)])]");
                             Assert.assertEquals(schema.getIndexPartitions().get().getPartitions().spliterator().estimateSize(), 1);
                             break;
                         case "OriginatedIn":
-                            Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 2);
+                            Assert.assertEquals(schema.getApplications().size(), 1);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(OriginatedIn)])]");
                             Assert.assertEquals(schema.getIndexPartitions().get().getPartitions().spliterator().estimateSize(), 1);
                             break;
                         case "RegisteredIn":
-                            Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 2);
+                            Assert.assertEquals(schema.getApplications().size(), 1);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(RegisteredIn)])]");
                             Assert.assertEquals(schema.getIndexPartitions().get().getPartitions().spliterator().estimateSize(), 1);
                             break;
                         case "Know":
-                            Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 2);
+                            Assert.assertEquals(schema.getApplications().size(), 1);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(Know)])]");
@@ -149,8 +145,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
                             break;
 
                         case "MemberOf":
-                            Assert.assertEquals(schema.getDirection(), Direction.OUT);
-                            Assert.assertEquals(schema.getApplications().size(), 2);
+                            Assert.assertEquals(schema.getApplications().size(), 1);
                             Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 1);
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(MemberOf)])]");
@@ -168,35 +163,35 @@ public class GraphElementSchemaProviderJsonFactoryTest {
         GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
-        Assert.assertEquals(12, StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
+        Assert.assertEquals(24, StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
                 .filter(p->p.getIndexPartitions().isPresent())
                 .filter(p->p.getIndexPartitions().get().getPartitions().iterator().hasNext())
                 .count());
         schemaProvider.getEdgeSchemas().forEach(schema -> {
             switch (schema.getLabel()) {
                 case "Freeze":
-                    Assert.assertEquals(schemaProvider.getEdgeSchemas("Freeze").spliterator().estimateSize(), 1);
+                    Assert.assertEquals(schemaProvider.getEdgeSchemas("Freeze").spliterator().estimateSize(), 2);
                     break;
                 case "Fire":
-                    Assert.assertEquals(schemaProvider.getEdgeSchemas("Fire").spliterator().estimateSize(), 1);
+                    Assert.assertEquals(schemaProvider.getEdgeSchemas("Fire").spliterator().estimateSize(), 2);
                     break;
                 case "Own":
-                    Assert.assertEquals(schemaProvider.getEdgeSchemas("Own").spliterator().estimateSize(), 2);
+                    Assert.assertEquals(schemaProvider.getEdgeSchemas("Own").spliterator().estimateSize(), 4);
                     break;
                 case "SubjectOf":
-                    Assert.assertEquals(schemaProvider.getEdgeSchemas("SubjectOf").spliterator().estimateSize(), 1);
+                    Assert.assertEquals(schemaProvider.getEdgeSchemas("SubjectOf").spliterator().estimateSize(), 2);
                     break;
                 case "OriginatedIn":
-                    Assert.assertEquals(schemaProvider.getEdgeSchemas("OriginatedIn").spliterator().estimateSize(), 3);
+                    Assert.assertEquals(schemaProvider.getEdgeSchemas("OriginatedIn").spliterator().estimateSize(), 6);
                     break;
                 case "RegisteredIn":
-                    Assert.assertEquals(schemaProvider.getEdgeSchemas("RegisteredIn").spliterator().estimateSize(), 2);
+                    Assert.assertEquals(schemaProvider.getEdgeSchemas("RegisteredIn").spliterator().estimateSize(), 4);
                     break;
                 case "Know":
-                    Assert.assertEquals(schemaProvider.getEdgeSchemas("Know").spliterator().estimateSize(), 1);
+                    Assert.assertEquals(schemaProvider.getEdgeSchemas("Know").spliterator().estimateSize(), 2);
                     break;
                 case "MemberOf":
-                    Assert.assertEquals(schemaProvider.getEdgeSchemas("MemberOf").spliterator().estimateSize(), 1);
+                    Assert.assertEquals(schemaProvider.getEdgeSchemas("MemberOf").spliterator().estimateSize(), 2);
                     break;
 
                 default:
