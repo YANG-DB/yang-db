@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 tagname=$1
 
 echo "docker login "

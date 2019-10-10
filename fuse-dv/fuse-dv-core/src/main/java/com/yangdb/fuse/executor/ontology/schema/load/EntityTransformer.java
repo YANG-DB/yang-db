@@ -1,7 +1,7 @@
 package com.yangdb.fuse.executor.ontology.schema.load;
 
 /*-
- * #%L
+ *
  * fuse-dv-core
  * %%
  * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
@@ -17,7 +17,7 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * #L%
+ *
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;

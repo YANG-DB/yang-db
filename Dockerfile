@@ -18,6 +18,10 @@ RUN chmod 755 /opt/engine/start-fuse-service.sh
 # clean
 RUN rm -rf /var/tmp/*
 
+# define health check api
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f http://0.0.0.0:8888/fuse/health || exit 1
+
 # Run cerebro
 CMD ["/cerebro-0.8.4/bin/cerebro"]
 # Run fuse

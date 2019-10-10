@@ -1,7 +1,7 @@
 package com.yangdb.fuse.assembly.knowledge.parser;
 
 /*-
- * #%L
+ *
  * fuse-domain-knowledge-ext
  * %%
  * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
@@ -17,7 +17,7 @@ package com.yangdb.fuse.assembly.knowledge.parser;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * #L%
+ *
  */
 
 
