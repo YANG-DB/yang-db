@@ -10,7 +10,7 @@
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/../../../</directory>
-            <outputDirectory>Fuse/</outputDirectory>
+            <outputDirectory>${distr.dir}/${assembly}</outputDirectory>
             <useDefaultExcludes>true</useDefaultExcludes>
             <excludes>
                 <exclude>**/.git/**</exclude>
