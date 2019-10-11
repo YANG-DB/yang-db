@@ -87,6 +87,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>uk.co.datumedge</groupId>
             <artifactId>hamcrest-json</artifactId>
             <scope>test</scope>

@@ -188,6 +188,7 @@
         <hamcrest-all.version>1.3</hamcrest-all.version>
         <hamcrest.version>1.3</hamcrest.version>
         <hamcres-json.version>0.2</hamcres-json.version>
+        <test.containers.version>1.12.2</test.containers.version>
 
         <!-- jmx monitoring        -->
         <jolokia>1.6.2</jolokia>
@@ -619,7 +620,12 @@
             <!-- metrics -->
 
             <!-- test -->
-            <!-- fuse -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${test.containers.version}</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>com.yangdb</groupId>
                 <artifactId>fuse-test-framework</artifactId>
