@@ -12,11 +12,16 @@ RUN apk add --no-cache bash
 RUN mkdir -p /opt/engine
 WORKDIR /opt/engine
 
+# this is a specific yang.db assembly used for knowledge based ontology - a general purpose RDF schema
 COPY fuse-domain/fuse-domain-knowledge/fuse-domain-knowledge-assembly/target/assembly-fuse-knowledge /opt/engine
 
 RUN chmod 755 /opt/engine/start-fuse-service.sh
 # clean
 RUN rm -rf /var/tmp/*
+
+# define health check api
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f http://0.0.0.0:8888/fuse/health || exit 1
 
 # Run cerebro
 CMD ["/cerebro-0.8.4/bin/cerebro"]
