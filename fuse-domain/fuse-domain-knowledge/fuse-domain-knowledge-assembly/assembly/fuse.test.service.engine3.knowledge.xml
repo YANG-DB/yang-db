@@ -37,10 +37,6 @@
             <destName>readme.txt</destName>
         </file>
         <file>
-            <source>${project.basedir}/resources/scripts/standard/start-fuse-service.bat</source>
-            <outputDirectory>./</outputDirectory>
-        </file>
-        <file>
             <source>${project.basedir}/resources/scripts/standard/start-fuse-service.sh</source>
             <outputDirectory>./</outputDirectory>
         </file>
