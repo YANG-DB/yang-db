@@ -26,6 +26,11 @@ public class TestRawSchema implements RawSchema {
     }
 
     @Override
+    public String getIdPrefix(String type) {
+        return "";
+    }
+
+    @Override
     public List<IndexPartitions.Partition> getPartitions(String type) {
         return Collections.emptyList();
     }

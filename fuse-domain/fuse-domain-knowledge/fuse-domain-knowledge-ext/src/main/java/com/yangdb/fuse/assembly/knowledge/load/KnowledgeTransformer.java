@@ -42,8 +42,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.ENTITY;
-import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.RELATION;
+import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchemaShort.*;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.RelationBuilder._rel;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.RvalueBuilder._r;
@@ -51,6 +50,7 @@ import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder._v;
 import static java.util.regex.Pattern.matches;
 
 public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
+    public static final int BULK_SIZE = 10;
     public static final String TECHNICAL_ID = "techId";
     private static Map<String, StatefulRange> ranges = new HashMap<>();
 
@@ -129,12 +129,12 @@ public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
     public StatefulRange getRange(String type) {
         //init ranges
         StatefulRange statefulRange = ranges.computeIfAbsent(type,
-                s -> new StatefulRange(idGenerator.getNext(type, 1000)));
+                s -> new StatefulRange(idGenerator.getNext(type, BULK_SIZE)));
 
         if (statefulRange.hasNext())
             return statefulRange;
         //update ranges
-        ranges.put(type, new StatefulRange(idGenerator.getNext(type, 1000)));
+        ranges.put(type, new StatefulRange(idGenerator.getNext(type, BULK_SIZE)));
         //return next range
         return ranges.get(type);
     }

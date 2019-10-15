@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.ENTITY;
+import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchemaShort.*;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 

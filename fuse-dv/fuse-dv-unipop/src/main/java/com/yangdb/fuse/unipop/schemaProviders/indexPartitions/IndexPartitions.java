@@ -22,6 +22,7 @@ package com.yangdb.fuse.unipop.schemaProviders.indexPartitions;
 
 import javaslang.collection.Stream;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public interface IndexPartitions {
@@ -78,6 +79,21 @@ public interface IndexPartitions {
                 private T from;
                 private T to;
                 //endregion
+
+                @Override
+                public boolean equals(Object o) {
+                    if (this == o) return true;
+                    if (o == null || getClass() != o.getClass()) return false;
+                    Impl<?> impl = (Impl<?>) o;
+                    return indices.equals(impl.indices) &&
+                            from.equals(impl.from) &&
+                            to.equals(impl.to);
+                }
+
+                @Override
+                public int hashCode() {
+                    return Objects.hash(indices, from, to);
+                }
             }
         }
     }

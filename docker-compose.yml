@@ -2,12 +2,9 @@ version: '3.3'
 
 services:
   fuse:
-    image: yangdb/yang.db:latest
+    image: yangdb/yang.db:${TAG}
     ports:
       - 8888:8888
-    environment:
-      - "ELASTICSEARCH_HOST=es"
-      - "ELASTICSEARCH_CLUSTER_NAME=Knowledge"
     networks:
       - network
   es:
