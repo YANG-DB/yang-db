@@ -50,6 +50,9 @@ From Graph to Elastic - A tail of a Yang-DB...
 ##### Code Coverage:
 [![Coverage Status](https://coveralls.io/repos/github/YANG-DB/yang-db/badge.svg?branch=develop)](https://coveralls.io/github/YANG-DB/yang-db?branch=develop)
 
+##### Dependencies Tags:
+[![](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://jitpack.io/#YANG-DB/yang-db)
+
 
 Infrastructure Technologies  
 -----------------------------------------------------------------------------------------------
