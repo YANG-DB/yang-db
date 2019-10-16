@@ -4,8 +4,8 @@ From Graph to Elastic - A tail of a Yang-DB...
 [![Build Status](https://api.travis-ci.org/repos/YANG-DB/yang-db.svg?branch=master)](https://api.travis-ci.org/repos/YANG-DB/yang-db)
 [![Coverage Status](https://coveralls.io/repos/github/YANG-DB/yang-db/badge.svg?branch=develop)](https://coveralls.io/github/YANG-DB/yang-db?branch=develop)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
-[![Twitter Follow](https://img.shields.io/twitter/follow/db_yang.svg?style=social)](https://twitter.com/db_yang)
 [![](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://jitpack.io/#YANG-DB/yang-db)
+[![Twitter Follow](https://img.shields.io/twitter/follow/db_yang.svg?style=social)](https://twitter.com/db_yang)
 
 ### Use 
 * Add [yang.db](https://github.com/YANG-DB/yang-db) as maven dependency https://jitpack.io/#YANG-DB/yang-db
