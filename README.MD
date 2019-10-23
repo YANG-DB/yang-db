@@ -263,6 +263,7 @@ In the last section we took a simple graph query and drilled down into the detai
 
 Start Using
 ---------------
-See ![](http://www.yangdb.org)
-See ![info](http://www.yangdb.org/general-info.html)
-See ![docker](http://www.yangdb.org/docker.html)
+ - See http://www.yangdb.org 
+ - See http://www.yangdb.org/general-info.html
+ - See http://www.yangdb.org/docker.html
+ - See http://www.yangdb.org/get-involved.html
