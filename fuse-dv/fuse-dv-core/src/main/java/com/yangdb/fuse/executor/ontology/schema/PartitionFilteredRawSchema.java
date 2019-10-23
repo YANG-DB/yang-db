@@ -74,6 +74,11 @@ public class PartitionFilteredRawSchema implements RawSchema {
     }
 
     @Override
+    public String getIdPrefix(String type) {
+        return rawSchema.getIdPrefix(type);
+    }
+
+    @Override
     public List<IndexPartitions.Partition> getPartitions(String type) {
         return Stream.ofAll(this.rawSchema.getPartitions(type))
                 .map(partition -> filterPartitionIndices(partition)).toJavaList();

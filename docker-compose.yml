@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   fuse:
-    image: yangdb/yang.db:Sep-2019-RC3
+    image: yangdb/yang.db:latest
     ports:
       - 8888:8888
     environment:

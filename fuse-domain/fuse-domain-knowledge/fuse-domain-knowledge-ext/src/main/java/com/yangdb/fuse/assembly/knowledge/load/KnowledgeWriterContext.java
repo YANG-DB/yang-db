@@ -49,8 +49,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.ENTITY;
-import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchema.RELATION;
+import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchemaShort.*;
 
 
 public class KnowledgeWriterContext {
@@ -111,7 +110,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextLogicalId(RawSchema schema, long index) {
-        return format(schema, index, "e", "entity");
+        return schema.getIdPrefix(ENTITY) + String.format(schema.getIdFormat(ENTITY), index);
     }
 
     public String nextLogicalId() {
@@ -119,7 +118,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextValueId(RawSchema schema, long index) {
-        return format(schema, index, "ev", "entity");
+        return schema.getIdPrefix(EVALUE) + String.format(schema.getIdFormat(EVALUE), index);
     }
 
     public String nextValueId() {
@@ -127,7 +126,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextRvalueId(RawSchema schema, long index) {
-        return format(schema, index, "rv", "relation");
+        return schema.getIdPrefix(RVALUE) + String.format(schema.getIdFormat(RVALUE), index);
     }
 
     public String nextRvalueId() {
@@ -135,7 +134,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextRefId(RawSchema schema, long index) {
-        return format(schema, index, "ref", "reference");
+        return schema.getIdPrefix(REFERENCE) + String.format(schema.getIdFormat(REFERENCE), index);
     }
 
     public String nextRefId() {
@@ -143,7 +142,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextInsightId(RawSchema schema, long index) {
-        return format(schema, index, "i", "insight");
+        return schema.getIdPrefix(INSIGHT) + String.format(schema.getIdFormat(INSIGHT), index);
     }
 
     public String nextInsightId() {
@@ -151,15 +150,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextRelId(RawSchema schema, long index) {
-        return format(schema, index, "r", "relation");
-    }
-
-    public static String format(RawSchema schema, long index, String prefix, String type) {
-        return prefix + String.format(schema.getIdFormat(type), index);
-    }
-
-    public static String format(RawSchema schema, String index, String prefix, String type) {
-        return prefix + String.format(schema.getIdFormat(type), index);
+        return schema.getIdPrefix(RELATION) + String.format(schema.getIdFormat(RELATION), index);
     }
 
     public String nextRelId() {
@@ -167,7 +158,7 @@ public class KnowledgeWriterContext {
     }
 
     public String nextFileId(RawSchema schema, long index) {
-        return format(schema, index, "f", "e.file");
+        return schema.getIdPrefix(EFILE) + String.format(schema.getIdFormat(EFILE), index);
     }
 
     public String nextFileId() {
@@ -279,10 +270,14 @@ public class KnowledgeWriterContext {
     }
 
     private static String resolveIndexByLabelAndId(String indexCategory, String id, RawSchema schema) {
-        return Stream.ofAll(schema.getPartitions(indexCategory))
+        List<IndexPartitions.Partition.Range> ranges = Stream.ofAll(schema.getPartitions(indexCategory))
                 .map(partition -> (IndexPartitions.Partition.Range) partition)
                 .filter(partition -> partition.isWithin(id))
-                .map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
+                .toJavaList();
+        if(ranges.isEmpty())
+            throw new FuseError.FuseErrorException(new FuseError("Index Schema routing error","No Index found for id "+id +" index category "+indexCategory ));
+
+        return ranges.get(0).getIndices().iterator().next();
     }
 
 

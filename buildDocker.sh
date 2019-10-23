@@ -1,9 +1,10 @@
 #!/bin/bash
 
+
 tagname=$1
 
-echo "docker login "
-docker login
+echo "docker login -u yangdb"
+docker login -u yangdb
 
 cd $(dirname "$0")
 echo "mvn clean install"

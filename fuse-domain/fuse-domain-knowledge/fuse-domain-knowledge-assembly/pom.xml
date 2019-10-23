@@ -11,9 +11,9 @@
     <packaging>pom</packaging>
 
     <artifactId>fuse-domain-knowledge-assembly</artifactId>
-
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
+        <assembly>knowledge-knowledge</assembly>
     </properties>
 
     <dependencies>
@@ -132,7 +132,7 @@
     </dependencies>
 
     <build>
-        <finalName>assembly</finalName>
+        <finalName>knowledge</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -145,7 +145,7 @@
                             <goal>copy</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <outputDirectory>${distr.dir}/${assembly}/lib</outputDirectory>
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.jolokia</groupId>
@@ -176,10 +176,11 @@
                         <descriptor>assembly/fuse.test.service.engine3.knowledge.xml</descriptor>
                         <descriptor>assembly/fuse.test.service.engine3.knowledge.source.xml</descriptor>
                     </descriptors>
+                    <outputDirectory>${distr.dir}/</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>fuse-service-assembly</id>
+                        <id>knowledge</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
@@ -188,7 +189,6 @@
                 </executions>
             </plugin>
         </plugins>
-
     </build>
 
 

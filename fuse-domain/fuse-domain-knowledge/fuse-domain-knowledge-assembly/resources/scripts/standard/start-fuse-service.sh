@@ -7,8 +7,10 @@ activeProfile=activeProfile
 logbackConfigurationFilename=config/logback.xml
 heapSize=1g
 
+elasticsearchEmbedded="${ELASTICSEARCH_EMBEDDED:-true}"
 elasticsearchHosts="${ELASTICSEARCH_HOST:-localhost}"
 elasticsearchClusterName="${ELASTICSEARCH_CLUSTER_NAME}"
+elasticsearchTcpPort="${ELASTICSEARCH_TCP_PORT:-9300}"
 
 argName=
 for var in "$@"
@@ -16,10 +18,14 @@ do
     if [ "${argName}" = "" ]; then
         if [ "${var}" = "--heapSize" ]; then
             argName=heapSize
+        elif [ "${var}" = "--elasticsearch.embedded" ]; then
+            argName=elasticsearchEmbedded
         elif [ "${var}" = "--elasticsearch.hosts" ]; then
             argName=elasticsearchHosts
         elif [ "${var}" = "--elasticsearch.cluster_name" ]; then
             argName=elasticsearchClusterName
+        elif [ "${var}" = "--elasticsearch.port" ]; then
+            argName=elasticsearchTcpPort
         elif [ "${var}" = "--config" ]; then
             argName=configFile
         elif [ "${var}" = "--logConfig" ]; then
@@ -46,6 +52,10 @@ if [ "${jmxEnabled}" != "" ]; then
     systemProperties="${systemProperties} -Dcom.sun.management.jmxremote.ssl=false"
 fi
 
+if [ "${elasticsearchEmbedded}" != "" ]; then
+	systemProperties="${systemProperties} -Delasticsearch.embedded=${elasticsearchEmbedded}"
+	echo ElasticSearch embedded param: -Delasticsearch.embedded=${elasticsearchEmbedded}
+fi
 if [ "${elasticsearchHosts}" != "" ]; then
 	systemProperties="${systemProperties} -Delasticsearch.hosts=${elasticsearchHosts}"
 	echo ElasticSearch hosts param: -Delasticsearch.hosts=${elasticsearchHosts}
@@ -54,6 +64,11 @@ fi
 if [ "${elasticsearchClusterName}" != "" ]; then
 	systemProperties="${systemProperties} -Delasticsearch.cluster_name=${elasticsearchClusterName}"
 	echo ElasticSearch cluster param: -Delasticsearch.cluster_name=${elasticsearchClusterName}
+fi
+
+if [ "${elasticsearchTcpPort}" != "" ]; then
+	systemProperties="${systemProperties} -Delasticsearch.port=${elasticsearchTcpPort}"
+	echo ElasticSearch TCP port param:  -Delasticsearch.port=${elasticsearchTcpPort}
 fi
 
 #jolokia = -javaagent:lib/jolokia-jvm-1.6.2-agent.jar=port=8088,host=localhost

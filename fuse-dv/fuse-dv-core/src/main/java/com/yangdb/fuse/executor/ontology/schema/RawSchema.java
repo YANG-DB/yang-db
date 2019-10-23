@@ -38,6 +38,8 @@ public interface RawSchema extends IndicesProvider {
 
     String getPrefix(String type);
 
+    String getIdPrefix(String type);
+
     List<IndexPartitions.Partition> getPartitions(String type);
 
 }
