@@ -72,6 +72,10 @@ public class EntityTransformerIT implements BaseITMarker {
             public IndexPartitions getPartition(String type) {
                 return schemaProvider.getVertexSchemas(type).iterator().next().getIndexPartitions().get();
             }
+            @Override
+            public String getIdPrefix(String type) {
+                return "";
+            }
 
             @Override
             public String getIdFormat(String type) {

@@ -14,6 +14,7 @@
 
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
+        <assembly>dragon-dragon</assembly>
     </properties>
 
     <dependencies>
@@ -128,20 +129,20 @@
     </dependencies>
 
     <build>
-        <finalName>assembly</finalName>
+        <finalName>dragon</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-jokolia</id>
+                        <id>copy-jolokia</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <outputDirectory>${distr.dir}/${assembly}/lib</outputDirectory>
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.jolokia</groupId>
@@ -169,13 +170,14 @@
                         </manifestEntries>
                     </archive>
                     <descriptors>
-                        <descriptor>assembly/fuse.test.service.engine3.dragons.graph.source.xml</descriptor>
                         <descriptor>assembly/fuse.test.service.engine3.dragons.graph.xml</descriptor>
+                        <descriptor>assembly/fuse.test.service.engine3.dragons.graph.source.xml</descriptor>
                     </descriptors>
+                    <outputDirectory>${distr.dir}/</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>fuse-service-assembly</id>
+                        <id>dragon</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
@@ -184,7 +186,6 @@
                 </executions>
             </plugin>
         </plugins>
-
     </build>
 
 

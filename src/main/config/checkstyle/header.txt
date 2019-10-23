@@ -1,5 +1,5 @@
 /*
- * Licensed to the yangdb.com under one or more contributor license agreements.
+ * Licensed to the yangdb.org under one or more contributor license agreements.
  * See the NOTICE file distributed with
  *
  * Unless required by applicable law or agreed to in writing, software

@@ -98,6 +98,11 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
             }
 
             @Override
+            public String getIdPrefix(String type) {
+                return "";
+            }
+
+            @Override
             public List<IndexPartitions.Partition> getPartitions(String type) {
                 return StreamSupport.stream(getPartition(type).getPartitions().spliterator(), false)
                         .collect(Collectors.toList());

@@ -5,6 +5,7 @@ import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.test.BaseSuiteMarker;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -25,6 +26,7 @@ import static com.yangdb.fuse.assembly.knowledge.Setup.manager;
         KnowledgeSimpleCdrWithV1InnerQueryTests.class
 })
 
+@Ignore
 public class KnowledgeSimpleCDR_TestSuite implements BaseSuiteMarker {
     public static KnowledgeWriterContext ctx;
 
@@ -36,11 +38,9 @@ public class KnowledgeSimpleCDR_TestSuite implements BaseSuiteMarker {
 
     @BeforeClass
     public static void setup() throws Exception {
-/*
         yangDbContainer.withStartupCheckStrategy(new IndefiniteWaitOneShotStartupCheckStrategy());
         yangDbContainer.start();
         Setup.setup(false, true, false);
-*/
         Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         long start = System.currentTimeMillis();

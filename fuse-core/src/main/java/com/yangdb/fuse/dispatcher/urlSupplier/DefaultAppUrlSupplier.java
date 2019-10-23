@@ -1,10 +1,10 @@
 package com.yangdb.fuse.dispatcher.urlSupplier;
 
 /*-
- *
+ * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2019 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@ package com.yangdb.fuse.dispatcher.urlSupplier;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ * #L%
  */
+
+
 
 /**
  * Created by lior.perry on 08/03/2017.

@@ -139,7 +139,7 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-jokolia</id>
+                        <id>copy-jolokia</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy</goal>

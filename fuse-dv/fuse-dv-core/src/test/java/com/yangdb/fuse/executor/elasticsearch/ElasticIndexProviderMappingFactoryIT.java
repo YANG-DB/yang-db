@@ -78,6 +78,10 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
             }
 
             @Override
+            public String getIdPrefix(String type) {
+                return "";
+            }
+            @Override
             public String getIdFormat(String type) {
                 return "";
             }
