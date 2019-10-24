@@ -40,6 +40,6 @@ public class ExecutionScope {
         return timeout;
     }
 
-    private long timeout = 60 * 1000 * 3;
+    private long timeout = 600 * 1000 * 3;
 
 }
