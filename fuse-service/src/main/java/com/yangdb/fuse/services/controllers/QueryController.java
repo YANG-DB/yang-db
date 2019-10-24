@@ -59,7 +59,7 @@ public interface QueryController<C,D> extends Controller<C,D> {
     /**
      * run a stateless query and get immediate graph results (first page only)
      * type may be volatile or persistent
-     * @param query
+     * @param `query
      * @param pageSize
      * @param cursorType
      * @return

@@ -66,8 +66,8 @@ public class DragonsExtensionQueryController implements QueryController<QueryCon
     }
 
     @Override
-    public ContentResponse<Object> run(Query query) {
-        return controller.run(query);
+    public ContentResponse<Object> run(Query query, int pageSize, String cursorType) {
+        return controller.run(query,pageSize,cursorType);
     }
 
     @Override
