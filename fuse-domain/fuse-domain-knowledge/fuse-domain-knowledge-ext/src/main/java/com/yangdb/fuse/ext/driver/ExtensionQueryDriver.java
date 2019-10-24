@@ -117,7 +117,7 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
         return new CreateJsonQueryRequest(id, id, cypher, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
     }
 
-    protected CreateQueryRequest createQueryRequest(Query query, String id) {
+    protected CreateQueryRequest createQueryRequest(Query query, String id, long pageSize) {
         return new CreateQueryRequest(id, id, query, new LogicalGraphCursorRequest(new CreatePageRequest()));
     }
 

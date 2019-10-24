@@ -187,6 +187,8 @@
 
         <!-- jmx monitoring        -->
         <jolokia>1.6.2</jolokia>
+        <!--reflection utils-->
+        <reflection>0.9.11</reflection>
     </properties>
 
     <dependencyManagement>
@@ -284,6 +286,13 @@
                 <artifactId>jolokia-jvm</artifactId>
                 <classifier>agent</classifier>
                 <version>${jolokia}</version>
+            </dependency>
+
+            <!-- reflection utils -->
+            <dependency>
+                <groupId>org.reflections</groupId>
+                <artifactId>reflections</artifactId>
+                <version>${reflection}</version>
             </dependency>
 
             <!-- geo -->

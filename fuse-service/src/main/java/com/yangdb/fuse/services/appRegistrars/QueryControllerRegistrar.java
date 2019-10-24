@@ -35,11 +35,11 @@ import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.transport.*;
+import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.model.validation.ValidationResult;
 import com.yangdb.fuse.services.controllers.QueryController;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.jooby.*;
-import org.jooby.Response;
 import org.jooby.apitool.ApiTool;
 
 import java.util.HashMap;
@@ -53,6 +53,12 @@ import static org.jooby.Status.NOT_FOUND;
 import static org.jooby.Status.OK;
 
 public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryController> {
+    /**
+     * todo get this from application.conf
+     */
+    public static final int TIMEOUT = 1000 * 60 * 10;
+    public static final int PAGE_SIZE = 1000;
+
     //region Constructors
     public QueryControllerRegistrar() {
         super(QueryController.class);
@@ -104,7 +110,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.post(appUrlSupplier.queryStoreUrl() + "/call",req -> API.call(app,req,this.getController(app)));
 
         /** call a query */
-        app.get(appUrlSupplier.resourceUrl(":queryId") + "/nextPageData",
+        app.get(appUrlSupplier.resourceUrl(":queryId",":cursorId") + "/nextPageData" ,
                 req -> API.nextPage(app,req,this));
 
         /** get the query info */
@@ -209,7 +215,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
             final long maxExecTime = createQueryRequest.getCreateCursorRequest() != null
                     ? createQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
-            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
+            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, TIMEOUT)));
 
             ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
                     controller.create(createQueryRequest) :
@@ -260,7 +266,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
             final long maxExecTime = createQueryRequest.getCreateCursorRequest() != null
                     ? createQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
-            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
+            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, TIMEOUT)));
 
             ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
                     controller.create(createQueryRequest) :
@@ -274,9 +280,12 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
             Query query = req.body(Query.class);
             req.set(Query.class, query);
-            req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
+            req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
-            ContentResponse<Object> response = controller.run(query);
+            ContentResponse<Object> response = controller.run(query,
+                    req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
+                    req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
+                    );
 
             return Results.with(response, response.status());
         }
@@ -286,7 +295,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
             String query = req.param("cypher").value();
             String ontology = req.param("ontology").value();
-            req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
+            req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
             ContentResponse<Object> response = controller.run(query,ontology);
 
@@ -302,7 +311,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(PlanTraceOptions.class, callQueryRequest.getPlanTraceOptions());
             final long maxExecTime = callQueryRequest.getCreateCursorRequest() != null
                     ? callQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
-            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, 1000 * 60 * 10)));
+            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, TIMEOUT)));
             ContentResponse<QueryResourceInfo> response = controller.callAndFetch(callQueryRequest);
 
 //            return with(req,response);

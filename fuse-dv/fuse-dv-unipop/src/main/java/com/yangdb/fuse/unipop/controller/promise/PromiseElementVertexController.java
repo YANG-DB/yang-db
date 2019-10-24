@@ -34,7 +34,7 @@ import com.yangdb.fuse.unipop.controller.promise.converter.SearchHitPromiseVerte
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.yangdb.fuse.unipop.controller.utils.CollectionUtil;
-import com.yangdb.fuse.unipop.converter.SearchHitLivePageIterable;
+import com.yangdb.fuse.unipop.converter.SearchHitScrollIterable;
 import com.yangdb.fuse.unipop.predicates.SelectP;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.promise.Promise;
@@ -185,12 +185,14 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
 
         //build
         SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
-        SearchHitLivePageIterable searchHits = new SearchHitLivePageIterable(
+        SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
-                searchBuilder.getScrollSize());
+                searchBuilder.getScrollSize(),
+                searchBuilder.getScrollTime()
+        );
 
         return convert(searchHits, new SearchHitPromiseVertexConverter(graph));
     }

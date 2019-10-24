@@ -327,7 +327,7 @@
         }
       }
     },
-    "/query/v1/run": {
+    "/query/v1/run?pageSize={pageSize};cursorType={cursorType}": {
       "post": {
         "tags": [
           "query"
@@ -335,6 +335,20 @@
         "summary": "submit & run V1 query directly  ",
         "description": "submit & run a query to the engine",
         "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "body",
             "name": "<body>",
@@ -597,6 +611,88 @@
             "description": "page ID.",
             "required": true,
             "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "page"
+        ],
+        "summary": "Deletes page data",
+        "description": "Deletes page data by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A <code>204</code>"
+          }
+        }
+      }
+    },
+    "/query/{queryId}/cursor/{cursorId}/nextPageData?pageSize={pageSize};deletePage={deletePage}": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Fetch Next Page data ",
+        "description": "Fetch Next Page data with given size ",
+        "parameters": [
+          {
+            "name": "queryId",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size.",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "deletePage",
+            "in": "query",
+            "description": "deletePage flag.",
+            "required": true,
+            "type": "boolean"
           }
         ],
         "responses": {

@@ -33,7 +33,7 @@ import com.yangdb.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
-import com.yangdb.fuse.unipop.converter.SearchHitLivePageIterable;
+import com.yangdb.fuse.unipop.converter.SearchHitScrollIterable;
 import com.yangdb.fuse.unipop.predicates.SelectP;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
@@ -145,12 +145,14 @@ public class DiscreteVertexController extends VertexControllerBase {
         searchAppender.append(searchBuilder, context);
 
         SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
-        SearchHitLivePageIterable searchHits = new SearchHitLivePageIterable(
+        SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
-                searchBuilder.getScrollSize());
+                searchBuilder.getScrollSize(),
+                searchBuilder.getScrollTime()
+        );
 
         ElementConverter<DataItem, Edge> elementConverter = new CompositeElementConverter<>(
                 new DiscreteEdgeConverter<>(context, this.profiler));

@@ -20,7 +20,6 @@
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
-            <version>${tinkerpop.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
@@ -45,7 +44,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.0</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
@@ -55,17 +53,14 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.10</version>
         </dependency>
         <dependency>
             <groupId>io.javaslang</groupId>
             <artifactId>javaslang</artifactId>
-            <version>2.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jool</artifactId>
-            <version>0.9.12</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

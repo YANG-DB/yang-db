@@ -47,16 +47,19 @@ import com.yangdb.fuse.model.results.AssignmentUtils;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.transport.*;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
-import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
+import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import javaslang.control.Option;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.dispatcher.cursor.CursorFactory.request;
+import static com.yangdb.fuse.dispatcher.cursor.CursorFactory.resolve;
 import static com.yangdb.fuse.model.Utils.getOrCreateId;
 import static com.yangdb.fuse.model.asgQuery.AsgCompositeQuery.hasInnerQuery;
 import static java.util.Collections.EMPTY_LIST;
@@ -93,10 +96,10 @@ public abstract class QueryDriverBase implements QueryDriver {
     }
 
     @Override
-    public Optional<Object> run(Query query) {
+    public Optional<Object> run(Query query, int pageSize, String cursorType) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateQueryRequest queryRequest = createQueryRequest(query, id);
+            CreateQueryRequest queryRequest = new CreateQueryRequest(id, id, query, request(cursorType,new CreatePageRequest(pageSize)));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -105,15 +108,14 @@ public abstract class QueryDriverBase implements QueryDriver {
                 return Optional.of(resourceInfo.get().getError());
 
             return Optional.of(resourceInfo.get());
+        } catch (Throwable e) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(), "failed building the cursor request " + cursorType)));
         } finally {
             //remove stateless query
 //            delete(id);
         }
 
-    }
-
-    protected CreateQueryRequest createQueryRequest(Query query, String id) {
-        return new CreateQueryRequest(id, id, query, new LogicalGraphCursorRequest(new CreatePageRequest()));
     }
 
     @Override

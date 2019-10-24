@@ -35,7 +35,7 @@ import com.yangdb.fuse.unipop.controller.promise.context.PromiseVertexFilterCont
 import com.yangdb.fuse.unipop.controller.promise.converter.SearchHitPromiseFilterEdgeConverter;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
-import com.yangdb.fuse.unipop.converter.SearchHitLivePageIterable;
+import com.yangdb.fuse.unipop.converter.SearchHitScrollIterable;
 import com.yangdb.fuse.unipop.predicates.SelectP;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -136,12 +136,14 @@ public class PromiseVertexFilterController extends VertexControllerBase {
 
         SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSize(0);
 
-        SearchHitLivePageIterable searchHits = new SearchHitLivePageIterable(
+        SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
-                searchBuilder.getScrollSize());
+                searchBuilder.getScrollSize(),
+                searchBuilder.getScrollTime()
+        );
 
         ElementConverter<SearchHit, Edge> converter = new SearchHitPromiseFilterEdgeConverter(graph);
         return Stream.ofAll(searchHits)

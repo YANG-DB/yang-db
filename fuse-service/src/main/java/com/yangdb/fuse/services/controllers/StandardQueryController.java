@@ -84,9 +84,9 @@ public class StandardQueryController implements QueryController<QueryController,
     }
 
     @Override
-    public ContentResponse<Object> run(Query query) {
+    public ContentResponse<Object> run(Query query, int pageSize, String cursorType) {
         return Builder.builder(CREATED, SERVER_ERROR )
-                .data(driver().run(query))
+                .data(driver().run(query,pageSize,cursorType ))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
 
