@@ -193,6 +193,8 @@
 
         <!-- jmx monitoring        -->
         <jolokia>1.6.2</jolokia>
+        <!--reflection utils-->
+        <reflection>0.9.11</reflection>
     </properties>
 
     <dependencyManagement>
@@ -316,6 +318,13 @@
                 <artifactId>jolokia-jvm</artifactId>
                 <classifier>agent</classifier>
                 <version>${jolokia}</version>
+            </dependency>
+
+            <!-- reflection utils -->
+            <dependency>
+                <groupId>org.reflections</groupId>
+                <artifactId>reflections</artifactId>
+                <version>${reflection}</version>
             </dependency>
 
             <!-- geo -->
@@ -781,6 +790,11 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
@@ -866,6 +880,17 @@
                         <jacocoReports>
                             <jacocoReport>${project.build.directory}/jacoco-ut/jacoco.xml</jacocoReport>
                         </jacocoReports>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>cobertura-maven-plugin</artifactId>
+                    <version>2.7</version>
+                    <configuration>
+                        <format>xml</format>
+                        <maxmem>256m</maxmem>
+                        <!-- aggregated reports for multi-module projects -->
+                        <aggregate>true</aggregate>
                     </configuration>
                 </plugin>
                 <plugin>

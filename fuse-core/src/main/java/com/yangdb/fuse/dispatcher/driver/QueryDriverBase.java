@@ -4,14 +4,14 @@ package com.yangdb.fuse.dispatcher.driver;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,6 @@ package com.yangdb.fuse.dispatcher.driver;
  * limitations under the License.
  * #L%
  */
-
-
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
@@ -53,12 +51,14 @@ import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
-import javaslang.control.Option;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.dispatcher.cursor.CursorFactory.request;
+import static com.yangdb.fuse.dispatcher.cursor.CursorFactory.resolve;
 import static com.yangdb.fuse.model.Utils.getOrCreateId;
 import static com.yangdb.fuse.model.asgQuery.AsgCompositeQuery.hasInnerQuery;
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.*;
@@ -96,10 +96,10 @@ public abstract class QueryDriverBase implements QueryDriver {
     }
 
     @Override
-    public Optional<Object> run(Query query) {
+    public Optional<Object> run(Query query, int pageSize, String cursorType) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateQueryRequest queryRequest = createQueryRequest(query, id);
+            CreateQueryRequest queryRequest = new CreateQueryRequest(id, id, query, request(cursorType,new CreatePageRequest(pageSize)));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -108,15 +108,14 @@ public abstract class QueryDriverBase implements QueryDriver {
                 return Optional.of(resourceInfo.get().getError());
 
             return Optional.of(resourceInfo.get());
+        } catch (Throwable e) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(), "failed building the cursor request " + cursorType)));
         } finally {
             //remove stateless query
 //            delete(id);
         }
 
-    }
-
-    protected CreateQueryRequest createQueryRequest(Query query, String id) {
-        return new CreateQueryRequest(id, id, query, new LogicalGraphCursorRequest(new CreatePageRequest()));
     }
 
     @Override

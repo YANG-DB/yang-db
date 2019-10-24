@@ -53,7 +53,7 @@ public interface QueryDriver {
 
     Optional<QueryResourceInfo> createAndFetch(CreateQueryRequest queryRequest);
 
-    Optional<Object> run(Query query);
+    Optional<Object> run(Query query, int pageSize, String cursorType);
 
     Optional<Object> run(String cypher, String ontology);
 
