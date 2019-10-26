@@ -222,7 +222,7 @@
         }
       }
     },
-    "/query/cypher/run": {
+    "/query/cypher/run?pageSize={pageSize};cursorType={cursorType}": {
       "get": {
         "tags": [
           "query"
@@ -230,6 +230,20 @@
         "summary": "submit & run cypher query directly  ",
         "description": "submit & run a query to the engine",
         "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "required": false,
+            "type": "string"
+          },
           {
             "name": "cypher",
             "in": "query",
@@ -380,14 +394,14 @@
             "name": "pageSize",
             "in": "query",
             "description": "page size",
-            "required": true,
+            "required": false,
             "type": "integer"
           },
           {
             "name": "cursorType",
             "in": "query",
             "description": "cursorType",
-            "required": true,
+            "required": false,
             "type": "string"
           },
           {
@@ -510,18 +524,25 @@
         }
       }
     },
-    "/query/{id}/cursor": {
+    "/query/{id}/cursor/{cursorId}": {
       "get": {
         "tags": [
           "cursor"
         ],
-        "summary": "Fetch query info by ID",
-        "description": "Fetch query info by ID",
+        "summary": "Fetch cursor info by ID",
+        "description": "Fetch cursor info by ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
             "required": true,
             "type": "string"
           }
@@ -542,13 +563,20 @@
         "tags": [
           "cursor"
         ],
-        "summary": "Deletes a query by ID",
-        "description": "Deletes a query by ID.",
+        "summary": "Deletes a cursor by ID",
+        "description": "Deletes a cursor by ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
             "required": true,
             "type": "string"
           }
@@ -560,13 +588,13 @@
         }
       }
     },
-    "/query/{id}/cursor/{cursorId}/page": {
+    "/query/{id}/cursor/{cursorId}/page/{pageId}": {
       "get": {
         "tags": [
           "page"
         ],
-        "summary": "Fetch query info by ID",
-        "description": "Fetch query info by ID",
+        "summary": "Fetch page info by ID",
+        "description": "Fetch page info by ID",
         "parameters": [
           {
             "name": "id",
@@ -579,6 +607,13 @@
             "name": "cursorId",
             "in": "path",
             "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
             "required": true,
             "type": "string"
           }
@@ -599,8 +634,8 @@
         "tags": [
           "page"
         ],
-        "summary": "Deletes a query by ID",
-        "description": "Deletes a query by ID.",
+        "summary": "Deletes a page by ID",
+        "description": "Deletes a page by ID.",
         "parameters": [
           {
             "name": "id",
@@ -613,6 +648,13 @@
             "name": "cursorId",
             "in": "path",
             "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
             "required": true,
             "type": "string"
           }
@@ -662,13 +704,15 @@
             "description": "Not Found"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/query/{id}/cursor/{cursorId}/page/{pageId}/format/{format}/data": {
+      "get": {
         "tags": [
           "page"
         ],
-        "summary": "Deletes page data",
-        "description": "Deletes page data by ID.",
+        "summary": "Fetch Page data with format ",
+        "description": "Fetch Page data with format ",
         "parameters": [
           {
             "name": "id",
@@ -690,11 +734,21 @@
             "description": "page ID.",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "path",
+            "description": "data format",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
-          "204": {
-            "description": "A <code>204</code>"
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -734,88 +788,6 @@
             "description": "deletePage flag.",
             "required": true,
             "type": "boolean"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "page"
-        ],
-        "summary": "Deletes page data",
-        "description": "Deletes page data by ID.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "query ID.",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "cursorId",
-            "in": "path",
-            "description": "cursor ID.",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "pageId",
-            "in": "path",
-            "description": "page ID.",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "A <code>204</code>"
-          }
-        }
-      }
-    },
-    "/query/{id}/cursor/{cursorId}/page/{pageId}/format/{format}/data": {
-      "get": {
-        "tags": [
-          "page"
-        ],
-        "summary": "Fetch Page data with format ",
-        "description": "Fetch Page data with format ",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "query ID.",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "cursorId",
-            "in": "path",
-            "description": "cursor ID.",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "pageId",
-            "in": "path",
-            "description": "page ID.",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "format",
-            "in": "path",
-            "description": "data format",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": {
