@@ -24,6 +24,7 @@ package com.yangdb.fuse.model.results;
  */
 
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import javaslang.collection.Stream;
@@ -46,6 +47,11 @@ public class AssignmentCount extends Assignment{
     //endregion
 
     //region Properties
+
+    @JsonAnyGetter
+    public Map<String, AtomicLong> getLabelsCount() {
+        return labelsCount;
+    }
 
 
     //endregion
