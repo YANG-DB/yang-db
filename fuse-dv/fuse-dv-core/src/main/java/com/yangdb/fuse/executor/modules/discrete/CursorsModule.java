@@ -47,6 +47,11 @@ public class CursorsModule extends ModuleBase {
                 new ForwardOnlyPathsTraversalCursor.Factory()));
 
         Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
+                CountCursorRequest.CursorType,
+                CountCursorRequest.class,
+                new CountTraversalCursor.Factory()));
+
+        Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
                 FindPathTraversalCursorRequest.CursorType,
                 FindPathTraversalCursorRequest.class,
                 new FindPathsTraversalCursor.Factory()));

@@ -26,6 +26,8 @@ package com.yangdb.fuse.model.results;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.yangdb.fuse.model.asgQuery.AsgCompositeQuery;
 import javaslang.collection.Stream;
 
 import java.util.*;
@@ -34,6 +36,8 @@ import java.util.*;
  * Created by benishue on 21-Feb-17.
  */
 
+@JsonSubTypes({
+        @JsonSubTypes.Type(name = "Assignment", value = AssignmentCount.class)})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Assignment<E,R> {
