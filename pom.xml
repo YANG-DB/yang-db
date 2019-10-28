@@ -70,7 +70,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <top.dir>${project.basedir}</top.dir>
-        <distr.dir>/home/lior/projects/github/yang-db/distrib</distr.dir>
+        <distr.dir>${project.basedir}/../../../distrib</distr.dir>
         <version.major>1</version.major>
         <version.minor>11</version.minor>
 
