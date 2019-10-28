@@ -125,6 +125,10 @@ public class ElasticGraphConfiguration extends BaseConfiguration {
         return super.getInt(ELASTIC_GRAPH_SCROLL_TIME, 60000);
     }
 
+    public int getElasticSearchScrollMaxOpen() {
+        return super.getInt(ELASTIC_SEARCH_SCROLL_MAX_OPEN, 1000);
+    }
+
     public void setElasticGraphScrollTime(int value) {
         super.addProperty(ELASTIC_GRAPH_SCROLL_TIME, value);
     }
@@ -226,6 +230,7 @@ public class ElasticGraphConfiguration extends BaseConfiguration {
     public static final String ELASTIC_GRAPH_SCHEMA_PROVIDER_FACTORY = "elastic.graph.schema_provider_factory";
     public static final String ELASTIC_GRAPH_SCHEMA_PROVIDER_FACTORY_CLASS = "elastic.graph.schema_provider_factory.class";
     public static final String ELASTIC_GRAPH_SCROLL_TIME = "elastic.graph.scroll_time";
+    public static final String ELASTIC_SEARCH_SCROLL_MAX_OPEN = "elasticsearch.search.max_open_scroll_context";
     public static final String ELASTIC_GRAPH_SCROLL_SIZE = "elastic.graph.scroll_size";
     public static final String ELASTIC_GRAPH_DEFAULT_SEARCH_SIZE = "elastic.graph.default_search_size";
     public static final String ELASTIC_GRAPH_MAX_SEARCH_SIZE = "elastic.graph.max_search_size";
