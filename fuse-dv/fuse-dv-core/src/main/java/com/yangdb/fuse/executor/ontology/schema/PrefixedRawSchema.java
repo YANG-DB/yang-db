@@ -70,8 +70,8 @@ public class PrefixedRawSchema implements RawSchema {
     }
 
     @Override
-    public String getPrefix(String type) {
-        return rawSchema.getPrefix(type);
+    public String getIndexPrefix(String type) {
+        return rawSchema.getIndexPrefix(type);
     }
 
     @Override

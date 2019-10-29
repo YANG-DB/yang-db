@@ -21,7 +21,6 @@ package com.yangdb.fuse.assembly.knowledge;
  */
 
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigList;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
@@ -117,7 +116,7 @@ public class KnowledgeRawSchemaShort implements RawSchema {
      * Index name prefix
      */
     @Override
-    public String getPrefix(String type) {
+    public String getIndexPrefix(String type) {
         switch (type) {
             case EFILE:
             case EVALUE:
@@ -188,31 +187,57 @@ public class KnowledgeRawSchemaShort implements RawSchema {
     public List<IndexPartitions.Partition> getPartitions(String type) {
         switch (type) {
             case ENTITY :
-                return IntStream.rangeClosed(0,indicesCount)
-                        .mapToObj(e-> buildIndexPartition(e,ENTITY))
-                        .collect(Collectors.toList());
+                return generatePartitions(ENTITY);
             case RELATION:
-                return IntStream.rangeClosed(0,indicesCount)
-                        .mapToObj(r-> buildIndexPartition(r,RELATION))
-                        .collect(Collectors.toList());
+                return generatePartitions(RELATION);
             case INSIGHT:
-                return IntStream.rangeClosed(0,indicesCount)
-                        .mapToObj(i-> buildIndexPartition(i,INSIGHT))
-                        .collect(Collectors.toList());
+                generatePartitions(INSIGHT);
             case REFERENCE:
-                return IntStream.rangeClosed(0,indicesCount)
-                        .mapToObj(ref-> buildIndexPartition(ref,REFERENCE))
-                        .collect(Collectors.toList());
+                generatePartitions(REFERENCE);
 
         }
         return Collections.emptyList();
+    }
+
+    private List<IndexPartitions.Partition> generatePartitions(String type) {
+        List<IndexPartitions.Partition> collect;
+        collect = IntStream.rangeClosed(0, indicesCount)
+                .mapToObj(r -> buildIndexPartition(r, type))
+                .collect(Collectors.toList());
+        //add default mapping
+        collect.add(addDefaultPartition(type));
+        return collect;
+    }
+
+    private IndexPartitions.Partition.Range<String> addDefaultPartition(String type) {
+        return new IndexPartitions.Partition.Range<String>() {
+            @Override
+            public String getFrom() {
+                return format("%s%s",getIdPrefix(type),format(getIdFormat(type),0)).replaceAll("\\d","0");
+            }
+
+            @Override
+            public String getTo() {
+                return format("%s%s",getIdPrefix(type),format(getIdFormat(type),0)).replaceAll("\\d","9");
+            }
+
+            @Override
+            public boolean isWithin(String value) {
+                return true;
+            }
+
+            @Override
+            public Iterable<String> getIndices() {
+                return Collections.singletonList(getIndexPrefix(type) + "*");
+            }
+        };
     }
 
     public IndexPartitions.Partition.Range.Impl<String> buildIndexPartition(int index,String type) {
         return new IndexPartitions.Partition.Range.Impl<>(
                 format("%s%s",getIdPrefix(type),format(getIdFormat(type),index*idBulk)),
                 format("%s%s",getIdPrefix(type),format(getIdFormat(type),(index+1)*idBulk)),
-                format("%s%d",getPrefix(type),index));
+                format("%s%d", getIndexPrefix(type),index));
     }
     //endregion
 }

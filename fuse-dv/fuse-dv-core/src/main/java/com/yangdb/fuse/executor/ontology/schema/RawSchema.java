@@ -36,7 +36,7 @@ public interface RawSchema extends IndicesProvider {
 
     String getIdFormat(String type);
 
-    String getPrefix(String type);
+    String getIndexPrefix(String type);
 
     String getIdPrefix(String type);
 

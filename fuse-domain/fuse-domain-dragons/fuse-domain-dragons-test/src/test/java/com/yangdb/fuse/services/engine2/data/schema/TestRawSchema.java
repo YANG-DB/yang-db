@@ -21,7 +21,7 @@ public class TestRawSchema implements RawSchema {
     }
 
     @Override
-    public String getPrefix(String type) {
+    public String getIndexPrefix(String type) {
         return "";
     }
 
