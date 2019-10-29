@@ -2,12 +2,9 @@ package com.yangdb.fuse.epb.plan;
 
 /*-
  * #%L
- * PlanNodeWrapper.java - fuse-model - yangdb - 2,016
- * org.codehaus.mojo-license-maven-plugin-1.16
- * $Id$
- * $HeadURL$
+ * fuse-model
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

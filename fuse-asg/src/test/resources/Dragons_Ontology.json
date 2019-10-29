@@ -86,7 +86,8 @@
     {
       "eType": "Person",
       "name": "Person",
-      "properties": [
+       "metadata": [],
+ "properties": [
         "id",
         "firstName",
         "lastName",
@@ -99,14 +100,16 @@
     {
       "eType": "Dragon",
       "name": "Dragon",
-      "properties": [
+       "metadata": [],
+ "properties": [
         "name"
       ]
     },
     {
       "eType": "Horse",
       "name": "Horse",
-      "properties": [
+       "metadata": [],
+ "properties": [
         "name",
         "color",
         "weight"
@@ -115,14 +118,16 @@
     {
       "eType": "Guild",
       "name": "Guild",
-      "properties": [
+       "metadata": [],
+ "properties": [
         "name"
       ]
     },
     {
       "eType": "Kingdom",
       "name": "Kingdom",
-      "properties": [
+       "metadata": [],
+ "properties": [
         "name"
       ]
     }
@@ -142,7 +147,8 @@
           "eTypeB": 3
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "startDate",
         "endDate"
       ]
@@ -157,7 +163,8 @@
           "eTypeB": "Dragon"
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "timestamp"
       ]
     },
@@ -171,7 +178,8 @@
           "eTypeB": "Dragon"
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "timestamp",
         "duration"
       ]
@@ -197,7 +205,8 @@
           "eTypeB": "Person"
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "startDate"
       ]
     },
@@ -211,7 +220,8 @@
           "eTypeB": "Guild"
         }
       ],
-      "properties": [
+       "metadata": [],
+ "properties": [
         "startDate",
         "endDate"
       ]

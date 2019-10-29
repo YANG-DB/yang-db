@@ -4,7 +4,7 @@ package com.yangdb.fuse.services.controllers;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ public class StandardDashboardDriver implements DashboardDriver {
     }
 
     @Override
+    //todo - fix this to be Ontology depended
     public Map graphElementCount() {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);
@@ -65,6 +66,7 @@ public class StandardDashboardDriver implements DashboardDriver {
     }
 
     @Override
+    //todo - fix this to be Ontology depended
     public Map graphElementCreated() {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);
@@ -83,6 +85,7 @@ public class StandardDashboardDriver implements DashboardDriver {
     }
 
     @Override
+    //todo - fix this to be Ontology depended
     public Map graphFieldValuesCount() {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);

@@ -4,7 +4,7 @@ package com.yangdb.fuse.unipop.controller.discrete.converter;
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
         Iterator<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(this.contextVertexLabel, context.getDirection(), this.contextEdgeLabel).iterator();
         if (!edgeSchemas.hasNext()) {
-            return null;
+                return null;
         }
 
         //currently assuming only one relevant edge schema

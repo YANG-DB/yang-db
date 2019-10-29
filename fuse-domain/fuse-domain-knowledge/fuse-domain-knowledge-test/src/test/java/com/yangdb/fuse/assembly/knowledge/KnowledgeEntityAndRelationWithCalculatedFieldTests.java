@@ -30,7 +30,7 @@ import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder._rel;
@@ -49,7 +49,7 @@ public class KnowledgeEntityAndRelationWithCalculatedFieldTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true,true);
+//        Setup.setup(true,true);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -155,14 +155,15 @@ public class KnowledgeEntityAndRelationWithCalculatedFieldTests {
         e4.rel(rel3, "in");
 
         // Insert Entity and Reference entities to ES
-        Assert.assertEquals(8, commit(ctx, INDEX, e1, e2, e3));
-        Assert.assertEquals(3, commit(ctx, REL_INDEX, rel1, rel2, rel3));
-        Assert.assertEquals(10, commit(ctx, INDEX, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10));
+        Assert.assertEquals("error loading data ",8, commit(ctx, INDEX, e1, e2, e3));
+        Assert.assertEquals("error loading data ",3, commit(ctx, REL_INDEX, rel1, rel2, rel3));
+        Assert.assertEquals("error loading data ",10, commit(ctx, INDEX, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10));
     }
 
     @AfterClass
     public static void after() {
-        ctx.removeCreated();
+        if(ctx!=null) Assert.assertEquals(21,ctx.removeCreated());
+
     }
 
     // STRING_VALUE, CONTENT, TITLE, DISPLAY_NAME, DESCRIPTION => Find lower and Upper

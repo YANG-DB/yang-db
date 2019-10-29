@@ -2,12 +2,9 @@ package com.yangdb.fuse.model.ontology;
 
 /*-
  * #%L
- * Ontology.java - fuse-model - yangdb - 2,016
- * org.codehaus.mojo-license-maven-plugin-1.16
- * $Id$
- * $HeadURL$
+ * fuse-model
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +20,30 @@ package com.yangdb.fuse.model.ontology;
  * #L%
  */
 
+
+/*-
+ *
+ * Ontology.java - fuse-model - yangdb - 2,016
+ * org.codehaus.mojo-license-maven-plugin-1.16
+ * $Id$
+ * $HeadURL$
+ * %%
+ * Copyright (C) 2016 - 2019 yangdb   ------ www.yangdb.org ------
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import javaslang.Tuple2;
@@ -36,7 +57,7 @@ import java.util.function.Supplier;
 /**
  * Created by benishue on 22-Feb-17.
  */
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"primitiveTypes"})
 public class Ontology {
     public Ontology() {
@@ -128,6 +149,7 @@ public class Ontology {
     private List<EntityType> entityTypes;
     private List<RelationshipType> relationshipTypes;
     private List<Property> properties;
+    private List<Property> metadata;
     private List<EnumeratedType> enumeratedTypes;
     private List<CompositeType> compositeTypes;
     private List<PrimitiveType> primitiveTypes;
@@ -317,6 +339,10 @@ public class Ontology {
             return Stream.ofAll(ontology.getEntityTypes()).toJavaList();
         }
 
+        public boolean containsMetadata(String pType) {
+            return Stream.ofAll(ontology.entityTypes).flatMap(EntityType::getMetadata).toJavaSet().contains(pType);
+        }
+
         public Iterable<String> eNames() {
             return Stream.ofAll(entities()).map(EntityType::getName).toJavaList();
         }
@@ -369,6 +395,7 @@ public class Ontology {
 
         private Map<String, Property> propertiesByName;
         private Map<String, Property> propertiesByPtype;
+
         //endregion
     }
     //endregion

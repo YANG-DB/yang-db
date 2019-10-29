@@ -1,12 +1,12 @@
 package com.yangdb.fuse.assembly.knowledge.cypher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.model.logical.LogicalEdge;
 import com.yangdb.fuse.model.logical.LogicalNode;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
+import com.yangdb.fuse.model.resourceInfo.ResultResourceInfo;
 import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.QueryResultBase;
@@ -21,15 +21,14 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.nextPage;
-import static com.yangdb.fuse.client.FuseClient.countGraphElements;
+import static com.yangdb.fuse.client.FuseClientSupport.countGraphElements;
+import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 
 /**
  * http://web.madstudio.northwestern.edu/re-visualizing-the-novel/
@@ -39,18 +38,16 @@ public class KnowledgeInsertLogicalGraphTest {
 
     //number of elements on les miserables graph
 
-    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true);
-        //load data
-        loadData();
+//        Setup.setup(true);
+//        loadData();
     }
 
     private static void loadData() throws IOException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("./data/logical/les_miserables.json");
-        QueryResourceInfo info = fuseClient.loadData(KNOWLEDGE, resource);
+        ResultResourceInfo info = fuseClient.loadData(KNOWLEDGE, resource);
         Assert.assertNotNull(info);
     }
 
@@ -81,7 +78,7 @@ public class KnowledgeInsertLogicalGraphTest {
             totalGraphSize = countGraphElements(pageData);
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
-        Assert.assertEquals(231, totalGraphSize);
+        Assert.assertEquals(30, totalGraphSize);
     }
 
 
@@ -112,7 +109,7 @@ public class KnowledgeInsertLogicalGraphTest {
             totalGraphSize = countGraphElements(pageData);
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
-        Assert.assertEquals(839, totalGraphSize);
+        Assert.assertEquals(37, totalGraphSize);
     }
 
     @Test
@@ -150,8 +147,8 @@ public class KnowledgeInsertLogicalGraphTest {
     public void testFetchEntityWithRelationGraphForSpecificName() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        String query = "Match (e:Entity)-[r:hasEvalue]->(ev:Evalue {stringValue: 'Myriel'}),  " +
-                              "(e:Entity)-[r:hasRelation]->(rel:Relation) "+
+        String query = "Match (e:Entity)-[rHasEv:hasEvalue]->(ev:Evalue {stringValue: 'Myriel'}),  " +
+                              "(e:Entity)-[rHasRel:hasRelation]->(rel:Relation) "+
                               " Return *";
 
 
@@ -175,7 +172,7 @@ public class KnowledgeInsertLogicalGraphTest {
             totalGraphSize = countGraphElements(pageData);
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
-        Assert.assertEquals(23, totalGraphSize);
+        Assert.assertEquals(7, totalGraphSize);
     }
 
 
@@ -210,7 +207,7 @@ public class KnowledgeInsertLogicalGraphTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(555, totalGraphSize);
+        Assert.assertEquals(28, totalGraphSize);
     }
 
     @Test
@@ -240,7 +237,7 @@ public class KnowledgeInsertLogicalGraphTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(692, totalGraphSize);
+        Assert.assertEquals(380, totalGraphSize);
     }
 
     @Test
@@ -270,7 +267,7 @@ public class KnowledgeInsertLogicalGraphTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(585, totalGraphSize);
+        Assert.assertEquals(28, totalGraphSize);
     }
     @Test
     public void testFetchEntityWithRelationThreeStepLogicalResultGraphForSpecificName() throws IOException, InterruptedException {
@@ -299,7 +296,7 @@ public class KnowledgeInsertLogicalGraphTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         }
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(391, totalGraphSize);
+        Assert.assertEquals(19, totalGraphSize);
     }
 
     @Test
@@ -321,7 +318,7 @@ public class KnowledgeInsertLogicalGraphTest {
         TypeReference<AssignmentsQueryResult<LogicalNode, LogicalEdge>> typeReference = new TypeReference<AssignmentsQueryResult<LogicalNode, LogicalEdge>>() {};
         AssignmentsQueryResult<LogicalNode, LogicalEdge> pageData = (AssignmentsQueryResult<LogicalNode, LogicalEdge>) nextPage(fuseClient, cursorResourceInfo, typeReference, 100);
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(11, pageData.getAssignments().get(0).getEntities().size());
+        Assert.assertEquals(3, pageData.getAssignments().get(0).getEntities().size());
 
         Optional<LogicalNode> node = pageData.getAssignments().get(0).getEntities().stream().filter(p -> p.getProperties().getProperties().containsKey("name")).findAny();
         Assert.assertTrue(node.isPresent());

@@ -309,8 +309,4 @@ public class OntologyTestUtils {
         return properties.stream().filter(p -> p.type.equals(type)).findFirst().get();
     }
 
-    public static void main(String[] args) throws IOException {
-        String json = Utils.asString(createDragonsOntologyLong());
-        IOUtils.write(json,new FileWriter("Dragons.json"));
-    }
 }

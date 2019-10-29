@@ -1,9 +1,10 @@
-  {
+{
   "ont": "Dragons",
   "entityTypes": [
     {
       "eType": "Person",
       "name": "Person",
+      "metadata": [],
       "properties": [
         "id",
         "firstName",
@@ -18,6 +19,7 @@
     {
       "eType": "Horse",
       "name": "Horse",
+      "metadata": [],
       "properties": [
         "id",
         "name",
@@ -29,6 +31,7 @@
     {
       "eType": "Dragon",
       "name": "Dragon",
+      "metadata": [],
       "properties": [
         "id",
         "name",
@@ -41,6 +44,7 @@
     {
       "eType": "Kingdom",
       "name": "Kingdom",
+      "metadata": [],
       "properties": [
         "id",
         "name",
@@ -53,6 +57,7 @@
     {
       "eType": "Guild",
       "name": "Guild",
+      "metadata": [],
       "properties": [
         "id",
         "name",
@@ -78,6 +83,7 @@
           "eTypeB": "Horse"
         }
       ],
+      "metadata": [],
       "properties": [
         "id",
         "startDate",
@@ -94,6 +100,7 @@
           "eTypeB": "Person"
         }
       ],
+      "metadata": [],
       "properties": [
         "id",
         "startDate"
@@ -109,6 +116,7 @@
           "eTypeB": "Guild"
         }
       ],
+      "metadata": [],
       "properties": [
         "id",
         "startDate",
@@ -125,6 +133,7 @@
           "eTypeB": "Dragon"
         }
       ],
+      "metadata": [],
       "properties": [
         "id",
         "date",
@@ -141,6 +150,7 @@
           "eTypeB": "Dragon"
         }
       ],
+      "metadata": [],
       "properties": [
         "id",
         "startDate",
@@ -157,6 +167,7 @@
           "eTypeB": "Kingdom"
         }
       ],
+      "metadata": [],
       "properties": [
         "id",
         "startDate"
@@ -172,6 +183,7 @@
           "eTypeB": "Kingdom"
         }
       ],
+      "metadata": [],
       "properties": [
         "id",
         "startDate"
@@ -195,6 +207,7 @@
           "eTypeB": "Guild"
         }
       ],
+      "metadata": [],
       "properties": [
         "id",
         "startDate"

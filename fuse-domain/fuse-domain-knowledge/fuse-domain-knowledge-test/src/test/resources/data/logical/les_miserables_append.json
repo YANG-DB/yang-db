@@ -54,6 +54,7 @@
   ],
   "edges": [
     {
+      "label": "knows",
       "source": "hezi",
       "target": "Champtercier",
       "metadata": {
@@ -61,6 +62,7 @@
       }
     },
     {
+      "label": "knows",
       "source": "CountessdeLo",
       "target": "moti",
       "metadata": {
@@ -68,6 +70,7 @@
       }
     },
     {
+      "label": "knows",
       "source": "hezi",
       "target": "moti",
       "metadata": {

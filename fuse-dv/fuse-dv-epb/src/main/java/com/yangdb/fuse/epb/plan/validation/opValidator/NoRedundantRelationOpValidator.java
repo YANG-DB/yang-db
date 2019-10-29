@@ -4,7 +4,7 @@ package com.yangdb.fuse.epb.plan.validation.opValidator;
  * #%L
  * fuse-dv-epb
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package com.yangdb.fuse.epb.plan.validation.opValidator;
  * limitations under the License.
  * #L%
  */
-
 
 import com.yangdb.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.yangdb.fuse.model.validation.ValidationResult;

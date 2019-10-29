@@ -4,7 +4,7 @@ package com.yangdb.fuse.services;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FuseUtils {
+    public static final String ELASTICSEARCH_EMBEDDED = "elasticsearch.embedded";
+    public static final String ELASTICSEARCH_CLUSTER_NAME = "elasticsearch.cluster_name";
+    public static final String ELASTICSEARCH_DELETE_DATA_ON_LOAD = "elasticsearch.delete_data_on_load";
+    public static final String ELASTICSEARCH_PORT = "elasticsearch.port ";
+    public static final String ELASTICSEARCH_WORKING_DIR = "elasticsearch.workingDir";
+
     private static List<AutoCloseable> closeables = new ArrayList<>();
 
     public static Config loadConfig(File file, String activeProfile, Tuple2<String, ConfigValue> ... values) {
@@ -44,17 +50,17 @@ public abstract class FuseUtils {
     }
 
     public static boolean loadEmbedded(Config config) throws Exception {
-        if(config.hasPath("elasticsearch.embedded") &&
-            config.getBoolean("elasticsearch.embedded")) {
-            String nodeName = config.getString("elasticsearch.cluster_name");
+        if(config.hasPath(ELASTICSEARCH_EMBEDDED) &&
+            config.getBoolean(ELASTICSEARCH_EMBEDDED)) {
+            String nodeName = config.getString(ELASTICSEARCH_CLUSTER_NAME);
             boolean deleteOnLoad = true;
-            if(config.hasPath("elasticsearch.delete_data_on_load")) {
-                deleteOnLoad = config.getBoolean("elasticsearch.delete_data_on_load");
+            if(config.hasPath(ELASTICSEARCH_DELETE_DATA_ON_LOAD)) {
+                deleteOnLoad = config.getBoolean(ELASTICSEARCH_DELETE_DATA_ON_LOAD);
             }
-            int nodePort = config.getInt("elasticsearch.port ");
+            int nodePort = config.getInt(ELASTICSEARCH_PORT);
             String target =  "target/es";
-            if(config.hasPath("elasticsearch.workingDir"))
-                target = config.getString("elasticsearch.workingDir");
+            if(config.hasPath(ELASTICSEARCH_WORKING_DIR))
+                target = config.getString(ELASTICSEARCH_WORKING_DIR);
 
             System.out.println(String.format("Loading elasticsearch (embedded?%b) server %s on port %d on target %s",config.getBoolean("elasticsearch.embedded"),nodeName,nodePort,target));
             closeables.add(new ElasticEmbeddedNode(target, 9200, nodePort, nodeName, deleteOnLoad));

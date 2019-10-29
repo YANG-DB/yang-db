@@ -55,6 +55,11 @@ public interface DfsTestUtils {
                     public Collection<Ontology> getAll() {
                         return Collections.singleton(ont.get());
                     }
+
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                return ontology;
+             }
                 });
     }
 

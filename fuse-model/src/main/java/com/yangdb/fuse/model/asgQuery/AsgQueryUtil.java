@@ -2,12 +2,32 @@ package com.yangdb.fuse.model.asgQuery;
 
 /*-
  * #%L
+ * fuse-model
+ * %%
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+/*-
+ *
  * AsgQueryUtil.java - fuse-model - yangdb - 2,016
  * org.codehaus.mojo-license-maven-plugin-1.16
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +40,7 @@ package com.yangdb.fuse.model.asgQuery;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * #L%
+ *
  */
 
 import com.yangdb.fuse.model.Tagged;
@@ -118,6 +138,21 @@ public class AsgQueryUtil {
                                 ((Rel) p.geteBase()).getWrapper() != null &&
                                 ((Rel) p.geteBase()).getWrapper().equals(eTag))
                 , truePredicate);
+    }
+
+    public static <T extends EBase, S extends EBase> Map<String, List<AsgEBase<EBase>>> groupByTags(AsgEBase<T> asgEBase) {
+        List<AsgEBase<EBase>> elements = elements(asgEBase,
+                emptyIterableFunction,
+                AsgEBase::getNext,
+                p -> (EEntityBase.class.isAssignableFrom(p.geteBase().getClass()) && ((EEntityBase) p.geteBase()).geteTag() != null)
+                        || (Rel.class.isAssignableFrom(p.geteBase().getClass()) && ((Rel) p.geteBase()).getWrapper() != null),
+                truePredicate,
+                Collections.emptyList());
+
+        return elements
+                .stream()
+                .collect(Collectors.groupingBy(o->((Tagged) o.geteBase()).geteTag()));
+
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
@@ -715,13 +750,16 @@ public class AsgQueryUtil {
             clone = (T) asgEBase.geteBase().clone(++max[0]);
         }
         //update etag
-        //this code will cause creation of new tags that will not assiciated with former tags that was cloned from and therefore will not be found
-        if (clone instanceof Tagged &&
-                ((Tagged) clone).geteTag() != null) {
-            if (isSeq((Tagged) clone) || cloneTags) {
+        //this will cause creation of new tags that will not be associated with former tags that was cloned from and therefore will not be found
+        if ((clone instanceof Tagged) && (((Tagged) clone).geteTag() != null) && cloneTags) {
+            if (isSeq((Tagged) clone) ) {
                 Tagged.setSeq(clone.geteNum(), (Tagged) clone);
+            } else {
+                //clone tag according to running sequence
+                ((Tagged) clone).seteTag(String.format("%s:%d",((Tagged) clone).geteTag(),clone.geteNum()));
             }
         }
+
         eBaseBuilder.withEBase(clone);
 
         List<AsgEBase<? extends EBase>> next = Stream.ofAll(asgEBase.getNext()).filter(nextPredicate).toJavaList();

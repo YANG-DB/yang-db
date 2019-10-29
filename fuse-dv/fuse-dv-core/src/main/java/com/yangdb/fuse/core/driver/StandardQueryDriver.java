@@ -4,14 +4,14 @@ package com.yangdb.fuse.core.driver;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +39,10 @@ import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 import com.yangdb.fuse.model.validation.ValidationResult;
+
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.concrete;
 
 /**
  * Created by lior.perry on 20/02/2017.
@@ -66,23 +69,17 @@ public class StandardQueryDriver extends QueryDriverBase {
     //region QueryDriverBase Implementation
     @Override
     protected QueryResource createResource(CreateQueryRequest request, Query query, AsgQuery asgQuery, QueryMetadata metadata) {
-        AsgQuery newAsgQuery = rewrite(asgQuery);
-        ValidationResult result = validateAsgQuery(newAsgQuery);
-        if (!result.valid()) {
-            throw new FuseError.FuseErrorException(new FuseError(Query.class.getSimpleName(),
-                    "Asg Query rewrite validation error " + result.toString()));
-        }
 
-        PlanWithCost<Plan, PlanDetailedCost> planWithCost = planWithCost(metadata, newAsgQuery);
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = planWithCost(metadata, asgQuery);
 
-        return new QueryResource(request, query, newAsgQuery, metadata, planWithCost, null);
+        return new QueryResource(request, query, asgQuery, metadata, planWithCost, null);
     }
 
     protected PlanWithCost<Plan, PlanDetailedCost> planWithCost(QueryMetadata metadata, AsgQuery query) {
         PlanWithCost<Plan, PlanDetailedCost> planWithCost = PlanWithCost.EMPTY_PLAN;
 
-        //calculate execution plan
-        if (metadata.isSearchPlan()) {
+        //calculate execution plan - only when explicitly asked and type is not parameterized - cant count of evaluate "named" parameters
+        if (metadata.isSearchPlan() && metadata.getType().equals(concrete)) {
             planWithCost = this.planSearcher.search(query);
 
             if (planWithCost == null) {

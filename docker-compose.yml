@@ -2,9 +2,12 @@ version: '3.3'
 
 services:
   fuse:
-    image: yangdb/yang.db:${TAG}
+    image: yangdb/yang.db:latest
     ports:
       - 8888:8888
+    environment:
+      - "elasticsearchHosts=10.6.91.1"
+      - "elasticsearchClusterName=Knowledge"
     networks:
       - network
   es:
@@ -66,11 +69,22 @@ services:
     deploy:
       endpoint_mode: dnsrr
       mode: 'global'
-
+  grafana:
+    image: grafana/grafana:5.1.0
+    container_name: grafana
+    volumes:
+      - grafana-data:/usr/share/grafana
+    ports:
+      - 3000:3000
+    networks:
+      - network
+    user: "0"
 volumes:
   es-fuse-data:
     driver: local
   es-fuse-master-data2:
+    driver: local
+  grafana-data:
     driver: local
 
 networks:

@@ -2,10 +2,10 @@ package com.yangdb.fuse.services.engine2;
 
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
-import com.yangdb.fuse.services.FuseRunner;
-import com.yangdb.fuse.services.engine2.data.DfsRedundantEntityRelationEntityTest;
+import com.yangdb.fuse.services.engine2.data.DfsRedundantEntityRelationEntityIT;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.yangdb.test.BaseSuiteMarker;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -20,21 +20,21 @@ import java.nio.file.Paths;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        DfsRedundantEntityRelationEntityTest.class
+        DfsRedundantEntityRelationEntityIT.class
 })
-public class RedundantTestSuite {
+public class RedundantTestSuite implements BaseSuiteMarker {
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("RedundantTestSuite start");
         start = System.currentTimeMillis();
 
-        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("Dragons");
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.conf").toString()),
                         "m1.dfs.redundant");
 
-        new FuseRunner().run(app, new FuseRunner.Options(Paths.get("src", "test", "conf", "logback.xml").toString(), false));
+        app.start("server.join=false");
     }
 
     @AfterClass
@@ -45,6 +45,7 @@ public class RedundantTestSuite {
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println("RedundantTestSuite elapsed: " + elapsed);
+
     }
 
     //region Fields

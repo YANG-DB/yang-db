@@ -4,7 +4,7 @@ package com.yangdb.fuse.epb.plan.extenders;
  * #%L
  * fuse-dv-epb
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.properties.RelProp;
 import javaslang.Tuple2;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
@@ -128,7 +127,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
             RelationFilterOp op = new RelationFilterOp(element);
             return op;
         }
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
 

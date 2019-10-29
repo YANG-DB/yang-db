@@ -29,15 +29,16 @@ import java.util.stream.IntStream;
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchemaShort.*;
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeStaticRuleBasedStatisticalProvider.KNOWLEDGE;
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.nextPage;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.RelationBuilder._rel;
 import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder._v;
-import static com.yangdb.fuse.executor.ontology.schema.GraphDataLoader.Directive.INSERT;
+import static com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader.Directive.INSERT;
 import static java.time.temporal.ChronoField.EPOCH_DAY;
 
-@Ignore("[ERROR]   KnowledgeMassInsertionPathTest.setup:61->loadData:78 » IndexOutOfBounds get(0)...")
+@Ignore("Remove random to disable non predictive assert result numbers")
+
 public class KnowledgeMassInsertionPathTest {
     public static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     public static final String[] words = LOREM_IPSUM.split(" ");
@@ -53,8 +54,8 @@ public class KnowledgeMassInsertionPathTest {
 
     @BeforeClass
     public static void setup() throws Exception {
+//        Setup.setup(true);
         mapper = new ObjectMapper();
-        Setup.setup(true);
         rand = new Random();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         //load data
@@ -63,7 +64,8 @@ public class KnowledgeMassInsertionPathTest {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        ctx.removeCreated();
+        if(ctx!=null) ctx.removeCreated();
+
     }
 
     private static void loadData() throws JsonProcessingException {

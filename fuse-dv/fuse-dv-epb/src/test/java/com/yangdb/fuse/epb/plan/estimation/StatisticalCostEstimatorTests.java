@@ -201,6 +201,11 @@ public class StatisticalCostEstimatorTests {
                     public Collection<Ontology> getAll() {
                         return Collections.singleton(ont.get());
                     }
+
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                return ontology;
+             }
                 }));
 
         Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.oldPlanWithCost(50, 250));
@@ -252,6 +257,11 @@ public class StatisticalCostEstimatorTests {
                     public Collection<Ontology> getAll() {
                         return Collections.singleton(ont.get());
                     }
+
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                return ontology;
+             }
                 }));
 
         Plan plan = new Plan().withOp(new EntityOp(AsgQueryUtil.element$(query, 1))).withOp(new EntityFilterOp(AsgQueryUtil.element$(query, 101)));

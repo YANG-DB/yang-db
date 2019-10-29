@@ -4,7 +4,7 @@ package com.yangdb.fuse.executor.ontology;
  * #%L
  * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ package com.yangdb.fuse.executor.ontology;
  * #L%
  */
 
-import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 
 public interface DataTransformer<T> {

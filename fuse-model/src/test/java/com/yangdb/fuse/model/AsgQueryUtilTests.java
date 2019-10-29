@@ -1,9 +1,11 @@
 package com.yangdb.fuse.model;
 
+import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.asgQuery.AsgQueryAssert;
 import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.ontology.Value;
+import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.RelProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
@@ -12,6 +14,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static com.yangdb.fuse.model.OntologyTestUtils.*;
 import static com.yangdb.fuse.model.OntologyTestUtils.FIRE;
@@ -26,6 +30,7 @@ import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.gt;
 import static com.yangdb.fuse.model.query.quant.QuantType.all;
 
 public class AsgQueryUtilTests {
+
     public static AsgQuery singleOptional(){
         return AsgQuery.Builder.start("q", "O")
                 .next(typed(1, OntologyTestUtils.PERSON.type))
@@ -50,12 +55,12 @@ public class AsgQueryUtilTests {
     public static AsgQuery singleHierarchicalOptional(){
         return AsgQuery.Builder.start("q", "O")
                 .next(typed(1, "entity1", "A"))
-                .next(rel(2, "rel1", R).below(relProp(2, RelProp.of(2, "2", Constraint.of(eq, "value2")))))
+                .next(rel(2, "rel1", R,"R").below(relProp(2, RelProp.of(2, "2", Constraint.of(eq, "value2")))))
                 .next(typed(3, "entity2", "B"))
                 .next(quant1(4, all))
                 .in(ePropGroup(5, EProp.of(5, "prop1", Constraint.of(eq, "value1")), EProp.of(5, "prop2", Constraint.of(gt, "value3"))),
-                        rel(6, "rel2", R).next(typed(7, "entity3", "C")),
-                        optional(11).next(rel(12, "rel4", R).next(typed(13, "entity4", "E")
+                        rel(6, "rel2", R,"R1").next(typed(7, "entity3", "C")),
+                        optional(11).next(rel(12, "rel4", R,"R2").next(typed(13, "entity4", "E")
                                 .next(optional(14).next(rel(15, "rel4", R).next(typed(16, "entity4", "F")))))))
                 .build();
     }
@@ -124,11 +129,12 @@ public class AsgQueryUtilTests {
         AsgQuery query = singleHierarchicalOptional();
         AsgQuery expectedMain =  AsgQuery.Builder.start("q", "O")
                 .next(typed(1, "entity1", "A"))
-                .next(rel(2, "rel1", R).below(relProp(2, RelProp.of(2, "2", Constraint.of(eq, "value2")))))
+                .next(rel(2, "rel1", R,"R").below(relProp(2, RelProp.of(2, "2", Constraint.of(eq, "value2")))))
                 .next(typed(3, "entity2", "B"))
                 .next(quant1(4, all))
                 .in(ePropGroup(5, EProp.of(5, "prop1", Constraint.of(eq, "value1")), EProp.of(5, "prop2", Constraint.of(gt, "value3"))),
-                        rel(6, "rel2", R).next(typed(7, "entity3", "C")))
+                        rel(6, "rel2", R,"R1")
+                                .next(typed(7, "entity3", "C")))
                 .build();
 
         AsgQuery expectedOptionalQuery =  AsgQuery.Builder.start("q", "O")
@@ -143,6 +149,59 @@ public class AsgQueryUtilTests {
 
         AsgQueryAssert.assertEquals(expectedMain, optionalStrippedQuery.getMainQuery());
         AsgQueryAssert.assertEquals(expectedOptionalQuery, optionalStrippedQuery.getOptionalQueries().get(0)._2);
+    }
+
+    @Test
+    public void testGroupQueryWithSingleTagsByTags(){
+        AsgQuery query = singleHierarchicalOptional();
+        Map<String, List<AsgEBase<EBase>>> map = AsgQueryUtil.groupByTags(query.getStart());
+        Assert.assertNotNull(map);
+        Assert.assertTrue(map.containsKey("A"));
+        Assert.assertEquals(map.get("A").size(),1);
+        Assert.assertTrue(map.containsKey("B"));
+        Assert.assertEquals(map.get("B").size(),1);
+        Assert.assertTrue(map.containsKey("C"));
+        Assert.assertEquals(map.get("C").size(),1);
+        Assert.assertTrue(map.containsKey("E"));
+        Assert.assertEquals(map.get("E").size(),1);
+        Assert.assertTrue(map.containsKey("F"));
+        Assert.assertEquals(map.get("F").size(),1);
+        Assert.assertTrue(map.containsKey("R"));
+        Assert.assertEquals(map.get("R").size(),1);
+        Assert.assertTrue(map.containsKey("R1"));
+        Assert.assertEquals(map.get("R1").size(),1);
+        Assert.assertTrue(map.containsKey("R2"));
+        Assert.assertEquals(map.get("R2").size(),1);
+    }
+
+    @Test
+    public void testGroupQueryWithDuplicateTagsByTags(){
+        AsgQuery query = AsgQuery.Builder.start("q", "O")
+                .next(typed(1, "entity1", "A"))
+                .next(rel(2, "rel1", R,"R").below(relProp(2, RelProp.of(2, "2", Constraint.of(eq, "value2")))))
+                .next(typed(3, "entity2", "B"))
+                .next(quant1(4, all))
+                .in(ePropGroup(5, EProp.of(5, "prop1", Constraint.of(eq, "value1")), EProp.of(5, "prop2", Constraint.of(gt, "value3"))),
+                        rel(6, "rel2", R,"R").next(typed(7, "entity3", "C")),
+                        optional(11)
+                                .next(rel(12, "rel4", R).next(typed(13, "entity4", "C")
+                                .next(optional(14).next(rel(15, "rel4", R,"R").next(typed(16, "entity4", "B")))))))
+                .build();
+        ;
+        Map<String, List<AsgEBase<EBase>>> map = AsgQueryUtil.groupByTags(query.getStart());
+        Assert.assertNotNull(map);
+        Assert.assertTrue(map.containsKey("A"));
+        Assert.assertEquals(map.get("A").size(),1);
+        Assert.assertTrue(map.containsKey("B"));
+        Assert.assertEquals(map.get("B").size(),2);
+        Assert.assertTrue(map.containsKey("C"));
+        Assert.assertEquals(map.get("C").size(),2);
+        Assert.assertFalse(map.containsKey("E"));
+        Assert.assertFalse(map.containsKey("F"));
+        Assert.assertTrue(map.containsKey("R"));
+        Assert.assertEquals(map.get("R").size(),3);
+        Assert.assertFalse(map.containsKey("R1"));
+        Assert.assertFalse(map.containsKey("R2"));
     }
 
     @Test

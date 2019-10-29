@@ -31,7 +31,7 @@ import java.util.TimeZone;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder._rel;
@@ -49,7 +49,7 @@ public class KnowledgeSimpleRelationAndRvalueWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
+//        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Relation entities for tests
@@ -104,14 +104,15 @@ public class KnowledgeSimpleRelationAndRvalueWithFilterE2ETests {
         rel4.value(rv7);
         rel5.value(rv8, rv9);
         // Insert Relation and Rvalue entities to ES
-        Assert.assertEquals(5, commit(ctx, REL_INDEX, rel1, rel2, rel3, rel4, rel5));
-        Assert.assertEquals(9, commit(ctx, REL_INDEX, rv1, rv2, rv3, rv4, rv5, rv6, rv7, rv8, rv9));
+        Assert.assertEquals("error loading data ",5, commit(ctx, REL_INDEX, rel1, rel2, rel3, rel4, rel5));
+        Assert.assertEquals("error loading data ",9, commit(ctx, REL_INDEX, rv1, rv2, rv3, rv4, rv5, rv6, rv7, rv8, rv9));
     }
 
 
     @AfterClass
     public static void after() {
-        ctx.removeCreated();
+        if(ctx!=null) Assert.assertEquals(14,ctx.removeCreated());
+
     }
 
     // STRING_VALUE, CONTENT, TITLE, DISPLAY_NAME, DESCRIPTION => Find lower and Upper

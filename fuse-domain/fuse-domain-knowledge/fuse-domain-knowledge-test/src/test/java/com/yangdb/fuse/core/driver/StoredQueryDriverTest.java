@@ -3,6 +3,7 @@ package com.yangdb.fuse.core.driver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Key;
 import com.google.inject.Provider;
+import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.FileBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
@@ -25,10 +26,7 @@ import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.StoreResourceInfo;
 import com.yangdb.fuse.model.results.*;
-import com.yangdb.fuse.model.transport.CreatePageRequest;
-import com.yangdb.fuse.model.transport.CreateQueryRequest;
-import com.yangdb.fuse.model.transport.ExecuteStoredQueryRequest;
-import com.yangdb.fuse.model.transport.PlanTraceOptions;
+import com.yangdb.fuse.model.transport.*;
 import com.yangdb.fuse.model.transport.cursor.CreateCsvCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCsvCursorRequest.CsvElement;
 import com.yangdb.fuse.model.transport.cursor.CreateCsvCursorRequest.ElementType;
@@ -36,9 +34,11 @@ import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
 import org.jooby.internal.RequestScope;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -55,11 +55,17 @@ import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDE
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.empty;
 import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.notEmpty;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.*;
 
 public class StoredQueryDriverTest extends BaseModuleInjectionTest {
     static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     static KnowledgeWriterContext ctx;
     static FileBuilder f1, f2;
+
+    @BeforeClass
+    public static void setupTest() throws Exception {
+//        Setup.setup();
+    }
 
     public void setupData(Client client, RawSchema schema) throws ParseException, JsonProcessingException {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -104,7 +110,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
 
         final Optional<QueryResourceInfo> resourceInfo = driver.create(new CreateQueryRequest("q10", "myStoredQuery", query)
                 .storageType(CreateQueryRequest.StorageType._stored)
-                .type(QueryMetadata.Type.parameterized));
+                .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
 
         final Optional<StoreResourceInfo> info = driver.getInfo();
@@ -136,8 +142,11 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
 
         final Optional<QueryResourceInfo> resourceInfo = driver.create(new CreateQueryRequest("q10", "myStoredQuery", query)
                 .storageType(CreateQueryRequest.StorageType._stored)
-                .type(QueryMetadata.Type.parameterized));
+                .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
+
+        //force indices refresh
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         final Optional<StoreResourceInfo> info = driver.getInfo();
         Assert.assertTrue(info.isPresent());
@@ -182,8 +191,10 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
 
         final Optional<QueryResourceInfo> resourceInfo = driver.create(new CreateQueryRequest("q10", "myStoredQuery", query)
                 .storageType(CreateQueryRequest.StorageType._stored)
-                .type(QueryMetadata.Type.parameterized));
+                .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
+        //force indices refresh
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         final Optional<StoreResourceInfo> info = driver.getInfo();
         Assert.assertTrue(info.isPresent());
@@ -324,7 +335,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         final Optional<QueryResourceInfo> resourceInfo = driver.create(
                 new CreateQueryRequest("q1", "myStoredQuery", query)
                         .storageType(CreateQueryRequest.StorageType._stored)
-                        .type(QueryMetadata.Type.parameterized));
+                        .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
@@ -374,7 +385,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
 
         final Optional<QueryResourceInfo> resourceInfo = driver.create(new CreateQueryRequest("q1", "myStoredQuery", query)
                 .storageType(CreateQueryRequest.StorageType._stored)
-                .type(QueryMetadata.Type.parameterized));
+                .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
@@ -411,7 +422,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
 
         final Optional<QueryResourceInfo> resourceInfo = driver.create(new CreateQueryRequest("q1", "myStoredQuery", query)
                 .storageType(CreateQueryRequest.StorageType._stored)
-                .type(QueryMetadata.Type.parameterized));
+                .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
@@ -455,7 +466,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
                         new CsvElement("A", "name", ElementType.Entity)
                 }).withHeaders(true).with(new CreatePageRequest()))
                 .storageType(CreateQueryRequest.StorageType._stored)
-                .type(QueryMetadata.Type.parameterized));
+                .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
@@ -504,7 +515,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
 
         final Optional<QueryResourceInfo> resourceInfo = driver.create(new CreateQueryRequest("q1", "myStoredQuery", query)
                 .storageType(CreateQueryRequest.StorageType._stored)
-                .type(QueryMetadata.Type.parameterized));
+                .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
@@ -559,7 +570,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
         final Optional<QueryResourceInfo> resourceInfo = driver.create(new CreateQueryRequest("q1", "myStoredQuery", query,
                 new CreateGraphCursorRequest(new CreatePageRequest()))
                 .storageType(CreateQueryRequest.StorageType._stored)
-                .type(QueryMetadata.Type.parameterized));
+                .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",
@@ -613,7 +624,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
 
         final Optional<QueryResourceInfo> resourceInfo = driver.create(new CreateQueryRequest("q1", "myStoredQuery", query)
                 .storageType(CreateQueryRequest.StorageType._stored)
-                .type(QueryMetadata.Type.parameterized));
+                .type(parameterized));
         Assert.assertTrue(resourceInfo.isPresent());
 
         Optional<QueryResourceInfo> info = driver.call(new ExecuteStoredQueryRequest("callQ1", "q1",

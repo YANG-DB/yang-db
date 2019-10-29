@@ -4,7 +4,7 @@ package com.yangdb.fuse.model.query.properties.constraint;
  * #%L
  * fuse-model
  * %%
- * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,11 +45,4 @@ public class QueryNamedParameter extends NamedParameter {
         return query;
     }
 
-    @Override
-    public String toString() {
-        return "Q.NamedParameter{" +
-                "name='" + getName() + '\'' +
-                "query='" + query + '\'' +
-                '}';
-    }
 }

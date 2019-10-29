@@ -1,6 +1,9 @@
 package com.yangdb.fuse.assembly.knowledge;
 
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
+import com.yangdb.fuse.core.driver.StoredQueryDriverTest;
+import com.yangdb.fuse.core.driver.UnionQueryDriverTest;
+import com.yangdb.test.BaseSuiteMarker;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -14,6 +17,7 @@ import org.junit.runners.Suite;
         //KnowledgeSimpleEntityWithRelationTests.class,
         //KnowledgeSimpleEntityWithFilterTests.class,
         //KnowledgeSimpleCdrWithCypherQueryTests.class,
+        KnowledgeInnerQueryWithRuntimeEvalE2ETests.class,
         KnowledgeEntityAndRelationWithCalculatedFieldTests.class,
         KnowledgeSimpleEntityWithFilterE2ETests.class,
         KnowledgeInnerQueryE2ETests.class,
@@ -30,10 +34,17 @@ import org.junit.runners.Suite;
         KnowledgeSimpleRelationAndRvalueWithFilterE2ETests.class,
         KnowledgeSimpleEntityRelationAndRvalueWithFilterE2ETests.class,
         KnowledgeSimpleEntityEvalueAndReferenceWithFilterE2ETests.class,
-        KnowledgeSimpleSomeTests.class
+        KnowledgeSimpleSomeTests.class,
+        KnowledgeSimpleEntityWithFilterTests.class,
+        KnowledgeSimpleEntityWithAnyDegreeOfRelationTests.class,
+        KnowledgeSimpleEntityWithRelationTests.class,
+        KnowledgeSimpleEvalueWithFilterE2ETests.class,
+
+        StoredQueryDriverTest.class,
+        UnionQueryDriverTest.class
 })
 
-public class KnowledgeSimpleTestSuite {
+public class KnowledgeSimpleTestSuite implements BaseSuiteMarker {
     public static KnowledgeWriterContext ctx;
 
     @BeforeClass
@@ -45,6 +56,9 @@ public class KnowledgeSimpleTestSuite {
     @AfterClass
     public static void tearDown() throws Exception {
         System.out.println("KnowledgeSimpleTestSuite - teardown");
-        Setup.cleanup();
+        Setup.cleanup(true,false);
     }
 }
+
+
+

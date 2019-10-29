@@ -32,7 +32,7 @@ import static com.yangdb.fuse.assembly.knowledge.Setup.manager;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder._rel;
@@ -50,7 +50,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
+//        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -118,13 +118,14 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
         e10.rel(rel5, "in");
 
         // Insert Entity and Reference entities to ES
-        Assert.assertEquals(20, commit(ctx, INDEX, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10));
-        Assert.assertEquals(5, commit(ctx, REL_INDEX, rel1, rel2, rel3, rel4, rel5));
+        Assert.assertEquals("error loading data ",20, commit(ctx, INDEX, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10));
+        Assert.assertEquals("error loading data ",5, commit(ctx, REL_INDEX, rel1, rel2, rel3, rel4, rel5));
     }
 
     @AfterClass
     public static void after() {
-        ctx.removeCreated();
+        if(ctx!=null) Assert.assertEquals(25,ctx.removeCreated());
+
     }
 
     // STRING_VALUE, CONTENT, TITLE, DISPLAY_NAME, DESCRIPTION => Find lower and Upper

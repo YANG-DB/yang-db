@@ -4,7 +4,7 @@ package com.yangdb.fuse.model.logical;
  * #%L
  * fuse-model
  * %%
- * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import com.yangdb.fuse.model.results.Property;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * //example
@@ -105,6 +106,11 @@ public class LogicalNode implements Vertex {
         return getProperties().getProperties();
     }
 
+    @JsonIgnore
+    public Object getProperty(String partition) {
+        return getProperties().properties.get(partition);
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName()+"{" +
@@ -115,14 +121,21 @@ public class LogicalNode implements Vertex {
                 '}';
     }
 
+    @JsonIgnore
     public LogicalNode withMetadata(Collection<Property> properties) {
         properties.forEach(p->this.metadata.addProperties(p.getpType(),p.getValue()));
         return this;
     }
 
+    @JsonIgnore
     public LogicalNode withProperty(String property, Object value) {
         properties.addProperties(property,value);
         return this;
+    }
+
+    @JsonIgnore
+    public Optional<Object> getPropertyValue(String name) {
+        return properties.properties.containsKey(name) ? Optional.of(properties.properties.get(name)) : Optional.empty();
     }
 
     public static class NodeMetadata {

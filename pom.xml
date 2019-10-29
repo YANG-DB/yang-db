@@ -18,7 +18,7 @@
     </mailingLists>
 
     <organization>
-        <name>The Fuse Graph Database Project</name>
+        <name>The YangDb Graph Database Project</name>
     </organization>
 
     <scm>
@@ -73,6 +73,9 @@
         <distr.dir>${project.basedir}/../../../distrib</distr.dir>
         <version.major>1</version.major>
         <version.minor>11</version.minor>
+
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
 
         <project.inceptionYear>2016</project.inceptionYear>
         <project.organization.name>yangdb</project.organization.name>
@@ -139,6 +142,8 @@
         <!-- tinkerpop -->
         <tinkerpop.version>3.2.5</tinkerpop.version>
 
+        <javax.annotation-api>1.3.2</javax.annotation-api>
+
         <!-- com.eaio.uuid -->
         <com.eaio.uuid.version>3.2</com.eaio.uuid.version>
 
@@ -184,6 +189,7 @@
         <hamcrest-all.version>1.3</hamcrest-all.version>
         <hamcrest.version>1.3</hamcrest.version>
         <hamcres-json.version>0.2</hamcres-json.version>
+        <test.containers.version>1.12.2</test.containers.version>
 
         <!-- jmx monitoring        -->
         <jolokia>1.6.2</jolokia>
@@ -254,6 +260,8 @@
                 <artifactId>fuse-geojson</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
+
+            <!-- Knowledge Deployment Assemblies   -->
             <dependency>
                 <groupId>com.yangdb</groupId>
                 <artifactId>fuse-domain-knowledge-ext</artifactId>
@@ -274,6 +282,30 @@
                 <artifactId>fuse-domain-knowledge-test</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
+
+            <!-- Dragons Deployment Assemblies   -->
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-dragons-ext</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-dragons-assembly</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-dragons-datagen</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-dragons-test</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+
+            <!-- Property Graph Deployment Assemblies   -->
 
             <!-- jmx monitoring    -->
             <dependency>
@@ -457,7 +489,6 @@
                 <version>1.6.0</version>
             </dependency>
             <!-- jooby -->
-
             <!-- elasticsearch -->
             <dependency>
                 <groupId>org.elasticsearch</groupId>
@@ -510,6 +541,15 @@
                 <version>${com.eaio.uuid.version}</version>
             </dependency>
             <!-- com.eaio.uuid -->
+
+            <!--javax annotation-->
+            <!-- enable support for  'java.lang.NoClassDefFoundError: javax/xml/bind/JAXBException'-->
+
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation-api}</version>
+            </dependency>
 
             <!-- opencsv -->
             <dependency>
@@ -590,7 +630,12 @@
             <!-- metrics -->
 
             <!-- test -->
-            <!-- fuse -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${test.containers.version}</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>com.yangdb</groupId>
                 <artifactId>fuse-test-framework</artifactId>
@@ -718,6 +763,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -786,8 +832,11 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <compilerArgs>
+<!--                            <arg>&#45;&#45;enable-preview</arg>-->
+                        </compilerArgs>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -828,6 +877,9 @@
                     <version>${coveralls.maven.plugin}</version>
                     <configuration>
                         <repoToken>4rxwIVZN1Pn7Bpb0LqiTN0PpSfoZvywKS</repoToken>
+                        <jacocoReports>
+                            <jacocoReport>${project.build.directory}/jacoco-ut/jacoco.xml</jacocoReport>
+                        </jacocoReports>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -866,7 +918,7 @@
                                 <!-- Sets the path to the file which contains the execution data. -->
                                 <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
                                 <!-- Sets the output directory for the code coverage report. -->
-                                <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                                <outputDirectory>${project.build.directory}/jacoco-ut</outputDirectory>
                             </configuration>
                         </execution>
                     </executions>

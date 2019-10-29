@@ -4,7 +4,7 @@ package com.yangdb.fuse.services.controllers;
  * #%L
  * fuse-service
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ public class StandardQueryController implements QueryController<QueryController,
     @Override
     public ContentResponse<ValidationResult> validate(Query query) {
         return Builder.<ValidationResult>builder(CREATED, SERVER_ERROR )
-                .data(Optional.of(driver().validateQuery(query)))
+                .data(Optional.of(driver().validateAndRewriteQuery(query)))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }

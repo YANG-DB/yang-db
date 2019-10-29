@@ -20,8 +20,8 @@ package com.yangdb.fuse.dispatcher.ontology;
  * #L%
  */
 
-
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.transport.ContentResponse;
 
 import java.util.Collection;
 import java.util.Optional;

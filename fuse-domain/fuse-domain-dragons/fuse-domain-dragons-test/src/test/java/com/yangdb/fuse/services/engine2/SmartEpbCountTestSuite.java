@@ -2,9 +2,10 @@ package com.yangdb.fuse.services.engine2;
 
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
-import com.yangdb.fuse.services.engine2.data.SmartEpbCountTests;
+import com.yangdb.fuse.services.engine2.data.SmartEpbCountIT;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
+import com.yangdb.test.BaseSuiteMarker;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -19,16 +20,16 @@ import java.nio.file.Paths;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        SmartEpbCountTests.class
+        SmartEpbCountIT.class
 })
-public class SmartEpbCountTestSuite {
+public class SmartEpbCountTestSuite implements BaseSuiteMarker {
 
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("JoinE2ETestSuite start");
         start = System.currentTimeMillis();
 
-        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("Dragons");
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.M2.discrete.count.conf").toString()), "m2.smartEpb");

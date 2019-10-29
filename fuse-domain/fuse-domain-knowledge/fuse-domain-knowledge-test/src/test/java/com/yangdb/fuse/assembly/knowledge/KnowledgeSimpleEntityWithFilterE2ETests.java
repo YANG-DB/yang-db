@@ -19,7 +19,7 @@ import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.Filter.filter;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KnowledgeQueryBuilder.start;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 
 
@@ -32,7 +32,7 @@ public class KnowledgeSimpleEntityWithFilterE2ETests {
     @BeforeClass
     public static void setup() throws Exception
     {
-        Setup.setup();
+//        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -56,14 +56,14 @@ public class KnowledgeSimpleEntityWithFilterE2ETests {
         e10 = _e(ctx.nextLogicalId()).cat("toyota").ctx("context10").lastUpdateUser("Kobi").creationUser("Kobi Shaul")
                 .creationTime(sdf.parse("2018-05-12 13:05:13.000"));
         // Insert entities to ES
-        Assert.assertEquals(10, commit(ctx, INDEX, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10));
+        Assert.assertEquals("error loading data ",10, commit(ctx, INDEX, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10));
     }
 
 
     @AfterClass
     public static void after() {
-        ctx.removeCreated();
-    }
+        if(ctx!=null) Assert.assertEquals(10,ctx.removeCreated());
+   }
 
 
     // Start Tests:

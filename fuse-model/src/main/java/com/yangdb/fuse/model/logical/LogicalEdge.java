@@ -4,7 +4,7 @@ package com.yangdb.fuse.model.logical;
  * #%L
  * fuse-model
  * %%
- * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,6 +148,11 @@ public class LogicalEdge implements Edge {
     @Override
     public String target() {
         return getTarget();
+    }
+
+    @JsonIgnore
+    public Object getProperty(String partition) {
+        return getProperties().properties.get(partition);
     }
 
     public static class EdgeMetadata {

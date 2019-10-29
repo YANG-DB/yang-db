@@ -1,9 +1,7 @@
 package com.yangdb.fuse.services;
 
-import com.yangdb.fuse.services.engine2.data.CsvCursorTests;
-import com.yangdb.fuse.services.engine2.data.JoinE2EEpbMockTests;
-import com.yangdb.fuse.services.engine2.data.JoinE2ETests;
-import com.yangdb.fuse.services.engine2.data.SmartEpbCountTests;
+import com.yangdb.fuse.services.engine2.data.*;
+import com.yangdb.fuse.services.mockEngine.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,13 +19,13 @@ public class TestsConfiguration {
         this.testClassesToRun = new HashSet<>();
 
         //mockEngine tests
-        this.testClassesToRun.add(com.yangdb.fuse.services.mockEngine.ApiDescriptorTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.mockEngine.CatalogTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.mockEngine.CursorTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.mockEngine.DataTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.mockEngine.PageTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.mockEngine.PlanTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.mockEngine.QueryTest.class);
+        this.testClassesToRun.add(ApiDescriptorIT.class);
+        this.testClassesToRun.add(CatalogIT.class);
+        this.testClassesToRun.add(CursorIT.class);
+        this.testClassesToRun.add(DataIT.class);
+        this.testClassesToRun.add(PageIT.class);
+        this.testClassesToRun.add(PlanIT.class);
+        this.testClassesToRun.add(QueryIT.class);
         //this.testClassesToRun.add(com.yangdb.fuse.services.mockEngine.SearchTest.class);
 
         //engine1 tests
@@ -37,21 +35,21 @@ public class TestsConfiguration {
         //this.testClassesToRun.add(com.yangdb.fuse.services.engine1.QueryTest.class);
 
         //engine2 tests
-        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.CursorTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.PageTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.QueryTest.class);
+        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.CursorIT.class);
+        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.PageIT.class);
+        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.QueryIT.class);
 
-        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.data.PromiseEdgeTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.data.SingleEntityTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.data.DfsRedundantEntityRelationEntityTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest.class);
-        this.testClassesToRun.add(CsvCursorTests.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.data.SmartEpbRedundantEntityRelationEntityTest.class);
-        this.testClassesToRun.add(com.yangdb.fuse.services.engine2.data.SmartEpbM2RedundantEntityRelationEntityTest.class);
+        this.testClassesToRun.add(PromiseEdgeIT.class);
+        this.testClassesToRun.add(SingleEntityIT.class);
+        this.testClassesToRun.add(DfsRedundantEntityRelationEntityIT.class);
+        this.testClassesToRun.add(DfsNonRedundantEntityRelationEntityIT.class);
+        this.testClassesToRun.add(CsvCursorIT.class);
+        this.testClassesToRun.add(SmartEpbRedundantEntityRelationEntityIT.class);
+        this.testClassesToRun.add(SmartEpbM2RedundantEntityRelationEntityIT.class);
 
-        this.testClassesToRun.add(JoinE2EEpbMockTests.class);
-        this.testClassesToRun.add(JoinE2ETests.class);
-        this.testClassesToRun.add(SmartEpbCountTests.class);
+        this.testClassesToRun.add(JoinE2EEpbMockIT.class);
+        this.testClassesToRun.add(JoinE2EIT.class);
+        this.testClassesToRun.add(SmartEpbCountIT.class);
     }
     //endregion
 

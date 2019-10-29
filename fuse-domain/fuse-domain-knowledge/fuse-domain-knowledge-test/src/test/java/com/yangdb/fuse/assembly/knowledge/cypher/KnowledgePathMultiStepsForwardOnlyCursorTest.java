@@ -4,6 +4,7 @@ import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
+import com.yangdb.fuse.model.resourceInfo.ResultResourceInfo;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateForwardOnlyPathTraversalCursorRequest;
@@ -17,8 +18,8 @@ import java.text.SimpleDateFormat;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.nextPage;
-import static com.yangdb.fuse.client.FuseClient.countGraphElements;
+import static com.yangdb.fuse.client.FuseClientSupport.countGraphElements;
+import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 
 public class KnowledgePathMultiStepsForwardOnlyCursorTest {
 
@@ -28,16 +29,10 @@ public class KnowledgePathMultiStepsForwardOnlyCursorTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true);
-        //load data
-        loadData();
+//        Setup.setup(true);
+//        loadData();
     }
 
-    private static void loadData() throws IOException {
-        URL resource = Thread.currentThread().getContextClassLoader().getResource("./data/logical/multi_steps.json");
-        QueryResourceInfo info = fuseClient.loadData(KNOWLEDGE, resource);
-        Assert.assertNotNull(info);
-    }
 
 
     @Test
@@ -68,7 +63,7 @@ public class KnowledgePathMultiStepsForwardOnlyCursorTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 1000);
         }
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(22, totalGraphSize);
+        Assert.assertEquals(33, totalGraphSize);
     }
     @Test
     public void testFetchEntityWithRelation5StepsLogicalResultPathSpecificName() throws IOException, InterruptedException {
@@ -99,7 +94,7 @@ public class KnowledgePathMultiStepsForwardOnlyCursorTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 1000);
         }
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(13, totalGraphSize);
+        Assert.assertEquals(52, totalGraphSize);
     }
     @Test
     public void testFetchEntityWithRelation6StepsLogicalResultPathSpecificName() throws IOException, InterruptedException {
@@ -131,7 +126,7 @@ public class KnowledgePathMultiStepsForwardOnlyCursorTest {
             pageData = nextPage(fuseClient, cursorResourceInfo, 1000);
         }
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
-        Assert.assertEquals(0, totalGraphSize);
+        Assert.assertEquals(30, totalGraphSize);
     }
 
 

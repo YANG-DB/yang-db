@@ -6,12 +6,12 @@ package com.yangdb.fuse.services.engine2;
 
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
-import com.yangdb.fuse.services.FuseRunner;
-import com.yangdb.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest;
-import com.yangdb.fuse.services.engine2.data.PromiseEdgeTest;
-import com.yangdb.fuse.services.engine2.data.SingleEntityTest;
+import com.yangdb.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityIT;
+import com.yangdb.fuse.services.engine2.data.PromiseEdgeIT;
+import com.yangdb.fuse.services.engine2.data.SingleEntityIT;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.yangdb.test.BaseSuiteMarker;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -23,26 +23,26 @@ import java.nio.file.Paths;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        CursorTest.class,
-        PageTest.class,
-        QueryTest.class,
-        SingleEntityTest.class,
-        PromiseEdgeTest.class,
-        DfsNonRedundantEntityRelationEntityTest.class
+        CursorIT.class,
+        PageIT.class,
+        QueryIT.class,
+        SingleEntityIT.class,
+        PromiseEdgeIT.class,
+        DfsNonRedundantEntityRelationEntityIT.class
 })
-public class NonRedundantTestSuite {
+public class NonRedundantTestSuite implements BaseSuiteMarker {
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("NonRedundantTestSuite start");
         start = System.currentTimeMillis();
 
-        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("Dragons");
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.conf").toString()),
                         "m1.dfs.non_redundant");
 
-        new FuseRunner().run(app, new FuseRunner.Options(Paths.get("src", "test", "conf", "logback.xml").toString(), false));
+        app.start("server.join=false");
     }
 
     @AfterClass
@@ -53,6 +53,7 @@ public class NonRedundantTestSuite {
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println("NonRedundantTestSuite elapsed: " + elapsed);
+
     }
 
     //region Fields

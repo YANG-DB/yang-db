@@ -4,7 +4,7 @@ package com.yangdb.fuse.assembly.knowledge;
  * #%L
  * fuse-domain-knowledge-ext
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import com.yangdb.fuse.assembly.knowledge.cursor.KnowledgeGraphHierarchyTraversa
 import com.yangdb.fuse.assembly.knowledge.cursor.KnowledgeLogicalGraphCursor;
 import com.yangdb.fuse.assembly.knowledge.parser.FolderBasedTypeProvider;
 import com.yangdb.fuse.assembly.knowledge.parser.model.BusinessTypesProvider;
+import com.yangdb.fuse.core.driver.BasicIdGenerator;
 import com.yangdb.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
@@ -48,8 +49,8 @@ public class KnowledgeModule extends ModuleBase {
     @Override
     protected void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         String indexName = conf.getString(conf.getString("assembly") + ".idGenerator_indexName");
-        binder.bindConstant().annotatedWith(named(KnowledgeIdGenerator.indexNameParameter)).to(indexName);
-        binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>() {}).to(KnowledgeIdGenerator.class).asEagerSingleton();
+        binder.bindConstant().annotatedWith(named(BasicIdGenerator.indexNameParameter)).to(indexName);
+        binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>() {}).to(BasicIdGenerator.class).asEagerSingleton();
 
         Multibinder<CompositeCursorFactory.Binding> bindingMultibinder = Multibinder.newSetBinder(binder, CompositeCursorFactory.Binding.class);
         //KnowledgeGraphHierarchyCursor

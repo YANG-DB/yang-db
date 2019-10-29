@@ -170,6 +170,11 @@ public class SmartEpbShortPathTests {
                     public Collection<Ontology> getAll() {
                         return Collections.singleton(ont.get());
                     }
+
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                return ontology;
+             }
                 }));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
@@ -193,6 +198,11 @@ public class SmartEpbShortPathTests {
                     public Collection<Ontology> getAll() {
                         return Collections.singleton(ont.get());
                     }
+
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                return ontology;
+             }
                 }, ont -> graphElementSchemaProvider),
                 pruneStrategy,
                 pruneStrategy,

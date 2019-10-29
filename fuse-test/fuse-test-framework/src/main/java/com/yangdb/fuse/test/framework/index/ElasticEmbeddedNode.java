@@ -4,7 +4,7 @@ package com.yangdb.fuse.test.framework.index;
  * #%L
  * fuse-test-framework
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,9 @@ import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,6 +46,11 @@ import static com.yangdb.fuse.test.framework.TestUtil.deleteFolder;
  */
 public class ElasticEmbeddedNode implements AutoCloseable {
 
+    static {
+        //see https://github.com/testcontainers/testcontainers-java/issues/1009 issue with netty & E/S
+        System.setProperty("es.set.netty.runtime.available.processors", "false");
+    }
+
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
         public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
@@ -52,6 +59,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
         @Override
         protected void registerDerivedNodeNameWithLogger(String nodeName) {
+            LogConfigurator.loadLog4jPlugins();
             LogConfigurator.setNodeName(nodeName);
         }
     }
@@ -112,8 +120,10 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     public static TransportClient getClient(String nodeName,int httpTransportPort) {
         if (client == null) {
             try {
+                System.out.println("Setting client "+nodeName);
                 Settings settings = Settings.builder()
                         .put("cluster.name", nodeName)
+                        .put("node.name", nodeName)
                         .build();
                 client = new PreBuiltTransportClient(settings)
                         .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
@@ -127,7 +137,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        System.out.println("Closing");
+        System.out.println("Closing E/S embedded");
         closeClient();
         if (this.node != null) {
             this.node.close();
@@ -154,6 +164,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
         Settings settings = Settings.builder()
                 .put("cluster.name", nodeName)
+                .put("node.name", nodeName)
                 .put("path.home", esWorkingDir)
                 .put("path.data", esWorkingDir)
                 .put("path.logs", esWorkingDir)
@@ -165,6 +176,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("transport.tcp.port", httpTransportPort)
                 .build();
 
+        System.out.println("Setting E/S embedded "+nodeName);
         this.node = new PluginConfigurableNode(settings, Arrays.asList(
                 Netty4Plugin.class,
 //                CommonScriptPlugin.class,
@@ -172,6 +184,18 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         ));
 
         this.node = this.node.start();
+        System.out.println("Started E/S Embedded");
+
     }
     //endregion
+
+    public static boolean isAvailable(int portNr) {
+        boolean portFree;
+        try (ServerSocket ignored = new ServerSocket(portNr)) {
+            portFree = true;
+        } catch (IOException e) {
+            portFree = false;
+        }
+        return portFree;
+    }
 }

@@ -22,7 +22,7 @@ package com.yangdb.fuse.client.export.graphml;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ package com.yangdb.fuse.client.export.graphml;
  * limitations under the License.
  * #L%
  */
+
+
 
 import com.yangdb.fuse.client.export.GraphWriter;
 import com.yangdb.fuse.model.logical.Edge;

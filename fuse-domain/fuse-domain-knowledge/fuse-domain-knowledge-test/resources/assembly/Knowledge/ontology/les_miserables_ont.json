@@ -1,0 +1,74 @@
+  {
+  "ont": "LesMiserables",
+  "entityTypes": [
+    {
+      "eType": "Person",
+      "name": "Person",
+      "metadata": [],
+      "properties": [
+        "id",
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "name"
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "rType": "knows",
+      "name": "knows",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Person"
+        }
+      ],
+      "metadata": [],
+      "properties": [
+        "id",
+        "startDate"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": "id",
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "pType": "firstName",
+      "name": "firstName",
+      "type": "string"
+    },
+    {
+      "pType": "lastName",
+      "name": "lastName",
+      "type": "string"
+    },
+    {
+      "pType": "gender",
+      "name": "gender",
+      "type": "string"
+    },
+    {
+      "pType": "birthDate",
+      "name": "birthDate",
+      "type": "date"
+    },
+    {
+      "pType": "deathDate",
+      "name": "deathDate",
+      "type": "string"
+    },
+    {
+      "pType": "name",
+      "name": "name",
+      "type": "string"
+    }
+  ]
+  }

@@ -27,7 +27,7 @@ import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.knowledge.Setup.manager;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.ValueBuilder._v;
 
@@ -42,7 +42,7 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
     @BeforeClass
     public static void setup() throws Exception
     {
-        Setup.setup();
+//        Setup.setup();
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Evalue entities for tests
@@ -91,9 +91,10 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
 
 
     @AfterClass
+
     public static void after() {
-        ctx.removeCreated();
-    }
+        if(ctx!=null) Assert.assertEquals(10,ctx.removeCreated());
+}
 
 
     // Start Tests:

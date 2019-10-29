@@ -4,7 +4,7 @@ package com.yangdb.fuse.assembly.knowledge.load.builder;
  * #%L
  * fuse-domain-knowledge-ext
  * %%
- * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 
 
 public class RelationBuilder extends Metadata {
-    public static final String REL_INDEX = "rel0";
 
     public static final String type = "Relation";
     public static String physicalType = "relation";

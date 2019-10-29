@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchemaShort;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
-import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;

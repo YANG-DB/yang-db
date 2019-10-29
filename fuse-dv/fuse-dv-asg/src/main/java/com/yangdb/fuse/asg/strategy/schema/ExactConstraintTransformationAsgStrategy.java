@@ -4,7 +4,7 @@ package com.yangdb.fuse.asg.strategy.schema;
  * #%L
  * fuse-dv-asg
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,7 +122,7 @@ public class ExactConstraintTransformationAsgStrategy implements AsgStrategy {
                         exactIndexingSchema.get().getName(),
                         eProp.getCon(),
                         ((RankingProp) eProp).getBoost()));
-            }else {
+            }else if(eProp.isConstraint()){
                 ePropGroup.getProps().add(new SchematicEProp(
                         0,
                         eProp.getpType(),

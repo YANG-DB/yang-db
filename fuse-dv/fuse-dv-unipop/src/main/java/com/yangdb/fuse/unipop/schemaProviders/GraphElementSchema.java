@@ -4,7 +4,7 @@ package com.yangdb.fuse.unipop.schemaProviders;
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package com.yangdb.fuse.unipop.schemaProviders;
  * limitations under the License.
  * #L%
  */
-
 
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;

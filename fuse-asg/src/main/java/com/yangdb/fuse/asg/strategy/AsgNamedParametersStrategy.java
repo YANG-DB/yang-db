@@ -4,14 +4,14 @@ package com.yangdb.fuse.asg.strategy;
  * #%L
  * fuse-asg
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,8 @@ package com.yangdb.fuse.asg.strategy;
  * limitations under the License.
  * #L%
  */
+
+
 
 import com.googlecode.aviator.AviatorEvaluator;
 import com.yangdb.fuse.asg.util.OntologyPropertyTypeFactory;
@@ -38,6 +40,7 @@ import com.yangdb.fuse.model.query.quant.QuantType;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.yangdb.fuse.model.asgQuery.AsgQueryUtil.getEprops;
 import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.*;
@@ -72,6 +75,7 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
     protected void manageParameterizedConstraint(List<NamedParameter> params, EProp eProp) {
         ParameterizedConstraint expr = (ParameterizedConstraint) eProp.getCon();
         String name = expr.getParameter().getName();
+
         Optional<NamedParameter> parameter = params.stream().filter(p -> p.getName().equals(name)).findAny();
         //in case of singular operator and list of operands - use union of conditions for each query pattern
         if (isArrayOrIterable(parameter.get().getValue()) && isForEachJoin(expr)) {
@@ -106,7 +110,10 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
             EPropGroup group = new EPropGroup(eProp.geteNum(), eProps);
             ePropAsg.get().seteBase(group);
         } else {
-            parameter.ifPresent(namedParameter -> eProp.setCon(Constraint.of(eProp.getCon().getOp(), parseValue(eProp, eProp.getCon().getExpr(), namedParameter), eProp.getCon().getiType())));
+            parameter.ifPresent(namedParameter -> eProp.setCon(
+                    Constraint.of(eProp.getCon().getOp(),
+                            parseValue(eProp, eProp.getCon().getExpr(), namedParameter),
+                            eProp.getCon().getiType())));
         }
     }
 
@@ -117,11 +124,21 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
             return namedParameter.getValue();
 
         if (isArrayOrIterable(exp)) {
-            //parse expression (function?) according to operator and assign named param value
-            return ((Collection) exp).stream()
+            //parse & evaluate expression (function?) according to operator and assign named param value
+            Collection eValuatedParams = (Collection) ((Collection) exp).stream()
                     .filter(e -> exp.toString().contains($VAL))
                     .map(e -> AviatorEvaluator.execute(e.toString(),
                             singletonMap($VAL, propertyTypeFactory.supply(property.get(), namedParameter.getValue()))))
+                    .collect(Collectors.toList());
+
+            //get all other non evaluated params
+            Collection nonEvaluatedParams = (Collection) ((Collection) exp).stream()
+                    .filter(e -> !exp.toString().contains($VAL))
+                    .collect(Collectors.toList());
+
+            return Stream.concat(
+                    eValuatedParams.stream(),
+                    nonEvaluatedParams.stream())
                     .collect(Collectors.toList());
         } else if (exp.toString().contains($VAL)) {
             return AviatorEvaluator.execute(exp.toString(),
@@ -137,8 +154,14 @@ public class AsgNamedParametersStrategy implements AsgStrategy {
         return isSingleElementOp(expr.getOp());
     }
 
+    /**
+     *
+     * @param params
+     * @param eProp
+     */
     protected void manageOptionalUnaryParameterizedConstraint(List<NamedParameter> params, EProp eProp) {
-        String name = ((Map<String, Object>) eProp.getCon().getExpr()).values().iterator().next().toString();
+        NamedParameter namedParameter = ((OptionalUnaryParameterizedConstraint) eProp.getCon()).getParameter();
+        String name = namedParameter.getName();
         Optional<NamedParameter> parameter = params.stream().filter(p -> p.getName().equals(name)).findAny();
         if (parameter.isPresent()) {
             final Optional<ConstraintOp> optional = ((OptionalUnaryParameterizedConstraint) eProp.getCon()).getOperations().stream()

@@ -61,6 +61,12 @@
             <scope>test</scope>
         </dependency>
         <!-- tests -->
+
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

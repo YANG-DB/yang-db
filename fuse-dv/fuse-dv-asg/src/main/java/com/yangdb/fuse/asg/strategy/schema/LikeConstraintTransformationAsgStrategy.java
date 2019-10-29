@@ -4,7 +4,7 @@ package com.yangdb.fuse.asg.strategy.schema;
  * #%L
  * fuse-dv-asg
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ public class LikeConstraintTransformationAsgStrategy implements AsgStrategy, Asg
 
         for (EProp eProp : new ArrayList<>(ePropGroupAsgEBase.geteBase().getProps())) {
 
-            if (eProp.getCon() == null || !eProp.getCon().getOp().equals(ConstraintOp.like)) {
+            if (!eProp.isConstraint() || !eProp.getCon().getOp().equals(ConstraintOp.like)) {
                 continue;
             }
 

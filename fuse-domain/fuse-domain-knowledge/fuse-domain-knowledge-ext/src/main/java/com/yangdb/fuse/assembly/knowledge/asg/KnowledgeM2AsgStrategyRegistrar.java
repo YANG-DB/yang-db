@@ -4,7 +4,7 @@ package com.yangdb.fuse.assembly.knowledge.asg;
  * #%L
  * fuse-domain-knowledge-ext
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
     @Override
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
-                new KnowledgeLogicalEntityGraphTranslatorStrategy(this.ontologyProvider,"Entity","Evalue", EEntityBase.class),
+                new KnowledgeLogicalEntityGraphTranslatorStrategy(this.ontologyProvider, EEntityBase.class),
                 new AsgNamedParametersStrategy(),
                 new RelationPatternRangeAsgStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),

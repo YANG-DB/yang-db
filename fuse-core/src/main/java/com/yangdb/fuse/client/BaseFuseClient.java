@@ -4,7 +4,7 @@ package com.yangdb.fuse.client;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ package com.yangdb.fuse.client;
  * #L%
  */
 
+
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -32,10 +34,7 @@ import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryMetadata;
-import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
-import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
-import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
-import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
+import com.yangdb.fuse.model.resourceInfo.*;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.Entity;
 import com.yangdb.fuse.model.results.QueryResultBase;
@@ -90,36 +89,41 @@ public class BaseFuseClient implements FuseClient {
         return this.objectMapper.readValue(unwrap(getRequest(this.fuseUrl + "/idgen/" + name + "?numIds=" + numIds)), Map.class);
     }
 
-    private QueryResourceInfo loadData(String ontology,String resourceURl, LogicalGraphModel root) throws IOException {
+    private ResultResourceInfo loadData(String ontology,String resourceURl, LogicalGraphModel root) throws IOException {
         // URL:/fuse/load/ontology/:id/load
-        String result = unwrap(postRequest(resourceURl, root));
-        return new QueryResourceInfo(QueryMetadata.Type.concrete, resourceURl, ontology, result);
+        return new ResultResourceInfo<>(resourceURl, ontology, unwrap(postRequest(resourceURl, root)));
     }
 
 
     @Override
-    public QueryResourceInfo upsertData(String ontology, URL resource) throws IOException {
+    public ResultResourceInfo upsertData(String ontology, URL resource) throws IOException {
         return loadData(ontology,String.format("%s/load/ontology/%s/load?directive=%s", this.fuseUrl, ontology,"UPSERT"),
                 objectMapper.readValue(resource,LogicalGraphModel.class));
     }
 
     @Override
-    public QueryResourceInfo loadData(String ontology, URL resource) throws IOException {
+    public ResultResourceInfo loadData(String ontology, LogicalGraphModel model) throws IOException {
+        String resourceUrl = String.format("%s/load/ontology/%s/load?directive=%s", this.fuseUrl, ontology, "INSERT");
+        return new ResultResourceInfo<>(resourceUrl, ontology, unwrap(postRequest(resourceUrl,model)));
+    }
+
+    @Override
+    public ResultResourceInfo loadData(String ontology, URL resource) throws IOException {
         return loadData(ontology,String.format("%s/load/ontology/%s/load?directive=%s", this.fuseUrl, ontology,"INSERT"),
                 objectMapper.readValue(resource,LogicalGraphModel.class));
     }
 
     @Override
-    public QueryResourceInfo uploadFile(String ontology, URL resourceFile) throws URISyntaxException {
+    public ResultResourceInfo uploadFile(String ontology, URL resourceFile) throws URISyntaxException {
         return uploadFile(ontology, resourceFile, String.format("%s/load/ontology/%s/upload?directive=%s", this.fuseUrl, ontology,"INSERT"));
     }
 
     @Override
-    public QueryResourceInfo upsertFile(String ontology, URL resourceFile) throws IOException, URISyntaxException {
+    public ResultResourceInfo upsertFile(String ontology, URL resourceFile) throws IOException, URISyntaxException {
         return uploadFile(ontology, resourceFile, String.format("%s/load/ontology/%s/upload?directive=%s", this.fuseUrl, ontology,"UPSERT"));
     }
 
-    private QueryResourceInfo uploadFile(String ontology, URL resourceFile, String resourceURl) throws URISyntaxException {
+    private ResultResourceInfo uploadFile(String ontology, URL resourceFile, String resourceURl) throws URISyntaxException {
         final File file = new File(resourceFile.getFile());
         final URI uri = resourceFile.toURI();
 
@@ -132,7 +136,7 @@ public class BaseFuseClient implements FuseClient {
                 .thenReturn()
                 .print();
 
-        return new QueryResourceInfo(QueryMetadata.Type.concrete, resourceURl,ontology,result);
+        return new ResultResourceInfo<>(resourceURl, ontology, result);
     }
 
     @Override
@@ -194,13 +198,13 @@ public class BaseFuseClient implements FuseClient {
     }
 
     @Override
-    public String initIndices(String catalogStoreUrl, String ontology) {
-        return getRequest(catalogStoreUrl+"/"+ontology + "/init");
+    public String initIndices(String ontology) {
+        return getRequest(String.format("%s/load/ontology/%s/init",this.fuseUrl, ontology));
     }
 
     @Override
-    public String dropIndices(String catalogStoreUrl, String ontology) {
-        return getRequest(catalogStoreUrl+"/"+ontology + "/drop");
+    public String dropIndices(String ontology) {
+        return getRequest(String.format("%s/load/ontology/%s/drop",this.fuseUrl, ontology));
     }
 
     private Map<String, Class<? extends CreateCursorRequest>> getCursorBindings() throws IOException {

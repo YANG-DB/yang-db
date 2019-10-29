@@ -4,7 +4,7 @@ package com.yangdb.fuse.model.transport;
  * #%L
  * fuse-model
  * %%
- * Copyright (C) 2016 - 2018 The Fuse Graph Database Project
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,8 @@ public interface CreateQueryRequestMetadata<T> {
 
     StorageType getStorageType();
 
+    QueryType getQueryType();
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     CreateCursorRequest getCreateCursorRequest();
 
@@ -43,8 +45,16 @@ public interface CreateQueryRequestMetadata<T> {
 
     PlanTraceOptions getPlanTraceOptions();
 
-        enum StorageType {
+    enum StorageType {
         _stored,
         _volatile;
     }
+
+    enum QueryType {
+        concrete,
+        parameterized
+
+
+    }
 }
+

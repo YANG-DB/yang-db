@@ -2,9 +2,9 @@ package com.yangdb.fuse.ext.driver;
 
 /*-
  * #%L
- * fuse-dv-core
+ * fuse-domain-knowledge-ext
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

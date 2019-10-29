@@ -4,7 +4,7 @@ package com.yangdb.fuse.unipop.controller;
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,11 +105,11 @@ public class ElasticGraphConfiguration extends BaseConfiguration {
         super.addProperty(ELASTIC_GRAPH_INDEX_NAME, value);
     }
 
-    public GraphElementSchemaProviderFactory getElasticGraphSchemaProviderFactory() {
-        return (GraphElementSchemaProviderFactory)super.getProperty(ELASTIC_GRAPH_SCHEMA_PROVIDER_FACTORY);
+    public UniGraphElementSchemaProviderFactory getElasticGraphSchemaProviderFactory() {
+        return (UniGraphElementSchemaProviderFactory)super.getProperty(ELASTIC_GRAPH_SCHEMA_PROVIDER_FACTORY);
     }
 
-    public void setElasticGraphSchemaProviderFactory(GraphElementSchemaProviderFactory value) {
+    public void setElasticGraphSchemaProviderFactory(UniGraphElementSchemaProviderFactory value) {
         super.addProperty(ELASTIC_GRAPH_SCHEMA_PROVIDER_FACTORY, value);
     }
 

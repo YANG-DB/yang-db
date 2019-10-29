@@ -4,7 +4,7 @@ package com.yangdb.fuse.assembly.knowledge;
  * #%L
  * fuse-domain-knowledge-ext
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,42 +46,43 @@ import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequ
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.xcontent.XContentType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;
+import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.*;
 
 /**
  * Created by lior.perry on 2/11/2018.
  */
 public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
-    private static final Logger logger = LoggerFactory.getLogger(KnowledgeDataLoader.class);
+    public static final String RELATIONS = "Relations";
+    public static final String ENTITIES = "Entities";
+    public static final String E_VALUES = "eValues";
+    public static final String R_VALUES = "rValues";
+
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+    static {
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
 
     private Client client;
-    private SimpleDateFormat sdf;
     private RawSchema schema;
     private KnowledgeTransformer transformer;
     private ObjectMapper mapper;
 
     @Inject
-    public KnowledgeDataLoader(Config config, Client client, RawSchema schema, OntologyTransformerProvider transformerProvider, KnowledgeIdGenerator idGenerator) {
+    public KnowledgeDataLoader(Config config, Client client, RawSchema schema, OntologyTransformerProvider transformerProvider, IdGeneratorDriver<Range> idGenerator) {
         this.schema = schema;
         this.mapper = new ObjectMapper();
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         //load knowledge transformer
         final Optional<OntologyTransformer> assembly = transformerProvider.transformer(config.getString("assembly"));
         if (!assembly.isPresent())
@@ -91,40 +92,14 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     }
 
 
+    @Override
     public long init() throws IOException {
-        String workingDir = System.getProperty("user.dir");
-        File templates = Paths.get(workingDir, "indexTemplates").toFile();
-        File[] templateFiles = templates.listFiles();
-        if (templateFiles != null) {
-            for (File templateFile : templateFiles) {
-                String templateName = FilenameUtils.getBaseName(templateFile.getName());
-                String template = FileUtils.readFileToString(templateFile, "utf-8");
-                if (!client.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
-                    final AcknowledgedResponse acknowledgedResponse = client.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet(1500);
-                    if (!acknowledgedResponse.isAcknowledged()) return -1;
-                }
-                final AcknowledgedResponse acknowledgedResponse = client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet(1500);
-                if (!acknowledgedResponse.isAcknowledged()) return -1;
-            }
-        }
-
-        Iterable<String> allIndices = getIndices();
-
-        Stream.ofAll(allIndices)
-                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
-                .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-        Stream.ofAll(allIndices).forEach(index -> client.admin().indices().create(new CreateIndexRequest(index)).actionGet());
-
-        return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
+        return DataLoaderUtils.init(client,schema);
     }
 
     @Override
     public long drop() throws IOException {
-        Iterable<String> indices = getIndices();
-        Stream.ofAll(indices)
-                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
-                .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-        return Stream.ofAll(indices).count(s -> !s.isEmpty());
+        return DataLoaderUtils.drop(client,schema);
     }
 
     /**
@@ -137,12 +112,12 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     public LoadResponse<String, FuseError> load(LogicalGraphModel root, Directive directive) throws JsonProcessingException {
         final KnowledgeContext context = transformer.transform(root, directive);
         List<String> success = new ArrayList<>();
-        success.add("Entities:"+context.getEntities().size());
-        success.add("Relations:"+context.getRelations().size());
-        success.add("eValues:"+context.geteValues().size());
-        success.add("rValues:"+context.getrValues().size());
+        success.add(ENTITIES + ":" +context.getEntities().size());
+        success.add(RELATIONS + ":" +context.getRelations().size());
+        success.add(E_VALUES + ":" +context.geteValues().size());
+        success.add(R_VALUES + ":" +context.getrValues().size());
 
-        KnowledgeWriterContext.Response transformationFailed = new KnowledgeWriterContext.Response("logicalTransformation")
+        Response transformationFailed = new Response("logicalTransformation")
                 .success(success).failure(context.getFailed());
 
         //load all data to designated indices according to schema

@@ -4,7 +4,7 @@ package com.yangdb.fuse.client;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ package com.yangdb.fuse.client;
  * #L%
  */
 
+
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
@@ -27,10 +29,7 @@ import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
-import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
-import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
-import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
+import com.yangdb.fuse.model.resourceInfo.*;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.PlanTraceOptions;
@@ -158,22 +157,27 @@ public class SnifferFuseClient implements FuseClient{
     }
 
     @Override
-    public QueryResourceInfo upsertData(String ontology, URL resource) throws IOException {
+    public ResultResourceInfo upsertData(String ontology, URL resource) throws IOException {
         return selectNode().upsertData(ontology,resource);
     }
 
     @Override
-    public QueryResourceInfo loadData(String ontology, URL resource) throws IOException {
+    public ResultResourceInfo loadData(String ontology, LogicalGraphModel model) throws IOException {
+        return selectNode().loadData(ontology,model);
+    }
+
+    @Override
+    public ResultResourceInfo loadData(String ontology, URL resource) throws IOException {
         return selectNode().loadData(ontology,resource);
     }
 
     @Override
-    public QueryResourceInfo uploadFile(String ontology, URL resource) throws IOException, URISyntaxException {
+    public ResultResourceInfo uploadFile(String ontology, URL resource) throws IOException, URISyntaxException {
         return selectNode().uploadFile(ontology,resource);
     }
 
     @Override
-    public QueryResourceInfo upsertFile(String ontology, URL resource) throws IOException, URISyntaxException {
+    public ResultResourceInfo upsertFile(String ontology, URL resource) throws IOException, URISyntaxException {
         return selectNode().upsertFile(ontology,resource);
     }
 
@@ -213,13 +217,13 @@ public class SnifferFuseClient implements FuseClient{
     }
 
     @Override
-    public String initIndices(String catalogStoreUrl, String ontology) {
-        return selectNode().initIndices(catalogStoreUrl,ontology);
+    public String initIndices(String ontology) {
+        return selectNode().initIndices(ontology);
     }
 
     @Override
-    public String dropIndices(String catalogStoreUrl, String ontology) {
-        return selectNode().dropIndices(catalogStoreUrl,ontology);
+    public String dropIndices(String ontology) {
+        return selectNode().dropIndices(ontology);
     }
 
     @Override

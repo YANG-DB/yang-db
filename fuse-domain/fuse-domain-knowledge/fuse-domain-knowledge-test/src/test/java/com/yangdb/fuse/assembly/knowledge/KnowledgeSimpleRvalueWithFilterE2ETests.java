@@ -28,7 +28,7 @@ import static com.yangdb.fuse.assembly.knowledge.Setup.client;
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.knowledge.Setup.manager;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RvalueBuilder._r;
@@ -42,7 +42,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(true);
+//        Setup.setup(true);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Rvalue entities for tests
@@ -72,12 +72,12 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
                 .creationUser("Gbi Levi").lastUpdateUser("Oron Lamed").creationTime(sdf.parse("2001-05-15 05:55:55.445"))
                 .deleteTime(sdf.parse("2010-01-11 01:11:13.161"));
         // Insert Relation entities to ES
-        Assert.assertEquals(8, commit(ctx, REL_INDEX, rv1, rv2, rv3, rv4, rv5, rv6, rv7, rv8));
+        Assert.assertEquals("error loading data ",8, commit(ctx, REL_INDEX, rv1, rv2, rv3, rv4, rv5, rv6, rv7, rv8));
     }
 
     @AfterClass
     public static void after() {
-        ctx.removeCreated();
+        if(ctx!=null) Assert.assertEquals(8,ctx.removeCreated());
     }
 
     // STRING_VALUE, CONTENT, TITLE, DISPLAY_NAME, DESCRIPTION => Find lower and Upper

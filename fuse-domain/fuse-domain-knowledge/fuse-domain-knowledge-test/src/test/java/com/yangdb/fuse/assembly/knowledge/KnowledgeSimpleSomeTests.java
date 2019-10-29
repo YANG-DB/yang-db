@@ -33,7 +33,7 @@ import static com.yangdb.fuse.assembly.knowledge.Setup.manager;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.query;
+import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RefBuilder._ref;
@@ -132,9 +132,10 @@ public class KnowledgeSimpleSomeTests {
 
 
     @AfterClass
+
     public static void after() {
-        ctx.removeCreated();
-    }
+        if(ctx!=null) Assert.assertEquals(18,ctx.removeCreated());
+}
 
     // STRING_VALUE, CONTENT, TITLE, DISPLAY_NAME, DESCRIPTION => Find lower and Upper
 

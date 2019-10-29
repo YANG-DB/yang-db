@@ -2,9 +2,9 @@ package com.yangdb.fuse.assembly.knowledge.asg;
 
 /*-
  * #%L
- * fuse-asg
+ * fuse-domain-knowledge-ext
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ package com.yangdb.fuse.assembly.knowledge.asg;
  * #L%
  */
 
+
+
 import com.yangdb.fuse.asg.validation.*;
 
 import java.util.Collections;
@@ -29,6 +31,7 @@ public class AsgKnowledgeValidatorStrategyRegistrar implements AsgValidatorStrat
     @Override
     public Iterable<AsgValidatorStrategy> register() {
         return Collections.singletonList(new CompositeValidatorStrategy(
+                new AsgConstraintExpressionValidatorStrategy(),
                 new AsgCycleValidatorStrategy(),
                 new AsgCompositeQueryValidatorStrategy(),
                 new AsgEntityDuplicateEnumValidatorStrategy(),
