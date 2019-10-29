@@ -29,6 +29,7 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsReques
 import org.elasticsearch.client.Client;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Created by roman.margolis on 01/03/2018.
@@ -88,6 +89,12 @@ public class PartitionFilteredRawSchema implements RawSchema {
     public Iterable<String> indices() {
         return this.rawSchema.indices();
     }
+
+    @Override
+    public Iterable<String> indices(Predicate<IndexPartitions.Partition> filter) {
+        return this.rawSchema.indices(filter);
+    }
+
     //endregion
 
     //region Private Methods

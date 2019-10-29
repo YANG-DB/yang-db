@@ -70,6 +70,10 @@ public class KnowledgeM2AsgStrategyTest {
 
         OntologyProvider ontologyProvider = new OntologyProvider() {
             @Override
+            public Ontology add(Ontology ontology) {
+                return ontology;
+            }
+            @Override
             public Optional<Ontology> get(String id) {
                 return Optional.of(ontology);
             }

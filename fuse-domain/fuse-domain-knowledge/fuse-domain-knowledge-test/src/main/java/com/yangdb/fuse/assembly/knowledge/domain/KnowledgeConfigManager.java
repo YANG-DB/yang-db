@@ -24,6 +24,7 @@ import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -82,7 +83,7 @@ public class KnowledgeConfigManager {
             }
         }
 
-        Iterable<String> allIndices = schema.indices();
+        Iterable<String> allIndices = getIndices();
 
         Stream.ofAll(allIndices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
@@ -94,7 +95,7 @@ public class KnowledgeConfigManager {
 
 
     public long drop() throws IOException {
-        Iterable<String> indices = Stream.ofAll(schema.indices()).append(".idgenerator");
+        Iterable<String> indices = Stream.ofAll(getIndices()).append(".idgenerator");
         Stream.ofAll(indices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
@@ -103,5 +104,9 @@ public class KnowledgeConfigManager {
 
     public TransportClient getClient() {
         return client;
+    }
+
+    private Iterable<String> getIndices() {
+        return schema.indices(partition -> !(partition instanceof IndexPartitions.Partition.Default<?>));
     }
 }

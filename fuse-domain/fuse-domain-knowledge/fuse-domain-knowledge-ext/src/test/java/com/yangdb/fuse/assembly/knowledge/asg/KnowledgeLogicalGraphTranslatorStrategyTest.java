@@ -34,6 +34,10 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
         ont = new Ontology.Accessor(new ObjectMapper().readValue(resource, Ontology.class));
         provider = new OntologyProvider() {
             @Override
+            public Ontology add(Ontology ontology) {
+                return ontology;
+            }
+            @Override
             public Optional<Ontology> get(String id) {
                 return Optional.of(ont.get());
             }

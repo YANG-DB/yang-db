@@ -96,6 +96,10 @@ public interface IndexPartitions {
                 }
             }
         }
+        interface Default<T extends Comparable<T>> extends Range {
+            @Override
+            default boolean isWithin(Comparable value) { return true; }
+        }
     }
 
     class Impl implements IndexPartitions {

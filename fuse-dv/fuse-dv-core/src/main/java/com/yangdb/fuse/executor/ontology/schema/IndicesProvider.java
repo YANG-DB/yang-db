@@ -20,8 +20,14 @@ package com.yangdb.fuse.executor.ontology.schema;
  * #L%
  */
 
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+
+import java.util.function.Predicate;
+
 public interface IndicesProvider {
 
     Iterable<String> indices();
+
+    Iterable<String> indices(Predicate<IndexPartitions.Partition> filter);
 
 }

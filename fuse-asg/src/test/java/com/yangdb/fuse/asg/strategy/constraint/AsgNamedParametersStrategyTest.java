@@ -53,6 +53,11 @@ public class AsgNamedParametersStrategyTest {
             public Collection<Ontology> getAll() {
                 return Collections.singleton(ontology);
             }
+
+            @Override
+            public Ontology add(Ontology ontology) {
+                return ontology;
+             }
         });
 
     }

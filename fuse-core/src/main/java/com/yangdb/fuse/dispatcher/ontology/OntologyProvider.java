@@ -4,7 +4,7 @@ package com.yangdb.fuse.dispatcher.ontology;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ package com.yangdb.fuse.dispatcher.ontology;
  * #L%
  */
 
+
 import com.yangdb.fuse.model.ontology.Ontology;
 
 import java.util.Collection;
@@ -32,4 +33,6 @@ public interface OntologyProvider {
     Optional<Ontology> get(String id);
 
     Collection<Ontology> getAll();
+
+    Ontology add(Ontology ontology);
 }

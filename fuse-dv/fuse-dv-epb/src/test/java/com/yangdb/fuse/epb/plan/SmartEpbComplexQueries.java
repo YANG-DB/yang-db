@@ -162,6 +162,10 @@ public class SmartEpbComplexQueries {
                         (ont) -> eBaseStatisticsProvider,
                 new OntologyProvider() {
                     @Override
+                    public Ontology add(Ontology ontology) {
+                        return ontology;
+                    }
+                    @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(ont.get());
                     }
@@ -180,6 +184,10 @@ public class SmartEpbComplexQueries {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
                 new M1PlanExtensionStrategy(new OntologyProvider() {
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                        return ontology;
+                    }
                     @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(ont.get());

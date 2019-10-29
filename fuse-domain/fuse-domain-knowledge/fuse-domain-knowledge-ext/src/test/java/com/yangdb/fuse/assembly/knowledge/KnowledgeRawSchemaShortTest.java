@@ -4,9 +4,11 @@ import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchemaShort.*;
 import static java.lang.String.format;
@@ -24,8 +26,15 @@ public class KnowledgeRawSchemaShortTest {
 
         List<String> list = Stream.concat(Stream.concat(eS, rS),
                 Stream.concat(refS,iS)).collect(Collectors.toList());
+        list.add("e*");
+        list.add("rel*");
+        list.add("i*");
+        list.add("ref*");
         Iterable<String> indices = rawSchemaShort.indices();
-        Assert.assertEquals(list,indices);
+        List<String> expected = StreamSupport.stream(indices.spliterator(), false).collect(Collectors.toList());
+        expected.sort(String::compareTo);
+        list.sort(String::compareTo);
+        Assert.assertEquals(list,expected);
     }
 
     @Test
@@ -34,10 +43,11 @@ public class KnowledgeRawSchemaShortTest {
         List<IndexPartitions.Partition> partitions = rawSchemaShort.getPartitions(ENTITY);
 
         KnowledgeRawSchemaShort finalRawSchemaShort = rawSchemaShort;
-        List<IndexPartitions.Partition.Range.Impl<String>> list = rangeClosed(0, DEFAULT_INDICES_COUNT)
+        List<IndexPartitions.Partition.Range<String>> list = rangeClosed(0, DEFAULT_INDICES_COUNT)
                 .mapToObj(e -> finalRawSchemaShort.buildIndexPartition(e, ENTITY))
                 .collect(Collectors.toList());
 
+        list.add(finalRawSchemaShort.addDefaultPartition(ENTITY));
         Assert.assertEquals(list,partitions);
 
         rawSchemaShort = new KnowledgeRawSchemaShort();
@@ -48,6 +58,7 @@ public class KnowledgeRawSchemaShortTest {
                 .mapToObj(e -> finalRawSchemaShort1.buildIndexPartition(e, RELATION))
                 .collect(Collectors.toList());
 
+        list.add(finalRawSchemaShort.addDefaultPartition(RELATION));
         Assert.assertEquals(list,partitions);
 
         rawSchemaShort = new KnowledgeRawSchemaShort();
@@ -58,6 +69,7 @@ public class KnowledgeRawSchemaShortTest {
                 .mapToObj(e -> finalRawSchemaShort2.buildIndexPartition(e, INSIGHT))
                 .collect(Collectors.toList());
 
+        list.add(finalRawSchemaShort.addDefaultPartition(INSIGHT));
         Assert.assertEquals(list,partitions);
 
         rawSchemaShort = new KnowledgeRawSchemaShort();
@@ -68,6 +80,7 @@ public class KnowledgeRawSchemaShortTest {
                 .mapToObj(e -> finalRawSchemaShort3.buildIndexPartition(e, REFERENCE))
                 .collect(Collectors.toList());
 
+        list.add(finalRawSchemaShort.addDefaultPartition(REFERENCE));
         Assert.assertEquals(list,partitions);
         }
 }

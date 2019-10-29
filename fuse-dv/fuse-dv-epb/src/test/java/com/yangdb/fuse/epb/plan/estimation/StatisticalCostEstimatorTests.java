@@ -189,6 +189,10 @@ public class StatisticalCostEstimatorTests {
                 (ont) -> provider,
                 new OntologyProvider() {
                     @Override
+                    public Ontology add(Ontology ontology) {
+                        return ontology;
+                    }
+                    @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(ont.get());
                     }
@@ -235,6 +239,10 @@ public class StatisticalCostEstimatorTests {
                 new CostEstimationConfig(1, 0.001),
                 (ont) -> provider,
                 new OntologyProvider() {
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                        return ontology;
+                    }
                     @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(ont.get());

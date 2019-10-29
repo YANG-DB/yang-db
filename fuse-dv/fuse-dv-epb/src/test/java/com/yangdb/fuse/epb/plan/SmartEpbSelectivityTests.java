@@ -172,6 +172,10 @@ public class SmartEpbSelectivityTests {
                 (ont) -> eBaseStatisticsProvider,
                 new OntologyProvider() {
                     @Override
+                    public Ontology add(Ontology ontology) {
+                        return ontology;
+                    }
+                    @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(ont.get());
                     }
@@ -191,6 +195,10 @@ public class SmartEpbSelectivityTests {
 
         planSearcher = new BottomUpPlanSearcher<>(
                 new M1PlanExtensionStrategy(new OntologyProvider() {
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                        return ontology;
+                    }
                     @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(ontology);

@@ -27,6 +27,7 @@ import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions.Pa
 import javaslang.collection.Stream;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Created by roman.margolis on 01/03/2018.
@@ -88,6 +89,11 @@ public class PrefixedRawSchema implements RawSchema {
     @Override
     public Iterable<String> indices() {
         return this.rawSchema.indices();
+    }
+
+    @Override
+    public Iterable<String> indices(Predicate<IndexPartitions.Partition> filter) {
+        return this.rawSchema.indices(filter);
     }
     //endregion
 

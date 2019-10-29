@@ -157,6 +157,10 @@ public class EpbJoinTests {
                 (ont) -> eBaseStatisticsProvider,
                 new OntologyProvider() {
                     @Override
+                    public Ontology add(Ontology ontology) {
+                        return ontology;
+                    }
+                    @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(ont.get());
                     }
@@ -184,6 +188,10 @@ public class EpbJoinTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
                 new M2PlanExtensionStrategy(new OntologyProvider() {
+                    @Override
+                    public Ontology add(Ontology ontology) {
+                        return ontology;
+                    }
                     @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(ont.get());

@@ -78,7 +78,7 @@ public class RankingKnowledgeDataInfraManager {
             }
         }
 
-        Iterable<String> allIndices = schema.indices();
+        Iterable<String> allIndices = getIndices();
 
         Stream.ofAll(allIndices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
@@ -89,7 +89,7 @@ public class RankingKnowledgeDataInfraManager {
     }
 
     public long drop()  {
-        Iterable<String> indices = Stream.ofAll(schema.indices()).append(".idgenerator");
+        Iterable<String> indices = Stream.ofAll(getIndices()).append(".idgenerator");
         Stream.ofAll(indices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
@@ -168,6 +168,10 @@ public class RankingKnowledgeDataInfraManager {
                     "2018-03-24 14:02:40.533");
             _entities.add(_mapper.writeValueAsString(on));
         }
+    }
+
+    private Iterable<String> getIndices() {
+        return schema.indices(partition -> !(partition instanceof IndexPartitions.Partition.Default<?>));
     }
 
     private String getEntityId(int id) {

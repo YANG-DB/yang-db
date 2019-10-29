@@ -4,7 +4,7 @@ package com.yangdb.fuse.dispatcher.ontology;
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package com.yangdb.fuse.dispatcher.ontology;
  * limitations under the License.
  * #L%
  */
+
+
 
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.OntologyFinalizer;
@@ -54,5 +56,11 @@ public class SimpleOntologyProvider implements OntologyProvider {
     @Override
     public Collection<Ontology> getAll() {
         return ontologyMap.values();
+    }
+
+    @Override
+    public Ontology add(Ontology ontology) {
+        ontologyMap.put(ontology.getOnt(),ontology);
+        return ontology;
     }
 }

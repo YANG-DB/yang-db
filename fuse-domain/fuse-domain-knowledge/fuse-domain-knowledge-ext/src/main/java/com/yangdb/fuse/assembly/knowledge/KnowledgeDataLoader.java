@@ -34,6 +34,7 @@ import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -107,7 +108,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
             }
         }
 
-        Iterable<String> allIndices = schema.indices();
+        Iterable<String> allIndices = getIndices();
 
         Stream.ofAll(allIndices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
@@ -119,7 +120,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
 
     @Override
     public long drop() throws IOException {
-        Iterable<String> indices = schema.indices();
+        Iterable<String> indices = getIndices();
         Stream.ofAll(indices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
@@ -170,6 +171,10 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
         //read
         LogicalGraphModel root = mapper.readValue(graph, LogicalGraphModel.class);
         return load(root, directive);
+    }
+
+    private Iterable<String> getIndices() {
+        return schema.indices(partition -> !(partition instanceof IndexPartitions.Partition.Default<?>));
     }
 
     private ByteArrayOutputStream extractFile(InflaterInputStream zipIn) throws IOException {

@@ -26,6 +26,7 @@ import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Created by roman.margolis on 01/03/2018.
@@ -80,7 +81,13 @@ public class CachedRawSchema implements RawSchema {
     public Iterable<String> indices() {
         return this.indices;
     }
-    //endregion
+
+    @Override
+    public Iterable<String> indices(Predicate<IndexPartitions.Partition> filter) {
+        return this.rawSchema.indices(filter);
+    }
+
+//endregion
 
     //region Fields
     private RawSchema rawSchema;

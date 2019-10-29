@@ -20,11 +20,22 @@ package com.yangdb.fuse.executor.ontology.schema;
  * #L%
  */
 
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.function.Predicate;
+
+import static com.yangdb.fuse.executor.resource.PersistantResourceStore.SYSTEM;
 
 public class SystemIndicesProvider implements IndicesProvider{
     @Override
     public Iterable<String> indices() {
+        return Arrays.asList(SYSTEM);
+    }
+
+    @Override
+    public Iterable<String> indices(Predicate<IndexPartitions.Partition> filter) {
         return Collections.emptyList();
     }
 }

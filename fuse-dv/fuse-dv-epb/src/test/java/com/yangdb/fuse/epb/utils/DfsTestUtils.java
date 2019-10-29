@@ -43,6 +43,10 @@ public interface DfsTestUtils {
                 (ontology) -> statsProvider(),
                 new OntologyProvider() {
                     @Override
+                    public Ontology add(Ontology ontology) {
+                        return ontology;
+                    }
+                    @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(ont.get());
                     }

@@ -26,9 +26,9 @@ import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -87,12 +87,23 @@ public class KnowledgeRawSchemaShort implements RawSchema {
     //region RawSchema
     @Override
     public Iterable<String> indices() {
-
         Iterable<String> allIndices = Stream.ofAll(getPartitions(ENTITY))
                 .appendAll(getPartitions(RELATION))
                 .appendAll(getPartitions(REFERENCE))
                 .appendAll(getPartitions(INSIGHT))
                 .flatMap(IndexPartitions.Partition::getIndices).distinct().toJavaList();
+        return allIndices;
+    }
+
+    @Override
+    public Iterable<String> indices(Predicate<IndexPartitions.Partition> filter) {
+        Iterable<String> allIndices = Stream.ofAll(getPartitions(ENTITY))
+                .appendAll(getPartitions(RELATION))
+                .appendAll(getPartitions(REFERENCE))
+                .appendAll(getPartitions(INSIGHT))
+                .filter(filter)
+                .flatMap(IndexPartitions.Partition::getIndices)
+                .distinct().toJavaList();
         return allIndices;
     }
 
@@ -191,9 +202,9 @@ public class KnowledgeRawSchemaShort implements RawSchema {
             case RELATION:
                 return generatePartitions(RELATION);
             case INSIGHT:
-                generatePartitions(INSIGHT);
+                return generatePartitions(INSIGHT);
             case REFERENCE:
-                generatePartitions(REFERENCE);
+                return generatePartitions(REFERENCE);
 
         }
         return Collections.emptyList();
@@ -209,8 +220,8 @@ public class KnowledgeRawSchemaShort implements RawSchema {
         return collect;
     }
 
-    private IndexPartitions.Partition.Range<String> addDefaultPartition(String type) {
-        return new IndexPartitions.Partition.Range<String>() {
+    public IndexPartitions.Partition.Default<String> addDefaultPartition(String type) {
+        return new IndexPartitions.Partition.Default<String>() {
             @Override
             public String getFrom() {
                 return format("%s%s",getIdPrefix(type),format(getIdFormat(type),0)).replaceAll("\\d","0");
@@ -222,14 +233,20 @@ public class KnowledgeRawSchemaShort implements RawSchema {
             }
 
             @Override
-            public boolean isWithin(String value) {
-                return true;
-            }
-
-            @Override
             public Iterable<String> getIndices() {
                 return Collections.singletonList(getIndexPrefix(type) + "*");
             }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                Range<?> impl = (Range<?>) o;
+                return getFrom().equals(impl.getFrom()) &&
+                        getTo().equals(impl.getTo()) &&
+                        getIndices().equals(impl.getIndices());
+            }
+
         };
     }
 

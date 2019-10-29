@@ -57,6 +57,10 @@ public class SmartEpbTests {
                 (ont) -> eBaseStatisticsProvider,
                 new OntologyProvider() {
                     @Override
+                    public Ontology add(Ontology ontology) {
+                        return ontology;
+                    }
+                    @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(scenarioMockUtil.getOntologyAccessor().get());
                     }

@@ -67,6 +67,11 @@ public class AsgInnerQueryCompositeTransformerTest {
             public Collection<Ontology> getAll() {
                 return Collections.singleton(ont);
             }
+
+            @Override
+            public Ontology add(Ontology ontology) {
+                return ontology;
+             }
         });
         AsgQuery asgQuery = asgSupplier.transform(Q5());
         assertTrue(asgQuery != null);
@@ -98,6 +103,11 @@ public class AsgInnerQueryCompositeTransformerTest {
             public Collection<Ontology> getAll() {
                 return Collections.singleton(ont);
             }
+
+            @Override
+            public Ontology add(Ontology ontology) {
+                return ontology;
+             }
         });
         AsgQuery asgQuery = asgSupplier.transform(Q6());
         assertTrue(asgQuery != null);
@@ -130,6 +140,11 @@ public class AsgInnerQueryCompositeTransformerTest {
             public Collection<Ontology> getAll() {
                 return Collections.singleton(ont);
             }
+
+            @Override
+            public Ontology add(Ontology ontology) {
+                return ontology;
+             }
         });
         AsgQuery asgQuery = asgSupplier.transform(Q1());
         assertTrue(asgQuery != null);
@@ -161,6 +176,11 @@ public class AsgInnerQueryCompositeTransformerTest {
             public Collection<Ontology> getAll() {
                 return Collections.singleton(ont);
             }
+
+            @Override
+            public Ontology add(Ontology ontology) {
+                return ontology;
+             }
         });
         AsgQuery asgQuery = asgSupplier.transform(Q4());
         assertTrue(asgQuery != null);
@@ -197,6 +217,11 @@ public class AsgInnerQueryCompositeTransformerTest {
             public Collection<Ontology> getAll() {
                 return Collections.singleton(ont);
             }
+
+            @Override
+            public Ontology add(Ontology ontology) {
+                return ontology;
+             }
         });
         AsgQuery asgQuery = asgSupplier.transform(Q0());
         assertTrue(asgQuery != null);
