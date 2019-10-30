@@ -173,8 +173,8 @@
                         </manifestEntries>
                     </archive>
                     <descriptors>
-                        <descriptor>assembly/fuse.test.service.engine3.knowledge.xml</descriptor>
-                        <descriptor>assembly/fuse.test.service.engine3.knowledge.source.xml</descriptor>
+                        <descriptor>assembly/fuse.folder.service.engine3.knowledge.xml</descriptor>
+                        <descriptor>assembly/fuse.zip.service.engine3.knowledge.xml</descriptor>
                     </descriptors>
                     <outputDirectory>${distr.dir}/</outputDirectory>
                 </configuration>

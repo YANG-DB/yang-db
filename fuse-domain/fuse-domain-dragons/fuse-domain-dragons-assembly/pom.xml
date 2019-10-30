@@ -170,8 +170,8 @@
                         </manifestEntries>
                     </archive>
                     <descriptors>
-                        <descriptor>assembly/fuse.test.service.engine3.dragons.graph.xml</descriptor>
-                        <descriptor>assembly/fuse.test.service.engine3.dragons.graph.source.xml</descriptor>
+                        <descriptor>assembly/fuse.folder.service.engine3.dragons.graph.xml</descriptor>
+                        <descriptor>assembly/fuse.zip.service.engine3.dragons.graph.xml</descriptor>
                     </descriptors>
                     <outputDirectory>${distr.dir}/</outputDirectory>
                 </configuration>
