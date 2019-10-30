@@ -26,27 +26,20 @@ import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.assembly.knowledge.load.KnowledgeContext;
 import com.yangdb.fuse.assembly.knowledge.load.KnowledgeTransformer;
-import com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext;
+import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerProvider;
-import com.yangdb.fuse.executor.ontology.schema.GraphDataLoader;
-import com.yangdb.fuse.executor.ontology.schema.LoadResponse;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
+import com.yangdb.fuse.executor.ontology.schema.load.Response;
+import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
-import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
-import javaslang.collection.Stream;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
-import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateRequest;
-import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
-import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -54,10 +47,10 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;
-import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.*;
 
 /**
  * Created by lior.perry on 2/11/2018.
@@ -146,10 +139,6 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
         //read
         LogicalGraphModel root = mapper.readValue(graph, LogicalGraphModel.class);
         return load(root, directive);
-    }
-
-    private Iterable<String> getIndices() {
-        return schema.indices(partition -> !(partition instanceof IndexPartitions.Partition.Default<?>));
     }
 
     private ByteArrayOutputStream extractFile(InflaterInputStream zipIn) throws IOException {

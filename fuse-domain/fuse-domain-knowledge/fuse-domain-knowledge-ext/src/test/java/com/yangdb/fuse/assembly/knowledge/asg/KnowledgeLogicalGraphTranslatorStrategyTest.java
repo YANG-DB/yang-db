@@ -61,10 +61,6 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
                 return Collections.singleton(knowledgeOnt.get());
             }
 
-            @Override
-            public Ontology add(Ontology ontology) {
-                return ontology;
-             }
         };
 
         validator = new AsgQueryValidator(new AsgKnowledgeValidatorStrategyRegistrar(), provider);

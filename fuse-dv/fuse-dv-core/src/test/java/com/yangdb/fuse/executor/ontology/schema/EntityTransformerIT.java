@@ -83,7 +83,7 @@ public class EntityTransformerIT implements BaseITMarker {
             }
 
             @Override
-            public String getPrefix(String type) {
+            public String getIndexPrefix(String type) {
                 return "";
             }
 
@@ -98,14 +98,17 @@ public class EntityTransformerIT implements BaseITMarker {
             public Iterable<String> indices() {
                 Stream<String> edges = StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
                         .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
+                        .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
                         .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
                 Stream<String> vertices = StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
                         .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
+                        .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
                         .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
 
                 return Stream.concat(edges, vertices)
                         .collect(Collectors.toSet());
             }
+
         };
     }
 

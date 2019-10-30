@@ -166,10 +166,6 @@ public class EpbJoinSelectionTests {
                 (ont) -> eBaseStatisticsProvider,
                 new OntologyProvider() {
                     @Override
-                    public Ontology add(Ontology ontology) {
-                        return ontology;
-                    }
-                    @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(ont.get());
                     }
@@ -215,10 +211,6 @@ public class EpbJoinSelectionTests {
                         return Collections.singleton(ont.get());
                     }
 
-                    @Override
-                    public Ontology add(Ontology ontology) {
-                return ontology;
-             }
                 }, ont -> graphElementSchemaProvider),
                 globalPruner,
                 localPruner,

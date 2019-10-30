@@ -42,7 +42,7 @@ public class DragonsSimpleFileUploadIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
         ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);

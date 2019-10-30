@@ -28,7 +28,6 @@ import javaslang.collection.Stream;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -91,19 +90,8 @@ public class KnowledgeRawSchemaShort implements RawSchema {
                 .appendAll(getPartitions(RELATION))
                 .appendAll(getPartitions(REFERENCE))
                 .appendAll(getPartitions(INSIGHT))
+                .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
                 .flatMap(IndexPartitions.Partition::getIndices).distinct().toJavaList();
-        return allIndices;
-    }
-
-    @Override
-    public Iterable<String> indices(Predicate<IndexPartitions.Partition> filter) {
-        Iterable<String> allIndices = Stream.ofAll(getPartitions(ENTITY))
-                .appendAll(getPartitions(RELATION))
-                .appendAll(getPartitions(REFERENCE))
-                .appendAll(getPartitions(INSIGHT))
-                .filter(filter)
-                .flatMap(IndexPartitions.Partition::getIndices)
-                .distinct().toJavaList();
         return allIndices;
     }
 

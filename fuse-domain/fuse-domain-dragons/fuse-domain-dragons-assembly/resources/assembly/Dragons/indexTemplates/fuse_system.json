@@ -2,16 +2,10 @@
   "order": 0,
   "template": "fuse_system*",
   "settings": {
-      "index": {
-        "creation_date": "1572113977271",
-        "number_of_shards": "5",
-        "number_of_replicas": "1",
-        "uuid": "DQdISSwZTcuM3YETNFoTjg",
-        "version": {
-          "created": "6050499"
-        },
-        "provided_name": "fuse_system"
-      }
+    "index": {
+      "number_of_shards": "5",
+      "number_of_replicas": "0"
+    }
   },
   "mappings": {},
   "aliases": {}

@@ -170,10 +170,6 @@ public class SmartEpbRedundancyTests {
                 new CostEstimationConfig(1.0, 0.001),
                 (ont) -> eBaseStatisticsProvider, new OntologyProvider() {
             @Override
-            public Ontology add(Ontology ontology) {
-                return ontology;
-            }
-            @Override
             public Optional<Ontology> get(String id) {
                 return Optional.of(ont.get());
             }
@@ -211,10 +207,6 @@ public class SmartEpbRedundancyTests {
                         return Collections.singleton(ont.get());
                     }
 
-                    @Override
-                    public Ontology add(Ontology ontology) {
-                return ontology;
-             }
                 }, ont -> graphElementSchemaProvider),
                 pruneStrategy,
                 pruneStrategy,

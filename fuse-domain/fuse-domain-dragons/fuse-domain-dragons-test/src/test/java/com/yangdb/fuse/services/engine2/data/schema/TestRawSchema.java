@@ -5,7 +5,6 @@ import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Created by lior.perry on 2/12/2018.
@@ -41,8 +40,4 @@ public class TestRawSchema implements RawSchema {
         return Collections.emptyList();
     }
 
-    @Override
-    public Iterable<String> indices(Predicate<IndexPartitions.Partition> filter) {
-        return Collections.emptyList();
-    }
 }

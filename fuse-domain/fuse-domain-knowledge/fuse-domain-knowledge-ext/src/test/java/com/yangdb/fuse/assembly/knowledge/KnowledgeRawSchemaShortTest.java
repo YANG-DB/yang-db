@@ -26,10 +26,6 @@ public class KnowledgeRawSchemaShortTest {
 
         List<String> list = Stream.concat(Stream.concat(eS, rS),
                 Stream.concat(refS,iS)).collect(Collectors.toList());
-        list.add("e*");
-        list.add("rel*");
-        list.add("i*");
-        list.add("ref*");
         Iterable<String> indices = rawSchemaShort.indices();
         List<String> expected = StreamSupport.stream(indices.spliterator(), false).collect(Collectors.toList());
         expected.sort(String::compareTo);

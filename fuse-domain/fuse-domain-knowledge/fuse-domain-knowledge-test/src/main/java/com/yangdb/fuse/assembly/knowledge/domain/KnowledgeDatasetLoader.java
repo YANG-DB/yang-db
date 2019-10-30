@@ -134,7 +134,7 @@ public class KnowledgeDatasetLoader {
             }
         }
 
-        Iterable<String> allIndices = getIndices();
+        Iterable<String> allIndices = schema.indices();
 
         Stream.ofAll(allIndices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
@@ -144,12 +144,8 @@ public class KnowledgeDatasetLoader {
         return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
     }
 
-    private Iterable<String> getIndices() {
-        return schema.indices(partition -> !(partition instanceof IndexPartitions.Partition.Default<?>));
-    }
-
     public long drop() throws IOException {
-        Iterable<String> indices = getIndices();
+        Iterable<String> indices = schema.indices();
         Stream.ofAll(indices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());

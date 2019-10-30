@@ -158,10 +158,6 @@ public class SmartEpbShortPathTests {
                 (ont) -> eBaseStatisticsProvider,
                 new OntologyProvider() {
                     @Override
-                    public Ontology add(Ontology ontology) {
-                        return ontology;
-                    }
-                    @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(ont.get());
                     }
@@ -199,10 +195,6 @@ public class SmartEpbShortPathTests {
                         return Collections.singleton(ont.get());
                     }
 
-                    @Override
-                    public Ontology add(Ontology ontology) {
-                return ontology;
-             }
                 }, ont -> graphElementSchemaProvider),
                 pruneStrategy,
                 pruneStrategy,

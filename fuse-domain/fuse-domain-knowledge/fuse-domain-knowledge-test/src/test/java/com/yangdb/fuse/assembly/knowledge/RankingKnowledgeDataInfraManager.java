@@ -78,7 +78,7 @@ public class RankingKnowledgeDataInfraManager {
             }
         }
 
-        Iterable<String> allIndices = getIndices();
+        Iterable<String> allIndices = schema.indices();
 
         Stream.ofAll(allIndices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
@@ -89,7 +89,7 @@ public class RankingKnowledgeDataInfraManager {
     }
 
     public long drop()  {
-        Iterable<String> indices = Stream.ofAll(getIndices()).append(".idgenerator");
+        Iterable<String> indices = Stream.ofAll(schema.indices()).append(".idgenerator");
         Stream.ofAll(indices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
@@ -170,9 +170,6 @@ public class RankingKnowledgeDataInfraManager {
         }
     }
 
-    private Iterable<String> getIndices() {
-        return schema.indices(partition -> !(partition instanceof IndexPartitions.Partition.Default<?>));
-    }
 
     private String getEntityId(int id) {
         return "e" + String.format(schema.getIdFormat(cEntity), id);

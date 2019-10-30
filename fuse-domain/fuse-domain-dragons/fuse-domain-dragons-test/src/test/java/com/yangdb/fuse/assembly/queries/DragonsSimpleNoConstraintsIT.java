@@ -48,7 +48,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
 
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
@@ -75,7 +75,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
@@ -107,7 +107,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
@@ -148,7 +148,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
@@ -186,7 +186,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
@@ -224,7 +224,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
@@ -257,7 +257,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
@@ -295,7 +295,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 

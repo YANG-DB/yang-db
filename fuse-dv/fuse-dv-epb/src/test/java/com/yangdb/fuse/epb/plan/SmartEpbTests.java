@@ -16,15 +16,15 @@ import com.yangdb.fuse.epb.utils.BasicScenarioSetup;
 import com.yangdb.fuse.epb.utils.ScenarioMockUtil;
 import com.yangdb.fuse.model.OntologyTestUtils.PERSON;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
+import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.yangdb.fuse.model.execution.plan.costs.DoubleCost;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
-import com.yangdb.fuse.model.query.properties.EProp;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static com.yangdb.fuse.model.OntologyTestUtils.FIRST_NAME;
-import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.ePropGroup;
 import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.typed;
 
 /**
@@ -56,10 +55,6 @@ public class SmartEpbTests {
                 new CostEstimationConfig(1.0, 0.001),
                 (ont) -> eBaseStatisticsProvider,
                 new OntologyProvider() {
-                    @Override
-                    public Ontology add(Ontology ontology) {
-                        return ontology;
-                    }
                     @Override
                     public Optional<Ontology> get(String id) {
                         return Optional.of(scenarioMockUtil.getOntologyAccessor().get());
