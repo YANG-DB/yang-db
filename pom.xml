@@ -100,7 +100,7 @@
         <fuse.version>${project.version}</fuse.version>
 
         <!-- jackson -->
-        <jackson.version>2.9.8</jackson.version>
+        <jackson.version>2.10.0</jackson.version>
 
         <!-- com.github.cnsvili.snowflake.version -->
         <com.github.cnsvili.snowflake.version>1.0.1</com.github.cnsvili.snowflake.version>
