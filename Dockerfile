@@ -26,6 +26,7 @@ HEALTHCHECK --interval=5m --timeout=3s \
 
 # Run cerebro
 CMD ["/cerebro-0.8.4/bin/cerebro"]
+
 # Run fuse
 CMD ["/opt/engine/start-fuse-service.sh"]
 
