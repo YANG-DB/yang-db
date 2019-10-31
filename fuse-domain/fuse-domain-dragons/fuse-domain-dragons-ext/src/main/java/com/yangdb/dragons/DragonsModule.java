@@ -26,26 +26,17 @@ import com.google.inject.multibindings.Multibinder;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.yangdb.dragons.cursor.LogicalGraphHierarchyTraversalCursor;
-import com.yangdb.dragons.schema.DragonsOntologyGraphLayoutProviderFactory;
 import com.yangdb.fuse.core.driver.BasicIdGenerator;
 import com.yangdb.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
-import com.yangdb.dragons.services.DragonsExtensionQueryController;
 import com.yangdb.fuse.dispatcher.ontology.DirectoryIndexProvider;
-import com.yangdb.fuse.dispatcher.ontology.DirectoryOntologyProvider;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
-import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
-import com.yangdb.fuse.executor.ontology.GraphLayoutProviderFactory;
-import com.yangdb.fuse.executor.ontology.schema.GraphElementSchemaProviderJsonFactory;
 import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import org.jooby.Env;
-import org.jooby.scope.RequestScoped;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 
 import static com.google.inject.name.Names.named;

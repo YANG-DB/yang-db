@@ -1,10 +1,10 @@
 ![](https://bytebucket.org/ravatar/%7Bfebcdb99-dbb1-4750-aeb9-f09a1be94b10%7D?ts=2032751)
 
-# Fuse
-Fuse is a graph query engine.
+# YangDb
+YangDb is a graph query engine.
 It is based on elasticsearch as the physical graph storage layer and the tinkerpop graph traversing framework.
 
-## Fuse features
+## YangDb features
  * Versatile Engine API including query cursor and paging
  * Pattern based graph query language [V1](https://github.com/LiorKogan/V1)
  * Cost based optimizer to enable fast and efficient graph search
