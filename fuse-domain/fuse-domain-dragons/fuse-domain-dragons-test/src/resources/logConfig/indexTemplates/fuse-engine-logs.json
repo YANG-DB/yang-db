@@ -65,6 +65,18 @@
         "elasticElapsedTotal": {
           "type": "integer"
         },
+        "totalHits": {
+          "type": "long"
+        },
+        "hits": {
+          "type": "integer"
+        },
+        "totalShards": {
+          "type": "integer"
+        },
+        "scrollId": {
+          "type": "keyword"
+        },
         "networkElasticElapsed": {
           "type": "integer"
         },

@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.elasticsearch.logging;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -217,17 +217,17 @@ public class LoggingClient implements Client {
 
             ActionFuture<SearchResponse> future = client.search(searchRequest);
             return new LoggingActionFuture<>(future,
-                            (response -> new LogMessage.Impl(this.logger, trace, "#{} finish search", sequence, LogType.of(success), search,
-                                    ElapsedFrom.now(),
-                                    ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                                    NetworkElasticElapsed.stop(), NetworkElasticElapsed.stopTotal())
-                                    .with(operationId)),
-                            (ex -> new LogMessage.Impl(this.logger, error, "#{} failed search", sequence, LogType.of(failure), search,
-                                    ElapsedFrom.now(), NetworkElasticElapsed.stop())
-                                    .with(operationId, ex)),
-                            timerContext,
-                            this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "success")),
-                            this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "failure")));
+                    (response -> new LogMessage.Impl(this.logger, trace, "#{} finish search", sequence, LogType.of(success), search,
+                            ElapsedFrom.now(),
+                            ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
+                            NetworkElasticElapsed.stop(), NetworkElasticElapsed.stopTotal())
+                            .with(operationId)),
+                    (ex -> new LogMessage.Impl(this.logger, error, "#{} failed search", sequence, LogType.of(failure), search,
+                            ElapsedFrom.now(), NetworkElasticElapsed.stop())
+                            .with(operationId, ex)),
+                    timerContext,
+                    this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "success")),
+                    this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "failure")));
         } catch (Exception ex) {
             new LogMessage.Impl(this.logger, error, "#{} failed search", sequence, LogType.of(failure), search, ElapsedFrom.now())
                     .with(operationId, ex).log();
@@ -239,7 +239,7 @@ public class LoggingClient implements Client {
 
     @Override
     public void search(SearchRequest searchRequest, ActionListener<SearchResponse> actionListener) {
-        Timer.Context timerContext =  this.metricRegistry.timer(name(this.logger.getName(), search.toString())).time();
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), search.toString())).time();
 
         int operationId = this.operationId++;
 
@@ -256,7 +256,12 @@ public class LoggingClient implements Client {
                             (response -> new LogMessage.Impl(this.logger, trace, "#{} finish search", sequence, LogType.of(success), search,
                                     ElapsedFrom.now(),
                                     ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                                    NetworkElasticElapsed.stop(), NetworkElasticElapsed.stopTotal())
+                                    NetworkElasticElapsed.stop(), NetworkElasticElapsed.stopTotal(),
+                                    ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                                    ElasticResults.hitsWriter(response.getHits().getHits().length),
+                                    ElasticResults.shardsWrite(response.getTotalShards()),
+                                    ElasticResults.scrollIdWriter(response.getScrollId())
+                            )
                                     .with(operationId)),
                             (ex -> new LogMessage.Impl(this.logger, error, "#{} failed search", sequence, LogType.of(failure), search,
                                     ElapsedFrom.now(), NetworkElasticElapsed.stop())
@@ -517,7 +522,7 @@ public class LoggingClient implements Client {
 
     @Override
     public void fieldCaps(FieldCapabilitiesRequest request, ActionListener<FieldCapabilitiesResponse> listener) {
-        client.fieldCaps(request,listener);
+        client.fieldCaps(request, listener);
     }
 
     @Override
