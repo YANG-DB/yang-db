@@ -114,7 +114,7 @@ public class ElasticResults {
         @Override
         public void write() {
             if (scrollId != null) {
-                MDC.put(TotalShardsConverter.key, this.scrollId);
+                MDC.put(ScrollIdConverter.key, this.scrollId);
             }
         }
         //endregion
