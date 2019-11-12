@@ -54,7 +54,7 @@ import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.pars
 /**
  * translator that takes the specific ontology with the actual schema and translates the logical graph model into a set of (schematic according to real mapping) elastic documents
  */
-public class EntityTransformer implements DataTransformer<DataTransformerContext> {
+public class EntityTransformer implements DataTransformer<DataTransformerContext<LogicalGraphModel>,LogicalGraphModel> {
     public static final String INDEX = "Index";
     public static final String TYPE = "type";
     public static SimpleDateFormat sdf;
@@ -86,9 +86,9 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
     }
 
     @Override
-    public DataTransformerContext transform(LogicalGraphModel graph, GraphDataLoader.Directive directive) {
-        DataTransformerContext context = new DataTransformerContext(mapper);
-        context.withGraph(graph);
+    public DataTransformerContext<LogicalGraphModel> transform(LogicalGraphModel graph, GraphDataLoader.Directive directive) {
+        DataTransformerContext<LogicalGraphModel> context = new DataTransformerContext<>(mapper);
+        context.withContainer(graph);
         context.withEntities(graph.getNodes().stream().map(n -> translate(context, n)).collect(Collectors.toList()));
         //out direction
         context.withRelations(graph.getEdges().stream().map(e -> translate(context, e, "out")).collect(Collectors.toList()));
@@ -105,7 +105,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param direction
      * @return
      */
-    private DocumentBuilder translate(DataTransformerContext context, LogicalEdge edge, String direction) {
+    private DocumentBuilder translate(DataTransformerContext<LogicalGraphModel> context, LogicalEdge edge, String direction) {
         try {
             ObjectNode element = mapper.createObjectNode();
             Relation relation = indexProvider.getRelation(edge.label())
@@ -143,7 +143,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param node
      * @return
      */
-    private DocumentBuilder translate(DataTransformerContext context, LogicalNode node) {
+    private DocumentBuilder translate(DataTransformerContext<LogicalGraphModel> context, LogicalNode node) {
         try {
             ObjectNode element = mapper.createObjectNode();
             Entity entity = indexProvider.getEntity(node.label())
@@ -171,7 +171,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param edge
      * @param element
      */
-    private void populateMetadataFields(DataTransformerContext context, LogicalEdge edge, ObjectNode element) {
+    private void populateMetadataFields(DataTransformerContext<LogicalGraphModel> context, LogicalEdge edge, ObjectNode element) {
         edge.metadata().entrySet()
                 .stream()
                 .filter(m -> accessor.relation$(edge.getLabel()).containsMetadata(m.getKey()))
@@ -186,7 +186,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param node
      * @param element
      */
-    private void populateMetadataFields(DataTransformerContext context, LogicalNode node, ObjectNode element) {
+    private void populateMetadataFields(DataTransformerContext<LogicalGraphModel> context, LogicalNode node, ObjectNode element) {
         node.metadata().entrySet()
                 .stream()
                 .filter(m -> accessor.entity$(node.getLabel()).containsMetadata(m.getKey()))
@@ -203,7 +203,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param entity
      * @param element
      */
-    private void populateFields(DataTransformerContext context, LogicalNode node, Entity entity, ObjectNode element) {
+    private void populateFields(DataTransformerContext<LogicalGraphModel> context, LogicalNode node, Entity entity, ObjectNode element) {
         //todo check the structure of the index
         switch (entity.getMapping()) {
             case INDEX:
@@ -227,7 +227,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param relation
      * @param element
      */
-    private ObjectNode populateFields(DataTransformerContext context, LogicalEdge edge, Relation relation,String direction, ObjectNode element) {
+    private ObjectNode populateFields(DataTransformerContext<LogicalGraphModel> context, LogicalEdge edge, Relation relation,String direction, ObjectNode element) {
         //populate redundant fields A
         switch (direction) {
             case "out":
@@ -269,7 +269,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param relation
      * @return
      */
-    private ObjectNode populateSide(String side, DataTransformerContext context, String sideId, Relation relation) {
+    private ObjectNode populateSide(String side, DataTransformerContext<LogicalGraphModel> context, String sideId, Relation relation) {
         ObjectNode entitySide = mapper.createObjectNode();
         Optional<LogicalNode> source = nodeById(context, sideId);
         if (!source.isPresent()) {
@@ -295,8 +295,8 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 parseValue(redundant.getType(), o.toString(), sdf).toString()));
     }
 
-    private Optional<LogicalNode> nodeById(DataTransformerContext context, String id) {
-        return context.getGraph().getNodes().stream().filter(n -> n.getId().equals(id)).findAny();
+    private Optional<LogicalNode> nodeById(DataTransformerContext<LogicalGraphModel> context, String id) {
+        return context.getContainer().getNodes().stream().filter(n -> n.getId().equals(id)).findAny();
     }
 
 

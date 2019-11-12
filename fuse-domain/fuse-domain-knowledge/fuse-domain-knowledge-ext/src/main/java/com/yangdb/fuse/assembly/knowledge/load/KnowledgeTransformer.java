@@ -52,7 +52,7 @@ import static com.yangdb.fuse.assembly.knowledge.load.builder.ValueBuilder._v;
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;
 import static java.util.regex.Pattern.matches;
 
-public class KnowledgeTransformer implements DataTransformer<KnowledgeContext> {
+public class KnowledgeTransformer implements DataTransformer<KnowledgeContext,LogicalGraphModel> {
     public static final int BULK_SIZE = 10;
     public static final String TECH_ID = "techId";
     public static final String ID = "id";

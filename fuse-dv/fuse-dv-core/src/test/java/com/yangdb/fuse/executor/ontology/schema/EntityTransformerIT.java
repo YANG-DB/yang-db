@@ -122,7 +122,7 @@ public class EntityTransformerIT implements BaseITMarker {
         EntityTransformer transformer = new EntityTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/LogicalDragonsGraph.json");
         LogicalGraphModel graphModel = mapper.readValue(stream, LogicalGraphModel.class);
-        DataTransformerContext transform = transformer.transform(graphModel, GraphDataLoader.Directive.INSERT);
+        DataTransformerContext<LogicalGraphModel> transform = transformer.transform(graphModel, GraphDataLoader.Directive.INSERT);
 
         Assert.assertNotNull(transform);
         Assert.assertEquals(transform.getEntities().size(), graphModel.getNodes().size());

@@ -39,19 +39,22 @@ public class HomeAppRegistrar implements AppRegistrar{
                     "<!doctype html>\n" +
                             "<html lang=\"en\">\n" +
                             "<head>\n" +
-                            "  <title>Fuse API</title>\n" +
+                            "  <title>YangDb API</title>\n" +
                             "</head>\n" +
                             "<body>\n" +
-                            "<h1>Fuse API</h1>\n" +
+                            "<h1>YangDb API</h1>\n" +
                             "<ul>\n" +
-                            "<li>Resource Url: <a href=\"/fuse\">fuse</a></li>\n" +
+                            "<li>Resource Url: <a href=\"/fuse\">Fuse</a></li>\n" +
+                            "<li>Swagger API: <a href=\"/swagger\">Swagger</a></li>\n" +
+                            "<li>BigDesk E/S online Monitor: <a href=\"/bigdesk\">bigDesk</a></li>\n" +
+                            "<li><hr></li>"+
                             "<li>Health Url: <a href=\"/fuse/health\">healthUrl</a></li>\n" +
                             "<li>Query Store Url: <a href=\"/fuse/query\">queryStoreUrl</a></li>\n" +
                             "<li>Search Store Url: <a href=\"/fuse/search\">searchStoreUrl</a></li>\n" +
                             "<li>Catalog Store Url: <a href=\"/fuse/catalog\">catalogStoreUrl</a></li>\n" +
                             "</ul>\n" +
-                            "<p>More at <a href=\"http://sheker.com\">" +
-                            "Sheker</a>\n" +
+                            "<p>More at <a href=\"http://yangdb.org\">" +
+                            "www.yangdb.org</a>\n" +
                             "</body>\n" +
                             "</html>")
             .type("html");

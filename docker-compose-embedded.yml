@@ -1,0 +1,42 @@
+version: '3.3'
+
+services:
+  fuse:
+    image: yangdb/yang.db:latest
+    ports:
+      - 8888:8888
+    environment:
+      - "elasticsearchHosts=localhost"
+      - "elasticsearchClusterName=Knowledge"
+    volumes:
+      - fuse-data:/usr/share/fuse
+    networks:
+      - network
+  elasticsearch_exporter:
+    image: justwatch/elasticsearch_exporter:1.1.0
+    command:
+      - '--es.uri=http://fuse:9200'
+    restart: always
+    ports:
+      - "127.0.0.1:9114:9114"
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    volumes:
+      - grafana-data:/usr/share/grafana
+    ports:
+      - 3000:3000
+    networks:
+      - network
+    user: "0"
+
+volumes:
+  fuse-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  network:
+    driver: overlay
+    attachable: true

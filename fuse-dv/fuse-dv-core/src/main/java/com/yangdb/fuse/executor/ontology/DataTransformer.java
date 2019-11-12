@@ -23,6 +23,6 @@ package com.yangdb.fuse.executor.ontology;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 
-public interface DataTransformer<T> {
-    T transform(LogicalGraphModel graph, GraphDataLoader.Directive directive);
+public interface DataTransformer<T,G> {
+    T transform(G data, GraphDataLoader.Directive directive);
 }

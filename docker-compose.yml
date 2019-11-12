@@ -69,16 +69,16 @@ services:
     deploy:
       endpoint_mode: dnsrr
       mode: 'global'
-  grafana:
-    image: grafana/grafana:5.1.0
-    container_name: grafana
-    volumes:
-      - grafana-data:/usr/share/grafana
-    ports:
-      - 3000:3000
-    networks:
-      - network
-    user: "0"
+    grafana:
+      image: grafana/grafana
+      container_name: grafana
+      volumes:
+        - grafana-data:/usr/share/grafana
+      ports:
+        - 3000:3000
+      networks:
+        - network
+      user: "0"
 volumes:
   es-fuse-data:
     driver: local

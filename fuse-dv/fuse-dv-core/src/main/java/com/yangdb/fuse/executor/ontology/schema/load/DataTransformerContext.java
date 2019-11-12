@@ -20,21 +20,18 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.yangdb.fuse.model.logical.LogicalGraphModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DataTransformerContext {
+public class DataTransformerContext<G> {
     private List<DocumentBuilder> entities;
     private List<DocumentBuilder> relations;
     private Response transformationResponse;
     private ObjectMapper mapper;
-    private LogicalGraphModel graph;
+    private G container;
 
     public DataTransformerContext(ObjectMapper mapper) {
         this.entities = new ArrayList<>();
@@ -44,8 +41,8 @@ public class DataTransformerContext {
     }
 
 
-    public DataTransformerContext withGraph(LogicalGraphModel graph) {
-        this.graph = graph;
+    public DataTransformerContext withContainer(G container) {
+        this.container = container;
         return this;
     }
 
@@ -105,8 +102,8 @@ public class DataTransformerContext {
         return relations;
     }
 
-    public LogicalGraphModel getGraph() {
-        return graph;
+    public G getContainer() {
+        return container;
     }
 
     public Response getTransformationResponse() {

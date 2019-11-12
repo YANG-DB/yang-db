@@ -132,7 +132,7 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
     public LoadResponse<String, FuseError> load(LogicalGraphModel root, Directive directive) {
         BulkRequestBuilder bulk = client.prepareBulk();
         Response upload = new Response("Upload");
-        DataTransformerContext context = transformer.transform(root, directive);
+        DataTransformerContext<LogicalGraphModel> context = transformer.transform(root, directive);
         //populate bulk entities documents index requests
         for (DocumentBuilder documentBuilder : context.getEntities()) {
             try {

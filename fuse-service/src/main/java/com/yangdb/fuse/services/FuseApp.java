@@ -95,6 +95,7 @@ public class FuseApp extends Jooby {
 //        get("/", () ->  Results.redirect("/public/assets/earth.html"));
 //        get("/collision", () ->  Results.redirect("/public/assets/collision.html"));
         get("swagger/swagger.json", () -> Results.redirect("/public/assets/swagger/swagger.json"));
+        get("bigdesk", () -> Results.redirect("/public/assets/bigdesk/index.html"));
 
         //internal quarts reporting job scheduler
         use(new Quartz().with(StatusReportedJob.class));
