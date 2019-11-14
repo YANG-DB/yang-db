@@ -49,9 +49,9 @@ public class HomeAppRegistrar implements AppRegistrar{
                             "<li>BigDesk E/S online Monitor: <a href=\"/bigdesk\">bigDesk</a></li>\n" +
                             "<li><hr></li>"+
                             "<li>Health Url: <a href=\"/fuse/health\">healthUrl</a></li>\n" +
+                            "<li>Statistics Url: <a href=\"/sys/metrics\">statistics</a></li>\n" +
+                            "<li><hr></li>"+
                             "<li>Query Store Url: <a href=\"/fuse/query\">queryStoreUrl</a></li>\n" +
-                            "<li>Search Store Url: <a href=\"/fuse/search\">searchStoreUrl</a></li>\n" +
-                            "<li>Catalog Store Url: <a href=\"/fuse/catalog\">catalogStoreUrl</a></li>\n" +
                             "</ul>\n" +
                             "<p>More at <a href=\"http://yangdb.org\">" +
                             "www.yangdb.org</a>\n" +
