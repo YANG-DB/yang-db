@@ -5,12 +5,11 @@ import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.executor.ontology.schema.load.CSVTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.DataTransformerContext;
 import com.yangdb.fuse.executor.ontology.schema.load.DocumentBuilder;
-import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.Range;
-import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -22,8 +21,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -112,20 +115,272 @@ public class CSVTransformerIT implements BaseITMarker {
         };
     }
 
-
     @Test
-    public void testTransform() throws IOException {
+    public void testDragons() throws IOException {
         IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        EntityTransformer transformer = new EntityTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/csv/Dragons.csv");
-        LogicalGraphModel graphModel = mapper.readValue(stream, LogicalGraphModel.class);
-        DataTransformerContext<LogicalGraphModel> transform = transformer.transform(graphModel, GraphDataLoader.Directive.INSERT);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Dragons.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "Dragon";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(3,testTransform(transform).getEntities().size());
+    }
+
+    @Test
+    public void testPerson() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Persons.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "Person";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(3,testTransform(transform).getEntities().size());
+    }
+
+    @Test
+    public void testGuild() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Guilds.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "Guild";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(3,testTransform(transform).getEntities().size());
+    }
+
+    @Test
+    public void testKingdom() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Kingdom.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "Kingdom";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(4,testTransform(transform).getEntities().size());
+    }
+
+    @Test
+    public void testHorse() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Horses.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "Horse";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(3,testTransform(transform).getEntities().size());
+    }
+
+    @Test
+    public void testFire() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Fire.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "Fire";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(4,testTransform(transform).getRelations().size());
+    }
+
+    @Test
+    public void testFreeze() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Freeze.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "Freeze";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(2,testTransform(transform).getRelations().size());
+    }
+
+    @Test
+    public void testKnows() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Knows.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "Know";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(6,testTransform(transform).getRelations().size());
+    }
+
+    @Test
+    public void testMemberOf() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/MemberOf.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "MemberOf";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(6,testTransform(transform).getRelations().size());
+    }
+
+    @Test
+    public void testOwns() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Owns.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "Own";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(8,testTransform(transform).getRelations().size());
+    }
+
+    @Test
+    public void testRegisteredIn() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/RegisteredIn.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "RegisteredIn";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(14,testTransform(transform).getRelations().size());
+    }
+    @Test
+    public void testSubjectIOf() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/SubjectOf.csv").getPath()));
+        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return "SubjectOf";
+            }
+
+            @Override
+            public Reader content() {
+                return reader;
+            }
+        }, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(6,testTransform(transform).getRelations().size());
+    }
+
+    public DataTransformerContext testTransform(DataTransformerContext<Object> transform) throws IOException {
 
         Assert.assertNotNull(transform);
-        Assert.assertEquals(transform.getEntities().size(), graphModel.getNodes().size());
         transform.getEntities().stream().
                 map(DocumentBuilder::getNode)
                 .forEach(e -> {
@@ -202,7 +457,6 @@ public class CSVTransformerIT implements BaseITMarker {
                     }
                 });
 
-        Assert.assertEquals(transform.getRelations().size(), 2 * graphModel.getEdges().size());
         transform.getRelations()
                 .stream()
                 .map(DocumentBuilder::getNode)
@@ -406,6 +660,6 @@ public class CSVTransformerIT implements BaseITMarker {
                     }
                 });
 
-
+        return transform;
     }
 }

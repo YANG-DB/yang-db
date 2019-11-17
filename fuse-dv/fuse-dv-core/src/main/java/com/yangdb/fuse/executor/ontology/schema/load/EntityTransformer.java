@@ -42,27 +42,19 @@ import com.yangdb.fuse.model.schema.Relation;
 import javaslang.Tuple2;
 import org.elasticsearch.client.Client;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory.*;
+import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.INDEX;
+import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.sdf;
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;
 
 /**
  * translator that takes the specific ontology with the actual schema and translates the logical graph model into a set of (schematic according to real mapping) elastic documents
  */
 public class EntityTransformer implements DataTransformer<DataTransformerContext<LogicalGraphModel>,LogicalGraphModel> {
-    public static final String INDEX = "Index";
-    public static final String TYPE = "type";
-    public static SimpleDateFormat sdf;
-
-    static {
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
 
 
     private final Ontology.Accessor accessor;

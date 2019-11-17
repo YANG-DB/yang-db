@@ -1,0 +1,10 @@
+id,source,source.type,target,target.type,startDate
+REGISTR_H01K02,H01-Dong,Horse,K02-South,Kingdom,12/22/1799
+REGISTR_H02K02,H02-Jersy,Horse,K02-South,Kingdom,2/1/1759
+REGISTR_H03K03,H03-Jojo,Horse,K03-West,Kingdom,31/1/1749
+REGISTR_H03K04,H03-Jojo,Horse,K04-East,Kingdom,31/1/1749
+REGISTR_G01K04,G01-masons,Guild,K03-West,Kingdom,31/1/1000
+REGISTR_G02K03,G02-merchant,Guild,K03-West,Kingdom,31/1/1000
+REGISTR_G03K01,G03-craft,Guild,K01-North,Kingdom,1/1/1100
+
+

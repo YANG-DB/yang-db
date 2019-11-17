@@ -49,10 +49,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -111,6 +109,13 @@ public class RelationshipType {
 
     public List<EPair> getePairs() {
         return ePairs;
+    }
+
+    public Set<String> getSources() {
+        return ePairs.stream().map(EPair::geteTypeA).collect(Collectors.toSet());
+    }
+    public Set<String> getTargets() {
+        return ePairs.stream().map(EPair::geteTypeB).collect(Collectors.toSet());
     }
 
     public void setePairs(List<EPair> ePairs) {

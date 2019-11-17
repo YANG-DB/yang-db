@@ -262,6 +262,19 @@
 
     },
     {
+      "id": "OWN_P02H03",
+      "source": "P02_Mlle.Baptistine",
+      "target": "H03-Jojo",
+      "label": "Own",
+      "metadata": {
+        "value": 1
+      },
+      "properties": {
+        "startDate": "21/11/1870"
+      }
+
+    },
+    {
       "id": "KNOW_P01P02",
       "source": "P01_Napoleon",
       "target": "P02_Mlle.Baptistine",
@@ -501,7 +514,7 @@
     },
     {
       "id": "REGISTR_G02K03",
-      "source": "G01-masons",
+      "source": "G02-merchant",
       "target": "K03-West",
       "label": "RegisteredIn",
       "metadata": {

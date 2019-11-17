@@ -175,8 +175,8 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
         LoadResponse<String, FuseError> response = graphLoader.load(graphModel, GraphDataLoader.Directive.INSERT);
         Assert.assertEquals(2,response.getResponses().size());
 
-        Assert.assertEquals(62,response.getResponses().get(0).getSuccesses().size());
-        Assert.assertEquals(62,response.getResponses().get(1).getSuccesses().size());
+        Assert.assertEquals(64,response.getResponses().get(0).getSuccesses().size());
+        Assert.assertEquals(64,response.getResponses().get(1).getSuccesses().size());
 
         Assert.assertEquals(0,response.getResponses().get(0).getFailures().size());
         Assert.assertEquals(0,response.getResponses().get(1).getFailures().size());

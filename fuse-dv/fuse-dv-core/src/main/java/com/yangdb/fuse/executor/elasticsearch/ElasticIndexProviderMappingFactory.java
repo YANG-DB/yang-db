@@ -21,7 +21,6 @@ package com.yangdb.fuse.executor.elasticsearch;
  */
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -30,7 +29,6 @@ import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.Entity;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.model.schema.Relation;
-import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.Tuple2;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;

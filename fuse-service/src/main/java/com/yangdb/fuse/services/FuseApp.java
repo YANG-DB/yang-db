@@ -91,10 +91,9 @@ public class FuseApp extends Jooby {
 
         use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {
         }));
-//        get("", () ->  Results.redirect("/public/assets/earth.html"));
-//        get("/", () ->  Results.redirect("/public/assets/earth.html"));
-//        get("/collision", () ->  Results.redirect("/public/assets/collision.html"));
+        // swagger support
         get("swagger/swagger.json", () -> Results.redirect("/public/assets/swagger/swagger.json"));
+        // elasticsearch bigDesk support (
         get("bigdesk", () -> Results.redirect("/public/assets/bigdesk/index.html"));
 
         //internal quarts reporting job scheduler

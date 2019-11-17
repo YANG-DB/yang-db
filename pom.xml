@@ -147,8 +147,9 @@
         <!-- com.eaio.uuid -->
         <com.eaio.uuid.version>3.2</com.eaio.uuid.version>
 
-        <!-- opencsv -->
+        <!-- opencsv / common csv  -->
         <opencsv.version>3.8</opencsv.version>
+        <commons.csv.version>1.7</commons.csv.version>
 
         <!-- javaslang -->
         <javaslang.version>2.0.4</javaslang.version>
@@ -552,6 +553,11 @@
             </dependency>
 
             <!-- opencsv -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>${commons.csv.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.opencsv</groupId>
                 <artifactId>opencsv</artifactId>

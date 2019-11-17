@@ -94,6 +94,16 @@ public class DataTransformerContext<G> {
         return this;
     }
 
+    public DocumentBuilder withEntity(DocumentBuilder entity) {
+        getEntities().add(entity);
+        return entity;
+    }
+
+    public DocumentBuilder withRelation(DocumentBuilder relation) {
+        getRelations().add(relation);
+        return relation;
+    }
+
     public List<DocumentBuilder> getEntities() {
         return entities;
     }

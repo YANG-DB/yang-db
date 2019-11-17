@@ -23,6 +23,22 @@ package com.yangdb.fuse.executor.ontology;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
+
 public interface DataTransformer<T,G> {
     T transform(G data, GraphDataLoader.Directive directive);
+
+    class Utils {
+        public static final String INDEX = "Index";
+        public static final String TYPE = "type";
+        public static SimpleDateFormat sdf;
+
+        static {
+            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
+
+
+    }
 }
