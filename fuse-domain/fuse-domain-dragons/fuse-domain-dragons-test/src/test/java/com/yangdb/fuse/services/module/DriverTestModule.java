@@ -13,7 +13,10 @@ import com.yangdb.fuse.executor.cursor.discrete.GraphTraversalCursor;
 import com.yangdb.fuse.executor.cursor.discrete.PathsTraversalCursor;
 import com.yangdb.fuse.executor.mock.elasticsearch.MockClient;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
+import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
+import com.yangdb.fuse.executor.ontology.schema.load.VoidGraphInitiator;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.yangdb.fuse.services.dispatcher.driver.MockDriver;
@@ -39,7 +42,11 @@ public class DriverTestModule extends ModuleBase {
         binder.bind(GraphElementSchemaProviderFactory.class)
                 .toInstance(ontology -> new OntologySchemaProvider(ontology, new M2DragonsPhysicalSchemaProvider()));
         binder.bind(Client.class).toInstance(new MockClient());
-        binder.bind(GraphDataLoader.class).toInstance(new InitialTestDataLoader(null, null));
+
+        InitialTestDataLoader loader = new InitialTestDataLoader(null, null);
+        binder.bind(GraphDataLoader.class).toInstance(loader);
+        binder.bind(CSVDataLoader.class).toInstance(loader);
+        binder.bind(GraphInitiator.class).toInstance(new VoidGraphInitiator());
 
         Multibinder.newSetBinder(binder, CompositeCursorFactory.Binding.class).addBinding().toInstance(new CompositeCursorFactory.Binding(
                 CreatePathsCursorRequest.CursorType,

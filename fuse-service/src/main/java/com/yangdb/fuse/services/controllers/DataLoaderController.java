@@ -34,7 +34,9 @@ import java.io.File;
 public interface DataLoaderController {
 
     ContentResponse<String> init(String ontology);
-    ContentResponse<LoadResponse<String, FuseError>> load(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive);
-    ContentResponse<LoadResponse<String, FuseError>> load(String ontology, File data, GraphDataLoader.Directive directive);
     ContentResponse<String> drop(String ontology);
+
+    ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive);
+    ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, File data, GraphDataLoader.Directive directive);
+    ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, File data, GraphDataLoader.Directive directive);
 }

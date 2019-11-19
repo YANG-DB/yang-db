@@ -60,18 +60,27 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
     //region AppControllerRegistrarBase Implementation
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
-        /** get the health status of the service */
+        // Initiate Graph
         app.get("/fuse/load/ontology/:id/init",
                 req -> Results.with(this.getController(app).init(req.param("id").value())));
+        app.get("/fuse/load/ontology/:id/drop",
+                req -> Results.with(this.getController(app).drop(req.param("id").value())));
 
-        app.post("/fuse/load/ontology/:id/upload",
+        // Upload data
+        app.post("/fuse/load/ontology/:id/graph/load",
+                req -> Results.json(this.getController(app)
+                        .loadGraph(req.param("id").value(), req.body(LogicalGraphModel.class),
+                                req.param("directive").isSet() ?
+                                        GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT )));
+
+        app.post("/fuse/load/ontology/:id/graph/upload",
                 req -> {
                     Upload upload = req.file("file");
                     try {
                         //todo check file type -> process zipped file
                         File file = upload.file();
                         return Results.json(this.getController(app)
-                                .load(req.param("id").value(), file,
+                                .loadGraph(req.param("id").value(), file,
                                         req.param("directive").isSet() ?
                                                 GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT ));
                     } finally {
@@ -79,14 +88,22 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                     }
                 });
 
-        app.post("/fuse/load/ontology/:id/load",
-                req -> Results.json(this.getController(app)
-                        .load(req.param("id").value(), req.body(LogicalGraphModel.class),
-                                req.param("directive").isSet() ?
-                                        GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT )));
-
-        app.get("/fuse/load/ontology/:id/drop",
-                req -> Results.with(this.getController(app).drop(req.param("id").value())));
+        app.post("/fuse/load/ontology/:id/csv/upload",
+                req -> {
+                    Upload upload = req.file("file");
+                    try {
+                        //todo check file type -> process zipped file
+                        File file = upload.file();
+                        return Results.json(this.getController(app)
+                                .loadCsv(req.param("id").value(),
+                                        req.param("type").value(),
+                                        file,
+                                        req.param("directive").isSet() ?
+                                                GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT ));
+                    } finally {
+                        upload.close();
+                    }
+                });
     }
     //endregion
 }

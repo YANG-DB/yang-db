@@ -35,6 +35,6 @@ public interface CSVDataLoader {
      *      - convert into bulk set
      *      - commit to repository
      */
-    LoadResponse<String, FuseError> load(File data, GraphDataLoader.Directive directive) throws IOException;
+    LoadResponse<String, FuseError> load(String type, File data, GraphDataLoader.Directive directive) throws IOException;
 
 }

@@ -22,7 +22,9 @@ package com.yangdb.fuse.services.controllers;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
 import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -44,8 +46,12 @@ public class StandardDataLoaderController implements DataLoaderController {
     //region Constructors
     @Inject
     public StandardDataLoaderController(OntologyProvider ontologyProvider,
+                                        GraphInitiator initiator,
+                                        CSVDataLoader csvDataLoader,
                                         GraphDataLoader graphDataLoader) {
         this.ontologyProvider = ontologyProvider;
+        this.initiator = initiator;
+        this.csvDataLoader = csvDataLoader;
         this.graphDataLoader = graphDataLoader;
     }
     //endregion
@@ -53,7 +59,7 @@ public class StandardDataLoaderController implements DataLoaderController {
     //region CatalogController Implementation
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
@@ -90,6 +96,42 @@ public class StandardDataLoaderController implements DataLoaderController {
     }
 
     @Override
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, File data, GraphDataLoader.Directive directive) {
+        if (ontologyProvider.get(ontology).isPresent()) {
+            try {
+                return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
+                        .data(Optional.of(this.csvDataLoader.load(type,data, directive)))
+                        .compose();
+            } catch (IOException e) {
+                return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
+                        .data(Optional.of(new LoadResponse<String, FuseError>() {
+                            @Override
+                            public List<CommitResponse<String, FuseError>> getResponses() {
+                                return Collections.singletonList(new CommitResponse<String, FuseError>() {
+                                    @Override
+                                    public List<String> getSuccesses() {
+                                        return Collections.emptyList();
+                                    }
+
+                                    @Override
+                                    public List<FuseError> getFailures() {
+                                        return Collections.singletonList(new FuseError(e.getMessage(),e));
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public LoadResponse response(CommitResponse<String, FuseError> response) {
+                                return this;
+                            }
+                        }))
+                        .compose();
+            }
+        }
+        return ContentResponse.notFound();
+    }
+
+    @Override
     /**
      * does:
      *  - unzip file
@@ -98,7 +140,7 @@ public class StandardDataLoaderController implements DataLoaderController {
      *      - convert into bulk set
      *      - commit to repository
      */
-    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, File data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, File data, GraphDataLoader.Directive directive) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
@@ -138,7 +180,7 @@ public class StandardDataLoaderController implements DataLoaderController {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<String>builder(OK, NOT_FOUND)
-                        .data(Optional.of("indices created:" + this.graphDataLoader.init()))
+                        .data(Optional.of("indices created:" + this.initiator.init()))
                         .compose();
             } catch (IOException e) {
                 return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)
@@ -155,7 +197,7 @@ public class StandardDataLoaderController implements DataLoaderController {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<String>builder(OK, NOT_FOUND)
-                        .data(Optional.of("indices dropped:" + this.graphDataLoader.drop()))
+                        .data(Optional.of("indices dropped:" + this.initiator.drop()))
                         .compose();
             } catch (IOException e) {
                 return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)
@@ -173,6 +215,8 @@ public class StandardDataLoaderController implements DataLoaderController {
 
     //region Fields
     private OntologyProvider ontologyProvider;
+    private final GraphInitiator initiator;
+    private final CSVDataLoader csvDataLoader;
     private GraphDataLoader graphDataLoader;
 
     //endregion

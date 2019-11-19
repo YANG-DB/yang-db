@@ -62,7 +62,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
 
     //region CatalogController Implementation
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive) {
         return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
@@ -70,11 +70,11 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.load(ontology, data,directive ), this.resultHandler());
+                .decorate(() -> this.controller.loadGraph(ontology, data,directive ), this.resultHandler());
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> load(String ontology, File data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, File data, GraphDataLoader.Directive directive) {
         return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
@@ -82,7 +82,19 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.load(ontology, data,directive ), this.resultHandler());
+                .decorate(() -> this.controller.loadGraph(ontology, data,directive ), this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, File data, GraphDataLoader.Directive directive) {
+        return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
+                this.logger,
+                this.metricRegistry,
+                load,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.loadCsv(ontology,type , data, directive), this.resultHandler());
     }
 
     @Override

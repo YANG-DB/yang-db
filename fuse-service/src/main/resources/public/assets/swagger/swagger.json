@@ -920,7 +920,7 @@
         }
       }
     },
-    "/load/ontology/{id}/load": {
+    "/load/ontology/{id}/graph/load": {
       "post": {
         "tags": [
           "load"
@@ -962,7 +962,7 @@
         }
       }
     },
-    "/load/ontology/{id}/upload": {
+    "/load/ontology/{id}/graph/upload": {
       "post": {
         "tags": [
           "upload"
@@ -993,6 +993,54 @@
           }
         ],
         "description": "Load Logical graph into DB according to specific ontology Transformer ",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/csv/upload": {
+      "post": {
+        "tags": [
+          "upload"
+        ],
+        "summary": "Upload json/zip File with CSV file into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "consumes": ["multipart/form-data","application/x-www-form-urlencoded"],
+        "parameters": [
+          {
+            "name": "directive",
+            "in": "query",
+            "description": "Directive [UPSERT/INSERT] ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "File Ontological label",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "file",
+            "description": "file",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "description": "Load CSV into DB according to specific ontology Transformer ",
         "responses": {
           "200": {
             "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"

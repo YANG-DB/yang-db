@@ -39,7 +39,7 @@ import java.util.stream.StreamSupport;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
+public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
     private static Client client;
 
     private static ObjectMapper mapper = new ObjectMapper();
@@ -49,7 +49,6 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
     private static Config config;
     private static OntologyProvider ontologyProvider;
     private static IndexProviderIfc providerIfc;
-    private static GraphInitiator initiator;
 
 
     @BeforeClass
@@ -122,9 +121,6 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
                         .collect(Collectors.toSet());
             }
         };
-        //init graph indices
-        initiator = new DefaultGraphInitiator(config,client,providerIfc,ontologyProvider,schema);
-        initiator.init();
 
     }
 
@@ -134,6 +130,7 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
         Set<String> strings = Arrays.asList("idx_fire_500","idx_freeze_2000","idx_fire_1500","idx_freeze_1000","guilds","own","subjectof","idx_freeze_1500","idx_fire_2000","people","idx_fire_1000","idx_freeze_500","kingdoms","know","originatedin","registeredin","memberof","horses","dragons").stream().collect(Collectors.toSet());
         Assert.assertEquals(strings,StreamSupport.stream(schema.indices().spliterator(),false).collect(Collectors.toSet()));
     }
+
 
     @Test
     public void testLoad() throws IOException {

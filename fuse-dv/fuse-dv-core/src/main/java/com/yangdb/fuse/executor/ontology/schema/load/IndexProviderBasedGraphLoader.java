@@ -62,8 +62,14 @@ import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extractFile;
 
+/**
+ * Loader for Graph Data Model to E/S
+ *  - load directly with Json structure
+ *  - load with file
+ */
 public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, FuseError> {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    public static final int NUM_IDS = 1000;
     private static Map<String, Range.StatefulRange> ranges = new HashMap<>();
 
     static {
@@ -73,59 +79,18 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
     private Client client;
     private EntityTransformer transformer;
     private RawSchema schema;
-    private IndexProvider indexProvider;
     private ObjectMapper mapper;
     private IdGeneratorDriver<Range> idGenerator;
-    private ElasticIndexProviderMappingFactory mappingFactory;
 
 
     @Inject
-    public IndexProviderBasedGraphLoader(Config config, Client client, OntologyProvider ontology, EntityTransformer transformer, RawSchema schema, IndexProviderIfc indexProviderFactory, IdGeneratorDriver<Range> idGenerator) {
-        String assembly = config.getString("assembly");
-            this.client = client;
-        this.transformer = transformer;
+    public IndexProviderBasedGraphLoader(Client client, EntityTransformer transformer, RawSchema schema, IdGeneratorDriver<Range> idGenerator) {
+        this.client = client;
         this.schema = schema;
-        this.indexProvider = indexProviderFactory.get(assembly)
-                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Index Provider present for assembly", "No Index Provider present for assembly" + assembly)));
-        Ontology ont = ontology.get(assembly)
-                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly)));
+        this.transformer = transformer;
         this.idGenerator = idGenerator;
         this.mapper = new ObjectMapper();
-        this.mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ont, indexProvider);
 
-    }
-
-
-    @Override
-    public long init() {
-        //generate mappings
-        List<Tuple2<String, Boolean>> mappingResults = mappingFactory.generateMappings();
-        //todo log indices names
-        //create indices
-        Iterable<String> allIndices = schema.indices();
-
-        Stream.ofAll(allIndices)
-                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
-                .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-        Stream.ofAll(allIndices).forEach(index -> client.admin().indices()
-                .create(new CreateIndexRequest(index.toLowerCase())).actionGet());
-
-        //refresh cluster
-        client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
-        return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
-
-    }
-
-    @Override
-    public long drop() {
-        Iterable<String> indices = schema.indices();
-        Stream.ofAll(indices)
-                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
-                .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-
-        //refresh cluster
-        client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
-        return Stream.ofAll(indices).count(s -> !s.isEmpty());
     }
 
     @Override
@@ -133,6 +98,33 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         BulkRequestBuilder bulk = client.prepareBulk();
         Response upload = new Response("Upload");
         DataTransformerContext<LogicalGraphModel> context = transformer.transform(root, directive);
+        //load bulk requests
+        load(bulk, upload, context);
+        //submit bulk request
+        submit(bulk, upload);
+
+        return new LoadResponseImpl().response(context.getTransformationResponse()).response(upload);
+    }
+
+    private void submit(BulkRequestBuilder bulk, Response upload) {
+        //bulk index data
+        BulkResponse responses = bulk.get();
+        final BulkItemResponse[] items = responses.getItems();
+        for (BulkItemResponse item : items) {
+            if (!item.isFailed()) {
+                upload.success(item.getId());
+            } else {
+                //log error
+                BulkItemResponse.Failure failure = item.getFailure();
+                DocWriteRequest<?> request = bulk.request().requests().get(item.getItemId());
+                //todo - get TechId from request
+                upload.failure(new FuseError("commit failed", failure.toString()));
+            }
+
+        }
+    }
+
+    private void load(BulkRequestBuilder bulk, Response upload, DataTransformerContext<LogicalGraphModel> context) {
         //populate bulk entities documents index requests
         for (DocumentBuilder documentBuilder : context.getEntities()) {
             try {
@@ -149,26 +141,9 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
                 upload.failure(err.getError());
             }
         }
-
-        //bulk index data
-        BulkResponse responses = bulk.get();
-        final BulkItemResponse[] items = responses.getItems();
-        for (BulkItemResponse item : items) {
-            if (!item.isFailed()) {
-                upload.success(item.getId());
-            } else {
-                //log error
-                BulkItemResponse.Failure failure = item.getFailure();
-                DocWriteRequest<?> request = bulk.request().requests().get(item.getItemId());
-                //todo - get TechId from request
-                upload.failure(new FuseError("commit failed", failure.toString()));
-            }
-
-        }
-        return new LoadResponseImpl().response(context.getTransformationResponse()).response(upload);
     }
 
-    private IndexRequestBuilder buildIndexRequest(BulkRequestBuilder bulk, DocumentBuilder node) {
+    public IndexRequestBuilder buildIndexRequest(BulkRequestBuilder bulk, DocumentBuilder node) {
         try {
             String index = resolveIndex(node);
             IndexRequestBuilder request = client.prepareIndex()
@@ -228,15 +203,16 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         return load(root, directive);
     }
 
+
     public Range.StatefulRange getRange(String type) {
         //init ranges
         Range.StatefulRange statefulRange = ranges.computeIfAbsent(type,
-                s -> new Range.StatefulRange(idGenerator.getNext(type, 1000)));
+                s -> new Range.StatefulRange(idGenerator.getNext(type, NUM_IDS)));
 
         if (statefulRange.hasNext())
             return statefulRange;
         //update ranges
-        ranges.put(type, new Range.StatefulRange(idGenerator.getNext(type, 1000)));
+        ranges.put(type, new Range.StatefulRange(idGenerator.getNext(type, NUM_IDS)));
         //return next range
         return ranges.get(type);
     }

@@ -29,13 +29,6 @@ import java.io.IOException;
  * Created by lior.perry on 2/11/2018.
  */
 public interface GraphDataLoader<S,F> {
-    /**
-     * create the indexTemplates
-     * create the vertices and edges indices according to schema
-     * @return
-     * @throws IOException
-     */
-    long init() throws IOException;
 
     /**
      * load the given input json graph - all must comply with the ontology and physical schema bounded
@@ -132,13 +125,6 @@ public interface GraphDataLoader<S,F> {
      *      - commit to repository
      */
     LoadResponse<S, F> load(File data, Directive directive) throws IOException;
-
-    /**
-     * drop the vertices and edges indices to schema
-     * @return
-     * @throws IOException
-     */
-    long drop() throws IOException;
 
     enum Directive {
         INSERT,UPSERT

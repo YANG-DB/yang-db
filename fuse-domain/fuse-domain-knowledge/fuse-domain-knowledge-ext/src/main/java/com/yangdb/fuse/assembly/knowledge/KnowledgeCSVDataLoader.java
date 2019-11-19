@@ -29,9 +29,7 @@ import com.yangdb.fuse.assembly.knowledge.load.KnowledgeTransformer;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerProvider;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
-import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
-import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
-import com.yangdb.fuse.executor.ontology.schema.load.Response;
+import com.yangdb.fuse.executor.ontology.schema.load.*;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
@@ -54,7 +52,7 @@ import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.com
 /**
  * Created by lior.perry on 2/11/2018.
  */
-public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
+public class KnowledgeCSVDataLoader implements CSVDataLoader {
     public static final String RELATIONS = "Relations";
     public static final String ENTITIES = "Entities";
     public static final String E_VALUES = "eValues";
@@ -72,7 +70,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     private ObjectMapper mapper;
 
     @Inject
-    public KnowledgeDataLoader(Config config, Client client, RawSchema schema, OntologyTransformerProvider transformerProvider, IdGeneratorDriver<Range> idGenerator) {
+    public KnowledgeCSVDataLoader(Config config, Client client, RawSchema schema, OntologyTransformerProvider transformerProvider, IdGeneratorDriver<Range> idGenerator) {
         this.schema = schema;
         this.mapper = new ObjectMapper();
         //load knowledge transformer
@@ -84,51 +82,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     }
 
 
-    /**
-     * transform json graph and load all data to designated indices according to schema
-     *
-     * @param root graph document
-     * @param directive
-     * @return
-     */
-    public LoadResponse<String, FuseError> load(LogicalGraphModel root, Directive directive) throws JsonProcessingException {
-        final KnowledgeContext context = transformer.transform(root, directive);
-        List<String> success = new ArrayList<>();
-        success.add(ENTITIES + ":" +context.getEntities().size());
-        success.add(RELATIONS + ":" +context.getRelations().size());
-        success.add(E_VALUES + ":" +context.geteValues().size());
-        success.add(R_VALUES + ":" +context.getrValues().size());
 
-        Response transformationFailed = new Response("logicalTransformation")
-                .success(success).failure(context.getFailed());
-
-        //load all data to designated indices according to schema
-        return commit(client, schema, mapper, context, directive)
-                .response(transformationFailed);
-    }
-
-    @Override
-    public LoadResponse<String, FuseError> load(File data, Directive directive) throws IOException {
-        String contentType = Files.probeContentType(data.toPath());
-        if (Arrays.asList("application/gzip", "application/zip").contains(contentType)) {
-            ByteArrayOutputStream stream = null; //unzip
-            switch (contentType) {
-                case "application/gzip":
-                    stream = extractFile(new GZIPInputStream(Files.newInputStream(data.toPath())));
-                    break;
-                case "application/zip":
-                    stream = extractFile(new ZipInputStream(Files.newInputStream(data.toPath())));
-                    break;
-            }
-
-            String graph = new String(stream.toByteArray());
-            return load(mapper.readValue(graph, LogicalGraphModel.class), directive);
-        }
-        String graph = new String(Files.readAllBytes(data.toPath()));
-        //read
-        LogicalGraphModel root = mapper.readValue(graph, LogicalGraphModel.class);
-        return load(root, directive);
-    }
 
     private ByteArrayOutputStream extractFile(InflaterInputStream zipIn) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -142,4 +96,10 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
         return stream;
     }
 
+    @Override
+    public LoadResponse<String, FuseError> load(String type, File data, GraphDataLoader.Directive directive) throws IOException {
+        //todo
+        return new LoadResponseImpl().response(LoadResponse.CommitResponse.EMPTY);
+
+    }
 }

@@ -1,8 +1,8 @@
-package com.yangdb.fuse.executor.ontology.schema.load;
+package com.yangdb.fuse.assembly.knowledge;
 
 /*-
  * #%L
- * fuse-dv-core
+ * fuse-domain-knowledge-ext
  * %%
  * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
@@ -20,31 +20,34 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
-import com.yangdb.fuse.model.logical.LogicalGraphModel;
+import com.google.inject.Inject;
+import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
+import org.elasticsearch.client.Client;
 
-import java.io.File;
 import java.io.IOException;
 
-public class VoidGraphDataLoader implements GraphDataLoader {
-    //region GraphDataLoader Implementation
+public class KnowledgeGraphInitiator implements GraphInitiator {
+
+    private final Client client;
+    private final RawSchema schema;
+
+    @Inject
+    public KnowledgeGraphInitiator(Client client,RawSchema schema) {
+        this.client = client;
+        this.schema = schema;
+    }
+
     @Override
     public long init() throws IOException {
-        return 0;
-    }
-
-    @Override
-    public LoadResponse load(LogicalGraphModel root, Directive directive) throws IOException {
-        return LoadResponse.EMPTY;
-    }
-
-    @Override
-    public LoadResponse load(File data, Directive directive) throws IOException {
-        return LoadResponse.EMPTY;
+        return DataLoaderUtils.init(client,schema);
     }
 
     @Override
     public long drop() throws IOException {
-        return 0;
+        return DataLoaderUtils.drop(client,schema);
     }
-    //endregion
+
+
 }

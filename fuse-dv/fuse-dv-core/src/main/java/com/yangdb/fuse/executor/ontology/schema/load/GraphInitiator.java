@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.ontology;
+package com.yangdb.fuse.executor.ontology.schema.load;
 
 /*-
  * #%L
@@ -20,24 +20,23 @@ package com.yangdb.fuse.executor.ontology;
  * #L%
  */
 
-import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import java.io.IOException;
 
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
+public interface GraphInitiator {
 
-public interface DataTransformer<T,G> {
-    T transform(G data, GraphDataLoader.Directive directive);
+    /**
+     * create the indexTemplates
+     * create the vertices and edges indices according to schema
+     * @return
+     * @throws IOException
+     */
+    long init() throws IOException;
 
-    class Utils {
-        public static final String INDEX = "Index";
-        public static final String TYPE = "type";
-        public static SimpleDateFormat sdf;
+    /**
+     * drop the vertices and edges indices to schema
+     * @return
+     * @throws IOException
+     */
+    long drop() throws IOException;
 
-        static {
-            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        }
-
-
-    }
 }

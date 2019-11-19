@@ -48,7 +48,10 @@ import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.UniGraphProvider;
 import com.yangdb.fuse.executor.ontology.schema.*;
+import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.DefaultGraphInitiator;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
 import com.yangdb.fuse.executor.resource.PersistantResourceStore;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
@@ -76,7 +79,9 @@ public class ExecutorModule extends ModuleBase {
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         bindGraphWriters(env, conf, binder);
         bindResourceManager(env, conf, binder);
-        bindInitialDataLoader(env, conf, binder);
+        bindGraphInitiator(env, conf, binder);
+        bindGraphDataLoader(env, conf, binder);
+        bindCSVDataLoader(env, conf, binder);
         bindCursorFactory(env, conf, binder);
         bindElasticClient(env, conf, binder);
         bindRawSchema(env, conf, binder);
@@ -112,14 +117,44 @@ public class ExecutorModule extends ModuleBase {
 
     }
 
-    protected void bindInitialDataLoader(Env env, Config conf, Binder binder) {
+    protected void bindGraphInitiator(Env env, Config conf, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                try {
+                    this.bind(GraphInitiator.class)
+                            .to(getGraphInitiator(conf));
+                    this.expose(GraphInitiator.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    protected void bindGraphDataLoader(Env env, Config conf, Binder binder) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
                 try {
                     this.bind(GraphDataLoader.class)
-                            .to(getInitialDataLoader(conf));
+                            .to(getGraphDataLoader(conf));
                     this.expose(GraphDataLoader.class);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+    protected void bindCSVDataLoader(Env env, Config conf, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                try {
+                    this.bind(CSVDataLoader.class)
+                            .to(getCSVDataLoader(conf));
+                    this.expose(CSVDataLoader.class);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -282,8 +317,16 @@ public class ExecutorModule extends ModuleBase {
         return (Class<? extends RawSchema>) Class.forName(conf.getString(conf.getString("assembly") + ".physical_raw_schema"));
     }
 
-    private Class<? extends GraphDataLoader> getInitialDataLoader(Config conf) throws ClassNotFoundException {
+    private Class<? extends GraphDataLoader> getGraphDataLoader(Config conf) throws ClassNotFoundException {
         return (Class<? extends GraphDataLoader>) (Class.forName(conf.getString(conf.getString("assembly") + ".physical_schema_data_loader")));
+    }
+
+    private Class<? extends GraphInitiator> getGraphInitiator(Config conf) throws ClassNotFoundException {
+        return (Class<? extends GraphInitiator>) (Class.forName(conf.getString(conf.getString("assembly") + ".physical_schema_initiator")));
+    }
+
+    private Class<? extends CSVDataLoader> getCSVDataLoader(Config conf) throws ClassNotFoundException {
+        return (Class<? extends CSVDataLoader>) (Class.forName(conf.getString(conf.getString("assembly") + ".physical_schema_csv_data_loader")));
     }
 
     private Class<? extends SearchOrderProviderFactory> getSearchOrderProvider(Config conf) throws ClassNotFoundException {

@@ -31,8 +31,6 @@ import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
-import com.yangdb.fuse.model.logical.LogicalGraphModel;
-import com.yangdb.fuse.model.logical.LogicalNode;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.RelationshipType;
@@ -48,17 +46,14 @@ import org.apache.commons.csv.CSVRecord;
 import org.elasticsearch.client.Client;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory.*;
-import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.*;
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.TYPE;
+import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.sdf;
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;
 
 public class CSVTransformer implements DataTransformer<DataTransformerContext, CSVTransformer.CsvElement> {
