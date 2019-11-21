@@ -74,6 +74,18 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
     }
 
     @Override
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String data, GraphDataLoader.Directive directive) {
+        return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
+                this.logger,
+                this.metricRegistry,
+                load,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.loadCsv(ontology,type, data,directive ), this.resultHandler());
+    }
+
+    @Override
     public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, File data, GraphDataLoader.Directive directive) {
         return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,

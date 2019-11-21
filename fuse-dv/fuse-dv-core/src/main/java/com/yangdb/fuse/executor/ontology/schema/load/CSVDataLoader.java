@@ -20,6 +20,7 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
+import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 
 import java.io.File;
@@ -36,5 +37,13 @@ public interface CSVDataLoader {
      *      - commit to repository
      */
     LoadResponse<String, FuseError> load(String type, File data, GraphDataLoader.Directive directive) throws IOException;
+
+    /**
+     * does:
+     *      - given string representation of csv file,
+     *      - convert into bulk set
+     *      - commit to repository
+     */
+    LoadResponse<String, FuseError> load(String type,String payload, GraphDataLoader.Directive directive) throws IOException;
 
 }

@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,7 +63,7 @@ public class StandardDataLoaderController implements DataLoaderController {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                        .data(Optional.of(this.graphDataLoader.load(data, directive )))
+                        .data(Optional.of(this.graphDataLoader.load(data, directive)))
                         .compose();
             } catch (IOException e) {
                 return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
@@ -78,7 +78,7 @@ public class StandardDataLoaderController implements DataLoaderController {
 
                                     @Override
                                     public List<FuseError> getFailures() {
-                                        return Collections.singletonList(new FuseError(e.getMessage(),e));
+                                        return Collections.singletonList(new FuseError(e.getMessage(), e));
                                     }
                                 });
                             }
@@ -96,11 +96,11 @@ public class StandardDataLoaderController implements DataLoaderController {
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, File data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String data, GraphDataLoader.Directive directive) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                        .data(Optional.of(this.csvDataLoader.load(type,data, directive)))
+                        .data(Optional.of(this.csvDataLoader.load(type, data, directive)))
                         .compose();
             } catch (IOException e) {
                 return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
@@ -115,7 +115,43 @@ public class StandardDataLoaderController implements DataLoaderController {
 
                                     @Override
                                     public List<FuseError> getFailures() {
-                                        return Collections.singletonList(new FuseError(e.getMessage(),e));
+                                        return Collections.singletonList(new FuseError(e.getMessage(), e));
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public LoadResponse response(CommitResponse<String, FuseError> response) {
+                                return this;
+                            }
+                        }))
+                        .compose();
+            }
+        }
+        return ContentResponse.notFound();
+    }
+
+    @Override
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, File data, GraphDataLoader.Directive directive) {
+        if (ontologyProvider.get(ontology).isPresent()) {
+            try {
+                return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
+                        .data(Optional.of(this.csvDataLoader.load(type, data, directive)))
+                        .compose();
+            } catch (IOException e) {
+                return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
+                        .data(Optional.of(new LoadResponse<String, FuseError>() {
+                            @Override
+                            public List<CommitResponse<String, FuseError>> getResponses() {
+                                return Collections.singletonList(new CommitResponse<String, FuseError>() {
+                                    @Override
+                                    public List<String> getSuccesses() {
+                                        return Collections.emptyList();
+                                    }
+
+                                    @Override
+                                    public List<FuseError> getFailures() {
+                                        return Collections.singletonList(new FuseError(e.getMessage(), e));
                                     }
                                 });
                             }
@@ -159,7 +195,7 @@ public class StandardDataLoaderController implements DataLoaderController {
 
                                     @Override
                                     public List<FuseError> getFailures() {
-                                        return Collections.singletonList(new FuseError(e.getMessage(),e));
+                                        return Collections.singletonList(new FuseError(e.getMessage(), e));
                                     }
                                 });
                             }

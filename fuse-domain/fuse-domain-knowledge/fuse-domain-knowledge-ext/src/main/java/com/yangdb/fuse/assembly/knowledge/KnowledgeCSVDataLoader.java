@@ -81,25 +81,16 @@ public class KnowledgeCSVDataLoader implements CSVDataLoader {
         this.client = client;
     }
 
-
-
-
-    private ByteArrayOutputStream extractFile(InflaterInputStream zipIn) throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        BufferedOutputStream bos = new BufferedOutputStream(stream);
-        byte[] bytesIn = new byte[4096];
-        int read = 0;
-        while ((read = zipIn.read(bytesIn)) != -1) {
-            bos.write(bytesIn, 0, read);
-        }
-        bos.close();
-        return stream;
-    }
-
     @Override
     public LoadResponse<String, FuseError> load(String type, File data, GraphDataLoader.Directive directive) throws IOException {
         //todo
-        return new LoadResponseImpl().response(LoadResponse.CommitResponse.EMPTY);
+        return LoadResponse.EMPTY;
 
+    }
+
+    @Override
+    public LoadResponse<String, FuseError> load(String type, String payload, GraphDataLoader.Directive directive) throws IOException {
+        //todo
+        return LoadResponse.EMPTY;
     }
 }

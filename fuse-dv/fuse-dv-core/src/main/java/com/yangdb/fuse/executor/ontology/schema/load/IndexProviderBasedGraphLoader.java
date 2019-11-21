@@ -108,19 +108,23 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
 
     private void submit(BulkRequestBuilder bulk, Response upload) {
         //bulk index data
-        BulkResponse responses = bulk.get();
-        final BulkItemResponse[] items = responses.getItems();
-        for (BulkItemResponse item : items) {
-            if (!item.isFailed()) {
-                upload.success(item.getId());
-            } else {
-                //log error
-                BulkItemResponse.Failure failure = item.getFailure();
-                DocWriteRequest<?> request = bulk.request().requests().get(item.getItemId());
-                //todo - get TechId from request
-                upload.failure(new FuseError("commit failed", failure.toString()));
-            }
+        try {
+            BulkResponse responses = bulk.get();
+            final BulkItemResponse[] items = responses.getItems();
+            for (BulkItemResponse item : items) {
+                if (!item.isFailed()) {
+                    upload.success(item.getId());
+                } else {
+                    //log error
+                    BulkItemResponse.Failure failure = item.getFailure();
+                    DocWriteRequest<?> request = bulk.request().requests().get(item.getItemId());
+                    //todo - get TechId from request
+                    upload.failure(new FuseError("commit failed", failure.toString()));
+                }
 
+            }
+        }catch (Exception err) {
+            upload.failure(new FuseError("commit failed", err.toString()));
         }
     }
 

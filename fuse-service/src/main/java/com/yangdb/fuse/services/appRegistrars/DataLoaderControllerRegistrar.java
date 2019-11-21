@@ -73,6 +73,15 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                                 req.param("directive").isSet() ?
                                         GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT )));
 
+
+       app.post("/fuse/load/ontology/:id/csv/load",
+                req -> Results.json(this.getController(app)
+                        .loadCsv(req.param("id").value(),
+                                req.param("type").value(),
+                                req.body(String.class),
+                                req.param("directive").isSet() ?
+                                GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT )));
+
         app.post("/fuse/load/ontology/:id/graph/upload",
                 req -> {
                     Upload upload = req.file("file");

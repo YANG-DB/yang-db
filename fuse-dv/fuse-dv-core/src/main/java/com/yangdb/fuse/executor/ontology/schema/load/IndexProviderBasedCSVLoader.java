@@ -100,6 +100,23 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
         return load(context, directive);
     }
 
+    @Override
+    public LoadResponse<String, FuseError> load(String type, String payload, GraphDataLoader.Directive directive) throws IOException {
+        //todo
+        DataTransformerContext context = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String type() {
+                return type;
+            }
+
+            @Override
+            public Reader content() {
+                return new StringReader(payload);
+            }
+        }, directive);
+        return load(context, directive);
+    }
+
     /**
      * load data into E/S
      *
@@ -121,19 +138,23 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
 
     private void submit(BulkRequestBuilder bulk, Response upload) {
         //bulk index data
-        BulkResponse responses = bulk.get();
-        final BulkItemResponse[] items = responses.getItems();
-        for (BulkItemResponse item : items) {
-            if (!item.isFailed()) {
-                upload.success(item.getId());
-            } else {
-                //log error
-                BulkItemResponse.Failure failure = item.getFailure();
-                DocWriteRequest<?> request = bulk.request().requests().get(item.getItemId());
-                //todo - get TechId from request
-                upload.failure(new FuseError("commit failed", failure.toString()));
-            }
+        try {
+            BulkResponse responses = bulk.get();
+            final BulkItemResponse[] items = responses.getItems();
+            for (BulkItemResponse item : items) {
+                if (!item.isFailed()) {
+                    upload.success(item.getId());
+                } else {
+                    //log error
+                    BulkItemResponse.Failure failure = item.getFailure();
+                    DocWriteRequest<?> request = bulk.request().requests().get(item.getItemId());
+                    //todo - get TechId from request
+                    upload.failure(new FuseError("commit failed", failure.toString()));
+                }
 
+            }
+        } catch (Exception err) {
+            upload.failure(new FuseError("commit failed", err.toString()));
         }
     }
 
