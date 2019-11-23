@@ -78,9 +78,9 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                 req -> Results.json(this.getController(app)
                         .loadCsv(req.param("id").value(),
                                 req.param("type").value(),
-                                req.body(String.class),
-                                req.param("directive").isSet() ?
-                                GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT )));
+                                req.param("label").value(),
+                                req.body(String.class), req.param("directive").isSet() ?
+                                GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT)));
 
         app.post("/fuse/load/ontology/:id/graph/upload",
                 req -> {
@@ -106,9 +106,9 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                         return Results.json(this.getController(app)
                                 .loadCsv(req.param("id").value(),
                                         req.param("type").value(),
-                                        file,
-                                        req.param("directive").isSet() ?
-                                                GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT ));
+                                        req.param("label").value(),
+                                        file, req.param("directive").isSet() ?
+                                                GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT));
                     } finally {
                         upload.close();
                     }

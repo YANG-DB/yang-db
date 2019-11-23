@@ -54,7 +54,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
-        ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
+        ResultResourceInfo<String> info = fuseClient.uploadGraphFile(DRAGONS, stream);
         Assert.assertFalse(info.isError());
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
@@ -80,7 +80,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
-        ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
+        ResultResourceInfo<String> info = fuseClient.uploadGraphFile(DRAGONS, stream);
         Assert.assertFalse(info.isError());
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
@@ -112,7 +112,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
-        ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
+        ResultResourceInfo<String> info = fuseClient.uploadGraphFile(DRAGONS, stream);
         Assert.assertFalse(info.isError());
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
@@ -153,7 +153,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
-        ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
+        ResultResourceInfo<String> info = fuseClient.uploadGraphFile(DRAGONS, stream);
         Assert.assertFalse(info.isError());
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
@@ -191,7 +191,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
-        ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
+        ResultResourceInfo<String> info = fuseClient.uploadGraphFile(DRAGONS, stream);
         Assert.assertFalse(info.isError());
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
@@ -229,7 +229,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
-        ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
+        ResultResourceInfo<String> info = fuseClient.uploadGraphFile(DRAGONS, stream);
         Assert.assertFalse(info.isError());
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
@@ -262,7 +262,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
-        ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
+        ResultResourceInfo<String> info = fuseClient.uploadGraphFile(DRAGONS, stream);
         Assert.assertFalse(info.isError());
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
@@ -300,7 +300,7 @@ public class DragonsSimpleNoConstraintsIT implements BaseITMarker {
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
-        ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
+        ResultResourceInfo<String> info = fuseClient.uploadGraphFile(DRAGONS, stream);
         Assert.assertFalse(info.isError());
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();

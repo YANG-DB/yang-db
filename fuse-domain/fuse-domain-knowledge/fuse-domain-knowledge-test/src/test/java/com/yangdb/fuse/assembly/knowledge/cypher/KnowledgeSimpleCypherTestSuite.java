@@ -48,7 +48,7 @@ public class KnowledgeSimpleCypherTestSuite implements BaseSuiteMarker {
 
     private static void loadData() throws IOException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("./data/logical/multi_steps.json");
-        ResultResourceInfo info = fuseClient.loadData(KNOWLEDGE, resource);
+        ResultResourceInfo info = fuseClient.loadGraphData(KNOWLEDGE, resource);
         Assert.assertNotNull(info);
     }
 

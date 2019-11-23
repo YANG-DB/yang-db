@@ -155,7 +155,7 @@ public class LogicalEdge implements Edge {
         return getProperties().properties.get(partition);
     }
 
-    public static class EdgeMetadata {
+    public static class EdgeMetadata implements PropertyFields<EdgeMetadata> {
         private Map<String,Object> properties;
 
         public EdgeMetadata() {
@@ -168,8 +168,9 @@ public class LogicalEdge implements Edge {
         }
 
         @JsonAnySetter
-        public void addProperties(String key, Object value) {
+        public EdgeMetadata addProperties(String key, Object value) {
             this.properties.put(key,value);
+            return this;
         }
 
         @Override
@@ -180,7 +181,7 @@ public class LogicalEdge implements Edge {
         }
     }
 
-    public static class EdgeProperties{
+    public static class EdgeProperties implements PropertyFields<EdgeProperties>{
         private Map<String,Object> properties = new HashMap<>();
 
         @JsonAnyGetter
@@ -189,8 +190,9 @@ public class LogicalEdge implements Edge {
         }
 
         @JsonAnySetter
-        public void addProperties(String key, Object value) {
+        public EdgeProperties addProperties(String key, Object value) {
             this.properties.put(key,value);
+            return this;
         }
 
         @Override

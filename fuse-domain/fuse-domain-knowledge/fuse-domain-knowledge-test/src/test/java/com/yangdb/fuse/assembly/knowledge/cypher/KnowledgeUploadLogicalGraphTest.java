@@ -1,6 +1,5 @@
 package com.yangdb.fuse.assembly.knowledge.cypher;
 
-import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
@@ -45,7 +44,7 @@ public class KnowledgeUploadLogicalGraphTest {
     public void testLoadFileGraph() throws IOException, InterruptedException, URISyntaxException {
         //load data
         URL resource = Thread.currentThread().getContextClassLoader().getResource("data/logical/les_miserables.json");
-        ResultResourceInfo info = fuseClient.uploadFile(KNOWLEDGE, resource);
+        ResultResourceInfo info = fuseClient.uploadGraphFile(KNOWLEDGE, resource);
         Assert.assertNotNull(info);
 
         // Create v1 query to fetch newly created entity
@@ -80,7 +79,7 @@ public class KnowledgeUploadLogicalGraphTest {
     public void testLoadZippedFileGraph() throws IOException, InterruptedException, URISyntaxException {
         //load data
         URL resource = Thread.currentThread().getContextClassLoader().getResource("data/logical/les_miserables.json.gz");
-        ResultResourceInfo info = fuseClient.uploadFile(KNOWLEDGE, resource);
+        ResultResourceInfo info = fuseClient.uploadGraphFile(KNOWLEDGE, resource);
         Assert.assertNotNull(info);
 
         // Create v1 query to fetch newly created entity

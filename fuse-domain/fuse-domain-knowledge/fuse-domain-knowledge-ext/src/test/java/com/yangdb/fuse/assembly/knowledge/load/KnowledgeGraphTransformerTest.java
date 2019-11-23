@@ -1,14 +1,12 @@
 package com.yangdb.fuse.assembly.knowledge.load;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.typesafe.config.Config;
 import com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchemaShort;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
-import org.elasticsearch.client.Client;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -16,14 +14,15 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-public class KnowledgeTransformerTest {
+public class KnowledgeGraphTransformerTest {
     private ObjectMapper mapper = new ObjectMapper();
     private OntologyTransformer ontTransformer;
     private LogicalGraphModel graphModel;
@@ -121,16 +120,20 @@ public class KnowledgeTransformerTest {
      */
     @Test
     public void transform() {
-        Client client = Mockito.mock(Client.class);
+        StoreAccessor client = Mockito.mock(StoreAccessor.class);
+        when(client.findEntityById(anyString(),anyString(), anyString(),any() ))
+                .thenAnswer(invocationOnMock -> Optional.of(new HashMap()));
+
         IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
         when(idGeneratorDriver.getNext(anyString(),anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
 
 
-        final KnowledgeTransformer transformer = new KnowledgeTransformer(ontTransformer,new KnowledgeRawSchemaShort(), idGeneratorDriver,client);
+        final KnowledgeGraphTransformer transformer = new KnowledgeGraphTransformer(new KnowledgeRawSchemaShort(), ontTransformer, idGeneratorDriver,client);
         final KnowledgeContext transform = transformer.transform(graphModel, GraphDataLoader.Directive.INSERT);
         assertNotNull(transform);
         assertEquals(2,transform.getEntities().size());
+
         assertEquals(2,transform.getEntities().get(0).additionalProperties.size());
         assertEquals(2,transform.getEntities().get(0).additional.size());
         assertEquals(2,transform.getEntities().get(0).hasRel.size());

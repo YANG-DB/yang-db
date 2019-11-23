@@ -35,12 +35,12 @@ public class InitialTestDataLoader implements GraphDataLoader, CSVDataLoader {
     }
 
     @Override
-    public LoadResponse<String, FuseError> load(String type, File data, Directive directive) throws IOException {
+    public LoadResponse<String, FuseError> load(String type, String label, File data, Directive directive) throws IOException {
         return LoadResponse.EMPTY;
     }
 
     @Override
-    public LoadResponse<String, FuseError> load(String type, String payload, Directive directive) throws IOException {
+    public LoadResponse<String, FuseError> load(String type, String label, String payload, Directive directive) throws IOException {
         return LoadResponse.EMPTY;
     }
 }

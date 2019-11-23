@@ -39,6 +39,6 @@ public interface DataLoaderController {
     ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive);
     ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, File data, GraphDataLoader.Directive directive);
 
-    ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology,  String type,String data, GraphDataLoader.Directive directive);
-    ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, File data, GraphDataLoader.Directive directive);
+    ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, String data, GraphDataLoader.Directive directive);
+    ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, File data, GraphDataLoader.Directive directive);
 }

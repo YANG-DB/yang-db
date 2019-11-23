@@ -20,7 +20,6 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
-import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 
 import java.io.File;
@@ -36,7 +35,7 @@ public interface CSVDataLoader {
      *      - convert into bulk set
      *      - commit to repository
      */
-    LoadResponse<String, FuseError> load(String type, File data, GraphDataLoader.Directive directive) throws IOException;
+    LoadResponse<String, FuseError> load(String type, String label, File data, GraphDataLoader.Directive directive) throws IOException;
 
     /**
      * does:
@@ -44,6 +43,6 @@ public interface CSVDataLoader {
      *      - convert into bulk set
      *      - commit to repository
      */
-    LoadResponse<String, FuseError> load(String type,String payload, GraphDataLoader.Directive directive) throws IOException;
+    LoadResponse<String, FuseError> load(String type, String label, String payload, GraphDataLoader.Directive directive) throws IOException;
 
 }

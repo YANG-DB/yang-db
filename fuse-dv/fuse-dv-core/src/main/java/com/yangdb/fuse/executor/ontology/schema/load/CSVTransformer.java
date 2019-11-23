@@ -89,11 +89,11 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
                 .withTrim())) {
 
             List<CSVRecord> dataRecords = csvRecords.getRecords();
-            if (accessor.entity(data.type()).isPresent()) {
-                EntityType entityType = accessor.entity$(data.type());
+            if (accessor.entity(data.label()).isPresent()) {
+                EntityType entityType = accessor.entity$(data.label());
                 dataRecords.forEach(r->context.withEntity(translate(context, entityType,r.toMap())));
-            } else if (accessor.relation(data.type()).isPresent()) {
-                RelationshipType relType = accessor.relation$(data.type());
+            } else if (accessor.relation(data.label()).isPresent()) {
+                RelationshipType relType = accessor.relation$(data.label());
                 //store both sides
                 dataRecords.forEach(r->context.withRelation(translate(context, relType,r.toMap(),"in")));
                 dataRecords.forEach(r->context.withRelation(translate(context, relType,r.toMap(),"out")));
@@ -115,7 +115,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
         try {
             ObjectNode element = mapper.createObjectNode();
             Entity entity = indexProvider.getEntity(entityType.geteType())
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Logical Graph Transformation Error", "No matching node found with label " + entityType.geteType())));
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("CSV Transformation Error", "No matching node found with label " + entityType.geteType())));
             //put classifiers
             element.put(ID, node.get(ID));
             element.put(TYPE, entity.getType());
@@ -140,7 +140,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
         try {
             ObjectNode element = mapper.createObjectNode();
             Relation relation = indexProvider.getRelation(relType.getrType())
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Logical Graph Transformation Error", "No matching node found with label " + relType.getrType())));
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("CSV Transformation Error", "No matching node found with label " + relType.getrType())));
             //put classifiers
             String id = String.format("%s.%s", node.get(ID), direction);
             element.put(ID, id);
@@ -278,6 +278,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * Csv Graph element Container
      */
     public interface CsvElement {
+        String label();
         String type();
         Reader content();
     }

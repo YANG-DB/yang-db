@@ -96,11 +96,11 @@ public class StandardDataLoaderController implements DataLoaderController {
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, String data, GraphDataLoader.Directive directive) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                        .data(Optional.of(this.csvDataLoader.load(type, data, directive)))
+                        .data(Optional.of(this.csvDataLoader.load(type,label , data, directive)))
                         .compose();
             } catch (IOException e) {
                 return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
@@ -132,11 +132,11 @@ public class StandardDataLoaderController implements DataLoaderController {
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, File data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, File data, GraphDataLoader.Directive directive) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {
                 return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                        .data(Optional.of(this.csvDataLoader.load(type, data, directive)))
+                        .data(Optional.of(this.csvDataLoader.load(type, label, data, directive)))
                         .compose();
             } catch (IOException e) {
                 return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)

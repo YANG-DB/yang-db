@@ -119,8 +119,19 @@ public class LogicalGraphModel {
         return nodes;
     }
 
+    public LogicalGraphModel with(LogicalNode node) {
+        getNodes().add(node);
+        return this;
+    }
+
     public List<LogicalEdge> getEdges() {
         return edges;
     }
+
+    public LogicalGraphModel with(LogicalEdge edge) {
+        getEdges().add(edge);
+        return this;
+    }
+
 
 }

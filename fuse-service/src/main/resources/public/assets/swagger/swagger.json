@@ -986,7 +986,14 @@
           {
             "name": "type",
             "in": "query",
-            "description": "File Ontological label",
+            "description": "File Ontological type - edge / vertex",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "label",
+            "in": "query",
+            "description": "File Ontological label - Person/Dragon/Kingdom ...",
             "required": true,
             "type": "string"
           },
@@ -1081,7 +1088,14 @@
           {
             "name": "type",
             "in": "query",
-            "description": "File Ontological label",
+            "description": "File Ontological type - edge / vertex",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "label",
+            "in": "query",
+            "description": "File Ontological label - Person/Dragon/Kingdom ...",
             "required": true,
             "type": "string"
           },

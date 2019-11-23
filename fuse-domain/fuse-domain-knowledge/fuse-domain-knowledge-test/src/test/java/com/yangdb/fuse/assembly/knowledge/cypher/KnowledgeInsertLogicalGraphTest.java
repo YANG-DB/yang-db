@@ -47,7 +47,7 @@ public class KnowledgeInsertLogicalGraphTest {
 
     private static void loadData() throws IOException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("./data/logical/les_miserables.json");
-        ResultResourceInfo info = fuseClient.loadData(KNOWLEDGE, resource);
+        ResultResourceInfo info = fuseClient.loadGraphData(KNOWLEDGE, resource);
         Assert.assertNotNull(info);
     }
 

@@ -77,7 +77,7 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
     }
 
     @Override
-    public LoadResponse<String, FuseError> load(String type, File data, GraphDataLoader.Directive directive) throws IOException {
+    public LoadResponse<String, FuseError> load(String type, String label, File data, GraphDataLoader.Directive directive) throws IOException {
         DataTransformerContext context;
         String contentType = Files.probeContentType(data.toPath());
         if (Arrays.asList("application/gzip", "application/zip").contains(contentType)) {
@@ -92,18 +92,23 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
             }
 
             ByteArrayOutputStream finalStream = stream;
-            context = transformer.transform(readCsv(type, new BufferedReader(new InputStreamReader(new ByteArrayInputStream(finalStream.toByteArray())))), directive);
+            context = transformer.transform(readCsv(type,label, new BufferedReader(new InputStreamReader(new ByteArrayInputStream(finalStream.toByteArray())))), directive);
             return load(context, directive);
         }
 
-        context = transformer.transform(readCsv(type, new FileReader(data.getAbsoluteFile())), directive);
+        context = transformer.transform(readCsv(type, label,new FileReader(data.getAbsoluteFile())), directive);
         return load(context, directive);
     }
 
     @Override
-    public LoadResponse<String, FuseError> load(String type, String payload, GraphDataLoader.Directive directive) throws IOException {
+    public LoadResponse<String, FuseError> load(String type, String label, String payload, GraphDataLoader.Directive directive) throws IOException {
         //todo
         DataTransformerContext context = transformer.transform(new CSVTransformer.CsvElement() {
+            @Override
+            public String label() {
+                return label;
+            }
+
             @Override
             public String type() {
                 return type;
@@ -214,11 +219,16 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
     }
 
 
-    private CSVTransformer.CsvElement readCsv(String type, Reader reader) {
+    private CSVTransformer.CsvElement readCsv(String type,String label, Reader reader) {
         return new CSVTransformer.CsvElement() {
             @Override
             public String type() {
                 return type;
+            }
+
+            @Override
+            public String label() {
+                return label;
             }
 
             @Override

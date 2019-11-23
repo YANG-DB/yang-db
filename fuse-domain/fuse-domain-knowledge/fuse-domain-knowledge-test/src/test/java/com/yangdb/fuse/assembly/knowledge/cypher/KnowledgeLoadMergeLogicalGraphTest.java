@@ -1,11 +1,9 @@
 package com.yangdb.fuse.assembly.knowledge.cypher;
 
-import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.ResultResourceInfo;
-import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.Entity;
 import com.yangdb.fuse.model.results.QueryResultBase;
@@ -43,7 +41,7 @@ public class KnowledgeLoadMergeLogicalGraphTest {
 
     private static void loadData() throws IOException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("./data/logical/les_miserables.json");
-        ResultResourceInfo info = fuseClient.loadData(KNOWLEDGE, resource);
+        ResultResourceInfo info = fuseClient.loadGraphData(KNOWLEDGE, resource);
         Assert.assertNotNull(info);
     }
 
@@ -51,7 +49,7 @@ public class KnowledgeLoadMergeLogicalGraphTest {
     @Test
     public void testFetchEntityWithRelationGraph() throws IOException, InterruptedException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("./data/logical/les_miserables_append.json");
-        ResultResourceInfo info = fuseClient.upsertData(KNOWLEDGE, resource);
+        ResultResourceInfo info = fuseClient.upsertGraphData(KNOWLEDGE, resource);
         Assert.assertNotNull(info);
 
         // Create v1 query to fetch newly created entity

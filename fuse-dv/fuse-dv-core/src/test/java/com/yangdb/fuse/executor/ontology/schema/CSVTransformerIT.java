@@ -125,8 +125,12 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Dragons.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "Dragon";
+            }
+
+            public String type() {
+                return "vertex";
             }
 
             @Override
@@ -147,8 +151,12 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Persons.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "Person";
+            }
+
+            public String type() {
+                return "vertex";
             }
 
             @Override
@@ -169,8 +177,12 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Guilds.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "Guild";
+            }
+
+            public String type() {
+                return "vertex";
             }
 
             @Override
@@ -191,10 +203,13 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Kingdom.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "Kingdom";
             }
 
+            public String type() {
+                return "vertex";
+            }
             @Override
             public Reader content() {
                 return reader;
@@ -213,10 +228,13 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Horses.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "Horse";
             }
 
+            public String type() {
+                return "vertex";
+            }
             @Override
             public Reader content() {
                 return reader;
@@ -235,10 +253,13 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Fire.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "Fire";
             }
 
+            public String type() {
+                return "edge";
+            }
             @Override
             public Reader content() {
                 return reader;
@@ -257,10 +278,13 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Freeze.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "Freeze";
             }
 
+            public String type() {
+                return "edge";
+            }
             @Override
             public Reader content() {
                 return reader;
@@ -279,10 +303,13 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Knows.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "Know";
             }
 
+            public String type() {
+                return "edge";
+            }
             @Override
             public Reader content() {
                 return reader;
@@ -301,10 +328,13 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/MemberOf.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "MemberOf";
             }
 
+            public String type() {
+                return "edge";
+            }
             @Override
             public Reader content() {
                 return reader;
@@ -323,10 +353,13 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Owns.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "Own";
             }
 
+            public String type() {
+                return "edge";
+            }
             @Override
             public Reader content() {
                 return reader;
@@ -345,10 +378,13 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/RegisteredIn.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "RegisteredIn";
             }
 
+            public String type() {
+                return "edge";
+            }
             @Override
             public Reader content() {
                 return reader;
@@ -366,10 +402,13 @@ public class CSVTransformerIT implements BaseITMarker {
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/SubjectOf.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
-            public String type() {
+            public String label() {
                 return "SubjectOf";
             }
 
+            public String type() {
+                return "edge";
+            }
             @Override
             public Reader content() {
                 return reader;

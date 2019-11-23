@@ -25,9 +25,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.assembly.knowledge.load.KnowledgeContext;
-import com.yangdb.fuse.assembly.knowledge.load.KnowledgeTransformer;
+import com.yangdb.fuse.assembly.knowledge.load.KnowledgeGraphTransformer;
+import com.yangdb.fuse.assembly.knowledge.load.StoreAccessor;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerProvider;
+import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
@@ -50,6 +52,7 @@ import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;
+import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extractFile;
 
 /**
  * Created by lior.perry on 2/11/2018.
@@ -68,7 +71,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
 
     private Client client;
     private RawSchema schema;
-    private KnowledgeTransformer transformer;
+    private DataTransformer<KnowledgeContext,LogicalGraphModel> transformer;
     private ObjectMapper mapper;
 
     @Inject
@@ -79,7 +82,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
         final Optional<OntologyTransformer> assembly = transformerProvider.transformer(config.getString("assembly"));
         if (!assembly.isPresent())
             throw new IllegalArgumentException("No transformer provider found for selected ontology " + config.getString("assembly"));
-        this.transformer = new KnowledgeTransformer(assembly.get(), schema, idGenerator, client);
+        this.transformer = new KnowledgeGraphTransformer(schema, assembly.get(), idGenerator, new StoreAccessor.DefaultAccessor(client));
         this.client = client;
     }
 
@@ -130,16 +133,5 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
         return load(root, directive);
     }
 
-    private ByteArrayOutputStream extractFile(InflaterInputStream zipIn) throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        BufferedOutputStream bos = new BufferedOutputStream(stream);
-        byte[] bytesIn = new byte[4096];
-        int read = 0;
-        while ((read = zipIn.read(bytesIn)) != -1) {
-            bos.write(bytesIn, 0, read);
-        }
-        bos.close();
-        return stream;
-    }
 
 }

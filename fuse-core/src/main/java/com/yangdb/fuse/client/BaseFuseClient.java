@@ -33,7 +33,6 @@ import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.resourceInfo.*;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.Entity;
@@ -89,38 +88,66 @@ public class BaseFuseClient implements FuseClient {
         return this.objectMapper.readValue(unwrap(getRequest(this.fuseUrl + "/idgen/" + name + "?numIds=" + numIds)), Map.class);
     }
 
-    private ResultResourceInfo loadData(String ontology,String resourceURl, LogicalGraphModel root) throws IOException {
+    private <T> ResultResourceInfo loadGraphData(String ontology, String resourceURl, T root) throws IOException {
         // URL:/fuse/load/ontology/:id/load
         return new ResultResourceInfo<>(resourceURl, ontology, unwrap(postRequest(resourceURl, root)));
     }
 
 
     @Override
-    public ResultResourceInfo upsertData(String ontology, URL resource) throws IOException {
-        return loadData(ontology,String.format("%s/load/ontology/%s/load?directive=%s", this.fuseUrl, ontology,"UPSERT"),
+    public ResultResourceInfo upsertGraphData(String ontology, URL resource) throws IOException {
+        return loadGraphData(ontology,String.format("%s/load/ontology/%s/graph/load?directive=%s", this.fuseUrl, ontology,"UPSERT"),
                 objectMapper.readValue(resource,LogicalGraphModel.class));
     }
 
     @Override
-    public ResultResourceInfo loadData(String ontology, LogicalGraphModel model) throws IOException {
-        String resourceUrl = String.format("%s/load/ontology/%s/load?directive=%s", this.fuseUrl, ontology, "INSERT");
+    public ResultResourceInfo loadGraphData(String ontology, LogicalGraphModel model) throws IOException {
+        String resourceUrl = String.format("%s/load/ontology/%s/graph/load?directive=%s", this.fuseUrl, ontology, "INSERT");
         return new ResultResourceInfo<>(resourceUrl, ontology, unwrap(postRequest(resourceUrl,model)));
     }
 
     @Override
-    public ResultResourceInfo loadData(String ontology, URL resource) throws IOException {
-        return loadData(ontology,String.format("%s/load/ontology/%s/load?directive=%s", this.fuseUrl, ontology,"INSERT"),
+    public ResultResourceInfo loadGraphData(String ontology, URL resource) throws IOException {
+        return loadGraphData(ontology,String.format("%s/load/ontology/%s/graph/load?directive=%s", this.fuseUrl, ontology,"INSERT"),
                 objectMapper.readValue(resource,LogicalGraphModel.class));
     }
 
     @Override
-    public ResultResourceInfo uploadFile(String ontology, URL resourceFile) throws URISyntaxException {
-        return uploadFile(ontology, resourceFile, String.format("%s/load/ontology/%s/upload?directive=%s", this.fuseUrl, ontology,"INSERT"));
+    public ResultResourceInfo uploadGraphFile(String ontology, URL resourceFile) throws URISyntaxException {
+        return uploadFile(ontology, resourceFile, String.format("%s/load/ontology/%s/graph/upload?directive=%s", this.fuseUrl, ontology,"INSERT"));
     }
 
     @Override
-    public ResultResourceInfo upsertFile(String ontology, URL resourceFile) throws IOException, URISyntaxException {
-        return uploadFile(ontology, resourceFile, String.format("%s/load/ontology/%s/upload?directive=%s", this.fuseUrl, ontology,"UPSERT"));
+    public ResultResourceInfo upsertGraphFile(String ontology, URL resourceFile) throws IOException, URISyntaxException {
+        return uploadFile(ontology, resourceFile, String.format("%s/load/ontology/%s/graph/upload?directive=%s", this.fuseUrl, ontology,"UPSERT"));
+    }
+
+
+    @Override
+    public ResultResourceInfo upsertCsvData(String ontology, String type, String label, URL resource) throws IOException, URISyntaxException {
+        return uploadFile(ontology, resource, String.format("%s/load/ontology/%s/csv/upload?directive=%s&type=%s&label=%s", this.fuseUrl, ontology,"UPSERT",type,label));
+    }
+
+    @Override
+    public ResultResourceInfo loadCsvData(String ontology, String type, String label, String model) throws IOException {
+        String resourceUrl = String.format("%s/load/ontology/%s/csv/load?directive=%s&type=%s&label=%s", this.fuseUrl, ontology, "INSERT",type,label);
+        return new ResultResourceInfo<>(resourceUrl, ontology, unwrap(postRequest(resourceUrl,model)));
+    }
+
+    @Override
+    public ResultResourceInfo loadCsvData(String ontology, String type, String label, URL resource) throws IOException {
+        return loadGraphData(ontology,String.format("%s/load/ontology/%s/csv/load?directive=%s&type=%s&label=%s", this.fuseUrl, ontology,"INSERT",type,label),
+                objectMapper.readValue(resource,String.class));
+    }
+
+    @Override
+    public ResultResourceInfo uploadCsvFile(String ontology, String type, String label, URL resource) throws IOException, URISyntaxException {
+        return uploadFile(ontology, resource, String.format("%s/load/ontology/%s/csv/upload?directive=%s&type=%s&label=%s", this.fuseUrl, ontology,"UPSERT",type,label));
+    }
+
+    @Override
+    public ResultResourceInfo upsertCsvFile(String ontology, String type, String label, URL resource) throws IOException, URISyntaxException {
+        return uploadFile(ontology, resource, String.format("%s/load/ontology/%s/csv/upload?directive=%s&type=%s&label=%s", this.fuseUrl, ontology,"INSERT",type,label));
     }
 
     private ResultResourceInfo uploadFile(String ontology, URL resourceFile, String resourceURl) throws URISyntaxException {
@@ -134,7 +161,7 @@ public class BaseFuseClient implements FuseClient {
                 .contentType("multipart/form-data")
                 .post(resourceURl)
                 .thenReturn()
-                .print();
+                .asString();
 
         return new ResultResourceInfo<>(resourceURl, ontology, result);
     }
@@ -312,7 +339,7 @@ public class BaseFuseClient implements FuseClient {
         return given().contentType("application/json")
                 .delete(queryResourceInfo.getResourceUrl())
                 .thenReturn()
-                .print();
+                .asString();
     }
 
     @Override

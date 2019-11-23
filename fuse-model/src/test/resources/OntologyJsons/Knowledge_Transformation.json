@@ -31,7 +31,10 @@
         "metadataProperties": [
           {"created":"creationTime"},
           {"source": "entityAId"},
-          {"target": "entityBId"}
+          {"source.type": "entityACategory"},
+          {"target": "entityBId"},
+          {"target.type": "entityBCategory"},
+          {"id": "id"}
           ],
         "properties": {
           "pattern": "\\w+",

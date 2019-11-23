@@ -138,7 +138,7 @@ public class LogicalNode implements Vertex {
         return properties.properties.containsKey(name) ? Optional.of(properties.properties.get(name)) : Optional.empty();
     }
 
-    public static class NodeMetadata {
+    public static class NodeMetadata implements PropertyFields<NodeMetadata> {
         private Map<String,Object> properties = new HashMap<>();
 
 
@@ -148,8 +148,9 @@ public class LogicalNode implements Vertex {
         }
 
         @JsonAnySetter
-        public void addProperties(String key, Object value) {
+        public NodeMetadata addProperties(String key, Object value) {
             this.properties.put(key,value);
+            return this;
         }
 
         @Override
@@ -160,7 +161,7 @@ public class LogicalNode implements Vertex {
         }
     }
 
-    public static class NodeProperties{
+    public static class NodeProperties implements PropertyFields<NodeProperties>{
         private Map<String,Object> properties = new HashMap<>();
 
         @JsonAnyGetter
@@ -169,8 +170,9 @@ public class LogicalNode implements Vertex {
         }
 
         @JsonAnySetter
-        public void addProperties(String key, Object value) {
+        public NodeProperties addProperties(String key, Object value) {
             this.properties.put(key,value);
+            return this;
         }
 
         @Override

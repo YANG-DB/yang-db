@@ -26,7 +26,7 @@ public class OntologyTransformerTest {
         assertEquals("Relation",transformer.getRelationTypes().get(0).getrType());
         assertEquals("^\\w+(?=:.*)",transformer.getRelationTypes().get(0).getProperties().getLabel());
         assertEquals(4,transformer.getRelationTypes().get(0).getProperties().getValuePatterns().size());
-        assertEquals(3,transformer.getRelationTypes().get(0).getMetadataProperties().size());
+        assertEquals(6,transformer.getRelationTypes().get(0).getMetadataProperties().size());
     }
 
 

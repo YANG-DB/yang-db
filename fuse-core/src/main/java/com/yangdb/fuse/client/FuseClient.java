@@ -73,22 +73,22 @@ public interface FuseClient {
     Object getId(String name, int numIds) throws IOException;
 
     /**
-     * upsert data file (logical graph model) according to technical id
+     * upsert graph data file (logical graph model) according to technical id
      * @param ontology
      * @param resource
      * @return
      * @throws IOException
      */
-    ResultResourceInfo upsertData(String ontology, URL resource) throws IOException;
+    ResultResourceInfo upsertGraphData(String ontology, URL resource) throws IOException;
 
     /**
-     * load data file (logical graph model) according to technical id
+     * load graph data file (logical graph model) according to technical id
      * @param ontology
      * @param model
      * @return
      * @throws IOException
      */
-    ResultResourceInfo loadData(String ontology, LogicalGraphModel model) throws IOException;
+    ResultResourceInfo loadGraphData(String ontology, LogicalGraphModel model) throws IOException;
 
     /**
      * load data file (logical graph model) according to technical id
@@ -97,7 +97,7 @@ public interface FuseClient {
      * @return
      * @throws IOException
      */
-    ResultResourceInfo loadData(String ontology, URL resource) throws IOException;
+    ResultResourceInfo loadGraphData(String ontology, URL resource) throws IOException;
 
     /**
      *
@@ -109,7 +109,7 @@ public interface FuseClient {
      * @throws IOException
      * @throws URISyntaxException
      */
-    ResultResourceInfo uploadFile(String ontology, URL resource) throws IOException, URISyntaxException;
+    ResultResourceInfo uploadGraphFile(String ontology, URL resource) throws IOException, URISyntaxException;
 
     /**
      *
@@ -121,7 +121,62 @@ public interface FuseClient {
      * @throws IOException
      * @throws URISyntaxException
      */
-    ResultResourceInfo upsertFile(String ontology, URL resource) throws IOException, URISyntaxException;
+    ResultResourceInfo upsertGraphFile(String ontology, URL resource) throws IOException, URISyntaxException;
+
+    /**
+     * upsert graph data file (logical graph model) according to technical id
+     * @param ontology
+     * @param resource
+     * @return
+     * @throws IOException
+     */
+    ResultResourceInfo upsertCsvData(String ontology, String type, String label, URL resource) throws IOException, URISyntaxException;
+
+    /**
+     * load graph data file (logical graph model) according to technical id
+     * @param ontology
+     * @param model
+     * @return
+     * @throws IOException
+     */
+    ResultResourceInfo loadCsvData(String ontology, String type, String label, String model) throws IOException;
+
+    /**
+     * load data file (logical graph model) according to technical id
+     * @param ontology
+     * @param resource
+     * @return
+     * @throws IOException
+     */
+    ResultResourceInfo loadCsvData(String ontology, String type, String label, URL resource) throws IOException;
+
+    /**
+     *
+     * upload data file (logical graph model) according to technical id
+     *
+     * @param ontology
+     * @param type
+     * @param label
+     * @param resource
+     * @return
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    ResultResourceInfo uploadCsvFile(String ontology, String type, String label, URL resource) throws IOException, URISyntaxException;
+
+    /**
+     *
+     * upsert data file (logical graph model) according to technical id
+     *
+     * @param ontology
+     * @param resource
+     * @return
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    ResultResourceInfo upsertCsvFile(String ontology, String type, String label, URL resource) throws IOException, URISyntaxException;
+
+
 
     QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException;
 

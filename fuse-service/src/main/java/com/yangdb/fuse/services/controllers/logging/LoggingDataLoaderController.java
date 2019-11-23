@@ -74,7 +74,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, String data, GraphDataLoader.Directive directive) {
         return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
@@ -82,7 +82,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.loadCsv(ontology,type, data,directive ), this.resultHandler());
+                .decorate(() -> this.controller.loadCsv(ontology,type, label, data, directive), this.resultHandler());
     }
 
     @Override
@@ -98,7 +98,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, File data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, File data, GraphDataLoader.Directive directive) {
         return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
@@ -106,7 +106,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.loadCsv(ontology,type , data, directive), this.resultHandler());
+                .decorate(() -> this.controller.loadCsv(ontology,type,label , data, directive), this.resultHandler());
     }
 
     @Override

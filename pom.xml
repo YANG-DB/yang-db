@@ -945,6 +945,7 @@
                             <exclude>*.txt</exclude>
                             <exclude>*.json</exclude>
                             <exclude>*.conf</exclude>
+                            <exclude>*.csv</exclude>
                             <exclude>*.xml</exclude>
                         </excludes>
                     </configuration>

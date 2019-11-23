@@ -32,7 +32,7 @@ public class DragonsSimpleFileUploadIT implements BaseITMarker {
     }
 
     @AfterClass
-    public static void after() {
+    public static void after() throws Exception {
 //        Setup.cleanup();
     }
 
@@ -45,7 +45,7 @@ public class DragonsSimpleFileUploadIT implements BaseITMarker {
         Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
-        ResultResourceInfo<String> info = fuseClient.uploadFile(DRAGONS, stream);
+        ResultResourceInfo<String> info = fuseClient.uploadGraphFile(DRAGONS, stream);
         Assert.assertFalse(info.isError());
 
         map = (Map) new ObjectMapper().readValue(info.getResult(), Map.class).get("data");
@@ -55,5 +55,43 @@ public class DragonsSimpleFileUploadIT implements BaseITMarker {
         Assert.assertEquals(62,((List)((Map)((List)map.get("responses")).get(0)).get("successes")).size());
         Assert.assertNotNull(((Map)((List)map.get("responses")).get(1)).get("successes"));
         Assert.assertEquals(62,((List)((Map)((List)map.get("responses")).get(1)).get("successes")).size());
+    }
+
+    @Test
+    public void testLoadDragonsEntitiesCsv() throws IOException, URISyntaxException {
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Assert.assertNotNull(fuseResourceInfo);
+
+        Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
+
+        URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/Dragons.csv");
+        ResultResourceInfo<String> info = fuseClient.uploadCsvFile(DRAGONS,"Entity","Dragon" , stream);
+        Assert.assertFalse(info.isError());
+
+        map = (Map) new ObjectMapper().readValue(info.getResult(), Map.class).get("data");
+        Assert.assertFalse(map.isEmpty());
+        Assert.assertEquals(2,((List)map.get("responses")).size());
+        Assert.assertNotNull(((Map)((List)map.get("responses")).get(0)).get("successes"));
+        Assert.assertEquals(3,((List)((Map)((List)map.get("responses")).get(1)).get("successes")).size());
+    }
+
+    @Test
+    public void testLoadFireRelatiobsCsv() throws IOException, URISyntaxException {
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Assert.assertNotNull(fuseResourceInfo);
+
+        Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
+
+        URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/Fire.csv");
+        ResultResourceInfo<String> info = fuseClient.uploadCsvFile(DRAGONS,"Relation" ,"Fire", stream);
+        Assert.assertFalse(info.isError());
+
+        map = (Map) new ObjectMapper().readValue(info.getResult(), Map.class).get("data");
+        Assert.assertFalse(map.isEmpty());
+        Assert.assertEquals(2,((List)map.get("responses")).size());
+        Assert.assertNotNull(((Map)((List)map.get("responses")).get(0)).get("successes"));
+        Assert.assertEquals(4,((List)((Map)((List)map.get("responses")).get(1)).get("successes")).size());
     }
 }

@@ -157,28 +157,54 @@ public class SnifferFuseClient implements FuseClient{
     }
 
     @Override
-    public ResultResourceInfo upsertData(String ontology, URL resource) throws IOException {
-        return selectNode().upsertData(ontology,resource);
+    public ResultResourceInfo upsertCsvData(String ontology, String type, String label, URL resource) throws IOException, URISyntaxException {
+        return selectNode().upsertCsvData(ontology,type,label,resource);
     }
 
     @Override
-    public ResultResourceInfo loadData(String ontology, LogicalGraphModel model) throws IOException {
-        return selectNode().loadData(ontology,model);
+    public ResultResourceInfo loadCsvData(String ontology, String type, String label, String model) throws IOException {
+        return selectNode().loadCsvData(ontology,type,label,model);
     }
 
     @Override
-    public ResultResourceInfo loadData(String ontology, URL resource) throws IOException {
-        return selectNode().loadData(ontology,resource);
+    public ResultResourceInfo loadCsvData(String ontology, String type, String label, URL resource) throws IOException {
+        return selectNode().loadCsvData(ontology,type,label,resource);
+
     }
 
     @Override
-    public ResultResourceInfo uploadFile(String ontology, URL resource) throws IOException, URISyntaxException {
-        return selectNode().uploadFile(ontology,resource);
+    public ResultResourceInfo uploadCsvFile(String ontology, String type, String label, URL resource) throws IOException, URISyntaxException {
+        return selectNode().uploadCsvFile(ontology ,type,label, resource);
     }
 
     @Override
-    public ResultResourceInfo upsertFile(String ontology, URL resource) throws IOException, URISyntaxException {
-        return selectNode().upsertFile(ontology,resource);
+    public ResultResourceInfo upsertCsvFile(String ontology, String type, String label, URL resource) throws IOException, URISyntaxException {
+        return selectNode().upsertCsvFile(ontology,type,label,resource);
+    }
+
+    @Override
+    public ResultResourceInfo upsertGraphData(String ontology, URL resource) throws IOException {
+        return selectNode().upsertGraphData(ontology,resource);
+    }
+
+    @Override
+    public ResultResourceInfo loadGraphData(String ontology, LogicalGraphModel model) throws IOException {
+        return selectNode().loadGraphData(ontology,model);
+    }
+
+    @Override
+    public ResultResourceInfo loadGraphData(String ontology, URL resource) throws IOException {
+        return selectNode().loadGraphData(ontology,resource);
+    }
+
+    @Override
+    public ResultResourceInfo uploadGraphFile(String ontology, URL resource) throws IOException, URISyntaxException {
+        return selectNode().uploadGraphFile(ontology,resource);
+    }
+
+    @Override
+    public ResultResourceInfo upsertGraphFile(String ontology, URL resource) throws IOException, URISyntaxException {
+        return selectNode().upsertGraphFile(ontology,resource);
     }
 
     @Override

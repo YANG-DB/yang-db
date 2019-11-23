@@ -103,6 +103,7 @@
   ],
   "edges": [
     {
+      "label": "knows",
       "source": "Myriel",
       "target": "Napoleon",
       "metadata": {
@@ -110,6 +111,7 @@
       }
     },
     {
+      "label": "knows",
       "source": "Napoleon",
       "target": "Mlle.Baptistine",
       "metadata": {
@@ -117,6 +119,7 @@
       }
     },
     {
+      "label": "knows",
       "source": "Mlle.Baptistine",
       "target": "Mme.Magloire",
       "metadata": {
@@ -124,6 +127,7 @@
       }
     },
     {
+      "label": "knows",
       "source": "Mme.Magloire",
       "target": "CountessdeLo",
       "metadata": {
@@ -131,6 +135,7 @@
       }
     },
     {
+      "label": "knows",
       "source": "CountessdeLo",
       "target": "Geborand",
       "metadata": {
@@ -138,6 +143,7 @@
       }
     },
     {
+      "label": "knows",
       "source": "Myriel",
       "target": "Champtercier",
       "metadata": {
@@ -145,6 +151,7 @@
       }
     },
     {
+      "label": "knows",
       "source": "Champtercier",
       "target": "Cravatte",
       "metadata": {
@@ -152,6 +159,7 @@
       }
     },
     {
+      "label": "knows",
       "source": "Cravatte",
       "target": "Count",
       "metadata": {
@@ -159,6 +167,7 @@
       }
     },
     {
+      "label": "knows",
       "source": "Count",
       "target": "OldMan",
       "metadata": {
