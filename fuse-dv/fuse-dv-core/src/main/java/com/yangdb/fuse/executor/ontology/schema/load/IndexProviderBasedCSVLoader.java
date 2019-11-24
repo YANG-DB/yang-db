@@ -129,7 +129,7 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
      * @param directive
      * @return
      */
-    public LoadResponse<String, FuseError> load(DataTransformerContext context, GraphDataLoader.Directive directive) {
+    private LoadResponse<String, FuseError> load(DataTransformerContext context, GraphDataLoader.Directive directive) {
         BulkRequestBuilder bulk = client.prepareBulk();
         Response upload = new Response("Upload");
         //load bulk requests

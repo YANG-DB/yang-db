@@ -26,8 +26,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +52,7 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
     private static Config config;
     private static OntologyProvider ontologyProvider;
     private static IndexProviderIfc providerIfc;
+    private static GraphInitiator initiator;
 
 
     @BeforeClass
@@ -121,6 +125,9 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
                         .collect(Collectors.toSet());
             }
         };
+        //init graph indices
+        initiator = new DefaultGraphInitiator(config,client,providerIfc,ontologyProvider,schema);
+        initiator.init();
 
     }
 
@@ -133,39 +140,61 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
 
 
     @Test
-    public void testLoad() throws IOException {
+    public void testLoadDragon() throws IOException, URISyntaxException {
         IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
         when(idGeneratorDriver.getNext(anyString(),anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
 
         String[] indices = StreamSupport.stream(schema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
-        EntityTransformer transformer = new EntityTransformer(config, ontologyProvider,providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider,providerIfc, schema, idGeneratorDriver, client);
 
         Assert.assertEquals(19,indices.length);
 
-        IndexProviderBasedGraphLoader graphLoader = new IndexProviderBasedGraphLoader(client, transformer,schema, idGeneratorDriver);
+        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,schema);
         // for stand alone test
 //        Assert.assertEquals(19,graphLoader.init());
 
-        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/LogicalDragonsGraph.json");
-        LogicalGraphModel graphModel = mapper.readValue(stream, LogicalGraphModel.class);
-        LoadResponse<String, FuseError> response = graphLoader.load(graphModel, GraphDataLoader.Directive.INSERT);
+        URL resource = Thread.currentThread().getContextClassLoader().getResource("schema/csv/Dragons.csv");
+        LoadResponse<String, FuseError> response = csvLoader.load("Entity","Dragon",new File(resource.toURI()), GraphDataLoader.Directive.INSERT);
         Assert.assertEquals(2,response.getResponses().size());
-
-        Assert.assertEquals(64,response.getResponses().get(0).getSuccesses().size());
-        Assert.assertEquals(64,response.getResponses().get(1).getSuccesses().size());
-
-        Assert.assertEquals(0,response.getResponses().get(0).getFailures().size());
-        Assert.assertEquals(0,response.getResponses().get(1).getFailures().size());
-
+        Assert.assertEquals(3,response.getResponses().get(1).getSuccesses().size());
 
         RefreshResponse actionGet = client.admin().indices().refresh(new RefreshRequest(indices)).actionGet();
         Assert.assertNotNull(actionGet);
 
         SearchRequestBuilder builder = client.prepareSearch();
-        builder.setIndices(indices);
+        builder.setIndices("dragons*");
         SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
-        Assert.assertEquals(graphModel.getNodes().size() + 2*graphModel.getEdges().size(),resp.getHits().getTotalHits());
+        Assert.assertEquals(3,resp.getHits().getTotalHits());
+
+    }
+    @Test
+    public void testLoadFire() throws IOException, URISyntaxException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(),anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0,1000));
+
+        String[] indices = StreamSupport.stream(schema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider,providerIfc, schema, idGeneratorDriver, client);
+
+        Assert.assertEquals(19,indices.length);
+
+        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,schema);
+        // for stand alone test
+//        Assert.assertEquals(19,graphLoader.init());
+
+        URL resource  = Thread.currentThread().getContextClassLoader().getResource("schema/csv/Fire.csv");
+        LoadResponse<String, FuseError> response = csvLoader.load("Relation","Fire",new File(resource.toURI()), GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(2,response.getResponses().size());
+        Assert.assertEquals(4,response.getResponses().get(1).getSuccesses().size());
+
+        RefreshResponse actionGet = client.admin().indices().refresh(new RefreshRequest(indices)).actionGet();
+        Assert.assertNotNull(actionGet);
+
+        SearchRequestBuilder builder = client.prepareSearch();
+        builder.setIndices("idx_fire*");
+        SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
+        Assert.assertEquals(4,resp.getHits().getTotalHits());
 
     }
 }
