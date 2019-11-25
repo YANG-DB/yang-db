@@ -26,7 +26,8 @@ import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.K
         KnowledgePathMultiStepsForwardOnlyCursorTest.class,
         KnowledgeSimpleEntityTests.class,
         KnowledgeUploadLogicalGraphTest.class,
-        KnowledgeMassInsertionGraphTest.class
+        KnowledgeMassInsertionGraphTest.class,
+        KnowledgeUploadCsvTest.class
 })
 
 public class KnowledgeSimpleCypherTestSuite implements BaseSuiteMarker {

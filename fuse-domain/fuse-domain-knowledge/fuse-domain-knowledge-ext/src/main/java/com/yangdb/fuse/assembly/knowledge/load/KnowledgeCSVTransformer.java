@@ -114,7 +114,7 @@ public class KnowledgeCSVTransformer implements DataTransformer<KnowledgeContext
                     dataRecords.forEach(rec -> {
                         try {
                             //id generation for edges without ids: source_label_target
-                            String id = (rec.get(ID) != null) ? rec.get(ID) : String.format("%s_%s_%s",rec.get(SOURCE),data.label(),rec.get(TARGET)) ;
+                            String id = rec.isSet(ID) ? rec.get(ID) : String.format("%s_%s_%s",rec.get(SOURCE),data.label(),rec.get(TARGET)) ;
                             context.add(createEdge(accessor,schema,
                                     context,writerContext,
                                     getRange(ranges,idGenerator, RelationBuilder.type),
