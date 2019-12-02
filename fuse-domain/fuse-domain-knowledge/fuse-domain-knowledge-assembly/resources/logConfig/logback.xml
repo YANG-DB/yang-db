@@ -13,6 +13,10 @@
   <conversionRule conversionWord="elapsedFrom" converterClass="com.yangdb.fuse.dispatcher.logging.ElapsedFrom$Converter" />
   <conversionRule conversionWord="elasticElapsed" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticElapsed$SingleConverter" />
   <conversionRule conversionWord="elasticElapsedTotal" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticElapsed$TotalConverter" />
+  <conversionRule conversionWord="totalHits" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticResults$TotalHitsConverter" />
+  <conversionRule conversionWord="hits" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticResults$HitsConverter" />
+  <conversionRule conversionWord="totalShards" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticResults$TotalShardsConverter" />
+  <conversionRule conversionWord="scrollId" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticResults$ScrollIdConverter" />
   <conversionRule conversionWord="networkElasticElapsed" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.NetworkElasticElapsed$SingleConverter" />
   <conversionRule conversionWord="networkElasticElapsedTotal" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.NetworkElasticElapsed$TotalConverter" />
   <conversionRule conversionWord="responseLength" converterClass="com.yangdb.fuse.logging.ResponseLength$Converter" />
@@ -110,6 +114,26 @@
       <property>
         <name>elasticElapsedTotal</name>
         <value>%elasticElapsedTotal</value>
+      </property>
+      <property>
+        <name>elasticElapsed</name>
+        <value>%elasticElapsed</value>
+      </property>
+      <property>
+        <name>totalHits</name>
+        <value>%totalHits</value>
+      </property>
+      <property>
+        <name>hits</name>
+        <value>%hits</value>
+      </property>
+      <property>
+        <name>totalShards</name>
+        <value>%totalShards</value>
+      </property>
+      <property>
+        <name>scrollId</name>
+        <value>%scrollId</value>
       </property>
       <property>
         <name>networkElasticElapsed</name>

@@ -3,7 +3,7 @@
   "template": "fuse-engine-logs-*",
   "settings": {
     "index": {
-      "number_of_shards": "5",
+      "number_of_shards": "1",
       "number_of_replicas": "0"
     }
   },
@@ -64,6 +64,18 @@
         },
         "elasticElapsedTotal": {
           "type": "integer"
+        },
+        "totalHits": {
+          "type": "long"
+        },
+        "hits": {
+          "type": "integer"
+        },
+        "totalShards": {
+          "type": "integer"
+        },
+        "scrollId": {
+          "type": "keyword"
         },
         "networkElasticElapsed": {
           "type": "integer"
