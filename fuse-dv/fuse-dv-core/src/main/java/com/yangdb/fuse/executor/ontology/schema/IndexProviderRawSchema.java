@@ -28,6 +28,7 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.NestedIndexPartitions;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,22 +78,28 @@ public class IndexProviderRawSchema implements RawSchema {
     public List<IndexPartitions.Partition> getPartitions(String type) {
         return StreamSupport.stream(getPartition(type).getPartitions().spliterator(), false)
                 .collect(Collectors.toList());
-
     }
 
     @Override
     public Iterable<String> indices() {
-        Stream<String> edges = StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
-                .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
-                .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
-        Stream<String> vertices = StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
-                .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
-                .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
-
-        return Stream.concat(edges,vertices)
+        return Stream.concat(edges(), vertices())
                 .collect(Collectors.toSet());
+    }
+
+    private Stream<String> vertices() {
+        return StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
+                .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
+                .filter(p->!(p instanceof NestedIndexPartitions))
+                .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
+                .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
+    }
+
+    private Stream<String> edges() {
+        return StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
+                    .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
+                    .filter(p->!(p instanceof NestedIndexPartitions))
+                    .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
+                    .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
     }
 
 }

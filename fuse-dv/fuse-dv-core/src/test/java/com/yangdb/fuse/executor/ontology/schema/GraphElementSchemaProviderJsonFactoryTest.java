@@ -67,7 +67,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
         Assert.assertEquals(StreamSupport.stream(schemaProvider.getEdgeLabels().spliterator(),false)
                 .collect(Collectors.toSet()),new HashSet<>(Arrays.asList("Freeze","Fire","Own","SubjectOf","OriginatedIn","RegisteredIn","Know","MemberOf")));
         Assert.assertEquals(StreamSupport.stream(schemaProvider.getVertexLabels().spliterator(),false)
-                .collect(Collectors.toSet()),new HashSet<>(Arrays.asList("Horse","Guild","Person","Dragon","Kingdom")));
+                .collect(Collectors.toSet()),new HashSet<>(Arrays.asList("Profession","Horse","Guild","Person","Dragon","Kingdom")));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
         GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
-        Assert.assertEquals(5, StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
+        Assert.assertEquals(6, StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
                 .filter(p->p.getIndexPartitions().isPresent())
                 .filter(p->p.getIndexPartitions().get() instanceof StaticIndexPartitions)
                 .filter(p->p.getIndexPartitions().get().getPartitions().iterator().hasNext())

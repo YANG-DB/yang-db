@@ -32,6 +32,7 @@ import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.*;
 import com.yangdb.fuse.unipop.schemaProviders.*;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.NestedIndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
@@ -44,7 +45,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
-import static com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endB;
 import static java.util.stream.Stream.concat;
 
 public class GraphElementSchemaProviderJsonFactory implements GraphElementSchemaProviderFactory {
@@ -60,6 +60,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
     public static final String STATIC = "static";
     public static final String TIME = "time";
+    public static final String NESTED = "nested";
 
     private IndexProvider indexProvider;
     private Ontology.Accessor accessor;
@@ -92,6 +93,10 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
                 return r.getProps().getValues().stream()
                         .flatMap(v -> generateGraphEdgeSchema(r, r.getType(), new StaticIndexPartitions(v)).stream())
                         .collect(Collectors.toList());
+            case NESTED:
+                return r.getProps().getValues().stream()
+                        .flatMap(v -> generateGraphEdgeSchema(r, r.getType(), new NestedIndexPartitions(v)).stream())
+                        .collect(Collectors.toList());
             case TIME:
                 return generateGraphEdgeSchema(r, r.getType(), new TimeBasedIndexPartitions(r.getProps()));
         }
@@ -111,7 +116,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
         switch (e.getPartition()) {
             case STATIC:
                 return
-                        e.getProps().getValues().stream()
+                e.getProps().getValues().stream()
                                 .map(v -> new GraphVertexSchema.Impl(e.getType(), new StaticIndexPartitions(v)))
                                 .collect(Collectors.toList());
             case TIME:

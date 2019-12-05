@@ -1,6 +1,7 @@
 package com.yangdb.fuse.executor;
 
 import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactoryIT;
+import com.yangdb.fuse.executor.ontology.schema.GraphInitiatorIT;
 import com.yangdb.fuse.executor.ontology.schema.IndexProviderBasedCSVLoaderIT;
 import com.yangdb.fuse.executor.ontology.schema.IndexProviderBasedGraphLoaderIT;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
@@ -20,7 +21,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         IndexProviderBasedGraphLoaderIT.class,
         IndexProviderBasedCSVLoaderIT.class,
-        ElasticIndexProviderMappingFactoryIT.class
+        ElasticIndexProviderMappingFactoryIT.class,
+        GraphInitiatorIT.class
 })
 public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
 

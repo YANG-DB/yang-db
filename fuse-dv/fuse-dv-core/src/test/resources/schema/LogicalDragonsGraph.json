@@ -55,7 +55,10 @@
         "birthDate": "12/10/1743",
         "deathDate": "21/7/1773",
         "height": "158",
-        "name": "General Napoleon Bonaparte"
+        "name": "General Napoleon Bonaparte",
+        "profession" : {
+
+        }
       }
     },
     {
