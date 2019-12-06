@@ -127,6 +127,7 @@ public interface DataLoaderUtils {
 
     static Object parseValue(String explicitType, Object value, DateFormat sdf) {
         switch (explicitType) {
+            case "text":
             case "string":
             case "stringValue":
                 return value.toString();
@@ -172,7 +173,7 @@ public interface DataLoaderUtils {
                         Double.valueOf(value.toString().split("[,]")[1]),
                         Double.valueOf(value.toString().split("[,]")[0]));
         }
-        return value.toString();
+        return value;
     }
 
 }

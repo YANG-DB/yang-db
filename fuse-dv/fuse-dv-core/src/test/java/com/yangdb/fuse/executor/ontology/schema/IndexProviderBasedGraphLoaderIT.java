@@ -171,4 +171,41 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
         Assert.assertEquals(graphModel.getNodes().size() + 2*graphModel.getEdges().size(),resp.getHits().getTotalHits());
 
     }
+
+    @Test
+    public void testLoadWithNestedData() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(),anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0,1000));
+
+        String[] indices = StreamSupport.stream(schema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
+        EntityTransformer transformer = new EntityTransformer(config, ontologyProvider,providerIfc, schema, idGeneratorDriver, client);
+
+        Assert.assertEquals(19,indices.length);
+
+        IndexProviderBasedGraphLoader graphLoader = new IndexProviderBasedGraphLoader(client, transformer,schema, idGeneratorDriver);
+        // for stand alone test
+//        Assert.assertEquals(19,graphLoader.init());
+
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/LogicalDragonsGraphWithNested.json");
+        LogicalGraphModel graphModel = mapper.readValue(stream, LogicalGraphModel.class);
+        LoadResponse<String, FuseError> response = graphLoader.load(graphModel, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(2,response.getResponses().size());
+
+        Assert.assertEquals(64,response.getResponses().get(0).getSuccesses().size());
+        Assert.assertEquals(64,response.getResponses().get(1).getSuccesses().size());
+
+        Assert.assertEquals(0,response.getResponses().get(0).getFailures().size());
+        Assert.assertEquals(0,response.getResponses().get(1).getFailures().size());
+
+
+        RefreshResponse actionGet = client.admin().indices().refresh(new RefreshRequest(indices)).actionGet();
+        Assert.assertNotNull(actionGet);
+
+        SearchRequestBuilder builder = client.prepareSearch();
+        builder.setIndices(indices);
+        SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
+        Assert.assertEquals(graphModel.getNodes().size() + 2*graphModel.getEdges().size(),resp.getHits().getTotalHits());
+
+    }
 }

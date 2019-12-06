@@ -9,7 +9,6 @@ import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
-import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +17,6 @@ import org.mockito.Mockito;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -65,9 +63,9 @@ public class GraphElementSchemaProviderJsonFactoryTest {
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
         Assert.assertEquals(StreamSupport.stream(schemaProvider.getEdgeLabels().spliterator(),false)
-                .collect(Collectors.toSet()),new HashSet<>(Arrays.asList("Freeze","Fire","Own","SubjectOf","OriginatedIn","RegisteredIn","Know","MemberOf")));
+                .collect(Collectors.toSet()),new HashSet<>(Arrays.asList("HasProfession","Freeze","Fire","Own","SubjectOf","OriginatedIn","RegisteredIn","Know","MemberOf")));
         Assert.assertEquals(StreamSupport.stream(schemaProvider.getVertexLabels().spliterator(),false)
-                .collect(Collectors.toSet()),new HashSet<>(Arrays.asList("Profession","Horse","Guild","Person","Dragon","Kingdom")));
+                .collect(Collectors.toSet()),new HashSet<>(Arrays.asList("Horse","Guild","Person","Dragon","Kingdom")));
     }
 
     @Test
@@ -75,7 +73,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
         GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
-        Assert.assertEquals(6, StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
+        Assert.assertEquals(5, StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
                 .filter(p->p.getIndexPartitions().isPresent())
                 .filter(p->p.getIndexPartitions().get() instanceof StaticIndexPartitions)
                 .filter(p->p.getIndexPartitions().get().getPartitions().iterator().hasNext())
@@ -87,8 +85,8 @@ public class GraphElementSchemaProviderJsonFactoryTest {
         GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
-        Assert.assertEquals( 24,StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(),false).count());
-        Arrays.asList("Freeze", "Fire", "Own", "SubjectOf", "OriginatedIn", "RegisteredIn", "Know", "MemberOf")
+        Assert.assertEquals( 26,StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(),false).count());
+        Arrays.asList("HasProfession","Freeze", "Fire", "Own", "SubjectOf", "OriginatedIn", "RegisteredIn", "Know", "MemberOf")
                 .forEach(label->{
                     Iterable<GraphEdgeSchema> edgeSchemas = schemaProvider.getEdgeSchemas(label);
                     Assert.assertNotNull(edgeSchemas);
@@ -143,6 +141,13 @@ public class GraphElementSchemaProviderJsonFactoryTest {
                             Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(Know)])]");
                             Assert.assertEquals(schema.getIndexPartitions().get().getPartitions().spliterator().estimateSize(), 1);
                             break;
+                        case "HasProfession":
+                            Assert.assertEquals(schema.getApplications().size(), 1);
+                            Assert.assertEquals(schema.getEndA().get().getRedundantProperties().spliterator().estimateSize(), 1);
+                            Assert.assertEquals(schema.getEndB().get().getRedundantProperties().spliterator().estimateSize(), 1);
+                            Assert.assertEquals(schema.getConstraint().getTraversalConstraint().toString(), "[HasStep([~label.eq(HasProfession)])]");
+                            Assert.assertEquals(schema.getIndexPartitions().get().getPartitions().spliterator().estimateSize(), 1);
+                            break;
 
                         case "MemberOf":
                             Assert.assertEquals(schema.getApplications().size(), 1);
@@ -163,12 +168,15 @@ public class GraphElementSchemaProviderJsonFactoryTest {
         GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
-        Assert.assertEquals(24, StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
+        Assert.assertEquals(26, StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
                 .filter(p->p.getIndexPartitions().isPresent())
                 .filter(p->p.getIndexPartitions().get().getPartitions().iterator().hasNext())
                 .count());
         schemaProvider.getEdgeSchemas().forEach(schema -> {
             switch (schema.getLabel()) {
+                case "HasProfession":
+                    Assert.assertEquals(schemaProvider.getEdgeSchemas("HasProfession").spliterator().estimateSize(), 2);
+                    break;
                 case "Freeze":
                     Assert.assertEquals(schemaProvider.getEdgeSchemas("Freeze").spliterator().estimateSize(), 2);
                     break;

@@ -21,6 +21,7 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.typesafe.config.Config;
@@ -42,7 +43,9 @@ import com.yangdb.fuse.model.schema.Relation;
 import javaslang.Tuple2;
 import org.elasticsearch.client.Client;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -167,8 +170,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
         edge.metadata().entrySet()
                 .stream()
                 .filter(m -> accessor.relation$(edge.getLabel()).containsMetadata(m.getKey()))
-                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                .forEach(m -> populate(element, m));
     }
 
     /**
@@ -182,8 +184,20 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
         node.metadata().entrySet()
                 .stream()
                 .filter(m -> accessor.entity$(node.getLabel()).containsMetadata(m.getKey()))
-                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                .forEach(m -> populate(element, m));
+    }
+
+    private ObjectNode populate(ObjectNode element, Map.Entry<String, Object> m) {
+        String pType = accessor.property$(m.getKey()).getpType();
+        Object result = parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf);
+        if (String.class.isAssignableFrom(result.getClass())) {
+            return element.put(pType,result.toString());
+        }
+        if (Collection.class.isAssignableFrom(result.getClass())){
+            return element.putPOJO(pType,result);
+        }
+        return element.put(pType,result.toString());
+
     }
 
 
@@ -203,8 +217,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 node.fields().entrySet()
                         .stream()
                         .filter(m -> accessor.entity$(node.getLabel()).containsProperty(m.getKey()))
-                        .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                        .forEach(m -> populate(element, m));
                 break;
             // todo manage nested index fields
             default:
@@ -241,8 +254,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 edge.fields().entrySet()
                         .stream()
                         .filter(m -> accessor.relation$(edge.getLabel()).containsProperty(m.getKey()))
-                        .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                        .forEach(m -> populate(element, m));
                 break;
             // todo manage nested index fields
             default:

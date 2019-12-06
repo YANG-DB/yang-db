@@ -15,7 +15,9 @@
         "birthDate",
         "deathDate",
         "height",
-        "name"      ]
+        "name",
+        "profession"
+      ]
     },
     {
       "eType": "Profession",
@@ -424,6 +426,11 @@
       "pType": "type",
       "name": "type",
       "type": "string"
+    },
+    {
+      "pType": "profession",
+      "name": "profession",
+      "type": "Profession"
     }
   ]
 }
