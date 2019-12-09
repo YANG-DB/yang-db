@@ -77,7 +77,7 @@ public class DragonsSimpleFileUploadIT implements BaseITMarker {
     }
 
     @Test
-    public void testLoadFireRelatiobsCsv() throws IOException, URISyntaxException {
+    public void testLoadFireRelationsCsv() throws IOException, URISyntaxException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Assert.assertNotNull(fuseResourceInfo);
 

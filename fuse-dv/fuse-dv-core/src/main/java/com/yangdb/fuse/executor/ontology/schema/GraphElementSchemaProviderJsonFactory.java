@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.ontology.schema;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.model.ontology.EPair;
+import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -48,6 +49,10 @@ import static com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema.Application
 import static java.util.stream.Stream.concat;
 
 public class GraphElementSchemaProviderJsonFactory implements GraphElementSchemaProviderFactory {
+
+    public static final String KEYWORD = "keyword";
+    public static final String TEXT = "text";
+    public static final String _ID = "_id";
 
     public static final String ID = "id";
     public static final String ENTITY_A = "entityA";
@@ -116,19 +121,30 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
         switch (e.getPartition()) {
             case STATIC:
                 return
-                e.getProps().getValues().stream()
-                                .map(v -> new GraphVertexSchema.Impl(e.getType(), new StaticIndexPartitions(v)))
+                        e.getProps().getValues().stream()
+                                .map(v -> new GraphVertexSchema.Impl(
+                                        e.getType(),
+                                        new StaticIndexPartitions(v),
+                                        getGraphElementPropertySchemas(e.getType())))
                                 .collect(Collectors.toList());
             case TIME:
-                e.getProps().getValues().stream()
-                        .map(v -> new GraphVertexSchema.Impl(e.getType(), new TimeBasedIndexPartitions(e.getProps())))
-                        .collect(Collectors.toList());
-                break;
+                return
+                        e.getProps().getValues().stream()
+                                .map(v -> new GraphVertexSchema.Impl(
+                                        e.getType(),
+                                        new TimeBasedIndexPartitions(e.getProps()),
+                                        getGraphElementPropertySchemas(e.getType())))
+                                .collect(Collectors.toList());
         }
-
+        //default - when other partition type is declared
         String v = e.getProps().getValues().isEmpty() ? e.getType() : e.getProps().getValues().get(0);
-        return Collections.singletonList(new GraphVertexSchema.Impl(e.getType(), new StaticIndexPartitions(v)));
+        return Collections.singletonList(
+                new GraphVertexSchema.Impl(
+                        e.getType(),
+                        new StaticIndexPartitions(v),
+                        getGraphElementPropertySchemas(e.getType())));
     }
+
 
     private Optional<List<EPair>> getEdgeSchemaOntologyPairs(String edge) {
         Optional<RelationshipType> relation = accessor.relation(edge);
@@ -145,9 +161,9 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
         validateSchema(pairList);
 
         return concat(
-                pairList.stream().map(p -> constructEdgeSchema(r, v, partitions, p,Direction.OUT)),
-                pairList.stream().map(p -> constructEdgeSchema(r, v, partitions, p,Direction.IN)))
-            .collect(Collectors.toList());
+                pairList.stream().map(p -> constructEdgeSchema(r, v, partitions, p, Direction.OUT)),
+                pairList.stream().map(p -> constructEdgeSchema(r, v, partitions, p, Direction.IN)))
+                .collect(Collectors.toList());
     }
 
     private GraphEdgeSchema.Impl constructEdgeSchema(Relation r, String v, IndexPartitions partitions, EPair p, Direction direction) {
@@ -201,6 +217,28 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
                 throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Pair containing " + pair.toString() + " was not matched against the current ontology"));
         });
     }
+
+    private List<GraphElementPropertySchema> getGraphElementPropertySchemas(String type) {
+        EntityType entityType = accessor.entity$(type);
+        List<GraphElementPropertySchema> elementPropertySchemas = new ArrayList<>();
+        entityType.getProperties()
+                .stream()
+                .filter(v -> accessor.pType(v).isPresent())
+                .forEach(v -> {
+                    switch (accessor.property$(v).getType()) {
+                        case TEXT:
+                            elementPropertySchemas.add(new GraphElementPropertySchema.Impl(v, accessor.pType$(v),
+                                    //todo add all types of possible analyzers - such as ngram ...
+                                    Arrays.asList(new GraphElementPropertySchema.ExactIndexingSchema.Impl(v + "." + KEYWORD))));
+                            break;
+                        default:
+                            elementPropertySchemas.add(new GraphElementPropertySchema.Impl(v, accessor.pType$(v)));
+                    }
+                });
+
+        return elementPropertySchemas;
+    }
+
 
     private List<GraphRedundantPropertySchema> getGraphRedundantPropertySchemas(String entitySide, String entityType, Relation rel) {
         List<GraphRedundantPropertySchema> redundantPropertySchemas = new ArrayList<>();

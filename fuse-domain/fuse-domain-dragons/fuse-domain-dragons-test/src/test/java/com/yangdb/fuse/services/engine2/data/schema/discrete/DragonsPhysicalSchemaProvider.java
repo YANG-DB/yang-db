@@ -30,20 +30,19 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
             case "Person":
                 return Collections.singletonList(new GraphVertexSchema.Impl(
                         label,
-                        Optional.empty(),
-                        Optional.of(new IndexPartitions.Impl("_id",
+                        new IndexPartitions.Impl("_id",
                                 new IndexPartitions.Partition.Range.Impl<>("p001", "p005", "person1"),
-                                new IndexPartitions.Partition.Range.Impl<>("p005", "p010", "person2")))
+                                new IndexPartitions.Partition.Range.Impl<>("p005", "p010", "person2"))
                 ));
             case "Dragon":
                 return Collections.singletonList(new GraphVertexSchema.Impl(
                         label,
-                        Optional.of(new GraphElementRouting.Impl(
+                        new GraphElementRouting.Impl(
                                 new GraphElementPropertySchema.Impl("personId", "string")
-                        )),
-                        Optional.of(new IndexPartitions.Impl("personId",
+                        ),
+                        new IndexPartitions.Impl("personId",
                                 new IndexPartitions.Partition.Range.Impl<>("p001", "p005", "dragon1"),
-                                new IndexPartitions.Partition.Range.Impl<>("p005", "p010", "dragon2")))
+                                new IndexPartitions.Partition.Range.Impl<>("p005", "p010", "dragon2"))
                 ));
 
             case "Kingdom":
