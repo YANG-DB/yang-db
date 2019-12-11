@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.ontology.schema;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ public class IndexProviderRawSchema implements RawSchema {
     private GraphElementSchemaProvider schemaProvider;
 
     @Inject
-    public IndexProviderRawSchema(Config config, OntologyProvider provider, GraphElementSchemaProviderFactory schemaProviderFactory ) {
+    public IndexProviderRawSchema(Config config, OntologyProvider provider, GraphElementSchemaProviderFactory schemaProviderFactory) {
         String assembly = config.getString("assembly");
         Optional<Ontology> ontology = provider.get(assembly);
         Ontology ont = ontology.orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly)));
@@ -50,12 +50,12 @@ public class IndexProviderRawSchema implements RawSchema {
 
     @Override
     public IndexPartitions getPartition(String type) {
-        if(schemaProvider.getVertexSchemas(type).iterator().hasNext())
+        if (schemaProvider.getVertexSchemas(type).iterator().hasNext())
             return schemaProvider.getVertexSchemas(type).iterator().next().getIndexPartitions().get();
-        if(schemaProvider.getEdgeSchemas(type).iterator().hasNext())
+        if (schemaProvider.getEdgeSchemas(type).iterator().hasNext())
             return schemaProvider.getEdgeSchemas(type).iterator().next().getIndexPartitions().get();
 
-        throw new FuseError.FuseErrorException("No valid partition found for " + type,new FuseError("IndexProvider Schema Error","No valid partition found for " + type));
+        throw new FuseError.FuseErrorException("No valid partition found for " + type, new FuseError("IndexProvider Schema Error", "No valid partition found for " + type));
 
     }
 
@@ -82,24 +82,30 @@ public class IndexProviderRawSchema implements RawSchema {
 
     @Override
     public Iterable<String> indices() {
-        return Stream.concat(edges(), vertices())
+        return indices(schemaProvider);
+    }
+
+    public static Iterable<String> indices(GraphElementSchemaProvider schemaProvider) {
+        return Stream.concat(edges(schemaProvider), vertices(schemaProvider))
                 .collect(Collectors.toSet());
     }
 
-    private Stream<String> vertices() {
+    public static Stream<String> vertices(GraphElementSchemaProvider schemaProvider) {
         return StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
+                .filter(p -> p.getIndexPartitions().isPresent())
+                .filter(p -> !(p.getIndexPartitions().get() instanceof NestedIndexPartitions))
                 .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                .filter(p->!(p instanceof NestedIndexPartitions))
-                .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
+                .filter(p -> !(p instanceof IndexPartitions.Partition.Default<?>))
                 .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
     }
 
-    private Stream<String> edges() {
+    public static Stream<String> edges(GraphElementSchemaProvider schemaProvider) {
         return StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
-                    .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                    .filter(p->!(p instanceof NestedIndexPartitions))
-                    .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
-                    .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
+                .filter(p -> p.getIndexPartitions().isPresent())
+                .filter(p -> !(p.getIndexPartitions().get() instanceof NestedIndexPartitions))
+                .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
+                .filter(p -> !(p instanceof IndexPartitions.Partition.Default<?>))
+                .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
     }
 
 }

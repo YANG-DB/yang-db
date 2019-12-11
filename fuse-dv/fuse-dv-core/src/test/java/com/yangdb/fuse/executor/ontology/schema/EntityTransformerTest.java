@@ -15,6 +15,7 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.NestedIndexPartitions;
 import com.yangdb.test.BaseITMarker;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
@@ -96,17 +97,7 @@ public class EntityTransformerTest {
 
             @Override
             public Iterable<String> indices() {
-                Stream<String> edges = StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
-                        .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                        .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
-                        .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
-                Stream<String> vertices = StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
-                        .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                        .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
-                        .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
-
-                return Stream.concat(edges, vertices)
-                        .collect(Collectors.toSet());
+                return IndexProviderRawSchema.indices(schemaProvider);
             }
 
         };

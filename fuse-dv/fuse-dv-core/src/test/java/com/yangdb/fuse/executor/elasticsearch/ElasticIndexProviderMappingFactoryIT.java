@@ -7,6 +7,7 @@ import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.BaseModuleInjectionTest;
 import com.yangdb.fuse.executor.ontology.schema.GraphElementSchemaProviderJsonFactory;
+import com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
@@ -97,19 +98,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
 
             @Override
             public Iterable<String> indices() {
-                Stream<String> edges = StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
-                        .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                        .filter(p->!(p instanceof NestedIndexPartitions))
-                        .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
-                        .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
-                Stream<String> vertices = StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
-                        .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                        .filter(p->!(p instanceof NestedIndexPartitions))
-                        .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
-                        .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
-
-                return Stream.concat(edges,vertices)
-                        .collect(Collectors.toSet());
+                return IndexProviderRawSchema.indices(schemaProvider);
             }
         };
     }

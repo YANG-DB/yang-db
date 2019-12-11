@@ -14,7 +14,6 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
-import com.yangdb.test.BaseITMarker;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -30,7 +29,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -75,6 +73,7 @@ public class CSVTransformerTest {
             public IndexPartitions getPartition(String type) {
                 return schemaProvider.getVertexSchemas(type).iterator().next().getIndexPartitions().get();
             }
+
             @Override
             public String getIdPrefix(String type) {
                 return "";
@@ -99,17 +98,7 @@ public class CSVTransformerTest {
 
             @Override
             public Iterable<String> indices() {
-                Stream<String> edges = StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
-                        .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                        .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
-                        .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
-                Stream<String> vertices = StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
-                        .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                        .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
-                        .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
-
-                return Stream.concat(edges, vertices)
-                        .collect(Collectors.toSet());
+                return IndexProviderRawSchema.indices(schemaProvider);
             }
 
         };
@@ -138,7 +127,7 @@ public class CSVTransformerTest {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(3,testTransform(transform).getEntities().size());
+        Assert.assertEquals(3, testTransform(transform).getEntities().size());
     }
 
     @Test
@@ -164,7 +153,7 @@ public class CSVTransformerTest {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(3,testTransform(transform).getEntities().size());
+        Assert.assertEquals(3, testTransform(transform).getEntities().size());
     }
 
     @Test
@@ -190,7 +179,7 @@ public class CSVTransformerTest {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(3,testTransform(transform).getEntities().size());
+        Assert.assertEquals(3, testTransform(transform).getEntities().size());
     }
 
     @Test
@@ -210,12 +199,13 @@ public class CSVTransformerTest {
             public String type() {
                 return "vertex";
             }
+
             @Override
             public Reader content() {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(4,testTransform(transform).getEntities().size());
+        Assert.assertEquals(4, testTransform(transform).getEntities().size());
     }
 
     @Test
@@ -235,12 +225,13 @@ public class CSVTransformerTest {
             public String type() {
                 return "vertex";
             }
+
             @Override
             public Reader content() {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(3,testTransform(transform).getEntities().size());
+        Assert.assertEquals(3, testTransform(transform).getEntities().size());
     }
 
     @Test
@@ -260,12 +251,13 @@ public class CSVTransformerTest {
             public String type() {
                 return "edge";
             }
+
             @Override
             public Reader content() {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(4,testTransform(transform).getRelations().size());
+        Assert.assertEquals(4, testTransform(transform).getRelations().size());
     }
 
     @Test
@@ -285,12 +277,13 @@ public class CSVTransformerTest {
             public String type() {
                 return "edge";
             }
+
             @Override
             public Reader content() {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(2,testTransform(transform).getRelations().size());
+        Assert.assertEquals(2, testTransform(transform).getRelations().size());
     }
 
     @Test
@@ -310,12 +303,13 @@ public class CSVTransformerTest {
             public String type() {
                 return "edge";
             }
+
             @Override
             public Reader content() {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(6,testTransform(transform).getRelations().size());
+        Assert.assertEquals(6, testTransform(transform).getRelations().size());
     }
 
     @Test
@@ -335,12 +329,13 @@ public class CSVTransformerTest {
             public String type() {
                 return "edge";
             }
+
             @Override
             public Reader content() {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(6,testTransform(transform).getRelations().size());
+        Assert.assertEquals(6, testTransform(transform).getRelations().size());
     }
 
     @Test
@@ -360,12 +355,13 @@ public class CSVTransformerTest {
             public String type() {
                 return "edge";
             }
+
             @Override
             public Reader content() {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(8,testTransform(transform).getRelations().size());
+        Assert.assertEquals(8, testTransform(transform).getRelations().size());
     }
 
     @Test
@@ -385,13 +381,15 @@ public class CSVTransformerTest {
             public String type() {
                 return "edge";
             }
+
             @Override
             public Reader content() {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(14,testTransform(transform).getRelations().size());
+        Assert.assertEquals(14, testTransform(transform).getRelations().size());
     }
+
     @Test
     public void testSubjectIOf() throws IOException {
         IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
@@ -409,12 +407,13 @@ public class CSVTransformerTest {
             public String type() {
                 return "edge";
             }
+
             @Override
             public Reader content() {
                 return reader;
             }
         }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(6,testTransform(transform).getRelations().size());
+        Assert.assertEquals(6, testTransform(transform).getRelations().size());
     }
 
     public DataTransformerContext testTransform(DataTransformerContext<Object> transform) throws IOException {
