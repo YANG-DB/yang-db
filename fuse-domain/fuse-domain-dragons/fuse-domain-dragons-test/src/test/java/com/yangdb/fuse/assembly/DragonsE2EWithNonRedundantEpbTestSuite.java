@@ -1,6 +1,8 @@
 package com.yangdb.fuse.assembly;
 
 
+import com.yangdb.fuse.assembly.queries.DragonsNestedNoConstraintsQueryIT;
+import com.yangdb.fuse.assembly.queries.DragonsSimpleConstraintsQueryIT;
 import com.yangdb.fuse.assembly.queries.DragonsSimpleNoConstraintsQueryIT;
 import com.yangdb.fuse.assembly.queries.DragonsSimpleFileUploadIT;
 import com.yangdb.test.BaseSuiteMarker;
@@ -14,7 +16,9 @@ import java.nio.file.Paths;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         DragonsSimpleFileUploadIT.class,
-        DragonsSimpleNoConstraintsQueryIT.class
+        DragonsSimpleNoConstraintsQueryIT.class,
+        DragonsSimpleConstraintsQueryIT.class,
+        DragonsNestedNoConstraintsQueryIT.class
 })
 public class DragonsE2EWithNonRedundantEpbTestSuite implements BaseSuiteMarker {
 

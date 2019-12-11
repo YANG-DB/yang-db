@@ -39,6 +39,7 @@ public class M1QueryTranslator extends CompositeQueryTranslator {
                                 new ContainsQueryTranslator()),
                         new ExistsQueryTranslator(),
                         new TextQueryTranslator(),
+//                        new NestedQueryTranslator(),
                         new AndPQueryTranslator(
                                 new CompareQueryTranslator(true),
                                 new ExclusiveChainTranslator(

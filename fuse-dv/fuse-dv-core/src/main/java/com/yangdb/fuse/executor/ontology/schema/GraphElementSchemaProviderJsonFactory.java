@@ -119,6 +119,14 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
     private List<GraphVertexSchema> generateGraphVertexSchema(Entity e) {
         switch (e.getPartition()) {
+            case NESTED:
+                return
+                        e.getProps().getValues().stream()
+                                .map(v -> new GraphVertexSchema.Impl(
+                                        e.getType(),
+                                        new NestedIndexPartitions(v),
+                                        getGraphElementPropertySchemas(e.getType())))
+                                .collect(Collectors.toList());
             case STATIC:
                 return
                         e.getProps().getValues().stream()

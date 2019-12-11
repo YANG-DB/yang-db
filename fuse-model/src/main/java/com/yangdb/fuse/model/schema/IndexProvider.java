@@ -46,10 +46,9 @@ package com.yangdb.fuse.model.schema;
 
 import com.fasterxml.jackson.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -69,7 +68,10 @@ public class IndexProvider {
 
     @JsonProperty("entities")
     public List<Entity> getEntities() {
-        return entities;
+        return Stream.concat(entities.stream()
+                    .filter(e -> !e.getNested().isEmpty())
+                    .flatMap(e -> e.getNested().stream()),entities.stream())
+                .collect(Collectors.toList());
     }
 
     @JsonProperty("entities")
@@ -79,7 +81,10 @@ public class IndexProvider {
 
     @JsonProperty("relations")
     public List<Relation> getRelations() {
-        return relations;
+        return Stream.concat(relations.stream()
+                .filter(e -> !e.getNested().isEmpty())
+                .flatMap(e -> e.getNested().stream()),relations.stream())
+                .collect(Collectors.toList());
     }
 
     @JsonProperty("relations")
@@ -113,7 +118,7 @@ public class IndexProvider {
                 .flatMap(e -> e.getNested().stream())
                 .filter(nested -> nested.getType().equals(label))
                 .findAny();
-        if(nest.isPresent())
+        if (nest.isPresent())
             return nest;
 
         return getEntities().stream().filter(e -> e.getType().equals(label)).findAny();
@@ -125,7 +130,7 @@ public class IndexProvider {
                 .flatMap(e -> e.getNested().stream())
                 .filter(nested -> nested.getType().equals(label))
                 .findAny();
-        if(nest.isPresent())
+        if (nest.isPresent())
             return nest;
 
         return getRelations().stream().filter(e -> e.getType().equals(label)).findAny();

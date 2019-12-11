@@ -29,6 +29,7 @@ public class OntologyTestUtils {
     public static Property LAST_NAME = new Property("lastName", STRING, "lastName");
     public static Property GENDER = new Property("gender", TYPE_GENDER, "gender");
     public static Property BIRTH_DATE = new Property("birthDate", STRING, "birthDate");
+    public static Property DESCRIPTION = new Property("description", STRING, "description");
     public static Property DEATH_DATE = new Property("deathDate", STRING, "deathDate");
     public static Property HEIGHT = new Property("height", INT, "height");
     public static Property NAME = new Property("name", STRING, "name");
@@ -50,6 +51,7 @@ public class OntologyTestUtils {
     public static final RelationshipType ORIGINATED_IN = new RelationshipType("originatedIn", "originatedIn", true).withProperty(START_DATE.type, END_DATE.type);
     public static final RelationshipType SUBJECT = new RelationshipType("subject", "subject", true).withProperty(START_DATE.type, END_DATE.type);
     public static final RelationshipType REGISTERED = new RelationshipType("registered", "registered", true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType HAS_PROFESSION = new RelationshipType("hasProfession", "hasProfession", true);
 
 
     public interface Entity {
@@ -125,6 +127,36 @@ public class OntologyTestUtils {
 
         public static List<RelationshipType> relationshipList = Collections.singletonList(
                 REGISTERED.addPair(new EPair(type, GUILD.type)));
+
+        @Override
+        public String name() {
+            return name;
+        }
+
+        @Override
+        public String type() {
+            return type;
+        }
+
+        @Override
+        public List<Property> properties() {
+            return propertyList;
+        }
+
+        @Override
+        public List<RelationshipType> relations() {
+            return relationshipList;
+        }
+    }
+
+    public static class PROFESSION implements Entity {
+        public static String name = "Profession";
+        public static String type = "Profession";
+
+        public static List<Property> propertyList = Arrays.asList(NAME.redundant(), DESCRIPTION);
+
+        public static List<RelationshipType> relationshipList = Collections.singletonList(
+                HAS_PROFESSION.addPair(new EPair(PERSON.type, type)));
 
         @Override
         public String name() {

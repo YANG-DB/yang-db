@@ -25,7 +25,7 @@ import com.yangdb.fuse.unipop.step.NestedStepWrapper;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.*;
 
-public class BoostingTraversalVisitor {
+public class NestedTraversalVisitor {
     //Public Methods
     public boolean visit(Traversal traversal) {
         return visitRecursive(traversal);
@@ -46,18 +46,17 @@ public class BoostingTraversalVisitor {
             return visitHasStep((HasStep) o);
         } else if (o.getClass() == TraversalFilterStep.class) {
             return visitTraversalFilterStep((TraversalFilterStep) o);
-        } else if(o.getClass() == BoostingStepWrapper.class){
-            return visitBoostingStep((BoostingStepWrapper) o);
+        } else if(o.getClass() == NestedStepWrapper.class){
+            return visitNestedStep((NestedStepWrapper) o);
         } else {
             //TODO: allow configurable behavior for unsupported or unexpected elements
             throw new UnsupportedOperationException(o.getClass() + " is not supported in promise conditions");
         }
     }
 
-    protected boolean visitBoostingStep(BoostingStepWrapper o) {
+    protected boolean visitNestedStep(NestedStepWrapper o) {
         return true;
     }
-
 
     protected boolean visitNotStep(NotStep<?> notStep) {
         return notStep.getLocalChildren().stream().map(this::visitRecursive).reduce((a,b) -> a || b ).orElse(false);

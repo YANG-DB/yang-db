@@ -52,9 +52,9 @@ public class DragonsSimpleFileUploadIT implements BaseITMarker {
         Assert.assertFalse(map.isEmpty());
         Assert.assertEquals(2,((List)map.get("responses")).size());
         Assert.assertNotNull(((Map)((List)map.get("responses")).get(0)).get("successes"));
-        Assert.assertEquals(62,((List)((Map)((List)map.get("responses")).get(0)).get("successes")).size());
+        Assert.assertEquals(64,((List)((Map)((List)map.get("responses")).get(0)).get("successes")).size());
         Assert.assertNotNull(((Map)((List)map.get("responses")).get(1)).get("successes"));
-        Assert.assertEquals(62,((List)((Map)((List)map.get("responses")).get(1)).get("successes")).size());
+        Assert.assertEquals(64,((List)((Map)((List)map.get("responses")).get(1)).get("successes")).size());
     }
 
     @Test

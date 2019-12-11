@@ -1,6 +1,7 @@
 package com.yangdb.fuse.assembly;
 
 
+import com.yangdb.fuse.assembly.queries.DragonsNestedNoConstraintsQueryIT;
 import com.yangdb.fuse.assembly.queries.DragonsSimpleConstraintsQueryIT;
 import com.yangdb.fuse.assembly.queries.DragonsSimpleNoConstraintsQueryIT;
 import com.yangdb.fuse.assembly.queries.DragonsSimpleFileUploadIT;
@@ -17,7 +18,7 @@ import java.nio.file.Paths;
         DragonsSimpleFileUploadIT.class,
         DragonsSimpleNoConstraintsQueryIT.class,
         DragonsSimpleConstraintsQueryIT.class,
-
+        DragonsNestedNoConstraintsQueryIT.class
 })
 public class DragonsE2EWithCostRedundantEpbTestSuite implements BaseSuiteMarker {
 

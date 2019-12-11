@@ -9,9 +9,9 @@ package com.yangdb.fuse.unipop.controller.search;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ package com.yangdb.fuse.unipop.controller.search;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javaslang.collection.Stream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.geo.ShapeRelation;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
@@ -197,11 +198,21 @@ public class QueryBuilder {
         return this;
     }
 
-    public QueryBuilder boost(long boost){
+    public QueryBuilder nested(String eType) {
         if (this.root == null) {
             throw new UnsupportedOperationException("'bool' may not appear as first statement");
         }
 
+        NestedComposite nestedComposite = new NestedComposite(null, Op.boost, this.current, eType);
+        this.current.children.add(nestedComposite);
+        this.current = nestedComposite;
+        return this;
+    }
+
+    public QueryBuilder boost(long boost) {
+        if (this.root == null) {
+            throw new UnsupportedOperationException("'bool' may not appear as first statement");
+        }
 
         BoostComposite boostComposite = new BoostComposite(null, Op.boost, this.current, boost);
         this.current.children.add(boostComposite);
@@ -218,7 +229,7 @@ public class QueryBuilder {
             throw new UnsupportedOperationException("'bool' may not appear as first statement");
         }
 
-        if (this.current.op != Op.query && this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should && current.op!= Op.boost) {
+        if (this.current.op != Op.query && this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should && current.op != Op.boost) {
             throw new UnsupportedOperationException("'bool' may only appear in the 'filter', 'must', 'mustNot' , 'should' , 'query' or 'boost' context");
         }
 
@@ -415,9 +426,13 @@ public class QueryBuilder {
         return this;
     }
 
-    public QueryBuilder wildcard(String fieldName, String wildcard) { return wildcard(null, fieldName, wildcard); }
+    public QueryBuilder wildcard(String fieldName, String wildcard) {
+        return wildcard(null, fieldName, wildcard);
+    }
 
-    public QueryBuilder wildcardScript(String fieldName, String wildcard) { return wildcardScript(null, fieldName, wildcard); }
+    public QueryBuilder wildcardScript(String fieldName, String wildcard) {
+        return wildcardScript(null, fieldName, wildcard);
+    }
 
     public QueryBuilder wildcardScript(String name, String fieldName, String wildcard) {
         if (this.root == null) {
@@ -433,7 +448,7 @@ public class QueryBuilder {
             return this;
         }
 
-        Composite wildcardCompositeScript = new ScriptComposite("wildcard","native", fieldName, wildcard, current);
+        Composite wildcardCompositeScript = new ScriptComposite("wildcard", "native", fieldName, wildcard, current);
         this.current.children.add(wildcardCompositeScript);
         this.current = wildcardCompositeScript;
 
@@ -464,6 +479,7 @@ public class QueryBuilder {
     public QueryBuilder match(String fieldName, Object value) {
         return this.match(null, fieldName, value);
     }
+
     public QueryBuilder matchPhrase(String fieldName, Object value) {
         return this.matchPhrase(null, fieldName, value);
     }
@@ -488,6 +504,7 @@ public class QueryBuilder {
 
         return this;
     }
+
     public QueryBuilder match(String name, String fieldName, Object value) {
         if (this.root == null) {
             throw new UnsupportedOperationException("'match' may not appear as first statement");
@@ -510,7 +527,7 @@ public class QueryBuilder {
     }
 
     public QueryBuilder queryString(String fieldName, Object value) {
-        return queryString(null,fieldName,value);
+        return queryString(null, fieldName, value);
     }
 
     public QueryBuilder queryString(String name, String fieldName, Object value) {
@@ -584,7 +601,7 @@ public class QueryBuilder {
         return this;
     }
 
-    public QueryBuilder geoBoundingBox(String name, String fieldName,GeoPoint topLeft, GeoPoint bottomRight) {
+    public QueryBuilder geoBoundingBox(String name, String fieldName, GeoPoint topLeft, GeoPoint bottomRight) {
         if (this.root == null) {
             throw new UnsupportedOperationException("'geoShape' may not appear as first statement");
         }
@@ -598,14 +615,14 @@ public class QueryBuilder {
             return this;
         }
 
-        Composite geoShapeComposite = new GeoBoundingBoxComposite(name, fieldName, current,topLeft,bottomRight);
+        Composite geoShapeComposite = new GeoBoundingBoxComposite(name, fieldName, current, topLeft, bottomRight);
         this.current.children.add(geoShapeComposite);
         this.current = geoShapeComposite;
 
         return this;
     }
 
-    public QueryBuilder geoDistance(String name, String fieldName,GeoPoint location, String distance) {
+    public QueryBuilder geoDistance(String name, String fieldName, GeoPoint location, String distance) {
         if (this.root == null) {
             throw new UnsupportedOperationException("'geoShape' may not appear as first statement");
         }
@@ -619,7 +636,7 @@ public class QueryBuilder {
             return this;
         }
 
-        Composite geoShapeComposite = new GeoDistanceComposite(name, fieldName, current,location,distance);
+        Composite geoShapeComposite = new GeoDistanceComposite(name, fieldName, current, location, distance);
         this.current.children.add(geoShapeComposite);
         this.current = geoShapeComposite;
 
@@ -746,12 +763,15 @@ public class QueryBuilder {
     public <V> QueryBuilder from(V from) {
         return this.param("getFrom", from);
     }
+
     public <V> QueryBuilder to(V to) {
         return this.param("getTo", to);
     }
+
     public QueryBuilder includeLower(boolean includeLower) {
         return this.param("include_lower", includeLower);
     }
+
     public QueryBuilder includeUpper(boolean includeLower) {
         return this.param("include_upper", includeLower);
     }
@@ -785,7 +805,7 @@ public class QueryBuilder {
     }
 
     public QueryBuilder seek(Predicate<Composite> predicate) {
-        Composite seek = this.root.seek(predicate,SeekMode.full);
+        Composite seek = this.root.seek(predicate, SeekMode.full);
         if (seek != null) {
             this.current = seek;
         }
@@ -831,7 +851,7 @@ public class QueryBuilder {
                 pruneComposite.drop();
             }
 
-        } while(pruneComposite != null);
+        } while (pruneComposite != null);
 
         return this;
     }
@@ -879,7 +899,7 @@ public class QueryBuilder {
             return null;
         }
 
-        return (org.elasticsearch.index.query.QueryBuilder)root.build();
+        return (org.elasticsearch.index.query.QueryBuilder) root.build();
     }
 
     // The clone will return a deep clone of the query builder (except leaf values: e.g the Object value in terms composite).
@@ -893,7 +913,7 @@ public class QueryBuilder {
             }
             clone.current = clone.root;
             return clone;
-        } catch(CloneNotSupportedException ex){
+        } catch (CloneNotSupportedException ex) {
             return null;
         }
     }
@@ -917,12 +937,12 @@ public class QueryBuilder {
         return filter != null;
     }
 
-    public<T> T visit(String labelNodeToSeek, BiFunction<Composite, T, T> accumulator, T seed) {
+    public <T> T visit(String labelNodeToSeek, BiFunction<Composite, T, T> accumulator, T seed) {
         QueryBuilder queryBuilder = this.seek(labelNodeToSeek);
         return visit(queryBuilder.current, accumulator, seed);
     }
 
-    public<T> T visit(Composite composite, BiFunction<Composite, T, T> accumulator, T seed) {
+    public <T> T visit(Composite composite, BiFunction<Composite, T, T> accumulator, T seed) {
         if (composite == null) {
             return null;
         }
@@ -964,7 +984,7 @@ public class QueryBuilder {
         }, SeekMode.childrenOnly);
     }
 
-    private Composite seekLocalClass(Composite composite, Class<? extends Composite> compositeClass){
+    private Composite seekLocalClass(Composite composite, Class<? extends Composite> compositeClass) {
         return composite.seek(childComposite -> {
             if (childComposite == null) {
                 return false;
@@ -975,7 +995,7 @@ public class QueryBuilder {
     }
 
     private ParamComposite seekLocalParam(Composite composite, String name) {
-        ParamComposite param = (ParamComposite)composite.seek(childComposite -> {
+        ParamComposite param = (ParamComposite) composite.seek(childComposite -> {
             if (childComposite == null) {
                 return false;
             }
@@ -999,25 +1019,25 @@ public class QueryBuilder {
                                     contextualFieldValues.getPositiveValues();
 
                         case term:
-                            QueryBuilder.TermComposite termComposite = (QueryBuilder.TermComposite)composite;
+                            QueryBuilder.TermComposite termComposite = (QueryBuilder.TermComposite) composite;
                             if (termComposite.getFieldName().equals(fieldName)) {
                                 set.add(termComposite.getValue());
                             }
                             break;
 
                         case terms:
-                            QueryBuilder.TermsComposite termsComposite = (QueryBuilder.TermsComposite)composite;
+                            QueryBuilder.TermsComposite termsComposite = (QueryBuilder.TermsComposite) composite;
                             if (termsComposite.getFieldName().equals(fieldName)) {
                                 if (Iterable.class.isAssignableFrom(termsComposite.getValue().getClass())) {
-                                    set.addAll(Stream.ofAll((Iterable)termsComposite.getValue()).toJavaList());
+                                    set.addAll(Stream.ofAll((Iterable) termsComposite.getValue()).toJavaList());
                                 } else if (String[].class.isAssignableFrom(termsComposite.getClass())) {
-                                    set.addAll(Stream.of((String[])termsComposite.getValue()).toJavaList());
+                                    set.addAll(Stream.of((String[]) termsComposite.getValue()).toJavaList());
                                 } else if (Date[].class.isAssignableFrom(termsComposite.getClass())) {
-                                    set.addAll(Stream.of((Date[])termsComposite.getValue()).toJavaList());
+                                    set.addAll(Stream.of((Date[]) termsComposite.getValue()).toJavaList());
                                 } else if (Integer[].class.isAssignableFrom(termsComposite.getClass())) {
-                                    set.addAll(Stream.of((Integer[])termsComposite.getValue()).toJavaList());
+                                    set.addAll(Stream.of((Integer[]) termsComposite.getValue()).toJavaList());
                                 } else if (Long[].class.isAssignableFrom(termsComposite.getClass())) {
-                                    set.addAll(Stream.of((Long[])termsComposite.getValue()).toJavaList());
+                                    set.addAll(Stream.of((Long[]) termsComposite.getValue()).toJavaList());
                                 } else {
                                     set.add(termsComposite.getValue());
                                 }
@@ -1025,7 +1045,7 @@ public class QueryBuilder {
                             break;
 
                         case range:
-                            QueryBuilder.RangeComposite rangeComposite = (QueryBuilder.RangeComposite)composite;
+                            QueryBuilder.RangeComposite rangeComposite = (QueryBuilder.RangeComposite) composite;
                             if (rangeComposite.getFieldName().equals(fieldName)) {
                                 Object from = CompositeHelper.getParamValue(rangeComposite, "getFrom", null);
                                 Object to = CompositeHelper.getParamValue(rangeComposite, "getTo", null);
@@ -1034,7 +1054,7 @@ public class QueryBuilder {
                             break;
 
                         case queryBuilderFilter:
-                            QueryBuilderFilterComposite queryBuilderFilterComposite = (QueryBuilderFilterComposite)composite;
+                            QueryBuilderFilterComposite queryBuilderFilterComposite = (QueryBuilderFilterComposite) composite;
                             ContextualFieldValues fieldValues = queryBuilderFilterComposite.getQueryBuilder().getFieldValues(fieldName);
 
                             if (set == contextualFieldValues.getPositiveValues()) {
@@ -1084,6 +1104,7 @@ public class QueryBuilder {
             private Object to;
             //endregion
         }
+
         //region Constructor
         public ContextualFieldValues() {
             this.positiveValues = new HashSet<>();
@@ -1109,7 +1130,7 @@ public class QueryBuilder {
     //endregion
 
     //region Composite
-    public abstract class Composite implements Cloneable{
+    public abstract class Composite implements Cloneable {
 
         //region Constructor
         public Composite(String name, Op op, Composite parent) {
@@ -1154,7 +1175,7 @@ public class QueryBuilder {
 
         protected void expand(Map<String, Object> expandValues) {
             if (this.getChildren() != null) {
-                for(Composite child : this.getChildren()) {
+                for (Composite child : this.getChildren()) {
                     child.expand(expandValues);
                 }
             }
@@ -1174,10 +1195,10 @@ public class QueryBuilder {
         }
 
         @Override
-        protected Composite clone() throws CloneNotSupportedException{
-            Composite clone = (Composite)super.clone();
+        protected Composite clone() throws CloneNotSupportedException {
+            Composite clone = (Composite) super.clone();
             clone.children = new ArrayList<>();
-            for(Composite child : this.getChildren()) {
+            for (Composite child : this.getChildren()) {
                 Composite childClone = child.clone();
 
                 clone.children.add(childClone);
@@ -1277,7 +1298,7 @@ public class QueryBuilder {
             org.elasticsearch.index.query.QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
             org.elasticsearch.index.query.QueryBuilder filterBuilder = QueryBuilders.matchAllQuery();
 
-            for(Composite child : getChildren()) {
+            for (Composite child : getChildren()) {
                 if (child.getOp() == Op.query) {
                     queryBuilder = (org.elasticsearch.index.query.QueryBuilder) child.build();
                 } else if (child.getOp() == Op.filter) {
@@ -1321,18 +1342,18 @@ public class QueryBuilder {
         protected Object build() {
             BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
-            for(Composite child : getChildren()) {
+            for (Composite child : getChildren()) {
                 switch (child.getOp()) {
                     case must:
-                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>)child.build()).forEach(filter -> boolQueryBuilder.must(filter));
+                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>) child.build()).forEach(filter -> boolQueryBuilder.must(filter));
                         break;
 
                     case mustNot:
-                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>)child.build()).forEach(filter -> boolQueryBuilder.mustNot(filter));
+                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>) child.build()).forEach(filter -> boolQueryBuilder.mustNot(filter));
                         break;
 
                     case should:
-                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>)child.build()).forEach(filter -> boolQueryBuilder.should(filter));
+                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>) child.build()).forEach(filter -> boolQueryBuilder.should(filter));
                         break;
                     case filter:
                         boolQueryBuilder.filter((org.elasticsearch.index.query.QueryBuilder) child.build());
@@ -1355,7 +1376,7 @@ public class QueryBuilder {
         @Override
         protected Object build() {
             ArrayList<org.elasticsearch.index.query.QueryBuilder> filters = new ArrayList<>();
-            for(Composite child : getChildren()) {
+            for (Composite child : getChildren()) {
                 filters.add((org.elasticsearch.index.query.QueryBuilder) child.build());
             }
             return filters;
@@ -1445,7 +1466,7 @@ public class QueryBuilder {
         @Override
         protected Object build() {
             if (this.value != null && this.value.getClass().equals(Date.class)) {
-                return QueryBuilders.termQuery(this.getFieldName(), ((Date)this.value).getTime());
+                return QueryBuilders.termQuery(this.getFieldName(), ((Date) this.value).getTime());
             }
 
             return QueryBuilders.termQuery(this.getFieldName(), this.value.toString());
@@ -1475,15 +1496,15 @@ public class QueryBuilder {
         @Override
         protected Object build() {
             if (this.value != null && Iterable.class.isAssignableFrom(this.value.getClass())) {
-                List valueList = javaslang.collection.Stream.ofAll((Iterable)value).toJavaList();
+                List valueList = javaslang.collection.Stream.ofAll((Iterable) value).toJavaList();
                 if (!valueList.isEmpty() && valueList.get(0).getClass().equals(Date.class)) {
                     return QueryBuilders.termsQuery(this.getFieldName(),
-                            Stream.ofAll(valueList).map(listVal -> ((Date)listVal).getTime()).toJavaList());
+                            Stream.ofAll(valueList).map(listVal -> ((Date) listVal).getTime()).toJavaList());
                 }
 
                 return QueryBuilders.termsQuery(
                         this.getFieldName(),
-                        javaslang.collection.Stream.ofAll((Iterable)value).toJavaList());
+                        javaslang.collection.Stream.ofAll((Iterable) value).toJavaList());
             }
 
             return QueryBuilders.termsQuery(this.getFieldName(), this.value);
@@ -1535,11 +1556,11 @@ public class QueryBuilder {
 
             // TEMPORARY PATCH: should add transformation logic to GTA
             if (from != null && from.getClass().equals(Date.class)) {
-                from = ((Date)from).getTime();
+                from = ((Date) from).getTime();
             }
 
             if (to != null && to.getClass().equals(Date.class)) {
-                to = ((Date)to).getTime();
+                to = ((Date) to).getTime();
             }
             // TEMPORARY PATCH: should add transformation logic to GTA
 
@@ -1644,7 +1665,7 @@ public class QueryBuilder {
 
     public class ScriptComposite extends FieldComposite {
         //region Constructor
-        protected ScriptComposite(String name,String lang, String fieldName, String value, Composite parent) {
+        protected ScriptComposite(String name, String lang, String fieldName, String value, Composite parent) {
             super(name, fieldName, Op.script, parent);
             this.lang = lang;
             this.value = value;
@@ -1655,9 +1676,9 @@ public class QueryBuilder {
         @Override
         protected Object build() {
             final HashMap<String, Object> map = new HashMap<>();
-            map.put("field",getFieldName());
-            map.put("expression",getValue());
-            return QueryBuilders.scriptQuery(new Script(INLINE,lang,getName(),map ));
+            map.put("field", getFieldName());
+            map.put("expression", getValue());
+            return QueryBuilders.scriptQuery(new Script(INLINE, lang, getName(), map));
         }
         //endregion
 
@@ -1772,7 +1793,7 @@ public class QueryBuilder {
         protected Object build() {
             if (this.value instanceof Iterable) {
                 ArrayList<String> ids = new ArrayList<>();
-                for(Object obj : (Iterable)this.value) {
+                for (Object obj : (Iterable) this.value) {
                     ids.add(obj.toString());
                 }
 
@@ -1864,7 +1885,7 @@ public class QueryBuilder {
         private final GeoPoint topRight;
         private final GeoPoint bottomLeft;
 
-        public GeoBoundingBoxComposite(String name, String fieldName, Composite parent, GeoPoint bottomLeft,GeoPoint topRight ) {
+        public GeoBoundingBoxComposite(String name, String fieldName, Composite parent, GeoPoint bottomLeft, GeoPoint topRight) {
             super(name, fieldName, Op.geoBox, parent);
             this.topRight = topRight;
             this.bottomLeft = bottomLeft;
@@ -1872,15 +1893,16 @@ public class QueryBuilder {
 
         @Override
         protected Object build() {
-            return QueryBuilders.geoBoundingBoxQuery(this.getFieldName()).setCorners(bottomLeft,topRight);
+            return QueryBuilders.geoBoundingBoxQuery(this.getFieldName()).setCorners(bottomLeft, topRight);
         }
     }
+
     public class GeoDistanceComposite extends FieldComposite {
 
         private final GeoPoint location;
         private final String distance;
 
-        public GeoDistanceComposite(String name, String fieldName, Composite parent, GeoPoint location, String distance ) {
+        public GeoDistanceComposite(String name, String fieldName, Composite parent, GeoPoint location, String distance) {
             super(name, fieldName, Op.geoDistance, parent);
             this.location = location;
             this.distance = distance;
@@ -1918,14 +1940,14 @@ public class QueryBuilder {
         private ShapeBuilder GetShapeBuilder(GeoJsonObject geoJson) {
             try {
                 if (geoJson instanceof Circle) {
-                    Circle cirlce = (Circle)geoJson;
+                    Circle cirlce = (Circle) geoJson;
                     return ShapeBuilders.newCircleBuilder()
                             .center(
                                     cirlce.getCoordinates().getLongitude(),
                                     cirlce.getCoordinates().getLatitude())
                             .radius(new DistanceUnit.Distance(cirlce.getRadius(), DistanceUnit.METERS));
                 } else if (geoJson instanceof Envelope) {
-                    Envelope envelope = (Envelope)geoJson;
+                    Envelope envelope = (Envelope) geoJson;
                     return ShapeBuilders.newEnvelope(
                             new Coordinate(
                                     envelope.getCoordinates().get(0).getLongitude(),
@@ -1947,7 +1969,7 @@ public class QueryBuilder {
         //endregion
     }
 
-    public class BoostComposite extends Composite{
+    public class BoostComposite extends Composite {
 
         public BoostComposite(String name, Op op, Composite parent, long boost) {
             super(name, op, parent);
@@ -1964,11 +1986,27 @@ public class QueryBuilder {
         private long boost;
     }
 
+    public class NestedComposite extends Composite {
+
+        public NestedComposite(String name, Op op, Composite parent, String eType) {
+            super(name, op, parent);
+            this.eType = eType;
+        }
+
+        @Override
+        protected Object build() {
+            org.elasticsearch.index.query.QueryBuilder queryBuilder = (org.elasticsearch.index.query.QueryBuilder) getChildren().get(0).build();
+            return QueryBuilders.nestedQuery(eType, queryBuilder, ScoreMode.None);
+        }
+
+        private String eType;
+    }
+
     private static ObjectMapper mapper = new ObjectMapper();
 
     public static class CompositeHelper {
         public static <V> V getParamValue(Composite composite, String paramName, V defaultValue) {
-            ParamComposite<V> param = (ParamComposite<V>)composite.seek(
+            ParamComposite<V> param = (ParamComposite<V>) composite.seek(
                     childComposite -> ParamComposite.class.isAssignableFrom(childComposite.getClass())
                             && childComposite.getName() == paramName, SeekMode.childrenOnly);
 

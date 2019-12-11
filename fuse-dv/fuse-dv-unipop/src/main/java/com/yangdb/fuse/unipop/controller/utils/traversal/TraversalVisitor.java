@@ -21,6 +21,7 @@ package com.yangdb.fuse.unipop.controller.utils.traversal;
  */
 
 import com.yangdb.fuse.unipop.step.BoostingStepWrapper;
+import com.yangdb.fuse.unipop.step.NestedStepWrapper;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -57,6 +58,8 @@ public class TraversalVisitor<TReturn> {
             visitTraversalFilterStep((TraversalFilterStep) o);
         } else if(o.getClass() == BoostingStepWrapper.class){
           visitBoostingStep((BoostingStepWrapper) o);
+        } else if(o.getClass() == NestedStepWrapper.class){
+          visitNestedStep((NestedStepWrapper) o);
         } else {
             //TODO: allow configurable behavior for unsupported or unexpected elements
             throw new UnsupportedOperationException(o.getClass() + " is not supported in promise conditions");
@@ -66,6 +69,11 @@ public class TraversalVisitor<TReturn> {
     }
 
     protected TReturn visitBoostingStep(BoostingStepWrapper o) {
+        visitRecursive(o.getInnerStep());
+        return null;
+    }
+
+    protected TReturn visitNestedStep(NestedStepWrapper o) {
         visitRecursive(o.getInnerStep());
         return null;
     }
