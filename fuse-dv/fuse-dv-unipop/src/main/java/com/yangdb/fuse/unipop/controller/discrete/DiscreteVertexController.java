@@ -113,6 +113,7 @@ public class DiscreteVertexController extends VertexControllerBase {
                         searchVertexQuery.getDirection(),
                         searchVertexQuery.getVertices()));
 
+        //skip vertex query since needed properties exist on already fetched vertices
         if (canDoWithoutQuery(searchVertexQuery, context)) {
             ElementConverter<DataItem, Edge> elementConverter = new CompositeElementConverter<>(
                     new DiscreteEdgeConverter<>(context, profiler));

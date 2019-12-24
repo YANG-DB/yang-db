@@ -53,6 +53,7 @@ import java.awt.geom.Point2D;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -343,6 +344,20 @@ public class Ontology {
             return Stream.ofAll(ontology.entityTypes).flatMap(EntityType::getMetadata).toJavaSet().contains(pType);
         }
 
+        public List<EntityType> nested$(String eType) {
+            return entity$(eType).getProperties().stream()
+                    .filter(p->$entity(p).isPresent())
+                    .map(p->$entity(p).get())
+                    .collect(Collectors.toList());
+
+        }
+
+        public boolean isNested(String eType) {
+            if(!entity(eType).isPresent()) return false;
+
+            return entity$(eType).getProperties().stream().anyMatch(p->$entity(p).isPresent());
+        }
+
         public Iterable<String> eNames() {
             return Stream.ofAll(entities()).map(EntityType::getName).toJavaList();
         }
@@ -395,6 +410,7 @@ public class Ontology {
 
         private Map<String, Property> propertiesByName;
         private Map<String, Property> propertiesByPtype;
+
 
         //endregion
     }

@@ -57,6 +57,7 @@ public class ElasticIndexProviderMappingFactory {
     public static final String PROPERTIES = "properties";
     public static final String NESTED = "nested";
     public static final String CHILD = "child";
+    public static final String EMBEDDED = "embedded";
 
     private Client client;
     private RawSchema schema;
@@ -245,6 +246,9 @@ public class ElasticIndexProviderMappingFactory {
         Map<String, Object> mapping = new HashMap<>();
         Map<String, Object> properties = new HashMap<>();
         switch (nest.getMapping()) {
+            case EMBEDDED:
+                //no specific mapping here -
+                break;
             case CHILD:
                 mapping.put(TYPE, NESTED);
                 break;
@@ -270,6 +274,9 @@ public class ElasticIndexProviderMappingFactory {
         Map<String, Object> mapping = new HashMap<>();
         Map<String, Object> properties = new HashMap<>();
         switch (nest.getMapping()) {
+            case EMBEDDED:
+                //no specific mapping here -
+                break;
             case CHILD:
                 mapping.put(TYPE, NESTED);
                 break;
