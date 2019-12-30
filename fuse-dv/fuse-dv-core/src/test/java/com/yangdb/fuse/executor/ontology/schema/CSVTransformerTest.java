@@ -11,6 +11,7 @@ import com.yangdb.fuse.executor.ontology.schema.load.DocumentBuilder;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema.getIndexPartitions;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +61,7 @@ public class CSVTransformerTest {
         config = Mockito.mock(Config.class);
         when(config.getString(any())).thenAnswer(invocationOnMock -> "Dragons");
 
-        InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
+        InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProviderNested.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
 
 
@@ -71,7 +73,7 @@ public class CSVTransformerTest {
         schema = new RawSchema() {
             @Override
             public IndexPartitions getPartition(String type) {
-                return schemaProvider.getVertexSchemas(type).iterator().next().getIndexPartitions().get();
+                return getIndexPartitions(schemaProvider,type);
             }
 
             @Override

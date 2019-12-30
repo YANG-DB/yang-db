@@ -50,13 +50,17 @@ public class IndexProviderRawSchema implements RawSchema {
 
     @Override
     public IndexPartitions getPartition(String type) {
+        return getIndexPartitions(schemaProvider,type);
+
+    }
+
+    public static IndexPartitions getIndexPartitions(GraphElementSchemaProvider schemaProvider,String type) {
         if (schemaProvider.getVertexSchemas(type).iterator().hasNext())
             return schemaProvider.getVertexSchemas(type).iterator().next().getIndexPartitions().get();
         if (schemaProvider.getEdgeSchemas(type).iterator().hasNext())
             return schemaProvider.getEdgeSchemas(type).iterator().next().getIndexPartitions().get();
 
         throw new FuseError.FuseErrorException("No valid partition found for " + type, new FuseError("IndexProvider Schema Error", "No valid partition found for " + type));
-
     }
 
     @Override

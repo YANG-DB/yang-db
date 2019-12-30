@@ -22,7 +22,6 @@ public class OntologyTestUtils {
     public static final String INT = "int";
     public static final String STRING = "string";
     public static final String CM = "cm";
-    public static final String PROFESSION = "Profession";
     public static final String ORDER = "Order";
 
     public static Property FIRST_NAME = new Property("firstName", STRING, "firstName");
@@ -150,8 +149,8 @@ public class OntologyTestUtils {
     }
 
     public static class PROFESSION implements Entity {
-        public static String name = PROFESSION;
-        public static String type = PROFESSION;
+        public static String name = "Profession";
+        public static String type = "Profession";
 
         public static List<Property> propertyList = Arrays.asList(NAME.redundant(), DESCRIPTION);
 
@@ -334,9 +333,9 @@ public class OntologyTestUtils {
                 .filter(e -> e.geteType().equals(PERSON.type))
                 .findAny().get();
         //add profession entity as nested type
-        EntityType profession = new EntityType(PROFESSION, PROFESSION, Arrays.asList("name", "description", "certification", "salary"));
+        EntityType profession = new EntityType(PROFESSION.name, PROFESSION.name, Arrays.asList("name", "description", "certification", "salary"));
         ontology.getEntityTypes().add(profession);
-        person.getProperties().add(PROFESSION);
+        person.getProperties().add(PROFESSION.name);
 
         //add order entity
         EntityType dragon = ontology.getEntityTypes().stream()

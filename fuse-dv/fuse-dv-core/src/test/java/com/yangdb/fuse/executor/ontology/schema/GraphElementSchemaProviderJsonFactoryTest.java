@@ -44,7 +44,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
         config = Mockito.mock(Config.class);
         when(config.getString(any())).thenAnswer(invocationOnMock -> "Dragons");
 
-        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProviderNested.conf");
         provider = mapper.readValue(stream, IndexProvider.class);
         stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
         ontology = mapper.readValue(stream, Ontology.class);
@@ -65,7 +65,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
         Assert.assertEquals(StreamSupport.stream(schemaProvider.getEdgeLabels().spliterator(),false)
                 .collect(Collectors.toSet()),new HashSet<>(Arrays.asList("HasProfession","Freeze","Fire","Own","SubjectOf","OriginatedIn","RegisteredIn","Know","MemberOf")));
         Assert.assertEquals(StreamSupport.stream(schemaProvider.getVertexLabels().spliterator(),false)
-                .collect(Collectors.toSet()),new HashSet<>(Arrays.asList("Horse","Guild","Person","Dragon","Kingdom")));
+                .collect(Collectors.toSet()),new HashSet<>(Arrays.asList("Horse","Guild","Person","Dragon","Kingdom","Profession")));
     }
 
     @Test

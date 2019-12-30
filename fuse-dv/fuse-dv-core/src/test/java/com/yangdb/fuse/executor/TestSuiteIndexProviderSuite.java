@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema.getIndexPartitions;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -35,10 +36,10 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        GraphInitiatorIT.class,
         IndexProviderBasedGraphLoaderIT.class,
         IndexProviderBasedCSVLoaderIT.class,
-        ElasticIndexProviderMappingFactoryIT.class,
-        GraphInitiatorIT.class
+        ElasticIndexProviderMappingFactoryIT.class
 })
 public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
     private static ElasticEmbeddedNode elasticEmbeddedNode;
@@ -84,7 +85,7 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         nestedSchema = new RawSchema() {
             @Override
             public IndexPartitions getPartition(String type) {
-                return nestedSchemaProvider.getVertexSchemas(type).iterator().next().getIndexPartitions().get();
+                return getIndexPartitions(nestedSchemaProvider,type);
             }
 
             @Override
@@ -117,7 +118,7 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         embeddedSchema = new RawSchema() {
             @Override
             public IndexPartitions getPartition(String type) {
-                return embeddedSchemaProvider.getVertexSchemas(type).iterator().next().getIndexPartitions().get();
+                return getIndexPartitions(embeddedSchemaProvider,type);
             }
 
             @Override

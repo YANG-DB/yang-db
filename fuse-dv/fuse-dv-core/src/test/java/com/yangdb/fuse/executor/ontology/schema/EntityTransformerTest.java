@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema.getIndexPartitions;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +60,7 @@ public class EntityTransformerTest {
         config = Mockito.mock(Config.class);
         when(config.getString(any())).thenAnswer(invocationOnMock -> "Dragons");
 
-        InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
+        InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProviderNested.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
 
 
@@ -71,8 +72,9 @@ public class EntityTransformerTest {
         schema = new RawSchema() {
             @Override
             public IndexPartitions getPartition(String type) {
-                return schemaProvider.getVertexSchemas(type).iterator().next().getIndexPartitions().get();
+                return getIndexPartitions(schemaProvider,type);
             }
+
             @Override
             public String getIdPrefix(String type) {
                 return "";
