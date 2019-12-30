@@ -78,6 +78,7 @@ public class DragonsNestedNoConstraintsQueryIT implements BaseITMarker {
     }
 
     @Test
+    @Ignore("Code under construction for supporting nested structure")
     public void testPersonWithName() throws IOException, InterruptedException, URISyntaxException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
