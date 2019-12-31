@@ -24,6 +24,7 @@ import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.properties.CalculatedEProp;
 import com.yangdb.fuse.model.query.properties.projection.CalculatedFieldProjection;
 import com.yangdb.fuse.model.results.*;
@@ -69,6 +70,9 @@ public class GraphTraversalCursor implements Cursor<TraversalCursorContext> {
     //region Cursor Implementation
     @Override
     public AssignmentsQueryResult getNextResults(int numResults) {
+        final Query pattern = getContext().getQueryResource().getQuery();
+        this.fullGraph.setPattern(pattern);
+
         AssignmentsQueryResult newResult = (AssignmentsQueryResult) this.cursor.getNextResults(numResults);
         consolidateFullGraph(newResult);
 

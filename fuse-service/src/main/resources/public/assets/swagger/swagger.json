@@ -222,7 +222,7 @@
         }
       }
     },
-    "/query/cypher/run?pageSize={pageSize};cursorType={cursorType}": {
+    "/query/cypher/run": {
       "get": {
         "tags": [
           "query"
@@ -382,7 +382,7 @@
         }
       }
     },
-    "/query/v1/run?pageSize={pageSize};cursorType={cursorType}": {
+    "/query/v1/run": {
       "post": {
         "tags": [
           "query"
@@ -753,7 +753,7 @@
         }
       }
     },
-    "/query/{queryId}/cursor/{cursorId}/nextPageData?pageSize={pageSize};deletePage={deletePage}": {
+    "/query/{queryId}/cursor/{cursorId}/nextPageData": {
       "get": {
         "tags": [
           "data"

@@ -1,0 +1,293 @@
+{
+  "ont": "Dragons",
+  "entityTypes": [
+    {
+      "eType": "Person",
+      "name": "Person",
+      "metadata": [],
+      "properties": [
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "height"
+      ]
+    },
+    {
+      "eType": "Horse",
+      "name": "Horse",
+      "metadata": [],
+      "properties": [
+        "name",
+        "gender"
+      ]
+    },
+    {
+      "eType": "Dragon",
+      "name": "Dragon",
+      "metadata": [],
+      "properties": [
+        "name",
+        "gender"
+      ]
+    },
+    {
+      "eType": "Kingdom",
+      "name": "kingdom",
+      "metadata": [],
+      "properties": [
+        "name"
+      ]
+    },
+    {
+      "eType": "Guild",
+      "name": "Guild",
+      "metadata": [],
+      "properties": [
+        "name"
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "rType": "registered",
+      "name": "registered",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Guild",
+          "eTypeB": "Kingdom"
+        },
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Guild"
+        },
+        {
+          "eTypeA": "Horse",
+          "eTypeB": "Guild"
+        }
+      ],
+      "metadata": [],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "rType": "subject",
+      "name": "subject",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Kingdom"
+        }
+      ],
+      "metadata": [],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "rType": "origin",
+      "name": "origin",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Kingdom"
+        }
+      ],
+      "metadata": [],
+      "properties": [
+      ]
+    },
+    {
+      "rType": "freeze",
+      "name": "freeze",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Dragon"
+        }
+      ],
+      "metadata": [],
+      "properties": [
+        "startDate",
+        "endDate",
+        "temperature"
+      ]
+    },
+    {
+      "rType": "fire",
+      "name": "fire",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Dragon"
+        }
+      ],
+      "metadata": [],
+      "properties": [
+        "startDate",
+        "endDate",
+        "timestamp",
+        "temperature"
+      ]
+    },
+    {
+      "rType": "memberOf",
+      "name": "memberOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Guild"
+        }
+      ],
+      "metadata": [],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "rType": "own",
+      "name": "own",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Dragon"
+        },
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Horse"
+        }
+      ],
+      "metadata": [],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": "firstName",
+      "name": "firstName",
+      "type": "string",
+      "searchType":["exact","full"]
+    },
+    {
+      "pType": "lastName",
+      "name": "lastName",
+      "type": "string",
+      "searchType":["exact","full"]
+    },
+    {
+      "pType": "gender",
+      "name": "gender",
+      "type": "TYPE_Gender",
+      "searchType":["exact"]
+    },
+    {
+      "pType": "birthDate",
+      "name": "birthDate",
+      "type": "date",
+      "searchType":["range"]
+    },
+    {
+      "pType": "deathDate",
+      "name": "deathDate",
+      "type": "date",
+      "searchType":["range"]
+    },
+    {
+      "pType": "height",
+      "name": "height",
+      "type": "int",
+      "units": "cm"
+    },
+    {
+      "pType": "name",
+      "name": "name",
+      "type": "string",
+      "searchType":["exact","full"]
+    },
+    {
+      "pType": "startDate",
+      "name": "startDate",
+      "type": "date"
+    },
+    {
+      "pType": "endDate",
+      "name": "endDate",
+      "type": "date"
+    },
+    {
+      "pType": "timestamp",
+      "name": "timestamp",
+      "type": "long"
+    },
+    {
+      "pType": "temperature",
+      "name": "temperature",
+      "type": "long"
+    },
+    {
+      "pType": "id",
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "pType": "type",
+      "name": "type",
+      "type": "string"
+    }
+  ],
+  "enumeratedTypes": [
+    {
+      "eType": "TYPE_Gender",
+      "values": [
+        {
+          "val": 0,
+          "name": "MALE"
+        },
+        {
+          "val": 1,
+          "name": "FEMALE"
+        },
+        {
+          "val": 2,
+          "name": "OTHER"
+        }
+      ]
+    },
+    {
+      "eType": "TYPE_Color",
+      "values": [
+        {
+          "val": 0,
+          "name": "RED"
+        },
+        {
+          "val": 1,
+          "name": "BLUE"
+        },
+        {
+          "val": 2,
+          "name": "GREEN"
+        },
+        {
+          "val": 3,
+          "name": "YELLOW"
+        }
+      ]
+    }
+  ]
+}

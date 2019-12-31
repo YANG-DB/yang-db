@@ -81,6 +81,11 @@ public class KnowledgeExtensionQueryController implements QueryController<QueryC
     }
 
     @Override
+    public ContentResponse<Object> run(String cypher, String ontology, int pageSize, String cursorType) {
+        return controller.run(cypher,ontology,pageSize,cursorType);
+    }
+
+    @Override
     public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryRequest request) {
         return controller.createAndFetch(request);
     }

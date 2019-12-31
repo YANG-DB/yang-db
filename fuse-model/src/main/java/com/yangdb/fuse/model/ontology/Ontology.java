@@ -71,6 +71,7 @@ public class Ontology {
 
         primitiveTypes.add(new PrimitiveType("int", Long.class));
         primitiveTypes.add(new PrimitiveType("string", String.class));
+        primitiveTypes.add(new PrimitiveType("text", String.class));
         primitiveTypes.add(new PrimitiveType("float", Double.class));
         primitiveTypes.add(new PrimitiveType("date", Date.class));
         primitiveTypes.add(new PrimitiveType("datetime", Date.class));

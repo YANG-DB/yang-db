@@ -57,6 +57,8 @@ public interface QueryDriver {
 
     Optional<Object> run(String cypher, String ontology);
 
+    Optional<Object> run(String cypher, String ontology, int pageSize, String cursorType);
+
     Optional<Object> getNextPageData(String queryId, Optional<String> cursorId,int pageSize, boolean deleteCurrentPage);
 
     Optional<StoreResourceInfo> getInfo();

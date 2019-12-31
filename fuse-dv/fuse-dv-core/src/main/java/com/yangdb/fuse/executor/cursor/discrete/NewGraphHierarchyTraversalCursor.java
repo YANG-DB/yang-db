@@ -29,6 +29,7 @@ import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.results.*;
@@ -151,7 +152,10 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
                     relTuple._3()));
         }
 
-        return AssignmentsQueryResult.Builder.instance().withAssignment(builder.build()).build();
+        final Query pattern = getContext().getQueryResource().getQuery();
+        return AssignmentsQueryResult.Builder.instance()
+                .withPattern(pattern)
+                .withAssignment(builder.build()).build();
     }
     //endregion
 

@@ -118,4 +118,5 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
 
     //endregion
     private QueryTransformer<String, Query> transformer;
+
 }

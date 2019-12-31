@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,9 +33,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,12 +44,20 @@ package com.yangdb.fuse.model.ontology;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by benishue on 22-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Property {
     //region Constructors
     public Property() {
@@ -59,6 +67,13 @@ public class Property {
         this.pType = pType;
         this.name = name;
         this.type = type;
+    }
+
+    public Property(String name, String pType, String type, SearchType... searchType) {
+        this.pType = pType;
+        this.name = name;
+        this.type = type;
+        this.searchType = Arrays.asList(searchType);
     }
     //endregion
 
@@ -83,15 +98,23 @@ public class Property {
         return type;
     }
 
+    public void setSearchType(List<SearchType> searchType) {
+        this.searchType = searchType;
+    }
+
     public void setType(String type) {
         this.type = type;
     }
+
+    public List<SearchType> getSearchType() {
+        return searchType;
+    }
+
     //endregion
 
     //region Override Methods
     @Override
-    public String toString()
-    {
+    public String toString() {
         return String.format("Property [pType = %s, name = %s, type = %s]", this.pType, this.name, this.type);
     }
 
@@ -119,10 +142,12 @@ public class Property {
     private String pType;
     private String name;
     private String type;
+    private List<SearchType> searchType = Collections.emptyList();
     //endregion
 
     //region Builder
     public static final class Builder {
+        private List<SearchType> searchTypes = new ArrayList<>();
         private String pType;
         private String name;
         private String type;
@@ -144,12 +169,17 @@ public class Property {
             return this;
         }
 
+        public Builder withSearchType(SearchType type) {
+            this.searchTypes.add(type);
+            return this;
+        }
+
         public Builder withType(String type) {
             this.type = type;
             return this;
         }
 
-        public Property build(String pType, String name, String type ) {
+        public Property build(String pType, String name, String type) {
             Property property = new Property();
             property.setName(name);
             property.setType(type);
@@ -162,11 +192,32 @@ public class Property {
             property.setName(name);
             property.setType(type);
             property.pType = this.pType;
+            property.searchType = Collections.unmodifiableList(this.searchTypes);
             return property;
         }
     }
     //endregion
 
 
+    public enum SearchType {
+        NGRAM("ngram"),
+        PREFIX("prefix"),
+        SUFFIX("suffix"),
+        FULL("full"),
+        EXACT("exact"),
+        RANGE("range"),
+        NONE("none");
+
+        private String name;
+
+        SearchType(String name) {
+            this.name = name;
+        }
+
+        @JsonValue
+        public String getName() {
+            return name;
+        }
+    }
 
 }

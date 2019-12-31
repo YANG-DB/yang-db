@@ -128,6 +128,7 @@ public class PathsTraversalCursor implements Cursor {
         return builder.build();
     }
 
+
     protected Assignment toAssignment(Path path) {
         Assignment.Builder builder = Assignment.Builder.instance();
 

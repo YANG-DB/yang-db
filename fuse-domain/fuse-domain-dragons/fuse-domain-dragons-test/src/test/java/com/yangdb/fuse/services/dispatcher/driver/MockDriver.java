@@ -64,6 +64,11 @@ public class MockDriver {
         }
 
         @Override
+        public Optional<Object> run(String cypher, String ontology, int pageSize, String cursorType) {
+            return Optional.empty();
+        }
+
+        @Override
         public Optional<GraphTraversal> traversal(com.yangdb.fuse.model.query.Query query) {
             return Optional.empty();
         }
