@@ -83,6 +83,19 @@ public interface QueryController<C,D> extends Controller<C,D> {
      */
     ContentResponse<Object> run(String cypher, String ontology);
 
+
+    /**
+     * run a stateless cypher query and get immediate graph results (first page only)
+     * type may be volatile or persistent
+     * @param `query
+     * @param ontology
+     * @param pageSize
+     * @param cursorType
+     * @return
+     */
+    ContentResponse<Object> run(String cypher, String ontology, int pageSize, String cursorType);
+
+
     /**
      * create a prepared statement, run against db and return results
      * type may be volatile or persistent

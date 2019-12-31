@@ -23,6 +23,7 @@ package com.yangdb.fuse.executor.cursor.discrete;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
+import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.Entity;
@@ -32,6 +33,8 @@ import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
 import java.util.*;
+
+import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
 
 /**
  * Created by roman.margolis on 11/03/2018.
@@ -71,6 +74,9 @@ public class GraphHierarchyTraversalCursor implements Cursor<TraversalCursorCont
     //region Cursor Implementation
     @Override
     public AssignmentsQueryResult getNextResults(int numResults) {
+        final Query pattern = getContext().getQueryResource().getQuery();
+        this.fullGraph.setPattern(pattern);
+
         AssignmentsQueryResult newResult = (AssignmentsQueryResult) this.cursor.getNextResults(numResults);
         while(newResult.getAssignments().size() > 0) {
             consolidateFullGraph(newResult);

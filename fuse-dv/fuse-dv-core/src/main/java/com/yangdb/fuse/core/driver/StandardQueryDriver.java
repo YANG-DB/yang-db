@@ -42,6 +42,8 @@ import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 import com.yangdb.fuse.model.validation.ValidationResult;
 
+import java.util.Optional;
+
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.concrete;
 
 /**
@@ -97,6 +99,7 @@ public class StandardQueryDriver extends QueryDriverBase {
     //region Fields
     private QueryTransformer<AsgQuery, AsgQuery> queryRewriter;
     private PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
+
 
 
     //endregion

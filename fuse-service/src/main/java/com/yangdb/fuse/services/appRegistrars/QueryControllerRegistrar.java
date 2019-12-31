@@ -317,7 +317,10 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             String ontology = req.param("ontology").value();
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
-            ContentResponse<Object> response = controller.run(query,ontology);
+            ContentResponse<Object> response = controller.run(query,ontology,
+                    req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
+                    req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
+            );
 
             return Results.with(response, response.status());
         }

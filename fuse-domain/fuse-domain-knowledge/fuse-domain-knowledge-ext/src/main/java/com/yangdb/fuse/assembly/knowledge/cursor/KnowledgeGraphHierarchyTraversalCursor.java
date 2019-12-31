@@ -29,6 +29,7 @@ import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.results.*;
@@ -152,9 +153,6 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor<TraversalC
         }
 
         Assignment.Builder builder = Assignment.Builder.instance();
-
-
-
         for(Map.Entry<String, Map<Vertex, Set<String>>> idVertexEtagsEntry : idVertexEtagsMap.entrySet()) {
             Vertex mergedVertex = mergeVertices(Stream.ofAll(idVertexEtagsEntry.getValue().keySet()).toJavaList());
             if(this.idsScore.containsKey(mergedVertex.id())) {
@@ -178,7 +176,10 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor<TraversalC
 
 
         Assignment assignment = compose(builder);
-        return AssignmentsQueryResult.Builder.instance().withAssignment(assignment).build();
+        final Query pattern = getContext().getQueryResource().getQuery();
+        return AssignmentsQueryResult.Builder.instance()
+                .withPattern(pattern)
+                .withAssignment(assignment).build();
     }
 
     protected Assignment compose(Assignment.Builder builder) {

@@ -75,7 +75,7 @@ public interface CursorFactory {
      * @return
      */
     static Class<? extends CreateCursorRequest> resolve(String cursorTypeName) {
-        Reflections reflections = new Reflections("com.yangdb.fuse");
+        Reflections reflections = new Reflections(CreateCursorRequest.class.getPackage().getName());
         Set<Class<? extends CreateCursorRequest>> allClasses = reflections.getSubTypesOf(CreateCursorRequest.class);
         Optional<Class<? extends CreateCursorRequest>> cursorType = allClasses.stream().filter(clazz -> {
             try {
