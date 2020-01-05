@@ -11,11 +11,13 @@ import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.RelProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
+import com.yangdb.fuse.model.query.properties.projection.IdentityProjection;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.ResultResourceInfo;
 import com.yangdb.fuse.model.results.*;
+import com.yangdb.fuse.model.schema.Relation;
 import com.yangdb.test.BaseITMarker;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.junit.AfterClass;
@@ -49,6 +51,44 @@ public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
 //        Setup.cleanup();
     }
 
+    @Test
+    public void testPersonKnowsPersonProjection() throws IOException, InterruptedException, URISyntaxException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Assert.assertNotNull(fuseResourceInfo);
+
+        initIndices();
+
+        URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
+        ResultResourceInfo<String> info = fuseClient.uploadGraphFile(DRAGONS, stream);
+        Assert.assertFalse(info.isError());
+        //refresh cluster
+        Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
+
+        Query query = Query.Builder.instance().withName("query").withOnt(DRAGONS)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "p1", "Person", 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(3, 4)),
+                        new EProp(3, "firstName", new IdentityProjection()),
+                        new Rel(4, "Know", Rel.Direction.R, "k", 5),
+                        new ETyped(5, "p2", "Person", 6, 0),
+                        new EProp(6, "firstName", new IdentityProjection())
+                )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, 1000, query);
+
+        Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
+        Assert.assertEquals(3, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
+        Assert.assertEquals(3, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().size());
+
+        //validate projection only returned the single explicit firstName field
+        Assignment<Entity, Relationship> assignment = (Assignment<Entity, Relationship>) ((AssignmentsQueryResult) pageData).getAssignments().get(0);
+        assignment.getEntities().forEach(e-> {
+            Assert.assertEquals(1,e.getProperties().size());
+            Assert.assertEquals("firstName",e.getProperties().iterator().next().getpType());
+        });
+
+    }
     @Test
     public void testPersonKnowsPerson() throws IOException, InterruptedException, URISyntaxException {
         // Create v1 query to fetch newly created entity

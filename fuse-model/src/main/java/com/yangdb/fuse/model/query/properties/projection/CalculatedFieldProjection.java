@@ -43,8 +43,10 @@ package com.yangdb.fuse.model.query.properties.projection;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.query.aggregation.AggLOp;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CalculatedFieldProjection extends Projection {
     private AggLOp expression;
 

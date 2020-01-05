@@ -9,9 +9,9 @@ package com.yangdb.fuse.asg.strategy.schema;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,27 +22,30 @@ package com.yangdb.fuse.asg.strategy.schema;
 
 import com.yangdb.fuse.asg.strategy.AsgStrategy;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.asgQuery.AsgStrategyContext;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.Property;
-import com.yangdb.fuse.model.query.properties.*;
-import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.ETyped;
+import com.yangdb.fuse.model.query.properties.*;
+import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
+import com.yangdb.fuse.model.query.properties.projection.IdentityProjection;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
 import static com.yangdb.fuse.unipop.schemaProviders.GraphElementPropertySchema.IndexingSchema.Type.exact;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * Created by roman.margolis on 08/02/2018.
@@ -128,11 +131,17 @@ public class ExactConstraintTransformationAsgStrategy implements AsgStrategy {
                         eProp.getpType(),
                         exactIndexingSchema.get().getName(),
                         eProp.getCon()));
+            }else if(eProp.isProjection()) {
+                ePropGroup.getProps().add(new EProp(
+                        0,
+                        eProp.getpType(),
+                        new IdentityProjection()));
             }
         }
 
         ePropGroup.getGroups().forEach(group -> transformEPropGroup(ont, schemaProvider, group, eTypedAsgEBase));
     }
+
     //endregion
 
     //region Fields
