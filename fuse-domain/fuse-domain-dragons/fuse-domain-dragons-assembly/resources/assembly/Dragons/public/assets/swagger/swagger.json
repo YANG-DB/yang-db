@@ -250,7 +250,7 @@
             "description": "cypher query",
             "required": true,
             "type": "string",
-            "default": "Match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue) Where (v.fieldId = \"name\" AND v.stringValue = \"Napoleon\") Return *"
+            "default": "Match  (p1:Entity)-[hasEv1:hasEvalue]->(value1:Evalue),\n       (p1:Entity)-[hasRelEn:relatedEntity]->(p2:Entity ),\n       (p2:Entity)-[hasEv2:hasEvalue]->(value2:Evalue {stringValue:'Myriel'})  return *"
           },
           {
             "name": "ontology",
@@ -1524,7 +1524,8 @@
             "id": "Myriel",
             "label": "Person",
             "properties": {
-              "name": "Myriel"
+              "name": "Myriel",
+              "age" : 43
             }
           },
           {
@@ -1534,7 +1535,8 @@
             "id": "Napoleon",
             "label": "Person",
             "properties": {
-              "name": "Napoleon"
+              "name": "Napoleon",
+              "age" : 68
             }
           },
           {
@@ -1544,7 +1546,8 @@
             "id": "Mlle.Baptistine",
             "label": "Person",
             "properties": {
-              "name": "Mlle.Baptistine"
+              "name": "Mlle.Baptistine",
+              "age" : 21
             }
           },
           {
@@ -1554,7 +1557,8 @@
             "id": "Mme.Magloire",
             "label": "Person",
             "properties": {
-              "name": "Mme.Magloire"
+              "name": "Mme.Magloire",
+              "age" : 13
             }
           },
           {
@@ -1564,7 +1568,8 @@
             "id": "CountessdeLo",
             "label": "Person",
             "properties": {
-              "name": "CountessdeLo"
+              "name": "CountessdeLo",
+              "age" : 32
             }
           },
           {
@@ -1574,7 +1579,8 @@
             "id": "Geborand",
             "label": "Person",
             "properties": {
-              "name": "Geborand"
+              "name": "Geborand",
+              "age" : 73
             }
           },
           {
@@ -1584,7 +1590,8 @@
             "id": "Champtercier",
             "label": "Person",
             "properties": {
-              "name": "Champtercier"
+              "name": "Champtercier",
+              "age" : 51
             }
           },
           {
@@ -1594,7 +1601,8 @@
             "id": "Cravatte",
             "label": "Person",
             "properties": {
-              "name": "Cravatte"
+              "name": "Cravatte",
+              "age" : 23
             }
           },
           {
@@ -1604,7 +1612,8 @@
             "id": "Count",
             "label": "Person",
             "properties": {
-              "name": "Count"
+              "name": "Count",
+              "age" : 58
             }
           },
           {
@@ -1614,7 +1623,8 @@
             "id": "OldMan",
             "label": "Person",
             "properties": {
-              "name": "OldMan"
+              "name": "OldMan",
+              "age" : 70
             }
           },
           {
@@ -1624,7 +1634,8 @@
             "id": "Labarre",
             "label": "Person",
             "properties": {
-              "name": "Labarre"
+              "name": "Labarre",
+              "age" : 27
             }
           },
           {
@@ -1634,7 +1645,8 @@
             "id": "Valjean",
             "label": "Person",
             "properties": {
-              "name": "Valjean"
+              "name": "Valjean",
+              "age" : 25
             }
           },
           {
@@ -1644,7 +1656,8 @@
             "id": "Marguerite",
             "label": "Person",
             "properties": {
-              "name": "Marguerite"
+              "name": "Marguerite",
+              "age" : 40
             }
           },
           {
@@ -1654,7 +1667,8 @@
             "id": "Mme.deR",
             "label": "Person",
             "properties": {
-              "name": "Mme.deR"
+              "name": "Mme.deR",
+              "age" : 9
             }
           },
           {
@@ -1664,7 +1678,8 @@
             "id": "Isabeau",
             "label": "Person",
             "properties": {
-              "name": "Isabeau"
+              "name": "Isabeau",
+              "age" : 10
             }
           },
           {
@@ -1674,7 +1689,8 @@
             "id": "Gervais",
             "label": "Person",
             "properties": {
-              "name": "Gervais"
+              "name": "Gervais",
+              "age" : 36
             }
           },
           {
@@ -1684,7 +1700,8 @@
             "id": "Tholomyes",
             "label": "Person",
             "properties": {
-              "name": "Tholomyes"
+              "name": "Tholomyes",
+              "age" : 42
             }
           },
           {
@@ -1694,7 +1711,8 @@
             "id": "Listolier",
             "label": "Person",
             "properties": {
-              "name": "Listolier"
+              "name": "Listolier",
+              "age" : 31
             }
           },
           {
@@ -1704,7 +1722,8 @@
             "id": "Fameuil",
             "label": "Person",
             "properties": {
-              "name": "Fameuil"
+              "name": "Fameuil",
+              "age" : 30
             }
           },
           {
@@ -1714,7 +1733,8 @@
             "id": "Blacheville",
             "label": "Person",
             "properties": {
-              "name": "Blacheville"
+              "name": "Blacheville",
+              "age" : 27
             }
           },
           {
@@ -1724,7 +1744,8 @@
             "id": "Favourite",
             "label": "Person",
             "properties": {
-              "name": "Favourite"
+              "name": "Favourite",
+              "age" : 20
             }
           },
           {
@@ -1734,7 +1755,8 @@
             "id": "Dahlia",
             "label": "Person",
             "properties": {
-              "name": "Dahlia"
+              "name": "Dahlia",
+              "age" : 19
             }
           },
           {
@@ -1744,7 +1766,8 @@
             "id": "Zephine",
             "label": "Person",
             "properties": {
-              "name": "Zephine"
+              "name": "Zephine",
+              "age" : 17
             }
           },
           {
@@ -1754,7 +1777,8 @@
             "id": "Fantine",
             "label": "Person",
             "properties": {
-              "name": "Fantine"
+              "name": "Fantine",
+              "age" : 16
             }
           },
           {
@@ -1764,7 +1788,8 @@
             "id": "Mme.Thenardier",
             "label": "Person",
             "properties": {
-              "name": "Mme.Thenardier"
+              "name": "Mme.Thenardier",
+              "age" : 37
             }
           },
           {
@@ -1774,7 +1799,8 @@
             "id": "Thenardier",
             "label": "Person",
             "properties": {
-              "name": "Thenardier"
+              "name": "Thenardier",
+              "age" : 19
             }
           },
           {
@@ -1784,7 +1810,8 @@
             "id": "Cosette",
             "label": "Person",
             "properties": {
-              "name": "Cosette"
+              "name": "Cosette",
+              "age" : 24
             }
           },
           {
@@ -1794,7 +1821,8 @@
             "id": "Javert",
             "label": "Person",
             "properties": {
-              "name": "Javert"
+              "name": "Javert",
+              "age" : 31
             }
           },
           {
@@ -1804,7 +1832,8 @@
             "id": "Fauchelevent",
             "label": "Person",
             "properties": {
-              "name": "Fauchelevent"
+              "name": "Fauchelevent",
+              "age" : 38
             }
           },
           {
@@ -1814,7 +1843,8 @@
             "id": "Bamatabois",
             "label": "Person",
             "properties": {
-              "name": "Bamatabois"
+              "name": "Bamatabois",
+              "age" : 21
             }
           },
           {
@@ -1824,7 +1854,8 @@
             "id": "Perpetue",
             "label": "Person",
             "properties": {
-              "name": "Perpetue"
+              "name": "Perpetue",
+              "age" : 29
             }
           },
           {
@@ -1834,7 +1865,8 @@
             "id": "Simplice",
             "label": "Person",
             "properties": {
-              "name": "Simplice"
+              "name": "Simplice",
+              "age" : 19
             }
           },
           {
@@ -1844,7 +1876,8 @@
             "id": "Scaufflaire",
             "label": "Person",
             "properties": {
-              "name": "Scaufflaire"
+              "name": "Scaufflaire",
+              "age" : 19
             }
           },
           {
@@ -1854,7 +1887,8 @@
             "id": "Woman1",
             "label": "Person",
             "properties": {
-              "name": "Woman1"
+              "name": "Woman1",
+              "age" : 20
             }
           },
           {
@@ -1864,7 +1898,8 @@
             "id": "Judge",
             "label": "Person",
             "properties": {
-              "name": "Judge"
+              "name": "Judge",
+              "age" : 39
             }
           },
           {
@@ -1874,7 +1909,8 @@
             "id": "Champmathieu",
             "label": "Person",
             "properties": {
-              "name": "Champmathieu"
+              "name": "Champmathieu",
+              "age" : 45
             }
           },
           {
@@ -1884,7 +1920,8 @@
             "id": "Brevet",
             "label": "Person",
             "properties": {
-              "name": "Brevet"
+              "name": "Brevet",
+              "age" : 35
             }
           },
           {
@@ -1894,7 +1931,8 @@
             "id": "Chenildieu",
             "label": "Person",
             "properties": {
-              "name": "Chenildieu"
+              "name": "Chenildieu",
+              "age" : 30
             }
           },
           {
@@ -1904,7 +1942,8 @@
             "id": "Cochepaille",
             "label": "Person",
             "properties": {
-              "name": "Cochepaille"
+              "name": "Cochepaille",
+              "age" : 32
             }
           },
           {
@@ -1914,7 +1953,8 @@
             "id": "Pontmercy",
             "label": "Person",
             "properties": {
-              "name": "Pontmercy"
+              "name": "Pontmercy",
+              "age" : 22
             }
           },
           {
@@ -1924,7 +1964,8 @@
             "id": "Boulatruelle",
             "label": "Person",
             "properties": {
-              "name": "Boulatruelle"
+              "name": "Boulatruelle",
+              "age" : 21
             }
           },
           {
@@ -1934,7 +1975,8 @@
             "id": "Eponine",
             "label": "Person",
             "properties": {
-              "name": "Eponine"
+              "name": "Eponine",
+              "age" : 20
             }
           },
           {
@@ -1944,7 +1986,8 @@
             "id": "Anzelma",
             "label": "Person",
             "properties": {
-              "name": "Anzelma"
+              "name": "Anzelma",
+              "age" : 190
             }
           },
           {
@@ -1954,7 +1997,8 @@
             "id": "Woman2",
             "label": "Person",
             "properties": {
-              "name": "Woman2"
+              "name": "Woman2",
+              "age" : 18
             }
           },
           {
@@ -1964,7 +2008,8 @@
             "id": "MotherInnocent",
             "label": "Person",
             "properties": {
-              "name": "MotherInnocent"
+              "name": "MotherInnocent",
+              "age" : 28
             }
           },
           {
@@ -1974,7 +2019,8 @@
             "id": "Gribier",
             "label": "Person",
             "properties": {
-              "name": "Gribier"
+              "name": "Gribier",
+              "age" : 41
             }
           },
           {
@@ -1984,7 +2030,8 @@
             "id": "Jondrette",
             "label": "Person",
             "properties": {
-              "name": "Jondrette"
+              "name": "Jondrette",
+              "age" : 45
             }
           },
           {
@@ -1994,7 +2041,8 @@
             "id": "Mme.Burgon",
             "label": "Person",
             "properties": {
-              "name": "Mme.Burgon"
+              "name": "Mme.Burgon",
+              "age" : 43
             }
           },
           {
@@ -2004,7 +2052,8 @@
             "id": "Gavroche",
             "label": "Person",
             "properties": {
-              "name": "Gavroche"
+              "name": "Gavroche",
+              "age" : 23
             }
           },
           {
@@ -2014,7 +2063,8 @@
             "id": "Gillenormand",
             "label": "Person",
             "properties": {
-              "name": "Gillenormand"
+              "name": "Gillenormand",
+              "age" : 23
             }
           },
           {
@@ -2024,7 +2074,8 @@
             "id": "Magnon",
             "label": "Person",
             "properties": {
-              "name": "Magnon"
+              "name": "Magnon",
+              "age" : 36
             }
           },
           {
@@ -2034,7 +2085,8 @@
             "id": "Mlle.Gillenormand",
             "label": "Person",
             "properties": {
-              "name": "Mlle.Gillenormand"
+              "name": "Mlle.Gillenormand",
+              "age" : 37
             }
           },
           {
@@ -2044,7 +2096,8 @@
             "id": "Mme.Pontmercy",
             "label": "Person",
             "properties": {
-              "name": "Mme.Pontmercy"
+              "name": "Mme.Pontmercy",
+              "age" : 38
             }
           },
           {
@@ -2054,7 +2107,8 @@
             "id": "Mlle.Vaubois",
             "label": "Person",
             "properties": {
-              "name": "Mlle.Vaubois"
+              "name": "Mlle.Vaubois",
+              "age" : 28
             }
           },
           {
@@ -2064,7 +2118,8 @@
             "id": "Lt.Gillenormand",
             "label": "Person",
             "properties": {
-              "name": "Lt.Gillenormand"
+              "name": "Lt.Gillenormand",
+              "age" : 24
             }
           },
           {
@@ -2074,7 +2129,8 @@
             "id": "Marius",
             "label": "Person",
             "properties": {
-              "name": "Marius"
+              "name": "Marius",
+              "age" : 22
             }
           },
           {
@@ -2084,7 +2140,8 @@
             "id": "BaronessT",
             "label": "Person",
             "properties": {
-              "name": "BaronessT"
+              "name": "BaronessT",
+              "age" : 12
             }
           },
           {
@@ -2094,7 +2151,8 @@
             "id": "Mabeuf",
             "label": "Person",
             "properties": {
-              "name": "Mabeuf"
+              "name": "Mabeuf",
+              "age" : 11
             }
           },
           {
@@ -2104,7 +2162,8 @@
             "id": "Enjolras",
             "label": "Person",
             "properties": {
-              "name": "Enjolras"
+              "name": "Enjolras",
+              "age" : 10
             }
           },
           {
@@ -2114,7 +2173,8 @@
             "id": "Combeferre",
             "label": "Person",
             "properties": {
-              "name": "Combeferre"
+              "name": "Combeferre",
+              "age" : 9
             }
           },
           {
@@ -2124,7 +2184,8 @@
             "id": "Prouvaire",
             "label": "Person",
             "properties": {
-              "name": "Prouvaire"
+              "name": "Prouvaire",
+              "age" : 8
             }
           },
           {
@@ -2134,7 +2195,8 @@
             "id": "Feuilly",
             "label": "Person",
             "properties": {
-              "name": "Feuilly"
+              "name": "Feuilly",
+              "age" : 7
             }
           },
           {
@@ -2144,7 +2206,8 @@
             "id": "Courfeyrac",
             "label": "Person",
             "properties": {
-              "name": "Courfeyrac"
+              "name": "Courfeyrac",
+              "age" : 6
             }
           },
           {
@@ -2154,7 +2217,8 @@
             "id": "Bahorel",
             "label": "Person",
             "properties": {
-              "name": "Bahorel"
+              "name": "Bahorel",
+              "age" : 18
             }
           },
           {
@@ -2164,7 +2228,8 @@
             "id": "Bossuet",
             "label": "Person",
             "properties": {
-              "name": "Bossuet"
+              "name": "Bossuet",
+              "age" : 17
             }
           },
           {
@@ -2174,7 +2239,8 @@
             "id": "Joly",
             "label": "Person",
             "properties": {
-              "name": "Joly"
+              "name": "Joly",
+              "age" : 16
             }
           },
           {
@@ -2184,7 +2250,8 @@
             "id": "Grantaire",
             "label": "Person",
             "properties": {
-              "name": "Grantaire"
+              "name": "Grantaire",
+              "age" : 15
             }
           },
           {
@@ -2194,7 +2261,8 @@
             "id": "MotherPlutarch",
             "label": "Person",
             "properties": {
-              "name": "MotherPlutarch"
+              "name": "MotherPlutarch",
+              "age" : 25
             }
           },
           {
@@ -2204,7 +2272,8 @@
             "id": "Gueulemer",
             "label": "Person",
             "properties": {
-              "name": "Gueulemer"
+              "name": "Gueulemer",
+              "age" : 27
             }
           },
           {
@@ -2214,7 +2283,8 @@
             "id": "Babet",
             "label": "Person",
             "properties": {
-              "name": "Babet"
+              "name": "Babet",
+              "age" : 29
             }
           },
           {
@@ -2224,7 +2294,8 @@
             "id": "Claquesous",
             "label": "Person",
             "properties": {
-              "name": "Claquesous"
+              "name": "Claquesous",
+              "age" : 30
             }
           },
           {
@@ -2234,7 +2305,8 @@
             "id": "Montparnasse",
             "label": "Person",
             "properties": {
-              "name": "Montparnasse"
+              "name": "Montparnasse",
+              "age" : 60
             }
           },
           {
@@ -2244,7 +2316,8 @@
             "id": "Toussaint",
             "label": "Person",
             "properties": {
-              "name": "Toussaint"
+              "name": "Toussaint",
+              "age" : 68
             }
           },
           {
@@ -2254,7 +2327,8 @@
             "id": "Child1",
             "label": "Person",
             "properties": {
-              "name": "Child1"
+              "name": "Child1",
+              "age" : 8
             }
           },
           {
@@ -2264,7 +2338,8 @@
             "id": "Child2",
             "label": "Person",
             "properties": {
-              "name": "Child2"
+              "name": "Child2",
+              "age" : 8
             }
           },
           {
@@ -2274,7 +2349,8 @@
             "id": "Brujon",
             "label": "Person",
             "properties": {
-              "name": "Brujon"
+              "name": "Brujon",
+              "age" : 28
             }
           },
           {
@@ -2284,7 +2360,8 @@
             "id": "Mme.Hucheloup",
             "label": "Person",
             "properties": {
-              "name": "Mme.Hucheloup"
+              "name": "Mme.Hucheloup",
+              "age" : 78
             }
           }
         ],

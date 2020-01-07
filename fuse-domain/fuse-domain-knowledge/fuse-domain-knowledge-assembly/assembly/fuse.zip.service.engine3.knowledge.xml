@@ -16,8 +16,8 @@
             <outputDirectory>./ontology</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/resources/assembly/Knowledge/rules</directory>
-            <outputDirectory>./rules</outputDirectory>
+            <directory>${project.basedir}/resources/assembly/Knowledge/public</directory>
+            <outputDirectory>./public</outputDirectory>
         </fileSet>
     </fileSets>
 

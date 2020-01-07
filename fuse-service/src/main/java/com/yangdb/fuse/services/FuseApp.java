@@ -63,6 +63,7 @@ import org.reflections.Reflections;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 
@@ -95,6 +96,8 @@ public class FuseApp extends Jooby {
         get("swagger/swagger.json", () -> Results.redirect("/public/assets/swagger/swagger.json"));
         // elasticsearch bigDesk support (
         get("bigdesk", () -> Results.redirect("/public/assets/bigdesk/index.html"));
+        get("cypher-queries-samples", () -> Results.redirect("/public/assets/samples/cypher-queries.txt"));
+        get("les_miserables-data", () -> Results.redirect("/public/assets/samples/les_miserables-data.json"));
 
         //internal quarts reporting job scheduler
         use(new Quartz().with(StatusReportedJob.class));
@@ -102,7 +105,9 @@ public class FuseApp extends Jooby {
         //'Access-Control-Allow-Origin' header
         use("*", new CorsHandler());
         //expose html assets
+        assets("/assets/**");
         assets("public/assets/**");
+        assets("public/assets/samples/**");
         assets("public/assets/lib/**");
 
         new LoggingJacksonRendererRegistrar(metricRegistry).register(this, localUrlSupplier);

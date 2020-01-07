@@ -1,0 +1,24 @@
+Match  (p1:Entity)-[hasEv1:hasEvalue]->(value1:Evalue),
+       (p1:Entity)-[hasRelEn:relatedEntity]->(p2:Entity ),
+       (p2:Entity)-[hasEv2:hasEvalue]->(value2:Evalue {stringValue:'Myriel'})  return *
+
+Match  (p1:Entity)-[hasEv1:hasEvalue]->(value1:Evalue),
+       (p1:Entity)-[hasRelEn:relatedEntity]->(p2:Entity),
+       (p2:Entity)-[hasEv2:hasEvalue]->(value2:Evalue)
+       where (value2.intValue > 60 and value2.fieldId = 'age') return *
+
+Match  (p1:Entity)-[hasEv1:hasEvalue]->(value1:Evalue),
+       (p1:Entity)-[hasRelEn:relatedEntity]->(p2:Entity ),
+       (p2:Entity)-[hasEv2:hasEvalue]->(value2:Evalue {stringValue:'Myriel'})
+       where (value1.intValue > 20)
+       return *
+
+Match  (p1:Entity)-[hasEv1:hasEvalue]->(value1:Evalue) Where (value1.fieldId = "name" AND value1.stringValue = "Napoleon") return *
+
+Match  (p1:Entity)-[hasEv1:hasEvalue]->(value1:Evalue {stringValue:'Napoleon'}),
+       (p1:Entity)-[hasRelEn:relatedEntity]->(p2:Entity) return *
+
+
+Match  (p1:Person)-[k:know]-(p2:Person) Where (p1.name = "Napoleon") return *
+
+Match  (p1:Entity)-[hasEv1:hasEvalue]->(value1:Evalue) where (value1.intValue > 60 and value1.fieldId = 'age') return *
