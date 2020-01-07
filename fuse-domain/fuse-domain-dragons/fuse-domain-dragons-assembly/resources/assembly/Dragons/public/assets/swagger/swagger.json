@@ -2,13 +2,13 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0",
-    "title": "Fuse API"
+    "title": "YangFb [Dragons] API"
   },
   "basePath": "/fuse",
   "tags": [
     {
-      "name": "fuse",
-      "description": "\nEverything about Fuse Graph Engine."
+      "name": "YangDb",
+      "description": "\nEverything about YangDb Graph Engine."
     }
   ],
   "schemes": [
