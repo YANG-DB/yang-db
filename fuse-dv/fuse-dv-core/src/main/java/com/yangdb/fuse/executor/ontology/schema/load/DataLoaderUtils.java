@@ -127,6 +127,7 @@ public interface DataLoaderUtils {
 
     static Object parseValue(String explicitType, Object value, DateFormat sdf) {
         switch (explicitType) {
+            case "text":
             case "string":
             case "stringValue":
                 return value.toString();

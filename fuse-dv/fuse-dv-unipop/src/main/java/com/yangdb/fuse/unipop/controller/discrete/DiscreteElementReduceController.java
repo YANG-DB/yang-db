@@ -162,7 +162,8 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
                         wrap(new FilterSourceRoutingSearchAppender()),
                         wrap(new ElementRoutingSearchAppender()),
                         wrap(new EdgeSourceSearchAppender()),
-                        wrap(new EdgeRoutingSearchAppender()),
+                        //todo: add configuration to enable/disable routing
+//                        wrap(new EdgeRoutingSearchAppender()),
                         wrap(new EdgeSourceRoutingSearchAppender()),
                         wrap(new EdgeIndexSearchAppender()),
                         wrap(new DualEdgeDirectionSearchAppender()),

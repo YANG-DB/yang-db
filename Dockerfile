@@ -14,7 +14,6 @@ WORKDIR /opt/engine
 
 # this is a specific yang.db assembly used for knowledge based ontology - a general purpose RDF schema
 COPY distrib/knowledge-knowledge /opt/engine
-COPY distrib/knowledge-fuse-source.zip /opt/engine
 
 RUN chmod 755 /opt/engine/start-fuse-service.sh
 # clean

@@ -58,9 +58,14 @@ import java.util.Optional;
 public class LogicalNode implements Vertex {
     public static final String NODE = "Node";
 
-    private String id;
+    @JsonProperty("label")
     private String label = NODE;
+    @JsonProperty("id")
+    private String id;
+
+    @JsonProperty("metadata")
     private NodeMetadata metadata = new NodeMetadata();
+    @JsonProperty("properties")
     private NodeProperties properties = new NodeProperties(); ;
 
     public LogicalNode() {}
@@ -70,38 +75,66 @@ public class LogicalNode implements Vertex {
         this.label = label;
     }
 
+    @JsonProperty("label")
     public String getLabel() {
         return label;
     }
 
+    @JsonProperty("id")
     public String getId() {
         return id;
     }
 
+    @JsonProperty("metadata")
     public NodeMetadata getMetadata() {
         return metadata;
     }
 
+    @JsonProperty("properties")
     public NodeProperties getProperties() {
         return properties;
     }
 
     @Override
+    @JsonProperty("id")
     public String id() {
         return getId();
     }
 
     @Override
+    @JsonProperty("label")
     public String label() {
         return getLabel();
     }
 
+    @JsonProperty("label")
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    @JsonProperty("id")
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @JsonProperty("metadata")
+    public void setMetadata(NodeMetadata metadata) {
+        this.metadata = metadata;
+    }
+
+    @JsonProperty("properties")
+    public void setProperties(NodeProperties properties) {
+        this.properties = properties;
+    }
+
     @Override
+    @JsonProperty("metadata")
     public Map<String, Object> metadata() {
         return getMetadata().getProperties();
     }
 
     @Override
+    @JsonProperty("properties")
     public Map<String, Object> fields() {
         return getProperties().getProperties();
     }

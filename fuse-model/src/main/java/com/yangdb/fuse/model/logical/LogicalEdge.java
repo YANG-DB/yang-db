@@ -50,12 +50,19 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LogicalEdge implements Edge {
     public static final String EDGE = "Edge";
+    @JsonProperty("id")
     private String id;
+    @JsonProperty("label")
     private String label = EDGE;
+    @JsonProperty("source")
     private String source;
+    @JsonProperty("target")
     private String target;
+    @JsonProperty("direction")
     private boolean direction;
+    @JsonProperty("metadata")
     private EdgeMetadata metadata = new EdgeMetadata();
+    @JsonProperty("properties")
     private EdgeProperties properties = new EdgeProperties();
 
     public LogicalEdge() {}
@@ -78,33 +85,74 @@ public class LogicalEdge implements Edge {
         return this;
     }
 
+    @JsonProperty("label")
     public String getLabel() {
         return label;
     }
 
-
+    @JsonProperty("id")
     public String getId() {
         return id;
     }
 
+    @JsonProperty("source")
     public String getSource() {
         return source;
     }
 
+    @JsonProperty("target")
     public String getTarget() {
         return target;
     }
 
+    @JsonProperty("direction")
     public boolean isDirection() {
         return direction;
     }
 
+    @JsonProperty("metadata")
     public EdgeMetadata getMetadata() {
         return metadata;
     }
 
+    @JsonProperty("properties")
     public EdgeProperties getProperties() {
         return properties;
+    }
+
+    @JsonProperty("id")
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @JsonProperty("label")
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    @JsonProperty("source")
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    @JsonProperty("target")
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
+    @JsonProperty("direction")
+    public void setDirection(boolean direction) {
+        this.direction = direction;
+    }
+
+    @JsonProperty("metadata")
+    public void setMetadata(EdgeMetadata metadata) {
+        this.metadata = metadata;
+    }
+
+    @JsonProperty("properties")
+    public void setProperties(EdgeProperties properties) {
+        this.properties = properties;
     }
 
     @Override
@@ -121,31 +169,37 @@ public class LogicalEdge implements Edge {
     }
 
     @Override
+    @JsonProperty("id")
     public String id() {
         return getId()!=null ? id : String.format("%s.%s",source,target);
     }
 
     @Override
+    @JsonProperty("label")
     public String label() {
         return getLabel();
     }
 
     @Override
+    @JsonProperty("metadata")
     public Map<String, Object> metadata() {
         return getMetadata().getProperties();
     }
 
     @Override
+    @JsonIgnore
     public Map<String, Object> fields() {
         return getProperties().getProperties();
     }
 
     @Override
+    @JsonProperty("source")
     public String source() {
         return getSource();
     }
 
     @Override
+    @JsonProperty("target")
     public String target() {
         return getTarget();
     }
