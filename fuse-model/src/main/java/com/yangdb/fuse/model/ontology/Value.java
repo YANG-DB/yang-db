@@ -46,6 +46,8 @@ package com.yangdb.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.Objects;
+
 /**
  * Created by benishue on 22-Feb-17.
  */
@@ -80,6 +82,20 @@ public class Value {
     public String toString()
     {
         return "Value [val = "+val+", name = "+name+"]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Value value = (Value) o;
+        return val == value.val &&
+                name.equals(value.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(val, name);
     }
 
     //region Fields

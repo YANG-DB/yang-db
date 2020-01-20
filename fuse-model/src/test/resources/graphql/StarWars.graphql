@@ -29,6 +29,7 @@ type Human implements Character {
     description: String
     friends: [Character]
     appearsIn: [Episode]!
+    owns:[Droid]
     homePlanet: String
 }
 

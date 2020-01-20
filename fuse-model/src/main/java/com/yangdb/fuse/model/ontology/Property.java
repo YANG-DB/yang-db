@@ -135,15 +135,15 @@ public class Property {
 
     @Override
     public boolean equals(Object o) {
-        if (!super.equals(o)) return false;
+        if (this == o) return true;
+        if (o == null || !getClass().isAssignableFrom(o.getClass())) return false;
 
         return equal(this, (Property) o);
       }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + this.pType.hashCode();
+        int result = this.pType.hashCode();
         result = 31 * result + this.name.hashCode();
         result = 31 * result + this.type.hashCode();
         return result;

@@ -1,8 +1,6 @@
 package com.yangdb.fuse.model.graphql;
 
-import com.yangdb.fuse.model.ontology.EntityType;
-import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.ontology.Property;
+import com.yangdb.fuse.model.ontology.*;
 import graphql.language.ListType;
 import graphql.language.NonNullType;
 import graphql.language.Type;
@@ -12,9 +10,12 @@ import graphql.schema.idl.EchoingWiringFactory;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
+import javaslang.Tuple2;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,6 +41,7 @@ public abstract class GraphQL2OntologyTransformer {
 
     /**
      * API that will transform a GraphQL schema into YangDb ontology schema
+     *
      * @param graphQL
      * @return
      */
@@ -94,6 +96,39 @@ public abstract class GraphQL2OntologyTransformer {
         return new ArrayList<>(collect);
     }
 
+
+    /**
+     * filter entity type according to predicate
+     *
+     * @param type
+     * @param predicate
+     * @return
+     */
+    private static Optional<Tuple2<String,TypeName>> filter(Type type, String field, Predicate<TypeName> predicate) {
+        //scalar type property
+        if ((type instanceof TypeName) && (predicate.test((TypeName) type))) return Optional.of(new Tuple2(field, type));
+
+        //list type
+        if (type instanceof ListType) {
+            return filter(((ListType) type).getType(),field, predicate);
+        }
+        //non null type - may contain all sub-types (wrapper)
+        if (type instanceof NonNullType) {
+            Type rawType = ((NonNullType) type).getType();
+
+            //validate only scalars are registered as properties
+            if ((rawType instanceof TypeName) && predicate.test((TypeName) rawType)) {
+                return Optional.of(new Tuple2(field, rawType));
+            }
+
+            if (rawType instanceof ListType) {
+                return filter(((ListType) rawType).getType(),field, predicate);
+            }
+        }
+
+        return Optional.empty();
+    }
+
     /**
      * populate property type according to entities
      *
@@ -132,6 +167,7 @@ public abstract class GraphQL2OntologyTransformer {
 
     /**
      * generate interface entity types
+     *
      * @param graphQLSchema
      * @param context
      * @return
@@ -139,13 +175,14 @@ public abstract class GraphQL2OntologyTransformer {
     static Ontology.OntologyBuilder interfaces(GraphQLSchema graphQLSchema, Ontology.OntologyBuilder context) {
         List<EntityType> collect = graphQLSchema.getAllTypesAsList().stream()
                 .filter(p -> GraphQLInterfaceType.class.isAssignableFrom(p.getClass()))
-                .map(ifc -> createEntity(ifc.getName(),((GraphQLInterfaceType) ifc).getFieldDefinitions()))
+                .map(ifc -> createEntity(ifc.getName(), ((GraphQLInterfaceType) ifc).getFieldDefinitions()))
                 .collect(Collectors.toList());
         return context.addEntityTypes(collect);
     }
 
     /**
      * generate concrete entity types
+     *
      * @param graphQLSchema
      * @param context
      * @return
@@ -162,6 +199,7 @@ public abstract class GraphQL2OntologyTransformer {
 
     /**
      * generate entity (interface) type
+     *
      * @return
      */
     private static EntityType createEntity(String name, List<GraphQLFieldDefinition> fields) {
@@ -176,7 +214,50 @@ public abstract class GraphQL2OntologyTransformer {
     }
 
     static Ontology.OntologyBuilder relations(GraphQLSchema graphQLSchema, Ontology.OntologyBuilder context) {
+        Map<String, List<RelationshipType>> collect = graphQLSchema.getAllTypesAsList().stream()
+                .filter(p -> GraphQLObjectType.class.isAssignableFrom(p.getClass()))
+                .filter(p -> !languageTypes.contains(p.getName()))
+                .filter(p -> !p.getName().startsWith("__"))
+                .map(ifc -> createRelation(ifc.getName(), ((GraphQLObjectType) ifc).getFieldDefinitions()))
+                .flatMap(p -> p.stream())
+                .collect(Collectors.groupingBy(RelationshipType::getrType));
+
+        //merge e-pairs
+        collect.forEach((key, value) -> {
+            List<EPair> pairs = value.stream()
+                    .flatMap(ep -> ep.getePairs().stream())
+                    .collect(Collectors.toList());
+            //replace multi relationships with one containing all epairs
+            context.addRelationshipType(value.get(0).withEPairs(pairs.toArray(new EPair[0])));
+        });
         return context;
+    }
+
+    /**
+     *
+     * @param name
+     * @param fieldDefinitions
+     * @return
+     */
+    private static List<RelationshipType> createRelation(String name, List<GraphQLFieldDefinition> fieldDefinitions) {
+        Set<Tuple2<String,TypeName>> typeNames = fieldDefinitions.stream()
+                .filter(p -> Type.class.isAssignableFrom(p.getDefinition().getType().getClass()))
+                .map(p -> filter(p.getDefinition().getType(), p.getName(), type -> objectTypes.contains(type.getName())))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toSet());
+        //relationships for each entity
+        List<RelationshipType> collect = typeNames.stream()
+                .map(type -> RelationshipType.Builder.get()
+                        //nested objects are directional by nature (nesting dictates the direction)
+                        .withDirectional(true)
+                        .withName(type._1())
+                        .withRType(type._1())
+                        .withEPairs(Collections.singletonList(new EPair(name,type._2().getName())))
+                        .build())
+                .collect(Collectors.toList());
+
+        return collect;
     }
 
     static Ontology.OntologyBuilder properties(GraphQLSchema graphQLSchema, Ontology.OntologyBuilder context) {
@@ -184,8 +265,32 @@ public abstract class GraphQL2OntologyTransformer {
         return context;
     }
 
+    /**
+     *
+     * @param graphQLSchema
+     * @param context
+     * @return
+     */
     static Ontology.OntologyBuilder enums(GraphQLSchema graphQLSchema, Ontology.OntologyBuilder context) {
+        List<EnumeratedType> collect = graphQLSchema.getAllTypesAsList().stream()
+                .filter(p -> GraphQLEnumType.class.isAssignableFrom(p.getClass()))
+                .filter(p -> !languageTypes.contains(p.getName()))
+                .filter(p -> !p.getName().startsWith("__"))
+                .map(ifc -> createEnum((GraphQLEnumType) ifc))
+                .collect(Collectors.toList());
+
+        context.withEnumeratedTypes(collect);
         return context;
+    }
+
+    private static EnumeratedType createEnum(GraphQLEnumType ifc) {
+        AtomicInteger counter = new AtomicInteger(0);
+        EnumeratedType.EnumeratedTypeBuilder builder = EnumeratedType.EnumeratedTypeBuilder.anEnumeratedType();
+        builder.withEType(ifc.getName());
+        builder.withValues(ifc.getValues().stream()
+                .map(v->new Value(counter.getAndIncrement(),v.getName()))
+                .collect(Collectors.toList()));
+        return builder.build();
     }
 
 }

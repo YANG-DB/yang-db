@@ -173,6 +173,12 @@ public class RelationshipType {
         return this;
     }
 
+    @JsonIgnore
+    public RelationshipType withEPairs(EPair ... pairs) {
+        this.setePairs(Arrays.asList(pairs));
+        return this;
+    }
+
     //endregion
 
     @Override
@@ -182,7 +188,7 @@ public class RelationshipType {
 
         RelationshipType that = (RelationshipType) o;
 
-        if (rType != that.rType) return false;
+        if (!rType.equals(that.rType)) return false;
         if (directional != that.directional) return false;
         if (!name.equals(that.name)) return false;
         if (DBrName != null ? !DBrName.equals(that.DBrName) : that.DBrName != null) return false;
@@ -233,6 +239,7 @@ public class RelationshipType {
     public boolean containsProperty(String key) {
         return properties.contains(key);
     }
+
 
     //endregion
 

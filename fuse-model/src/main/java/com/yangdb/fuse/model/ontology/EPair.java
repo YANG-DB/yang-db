@@ -46,6 +46,8 @@ package com.yangdb.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.Objects;
+
 /**
  * Created by benishue on 22-Feb-17.
  */
@@ -74,6 +76,20 @@ public class EPair {
 
     public void seteTypeB(String eTypeB) {
         this.eTypeB = eTypeB;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EPair ePair = (EPair) o;
+        return Objects.equals(eTypeA, ePair.eTypeA) &&
+                Objects.equals(eTypeB, ePair.eTypeB);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(eTypeA, eTypeB);
     }
 
     @Override

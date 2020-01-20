@@ -192,6 +192,10 @@ public class Ontology {
             this.entityTypes.addAll(entityTypes);
             return this;
         }
+        public OntologyBuilder addEntityType(EntityType entityType) {
+            this.entityTypes.add(entityType);
+            return this;
+        }
 
         public OntologyBuilder withRelationshipTypes(List<RelationshipType> relationshipTypes) {
             this.relationshipTypes = relationshipTypes;
@@ -200,6 +204,12 @@ public class Ontology {
 
         public OntologyBuilder addRelationshipTypes(List<RelationshipType> relationshipTypes) {
             this.relationshipTypes.addAll(relationshipTypes);
+            return this;
+        }
+
+
+        public OntologyBuilder addRelationshipType(RelationshipType relationshipType) {
+            this.relationshipTypes.add(relationshipType);
             return this;
         }
 
