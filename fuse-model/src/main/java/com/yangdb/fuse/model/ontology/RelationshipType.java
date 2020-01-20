@@ -70,6 +70,8 @@ public class RelationshipType {
         this.rType = rType;
         this.name = name;
         this.directional = directional;
+        this.mandatory = new ArrayList<>();
+
     }
 
     //region Getters & Setters
@@ -139,6 +141,14 @@ public class RelationshipType {
         return properties !=null ? properties : Collections.emptyList();
     }
 
+    public List<String> getMandatory() {
+        return mandatory!=null ? mandatory :  Collections.emptyList();
+    }
+
+    public void setMandatory(List<String> mandatory) {
+        this.mandatory = mandatory;
+    }
+
     public void setProperties(List<String> properties) {
         this.properties = properties;
     }
@@ -190,12 +200,13 @@ public class RelationshipType {
         result = 31 * result + (ePairs != null ? ePairs.hashCode() : 0);
         result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
         result = 31 * result + (properties != null ? properties.hashCode() : 0);
+        result = 31 * result + (mandatory != null ? mandatory.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "RelationshipType [ePairs = " + ePairs + ", rType = " + rType + ", directional = " + directional + ", name = " + name + ", properties = " + properties + ", metadata = " + metadata + "]";
+        return "RelationshipType [ePairs = " + ePairs + ", rType = " + rType + ", directional = " + directional + ", name = " + name + ", properties = " + properties + ", metadata = " + metadata  +", mandatory = " + mandatory + "]";
     }
 
     //region Fields
@@ -203,6 +214,7 @@ public class RelationshipType {
     private String name;
     private boolean directional;
     private String DBrName;
+    private List<String> mandatory;
     private List<EPair> ePairs;
     private List<String> properties;
     private List<String> metadata;
@@ -210,6 +222,11 @@ public class RelationshipType {
     @JsonIgnore
     public boolean containsMetadata(String key) {
         return metadata.contains(key);
+    }
+
+    @JsonIgnore
+    public boolean isMandatory(String key) {
+        return mandatory.contains(key);
     }
 
     @JsonIgnore
@@ -225,6 +242,7 @@ public class RelationshipType {
         private String name;
         private boolean directional;
         private String DBrName;
+        private List<String> mandatory = new ArrayList<>();
         private List<EPair> ePairs = new ArrayList<>();
         private List<String> properties = new ArrayList<>();
         private List<String> metatada = new ArrayList<>();
@@ -251,6 +269,17 @@ public class RelationshipType {
             return this;
         }
 
+        public Builder withMandatory(List<String> mandatory) {
+            this.mandatory = mandatory;
+            return this;
+        }
+
+        public Builder withMandatory(String mandatory) {
+            this.mandatory.add(mandatory);
+            return this;
+        }
+
+
         public Builder withDBrName(String DBrName) {
             this.DBrName = DBrName;
             return this;
@@ -266,6 +295,12 @@ public class RelationshipType {
             return this;
         }
 
+        public Builder withProperty(String property) {
+            this.properties.add(property);
+            return this;
+        }
+
+
         public Builder withMetadata(List<String> metatada) {
             this.metatada = metatada;
             return this;
@@ -278,6 +313,7 @@ public class RelationshipType {
             relationshipType.setDBrName(DBrName);
             relationshipType.setProperties(properties);
             relationshipType.setMetadata(metatada);
+            relationshipType.setMandatory(mandatory);
             relationshipType.ePairs = this.ePairs;
             relationshipType.rType = this.rType;
             return relationshipType;

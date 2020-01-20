@@ -218,6 +218,7 @@ public class Ontology {
             ontology.setProperties(properties);
             return ontology;
         }
+
     }
 
     //endregion

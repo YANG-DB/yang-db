@@ -48,10 +48,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -61,6 +58,12 @@ import java.util.List;
 public class Property {
     //region Constructors
     public Property() {
+    }
+
+    public Property(Property clone) {
+        this.name = clone.name;
+        this.pType = clone.pType;
+        this.type = clone.type;
     }
 
     public Property(String name, String pType, String type) {
@@ -217,6 +220,20 @@ public class Property {
         @JsonValue
         public String getName() {
             return name;
+        }
+    }
+
+    /**
+     * mandatory property name holder
+     */
+    public static class MandatoryProperty extends Property {
+
+        public MandatoryProperty(Property property) {
+            super(property);
+        }
+
+        public static Optional<Property> of(Optional<Property> property) {
+            return property.map(MandatoryProperty::new);
         }
     }
 
