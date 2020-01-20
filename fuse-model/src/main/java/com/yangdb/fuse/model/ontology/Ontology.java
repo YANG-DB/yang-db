@@ -167,11 +167,11 @@ public class Ontology {
         private List<CompositeType> compositeTypes;
 
         private OntologyBuilder() {
-            this.entityTypes = Collections.emptyList();
-            this.relationshipTypes = Collections.emptyList();
-            this.properties = Collections.emptyList();
-            this.enumeratedTypes = Collections.emptyList();
-            this.compositeTypes = Collections.emptyList();
+            this.entityTypes = new ArrayList<>();
+            this.relationshipTypes = new ArrayList<>();
+            this.properties = new ArrayList<>();
+            this.enumeratedTypes = new ArrayList<>();
+            this.compositeTypes = new ArrayList<>();
         }
 
         public static OntologyBuilder anOntology() {
@@ -188,10 +188,21 @@ public class Ontology {
             return this;
         }
 
+        public OntologyBuilder addEntityTypes(List<EntityType> entityTypes) {
+            this.entityTypes.addAll(entityTypes);
+            return this;
+        }
+
         public OntologyBuilder withRelationshipTypes(List<RelationshipType> relationshipTypes) {
             this.relationshipTypes = relationshipTypes;
             return this;
         }
+
+        public OntologyBuilder addRelationshipTypes(List<RelationshipType> relationshipTypes) {
+            this.relationshipTypes.addAll(relationshipTypes);
+            return this;
+        }
+
 
         public OntologyBuilder withEnumeratedTypes(List<EnumeratedType> enumeratedTypes) {
             this.enumeratedTypes = enumeratedTypes;

@@ -29,12 +29,13 @@ public abstract class GraphQL2OntologyTransformer {
     static TypeDefinitionRegistry typeRegistry = new TypeDefinitionRegistry();
     static SchemaGenerator schemaGenerator = new SchemaGenerator();
 
+    static Set<String> languageTypes = new HashSet<>();
     static Set<String> objectTypes = new HashSet<>();
     static Set<Property> properties = new HashSet<>();
 
     static {
         //exclusion of build-in graphQL types
-        objectTypes.add("Query");
+        languageTypes.add("QueryType");
     }
 
     /**
@@ -76,6 +77,7 @@ public abstract class GraphQL2OntologyTransformer {
                         .map(GraphQLNamedSchemaElement::getName)
         )
                 .filter(p -> !p.startsWith("__"))
+                .filter(p -> !languageTypes.contains(p))
                 .collect(Collectors.toList()));
     }
 
@@ -128,28 +130,49 @@ public abstract class GraphQL2OntologyTransformer {
         return Optional.empty();
     }
 
-
+    /**
+     * generate interface entity types
+     * @param graphQLSchema
+     * @param context
+     * @return
+     */
     static Ontology.OntologyBuilder interfaces(GraphQLSchema graphQLSchema, Ontology.OntologyBuilder context) {
         List<EntityType> collect = graphQLSchema.getAllTypesAsList().stream()
                 .filter(p -> GraphQLInterfaceType.class.isAssignableFrom(p.getClass()))
-                .map(ifc -> createEntity((GraphQLInterfaceType) ifc))
+                .map(ifc -> createEntity(ifc.getName(),((GraphQLInterfaceType) ifc).getFieldDefinitions()))
                 .collect(Collectors.toList());
-        return context.withEntityTypes(collect);
+        return context.addEntityTypes(collect);
     }
 
-    private static EntityType createEntity(GraphQLInterfaceType ifc) {
-        List<Property> properties = populateProperties(ifc.getFieldDefinitions());
+    /**
+     * generate concrete entity types
+     * @param graphQLSchema
+     * @param context
+     * @return
+     */
+    static Ontology.OntologyBuilder entities(GraphQLSchema graphQLSchema, Ontology.OntologyBuilder context) {
+        List<EntityType> collect = graphQLSchema.getAllTypesAsList().stream()
+                .filter(p -> GraphQLObjectType.class.isAssignableFrom(p.getClass()))
+                .filter(p -> !languageTypes.contains(p.getName()))
+                .filter(p -> !p.getName().startsWith("__"))
+                .map(ifc -> createEntity(ifc.getName(), ((GraphQLObjectType) ifc).getFieldDefinitions()))
+                .collect(Collectors.toList());
+        return context.addEntityTypes(collect);
+    }
+
+    /**
+     * generate entity (interface) type
+     * @return
+     */
+    private static EntityType createEntity(String name, List<GraphQLFieldDefinition> fields) {
+        List<Property> properties = populateProperties(fields);
 
         EntityType.Builder builder = EntityType.Builder.get();
-        builder.withName(ifc.getName()).withEType(ifc.getName());
+        builder.withName(name).withEType(name);
         builder.withProperties(properties.stream().map(Property::getName).collect(Collectors.toList()));
         builder.withMandatory(properties.stream().filter(p -> p instanceof Property.MandatoryProperty).map(Property::getName).collect(Collectors.toList()));
 
         return builder.build();
-    }
-
-    static Ontology.OntologyBuilder entities(GraphQLSchema graphQLSchema, Ontology.OntologyBuilder context) {
-        return context;
     }
 
     static Ontology.OntologyBuilder relations(GraphQLSchema graphQLSchema, Ontology.OntologyBuilder context) {

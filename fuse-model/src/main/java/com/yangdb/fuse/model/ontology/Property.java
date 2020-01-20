@@ -121,15 +121,24 @@ public class Property {
         return String.format("Property [pType = %s, name = %s, type = %s]", this.pType, this.name, this.type);
     }
 
+    /**
+     * check equality by not using the class type
+     * @param source
+     * @param other
+     * @return
+     */
+    public static boolean equal(Property source,Property other) {
+        return source.pType.equals(other.pType) &&
+                source.name.equals(other.name) &&
+                source.type.equals(other.type);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!super.equals(o)) return false;
-        Property other = (Property) o;
 
-        return this.pType.equals(other.pType) &&
-                this.name.equals(other.name) &&
-                this.type.equals(other.type);
-    }
+        return equal(this, (Property) o);
+      }
 
     @Override
     public int hashCode() {
@@ -230,6 +239,16 @@ public class Property {
 
         public MandatoryProperty(Property property) {
             super(property);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return super.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return super.hashCode();
         }
 
         public static Optional<Property> of(Optional<Property> property) {
