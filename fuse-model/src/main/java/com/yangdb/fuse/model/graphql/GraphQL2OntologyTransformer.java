@@ -13,6 +13,7 @@ import graphql.schema.idl.TypeDefinitionRegistry;
 import javaslang.Tuple2;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
@@ -26,6 +27,7 @@ import static com.yangdb.fuse.model.ontology.Property.MandatoryProperty.of;
  */
 public abstract class GraphQL2OntologyTransformer {
     //graph QL reader and schema parts
+    static GraphQLSchema graphQLSchema;
     static SchemaParser schemaParser = new SchemaParser();
     static TypeDefinitionRegistry typeRegistry = new TypeDefinitionRegistry();
     static SchemaGenerator schemaGenerator = new SchemaGenerator();
@@ -40,21 +42,31 @@ public abstract class GraphQL2OntologyTransformer {
     }
 
     /**
+     * get the graph QL schema
+     *
+     * @return
+     */
+    public static GraphQLSchema getGraphQLSchema() {
+        return graphQLSchema;
+    }
+
+    /**
      * API that will transform a GraphQL schema into YangDb ontology schema
      *
      * @param graphQL
      * @return
      */
     public static Ontology transform(InputStream graphQL) {
-        // each registry is merged into the main registry
-        TypeDefinitionRegistry parse = schemaParser.parse(graphQL);
-        typeRegistry.merge(parse);
-        //create schema
-        GraphQLSchema graphQLSchema = schemaGenerator.makeExecutableSchema(
-                SchemaGenerator.Options.defaultOptions().enforceSchemaDirectives(false),
-                typeRegistry,
-                EchoingWiringFactory.newEchoingWiring());
-
+        if (graphQLSchema == null) {
+            // each registry is merged into the main registry
+            TypeDefinitionRegistry parse = schemaParser.parse(new InputStreamReader(graphQL));
+            typeRegistry.merge(parse);
+            //create schema
+            graphQLSchema = schemaGenerator.makeExecutableSchema(
+                    SchemaGenerator.Options.defaultOptions().enforceSchemaDirectives(false),
+                    typeRegistry,
+                    EchoingWiringFactory.newEchoingWiring());
+        }
         //create a curated list of names for typed schema elements
         populateObjectTypes(graphQLSchema);
 
@@ -104,13 +116,14 @@ public abstract class GraphQL2OntologyTransformer {
      * @param predicate
      * @return
      */
-    private static Optional<Tuple2<String,TypeName>> filter(Type type, String field, Predicate<TypeName> predicate) {
+    private static Optional<Tuple2<String, TypeName>> filter(Type type, String field, Predicate<TypeName> predicate) {
         //scalar type property
-        if ((type instanceof TypeName) && (predicate.test((TypeName) type))) return Optional.of(new Tuple2(field, type));
+        if ((type instanceof TypeName) && (predicate.test((TypeName) type)))
+            return Optional.of(new Tuple2(field, type));
 
         //list type
         if (type instanceof ListType) {
-            return filter(((ListType) type).getType(),field, predicate);
+            return filter(((ListType) type).getType(), field, predicate);
         }
         //non null type - may contain all sub-types (wrapper)
         if (type instanceof NonNullType) {
@@ -122,7 +135,7 @@ public abstract class GraphQL2OntologyTransformer {
             }
 
             if (rawType instanceof ListType) {
-                return filter(((ListType) rawType).getType(),field, predicate);
+                return filter(((ListType) rawType).getType(), field, predicate);
             }
         }
 
@@ -234,13 +247,12 @@ public abstract class GraphQL2OntologyTransformer {
     }
 
     /**
-     *
      * @param name
      * @param fieldDefinitions
      * @return
      */
     private static List<RelationshipType> createRelation(String name, List<GraphQLFieldDefinition> fieldDefinitions) {
-        Set<Tuple2<String,TypeName>> typeNames = fieldDefinitions.stream()
+        Set<Tuple2<String, TypeName>> typeNames = fieldDefinitions.stream()
                 .filter(p -> Type.class.isAssignableFrom(p.getDefinition().getType().getClass()))
                 .map(p -> filter(p.getDefinition().getType(), p.getName(), type -> objectTypes.contains(type.getName())))
                 .filter(Optional::isPresent)
@@ -253,7 +265,7 @@ public abstract class GraphQL2OntologyTransformer {
                         .withDirectional(true)
                         .withName(type._1())
                         .withRType(type._1())
-                        .withEPairs(Collections.singletonList(new EPair(name,type._2().getName())))
+                        .withEPairs(Collections.singletonList(new EPair(name, type._2().getName())))
                         .build())
                 .collect(Collectors.toList());
 
@@ -266,7 +278,6 @@ public abstract class GraphQL2OntologyTransformer {
     }
 
     /**
-     *
      * @param graphQLSchema
      * @param context
      * @return
@@ -288,7 +299,7 @@ public abstract class GraphQL2OntologyTransformer {
         EnumeratedType.EnumeratedTypeBuilder builder = EnumeratedType.EnumeratedTypeBuilder.anEnumeratedType();
         builder.withEType(ifc.getName());
         builder.withValues(ifc.getValues().stream()
-                .map(v->new Value(counter.getAndIncrement(),v.getName()))
+                .map(v -> new Value(counter.getAndIncrement(), v.getName()))
                 .collect(Collectors.toList()));
         return builder.build();
     }

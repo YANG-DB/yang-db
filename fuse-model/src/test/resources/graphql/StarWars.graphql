@@ -19,7 +19,7 @@ interface Character {
     id: ID!
     name: String!
     description: String
-    friends: [Character]
+    friends: Character
     appearsIn: [Episode]!
 }
 
@@ -27,7 +27,7 @@ type Human implements Character {
     id: ID!
     name: String!
     description: String
-    friends: [Character]
+    friends: Character
     appearsIn: [Episode]!
     owns:[Droid]
     homePlanet: String
@@ -37,7 +37,8 @@ type Droid implements Character {
     id: ID!
     name: String!
     description: String
-    friends: [Character]
+    friends: Character
     appearsIn: [Episode]!
     primaryFunction: String
 }
+

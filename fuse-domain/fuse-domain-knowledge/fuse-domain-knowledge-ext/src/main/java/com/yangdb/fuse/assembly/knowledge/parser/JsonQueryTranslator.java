@@ -74,13 +74,15 @@ public class JsonQueryTranslator {
         final JSONArray clauseArray = clause.getJSONArray(0);
         final Start start = new Start(sequence.get(), 0);
         AtomicReference<EBase> context = new AtomicReference<>(start);
-        builder.withElement(start);
+        builder.start();
 
+        List<EBase> elements = new ArrayList<>();
         //iterate and populate query elements
         for (int i = 0; i < clauseArray.length(); i++) {
-            builder.appendElements(element(i, clauseArray, context, sequence, typesProvider));
+            elements.addAll(element(i, clauseArray, context, sequence, typesProvider));
         }
 
+        builder.withElements(elements);
         return builder.build();
     }
 

@@ -116,7 +116,7 @@
         <openCypher.spark.version>0.2.3</openCypher.spark.version>
 
         <!--graph ql java-->
-        <graphql.java.version>2020-01-16T01-18-01-fd13faf</graphql.java.version>
+        <graphql.java.version>2020-01-17T02-41-10-578985f</graphql.java.version>
 
         <!-- commons -->
         <commons-io.version>2.5</commons-io.version>

@@ -97,16 +97,6 @@ public class ParameterizedQuery extends Query {
             return this;
         }
 
-        public ParameterizedQuery.Builder appendElements(List<EBase> elements) {
-            this.builder.appendElements(elements);
-            return this;
-        }
-
-        public ParameterizedQuery.Builder withElement(EBase ... element) {
-            this.builder.withElement(element);
-            return this;
-        }
-
         public ParameterizedQuery.Builder withParams(Collection<NamedParameter> params) {
             this.params = params;
             return this;

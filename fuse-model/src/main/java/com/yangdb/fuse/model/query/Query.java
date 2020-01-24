@@ -48,15 +48,22 @@ package com.yangdb.fuse.model.query;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.yangdb.fuse.model.Next;
 import com.yangdb.fuse.model.asgQuery.IQuery;
+import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
+import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.properties.EProp;
+import com.yangdb.fuse.model.query.properties.RelProp;
 import com.yangdb.fuse.model.query.properties.constraint.InnerQueryConstraint;
+import com.yangdb.fuse.model.query.properties.projection.IdentityProjection;
+import com.yangdb.fuse.model.query.quant.Quant1;
+import com.yangdb.fuse.model.query.quant.QuantType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -107,6 +114,9 @@ public class Query implements IQuery<EBase> {
 
     @JsonPOJOBuilder(buildMethodName = "build", withPrefix = "with")
     public static final class Builder {
+        private AtomicInteger sequence = new AtomicInteger(0);
+        private int currentIndex = 0;
+
         private String ont;
         private String name;
         private List<EBase> elements;
@@ -134,24 +144,82 @@ public class Query implements IQuery<EBase> {
             return this;
         }
 
-        public Builder appendElements(List<EBase> elements) {
-            if(elements==null) {
-                this.elements = new ArrayList<>();
-            }
-            return withElement(elements.toArray(new EBase[0]));
+        public Builder start() {
+            getElements().add(new Start(sequence.get()));
+            currentIndex = sequence.get();
+            return this;
         }
 
-        public Builder withElement(EBase ... element) {
-            if(elements==null) {
-                this.elements = new ArrayList<>();
-            }
-            this.elements.addAll(Arrays.asList(element));
+        public Builder eType(String type, String tag) {
+            populateNext();
+            getElements().add(new ETyped(sequence.get(),tag,type,0));
+            currentIndex = sequence.get();
+            return this;
+        }
+
+        public Builder concrete(String id,String name,String type, String tag) {
+            getElements().add(new EConcrete(sequence.get(),tag,type,id,name, sequence.incrementAndGet()));
+            return this;
+        }
+
+        public Builder rel(String rType, Rel.Direction dir, String tag) {
+            populateNext();
+            getElements().add(new Rel(sequence.get(),rType,dir,tag,0));
+            currentIndex = sequence.get();
+            return this;
+        }
+
+        public Builder eProp(String pType) {
+            populateNext();
+            getElements().add(new EProp(sequence.get(),pType,new IdentityProjection()));
+            //current index remain the same since property has no "next"
+            return this;
+        }
+
+        public Builder rProp(String pType) {
+            populateNext();
+            getElements().add(new RelProp(sequence.get(),pType,new IdentityProjection()));
+            //current index remain the same since property has no "next"
+            return this;
+        }
+
+        public Builder quant(QuantType type) {
+            populateNext();
+            getElements().add(new Quant1(sequence.get(),type, new ArrayList<>()));
+            currentIndex = sequence.get();
             return this;
         }
 
         public Builder withNonidentical(List<List<String>> nonidentical) {
             this.nonidentical = nonidentical;
             return this;
+        }
+
+        private void populateNext() {
+            if(current() instanceof Next) {
+                if(((Next) current()).getNext() instanceof List) {
+                    ((List) ((Next) current()).getNext()).add(sequence.incrementAndGet());
+                } else {
+                    ((Next) current()).setNext(sequence.incrementAndGet());
+                }
+            }
+        }
+
+        public int currentIndex() {
+            return currentIndex;
+        }
+
+        public int currentIndex(int newCurrent) {
+            currentIndex = newCurrent;
+            return newCurrent;
+        }
+
+        public EBase current() {
+            return elements.get(currentIndex);
+        }
+
+        public EBase current(int index) {
+            return elements.get(index);
         }
 
         public Query build() {
@@ -165,6 +233,12 @@ public class Query implements IQuery<EBase> {
             return query;
         }
 
+        private List<EBase> getElements() {
+            if (elements == null) {
+                this.elements = new ArrayList<>();
+            }
+            return elements;
+        }
     }
 
     public static class QueryUtils {

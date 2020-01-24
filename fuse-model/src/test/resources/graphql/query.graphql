@@ -1,0 +1,16 @@
+{
+    human {
+        name,
+        friends {
+            name
+        },
+        owns {
+            name,
+            appearsIn,
+            friends {
+                name,
+                description
+            }
+        }
+    }
+}

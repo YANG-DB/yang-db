@@ -1,0 +1,298 @@
+package com.yangdb.fuse.model.graphql.wiring;
+
+import com.yangdb.fuse.model.ontology.EntityType;
+import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.ontology.Property;
+import com.yangdb.fuse.model.ontology.RelationshipType;
+import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.query.quant.QuantBase;
+import com.yangdb.fuse.model.query.quant.QuantType;
+import graphql.Internal;
+import graphql.Scalars;
+import graphql.execution.ExecutionPath;
+import graphql.execution.ExecutionStepInfo;
+import graphql.schema.*;
+import graphql.schema.idl.*;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.function.Consumer;
+
+import static com.yangdb.fuse.model.graphql.GraphQL2OntologyTransformer.getGraphQLSchema;
+
+/**
+ * A wiring factory that will echo back the objects defined.  That is if you have a field called
+ * "name" of type String, it will echo back the value "name".  This is ONLY useful for mocking out a
+ * schema that do don't want to actually execute properly.
+ */
+@Internal
+public class TraversalWiringFactory implements WiringFactory {
+
+    private Query.Builder builder;
+    private Ontology.Accessor accessor;
+    private Map<String, Integer> pathContext;
+
+    public static RuntimeWiring newEchoingWiring(Ontology ontology, Query.Builder queryBuilder) {
+        return newEchoingWiring(x -> {
+        }, ontology, queryBuilder);
+    }
+
+    public static RuntimeWiring newEchoingWiring(Consumer<RuntimeWiring.Builder> builderConsumer, Ontology ontology, Query.Builder queryBuilder) {
+        RuntimeWiring.Builder builder = RuntimeWiring.newRuntimeWiring();
+        builderConsumer.accept(builder);
+        return builder
+                .wiringFactory(new TraversalWiringFactory(ontology, queryBuilder))
+                .build();
+    }
+
+    public TraversalWiringFactory(Ontology ontology, Query.Builder builder) {
+        this.builder = builder;
+        this.accessor = new Ontology.Accessor(ontology);
+        this.pathContext = new HashMap<>();
+    }
+
+    public Query.Builder getBuilder() {
+        return builder;
+    }
+
+    @Override
+    public boolean providesTypeResolver(InterfaceWiringEnvironment environment) {
+        return true;
+    }
+
+    @Override
+    public TypeResolver getTypeResolver(InterfaceWiringEnvironment environment) {
+        return env -> getGraphQLSchema().getImplementations((GraphQLInterfaceType) env.getFieldType()).get(0);
+    }
+
+    @Override
+    public boolean providesTypeResolver(UnionWiringEnvironment environment) {
+        return true;
+    }
+
+    @Override
+    public TypeResolver getTypeResolver(UnionWiringEnvironment environment) {
+        return env -> env.getSchema().getQueryType();
+    }
+
+    @Override
+    public DataFetcher getDefaultDataFetcher(FieldWiringEnvironment environment) {
+        return env -> {
+            GraphQLType fieldType = env.getFieldType();
+            if (fieldType instanceof GraphQLList) {
+                return Arrays.asList(getObject(env, ((GraphQLList) fieldType).getWrappedType()));
+            } else {
+                return getObject(env, fieldType);
+            }
+        };
+    }
+
+    private Object getObject(DataFetchingEnvironment env, GraphQLType fieldType) {
+        fieldType = extractConcreteFieldType(fieldType);
+
+        // in parent is of type vertex and current query element not quant -> add quant
+        ExecutionStepInfo parent = env.getExecutionStepInfo().getParent();
+        if (parent.getFieldDefinition() != null) {
+            GraphQLFieldDefinition parentField = parent.getFieldDefinition();
+            ExecutionPath parentPath = env.getExecutionStepInfo().getParent().getPath();
+            if (((parentField.getType() instanceof GraphQLObjectType) || (parentField.getType() instanceof GraphQLInterfaceType)) &&
+                            //assume a path was already entered
+                            pathContext.containsKey(parentPath.toString()) &&
+                            //validate no quant related to the
+                            !(builder.current(pathContext.get(parentPath.toString())) instanceof QuantBase)) {
+                //todo add quant
+                builder.quant(QuantType.all);
+                pathContext.put(parent.getPath().toString(), builder.currentIndex());
+            }
+        }
+
+        if (fieldType instanceof GraphQLObjectType) {
+            GraphQLObjectType type = (GraphQLObjectType) fieldType;
+            GraphQLObjectType parentType = (GraphQLObjectType) parent.getType();
+            //add the start query element
+            if (parentType.getName().equals("QueryType")) {
+                builder.start();
+            }
+            //populate vertex or relation
+            populateGraphObject(env, type.getName());
+//            return fakeObjectValue(accessor, builder, (GraphQLObjectType) fieldType);
+            return new Object();
+            //todo create concrete union types from abstract interface
+        } else if (fieldType instanceof GraphQLInterfaceType) {
+            //select the first implementing of interface (no matter which one since all share same common fields)
+            List<GraphQLObjectType> implementations = getGraphQLSchema().getImplementations((GraphQLInterfaceType) fieldType);
+            //populate vertex or relation
+            populateGraphObject(env, ((GraphQLInterfaceType) fieldType).getName());
+//            return fakeObjectValue(accessor, builder, implementations.get(0));
+            return new Object();
+        }
+        //populate values
+        if (fieldType instanceof GraphQLScalarType) {
+            String name = populateGraphValue(env);
+            return fakeScalarValue(name, (GraphQLScalarType) fieldType);
+        } else if (fieldType instanceof GraphQLEnumType) {
+            String name = populateGraphValue(env);
+            return fakeEnumValue(name, (GraphQLEnumType) fieldType);
+        }
+        return new Object();
+    }
+
+    /**
+     * @param env
+     * @return
+     */
+    private String populateGraphValue(DataFetchingEnvironment env) {
+        //pop to the correct index according to path
+        builder.currentIndex(pathContext.get(env.getExecutionStepInfo().getParent().getPath().toString()));
+        String name = env.getField().getName();
+        Property property = accessor.property$(name);
+        builder.eProp(property.getpType());
+        return name;
+    }
+
+    /**
+     * get concrete frield type
+     *
+     * @param fieldType
+     * @return
+     */
+    private GraphQLType extractConcreteFieldType(GraphQLType fieldType) {
+        //list to wrapping type
+        if (fieldType instanceof GraphQLList) {
+            //inner field type
+            fieldType = ((GraphQLList) fieldType).getWrappedType();
+        }
+        //non-null to wrapping type
+        if (fieldType instanceof GraphQLNonNull) {
+            //inner field type
+            fieldType = ((GraphQLNonNull) fieldType).getWrappedType();
+            //list to wrapping type
+            if (fieldType instanceof GraphQLList) {
+                //inner field type
+                fieldType = ((GraphQLList) fieldType).getWrappedType();
+            }
+        }
+        return fieldType;
+    }
+
+    private void populateGraphObject(DataFetchingEnvironment env, String typeName) {
+        //pop to the correct index according to path
+        if(pathContext.containsKey(env.getExecutionStepInfo().getParent().getPath().toString())) {
+            builder.currentIndex(pathContext.get(env.getExecutionStepInfo().getParent().getPath().toString()));
+        }
+
+        if (accessor.relation(env.getField().getName()).isPresent()) {
+            //relation
+            RelationshipType relationshipType = accessor.relation$(env.getField().getName());
+            builder.rel(relationshipType.getrType(), Rel.Direction.R, env.getField().getName());
+            //right after will be the vertex
+            EntityType entityType = accessor.entity$(typeName);
+            builder.eType(entityType.geteType(), typeName);
+            pathContext.put(env.getExecutionStepInfo().getPath().toString(), builder.currentIndex());
+        } else if (accessor.entity(typeName).isPresent()) {
+            EntityType entityType = accessor.entity$(typeName);
+            builder.eType(entityType.geteType(), typeName);
+            pathContext.put(env.getExecutionStepInfo().getPath().toString(), builder.currentIndex());
+        }
+    }
+
+
+    private static Object fakeObjectValue(Ontology.Accessor accessor, Query.Builder builder, GraphQLObjectType fieldType) {
+        Map<String, Object> map = new LinkedHashMap<>();
+
+        if (!fieldType.getFieldDefinitions().isEmpty())
+            builder.quant(QuantType.all);
+
+        fieldType.getFieldDefinitions().forEach(fldDef -> {
+            GraphQLOutputType innerFieldType = fldDef.getType();
+
+            if (innerFieldType instanceof GraphQLNonNull) {
+                innerFieldType = (GraphQLOutputType) ((GraphQLNonNull) innerFieldType).getWrappedType();
+            }
+
+            if (innerFieldType instanceof GraphQLList) {
+                innerFieldType = (GraphQLOutputType) ((GraphQLList) innerFieldType).getWrappedType();
+            }
+
+            map.put(fldDef.getName(), getObject(accessor, builder, fieldType, fldDef, innerFieldType));
+        });
+        return map;
+    }
+
+    private static Object getObject(Ontology.Accessor accessor, Query.Builder builder, GraphQLObjectType fieldType, GraphQLFieldDefinition fldDef, GraphQLOutputType innerFieldType) {
+        if (innerFieldType instanceof GraphQLObjectType) {
+            RelationshipType relType = accessor.relation$(fldDef.getName());
+            builder.rel(relType.getrType(), Rel.Direction.R, fieldType.getName());
+            return new Object();
+        } else if (innerFieldType instanceof GraphQLInterfaceType) {
+            RelationshipType relType = accessor.relation$(fldDef.getName());
+            builder.rel(relType.getrType(), Rel.Direction.R, fieldType.getName());
+            //select first implementing concrete class since ....
+            return new Object();
+        } else if (innerFieldType instanceof GraphQLScalarType) {
+            populateGraphValue(accessor, builder, fldDef);
+            return fakeScalarValue(fldDef.getName(), (GraphQLScalarType) innerFieldType);
+        } else if (innerFieldType instanceof GraphQLEnumType) {
+            populateGraphValue(accessor, builder, fldDef);
+            return fakeEnumValue(fldDef.getName(), (GraphQLEnumType) innerFieldType);
+        }
+        return null;
+    }
+
+    private static void populateGraphValue(Ontology.Accessor accessor, Query.Builder builder, GraphQLFieldDefinition fldDef) {
+        Property property = accessor.property$(fldDef.getName());
+        builder.eProp(property.getpType());
+    }
+
+
+    private static Object fakeScalarValue(String fieldName, GraphQLScalarType scalarType) {
+        if (scalarType.equals(Scalars.GraphQLString)) {
+            return fieldName;
+        } else if (scalarType.equals(Scalars.GraphQLBoolean)) {
+            return true;
+        } else if (scalarType.equals(Scalars.GraphQLInt)) {
+            return 1;
+        } else if (scalarType.equals(Scalars.GraphQLFloat)) {
+            return 1.0;
+        } else if (scalarType.equals(Scalars.GraphQLID)) {
+            return "id_" + fieldName;
+        } else if (scalarType.equals(Scalars.GraphQLBigDecimal)) {
+            return new BigDecimal(1.0);
+        } else if (scalarType.equals(Scalars.GraphQLBigInteger)) {
+            return new BigInteger("1");
+        } else if (scalarType.equals(Scalars.GraphQLByte)) {
+            return Byte.valueOf("1");
+        } else if (scalarType.equals(Scalars.GraphQLShort)) {
+            return Short.valueOf("1");
+        } else {
+            return null;
+        }
+    }
+
+    private static Object fakeEnumValue(String fieldName, GraphQLEnumType enumType) {
+        return fieldName;
+    }
+
+    public static GraphQLScalarType fakeScalar(String name) {
+        return new GraphQLScalarType(name, name, new Coercing() {
+            @Override
+            public Object serialize(Object dataFetcherResult) {
+                return dataFetcherResult;
+            }
+
+            @Override
+            public Object parseValue(Object input) {
+                return input;
+            }
+
+            @Override
+            public Object parseLiteral(Object input) {
+                return input;
+            }
+        });
+    }
+}
+
+

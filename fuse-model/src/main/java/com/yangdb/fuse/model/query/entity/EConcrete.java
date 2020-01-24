@@ -60,6 +60,12 @@ public class EConcrete extends ETyped implements Typed.eTyped{
         this.eID = eID;
         this.eName = eName;
     }
+
+    public EConcrete(int eNum, String eTag, String eType, String eID, String eName, int next) {
+        super(eNum, eTag, eType, next);
+        this.eID = eID;
+        this.eName = eName;
+    }
     //endregion
 
     //region Override Methods

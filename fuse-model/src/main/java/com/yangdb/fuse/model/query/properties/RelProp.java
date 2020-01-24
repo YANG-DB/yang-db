@@ -66,6 +66,10 @@ public class RelProp extends BaseProp {
         this.b = b;
     }
 
+    public RelProp(int eNum, String pType, Projection proj) {
+        super(eNum, pType, proj);
+    }
+
     public RelProp(int eNum, String pType, Projection proj, int b) {
         super(eNum, pType, proj);
         this.b = b;
