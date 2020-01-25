@@ -187,11 +187,11 @@ public abstract class GraphQL2OntologyTransformer {
             //validate only scalars are registered as properties
             if ((rawType instanceof TypeName) &&
                     (!objectTypes.contains(((TypeName) rawType).getName()))) {
-                return of(Optional.of(new Property(fieldName, fieldName, ((TypeName) rawType).getName())));
+                return Property.MandatoryProperty.of(Optional.of(new Property(fieldName, fieldName, ((TypeName) rawType).getName())));
             }
 
             if (rawType instanceof ListType) {
-                return of(createProperty(((ListType) rawType).getType(), fieldName));
+                return Property.MandatoryProperty.of(createProperty(((ListType) rawType).getType(), fieldName));
             }
         }
 
