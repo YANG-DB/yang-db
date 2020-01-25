@@ -1,5 +1,25 @@
 package com.yangdb.fuse.model.graphql.wiring;
 
+/*-
+ * #%L
+ * fuse-model
+ * %%
+ * Copyright (C) 2016 - 2020 The YangDb Graph Database Project
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.Property;
@@ -95,16 +115,15 @@ public class TraversalWiringFactory implements WiringFactory {
         // in parent is of type vertex and current query element not quant -> add quant
         ExecutionStepInfo parent = env.getExecutionStepInfo().getParent();
         if (parent.getFieldDefinition() != null) {
-            GraphQLFieldDefinition parentField = parent.getFieldDefinition();
-            ExecutionPath parentPath = env.getExecutionStepInfo().getParent().getPath();
-            if (((parentField.getType() instanceof GraphQLObjectType) || (parentField.getType() instanceof GraphQLInterfaceType)) &&
-                            //assume a path was already entered
-                            pathContext.containsKey(parentPath.toString()) &&
-                            //validate no quant related to the
-                            !(builder.current(pathContext.get(parentPath.toString())) instanceof QuantBase)) {
+            ExecutionPath parentPath = env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd();
+            if (isParentObjectType(parent.getFieldDefinition()) &&
+                    //assume a path was already entered
+                    pathContext.containsKey(parentPath.getPathWithoutListEnd().toString()) &&
+                    //validate no quant related to the
+                    !(builder.current(pathContext.get(parentPath.getPathWithoutListEnd().toString())) instanceof QuantBase)) {
                 //todo add quant
                 builder.quant(QuantType.all);
-                pathContext.put(parent.getPath().toString(), builder.currentIndex());
+                pathContext.put(parent.getPath().getPathWithoutListEnd().toString(), builder.currentIndex());
             }
         }
 
@@ -139,13 +158,20 @@ public class TraversalWiringFactory implements WiringFactory {
         return new Object();
     }
 
+    private boolean isParentObjectType(GraphQLFieldDefinition parentField) {
+        return (extractConcreteFieldType(parentField.getType()) instanceof GraphQLInterfaceType) ||
+                (extractConcreteFieldType(parentField.getType()) instanceof GraphQLObjectType);
+    }
+
     /**
      * @param env
      * @return
      */
     private String populateGraphValue(DataFetchingEnvironment env) {
         //pop to the correct index according to path
-        builder.currentIndex(pathContext.get(env.getExecutionStepInfo().getParent().getPath().toString()));
+        if (pathContext.containsKey(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString())) {
+            builder.currentIndex(pathContext.get(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString()));
+        }
         String name = env.getField().getName();
         Property property = accessor.property$(name);
         builder.eProp(property.getpType());
@@ -153,7 +179,7 @@ public class TraversalWiringFactory implements WiringFactory {
     }
 
     /**
-     * get concrete frield type
+     * get concrete friend type
      *
      * @param fieldType
      * @return
@@ -179,8 +205,8 @@ public class TraversalWiringFactory implements WiringFactory {
 
     private void populateGraphObject(DataFetchingEnvironment env, String typeName) {
         //pop to the correct index according to path
-        if(pathContext.containsKey(env.getExecutionStepInfo().getParent().getPath().toString())) {
-            builder.currentIndex(pathContext.get(env.getExecutionStepInfo().getParent().getPath().toString()));
+        if (pathContext.containsKey(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString())) {
+            builder.currentIndex(pathContext.get(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString()));
         }
 
         if (accessor.relation(env.getField().getName()).isPresent()) {
@@ -190,11 +216,11 @@ public class TraversalWiringFactory implements WiringFactory {
             //right after will be the vertex
             EntityType entityType = accessor.entity$(typeName);
             builder.eType(entityType.geteType(), typeName);
-            pathContext.put(env.getExecutionStepInfo().getPath().toString(), builder.currentIndex());
+            pathContext.put(env.getExecutionStepInfo().getPath().getPathWithoutListEnd().toString(), builder.currentIndex());
         } else if (accessor.entity(typeName).isPresent()) {
             EntityType entityType = accessor.entity$(typeName);
             builder.eType(entityType.geteType(), typeName);
-            pathContext.put(env.getExecutionStepInfo().getPath().toString(), builder.currentIndex());
+            pathContext.put(env.getExecutionStepInfo().getPath().getPathWithoutListEnd().toString(), builder.currentIndex());
         }
     }
 

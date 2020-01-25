@@ -122,11 +122,16 @@ public class Query implements IQuery<EBase> {
         private List<EBase> elements;
         private List<List<String>> nonidentical;
 
-        private Builder() {
-        }
+        private Builder() {}
 
         public static Builder instance() {
             return new Builder();
+        }
+
+        public static Builder instance(AtomicInteger sequence) {
+            Builder instance = instance();
+            instance.sequence = sequence;
+            return instance ;
         }
 
         public Builder withOnt(String ont) {

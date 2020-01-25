@@ -65,18 +65,18 @@ public class JsonQueryTranslator {
 
 
     private Query jsonParser(JSONObject query, BusinessTypesProvider typesProvider) throws IOException {
-        Query.Builder builder = Query.Builder.instance();
+        AtomicInteger sequence = new AtomicInteger(0);
+        Query.Builder builder = Query.Builder.instance(sequence);
         builder.withName(query.optString("name", "Query:" + System.currentTimeMillis()));
         builder.withOnt(query.optString("ontology", "Knowledge"));
 
         JSONArray clause = query.getJSONArray("clause");
-        AtomicInteger sequence = new AtomicInteger(0);
         final JSONArray clauseArray = clause.getJSONArray(0);
         final Start start = new Start(sequence.get(), 0);
         AtomicReference<EBase> context = new AtomicReference<>(start);
-        builder.start();
 
         List<EBase> elements = new ArrayList<>();
+        elements.add(start);
         //iterate and populate query elements
         for (int i = 0; i < clauseArray.length(); i++) {
             elements.addAll(element(i, clauseArray, context, sequence, typesProvider));
