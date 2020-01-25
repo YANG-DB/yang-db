@@ -20,11 +20,14 @@ package com.yangdb.fuse.model.graphql;
  * #L%
  */
 
+import com.yangdb.fuse.model.graphql.wiring.TraversalWiringFactory;
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
-import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.schema.GraphQLSchema;
+import graphql.schema.idl.SchemaGenerator;
+import graphql.schema.idl.TypeDefinitionRegistry;
 
 public class GraphQL2QueryTransformer {
 
@@ -33,14 +36,19 @@ public class GraphQL2QueryTransformer {
      * @param query
      * @return
      */
-    public static Query transform(GraphQLSchema schema, String query) {
-        ExecutionInput input = ExecutionInput.newExecutionInput().query(query).build();
-
+    public static Query transform(TypeDefinitionRegistry typeRegistry,Ontology ontology, String query) {
+        Query.Builder instance = Query.Builder.instance();
+        GraphQLSchema schema = createSchema(typeRegistry,ontology,instance);
         GraphQL graphQL = GraphQL.newGraphQL(schema).build();
         ExecutionResult execute = graphQL.execute(query);
-
-        Query.Builder builder = Query.Builder.instance();
-
-        return builder.build();
+        if(execute.getErrors().isEmpty())
+            return instance.build();
+        throw new IllegalArgumentException(execute.getErrors().toString());
     }
+
+    private static GraphQLSchema createSchema(TypeDefinitionRegistry typeRegistry,Ontology ontology,Query.Builder builder) {
+        SchemaGenerator schemaGenerator = new SchemaGenerator();
+        return schemaGenerator.makeExecutableSchema(typeRegistry, TraversalWiringFactory.newEchoingWiring(ontology,builder));
+    }
+
 }

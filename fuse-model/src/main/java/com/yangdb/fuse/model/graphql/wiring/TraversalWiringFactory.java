@@ -20,10 +20,7 @@ package com.yangdb.fuse.model.graphql.wiring;
  * #L%
  */
 
-import com.yangdb.fuse.model.ontology.EntityType;
-import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.ontology.Property;
-import com.yangdb.fuse.model.ontology.RelationshipType;
+import com.yangdb.fuse.model.ontology.*;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.quant.QuantBase;
@@ -152,7 +149,7 @@ public class TraversalWiringFactory implements WiringFactory {
             String name = populateGraphValue(env);
             return fakeScalarValue(name, (GraphQLScalarType) fieldType);
         } else if (fieldType instanceof GraphQLEnumType) {
-            String name = populateGraphValue(env);
+            String name = populateGraphEnum(env);
             return fakeEnumValue(name, (GraphQLEnumType) fieldType);
         }
         return new Object();
@@ -176,6 +173,21 @@ public class TraversalWiringFactory implements WiringFactory {
         Property property = accessor.property$(name);
         builder.eProp(property.getpType());
         return name;
+    }
+
+    /**
+     * @param env
+     * @return
+     */
+    private String populateGraphEnum(DataFetchingEnvironment env) {
+        //pop to the correct index according to path
+        if (pathContext.containsKey(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString())) {
+            builder.currentIndex(pathContext.get(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString()));
+        }
+        Property enumProp = accessor.property$(env.getField().getName());
+        builder.eProp(env.getField().getName());
+        //select first value since no matter which value selected for mock data
+        return accessor.enumeratedType$(enumProp.getType()).getValues().get(0).getName();
     }
 
     /**

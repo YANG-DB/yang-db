@@ -1,13 +1,8 @@
 package com.yangdb.fuse.model.graphql;
 
 import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
-import com.yangdb.fuse.model.graphql.wiring.TraversalWiringFactory;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
-import graphql.ExecutionResult;
-import graphql.GraphQL;
-import graphql.schema.GraphQLSchema;
-import graphql.schema.idl.SchemaGenerator;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,25 +20,15 @@ public class GraphQLQueryExecuterTest {
         Assert.assertNotNull(ontology);
     }
 
-    private GraphQLSchema createSchema(Query.Builder builder) {
-        SchemaGenerator schemaGenerator = new SchemaGenerator();
-        return schemaGenerator.makeExecutableSchema(GraphQL2OntologyTransformer.typeRegistry, TraversalWiringFactory.newEchoingWiring(ontology,builder));
-    }
-
     @Test
     public void testQuerySingleVertexWithFewProperties() {
-        Query.Builder instance = Query.Builder.instance();
-        GraphQLSchema schema = createSchema(instance);
-        GraphQL graphQL = GraphQL.newGraphQL(schema).build();
-        ExecutionResult execute = graphQL.execute(
-          " {\n" +
-                "    human {\n" +
-                "        name,\n" +
-                "        description\n" +
-                "    }\n" +
-                "}");
-        Query query = instance.build();
-        Assert.assertNotNull(execute);
+        Query query = GraphQL2QueryTransformer.transform(GraphQL2OntologyTransformer.typeRegistry, ontology,
+                " {\n" +
+                        "    human {\n" +
+                        "        name,\n" +
+                        "        description\n" +
+                        "    }\n" +
+                        "}");
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4}, \n" +
                 "                          └─?[3]:[name<IdentityProjection>], \n" +
@@ -52,10 +37,7 @@ public class GraphQLQueryExecuterTest {
     }
     @Test
     public void testQuerySingleVertexWithSinleRelation() {
-        Query.Builder instance = Query.Builder.instance();
-        GraphQLSchema schema = createSchema(instance);
-        GraphQL graphQL = GraphQL.newGraphQL(schema).build();
-        ExecutionResult execute = graphQL.execute(
+        Query query = GraphQL2QueryTransformer.transform(GraphQL2OntologyTransformer.typeRegistry, ontology,
           " {\n" +
                 "    human {\n" +
                 "       friends {\n" +
@@ -63,8 +45,6 @@ public class GraphQLQueryExecuterTest {
                 "        }\n" +
                 "    }\n" +
                 "}");
-        Query query = instance.build();
-        Assert.assertNotNull(execute);
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3}, \n" +
                 "                        └-> Rel(friends:3)──Typ[Character:4]──Q[5]:{6}, \n" +
@@ -74,10 +54,8 @@ public class GraphQLQueryExecuterTest {
 
     @Test
     public void testQuerySingleVertexWithTwoRelationAndProperties() {
-        Query.Builder instance = Query.Builder.instance();
-        GraphQLSchema schema = createSchema(instance);
-        GraphQL graphQL = GraphQL.newGraphQL(schema).build();
-        ExecutionResult execute = graphQL.execute("{\n" +
+        Query query = GraphQL2QueryTransformer.transform(GraphQL2OntologyTransformer.typeRegistry, ontology,
+            " {\n" +
                 "    human {\n" +
                 "        name,\n" +
                 "        friends {\n" +
@@ -89,8 +67,6 @@ public class GraphQLQueryExecuterTest {
                 "            }\n" +
                 "    }\n" +
                 "}");
-        Query query = instance.build();
-        Assert.assertNotNull(execute);
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
                 "                            └─?[3]:[name<IdentityProjection>], \n" +
@@ -104,10 +80,8 @@ public class GraphQLQueryExecuterTest {
 
     @Test
     public void testQuerySingleVertexWithTwoHopesRelationAndProperties() {
-        Query.Builder instance = Query.Builder.instance();
-        GraphQLSchema schema = createSchema(instance);
-        GraphQL graphQL = GraphQL.newGraphQL(schema).build();
-        ExecutionResult execute = graphQL.execute("{\n" +
+        Query query = GraphQL2QueryTransformer.transform(GraphQL2OntologyTransformer.typeRegistry, ontology,
+                "{\n" +
                 "    human {\n" +
                 "        name,\n" +
                 "        friends {\n" +
@@ -123,8 +97,6 @@ public class GraphQLQueryExecuterTest {
                 "        }\n" +
                 "    }\n" +
                 "}");
-        Query query = instance.build();
-        Assert.assertNotNull(execute);
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
                 "                            └─?[3]:[name<IdentityProjection>], \n" +
