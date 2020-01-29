@@ -1,8 +1,8 @@
-package com.yangdb.fuse.dispatcher.query;
+package com.yangdb.fuse.services.controllers;
 
 /*-
  * #%L
- * fuse-core
+ * fuse-service
  * %%
  * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
@@ -20,11 +20,16 @@ package com.yangdb.fuse.dispatcher.query;
  * #L%
  */
 
+import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.transport.ContentResponse;
 
-import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import java.util.List;
 
-public interface JsonQueryTransformerFactory {
-    QueryTransformer<String, AsgQuery> transform(String type);
+/**
+ * Created by lior.perry on 19/02/2017.
+ */
+public interface GraphQLController {
 
+    ContentResponse<Ontology> translate(String graphQLSchema);
 
 }

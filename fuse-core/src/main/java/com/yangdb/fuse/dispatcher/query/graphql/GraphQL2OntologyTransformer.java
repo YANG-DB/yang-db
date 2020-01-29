@@ -21,7 +21,7 @@ package com.yangdb.fuse.dispatcher.query.graphql;
  */
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.dispatcher.ontology.OntologyTransformer;
+import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
 import com.yangdb.fuse.model.ontology.*;
 import graphql.language.ListType;
 import graphql.language.NonNullType;
@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 /**
  * API that will transform a GraphQL schema into YangDb ontology schema
  */
-public class GraphQL2OntologyTransformer implements OntologyTransformer<String,Ontology>, GraphQLSchemaUtils {
+public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<String,Ontology>, GraphQLSchemaUtils {
     //graph QL reader and schema parts
     private GraphQLSchema graphQLSchema;
     private SchemaParser schemaParser = new SchemaParser();

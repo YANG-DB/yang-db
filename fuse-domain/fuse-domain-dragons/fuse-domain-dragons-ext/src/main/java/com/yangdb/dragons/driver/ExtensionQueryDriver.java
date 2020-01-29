@@ -25,6 +25,7 @@ import com.yangdb.fuse.core.driver.StandardQueryDriver;
 import com.yangdb.fuse.dispatcher.driver.CursorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.epb.PlanSearcher;
+import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
@@ -57,12 +58,11 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
             QueryTransformer<Query, AsgQuery> queryTransformer,
             QueryValidator<AsgQuery> queryValidator,
             QueryTransformer<AsgQuery, AsgQuery> queryRewriter,
-            QueryTransformer<String, AsgQuery> cypherQueryTransformer,
-            QueryTransformer<String, AsgQuery> graphQLQueryTransformer,
+            JsonQueryTransformerFactory transformerFactory,
             PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
-        super(cursorDriver, pageDriver, queryTransformer, queryValidator, queryRewriter, cypherQueryTransformer, graphQLQueryTransformer, planSearcher, resourceStore, urlSupplier);
+        super(cursorDriver, pageDriver, queryTransformer, queryValidator, queryRewriter, transformerFactory, planSearcher, resourceStore, urlSupplier);
     }
     //endregion
 

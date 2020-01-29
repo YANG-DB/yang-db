@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.client.export.GraphWriterStrategy;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.driver.*;
+import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.PageResource;
@@ -34,12 +35,11 @@ public class MockDriver {
                 CursorDriver cursorDriver,
                 PageDriver pageDriver,
                 QueryTransformer<com.yangdb.fuse.model.query.Query, AsgQuery> queryTransformer,
-                QueryTransformer<String, AsgQuery> cypherJasonTransformer,
-                QueryTransformer<String, AsgQuery> graphQLJasonTransformer,
+                JsonQueryTransformerFactory transformerFactory,
                 QueryValidator<AsgQuery> queryValidator,
                 ResourceStore resourceStore,
                 AppUrlSupplier urlSupplier) {
-            super(cursorDriver, pageDriver, queryTransformer, cypherJasonTransformer,graphQLJasonTransformer , queryValidator, resourceStore, urlSupplier);
+            super(cursorDriver, pageDriver, queryTransformer,transformerFactory , queryValidator, resourceStore, urlSupplier);
         }
         //endregion
 

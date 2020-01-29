@@ -24,6 +24,7 @@ package com.yangdb.fuse.asg;
 import com.google.inject.Inject;
 import com.yangdb.fuse.asg.translator.AsgTranslator;
 import com.yangdb.fuse.dispatcher.asg.QueryToAsgTransformer;
+import com.yangdb.fuse.dispatcher.query.graphql.GraphQLSchemaUtils;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2QueryTransformer;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -36,14 +37,14 @@ import graphql.schema.idl.TypeDefinitionRegistry;
 public class AsgGraphQLTransformer implements AsgTranslator<String,AsgQuery> {
     private Ontology ontology;
     private final QueryToAsgTransformer queryTransformer;
-    private final TypeDefinitionRegistry registry;
+    private final GraphQLSchemaUtils schemaUtils;
 
     //region Constructors
     @Inject
-    public AsgGraphQLTransformer(Ontology ontology,QueryToAsgTransformer queryTransformer, TypeDefinitionRegistry registry) {
+    public AsgGraphQLTransformer(Ontology ontology,QueryToAsgTransformer queryTransformer, GraphQLSchemaUtils schemaUtils) {
         this.ontology = ontology;
         this.queryTransformer = queryTransformer;
-        this.registry = registry;
+        this.schemaUtils = schemaUtils;
     }
     //endregion
 
@@ -51,7 +52,7 @@ public class AsgGraphQLTransformer implements AsgTranslator<String,AsgQuery> {
 
     @Override
     public AsgQuery translate(String query) {
-        Query transform = GraphQL2QueryTransformer.transform(registry,ontology, query);
+        Query transform = GraphQL2QueryTransformer.transform(schemaUtils,ontology, query);
         return queryTransformer.transform(transform);
     }
 

@@ -21,6 +21,7 @@ package com.yangdb.fuse.dispatcher.driver;
  */
 
 import com.google.inject.Inject;
+import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.PageResource;
@@ -74,16 +75,14 @@ public abstract class QueryDriverBase implements QueryDriver {
             CursorDriver cursorDriver,
             PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
-            QueryTransformer<String, AsgQuery> cypherQueryTransformer,
-            QueryTransformer<String, AsgQuery> graphQLQueryTransformer,
+            JsonQueryTransformerFactory transformerFactory,
             QueryValidator<AsgQuery> queryValidator,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
         this.cursorDriver = cursorDriver;
         this.pageDriver = pageDriver;
         this.queryTransformer = queryTransformer;
-        this.cypherQueryTransformer = cypherQueryTransformer;
-        this.graphQLQueryTransformer = graphQLQueryTransformer;
+        this.transformerFactory = transformerFactory;
         this.queryValidator = queryValidator;
         this.resourceStore = resourceStore;
         this.urlSupplier = urlSupplier;
@@ -408,18 +407,8 @@ public abstract class QueryDriverBase implements QueryDriver {
         return this.queryTransformer.transform(query);
     }
 
-
-    protected AsgQuery transform(String queryType, String query) {
-        switch (queryType) {
-            case TYPE_GRAPH_QL:
-                return graphQLQueryTransformer.transform(query);
-
-            case TYPE_CYPHER:
-                return cypherQueryTransformer.transform(query);
-
-        }
-        throw new FuseError.FuseErrorException(new FuseError(query, "No query translation strategy was found for "+queryType));
-
+    protected AsgQuery transform(String type, String query) {
+        return this.transformerFactory.transform(type).transform(query);
     }
 
     @Override
@@ -769,9 +758,8 @@ public abstract class QueryDriverBase implements QueryDriver {
     //region Fields
     private final CursorDriver cursorDriver;
     private final PageDriver pageDriver;
-    private QueryTransformer<String, AsgQuery> cypherQueryTransformer;
-    private QueryTransformer<String, AsgQuery> graphQLQueryTransformer;
     private QueryTransformer<Query, AsgQuery> queryTransformer;
+    private JsonQueryTransformerFactory transformerFactory;
     private QueryValidator<AsgQuery> queryValidator;
     private ResourceStore resourceStore;
     private final AppUrlSupplier urlSupplier;
