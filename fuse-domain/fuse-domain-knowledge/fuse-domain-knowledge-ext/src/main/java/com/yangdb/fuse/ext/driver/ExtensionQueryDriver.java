@@ -79,7 +79,7 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
             Optional<QueryResourceInfo> queryResourceInfo = Optional.empty();
             if (request.getQueryType().equals(CreateJsonQueryRequest.TYPE_CYPHER)) {
                 //support cypher type
-                queryResourceInfo = this.create(request, metadata, request.getQuery());
+                queryResourceInfo = this.create(request, metadata);
             } else if (request.getQueryType().equals(TYPE_CLAUSE)) {
                 //support clause type
                 Query query = transformer.transform(request.getQuery());

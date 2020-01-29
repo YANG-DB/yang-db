@@ -3,18 +3,18 @@ package com.yangdb.fuse.asg.translator.cypher;
 import com.yangdb.fuse.asg.translator.AsgTranslator;
 import com.yangdb.fuse.asg.translator.cypher.strategies.MatchCypherTranslatorStrategy;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.query.QueryInfo;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 
 import static com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
 import static com.yangdb.fuse.model.query.properties.EProp.of;
 import static com.yangdb.fuse.model.query.properties.constraint.Constraint.of;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_CYPHER;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -33,8 +33,10 @@ public class CypherMatchMultiHopsWithWhereTest {
 
     @Test
     public void testMatch_4_hops_with_contains_and() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh') AND a:Horse RETURN a");
+        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        String s = "MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh') AND a:Horse RETURN a";
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+
         String expected = "[└── Start, \n" +
                 "    ──UnTyp[:[] a#1]──Q[100:all]:{2|101}, \n" +
                 "                                    └-> Rel(:* b#2)──UnTyp[:[] c#3]──Q[300:all]:{4}, \n" +
@@ -49,8 +51,10 @@ public class CypherMatchMultiHopsWithWhereTest {
 
     @Test
     public void testMatch_4_hops_with_contains_and_with_pattern() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a {name: 'vlad'})-[b]->(c {size: 'large'})-[d]-(e {age: 100})-[f]->(g {weight: 250})-[h]-(i { height: 200}) where (a.name CONTAINS 'jh') AND a:Horse RETURN a");
+        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        String s = "MATCH (a {name: 'vlad'})-[b]->(c {size: 'large'})-[d]-(e {age: 100})-[f]->(g {weight: 250})-[h]-(i { height: 200}) where (a.name CONTAINS 'jh') AND a:Horse RETURN a";
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+
         String expected = "[└── Start, \n" +
                 "    ──UnTyp[:[] a#1]──Q[100:all]:{101|2}, \n" +
                 "                                    └─?[..][101], \n" +
@@ -74,8 +78,10 @@ public class CypherMatchMultiHopsWithWhereTest {
 
     @Test
     public void testMatch_4_hops_with_contains_or() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh') OR a:Horse RETURN a");
+        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        String s = "MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh') OR a:Horse RETURN a";
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+
         String expected = "[└── Start, \n" +
                 "    ──Q[900:some]:{10|19}, \n" +
                 "                     └─UnTyp[:[] a#10]──Q[1000:all]:{11|1001}, \n" +
@@ -97,8 +103,10 @@ public class CypherMatchMultiHopsWithWhereTest {
 
     @Test
     public void testMatch_4_hops_with_contains_or_and() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh' and c.age > 100) OR (e:Horse and h:Fire) RETURN a");
+        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        String s = "MATCH (a)-[b]->(c)-[d]-(e)-[f]->(g)-[h]-(i) where (a.name CONTAINS 'jh' and c.age > 100) OR (e:Horse and h:Fire) RETURN a";
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+
         String expected = "[└── Start, \n" +
                 "    ──Q[900:some]:{10|19}, \n" +
                 "                     └─UnTyp[:[] a#10]──Q[1000:all]:{11}, \n" +

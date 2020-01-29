@@ -3,18 +3,17 @@ package com.yangdb.fuse.asg.translator.cypher;
 import com.yangdb.fuse.asg.translator.AsgTranslator;
 import com.yangdb.fuse.asg.translator.cypher.strategies.MatchCypherTranslatorStrategy;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.query.QueryInfo;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 
 import static com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_CYPHER;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -33,14 +32,15 @@ public class CypherMatchMultiStatementTest {
 
     @Test
     public void testMatch_2_clausesWithMultiDirections() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
-        final AsgQuery query = translator.translate(
-          " Match " +
+        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        String s = " Match " +
                 "   (person:Entity)-[:hasEvalue]->(personName:Evalue {stringValue:'Tom Hanks'}), " +
                 "   (person:Entity)-[tomActedIn:relatedEntity {category:'ACTED_IN'}]->(m1:Entity), " +
                 "   (otherPerson:Entity)-[othersActedIn:relatedEntity {category:'ACTED_IN'}]->(m2:Entity) " +
                 " Where m1.name = m2.name " +
-                " Return *");
+                " Return *";
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+
 
         String expected = "[└── Start, \n" +
                             "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -61,10 +61,12 @@ public class CypherMatchMultiStatementTest {
 
     @Test
     public void testMatch_2_clauses() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a:A)-[c:C]->(b:B), " +
+        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        String s = "MATCH (a:A)-[c:C]->(b:B), " +
                 " (a:A)-[d:D]->(e:E)-[:F]-(g:G)" +
-                " RETURN *");
+                " RETURN *";
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+
         String expected = "[└── Start, \n" +
                             "    ──Typ[:A a#1]──Q[100:all]:{2|4}, \n" +
                             "                               └-> Rel(:C c#2)──Typ[:B b#3], \n" +
@@ -75,13 +77,15 @@ public class CypherMatchMultiStatementTest {
 
     @Test
     public void testMatch_2_clauses_with_and() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a:A)-[c:C]->(b:B), " +
+        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        String s = "MATCH (a:A)-[c:C]->(b:B), " +
                 " (a:A)-[d:D]->(e:E)-[:F]-(g:G)" +
                 " where (b.fieldId = 'b' and b.stringValue = 'b') AND" +
                 "       (e.fieldId = 'e' and e.stringValue = 'e') AND" +
                 "       (g.fieldId = 'g' and g.stringValue = 'g') " +
-                " RETURN *");
+                " RETURN *";
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+
         String expected = "[└── Start, \n" +
                             "    ──Typ[:A a#1]──Q[100:all]:{2|4}, \n" +
                             "                               └-> Rel(:C c#2)──Typ[:B b#3]──Q[700:all]:{701}, \n" +
@@ -101,13 +105,15 @@ public class CypherMatchMultiStatementTest {
 
     @Test
     public void testMatch_2_clauses_with_or() {
-        AsgTranslator<String, AsgQuery> translator = new CypherTranslator("Dragons", () -> Collections.singleton(match));
-        final AsgQuery query = translator.translate("MATCH (a:A)-[c:C]->(b:B), " +
+        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        String s = "MATCH (a:A)-[c:C]->(b:B), " +
                 " (a:A)-[d:D]->(e:E)-[:F]-(g:G)" +
                 " where (b.fieldId = 'b' and b.stringValue = 'b') OR" +
                 "       (e.fieldId = 'e' and e.stringValue = 'e') OR" +
                 "       (g.fieldId = 'g' and g.stringValue = 'g') " +
-                " RETURN *");
+                " RETURN *";
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+
         String expected = "[└── Start, \n" +
                 "    ──Q[700:some]:{8|15|22}, \n" +
                 "                       └─Typ[:A a#8]──Q[800:all]:{9|11}, \n" +

@@ -26,27 +26,27 @@ import com.yangdb.fuse.asg.translator.AsgTranslator;
 import com.yangdb.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.yangdb.fuse.asg.translator.cypher.strategies.CypherTranslatorStrategy;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.query.QueryInfo;
 import org.opencypher.v9_0.ast.Statement;
 import org.opencypher.v9_0.parser.CypherParser;
 import scala.Option;
 
-public class CypherTranslator implements AsgTranslator<String,AsgQuery> {
+public class CypherTranslator implements AsgTranslator<QueryInfo<String>,AsgQuery> {
 
     @Inject
-    public CypherTranslator(String ontology, CypherAsgStrategyRegistrar strategies) {
-        this.ontology = ontology;
+    public CypherTranslator(CypherAsgStrategyRegistrar strategies) {
         this.strategies = strategies.register();
     }
     //endregion
 
 
     @Override
-    public AsgQuery translate(String source) {
+    public AsgQuery translate(QueryInfo<String> source) {
 
-        final AsgQuery query = AsgQuery.Builder.start("cypher_", ontology).build();
+        final AsgQuery query = AsgQuery.Builder.start("cypher_", source.getOntology()).build();
 
         //translate cypher asci into cypher AST
-        final Statement statement = new CypherParser().parse(source,Option.empty());
+        final Statement statement = new CypherParser().parse(source.getQuery(),Option.empty());
         final CypherStrategyContext context = new CypherStrategyContext(statement,query.getStart());
 
         //apply strategies
@@ -54,6 +54,5 @@ public class CypherTranslator implements AsgTranslator<String,AsgQuery> {
         return query;
     }
 
-    private String ontology;
     private Iterable<CypherTranslatorStrategy> strategies;
 }

@@ -49,7 +49,6 @@ import com.yangdb.fuse.executor.ontology.OntologyGraphElementSchemaProviderFacto
 import com.yangdb.fuse.executor.ontology.UniGraphProvider;
 import com.yangdb.fuse.executor.ontology.schema.*;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
-import com.yangdb.fuse.executor.ontology.schema.load.DefaultGraphInitiator;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
 import com.yangdb.fuse.executor.resource.PersistantResourceStore;
@@ -91,6 +90,7 @@ public class ExecutorModule extends ModuleBase {
         binder.bind(QueryDriver.class).to(StandardQueryDriver.class).in(RequestScoped.class);
         binder.bind(CursorDriver.class).to(StandardCursorDriver.class).in(RequestScoped.class);
         binder.bind(PageDriver.class).to(StandardPageDriver.class).in(RequestScoped.class);
+
         binder.bind(SearchOrderProviderFactory.class).to(getSearchOrderProvider(conf));
     }
 

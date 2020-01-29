@@ -22,9 +22,10 @@ package com.yangdb.fuse.dispatcher.query;
 
 
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.query.QueryInfo;
 
 public interface JsonQueryTransformerFactory {
-    QueryTransformer<String, AsgQuery> transform(String type);
+    QueryTransformer<QueryInfo<String>, AsgQuery> transform(String type);
 
 
 }

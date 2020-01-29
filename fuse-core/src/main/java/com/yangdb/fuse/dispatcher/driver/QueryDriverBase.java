@@ -38,6 +38,7 @@ import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.execution.plan.planTree.PlanNode;
 import com.yangdb.fuse.model.query.ParameterizedQuery;
 import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.query.QueryInfo;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.constraint.NamedParameter;
@@ -340,12 +341,12 @@ public abstract class QueryDriverBase implements QueryDriver {
      *
      * @param request
      * @param metadata
-     * @param query
      * @return
      */
-    protected Optional<QueryResourceInfo> create(CreateJsonQueryRequest request, QueryMetadata metadata, String query) {
+    protected Optional<QueryResourceInfo> create(CreateJsonQueryRequest request, QueryMetadata metadata) {
         try {
-            AsgQuery asgQuery = transform(request.getType(), query);
+            QueryInfo<String> queryInfo = new QueryInfo<>(request.getQuery(), request.getName(), request.getType(), request.getOntology());
+            AsgQuery asgQuery = transform(queryInfo);
             asgQuery.setName(metadata.getName());
             asgQuery.setOnt(request.getOntology());
             //rewrite query
@@ -361,7 +362,8 @@ public abstract class QueryDriverBase implements QueryDriver {
 
             Query build = Query.Builder.instance()
                     .withOnt(asgQuery.getOnt())
-                    .withName(query).build();
+                    .withName(queryInfo.getQueryName())
+                    .build();
 
             //create inner query
             final List<QueryResource> innerQuery = compositeQuery(request, metadata, asgQuery);
@@ -407,15 +409,15 @@ public abstract class QueryDriverBase implements QueryDriver {
         return this.queryTransformer.transform(query);
     }
 
-    protected AsgQuery transform(String type, String query) {
-        return this.transformerFactory.transform(type).transform(query);
+    protected AsgQuery transform(QueryInfo<String> query) {
+        return this.transformerFactory.transform(query.getQueryType()).transform(query);
     }
 
     @Override
     public Optional<QueryResourceInfo> create(CreateJsonQueryRequest request) {
         try {
             QueryMetadata metadata = getQueryMetadata(request);
-            Optional<QueryResourceInfo> queryResourceInfo = this.create(request, metadata, request.getQuery());
+            Optional<QueryResourceInfo> queryResourceInfo = this.create(request, metadata);
             return getQueryResourceInfo(request, queryResourceInfo);
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(

@@ -1,38 +1,60 @@
 package com.yangdb.fuse.dispatcher.query.graphql;
 
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.query.QueryInfo;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Optional;
+
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_GRAPH_QL;
 
 
 public class GraphQLQueryExecuterTest {
     public static Ontology ontology;
-    public static QueryTransformer<String, Query> transformer;
+    public static QueryTransformer<QueryInfo<String>, Query> transformer;
 
     @BeforeClass
     public static void setUp() throws Exception {
         InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/StarWars.graphql");
         GraphQL2OntologyTransformer graphQL2OntologyTransformer = new GraphQL2OntologyTransformer();
         ontology = graphQL2OntologyTransformer.transform(resource);
-        transformer = new GraphQL2QueryTransformer(graphQL2OntologyTransformer,ontology);
+        transformer = new GraphQL2QueryTransformer(graphQL2OntologyTransformer, new OntologyProvider() {
+            @Override
+            public Optional<Ontology> get(String id) {
+                return Optional.of(ontology);
+            }
+
+            @Override
+            public Collection<Ontology> getAll() {
+                return null;
+            }
+
+            @Override
+            public Ontology add(Ontology ontology) {
+                return null;
+            }
+        });
         Assert.assertNotNull(ontology);
     }
 
     @Test
     public void testQuerySingleVertexWithFewProperties() {
-        Query query = transformer.transform(
-                " {\n" +
-                        "    human {\n" +
-                        "        name,\n" +
-                        "        description\n" +
-                        "    }\n" +
-                        "}");
+        String q = " {\n" +
+                "    human {\n" +
+                "        name,\n" +
+                "        description\n" +
+                "    }\n" +
+                "}";
+        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPH_QL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4}, \n" +
                 "                          └─?[3]:[name<IdentityProjection>], \n" +
@@ -42,14 +64,14 @@ public class GraphQLQueryExecuterTest {
 
     @Test
     public void testQuerySingleVertexWithSinleRelation() {
-        Query query = transformer.transform(
-          " {\n" +
+        String q = " {\n" +
                 "    human {\n" +
                 "       friends {\n" +
                 "            name\n" +
                 "        }\n" +
                 "    }\n" +
-                "}");
+                "}";
+        Query query = transformer.transform(new QueryInfo<>(q,"q2", TYPE_GRAPH_QL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3}, \n" +
                 "                        └-> Rel(friends:3)──Typ[Character:4]──Q[5]:{6}, \n" +
@@ -59,8 +81,7 @@ public class GraphQLQueryExecuterTest {
 
     @Test
     public void testQuerySingleVertexWithTwoRelationAndProperties() {
-        Query query = transformer.transform(
-            " {\n" +
+        String q = " {\n" +
                 "    human {\n" +
                 "        name,\n" +
                 "        friends {\n" +
@@ -71,7 +92,8 @@ public class GraphQLQueryExecuterTest {
                 "            appearsIn\n" +
                 "            }\n" +
                 "    }\n" +
-                "}");
+                "}";
+        Query query = transformer.transform(new QueryInfo<>(q,"q3", TYPE_GRAPH_QL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
                 "                            └─?[3]:[name<IdentityProjection>], \n" +
@@ -85,8 +107,7 @@ public class GraphQLQueryExecuterTest {
 
     @Test
     public void testQuerySingleVertexWithTwoHopesRelationAndProperties() {
-        Query query = transformer.transform(
-                "{\n" +
+        String q = "{\n" +
                 "    human {\n" +
                 "        name,\n" +
                 "        friends {\n" +
@@ -101,7 +122,8 @@ public class GraphQLQueryExecuterTest {
                 "            }\n" +
                 "        }\n" +
                 "    }\n" +
-                "}");
+                "}";
+        Query query = transformer.transform(new QueryInfo<>(q,"q4", TYPE_GRAPH_QL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
                 "                            └─?[3]:[name<IdentityProjection>], \n" +

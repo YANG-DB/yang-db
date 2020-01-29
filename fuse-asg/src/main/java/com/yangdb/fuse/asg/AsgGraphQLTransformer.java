@@ -22,37 +22,34 @@ package com.yangdb.fuse.asg;
 
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.asg.translator.AsgTranslator;
 import com.yangdb.fuse.dispatcher.asg.QueryToAsgTransformer;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQLSchemaUtils;
+import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2QueryTransformer;
-import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
-import graphql.schema.idl.TypeDefinitionRegistry;
+import com.yangdb.fuse.model.query.QueryInfo;
 
 /**
  * Created by liorp on 12/15/2017.
  */
-public class AsgGraphQLTransformer implements AsgTranslator<String,AsgQuery> {
-    private Ontology ontology;
+public class AsgGraphQLTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery>  {
+    private GraphQL2QueryTransformer graphQL2QueryTransformer;
     private final QueryToAsgTransformer queryTransformer;
-    private final GraphQLSchemaUtils schemaUtils;
 
     //region Constructors
     @Inject
-    public AsgGraphQLTransformer(Ontology ontology,QueryToAsgTransformer queryTransformer, GraphQLSchemaUtils schemaUtils) {
-        this.ontology = ontology;
+    public AsgGraphQLTransformer(GraphQL2QueryTransformer graphQL2QueryTransformer,
+                                 QueryToAsgTransformer queryTransformer) {
+        this.graphQL2QueryTransformer = graphQL2QueryTransformer;
         this.queryTransformer = queryTransformer;
-        this.schemaUtils = schemaUtils;
     }
     //endregion
 
     //region QueryTransformer Implementation
 
     @Override
-    public AsgQuery translate(String query) {
-        Query transform = GraphQL2QueryTransformer.transform(schemaUtils,ontology, query);
+    public AsgQuery transform(QueryInfo<String> query) {
+        Query transform = graphQL2QueryTransformer.transform(query);
         return queryTransformer.transform(transform);
     }
 
