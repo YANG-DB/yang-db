@@ -28,7 +28,7 @@ import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 
 /**
- * Created by Roman on 12/15/2017.
+ * Created by liorp on 12/15/2017.
  */
 public class AsgCypherTransformer implements QueryTransformer<String, AsgQuery> {
     //region Constructors

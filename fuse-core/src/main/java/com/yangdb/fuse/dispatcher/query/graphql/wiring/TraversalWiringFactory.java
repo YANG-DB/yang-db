@@ -1,4 +1,4 @@
-package com.yangdb.fuse.model.graphql.wiring;
+package com.yangdb.fuse.dispatcher.query.graphql.wiring;
 
 /*-
  * #%L
@@ -20,7 +20,11 @@ package com.yangdb.fuse.model.graphql.wiring;
  * #L%
  */
 
-import com.yangdb.fuse.model.ontology.*;
+import com.yangdb.fuse.dispatcher.query.graphql.GraphQLSchemaUtils;
+import com.yangdb.fuse.model.ontology.EntityType;
+import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.ontology.Property;
+import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.quant.QuantBase;
@@ -37,7 +41,6 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static com.yangdb.fuse.model.graphql.GraphQL2OntologyTransformer.getGraphQLSchema;
 
 /**
  * A wiring factory that will echo back the objects defined.  That is if you have a field called
@@ -50,21 +53,23 @@ public class TraversalWiringFactory implements WiringFactory {
     private Query.Builder builder;
     private Ontology.Accessor accessor;
     private Map<String, Integer> pathContext;
+    private GraphQLSchema schema;
 
-    public static RuntimeWiring newEchoingWiring(Ontology ontology, Query.Builder queryBuilder) {
-        return newEchoingWiring(x -> {
+    public static RuntimeWiring newEchoingWiring(GraphQLSchemaUtils schema, Ontology ontology, Query.Builder queryBuilder) {
+        return newEchoingWiring(schema,x -> {
         }, ontology, queryBuilder);
     }
 
-    public static RuntimeWiring newEchoingWiring(Consumer<RuntimeWiring.Builder> builderConsumer, Ontology ontology, Query.Builder queryBuilder) {
+    public static RuntimeWiring newEchoingWiring(GraphQLSchemaUtils schema, Consumer<RuntimeWiring.Builder> builderConsumer, Ontology ontology, Query.Builder queryBuilder) {
         RuntimeWiring.Builder builder = RuntimeWiring.newRuntimeWiring();
         builderConsumer.accept(builder);
         return builder
-                .wiringFactory(new TraversalWiringFactory(ontology, queryBuilder))
+                .wiringFactory(new TraversalWiringFactory(schema,ontology, queryBuilder))
                 .build();
     }
 
-    public TraversalWiringFactory(Ontology ontology, Query.Builder builder) {
+    public TraversalWiringFactory(GraphQLSchemaUtils schemaUtils,Ontology ontology, Query.Builder builder) {
+        this.schema = schemaUtils.getGraphQLSchema();
         this.builder = builder;
         this.accessor = new Ontology.Accessor(ontology);
         this.pathContext = new HashMap<>();
@@ -81,7 +86,7 @@ public class TraversalWiringFactory implements WiringFactory {
 
     @Override
     public TypeResolver getTypeResolver(InterfaceWiringEnvironment environment) {
-        return env -> getGraphQLSchema().getImplementations((GraphQLInterfaceType) env.getFieldType()).get(0);
+        return env -> schema.getImplementations((GraphQLInterfaceType) env.getFieldType()).get(0);
     }
 
     @Override
@@ -138,7 +143,7 @@ public class TraversalWiringFactory implements WiringFactory {
             //todo create concrete union types from abstract interface
         } else if (fieldType instanceof GraphQLInterfaceType) {
             //select the first implementing of interface (no matter which one since all share same common fields)
-            List<GraphQLObjectType> implementations = getGraphQLSchema().getImplementations((GraphQLInterfaceType) fieldType);
+            List<GraphQLObjectType> implementations = schema.getImplementations((GraphQLInterfaceType) fieldType);
             //populate vertex or relation
             populateGraphObject(env, ((GraphQLInterfaceType) fieldType).getName());
 //            return fakeObjectValue(accessor, builder, implementations.get(0));
@@ -237,7 +242,7 @@ public class TraversalWiringFactory implements WiringFactory {
     }
 
 
-    private static Object fakeObjectValue(Ontology.Accessor accessor, Query.Builder builder, GraphQLObjectType fieldType) {
+    private  Object fakeObjectValue(Ontology.Accessor accessor, Query.Builder builder, GraphQLObjectType fieldType) {
         Map<String, Object> map = new LinkedHashMap<>();
 
         if (!fieldType.getFieldDefinitions().isEmpty())
@@ -259,7 +264,7 @@ public class TraversalWiringFactory implements WiringFactory {
         return map;
     }
 
-    private static Object getObject(Ontology.Accessor accessor, Query.Builder builder, GraphQLObjectType fieldType, GraphQLFieldDefinition fldDef, GraphQLOutputType innerFieldType) {
+    private  Object getObject(Ontology.Accessor accessor, Query.Builder builder, GraphQLObjectType fieldType, GraphQLFieldDefinition fldDef, GraphQLOutputType innerFieldType) {
         if (innerFieldType instanceof GraphQLObjectType) {
             RelationshipType relType = accessor.relation$(fldDef.getName());
             builder.rel(relType.getrType(), Rel.Direction.R, fieldType.getName());
@@ -279,13 +284,13 @@ public class TraversalWiringFactory implements WiringFactory {
         return null;
     }
 
-    private static void populateGraphValue(Ontology.Accessor accessor, Query.Builder builder, GraphQLFieldDefinition fldDef) {
+    private  void populateGraphValue(Ontology.Accessor accessor, Query.Builder builder, GraphQLFieldDefinition fldDef) {
         Property property = accessor.property$(fldDef.getName());
         builder.eProp(property.getpType());
     }
 
 
-    private static Object fakeScalarValue(String fieldName, GraphQLScalarType scalarType) {
+    private  Object fakeScalarValue(String fieldName, GraphQLScalarType scalarType) {
         if (scalarType.equals(Scalars.GraphQLString)) {
             return fieldName;
         } else if (scalarType.equals(Scalars.GraphQLBoolean)) {
@@ -309,11 +314,11 @@ public class TraversalWiringFactory implements WiringFactory {
         }
     }
 
-    private static Object fakeEnumValue(String fieldName, GraphQLEnumType enumType) {
+    private  Object fakeEnumValue(String fieldName, GraphQLEnumType enumType) {
         return fieldName;
     }
 
-    public static GraphQLScalarType fakeScalar(String name) {
+    public  GraphQLScalarType fakeScalar(String name) {
         return new GraphQLScalarType(name, name, new Coercing() {
             @Override
             public Object serialize(Object dataFetcherResult) {

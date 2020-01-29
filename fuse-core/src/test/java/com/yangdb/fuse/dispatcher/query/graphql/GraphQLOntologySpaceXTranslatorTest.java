@@ -1,17 +1,11 @@
-package com.yangdb.fuse.model.graphql;
+package com.yangdb.fuse.dispatcher.query.graphql;
 
-import com.yangdb.fuse.model.ontology.EnumeratedType;
 import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.ontology.Property;
-import com.yangdb.fuse.model.ontology.Value;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.InputStream;
-import java.util.Arrays;
-
-import static com.yangdb.fuse.model.ontology.Property.equal;
 
 public class GraphQLOntologySpaceXTranslatorTest {
     public static Ontology ontology;
@@ -19,7 +13,7 @@ public class GraphQLOntologySpaceXTranslatorTest {
     @BeforeClass
     public static void setUp() throws Exception {
         InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/spaceX.graphql");
-        ontology = GraphQL2OntologyTransformer.transform(resource);
+        ontology = new GraphQL2OntologyTransformer().transform(resource);
         Assert.assertNotNull(ontology);
     }
 

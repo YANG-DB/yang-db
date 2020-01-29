@@ -114,7 +114,7 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     }
 
     @Override
-    public ContentResponse<Object> run(Query query, int pageSize, String cursorType) {
+    public ContentResponse<Object> runCypher(Query query, int pageSize, String cursorType) {
         return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
                 this.logger,
                 this.metricRegistry,
@@ -127,7 +127,7 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
                         new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), createAndFetch)
                                 .with(this.queryDescriptor.describe(query)).log();
                     }
-                    return this.controller.run(query, pageSize, cursorType);
+                    return this.controller.runCypher(query, pageSize, cursorType);
                 }, this.resultHandler());
     }
 
@@ -150,7 +150,7 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     }
 
     @Override
-    public ContentResponse<Object> run(String cypher, String ontology) {
+    public ContentResponse<Object> runCypher(String cypher, String ontology) {
         return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
                 this.logger,
                 this.metricRegistry,
@@ -163,12 +163,12 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
                         new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), createAndFetch)
                                 .with(cypher).log();
                     }
-                    return this.controller.run(cypher,ontology );
+                    return this.controller.runCypher(cypher,ontology );
                 }, this.resultHandler());
     }
 
     @Override
-    public ContentResponse<Object> run(String cypher, String ontology, int pageSize, String cursorType) {
+    public ContentResponse<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
         return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
                 this.logger,
                 this.metricRegistry,
@@ -181,7 +181,7 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
                         new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), createAndFetch)
                                 .with(cypher).log();
                     }
-                    return this.controller.run(cypher,ontology , pageSize, cursorType);
+                    return this.controller.runCypher(cypher,ontology , pageSize, cursorType);
                 }, this.resultHandler());
 
     }

@@ -64,7 +64,7 @@ public interface QueryController<C,D> extends Controller<C,D> {
      * @param cursorType
      * @return
      */
-    ContentResponse<Object> run(Query query, int pageSize, String cursorType);
+    ContentResponse<Object> runCypher(Query query, int pageSize, String cursorType);
 
     /**
      * run a stateless query and get immediate graph results (first page only)
@@ -81,7 +81,7 @@ public interface QueryController<C,D> extends Controller<C,D> {
      * @param ontology
      * @return
      */
-    ContentResponse<Object> run(String cypher, String ontology);
+    ContentResponse<Object> runCypher(String cypher, String ontology);
 
 
     /**
@@ -93,7 +93,7 @@ public interface QueryController<C,D> extends Controller<C,D> {
      * @param cursorType
      * @return
      */
-    ContentResponse<Object> run(String cypher, String ontology, int pageSize, String cursorType);
+    ContentResponse<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType);
 
 
     /**

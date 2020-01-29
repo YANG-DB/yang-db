@@ -37,12 +37,7 @@ import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryMetadata;
-import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
-import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
-import com.yangdb.fuse.model.validation.ValidationResult;
-
-import java.util.Optional;
 
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.concrete;
 
@@ -58,11 +53,12 @@ public class StandardQueryDriver extends QueryDriverBase {
             QueryTransformer<Query, AsgQuery> queryTransformer,
             QueryValidator<AsgQuery> queryValidator,
             QueryTransformer<AsgQuery, AsgQuery> queryRewriter,
-            QueryTransformer<String, AsgQuery> jsonQueryTransformer,
+            QueryTransformer<String, AsgQuery> cypherQueryTransformer,
+            QueryTransformer<String, AsgQuery> graphQLQueryTransformer,
             PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
-        super(cursorDriver, pageDriver, queryTransformer, jsonQueryTransformer, queryValidator, resourceStore, urlSupplier);
+        super(cursorDriver, pageDriver, queryTransformer, cypherQueryTransformer,graphQLQueryTransformer , queryValidator, resourceStore, urlSupplier);
         this.queryRewriter = queryRewriter;
         this.planSearcher = planSearcher;
     }

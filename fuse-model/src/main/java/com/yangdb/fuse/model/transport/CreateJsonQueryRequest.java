@@ -54,13 +54,8 @@ import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String> {
-    public static final String TYPE_CYPHER = "cypher";
 
     //region Constructors
-    public CreateJsonQueryRequest() {
-        this(TYPE_CYPHER);
-    }
-
     public CreateJsonQueryRequest(String queryType) {
         this.queryType = queryType;
         this.planTraceOptions = new PlanTraceOptions();
@@ -69,7 +64,7 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
     }
 
     public CreateJsonQueryRequest(String id, String name,String queryType, String query, String ontology) {
-        this();
+        this(queryType);
         this.id = id;
         this.name = name;
         this.queryType = queryType;
@@ -78,23 +73,18 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
     }
 
     public CreateJsonQueryRequest(String id, String name,String queryType, String query, String ontology, CreateCursorRequest createCursorRequest) {
-        this(id, name, query,ontology, new PlanTraceOptions());
+        this(id, name, queryType,query,ontology, new PlanTraceOptions());
         this.queryType = queryType;
         this.createCursorRequest = createCursorRequest;
     }
 
-    public CreateJsonQueryRequest(String id, String name, String query, String ontology, PlanTraceOptions planTraceOptions) {
-        this(id, name, TYPE_CYPHER, query,ontology);
+    public CreateJsonQueryRequest(String id, String name, String queryType, String query, String ontology, PlanTraceOptions planTraceOptions) {
+        this(id, name, queryType, query,ontology);
         this.planTraceOptions = planTraceOptions;
     }
 
-    public CreateJsonQueryRequest(String id, String name, String query, String ontology, CreateCursorRequest createCursorRequest) {
-        this(id, name, query,ontology, new PlanTraceOptions());
-        this.createCursorRequest = createCursorRequest;
-    }
-
-    public CreateJsonQueryRequest(String id, String name, String query, String ontology, PlanTraceOptions planTraceOptions, CreateCursorRequest createCursorRequest) {
-        this(id, name, query,ontology, planTraceOptions);
+    public CreateJsonQueryRequest(String id, String name,String queryType, String query, String ontology, PlanTraceOptions planTraceOptions, CreateCursorRequest createCursorRequest) {
+        this(id, name,queryType, query,ontology, planTraceOptions);
         this.createCursorRequest = createCursorRequest;
     }
     //endregion
@@ -149,6 +139,11 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
 
     public StorageType getStorageType() {
         return type;
+    }
+
+    @Override
+    public String getType() {
+        return queryType;
     }
 
     public PlanTraceOptions getPlanTraceOptions() {

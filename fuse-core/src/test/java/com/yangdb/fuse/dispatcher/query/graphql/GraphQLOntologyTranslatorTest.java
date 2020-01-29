@@ -1,4 +1,4 @@
-package com.yangdb.fuse.model.graphql;
+package com.yangdb.fuse.dispatcher.query.graphql;
 
 import com.yangdb.fuse.model.ontology.EnumeratedType;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -19,7 +19,7 @@ public class GraphQLOntologyTranslatorTest {
     @BeforeClass
     public static void setUp() throws Exception {
         InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/StarWars.graphql");
-        ontology = GraphQL2OntologyTransformer.transform(resource);
+        ontology = new GraphQL2OntologyTransformer().transform(resource);
         Assert.assertNotNull(ontology);
     }
 

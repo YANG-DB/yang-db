@@ -66,13 +66,13 @@ public class DragonsExtensionQueryController implements QueryController<QueryCon
     }
 
     @Override
-    public ContentResponse<Object> run(Query query, int pageSize, String cursorType) {
-        return controller.run(query,pageSize,cursorType);
+    public ContentResponse<Object> runCypher(Query query, int pageSize, String cursorType) {
+        return controller.runCypher(query,pageSize,cursorType);
     }
 
     @Override
-    public ContentResponse<Object> run(String cypher, String ontology, int pageSize, String cursorType) {
-        return controller.run(cypher, ontology, pageSize, cursorType);
+    public ContentResponse<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
+        return controller.runCypher(cypher, ontology, pageSize, cursorType);
     }
 
     @Override
@@ -81,8 +81,8 @@ public class DragonsExtensionQueryController implements QueryController<QueryCon
     }
 
     @Override
-    public ContentResponse<Object> run(String cypher, String ontology) {
-        return controller.run(cypher,ontology);
+    public ContentResponse<Object> runCypher(String cypher, String ontology) {
+        return controller.runCypher(cypher,ontology);
     }
 
     @Override

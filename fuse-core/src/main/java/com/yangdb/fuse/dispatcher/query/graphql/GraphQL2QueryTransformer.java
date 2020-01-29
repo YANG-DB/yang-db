@@ -1,4 +1,4 @@
-package com.yangdb.fuse.model.graphql;
+package com.yangdb.fuse.dispatcher.query.graphql;
 
 /*-
  * #%L
@@ -20,7 +20,9 @@ package com.yangdb.fuse.model.graphql;
  * #L%
  */
 
-import com.yangdb.fuse.model.graphql.wiring.TraversalWiringFactory;
+import com.google.inject.Inject;
+import com.yangdb.fuse.dispatcher.query.QueryTransformer;
+import com.yangdb.fuse.dispatcher.query.graphql.wiring.TraversalWiringFactory;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import graphql.ExecutionResult;
@@ -29,26 +31,43 @@ import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.TypeDefinitionRegistry;
 
-public class GraphQL2QueryTransformer {
+public class GraphQL2QueryTransformer implements QueryTransformer<String, Query> {
+
+    private final GraphQLSchemaUtils schemaUtils;
+    private final Ontology ontology;
+
+    @Inject
+    public GraphQL2QueryTransformer(GraphQLSchemaUtils schemaUtils, Ontology ontology) {
+        this.schemaUtils = schemaUtils;
+        this.ontology = ontology;
+    }
+
+
+    public Query transform(String query) {
+        return transform(schemaUtils,ontology,query);
+    }
 
     /**
      * translate graphQL query to V1 Query
      * @param query
      * @return
      */
-    public static Query transform(TypeDefinitionRegistry typeRegistry,Ontology ontology, String query) {
+    public static Query transform(GraphQLSchemaUtils schemaUtils,Ontology ontology, String query) {
         Query.Builder instance = Query.Builder.instance();
-        GraphQLSchema schema = createSchema(typeRegistry,ontology,instance);
+        GraphQLSchema schema = createSchema(schemaUtils,ontology,instance);
         GraphQL graphQL = GraphQL.newGraphQL(schema).build();
         ExecutionResult execute = graphQL.execute(query);
         if(execute.getErrors().isEmpty())
             return instance.build();
+
         throw new IllegalArgumentException(execute.getErrors().toString());
     }
 
-    private static GraphQLSchema createSchema(TypeDefinitionRegistry typeRegistry,Ontology ontology,Query.Builder builder) {
+    private static GraphQLSchema createSchema(GraphQLSchemaUtils schemaUtils,Ontology ontology,Query.Builder builder) {
         SchemaGenerator schemaGenerator = new SchemaGenerator();
-        return schemaGenerator.makeExecutableSchema(typeRegistry, TraversalWiringFactory.newEchoingWiring(ontology,builder));
+        return schemaGenerator.makeExecutableSchema(
+                schemaUtils.getTypeRegistry(),
+                TraversalWiringFactory.newEchoingWiring(schemaUtils,ontology,builder));
     }
 
 }

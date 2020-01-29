@@ -84,7 +84,7 @@ public class StandardQueryController implements QueryController<QueryController,
     }
 
     @Override
-    public ContentResponse<Object> run(Query query, int pageSize, String cursorType) {
+    public ContentResponse<Object> runCypher(Query query, int pageSize, String cursorType) {
         return Builder.builder(CREATED, SERVER_ERROR )
                 .data(driver().run(query,pageSize,cursorType ))
                 .successPredicate(objectContentResponse -> true)
@@ -101,18 +101,18 @@ public class StandardQueryController implements QueryController<QueryController,
     }
 
     @Override
-    public ContentResponse<Object> run(String cypher, String ontology) {
+    public ContentResponse<Object> runCypher(String cypher, String ontology) {
         return Builder.builder(CREATED, SERVER_ERROR )
-                .data(driver().run(cypher,ontology))
+                .data(driver().runCypher(cypher,ontology))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
 
     }
 
     @Override
-    public ContentResponse<Object> run(String cypher, String ontology, int pageSize, String cursorType) {
+    public ContentResponse<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
         return Builder.builder(CREATED, SERVER_ERROR )
-                .data(driver().run(cypher,ontology,pageSize,cursorType))
+                .data(driver().runCypher(cypher,ontology,pageSize,cursorType))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }

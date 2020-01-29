@@ -147,6 +147,11 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
         return storageType;
     }
 
+    @Override
+    public String getType() {
+        return TYPE_V1_QUERY;
+    }
+
     public PlanTraceOptions getPlanTraceOptions() {
         return planTraceOptions;
     }

@@ -1,5 +1,6 @@
-package com.yangdb.fuse.model.graphql;
+package com.yangdb.fuse.dispatcher.query.graphql;
 
+import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
@@ -12,17 +13,20 @@ import java.io.InputStream;
 
 public class GraphQLQueryExecuterTest {
     public static Ontology ontology;
+    public static QueryTransformer<String, Query> transformer;
 
     @BeforeClass
     public static void setUp() throws Exception {
         InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/StarWars.graphql");
-        ontology = GraphQL2OntologyTransformer.transform(resource);
+        GraphQL2OntologyTransformer graphQL2OntologyTransformer = new GraphQL2OntologyTransformer();
+        ontology = graphQL2OntologyTransformer.transform(resource);
+        transformer = new GraphQL2QueryTransformer(graphQL2OntologyTransformer,ontology);
         Assert.assertNotNull(ontology);
     }
 
     @Test
     public void testQuerySingleVertexWithFewProperties() {
-        Query query = GraphQL2QueryTransformer.transform(GraphQL2OntologyTransformer.typeRegistry, ontology,
+        Query query = transformer.transform(
                 " {\n" +
                         "    human {\n" +
                         "        name,\n" +
@@ -35,9 +39,10 @@ public class GraphQLQueryExecuterTest {
                 "                          └─?[4]:[description<IdentityProjection>]]";
         Assert.assertEquals(expected, QueryDescriptor.print(query));
     }
+
     @Test
     public void testQuerySingleVertexWithSinleRelation() {
-        Query query = GraphQL2QueryTransformer.transform(GraphQL2OntologyTransformer.typeRegistry, ontology,
+        Query query = transformer.transform(
           " {\n" +
                 "    human {\n" +
                 "       friends {\n" +
@@ -54,7 +59,7 @@ public class GraphQLQueryExecuterTest {
 
     @Test
     public void testQuerySingleVertexWithTwoRelationAndProperties() {
-        Query query = GraphQL2QueryTransformer.transform(GraphQL2OntologyTransformer.typeRegistry, ontology,
+        Query query = transformer.transform(
             " {\n" +
                 "    human {\n" +
                 "        name,\n" +
@@ -80,7 +85,7 @@ public class GraphQLQueryExecuterTest {
 
     @Test
     public void testQuerySingleVertexWithTwoHopesRelationAndProperties() {
-        Query query = GraphQL2QueryTransformer.transform(GraphQL2OntologyTransformer.typeRegistry, ontology,
+        Query query = transformer.transform(
                 "{\n" +
                 "    human {\n" +
                 "        name,\n" +

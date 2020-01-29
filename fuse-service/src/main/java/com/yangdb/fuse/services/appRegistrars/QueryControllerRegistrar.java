@@ -68,7 +68,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.yangdb.fuse.services.appRegistrars.QueryControllerRegistrar.API.*;
 import static org.jooby.Status.NOT_FOUND;
 import static org.jooby.Status.OK;
 
@@ -103,27 +102,13 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
          * @return newly created query resource information
          **/
         app.post(appUrlSupplier.queryStoreUrl() ,
-                req -> postV1(app,req, this.getController(app)));
+                req -> API.postV1(app,req, this.getController(app)));
 
-        /** validate a v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1/validate",req -> validateV1(app,req,this.getController(app)));
+        /**  register V1 API context **/
+        v1Context(app, appUrlSupplier);
 
-        /** get the plan from v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1/plan",req -> plan(app,req,this.getController(app)));
-
-        /** get the traversal from v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1/traversal",req -> traversal(app,req,this.getController(app)));
-
-        /** create a v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1",req -> postV1(app,req,this.getController(app)));
-
-        /** create a v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1/run",req -> runV1(app,req,this.getController(app)));
-
-        /** create a cypher query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/cypher",req -> postCypher(app,req,this.getController(app)));
-        /** run a cypher query */
-        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/run",req -> runCypher(app,req,this.getController(app)));
+        /**  register cypher API context **/
+        cypherContext(app, appUrlSupplier);
 
 
         /** call a query */
@@ -223,10 +208,60 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         );
 
     }
+
+    private void cypherContext(Jooby app, AppUrlSupplier appUrlSupplier) {
+        /** create a cypher query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/cypher",req -> API.postCypher(app,req,this.getController(app)));
+        /** run a cypher query */
+        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/run",req -> API.runCypher(app,req,this.getController(app)));
+    }
+
+    private void graphQLContext(Jooby app, AppUrlSupplier appUrlSupplier) {
+        /** create a cypher query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/graphQl",req -> API.postCypher(app,req,this.getController(app)));
+        /** run a cypher query */
+        app.get(appUrlSupplier.queryStoreUrl() + "/graphQl/run",req -> API.runCypher(app,req,this.getController(app)));
+    }
+
+    private void v1Context(Jooby app, AppUrlSupplier appUrlSupplier) {
+        /** validate a v1 query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/validate",req -> API.validateV1(app,req,this.getController(app)));
+
+        /** get the plan from v1 query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/plan",req -> API.plan(app,req,this.getController(app)));
+
+        /** get the traversal from v1 query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/traversal",req -> API.traversal(app,req,this.getController(app)));
+
+        /** create a v1 query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1",req -> API.postV1(app,req,this.getController(app)));
+
+        /** create a v1 query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/run",req -> API.runV1(app,req,this.getController(app)));
+    }
     //endregion
 
 
     public static class API {
+
+        public static Result postGraphQL(Jooby app, final Request req, QueryController controller) throws Exception {
+            Route.of("postGraphQL").write();
+
+            CreateJsonQueryRequest createQueryRequest = req.body(CreateJsonQueryRequest.class);
+            req.set(CreateJsonQueryRequest.class, createQueryRequest);
+            req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
+            final long maxExecTime = createQueryRequest.getCreateCursorRequest() != null
+                    ? createQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
+            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, TIMEOUT)));
+
+            ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
+                    controller.create(createQueryRequest) :
+                    controller.createAndFetch(createQueryRequest);
+
+            return Results.with(response, response.status());
+
+        }
+
         public static Result postCypher(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("postCypher").write();
 
@@ -302,7 +337,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(Query.class, query);
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
-            ContentResponse<Object> response = controller.run(query,
+            ContentResponse<Object> response = controller.runCypher(query,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
                     req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
                     );
@@ -317,7 +352,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             String ontology = req.param("ontology").value();
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
-            ContentResponse<Object> response = controller.run(query,ontology,
+            ContentResponse<Object> response = controller.runCypher(query,ontology,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
                     req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
             );

@@ -55,9 +55,13 @@ public interface QueryDriver {
 
     Optional<Object> run(Query query, int pageSize, String cursorType);
 
-    Optional<Object> run(String cypher, String ontology);
+    Optional<Object> runCypher(String cypher, String ontology);
 
-    Optional<Object> run(String cypher, String ontology, int pageSize, String cursorType);
+    Optional<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType);
+
+    Optional<Object> runGraphQL(String graphQL, String ontology);
+
+    Optional<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType);
 
     Optional<Object> getNextPageData(String queryId, Optional<String> cursorId,int pageSize, boolean deleteCurrentPage);
 

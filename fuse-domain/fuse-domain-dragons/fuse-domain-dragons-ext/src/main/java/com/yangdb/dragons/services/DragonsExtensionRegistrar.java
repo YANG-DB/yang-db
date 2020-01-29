@@ -101,7 +101,7 @@ public class DragonsExtensionRegistrar extends AppControllerRegistrarBase<Dragon
         String ontology = req.param("ontology").value();
         req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
 
-        ContentResponse<Object> response = controller.run(query,ontology);
+        ContentResponse<Object> response = controller.runCypher(query,ontology);
 
         return Results.with(response, response.status());
     }

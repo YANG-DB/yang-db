@@ -61,6 +61,7 @@ import static com.yangdb.fuse.dispatcher.cursor.CursorFactory.request;
 import static com.yangdb.fuse.model.Utils.getOrCreateId;
 import static com.yangdb.fuse.model.asgQuery.AsgCompositeQuery.hasInnerQuery;
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.parameterized;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.*;
 import static java.util.Collections.EMPTY_LIST;
 
 /**
@@ -73,14 +74,16 @@ public abstract class QueryDriverBase implements QueryDriver {
             CursorDriver cursorDriver,
             PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
-            QueryTransformer<String, AsgQuery> jsonQueryTransformer,
+            QueryTransformer<String, AsgQuery> cypherQueryTransformer,
+            QueryTransformer<String, AsgQuery> graphQLQueryTransformer,
             QueryValidator<AsgQuery> queryValidator,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
         this.cursorDriver = cursorDriver;
         this.pageDriver = pageDriver;
         this.queryTransformer = queryTransformer;
-        this.jsonQueryTransformer = jsonQueryTransformer;
+        this.cypherQueryTransformer = cypherQueryTransformer;
+        this.graphQLQueryTransformer = graphQLQueryTransformer;
         this.queryValidator = queryValidator;
         this.resourceStore = resourceStore;
         this.urlSupplier = urlSupplier;
@@ -118,10 +121,10 @@ public abstract class QueryDriverBase implements QueryDriver {
     }
 
     @Override
-    public Optional<Object> run(String cypher, String ontology, int pageSize, String cursorType) {
+    public Optional<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, cypher, ontology, request(cursorType,new CreatePageRequest(pageSize)));
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPH_QL, cypher, ontology, request(cursorType,new CreatePageRequest(pageSize)));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -141,10 +144,48 @@ public abstract class QueryDriverBase implements QueryDriver {
     }
 
     @Override
-    public Optional<Object> run(String cypher, String ontology) {
+    public Optional<Object> runGraphQL(String graphQL, String ontology) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, cypher, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPH_QL, graphQL, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
+
+    @Override
+    public Optional<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
+        String id = UUID.randomUUID().toString();
+        try {
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPH_QL, graphQL, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
+
+    @Override
+    public Optional<Object> runCypher(String cypher, String ontology) {
+        String id = UUID.randomUUID().toString();
+        try {
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHER, cypher, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -305,7 +346,7 @@ public abstract class QueryDriverBase implements QueryDriver {
      */
     protected Optional<QueryResourceInfo> create(CreateJsonQueryRequest request, QueryMetadata metadata, String query) {
         try {
-            AsgQuery asgQuery = transform(query);
+            AsgQuery asgQuery = transform(request.getType(), query);
             asgQuery.setName(metadata.getName());
             asgQuery.setOnt(request.getOntology());
             //rewrite query
@@ -344,6 +385,8 @@ public abstract class QueryDriverBase implements QueryDriver {
                     metadata.getId(),
                     urlSupplier.cursorStoreUrl(metadata.getId()))
                     .withInnerQueryResources(getQueryResourceInfos(innerQuery)));
+        } catch (FuseError.FuseErrorException err) {
+            return Optional.of(new QueryResourceInfo().error(err.getError()));
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(),err)));
@@ -366,8 +409,17 @@ public abstract class QueryDriverBase implements QueryDriver {
     }
 
 
-    protected AsgQuery transform(String query) {
-        return this.jsonQueryTransformer.transform(query);
+    protected AsgQuery transform(String queryType, String query) {
+        switch (queryType) {
+            case TYPE_GRAPH_QL:
+                return graphQLQueryTransformer.transform(query);
+
+            case TYPE_CYPHER:
+                return cypherQueryTransformer.transform(query);
+
+        }
+        throw new FuseError.FuseErrorException(new FuseError(query, "No query translation strategy was found for "+queryType));
+
     }
 
     @Override
@@ -717,7 +769,8 @@ public abstract class QueryDriverBase implements QueryDriver {
     //region Fields
     private final CursorDriver cursorDriver;
     private final PageDriver pageDriver;
-    private QueryTransformer<String, AsgQuery> jsonQueryTransformer;
+    private QueryTransformer<String, AsgQuery> cypherQueryTransformer;
+    private QueryTransformer<String, AsgQuery> graphQLQueryTransformer;
     private QueryTransformer<Query, AsgQuery> queryTransformer;
     private QueryValidator<AsgQuery> queryValidator;
     private ResourceStore resourceStore;

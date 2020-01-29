@@ -34,11 +34,12 @@ public class MockDriver {
                 CursorDriver cursorDriver,
                 PageDriver pageDriver,
                 QueryTransformer<com.yangdb.fuse.model.query.Query, AsgQuery> queryTransformer,
-                QueryTransformer<String, AsgQuery> queryJasonTransformer,
+                QueryTransformer<String, AsgQuery> cypherJasonTransformer,
+                QueryTransformer<String, AsgQuery> graphQLJasonTransformer,
                 QueryValidator<AsgQuery> queryValidator,
                 ResourceStore resourceStore,
                 AppUrlSupplier urlSupplier) {
-            super(cursorDriver, pageDriver, queryTransformer, queryJasonTransformer, queryValidator, resourceStore, urlSupplier);
+            super(cursorDriver, pageDriver, queryTransformer, cypherJasonTransformer,graphQLJasonTransformer , queryValidator, resourceStore, urlSupplier);
         }
         //endregion
 
@@ -59,12 +60,12 @@ public class MockDriver {
         }
 
         @Override
-        public Optional<Object> run(String cypher, String ontology) {
+        public Optional<Object> runCypher(String cypher, String ontology) {
             return Optional.empty();
         }
 
         @Override
-        public Optional<Object> run(String cypher, String ontology, int pageSize, String cursorType) {
+        public Optional<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
             return Optional.empty();
         }
 

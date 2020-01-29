@@ -38,10 +38,7 @@ import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.Entity;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.results.Relationship;
-import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
-import com.yangdb.fuse.model.transport.CreatePageRequest;
-import com.yangdb.fuse.model.transport.CreateQueryRequest;
-import com.yangdb.fuse.model.transport.PlanTraceOptions;
+import com.yangdb.fuse.model.transport.*;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.Tuple2;
@@ -57,6 +54,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.yangdb.fuse.client.FuseClient.*;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.*;
 import static io.restassured.RestAssured.given;
 
 /**
@@ -173,7 +171,7 @@ public class BaseFuseClient implements FuseClient {
 
     @Override
     public QueryResourceInfo postQuery(String queryStoreUrl, String query, String ontology) throws IOException {
-        return postQuery(queryStoreUrl,query,ontology, PlanTraceOptions.of(PlanTraceOptions.Level.none));
+        return postCypherQuery(queryStoreUrl,query,ontology, PlanTraceOptions.of(PlanTraceOptions.Level.none));
     }
 
     @Override
@@ -193,8 +191,21 @@ public class BaseFuseClient implements FuseClient {
     }
 
     @Override
-    public QueryResourceInfo postQuery(String queryStoreUrl, String query, String ontology, PlanTraceOptions planTraceOptions) throws IOException {
-        CreateJsonQueryRequest request = new CreateJsonQueryRequest();
+    public QueryResourceInfo postGraphQLQuery(String queryStoreUrl, String query, String ontology, PlanTraceOptions planTraceOptions) throws IOException {
+            CreateJsonQueryRequest request = new CreateJsonQueryRequest(TYPE_GRAPH_QL);
+            String id = UUID.randomUUID().toString();
+            request.setId(id);
+            request.setName(id);
+            request.setQuery(query);
+            request.setOntology(ontology);
+            request.setPlanTraceOptions(planTraceOptions);
+            final String response = postRequest(queryStoreUrl +"/" + CreateJsonQueryRequest.TYPE_CYPHER, request);
+            return this.objectMapper.readValue(unwrap(response), QueryResourceInfo.class);
+    }
+
+    @Override
+    public QueryResourceInfo postCypherQuery(String queryStoreUrl, String query, String ontology, PlanTraceOptions planTraceOptions) throws IOException {
+        CreateJsonQueryRequest request = new CreateJsonQueryRequest(TYPE_CYPHER);
         String id = UUID.randomUUID().toString();
         request.setId(id);
         request.setName(id);
