@@ -20,6 +20,7 @@ package com.yangdb.fuse.model.transport;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 
