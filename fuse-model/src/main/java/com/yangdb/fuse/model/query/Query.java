@@ -54,11 +54,14 @@ import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.properties.EProp;
+import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.RelProp;
+import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.InnerQueryConstraint;
 import com.yangdb.fuse.model.query.properties.projection.IdentityProjection;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
+import javaslang.Tuple2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +122,7 @@ public class Query implements IQuery<EBase> {
 
         private String ont;
         private String name;
-        private List<EBase> elements;
+        private List<Wrapper<? extends EBase>> elements;
         private List<List<String>> nonidentical;
 
         private Builder() {}
@@ -145,52 +148,76 @@ public class Query implements IQuery<EBase> {
         }
 
         public Builder withElements(List<EBase> elements) {
-            this.elements = elements;
+            this.elements = elements.stream().map(Wrapper::new).collect(Collectors.toList());
             return this;
         }
 
         public Builder start() {
-            getElements().add(new Start(sequence.get()));
+            getElements().add(new Wrapper<>(new Start(sequence.get())));
             currentIndex = sequence.get();
             return this;
         }
 
         public Builder eType(String type, String tag) {
             populateNext();
-            getElements().add(new ETyped(sequence.get(),tag,type,0));
+            getElements().add(new Wrapper< >(new ETyped(sequence.get(),tag,type,0),current()));
             currentIndex = sequence.get();
             return this;
         }
 
         public Builder concrete(String id,String name,String type, String tag) {
-            getElements().add(new EConcrete(sequence.get(),tag,type,id,name, sequence.incrementAndGet()));
+            getElements().add(new Wrapper< >(new EConcrete(sequence.get(),tag,type,id,name, sequence.incrementAndGet()),current()));
             return this;
         }
 
         public Builder rel(String rType, Rel.Direction dir, String tag) {
             populateNext();
-            getElements().add(new Rel(sequence.get(),rType,dir,tag,0));
+            getElements().add(new Wrapper< >(new Rel(sequence.get(),rType,dir,tag,0),current()));
             currentIndex = sequence.get();
             return this;
         }
 
         public Builder eProp(String pType) {
             populateNext();
-            getElements().add(new EProp(sequence.get(),pType,new IdentityProjection()));
+            getElements().add(new Wrapper< >(new EProp(sequence.get(),pType,new IdentityProjection()),current()));
+            //current index remain the same since property has no "next"
+            return this;
+        }
+
+        public Builder eProp(String pType, Constraint constraint) {
+            populateNext();
+            getElements().add(new Wrapper< >(new EProp(sequence.get(),pType,constraint),current()));
+            //current index remain the same since property has no "next"
+            return this;
+        }
+
+        public Builder ePropGroup(List<Tuple2<String,Optional<Constraint>>> pTypes, QuantType type) {
+            populateNext();
+            getElements().add(new Wrapper<>(new EPropGroup(sequence.get(),type,pTypes.stream()
+                    .map(p-> p._2.map(constraint -> new EProp(sequence.get(), p._1, constraint)).orElseGet(()
+                            -> new EProp(sequence.get(), p._1, new IdentityProjection())))
+                    .collect(Collectors.toList())),current()));
             //current index remain the same since property has no "next"
             return this;
         }
 
         public Builder rProp(String pType) {
             populateNext();
-            getElements().add(new RelProp(sequence.get(),pType,new IdentityProjection()));
+            getElements().add(new Wrapper< >(new RelProp(sequence.get(),pType,new IdentityProjection()),current()));
+            //current index remain the same since property has no "next"
+            return this;
+        }
+
+        public Builder rProp(String pType,Constraint constraint) {
+            populateNext();
+            getElements().add(new Wrapper< >(new RelProp(sequence.get(),pType,constraint),current()));
             //current index remain the same since property has no "next"
             return this;
         }
 
         public Builder quant(QuantType type) {
             populateNext();
-            getElements().add(new Quant1(sequence.get(),type, new ArrayList<>()));
+            getElements().add(new Wrapper<>(new Quant1(sequence.get(),type, new ArrayList<>()),current(sequence.get()-1)));
             currentIndex = sequence.get();
             return this;
         }
@@ -220,11 +247,23 @@ public class Query implements IQuery<EBase> {
         }
 
         public EBase current() {
+            return elements.get(currentIndex).getCurrent();
+        }
+
+        public Wrapper<? extends EBase> currentWrapper() {
             return elements.get(currentIndex);
         }
 
+        public EBase pop() {
+            return currentWrapper().getParent();
+        }
+
+        public Wrapper<? extends EBase> popWrapper() {
+            return elements.get(currentWrapper().getParent().geteNum());
+        }
+
         public EBase current(int index) {
-            return elements.get(index);
+            return elements.get(index).getCurrent();
         }
 
         public Query build() {
@@ -232,17 +271,39 @@ public class Query implements IQuery<EBase> {
             query.setOnt(ont);
             query.setName(name);
             if (elements != null)
-                query.setElements(elements);
+                query.setElements(elements.stream().map(Wrapper::getCurrent).collect(Collectors.toList()));
             if (nonidentical != null)
                 query.setNonidentical(nonidentical);
             return query;
         }
 
-        private List<EBase> getElements() {
+        private List<Wrapper<? extends EBase>> getElements() {
             if (elements == null) {
                 this.elements = new ArrayList<>();
             }
             return elements;
+        }
+    }
+
+    private static class Wrapper<T> {
+        private  T parent;
+        private  T current;
+
+        public Wrapper( T current) {
+            this.current = current;
+        }
+
+        public Wrapper(T current,T parent) {
+            this(current);
+            this.parent = parent;
+        }
+
+        public T getParent() {
+            return parent;
+        }
+
+        public T getCurrent() {
+            return current;
         }
     }
 

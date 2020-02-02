@@ -1,16 +1,20 @@
 package com.yangdb.fuse.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yangdb.fuse.model.query.*;
+import com.yangdb.fuse.model.query.EBase;
+import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.ETyped;
-import com.yangdb.fuse.model.query.properties.constraint.Constraint;
-import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.RelProp;
+import com.yangdb.fuse.model.query.properties.constraint.Constraint;
+import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.Quant2;
 import com.yangdb.fuse.model.query.quant.QuantType;
+import javaslang.Tuple2;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.junit.Assert;
@@ -23,6 +27,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.Optional.of;
 
 
 /**
@@ -40,11 +47,30 @@ public class QueryTest {
 
 
     @Test
+    public void testQueryBuilder() throws IOException, JSONException {
+        Query query = Query.Builder.instance()
+                .start()
+                .withOnt("Knowledge")
+                .withName("test")
+                .eType("Entity", "P1")
+                .quant(QuantType.some)
+                .ePropGroup(Arrays.asList(new Tuple2<>("category", Optional.empty()), new Tuple2<>("context", of(new Constraint(ConstraintOp.notEmpty)))), QuantType.all)
+                .rel("hasOutRelation", Rel.Direction.R, "k")
+                .eType("Entity", "P2")
+                .quant(QuantType.all)
+                .ePropGroup(Arrays.asList(new Tuple2<>("deleteTime", of(new Constraint(ConstraintOp.empty)))), QuantType.all)
+                .build();
+        String queryString = mapper.writeValueAsString(query);
+        JSONAssert.assertEquals("{\"ont\":\"Knowledge\",\"name\":\"test\",\"elements\":[{\"type\":\"Start\",\"eNum\":0,\"next\":1},{\"type\":\"ETyped\",\"eNum\":1,\"eTag\":\"P1\",\"next\":2,\"b\":-1,\"eType\":\"Entity\",\"typed\":\"Entity\"},{\"type\":\"Quant1\",\"eNum\":2,\"qType\":\"some\",\"b\":-1,\"next\":[3,4]},{\"type\":\"EPropGroup\",\"eNum\":3,\"props\":[{\"type\":\"EProp\",\"eNum\":3,\"pType\":\"category\",\"proj\":{\"type\":\"Identity\"},\"constraint\":false,\"projection\":true},{\"type\":\"EProp\",\"eNum\":3,\"pType\":\"context\",\"con\":{\"type\":\"Constraint\",\"op\":\"not empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false}],\"quantType\":\"all\"},{\"type\":\"Rel\",\"eNum\":4,\"rType\":\"hasOutRelation\",\"dir\":\"R\",\"wrapper\":\"k\",\"next\":5,\"b\":-1,\"eTag\":\"k\",\"typed\":\"hasOutRelation\"},{\"type\":\"ETyped\",\"eNum\":5,\"eTag\":\"P2\",\"next\":6,\"b\":-1,\"eType\":\"Entity\",\"typed\":\"Entity\"},{\"type\":\"Quant1\",\"eNum\":6,\"qType\":\"all\",\"b\":-1,\"next\":[7]},{\"type\":\"EPropGroup\",\"eNum\":7,\"props\":[{\"type\":\"EProp\",\"eNum\":7,\"pType\":\"deleteTime\",\"con\":{\"type\":\"Constraint\",\"op\":\"empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false}],\"quantType\":\"all\"}]}", queryString, true);
+
+    }
+
+    @Test
     public void testQ1Serialization() throws IOException, JSONException {
         String q1ActualJSON = mapper.writeValueAsString(q1Obj);
         String q1ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"EConcrete\",\"eTag\":\"A\",\"eID\":\"12345678\",\"eType\":\"Person\",\"eName\":\"Brandon Stark\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"}]}";
 
-        JSONAssert.assertEquals(q1ExpectedJSONString, q1ActualJSON,false);
+        JSONAssert.assertEquals(q1ExpectedJSONString, q1ActualJSON, false);
     }
 
     @Test
@@ -52,7 +78,7 @@ public class QueryTest {
         String q2ActualJSON = mapper.writeValueAsString(q2Obj);
         String q2ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q2\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"EConcrete\",\"eTag\":\"A\",\"eID\":\"12345678\",\"eType\":\"Person\",\"eName\":\"Brandon Stark\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\",\"next\":4},{\"eNum\":4,\"type\":\"Rel\",\"rType\":\"fire\",\"dir\":\"R\",\"next\":5},{\"eNum\":5,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":\"Dragon\"}]}";
 
-        JSONAssert.assertEquals(q2ExpectedJSONString, q2ActualJSON,false);
+        JSONAssert.assertEquals(q2ExpectedJSONString, q2ActualJSON, false);
     }
 
     @Test
@@ -60,7 +86,7 @@ public class QueryTest {
         String q3_1ActualJSON = mapper.writeValueAsString(q3_1Obj);
         String q3_1ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Dragon\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"L\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Person\",\"next\":4},{\"eNum\":4,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}}]}";
 
-        JSONAssert.assertEquals(q3_1ExpectedJSONString, q3_1ActualJSON,false);
+        JSONAssert.assertEquals(q3_1ExpectedJSONString, q3_1ActualJSON, false);
     }
 
     @Test
@@ -68,7 +94,7 @@ public class QueryTest {
         String q3_2ActualJSON = mapper.writeValueAsString(q3_2Obj);
         String q3_2ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-2\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Person\",\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,4]},{\"eNum\":3,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}},{\"eNum\":4,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":5},{\"eNum\":5,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"}]}";
 
-        JSONAssert.assertEquals(q3_2ExpectedJSONString, q3_2ActualJSON,false);
+        JSONAssert.assertEquals(q3_2ExpectedJSONString, q3_2ActualJSON, false);
     }
 
     @Test
@@ -76,7 +102,7 @@ public class QueryTest {
         String q5ActualJSON = mapper.writeValueAsString(q5Obj);
         String q5ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q5\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Person\",\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,5,11]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":4},{\"eNum\":4,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"},{\"eNum\":5,\"type\":\"Rel\",\"rType\":\"freeze\",\"dir\":\"R\",\"next\":6},{\"eNum\":6,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":\"Dragon\",\"next\":7},{\"eNum\":7,\"type\":\"Rel\",\"rType\":\"fire\",\"dir\":\"R\",\"next\":8},{\"eNum\":8,\"type\":\"ETyped\",\"eTag\":\"D\",\"eType\":\"Dragon\",\"next\":9},{\"eNum\":9,\"type\":\"Rel\",\"rType\":\"fire\",\"dir\":\"R\",\"next\":10},{\"eNum\":10,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"},{\"eNum\":11,\"type\":\"Rel\",\"rType\":\"freeze\",\"dir\":\"R\",\"next\":12},{\"eNum\":12,\"type\":\"ETyped\",\"eTag\":\"E\",\"eType\":\"Person\",\"next\":13},{\"eNum\":13,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":14},{\"eNum\":14,\"type\":\"ETyped\",\"eTag\":\"D\",\"eType\":\"Dragon\"}],\"nonidentical\":[[\"C\",\"E\"]]}";
 
-        JSONAssert.assertEquals(q5ExpectedJSONString, q5ActualJSON,false);
+        JSONAssert.assertEquals(q5ExpectedJSONString, q5ActualJSON, false);
     }
 
     @Test
@@ -84,7 +110,7 @@ public class QueryTest {
         String q11ActualJSON = mapper.writeValueAsString(q11Obj);
         String q11ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q11\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Person\",\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,6]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":\"subject\",\"dir\":\"R\",\"next\":5,\"b\":4},{\"eNum\":4,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"1\",\"con\":{\"op\":\"empty\"}},{\"eNum\":5,\"type\":\"EConcrete\",\"eTag\":\"B\",\"eID\":\"22345670\",\"eType\":\"Guild\",\"eName\":\"Masons\"},{\"eNum\":6,\"type\":\"Rel\",\"rType\":\"registered\",\"dir\":\"R\",\"next\":8,\"b\":7},{\"eNum\":7,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"2\",\"con\":{\"op\":\"ge\",\"expr\":\"1011-01-01T00:00:00.000\"}},{\"eNum\":8,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":\"Person\",\"next\":9},{\"eNum\":9,\"type\":\"Rel\",\"rType\":\"subject\",\"dir\":\"R\",\"next\":11,\"b\":10},{\"eNum\":10,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"3\",\"con\":{\"op\":\"ge\",\"expr\":\"1010-06-01T00:00:00.000\"}},{\"eNum\":11,\"type\":\"Quant2\",\"qType\":\"some\",\"next\":[12,13]},{\"eNum\":12,\"type\":\"EConcrete\",\"eTag\":\"D\",\"eID\":\"22345671\",\"eType\":\"Guild\",\"eName\":\"Saddlers\"},{\"eNum\":13,\"type\":\"EConcrete\",\"eTag\":\"E\",\"eID\":\"22345672\",\"eType\":\"Guild\",\"eName\":\"Blacksmiths\"}]}";
 
-        JSONAssert.assertEquals(q11ExpectedJSONString, q11ActualJSON,false);
+        JSONAssert.assertEquals(q11ExpectedJSONString, q11ActualJSON, false);
     }
 
     @Test
@@ -93,51 +119,50 @@ public class QueryTest {
         Query q1Obj = new ObjectMapper().readValue(q1ExpectedJson, Query.class);
         Assert.assertNotNull(q1Obj);
         String q1ActualJSON = mapper.writeValueAsString(q1Obj);
-        JSONAssert.assertEquals(q1ExpectedJson, q1ActualJSON,false);
+        JSONAssert.assertEquals(q1ExpectedJson, q1ActualJSON, false);
 
         String q2ExpectedJson = readJsonToString("Q002.json");
         Query q2Obj = new ObjectMapper().readValue(q2ExpectedJson, Query.class);
         Assert.assertNotNull(q1Obj);
         String q2ActualJSON = mapper.writeValueAsString(q2Obj);
-        JSONAssert.assertEquals(q2ExpectedJson, q2ActualJSON,false);
+        JSONAssert.assertEquals(q2ExpectedJson, q2ActualJSON, false);
 
         String q3_1ExpectedJson = readJsonToString("Q003-1.json");
         Query q3_1Obj = new ObjectMapper().readValue(q3_1ExpectedJson, Query.class);
         Assert.assertNotNull(q3_1Obj);
         String q3_1ActualJSON = mapper.writeValueAsString(q3_1Obj);
-        JSONAssert.assertEquals(q3_1ExpectedJson, q3_1ActualJSON,false);
+        JSONAssert.assertEquals(q3_1ExpectedJson, q3_1ActualJSON, false);
 
 
         String q3_2ExpectedJson = readJsonToString("Q003-2.json");
         Query q3_2Obj = new ObjectMapper().readValue(q3_2ExpectedJson, Query.class);
         Assert.assertNotNull(q3_2Obj);
         String q3_2ActualJSON = mapper.writeValueAsString(q3_2Obj);
-        JSONAssert.assertEquals(q3_2ExpectedJson, q3_2ActualJSON,false);
+        JSONAssert.assertEquals(q3_2ExpectedJson, q3_2ActualJSON, false);
 
 
         String q4ExpectedJson = readJsonToString("Q004.json");
         Query q4Obj = new ObjectMapper().readValue(q4ExpectedJson, Query.class);
         Assert.assertNotNull(q4Obj);
         String q4ActualJSON = mapper.writeValueAsString(q4Obj);
-        JSONAssert.assertEquals(q4ExpectedJson, q4ActualJSON,false);
+        JSONAssert.assertEquals(q4ExpectedJson, q4ActualJSON, false);
 
 
         String q5ExpectedJson = readJsonToString("Q005.json");
         Query q5Obj = new ObjectMapper().readValue(q5ExpectedJson, Query.class);
         Assert.assertNotNull(q5Obj);
         String q5ActualJSON = mapper.writeValueAsString(q5Obj);
-        JSONAssert.assertEquals(q5ExpectedJson, q5ActualJSON,false);
+        JSONAssert.assertEquals(q5ExpectedJson, q5ActualJSON, false);
 
         String q11ExpectedJson = readJsonToString("Q005.json");
         Query q11Obj = new ObjectMapper().readValue(q11ExpectedJson, Query.class);
         Assert.assertNotNull(q11Obj);
         String q11ActualJSON = mapper.writeValueAsString(q11Obj);
-        JSONAssert.assertEquals(q11ExpectedJson, q11ActualJSON,false);
+        JSONAssert.assertEquals(q11ExpectedJson, q11ActualJSON, false);
 
     }
 
-    private static void createQ1()
-    {
+    private static void createQ1() {
         q1Obj.setOnt("Dragons");
         q1Obj.setName("Q1");
         List<EBase> elements = new ArrayList<EBase>();
@@ -150,7 +175,7 @@ public class QueryTest {
         }
          */
 
-        Start start  = new Start();
+        Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
         elements.add(start);
@@ -209,8 +234,7 @@ public class QueryTest {
         q1Obj.setElements(elements);
     }
 
-    private static void createQ2()
-    {
+    private static void createQ2() {
         q2Obj.setOnt("Dragons");
         q2Obj.setName("Q2");
         List<EBase> elements = new ArrayList<EBase>();
@@ -223,7 +247,7 @@ public class QueryTest {
             }
          */
 
-        Start start  = new Start();
+        Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
         elements.add(start);
@@ -318,8 +342,7 @@ public class QueryTest {
         q2Obj.setElements(elements);
     }
 
-    private static void createQ3_1()
-    {
+    private static void createQ3_1() {
         q3_1Obj.setOnt("Dragons");
         q3_1Obj.setName("Q3-1");
         List<EBase> elements = new ArrayList<EBase>();
@@ -332,7 +355,7 @@ public class QueryTest {
             }
          */
 
-        Start start  = new Start();
+        Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
         elements.add(start);
@@ -428,7 +451,7 @@ public class QueryTest {
             }
          */
 
-        Start start  = new Start();
+        Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
         elements.add(start);
@@ -465,7 +488,7 @@ public class QueryTest {
         Quant1 quant1 = new Quant1();
         quant1.seteNum(2);
         quant1.setqType(QuantType.all);
-        quant1.setNext(Arrays.asList(3,4));
+        quant1.setNext(Arrays.asList(3, 4));
         elements.add(quant1);
 
         /*
@@ -536,7 +559,7 @@ public class QueryTest {
           "next": 1
         }
          */
-        Start start  = new Start();
+        Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
         elements.add(start);
@@ -547,12 +570,12 @@ public class QueryTest {
             "eType": 1,
             "next": 2
      }*/
-      ETyped eTyped1 = new ETyped();
-      eTyped1.seteNum(1);
-      eTyped1.seteTag("A");
-      eTyped1.seteType("Person");
-      eTyped1.setNext(2);
-      elements.add(eTyped1);
+        ETyped eTyped1 = new ETyped();
+        eTyped1.seteNum(1);
+        eTyped1.seteTag("A");
+        eTyped1.seteType("Person");
+        eTyped1.setNext(2);
+        elements.add(eTyped1);
 
         /*
         {
@@ -569,7 +592,7 @@ public class QueryTest {
         Quant1 quant1 = new Quant1();
         quant1.seteNum(2);
         quant1.setqType(QuantType.all);
-        quant1.setNext(Arrays.asList(3,5,11));
+        quant1.setNext(Arrays.asList(3, 5, 11));
         elements.add(quant1);
         /*
         {
@@ -596,11 +619,11 @@ public class QueryTest {
         }
          */
 
-      ETyped eTyped2 = new ETyped();
-      eTyped2.seteNum(4);
-      eTyped2.seteTag("B");
-      eTyped2.seteType("Dragon");
-      elements.add(eTyped2);
+        ETyped eTyped2 = new ETyped();
+        eTyped2.seteNum(4);
+        eTyped2.seteTag("B");
+        eTyped2.seteType("Dragon");
+        elements.add(eTyped2);
 
           /*
         {
@@ -612,7 +635,7 @@ public class QueryTest {
         }
          */
 
-        Rel rel2 =  new Rel();
+        Rel rel2 = new Rel();
         rel2.seteNum(5);
         rel2.setrType("freeze");
         rel2.setDir(Rel.Direction.R);
@@ -629,12 +652,12 @@ public class QueryTest {
         }
          */
 
-         ETyped eTyped3 = new ETyped();
-         eTyped3.seteNum(6);
-         eTyped3.seteTag("C");
-         eTyped3.seteType("Dragon");
-         eTyped3.setNext(7);
-         elements.add(eTyped3);
+        ETyped eTyped3 = new ETyped();
+        eTyped3.seteNum(6);
+        eTyped3.seteTag("C");
+        eTyped3.seteType("Dragon");
+        eTyped3.setNext(7);
+        elements.add(eTyped3);
 
         /*
         {
@@ -662,12 +685,12 @@ public class QueryTest {
           "next": 9
         }
          */
-         ETyped eTyped4 = new ETyped();
-         eTyped4.seteNum(8);
-         eTyped4.seteTag("D");
-         eTyped4.seteType("Dragon");
-         eTyped4.setNext(9);
-         elements.add(eTyped4);
+        ETyped eTyped4 = new ETyped();
+        eTyped4.seteNum(8);
+        eTyped4.seteTag("D");
+        eTyped4.seteType("Dragon");
+        eTyped4.setNext(9);
+        elements.add(eTyped4);
 
          /*
         {
@@ -745,7 +768,7 @@ public class QueryTest {
         }
         */
 
-        Rel rel6 =  new Rel();
+        Rel rel6 = new Rel();
         rel6.seteNum(13);
         rel6.setrType("own");
         rel6.setDir(Rel.Direction.R);
@@ -768,11 +791,11 @@ public class QueryTest {
         elements.add(eTyped7);
 
 
-       q5Obj.setNonidentical(Arrays.asList(Arrays.asList("C","E")));
-       q5Obj.setElements(elements);
+        q5Obj.setNonidentical(Arrays.asList(Arrays.asList("C", "E")));
+        q5Obj.setElements(elements);
     }
 
-    private static void createQ11(){
+    private static void createQ11() {
         q11Obj.setOnt("Dragons");
         q11Obj.setName("Q11");
         List<EBase> elements = new ArrayList<>();
@@ -785,7 +808,7 @@ public class QueryTest {
         }
         */
 
-        Start start  = new Start();
+        Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
         elements.add(start);
@@ -804,7 +827,7 @@ public class QueryTest {
         eTyped1.seteNum(1);
         eTyped1.seteTag("A");
         eTyped1.seteType("Person");
-        eTyped1. setNext(2);
+        eTyped1.setNext(2);
         elements.add(eTyped1);
 
         /*
@@ -822,7 +845,7 @@ public class QueryTest {
         Quant1 quant1 = new Quant1();
         quant1.seteNum(2);
         quant1.setqType(QuantType.all);
-        quant1.setNext(Arrays.asList(3,6));
+        quant1.setNext(Arrays.asList(3, 6));
         elements.add(quant1);
 
         /*
@@ -999,7 +1022,7 @@ public class QueryTest {
         Quant2 quant2 = new Quant2();
         quant2.seteNum(11);
         quant2.setqType(QuantType.some);
-        quant2.setNext(Arrays.asList(12,13));
+        quant2.setNext(Arrays.asList(12, 13));
         elements.add(quant2);
 
 
@@ -1069,8 +1092,6 @@ public class QueryTest {
         createQ5();
         createQ11();
     }
-
-
 
 
 }
