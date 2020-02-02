@@ -110,6 +110,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /**  register cypher API context **/
         cypherContext(app, appUrlSupplier);
 
+        /**  register graphQL API context **/
+        graphQLContext(app, appUrlSupplier);
+
 
         /** call a query */
         app.post(appUrlSupplier.queryStoreUrl() + "/call",req -> API.call(app,req,this.getController(app)));
@@ -218,9 +221,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
     private void graphQLContext(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** create a cypher query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/graphQl",req -> API.postCypher(app,req,this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/graphQL",req -> API.postGraphQL(app,req,this.getController(app)));
         /** run a cypher query */
-        app.get(appUrlSupplier.queryStoreUrl() + "/graphQl/run",req -> API.runCypher(app,req,this.getController(app)));
+        app.get(appUrlSupplier.queryStoreUrl() + "/graphQL/run",req -> API.runGraphQL(app,req,this.getController(app)));
     }
 
     private void v1Context(Jooby app, AppUrlSupplier appUrlSupplier) {
@@ -337,7 +340,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(Query.class, query);
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
-            ContentResponse<Object> response = controller.runCypher(query,
+            ContentResponse<Object> response = controller.runV1Query(query,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
                     req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
                     );
@@ -360,6 +363,20 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             return Results.with(response, response.status());
         }
 
+        public static Result runGraphQL(Jooby app, final Request req, QueryController controller) throws Throwable {
+            Route.of("runGraphQL").write();
+
+            String query = req.param("graphQL").value();
+            String ontology = req.param("ontology").value();
+            req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
+
+            ContentResponse<Object> response = controller.runGraphQL(query,ontology,
+                    req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
+                    req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
+            );
+
+            return Results.with(response, response.status());
+        }
 
         public static Result call(Jooby app, Request req, QueryController controller) throws Exception {
             Route.of("callQuery").write();

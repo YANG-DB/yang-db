@@ -66,8 +66,13 @@ public class KnowledgeExtensionQueryController implements QueryController<QueryC
     }
 
     @Override
-    public ContentResponse<Object> runCypher(Query query, int pageSize, String cursorType) {
-        return controller.runCypher(query,pageSize,cursorType );
+    public ContentResponse<Object> runV1Query(Query query, int pageSize, String cursorType) {
+        return controller.runV1Query(query,pageSize,cursorType );
+    }
+
+    @Override
+    public ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
+        return controller.runGraphQL(graphQL, ontology, pageSize, cursorType);
     }
 
     @Override

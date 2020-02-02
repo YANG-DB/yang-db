@@ -44,7 +44,6 @@ import java.net.UnknownHostException;
  * This module is called by the fuse-service scanner class loader
  */
 public class NewDispatcherModule extends ModuleBase {
-    private GraphQL2OntologyTransformer graphQL2OntologyTransformer;
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {

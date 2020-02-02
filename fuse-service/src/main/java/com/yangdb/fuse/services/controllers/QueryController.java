@@ -64,7 +64,7 @@ public interface QueryController<C,D> extends Controller<C,D> {
      * @param cursorType
      * @return
      */
-    ContentResponse<Object> runCypher(Query query, int pageSize, String cursorType);
+    ContentResponse<Object> runV1Query(Query query, int pageSize, String cursorType);
 
     /**
      * run a stateless query and get immediate graph results (first page only)
@@ -94,6 +94,17 @@ public interface QueryController<C,D> extends Controller<C,D> {
      * @return
      */
     ContentResponse<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType);
+
+    /**
+     * run a stateless graphQL query and get immediate graph results (first page only)
+     * type may be volatile or persistent
+     * @param `query
+     * @param ontology
+     * @param pageSize
+     * @param cursorType
+     * @return
+     */
+    ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType);
 
 
     /**

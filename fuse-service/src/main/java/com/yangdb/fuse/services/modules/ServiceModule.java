@@ -112,6 +112,7 @@ public class ServiceModule extends ModuleBase {
         bindCursorController(env, config, binder);
         bindPageController(env, config, binder);
         bindCatalogController(env, config, binder);
+        bindGraphQLController(env, config, binder);
         bindDataLoaderController(env, config, binder);
         bindIdGeneratorController(env, config, binder);
 
@@ -312,6 +313,26 @@ public class ServiceModule extends ModuleBase {
                         .to(LoggingCatalogController.class);
 
                 this.expose(CatalogController.class);
+            }
+        });
+    }
+
+    private void bindGraphQLController(Env env, Config config, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                this.bind(GraphQLController.class)
+                        .annotatedWith(named(LoggingGraphQLController.controllerParameter))
+                        .to(StandardGraphQLController.class);
+
+                this.bind(Logger.class)
+                        .annotatedWith(named(LoggingGraphQLController.loggerParameter))
+                        .toInstance(LoggerFactory.getLogger(StandardGraphQLController.class));
+
+                this.bind(GraphQLController.class)
+                        .to(LoggingGraphQLController.class);
+
+                this.expose(GraphQLController.class);
             }
         });
     }

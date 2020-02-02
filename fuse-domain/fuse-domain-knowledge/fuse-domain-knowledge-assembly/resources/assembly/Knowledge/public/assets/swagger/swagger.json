@@ -2,13 +2,13 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0",
-    "title": "YangDb [Knowledge] API"
+    "title": "YangFb [Dragons] API"
   },
   "basePath": "/fuse",
   "tags": [
     {
       "name": "YangDb",
-      "description": "\nEverything about YangDb (Fuse) Graph Engine."
+      "description": "\nEverything about YangDb Graph Engine."
     }
   ],
   "schemes": [
@@ -194,6 +194,34 @@
         }
       }
     },
+    "/graphql/ontology": {
+      "post": {
+        "tags": [
+          "graphQL"
+        ],
+        "summary": "graphQL IDL into Ontology",
+        "description": "Transform a graphQL IDL into V1 Ontology - see https://graphql.org/learn/schema/" ,
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "graphQL IDL  ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GraphQLSchema"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an Ontology object",
+            "schema": {
+              "$ref": "#/definitions/Ontology"
+            }
+          }
+        }
+      }
+    },
     "/query/cypher": {
       "post": {
         "tags": [
@@ -251,6 +279,82 @@
             "required": true,
             "type": "string",
             "default": "Match  (p1:Entity)-[hasEv1:hasEvalue]->(value1:Evalue),\n       (p1:Entity)-[hasRelEn:relatedEntity]->(p2:Entity ),\n       (p2:Entity)-[hasEv2:hasEvalue]->(value2:Evalue {stringValue:'Myriel'})  return *"
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/graphQL": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit a graphQL query request",
+        "description": "submit a graphQL to the engine",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "graphQL Query json request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GraphQLQueryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/graphQL/run": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run graphQL query directly  ",
+        "description": "submit & run a graphQL query to the engine",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "graphQL",
+            "in": "query",
+            "description": "graphQL query",
+            "required": true,
+            "type": "string",
+            "default": "{\n    human {\n        name,\n        friends {\n            name\n        },\n        owns {\n            name,\n            appearsIn,\n            friends {\n                name,\n                description\n            }\n        }\n    }\n}"
           },
           {
             "name": "ontology",
@@ -1234,6 +1338,27 @@
         "query": "match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue), (e:Entity)-[hasRelEn:relatedEntity]->(e2:Entity) return *"
       }
     },
+    "GraphQLQueryRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "id": "1",
+        "name": "Q1",
+        "ontology": "Knowledge",
+        "query": "{\n    person {\n        name,\n        knows {\n            name\n        },\n        owns {\n            name,\n            appearsIn,\n            knows {\n                name,\n                description\n            }\n        }\n    }\n}"
+      }
+    },
     "QueryRequest": {
       "type": "object",
       "properties": {
@@ -1525,7 +1650,7 @@
             "label": "Person",
             "properties": {
               "name": "Myriel",
-              "age" : 43
+              "age": 43
             }
           },
           {
@@ -1536,7 +1661,7 @@
             "label": "Person",
             "properties": {
               "name": "Napoleon",
-              "age" : 68
+              "age": 68
             }
           },
           {
@@ -1547,7 +1672,7 @@
             "label": "Person",
             "properties": {
               "name": "Mlle.Baptistine",
-              "age" : 21
+              "age": 21
             }
           },
           {
@@ -1558,7 +1683,7 @@
             "label": "Person",
             "properties": {
               "name": "Mme.Magloire",
-              "age" : 13
+              "age": 13
             }
           },
           {
@@ -1569,7 +1694,7 @@
             "label": "Person",
             "properties": {
               "name": "CountessdeLo",
-              "age" : 32
+              "age": 32
             }
           },
           {
@@ -1580,7 +1705,7 @@
             "label": "Person",
             "properties": {
               "name": "Geborand",
-              "age" : 73
+              "age": 73
             }
           },
           {
@@ -1591,7 +1716,7 @@
             "label": "Person",
             "properties": {
               "name": "Champtercier",
-              "age" : 51
+              "age": 51
             }
           },
           {
@@ -1602,7 +1727,7 @@
             "label": "Person",
             "properties": {
               "name": "Cravatte",
-              "age" : 23
+              "age": 23
             }
           },
           {
@@ -1613,7 +1738,7 @@
             "label": "Person",
             "properties": {
               "name": "Count",
-              "age" : 58
+              "age": 58
             }
           },
           {
@@ -1624,7 +1749,7 @@
             "label": "Person",
             "properties": {
               "name": "OldMan",
-              "age" : 70
+              "age": 70
             }
           },
           {
@@ -1635,7 +1760,7 @@
             "label": "Person",
             "properties": {
               "name": "Labarre",
-              "age" : 27
+              "age": 27
             }
           },
           {
@@ -1646,7 +1771,7 @@
             "label": "Person",
             "properties": {
               "name": "Valjean",
-              "age" : 25
+              "age": 25
             }
           },
           {
@@ -1657,7 +1782,7 @@
             "label": "Person",
             "properties": {
               "name": "Marguerite",
-              "age" : 40
+              "age": 40
             }
           },
           {
@@ -1668,7 +1793,7 @@
             "label": "Person",
             "properties": {
               "name": "Mme.deR",
-              "age" : 9
+              "age": 9
             }
           },
           {
@@ -1679,7 +1804,7 @@
             "label": "Person",
             "properties": {
               "name": "Isabeau",
-              "age" : 10
+              "age": 10
             }
           },
           {
@@ -1690,7 +1815,7 @@
             "label": "Person",
             "properties": {
               "name": "Gervais",
-              "age" : 36
+              "age": 36
             }
           },
           {
@@ -1701,7 +1826,7 @@
             "label": "Person",
             "properties": {
               "name": "Tholomyes",
-              "age" : 42
+              "age": 42
             }
           },
           {
@@ -1712,7 +1837,7 @@
             "label": "Person",
             "properties": {
               "name": "Listolier",
-              "age" : 31
+              "age": 31
             }
           },
           {
@@ -1723,7 +1848,7 @@
             "label": "Person",
             "properties": {
               "name": "Fameuil",
-              "age" : 30
+              "age": 30
             }
           },
           {
@@ -1734,7 +1859,7 @@
             "label": "Person",
             "properties": {
               "name": "Blacheville",
-              "age" : 27
+              "age": 27
             }
           },
           {
@@ -1745,7 +1870,7 @@
             "label": "Person",
             "properties": {
               "name": "Favourite",
-              "age" : 20
+              "age": 20
             }
           },
           {
@@ -1756,7 +1881,7 @@
             "label": "Person",
             "properties": {
               "name": "Dahlia",
-              "age" : 19
+              "age": 19
             }
           },
           {
@@ -1767,7 +1892,7 @@
             "label": "Person",
             "properties": {
               "name": "Zephine",
-              "age" : 17
+              "age": 17
             }
           },
           {
@@ -1778,7 +1903,7 @@
             "label": "Person",
             "properties": {
               "name": "Fantine",
-              "age" : 16
+              "age": 16
             }
           },
           {
@@ -1789,7 +1914,7 @@
             "label": "Person",
             "properties": {
               "name": "Mme.Thenardier",
-              "age" : 37
+              "age": 37
             }
           },
           {
@@ -1800,7 +1925,7 @@
             "label": "Person",
             "properties": {
               "name": "Thenardier",
-              "age" : 19
+              "age": 19
             }
           },
           {
@@ -1811,7 +1936,7 @@
             "label": "Person",
             "properties": {
               "name": "Cosette",
-              "age" : 24
+              "age": 24
             }
           },
           {
@@ -1822,7 +1947,7 @@
             "label": "Person",
             "properties": {
               "name": "Javert",
-              "age" : 31
+              "age": 31
             }
           },
           {
@@ -1833,7 +1958,7 @@
             "label": "Person",
             "properties": {
               "name": "Fauchelevent",
-              "age" : 38
+              "age": 38
             }
           },
           {
@@ -1844,7 +1969,7 @@
             "label": "Person",
             "properties": {
               "name": "Bamatabois",
-              "age" : 21
+              "age": 21
             }
           },
           {
@@ -1855,7 +1980,7 @@
             "label": "Person",
             "properties": {
               "name": "Perpetue",
-              "age" : 29
+              "age": 29
             }
           },
           {
@@ -1866,7 +1991,7 @@
             "label": "Person",
             "properties": {
               "name": "Simplice",
-              "age" : 19
+              "age": 19
             }
           },
           {
@@ -1877,7 +2002,7 @@
             "label": "Person",
             "properties": {
               "name": "Scaufflaire",
-              "age" : 19
+              "age": 19
             }
           },
           {
@@ -1888,7 +2013,7 @@
             "label": "Person",
             "properties": {
               "name": "Woman1",
-              "age" : 20
+              "age": 20
             }
           },
           {
@@ -1899,7 +2024,7 @@
             "label": "Person",
             "properties": {
               "name": "Judge",
-              "age" : 39
+              "age": 39
             }
           },
           {
@@ -1910,7 +2035,7 @@
             "label": "Person",
             "properties": {
               "name": "Champmathieu",
-              "age" : 45
+              "age": 45
             }
           },
           {
@@ -1921,7 +2046,7 @@
             "label": "Person",
             "properties": {
               "name": "Brevet",
-              "age" : 35
+              "age": 35
             }
           },
           {
@@ -1932,7 +2057,7 @@
             "label": "Person",
             "properties": {
               "name": "Chenildieu",
-              "age" : 30
+              "age": 30
             }
           },
           {
@@ -1943,7 +2068,7 @@
             "label": "Person",
             "properties": {
               "name": "Cochepaille",
-              "age" : 32
+              "age": 32
             }
           },
           {
@@ -1954,7 +2079,7 @@
             "label": "Person",
             "properties": {
               "name": "Pontmercy",
-              "age" : 22
+              "age": 22
             }
           },
           {
@@ -1965,7 +2090,7 @@
             "label": "Person",
             "properties": {
               "name": "Boulatruelle",
-              "age" : 21
+              "age": 21
             }
           },
           {
@@ -1976,7 +2101,7 @@
             "label": "Person",
             "properties": {
               "name": "Eponine",
-              "age" : 20
+              "age": 20
             }
           },
           {
@@ -1987,7 +2112,7 @@
             "label": "Person",
             "properties": {
               "name": "Anzelma",
-              "age" : 190
+              "age": 190
             }
           },
           {
@@ -1998,7 +2123,7 @@
             "label": "Person",
             "properties": {
               "name": "Woman2",
-              "age" : 18
+              "age": 18
             }
           },
           {
@@ -2009,7 +2134,7 @@
             "label": "Person",
             "properties": {
               "name": "MotherInnocent",
-              "age" : 28
+              "age": 28
             }
           },
           {
@@ -2020,7 +2145,7 @@
             "label": "Person",
             "properties": {
               "name": "Gribier",
-              "age" : 41
+              "age": 41
             }
           },
           {
@@ -2031,7 +2156,7 @@
             "label": "Person",
             "properties": {
               "name": "Jondrette",
-              "age" : 45
+              "age": 45
             }
           },
           {
@@ -2042,7 +2167,7 @@
             "label": "Person",
             "properties": {
               "name": "Mme.Burgon",
-              "age" : 43
+              "age": 43
             }
           },
           {
@@ -2053,7 +2178,7 @@
             "label": "Person",
             "properties": {
               "name": "Gavroche",
-              "age" : 23
+              "age": 23
             }
           },
           {
@@ -2064,7 +2189,7 @@
             "label": "Person",
             "properties": {
               "name": "Gillenormand",
-              "age" : 23
+              "age": 23
             }
           },
           {
@@ -2075,7 +2200,7 @@
             "label": "Person",
             "properties": {
               "name": "Magnon",
-              "age" : 36
+              "age": 36
             }
           },
           {
@@ -2086,7 +2211,7 @@
             "label": "Person",
             "properties": {
               "name": "Mlle.Gillenormand",
-              "age" : 37
+              "age": 37
             }
           },
           {
@@ -2097,7 +2222,7 @@
             "label": "Person",
             "properties": {
               "name": "Mme.Pontmercy",
-              "age" : 38
+              "age": 38
             }
           },
           {
@@ -2108,7 +2233,7 @@
             "label": "Person",
             "properties": {
               "name": "Mlle.Vaubois",
-              "age" : 28
+              "age": 28
             }
           },
           {
@@ -2119,7 +2244,7 @@
             "label": "Person",
             "properties": {
               "name": "Lt.Gillenormand",
-              "age" : 24
+              "age": 24
             }
           },
           {
@@ -2130,7 +2255,7 @@
             "label": "Person",
             "properties": {
               "name": "Marius",
-              "age" : 22
+              "age": 22
             }
           },
           {
@@ -2141,7 +2266,7 @@
             "label": "Person",
             "properties": {
               "name": "BaronessT",
-              "age" : 12
+              "age": 12
             }
           },
           {
@@ -2152,7 +2277,7 @@
             "label": "Person",
             "properties": {
               "name": "Mabeuf",
-              "age" : 11
+              "age": 11
             }
           },
           {
@@ -2163,7 +2288,7 @@
             "label": "Person",
             "properties": {
               "name": "Enjolras",
-              "age" : 10
+              "age": 10
             }
           },
           {
@@ -2174,7 +2299,7 @@
             "label": "Person",
             "properties": {
               "name": "Combeferre",
-              "age" : 9
+              "age": 9
             }
           },
           {
@@ -2185,7 +2310,7 @@
             "label": "Person",
             "properties": {
               "name": "Prouvaire",
-              "age" : 8
+              "age": 8
             }
           },
           {
@@ -2196,7 +2321,7 @@
             "label": "Person",
             "properties": {
               "name": "Feuilly",
-              "age" : 7
+              "age": 7
             }
           },
           {
@@ -2207,7 +2332,7 @@
             "label": "Person",
             "properties": {
               "name": "Courfeyrac",
-              "age" : 6
+              "age": 6
             }
           },
           {
@@ -2218,7 +2343,7 @@
             "label": "Person",
             "properties": {
               "name": "Bahorel",
-              "age" : 18
+              "age": 18
             }
           },
           {
@@ -2229,7 +2354,7 @@
             "label": "Person",
             "properties": {
               "name": "Bossuet",
-              "age" : 17
+              "age": 17
             }
           },
           {
@@ -2240,7 +2365,7 @@
             "label": "Person",
             "properties": {
               "name": "Joly",
-              "age" : 16
+              "age": 16
             }
           },
           {
@@ -2251,7 +2376,7 @@
             "label": "Person",
             "properties": {
               "name": "Grantaire",
-              "age" : 15
+              "age": 15
             }
           },
           {
@@ -2262,7 +2387,7 @@
             "label": "Person",
             "properties": {
               "name": "MotherPlutarch",
-              "age" : 25
+              "age": 25
             }
           },
           {
@@ -2273,7 +2398,7 @@
             "label": "Person",
             "properties": {
               "name": "Gueulemer",
-              "age" : 27
+              "age": 27
             }
           },
           {
@@ -2284,7 +2409,7 @@
             "label": "Person",
             "properties": {
               "name": "Babet",
-              "age" : 29
+              "age": 29
             }
           },
           {
@@ -2295,7 +2420,7 @@
             "label": "Person",
             "properties": {
               "name": "Claquesous",
-              "age" : 30
+              "age": 30
             }
           },
           {
@@ -2306,7 +2431,7 @@
             "label": "Person",
             "properties": {
               "name": "Montparnasse",
-              "age" : 60
+              "age": 60
             }
           },
           {
@@ -2317,7 +2442,7 @@
             "label": "Person",
             "properties": {
               "name": "Toussaint",
-              "age" : 68
+              "age": 68
             }
           },
           {
@@ -2328,7 +2453,7 @@
             "label": "Person",
             "properties": {
               "name": "Child1",
-              "age" : 8
+              "age": 8
             }
           },
           {
@@ -2339,7 +2464,7 @@
             "label": "Person",
             "properties": {
               "name": "Child2",
-              "age" : 8
+              "age": 8
             }
           },
           {
@@ -2350,7 +2475,7 @@
             "label": "Person",
             "properties": {
               "name": "Brujon",
-              "age" : 28
+              "age": 28
             }
           },
           {
@@ -2361,7 +2486,7 @@
             "label": "Person",
             "properties": {
               "name": "Mme.Hucheloup",
-              "age" : 78
+              "age": 78
             }
           }
         ],
@@ -4423,6 +4548,9 @@
           "$ref": "#/definitions/Metadata"
         }
       }
+    },
+    "GraphQLSchema": {
+      "type": "string"
     },
     "LogicalNode": {
       "type": "object",

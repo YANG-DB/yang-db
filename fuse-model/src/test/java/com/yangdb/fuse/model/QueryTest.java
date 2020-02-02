@@ -7,6 +7,7 @@ import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.ETyped;
+import com.yangdb.fuse.model.query.optional.OptionalComp;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.RelProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
@@ -29,6 +30,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.yangdb.fuse.model.query.Rel.Direction.L;
+import static com.yangdb.fuse.model.query.Rel.Direction.R;
 import static java.util.Optional.of;
 
 
@@ -62,6 +65,382 @@ public class QueryTest {
                 .build();
         String queryString = mapper.writeValueAsString(query);
         JSONAssert.assertEquals("{\"ont\":\"Knowledge\",\"name\":\"test\",\"elements\":[{\"type\":\"Start\",\"eNum\":0,\"next\":1},{\"type\":\"ETyped\",\"eNum\":1,\"eTag\":\"P1\",\"next\":2,\"b\":-1,\"eType\":\"Entity\",\"typed\":\"Entity\"},{\"type\":\"Quant1\",\"eNum\":2,\"qType\":\"some\",\"b\":-1,\"next\":[3,4]},{\"type\":\"EPropGroup\",\"eNum\":3,\"props\":[{\"type\":\"EProp\",\"eNum\":3,\"pType\":\"category\",\"proj\":{\"type\":\"Identity\"},\"constraint\":false,\"projection\":true},{\"type\":\"EProp\",\"eNum\":3,\"pType\":\"context\",\"con\":{\"type\":\"Constraint\",\"op\":\"not empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false}],\"quantType\":\"all\"},{\"type\":\"Rel\",\"eNum\":4,\"rType\":\"hasOutRelation\",\"dir\":\"R\",\"wrapper\":\"k\",\"next\":5,\"b\":-1,\"eTag\":\"k\",\"typed\":\"hasOutRelation\"},{\"type\":\"ETyped\",\"eNum\":5,\"eTag\":\"P2\",\"next\":6,\"b\":-1,\"eType\":\"Entity\",\"typed\":\"Entity\"},{\"type\":\"Quant1\",\"eNum\":6,\"qType\":\"all\",\"b\":-1,\"next\":[7]},{\"type\":\"EPropGroup\",\"eNum\":7,\"props\":[{\"type\":\"EProp\",\"eNum\":7,\"pType\":\"deleteTime\",\"con\":{\"type\":\"Constraint\",\"op\":\"empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false}],\"quantType\":\"all\"}]}", queryString, true);
+
+    }
+
+    @Test
+    public void testQueryBuilderWithOptional() throws IOException, JSONException {
+        Query query = Query.Builder.instance().withName("q2").withOnt("Knowledge")
+            .withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", "Entity", 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3,4,9,14,28), 0),
+                new EProp(3, "context", Constraint.of(ConstraintOp.eq,"global")),
+                new Rel(4, "hasEvalue", R, null, 5, 0),
+                new ETyped(5, "B","Evalue", 6, 0),
+                new Quant1(6, QuantType.all, Arrays.asList(7,8,29), 0),
+                new EProp(7, "fieldId", Constraint.of(ConstraintOp.eq, "title")),
+                new EProp(8, "stringValue", Constraint.of(ConstraintOp.like,"*")),
+                new Rel(9, "hasEvalue", R, null, 10, 0),
+                new ETyped(10, "B","Evalue", 11, 0),
+                new Quant1(11, QuantType.all, Arrays.asList(12,13,30), 0),
+                new EProp(12, "fieldId", Constraint.of(ConstraintOp.eq, "nicknames")),
+                new EProp(13, "stringValue", Constraint.of(ConstraintOp.like,"***")),
+                new Rel(14,"hasEntity", L, null, 15, 0),
+                new ETyped(15, "B", "LogicalEntity", 16, 0),
+                new Rel(16,"hasEntity", R, null, 17, 0),
+                new ETyped(17, "B", "Entity", 18, 0),
+                new Quant1(18, QuantType.all, Arrays.asList(19,20,22,31), 0),
+                new EProp(19, "context", Constraint.of(ConstraintOp.eq, "global")),
+                new EProp(20, "context", Constraint.of(ConstraintOp.eq, "context1")),
+                new OptionalComp(22,23),
+                new Rel(23, "hasEvalue", R, null, 24, 0),
+                new ETyped(24, "B","Evalue", 25, 0),
+                new Quant1(25, QuantType.all, Arrays.asList(26,27,32), 0),
+                new EProp(26, "fieldId", Constraint.of(ConstraintOp.eq, "description")),
+                new EProp(27, "stringValue", Constraint.of(ConstraintOp.like, "*")),
+
+                new EProp(28, "deleteTime", Constraint.of(ConstraintOp.empty)),
+                new EProp(29, "deleteTime", Constraint.of(ConstraintOp.empty)),
+                new EProp(30, "deleteTime", Constraint.of(ConstraintOp.empty)),
+                new EProp(31, "deleteTime", Constraint.of(ConstraintOp.empty)),
+                new EProp(32, "deleteTime", Constraint.of(ConstraintOp.empty))
+        )).build();
+        String queryString = mapper.writeValueAsString(query);
+        JSONAssert.assertEquals("{\n" +
+                "  \"ont\": \"Knowledge\",\n" +
+                "  \"name\": \"q2\",\n" +
+                "  \"elements\": [\n" +
+                "    {\n" +
+                "      \"type\": \"Start\",\n" +
+                "      \"eNum\": 0,\n" +
+                "      \"next\": 1\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"ETyped\",\n" +
+                "      \"eNum\": 1,\n" +
+                "      \"eTag\": \"A\",\n" +
+                "      \"next\": 2,\n" +
+                "      \"eType\": \"Entity\",\n" +
+                "      \"typed\": \"Entity\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Quant1\",\n" +
+                "      \"eNum\": 2,\n" +
+                "      \"qType\": \"all\",\n" +
+                "      \"next\": [\n" +
+                "        3,\n" +
+                "        4,\n" +
+                "        9,\n" +
+                "        14,\n" +
+                "        28\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 3,\n" +
+                "      \"pType\": \"context\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"eq\",\n" +
+                "        \"expr\": \"global\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Rel\",\n" +
+                "      \"eNum\": 4,\n" +
+                "      \"rType\": \"hasEvalue\",\n" +
+                "      \"dir\": \"R\",\n" +
+                "      \"next\": 5,\n" +
+                "      \"typed\": \"hasEvalue\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"ETyped\",\n" +
+                "      \"eNum\": 5,\n" +
+                "      \"eTag\": \"B\",\n" +
+                "      \"next\": 6,\n" +
+                "      \"eType\": \"Evalue\",\n" +
+                "      \"typed\": \"Evalue\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Quant1\",\n" +
+                "      \"eNum\": 6,\n" +
+                "      \"qType\": \"all\",\n" +
+                "      \"next\": [\n" +
+                "        7,\n" +
+                "        8,\n" +
+                "        29\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 7,\n" +
+                "      \"pType\": \"fieldId\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"eq\",\n" +
+                "        \"expr\": \"title\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 8,\n" +
+                "      \"pType\": \"stringValue\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"like\",\n" +
+                "        \"expr\": \"*\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Rel\",\n" +
+                "      \"eNum\": 9,\n" +
+                "      \"rType\": \"hasEvalue\",\n" +
+                "      \"dir\": \"R\",\n" +
+                "      \"next\": 10,\n" +
+                "      \"typed\": \"hasEvalue\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"ETyped\",\n" +
+                "      \"eNum\": 10,\n" +
+                "      \"eTag\": \"B\",\n" +
+                "      \"next\": 11,\n" +
+                "      \"eType\": \"Evalue\",\n" +
+                "      \"typed\": \"Evalue\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Quant1\",\n" +
+                "      \"eNum\": 11,\n" +
+                "      \"qType\": \"all\",\n" +
+                "      \"next\": [\n" +
+                "        12,\n" +
+                "        13,\n" +
+                "        30\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 12,\n" +
+                "      \"pType\": \"fieldId\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"eq\",\n" +
+                "        \"expr\": \"nicknames\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 13,\n" +
+                "      \"pType\": \"stringValue\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"like\",\n" +
+                "        \"expr\": \"***\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Rel\",\n" +
+                "      \"eNum\": 14,\n" +
+                "      \"rType\": \"hasEntity\",\n" +
+                "      \"dir\": \"L\",\n" +
+                "      \"next\": 15,\n" +
+                "      \"typed\": \"hasEntity\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"ETyped\",\n" +
+                "      \"eNum\": 15,\n" +
+                "      \"eTag\": \"B\",\n" +
+                "      \"next\": 16,\n" +
+                "      \"eType\": \"LogicalEntity\",\n" +
+                "      \"typed\": \"LogicalEntity\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Rel\",\n" +
+                "      \"eNum\": 16,\n" +
+                "      \"rType\": \"hasEntity\",\n" +
+                "      \"dir\": \"R\",\n" +
+                "      \"next\": 17,\n" +
+                "      \"typed\": \"hasEntity\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"ETyped\",\n" +
+                "      \"eNum\": 17,\n" +
+                "      \"eTag\": \"B\",\n" +
+                "      \"next\": 18,\n" +
+                "      \"eType\": \"Entity\",\n" +
+                "      \"typed\": \"Entity\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Quant1\",\n" +
+                "      \"eNum\": 18,\n" +
+                "      \"qType\": \"all\",\n" +
+                "      \"next\": [\n" +
+                "        19,\n" +
+                "        20,\n" +
+                "        22,\n" +
+                "        31\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 19,\n" +
+                "      \"pType\": \"context\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"eq\",\n" +
+                "        \"expr\": \"global\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 20,\n" +
+                "      \"pType\": \"context\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"eq\",\n" +
+                "        \"expr\": \"context1\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"OptionalComp\",\n" +
+                "      \"eNum\": 22,\n" +
+                "      \"next\": 23\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Rel\",\n" +
+                "      \"eNum\": 23,\n" +
+                "      \"rType\": \"hasEvalue\",\n" +
+                "      \"dir\": \"R\",\n" +
+                "      \"next\": 24,\n" +
+                "      \"typed\": \"hasEvalue\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"ETyped\",\n" +
+                "      \"eNum\": 24,\n" +
+                "      \"eTag\": \"B\",\n" +
+                "      \"next\": 25,\n" +
+                "      \"eType\": \"Evalue\",\n" +
+                "      \"typed\": \"Evalue\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Quant1\",\n" +
+                "      \"eNum\": 25,\n" +
+                "      \"qType\": \"all\",\n" +
+                "      \"next\": [\n" +
+                "        26,\n" +
+                "        27,\n" +
+                "        32\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 26,\n" +
+                "      \"pType\": \"fieldId\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"eq\",\n" +
+                "        \"expr\": \"description\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 27,\n" +
+                "      \"pType\": \"stringValue\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"like\",\n" +
+                "        \"expr\": \"*\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 28,\n" +
+                "      \"pType\": \"deleteTime\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"empty\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 29,\n" +
+                "      \"pType\": \"deleteTime\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"empty\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 30,\n" +
+                "      \"pType\": \"deleteTime\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"empty\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 31,\n" +
+                "      \"pType\": \"deleteTime\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"empty\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"EProp\",\n" +
+                "      \"eNum\": 32,\n" +
+                "      \"pType\": \"deleteTime\",\n" +
+                "      \"con\": {\n" +
+                "        \"type\": \"Constraint\",\n" +
+                "        \"op\": \"empty\",\n" +
+                "        \"iType\": \"[]\"\n" +
+                "      },\n" +
+                "      \"constraint\": true,\n" +
+                "      \"projection\": false\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}", queryString, true);
 
     }
 

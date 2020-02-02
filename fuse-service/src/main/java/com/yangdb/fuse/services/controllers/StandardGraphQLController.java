@@ -40,7 +40,7 @@ import static org.jooby.Status.OK;
 public class StandardGraphQLController implements GraphQLController {
     //region Constructors
     @Inject
-    public StandardGraphQLController(OntologyTransformerIfc transformer) {
+    public StandardGraphQLController(OntologyTransformerIfc<String, Ontology> transformer) {
         this.transformer = transformer;
     }
     //endregion
