@@ -18,15 +18,16 @@ import java.util.Optional;
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_GRAPH_QL;
 
 
-public class GraphQLQueryExecuterTest {
+public class GraphQLSimpleQueryExecuterTest {
     public static Ontology ontology;
     public static QueryTransformer<QueryInfo<String>, Query> transformer;
 
     @BeforeClass
     public static void setUp() throws Exception {
-        InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/StarWars.graphql");
+        InputStream schemaInput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/starWars.graphql");
+        InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql");
         GraphQL2OntologyTransformer graphQL2OntologyTransformer = new GraphQL2OntologyTransformer();
-        ontology = graphQL2OntologyTransformer.transform(resource);
+        ontology = graphQL2OntologyTransformer.transform(schemaInput,whereInoput);
         transformer = new GraphQL2QueryTransformer(graphQL2OntologyTransformer, new OntologyProvider() {
             @Override
             public Optional<Ontology> get(String id) {
@@ -50,6 +51,34 @@ public class GraphQLQueryExecuterTest {
     public void testQuerySingleVertexWithFewProperties() {
         String q = " {\n" +
                 "    human {\n" +
+                "        name,\n" +
+                "        description\n" +
+                "    }\n" +
+                "}";
+        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPH_QL,"test"));
+        String expected = "[└── Start, \n" +
+                "    ──Typ[Human:1]──Q[2]:{3|4}, \n" +
+                "                          └─?[3]:[name<IdentityProjection>], \n" +
+                "                          └─?[4]:[description<IdentityProjection>]]";
+        Assert.assertEquals(expected, QueryDescriptor.print(query));
+    }
+
+    @Test
+    public void testConstraintByIdQuerySingleVertexWithFewProperties() {
+        String q = "{\n" +
+                "    human (where: {\n" +
+                "        operator: AND,\n" +
+                "        constraints: [{\n" +
+                "            operand: \"name\",\n" +
+                "            operator: \"like\",\n" +
+                "            expression: \"jhone\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            operand: \"description\",\n" +
+                "            operator: \"not_empty\"\n" +
+                "        }]\n" +
+                "    }) {\n" +
+                "\n" +
                 "        name,\n" +
                 "        description\n" +
                 "    }\n" +

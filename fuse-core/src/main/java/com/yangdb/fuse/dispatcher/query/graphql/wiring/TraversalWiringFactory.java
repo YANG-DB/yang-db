@@ -113,7 +113,8 @@ public class TraversalWiringFactory implements WiringFactory {
 
     private Object getObject(DataFetchingEnvironment env, GraphQLType fieldType) {
         fieldType = extractConcreteFieldType(fieldType);
-
+        //arguments
+        Map<String, Object> arguments = env.getArguments();
         // in parent is of type vertex and current query element not quant -> add quant
         ExecutionStepInfo parent = env.getExecutionStepInfo().getParent();
         if (parent.getFieldDefinition() != null) {

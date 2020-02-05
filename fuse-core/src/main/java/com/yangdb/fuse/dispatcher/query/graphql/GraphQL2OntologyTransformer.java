@@ -85,14 +85,13 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
     /**
      * API that will transform a GraphQL schema into YangDb ontology schema
      *
-     * @param graphQL
+     * @param streams
      * @return
      */
-    public Ontology transform(InputStream graphQL) {
+    public Ontology transform(InputStream ... streams) {
         if (graphQLSchema == null) {
             // each registry is merged into the main registry
-            TypeDefinitionRegistry parse = schemaParser.parse(new InputStreamReader(graphQL));
-            typeRegistry.merge(parse);
+            Arrays.asList(streams).forEach(s-> typeRegistry.merge(schemaParser.parse(new InputStreamReader(s))));
             //create schema
             graphQLSchema = schemaGenerator.makeExecutableSchema(
                     SchemaGenerator.Options.defaultOptions().enforceSchemaDirectives(false),
