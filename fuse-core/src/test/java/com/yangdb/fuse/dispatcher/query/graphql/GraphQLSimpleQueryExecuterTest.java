@@ -6,7 +6,6 @@ import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryInfo;
-import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -75,7 +74,7 @@ public class GraphQLSimpleQueryExecuterTest {
                 "        },\n" +
                 "        {\n" +
                 "            operand: \"description\",\n" +
-                "            operator: \"not_empty\"\n" +
+                "            operator: \"notEmpty\"\n" +
                 "        }]\n" +
                 "    }) {\n" +
                 "\n" +
@@ -85,9 +84,10 @@ public class GraphQLSimpleQueryExecuterTest {
                 "}";
         Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPH_QL,"test"));
         String expected = "[└── Start, \n" +
-                "    ──Typ[Human:1]──Q[2]:{3|4}, \n" +
-                "                          └─?[3]:[name<IdentityProjection>], \n" +
-                "                          └─?[4]:[description<IdentityProjection>]]";
+                "    ──Typ[Human:1]──Q[2]:{3|4|5}, \n" +
+                "                            └─?[3]:[name<like,jhone>, description<notEmpty,null>], \n" +
+                "                            └─?[4]:[name<IdentityProjection>], \n" +
+                "                            └─?[5]:[description<IdentityProjection>]]";
         Assert.assertEquals(expected, QueryDescriptor.print(query));
     }
 

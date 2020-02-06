@@ -1,16 +1,16 @@
-enum WhereOperator {
-    AND
-    OR
-    OPTIONAL
-}
+    enum WhereOperator {
+        AND
+        OR
+        OPTIONAL
+    }
 
-input Constraint {
-    operand: String!
-    operator: String!
-    expression: String
-}
+    input Constraint {
+        operand: String!
+        operator: String!
+        expression: String
+    }
 
-input WhereClause {
-    operator: WhereOperator
-    constraints: [Constraint]
-}
+    input WhereClause {
+        operator: WhereOperator
+        constraints: [Constraint]
+    }

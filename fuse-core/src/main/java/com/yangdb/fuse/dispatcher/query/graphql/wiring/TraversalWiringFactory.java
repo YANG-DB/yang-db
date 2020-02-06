@@ -20,13 +20,17 @@ package com.yangdb.fuse.dispatcher.query.graphql.wiring;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.dispatcher.query.graphql.GraphQLSchemaUtils;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.ontology.RelationshipType;
+import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.query.properties.constraint.Constraint;
+import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.quant.QuantBase;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import graphql.Internal;
@@ -35,11 +39,14 @@ import graphql.execution.ExecutionPath;
 import graphql.execution.ExecutionStepInfo;
 import graphql.schema.*;
 import graphql.schema.idl.*;
+import javaslang.Tuple2;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 /**
@@ -49,6 +56,10 @@ import java.util.function.Consumer;
  */
 @Internal
 public class TraversalWiringFactory implements WiringFactory {
+
+    public static final String WHERE = "where";
+    //wiring jackson mapper
+    public static final ObjectMapper mapper = new ObjectMapper();
 
     private Query.Builder builder;
     private Ontology.Accessor accessor;
@@ -111,10 +122,8 @@ public class TraversalWiringFactory implements WiringFactory {
         };
     }
 
-    private Object getObject(DataFetchingEnvironment env, GraphQLType fieldType) {
+    private Object getObject(DataFetchingEnvironment env, GraphQLType fieldType) throws IOException {
         fieldType = extractConcreteFieldType(fieldType);
-        //arguments
-        Map<String, Object> arguments = env.getArguments();
         // in parent is of type vertex and current query element not quant -> add quant
         ExecutionStepInfo parent = env.getExecutionStepInfo().getParent();
         if (parent.getFieldDefinition() != null) {
@@ -125,7 +134,9 @@ public class TraversalWiringFactory implements WiringFactory {
                     //validate no quant related to the
                     !(builder.current(pathContext.get(parentPath.getPathWithoutListEnd().toString())) instanceof QuantBase)) {
                 //todo add quant
-                builder.quant(QuantType.all);
+                if(!(builder.current() instanceof QuantBase)) {
+                    builder.quant(QuantType.all);
+                }
                 pathContext.put(parent.getPath().getPathWithoutListEnd().toString(), builder.currentIndex());
             }
         }
@@ -138,7 +149,8 @@ public class TraversalWiringFactory implements WiringFactory {
                 builder.start();
             }
             //populate vertex or relation
-            populateGraphObject(env, type.getName());
+            Optional<EntityType> realType = populateGraphObject(env, type.getName());
+            addWhereClause(env,realType);
 //            return fakeObjectValue(accessor, builder, (GraphQLObjectType) fieldType);
             return new Object();
             //todo create concrete union types from abstract interface
@@ -146,7 +158,8 @@ public class TraversalWiringFactory implements WiringFactory {
             //select the first implementing of interface (no matter which one since all share same common fields)
             List<GraphQLObjectType> implementations = schema.getImplementations((GraphQLInterfaceType) fieldType);
             //populate vertex or relation
-            populateGraphObject(env, ((GraphQLInterfaceType) fieldType).getName());
+            Optional<EntityType> realType = populateGraphObject(env, ((GraphQLInterfaceType) fieldType).getName());
+            addWhereClause(env, realType);
 //            return fakeObjectValue(accessor, builder, implementations.get(0));
             return new Object();
         }
@@ -158,7 +171,53 @@ public class TraversalWiringFactory implements WiringFactory {
             String name = populateGraphEnum(env);
             return fakeEnumValue(name, (GraphQLEnumType) fieldType);
         }
+
         return new Object();
+    }
+
+    /**
+     *
+     * @param env
+     * @param realType
+     * @throws IOException
+     */
+    private void addWhereClause(DataFetchingEnvironment env, Optional<EntityType> realType) throws IOException {
+        //arguments
+        if(realType.isPresent() && env.getArguments().containsKey(WHERE)) {
+            Object argument = env.getArguments().get(WHERE);
+            InputTypeWhereClause whereClause = mapper.readValue(mapper.writeValueAsString(argument), InputTypeWhereClause.class);
+            //verify fields exist within entity type
+            List<InputTypeConstraint> nonFoundFields = whereClause.getConstraints().stream()
+                    .filter(c -> !realType.get().containsProperty(c.getOperand()))
+                    .collect(Collectors.toList());
+
+            if(!nonFoundFields.isEmpty())
+                throw new IllegalArgumentException("Fields "+nonFoundFields +" are not a part of the queried entity "+realType.get().getName());
+
+            //build the where clause query
+            List<Tuple2<String, Optional<Constraint>>> constraints = whereClause.getConstraints().stream()
+                    .map(c -> new Tuple2<>(c.getOperand(),
+                            Optional.of(new Constraint(ConstraintOp.valueOf(c.getOperator()), c.getExpression()))))
+                    .collect(Collectors.toList());
+
+
+            //if no quant exists - add one
+            if(!getBuilder().pop(eBase -> eBase instanceof QuantBase).isPresent()) {
+                builder.quant(QuantType.all);
+            }
+
+            //add to group
+            builder.ePropGroup(constraints,asQuantType(whereClause.getOperator()));
+
+        }
+    }
+
+    private QuantType asQuantType(InputTypeWhereClause.WhereOperator operator) {
+        switch (operator) {
+            case AND: return QuantType.all;
+            case OR: return QuantType.some;
+            default:return QuantType.all;
+        }
     }
 
     private boolean isParentObjectType(GraphQLFieldDefinition parentField) {
@@ -221,7 +280,7 @@ public class TraversalWiringFactory implements WiringFactory {
         return fieldType;
     }
 
-    private void populateGraphObject(DataFetchingEnvironment env, String typeName) {
+    private Optional<EntityType> populateGraphObject(DataFetchingEnvironment env, String typeName) {
         //pop to the correct index according to path
         if (pathContext.containsKey(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString())) {
             builder.currentIndex(pathContext.get(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString()));
@@ -235,14 +294,18 @@ public class TraversalWiringFactory implements WiringFactory {
             EntityType entityType = accessor.entity$(typeName);
             builder.eType(entityType.geteType(), typeName);
             pathContext.put(env.getExecutionStepInfo().getPath().getPathWithoutListEnd().toString(), builder.currentIndex());
+            return Optional.of(entityType);
         } else if (accessor.entity(typeName).isPresent()) {
             EntityType entityType = accessor.entity$(typeName);
             builder.eType(entityType.geteType(), typeName);
             pathContext.put(env.getExecutionStepInfo().getPath().getPathWithoutListEnd().toString(), builder.currentIndex());
+            return Optional.of(entityType);
         }
+        return Optional.empty();
     }
 
 
+    @Deprecated
     private  Object fakeObjectValue(Ontology.Accessor accessor, Query.Builder builder, GraphQLObjectType fieldType) {
         Map<String, Object> map = new LinkedHashMap<>();
 
