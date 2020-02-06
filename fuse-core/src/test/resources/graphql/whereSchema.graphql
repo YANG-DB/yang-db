@@ -1,7 +1,6 @@
     enum WhereOperator {
         AND
         OR
-        OPTIONAL
     }
 
     input Constraint {
