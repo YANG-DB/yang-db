@@ -199,7 +199,7 @@ public class BaseFuseClient implements FuseClient {
             request.setQuery(query);
             request.setOntology(ontology);
             request.setPlanTraceOptions(planTraceOptions);
-            final String response = postRequest(queryStoreUrl +"/" + CreateJsonQueryRequest.TYPE_CYPHER, request);
+            final String response = postRequest(queryStoreUrl +"/" + TYPE_GRAPH_QL, request);
             return this.objectMapper.readValue(unwrap(response), QueryResourceInfo.class);
     }
 
