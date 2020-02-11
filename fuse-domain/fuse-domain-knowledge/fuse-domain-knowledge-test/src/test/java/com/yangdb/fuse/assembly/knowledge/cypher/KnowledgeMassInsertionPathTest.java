@@ -26,8 +26,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeRawSchemaShort.*;
-import static com.yangdb.fuse.assembly.knowledge.KnowledgeStaticRuleBasedStatisticalProvider.KNOWLEDGE;
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;

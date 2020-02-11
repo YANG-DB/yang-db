@@ -45,11 +45,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
+
 /**
  * replace logical graph query (fields within the Entity) into knowledge graph query (RDF structure - fields as separate nodes)
  */
 public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrategy {
-    public static final String KNOWLEDGE = "Knowledge";
     public static final String ENTITY = "Entity";
     public static final String EVALUE = "Evalue";
     public static final String RELATED_ENTITY = "relatedEntity";
@@ -68,7 +69,7 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
         //only transform logical ontologies
-        if (query.getOnt().equals("Knowledge"))
+        if (query.getOnt().equals(KNOWLEDGE))
             return;
 
         Ontology.Accessor logicalOntAccessor = new Ontology.Accessor(this.ontologyProvider.get(query.getOnt()).get());

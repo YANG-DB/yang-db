@@ -92,6 +92,7 @@ public class StandardCursorDriver extends CursorDriverBase {
 
     protected TraversalCursorContext createContext(QueryResource queryResource, CreateCursorRequest cursorRequest, Ontology ontology, GraphTraversal<?, ?> traversal) {
         TraversalCursorContext context = new TraversalCursorContext(
+                ontologyProvider,
                 ontology,
                 queryResource,
                 cursorRequest,
@@ -101,6 +102,7 @@ public class StandardCursorDriver extends CursorDriverBase {
             //first level (hierarchy) inner queries
             return new CompositeTraversalCursorContext(
                     new TraversalCursorContext(
+                            ontologyProvider,
                             ontology,
                             queryResource,
                             new CreateInnerQueryCursorRequest(cursorRequest),

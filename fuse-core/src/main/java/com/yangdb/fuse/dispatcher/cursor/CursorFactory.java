@@ -22,6 +22,7 @@ package com.yangdb.fuse.dispatcher.cursor;
 
 
 
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
@@ -38,13 +39,16 @@ import java.util.Set;
  */
 public interface CursorFactory {
     interface Context {
+        OntologyProvider getOntologyProvider();
+
         QueryResource getQueryResource();
 
         CreateCursorRequest getCursorRequest();
 
         class Impl implements Context {
             //region Constructors
-            public Impl(QueryResource queryResource, CreateCursorRequest cursorRequest) {
+            public Impl(OntologyProvider ontologyProvider,QueryResource queryResource, CreateCursorRequest cursorRequest) {
+                this.ontologyProvider = ontologyProvider;
                 this.queryResource = queryResource;
                 this.cursorRequest = cursorRequest;
             }
@@ -60,6 +64,13 @@ public interface CursorFactory {
             }
             //endregion
 
+
+            @Override
+            public OntologyProvider getOntologyProvider() {
+                return ontologyProvider;
+            }
+
+            private OntologyProvider ontologyProvider;
             //region Fields
             private QueryResource queryResource;
             private CreateCursorRequest cursorRequest;
@@ -95,10 +106,11 @@ public interface CursorFactory {
      * @param cursorTypeName
      * @return
      */
-    static CreateCursorRequest request(String cursorTypeName, CreatePageRequest pageRequest) throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException {
+    static CreateCursorRequest request(String ontology,String cursorTypeName, CreatePageRequest pageRequest) throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException {
         Class<? extends CreateCursorRequest> cursor = resolve(cursorTypeName);
-        Constructor<? extends CreateCursorRequest> constructor = cursor.getConstructor(pageRequest.getClass());
-        return constructor.newInstance(pageRequest);
+        Constructor<? extends CreateCursorRequest> constructor = cursor.getConstructor();
+        CreateCursorRequest request = constructor.newInstance();
+        return request.with(pageRequest).with(ontology);
     }
 
 }

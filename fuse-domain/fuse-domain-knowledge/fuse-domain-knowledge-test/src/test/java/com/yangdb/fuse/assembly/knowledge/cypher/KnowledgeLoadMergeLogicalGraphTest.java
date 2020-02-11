@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 
 /**

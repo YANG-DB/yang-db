@@ -43,6 +43,8 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
+
 
 /**
  * Created by lior.perry on 2/18/2018.
@@ -53,7 +55,6 @@ public class KnowledgeStaticRuleBasedStatisticalProvider implements RefreshableS
     public static final String RULES_SETUP_JSON = "./rules/static_setup.json";
 
     public static final String RULES = "rules";
-    public static final String KNOWLEDGE = "Knowledge";
     public static final String OPERATORS = "operators";
     public static final String NODE = "node";
     public static final String SCORE = "score";

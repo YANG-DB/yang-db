@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.client.export.GraphWriterStrategy;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.driver.*;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
@@ -16,12 +17,14 @@ import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -99,6 +102,22 @@ public class MockDriver {
                     cursorId,
                     cursorFactory.createCursor(
                             new CursorFactory.Context.Impl(
+                                    new OntologyProvider() {
+                                        @Override
+                                        public Optional<Ontology> get(String id) {
+                                            return Optional.empty();
+                                        }
+
+                                        @Override
+                                        public Collection<Ontology> getAll() {
+                                            return null;
+                                        }
+
+                                        @Override
+                                        public Ontology add(Ontology ontology) {
+                                            return null;
+                                        }
+                                    },
                                     queryResource,
                                     cursorRequest)),
                     cursorRequest);

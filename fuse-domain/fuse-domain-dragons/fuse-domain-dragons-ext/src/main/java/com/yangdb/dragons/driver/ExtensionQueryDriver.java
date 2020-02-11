@@ -109,12 +109,7 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
     }
 
 
-    protected CreateQueryRequest createQueryRequest(Query query, String id) {
-        return new CreateQueryRequest(id, id, query, new LogicalGraphCursorRequest(new CreatePageRequest()));
-    }
-
-
-    //endregion
+        //endregion
     private QueryTransformer<String, Query> transformer;
 
 }

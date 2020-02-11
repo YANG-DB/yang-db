@@ -77,6 +77,13 @@ public abstract class CreateCursorRequest {
         this.createPageRequest = createPageRequest;
     }
 
+    public CreateCursorRequest(String ontology,String cursorType, Include include, CreatePageRequest createPageRequest) {
+        this.ontology = ontology;
+        this.cursorType = cursorType;
+        this.include = include;
+        this.createPageRequest = createPageRequest;
+    }
+
     public CreateCursorRequest maxExecutionTime(long time) {
         this.maxExecutionTime = time;
         return this;
@@ -106,6 +113,14 @@ public abstract class CreateCursorRequest {
         this.createPageRequest = createPageRequest;
     }
 
+    public void setOntology(String ontology) {
+        this.ontology = ontology;
+    }
+
+    public String getOntology() {
+        return ontology;
+    }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public Include getInclude() {
         return include;
@@ -119,11 +134,16 @@ public abstract class CreateCursorRequest {
         setCreatePageRequest(createPageRequest);
         return this;
     }
+    public CreateCursorRequest with(String ontology) {
+        setOntology(ontology);
+        return this;
+    }
     //endregions
 
     @Override
     public String toString() {
         return "CreateCursorRequest{" +
+                "ontology='" + ontology + '\'' +
                 "cursorType='" + cursorType + '\'' +
                 ", createPageRequest=" + (createPageRequest!=null ? createPageRequest.toString() : "None") +
                 '}';
@@ -132,6 +152,7 @@ public abstract class CreateCursorRequest {
     //region Fields
     private long maxExecutionTime = 10* 60 * 1000;
     private String cursorType;
+    private String ontology;
     private CreatePageRequest createPageRequest;
     private Include include;
     //endregion

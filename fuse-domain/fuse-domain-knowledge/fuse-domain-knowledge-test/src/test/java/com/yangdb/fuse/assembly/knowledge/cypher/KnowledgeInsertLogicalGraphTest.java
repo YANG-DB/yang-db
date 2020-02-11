@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 import static com.yangdb.fuse.client.FuseClientSupport.countGraphElements;
 import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 
@@ -312,7 +312,7 @@ public class KnowledgeInsertLogicalGraphTest {
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, KNOWLEDGE);
         // Press on Cursor
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(),
-                new LogicalGraphCursorRequest(Arrays.asList("e1","e2","e3","e4"),new CreatePageRequest(100)));
+                new LogicalGraphCursorRequest(KNOWLEDGE,Arrays.asList("e1","e2","e3","e4"),new CreatePageRequest(100)));
 
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
         TypeReference<AssignmentsQueryResult<LogicalNode, LogicalEdge>> typeReference = new TypeReference<AssignmentsQueryResult<LogicalNode, LogicalEdge>>() {};

@@ -21,6 +21,7 @@ package com.yangdb.fuse.executor.cursor;
  */
 
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
@@ -33,10 +34,12 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 public class TraversalCursorContext implements CursorFactory.Context {
     //region Constructor
     public TraversalCursorContext(
+            OntologyProvider ontologyProvider,
             Ontology ontology,
             QueryResource queryResource,
             CreateCursorRequest cursorRequest,
             Traversal<?, Path> traversal) {
+        this.ontologyProvider = ontologyProvider;
         this.ontology = ontology;
         this.queryResource = queryResource;
         this.cursorRequest = cursorRequest;
@@ -55,6 +58,11 @@ public class TraversalCursorContext implements CursorFactory.Context {
         return this.cursorRequest;
     }
     //endregion
+
+    @Override
+    public OntologyProvider getOntologyProvider() {
+        return ontologyProvider;
+    }
 
     //region Properties
     public Traversal<?, Path> getTraversal() {
@@ -86,9 +94,10 @@ public class TraversalCursorContext implements CursorFactory.Context {
 
     @Override
     public TraversalCursorContext clone()  {
-        return new TraversalCursorContext(ontology,queryResource,cursorRequest,traversal);
+        return new TraversalCursorContext(ontologyProvider,ontology,queryResource,cursorRequest,traversal);
     }
 
+    private OntologyProvider ontologyProvider;
     //region Fields
     private Ontology ontology;
     private QueryResource queryResource;

@@ -56,6 +56,7 @@ import javaslang.collection.Stream;
 import javaslang.control.Option;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -101,7 +102,8 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> run(Query query, int pageSize, String cursorType) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateQueryRequest queryRequest = new CreateQueryRequest(id, id, query, request(cursorType,new CreatePageRequest(pageSize)));
+            CreateQueryRequest queryRequest = new CreateQueryRequest(id, id, query,
+                    request(query.getOnt(),cursorType,new CreatePageRequest(pageSize)));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -124,7 +126,8 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHER, cypher, ontology, request(cursorType,new CreatePageRequest(pageSize)));
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHER, cypher, ontology,
+                    request(ontology,cursorType,new CreatePageRequest(pageSize)));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -147,7 +150,8 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> runGraphQL(String graphQL, String ontology) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPH_QL, graphQL, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPH_QL, graphQL, ontology,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -166,7 +170,8 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPH_QL, graphQL, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPH_QL, graphQL, ontology,
+                    request(ontology,cursorType,new CreatePageRequest(pageSize)));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -175,6 +180,9 @@ public abstract class QueryDriverBase implements QueryDriver {
                 return Optional.of(resourceInfo.get().getError());
 
             return Optional.of(resourceInfo.get());
+        } catch (Throwable e) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(), "failed building the cursor request " + cursorType)));
         } finally {
             //remove stateless query
 //            delete(id);
@@ -185,7 +193,8 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> runCypher(String cypher, String ontology) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHER, cypher, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHER, cypher, ontology,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -361,6 +370,7 @@ public abstract class QueryDriverBase implements QueryDriver {
             }
 
             Query build = Query.Builder.instance()
+//                    .withOnt(request.getOntology())
                     .withOnt(asgQuery.getOnt())
                     .withName(queryInfo.getQueryName())
                     .build();
