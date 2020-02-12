@@ -73,7 +73,7 @@ public interface GraphElementSchemaProvider {
             this(vertexSchemas, edgeSchemas, Collections.emptyList());
         }
 
-        public Impl(String labelFieldName,
+        public Impl(Optional<String> labelFieldName,
                 Iterable<GraphVertexSchema> vertexSchemas,
                     Iterable<GraphEdgeSchema> edgeSchemas) {
             this(labelFieldName,vertexSchemas, edgeSchemas, Collections.emptyList());
@@ -85,7 +85,7 @@ public interface GraphElementSchemaProvider {
             this(null,vertexSchemas,edgeSchemas,propertySchemas);
         }
 
-        public Impl(String labelFieldName,
+        public Impl(Optional<String> labelFieldName,
                 Iterable<GraphVertexSchema> vertexSchemas,
                     Iterable<GraphEdgeSchema> edgeSchemas,
                     Iterable<GraphElementPropertySchema> propertySchemas) {
@@ -167,7 +167,7 @@ public interface GraphElementSchemaProvider {
 
         @Override
         public Optional<String> getLabelFieldName() {
-            return Optional.ofNullable(labelFieldName);
+            return labelFieldName;
         }
         //endregion
 
@@ -270,7 +270,7 @@ public interface GraphElementSchemaProvider {
         protected Iterable<String> vertexLabels;
         protected Iterable<String> edgeLabels;
         protected Iterable<String> propertyNames;
-        protected String labelFieldName;
+        protected Optional<String> labelFieldName;
         //endregion
     }
 
@@ -280,7 +280,7 @@ public interface GraphElementSchemaProvider {
             super(Collections.emptyList(), Collections.emptyList());
 
             this.schemaProvider = schemaProvider;
-
+            this.labelFieldName = this.schemaProvider.getLabelFieldName();
             this.vertexLabels = this.schemaProvider.getVertexLabels();
             this.edgeLabels = this.schemaProvider.getEdgeLabels();
             this.propertyNames = this.schemaProvider.getPropertyNames();
