@@ -282,6 +282,11 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
             }
         }
     }
+
+    @Override
+    public Optional<String> getLabelFieldName() {
+        return schemaProvider.getLabelFieldName();
+    }
     //endregion
 
     //region Fields

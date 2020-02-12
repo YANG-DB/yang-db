@@ -21,6 +21,7 @@ package com.yangdb.fuse.model.logical;
  */
 
 import com.fasterxml.jackson.annotation.*;
+import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.CsvQueryResult;
 import com.yangdb.fuse.model.results.Property;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * //example
@@ -167,9 +169,26 @@ public class LogicalNode implements Vertex {
     }
 
     @JsonIgnore
+    public LogicalNode withProperty(EntityType type, String property, Object value) {
+        if(type.containsProperty(property)){
+            properties.addProperties(property,value);
+        } else {
+            //add property with _underscore so it can be ignored if needed
+            properties.addProperties(String.format("_%s",property),value);
+        }
+        return this;
+    }
+
+    @JsonIgnore
     public Optional<Object> getPropertyValue(String name) {
         return properties.properties.containsKey(name) ? Optional.of(properties.properties.get(name)) : Optional.empty();
     }
+
+    public LogicalNode withMetadata(EntityType type, Collection<Property> properties) {
+        properties.addAll(properties.stream().filter(p->type.containsProperty(p.getpType())).collect(Collectors.toSet()));
+        return this;
+    }
+
 
     public static class NodeMetadata implements PropertyFields<NodeMetadata> {
         private Map<String,Object> properties = new HashMap<>();

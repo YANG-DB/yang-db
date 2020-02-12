@@ -62,36 +62,6 @@ public class GraphQLSimpleQueryExecuterTest {
         Assert.assertEquals(expected, QueryDescriptor.print(query));
     }
 
-    @Test
-    public void testQueryWithExactNameSingleVertexWithFewProperties() {
-        String q = " {\n" +
-                "    human(name: ginger) {\n" +
-                "        name,\n" +
-                "        description\n" +
-                "    }\n" +
-                "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPH_QL,"test"));
-        String expected = "[└── Start, \n" +
-                "    ──Typ[Human:1]──Q[2]:{3|4}, \n" +
-                "                          └─?[3]:[name<IdentityProjection>], \n" +
-                "                          └─?[4]:[description<IdentityProjection>]]";
-        Assert.assertEquals(expected, QueryDescriptor.print(query));
-    }
-    @Test
-    public void testQueryWithExactIdSingleVertexWithFewProperties() {
-        String q = " {\n" +
-                "    human(id: 1234) {\n" +
-                "        name,\n" +
-                "        description\n" +
-                "    }\n" +
-                "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPH_QL,"test"));
-        String expected = "[└── Start, \n" +
-                "    ──Typ[Human:1]──Q[2]:{3|4}, \n" +
-                "                          └─?[3]:[name<IdentityProjection>], \n" +
-                "                          └─?[4]:[description<IdentityProjection>]]";
-        Assert.assertEquals(expected, QueryDescriptor.print(query));
-    }
 
     @Test
     public void testConstraintByIdQuerySingleVertexWithFewProperties() {

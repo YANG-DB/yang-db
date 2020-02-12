@@ -148,5 +148,10 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
     public Iterable<String> getPropertyNames() {
         return Collections.emptyList();
     }
+
+    @Override
+    public Optional<String> getLabelFieldName() {
+        return Optional.empty();
+    }
     //endregion
 }

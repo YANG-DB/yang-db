@@ -25,20 +25,23 @@ import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
+import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 
 /**
  * Created by Roman on 05/04/2017.
  */
-public class TraversalCursorContext implements CursorFactory.Context {
+public class TraversalCursorContext implements CursorFactory.Context<GraphElementSchemaProvider> {
     //region Constructor
     public TraversalCursorContext(
+            GraphElementSchemaProvider schemaProvider,
             OntologyProvider ontologyProvider,
             Ontology ontology,
             QueryResource queryResource,
             CreateCursorRequest cursorRequest,
             Traversal<?, Path> traversal) {
+        this.schemaProvider = schemaProvider;
         this.ontologyProvider = ontologyProvider;
         this.ontology = ontology;
         this.queryResource = queryResource;
@@ -46,6 +49,11 @@ public class TraversalCursorContext implements CursorFactory.Context {
         this.traversal = traversal;
     }
     //endregion
+
+
+    public GraphElementSchemaProvider getSchemaProvider() {
+        return schemaProvider;
+    }
 
     //region CursorFactory.Context Implementation
     @Override
@@ -94,9 +102,10 @@ public class TraversalCursorContext implements CursorFactory.Context {
 
     @Override
     public TraversalCursorContext clone()  {
-        return new TraversalCursorContext(ontologyProvider,ontology,queryResource,cursorRequest,traversal);
+        return new TraversalCursorContext(schemaProvider,ontologyProvider,ontology,queryResource,cursorRequest,traversal);
     }
 
+    private GraphElementSchemaProvider schemaProvider;
     private OntologyProvider ontologyProvider;
     //region Fields
     private Ontology ontology;

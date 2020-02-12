@@ -9,9 +9,9 @@ package com.yangdb.fuse.assembly.knowledge.cursor;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,11 +26,15 @@ import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.logical.LogicalEdge;
 import com.yangdb.fuse.model.logical.LogicalNode;
+import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.Entity;
+import com.yangdb.fuse.model.results.Property;
 import com.yangdb.fuse.model.results.Relationship;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
+import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -44,6 +48,7 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
 
     private LogicalGraphCursorRequest.GraphFormat format = JSON;
     private final Ontology.Accessor logicalOntologyAccessor;
+    private final GraphElementSchemaProvider schemaProvider;
 
     //region Factory
     public static class Factory implements CursorFactory {
@@ -63,6 +68,7 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
         super(context, countTags);
         //assuming logical ontology must exist since this stage would not been reached is ontology was not present
         this.logicalOntologyAccessor = new Ontology.Accessor(context.getOntologyProvider().get(logicalOntology).get());
+        this.schemaProvider = context.getSchemaProvider();
         this.format = format;
     }
 
@@ -85,9 +91,11 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
                 .stream().filter(e -> e.geteType().equals(EVALUE))
                 .forEach(p -> {
                     if (entityMap.containsKey(fieldId(p))) {
+
                         //populate properties
-                        entityMap.get(fieldId(p))
-                                .withProperty(p.getProperty(FIELD_ID).get().getValue().toString(), value(p));
+                        LogicalNode node = entityMap.get(fieldId(p));
+                        EntityType type = logicalOntologyAccessor.entity$(node.label());
+                        node.withProperty(type, p.getProperty(FIELD_ID).get().getValue().toString(), value(p));
 
                     }
                 });
@@ -110,18 +118,23 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
 
     /**
      * generate logical node according to requested ontology
+     *
      * @param e
      * @return
      */
     private LogicalNode createLogicalNode(Entity e) {
-        if(logicalOntologyAccessor.get().getOnt().equals(KNOWLEDGE.KNOWLEDGE))
+        if (!logicalOntologyAccessor.get().getOnt().equals(KNOWLEDGE.KNOWLEDGE)
+                && schemaProvider.getLabelFieldName().isPresent()) {
+            //return logical node according to logical ontology
             //validate label according to ontology
+            Property labelProperty = e.getProperty(schemaProvider.getLabelFieldName().get()).get();
+            EntityType type = logicalOntologyAccessor.entity$(labelProperty.getValue().toString());
             return new LogicalNode(
                     e.id(),
-                    e.label())
-                    .withMetadata(e.getProperties());
+                    type.geteType())
+                    .withMetadata(type,e.getProperties());
+        }
 
-        //todo return logical node according to logical ontology
         return new LogicalNode(
                 e.id(),
                 e.label())
@@ -131,23 +144,31 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
 
     /**
      * generate logical edge according to requested ontology
+     *
      * @param r
      * @return
      */
     private LogicalEdge createLogicalEdge(Relationship r) {
-        if(logicalOntologyAccessor.get().getOnt().equals(KNOWLEDGE.KNOWLEDGE))
-            return new LogicalEdge(r.id(), r.label(),
+        if (!logicalOntologyAccessor.get().getOnt().equals(KNOWLEDGE.KNOWLEDGE)
+                && schemaProvider.getLabelFieldName().isPresent()) {
+            //return logical node according to logical ontology
+            //validate label according to ontology
+            Property labelProperty = r.getProperty(schemaProvider.getLabelFieldName().get()).get();
+            RelationshipType type = logicalOntologyAccessor.relation$(labelProperty.getValue().toString());
+
+            return new LogicalEdge(r.id(), type.getrType(),
                     r.source(), r.target(), r.isDirectional())
-                    .withMetadata(r.getProperties());
+                    .withMetadata(type,r.getProperties());
+        }
         //validate label according to ontology
-        //todo return logical edge according to logical ontology
+        //return logical edge according to logical ontology
         return new LogicalEdge(r.id(), r.label(),
                 r.source(), r.target(), r.isDirectional())
                 .withMetadata(r.getProperties());
     }
 
     private String fieldId(Entity p) {
-        if(p.getProperty(CONTEXT).isPresent())
+        if (p.getProperty(CONTEXT).isPresent())
             return String.format("%s.%s", p.getProperty(LOGICAL_ID).get().getValue().toString(), p.getProperty(CONTEXT).get().getValue().toString());
         else
             return p.getProperty(LOGICAL_ID).get().getValue().toString();

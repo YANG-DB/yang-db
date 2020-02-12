@@ -44,6 +44,7 @@ public interface GraphElementSchemaProvider {
     Iterable<String> getVertexLabels();
     Iterable<String> getEdgeLabels();
     Iterable<String> getPropertyNames();
+    Optional<String> getLabelFieldName();
 
     default Iterable<GraphVertexSchema> getVertexSchemas() {
         return Stream.ofAll(getVertexLabels())
@@ -72,9 +73,23 @@ public interface GraphElementSchemaProvider {
             this(vertexSchemas, edgeSchemas, Collections.emptyList());
         }
 
+        public Impl(String labelFieldName,
+                Iterable<GraphVertexSchema> vertexSchemas,
+                    Iterable<GraphEdgeSchema> edgeSchemas) {
+            this(labelFieldName,vertexSchemas, edgeSchemas, Collections.emptyList());
+        }
+
         public Impl(Iterable<GraphVertexSchema> vertexSchemas,
                     Iterable<GraphEdgeSchema> edgeSchemas,
                     Iterable<GraphElementPropertySchema> propertySchemas) {
+            this(null,vertexSchemas,edgeSchemas,propertySchemas);
+        }
+
+        public Impl(String labelFieldName,
+                Iterable<GraphVertexSchema> vertexSchemas,
+                    Iterable<GraphEdgeSchema> edgeSchemas,
+                    Iterable<GraphElementPropertySchema> propertySchemas) {
+            this.labelFieldName = labelFieldName;
             this.vertexSchemas = Stream.ofAll(vertexSchemas)
                     .groupBy(GraphElementSchema::getLabel)
                     .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().toJavaList()));
@@ -148,6 +163,11 @@ public interface GraphElementSchemaProvider {
         @Override
         public Iterable<String> getPropertyNames() {
             return this.propertyNames;
+        }
+
+        @Override
+        public Optional<String> getLabelFieldName() {
+            return Optional.ofNullable(labelFieldName);
         }
         //endregion
 
@@ -250,6 +270,7 @@ public interface GraphElementSchemaProvider {
         protected Iterable<String> vertexLabels;
         protected Iterable<String> edgeLabels;
         protected Iterable<String> propertyNames;
+        protected String labelFieldName;
         //endregion
     }
 
@@ -310,6 +331,7 @@ public interface GraphElementSchemaProvider {
                 this.propertySchemas.put(propertyName, this.schemaProvider.getPropertySchema(propertyName).get());
             }
         }
+
         //endregion
 
         //region Fields

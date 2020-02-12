@@ -34,6 +34,7 @@ import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.executor.CompositeTraversalCursorContext;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
+import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.UniGraphProvider;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -41,6 +42,7 @@ import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateInnerQueryCursorRequest;
+import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
@@ -53,17 +55,21 @@ import static com.yangdb.fuse.model.asgQuery.AsgCompositeQuery.hasInnerQuery;
  * Created by lior.perry on 20/02/2017.
  */
 public class StandardCursorDriver extends CursorDriverBase {
+    private final GraphElementSchemaProviderFactory schemaProvider;
+
     //region Constructors
     @Inject
     public StandardCursorDriver(
             ResourceStore resourceStore,
             PageDriver pageDriver,
             OntologyProvider ontologyProvider,
+            GraphElementSchemaProviderFactory schemaProviderFactory,
             PlanTraversalTranslator planTraversalTranslator,
             CursorFactory cursorFactory,
             UniGraphProvider uniGraphProvider,
             AppUrlSupplier urlSupplier) {
         super(resourceStore, urlSupplier);
+        this.schemaProvider = schemaProviderFactory;
         this.pageDriver = pageDriver;
         this.ontologyProvider = ontologyProvider;
         this.planTraversalTranslator = planTraversalTranslator;
@@ -92,6 +98,7 @@ public class StandardCursorDriver extends CursorDriverBase {
 
     protected TraversalCursorContext createContext(QueryResource queryResource, CreateCursorRequest cursorRequest, Ontology ontology, GraphTraversal<?, ?> traversal) {
         TraversalCursorContext context = new TraversalCursorContext(
+                schemaProvider.get(ontology),
                 ontologyProvider,
                 ontology,
                 queryResource,
@@ -102,6 +109,7 @@ public class StandardCursorDriver extends CursorDriverBase {
             //first level (hierarchy) inner queries
             return new CompositeTraversalCursorContext(
                     new TraversalCursorContext(
+                            schemaProvider.get(ontology),
                             ontologyProvider,
                             ontology,
                             queryResource,

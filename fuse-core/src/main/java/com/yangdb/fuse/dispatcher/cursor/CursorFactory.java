@@ -38,16 +38,19 @@ import java.util.Set;
  * Created by Roman on 02/04/2017.
  */
 public interface CursorFactory {
-    interface Context {
+    interface Context<T> {
+        T getSchemaProvider();
+
         OntologyProvider getOntologyProvider();
 
         QueryResource getQueryResource();
 
         CreateCursorRequest getCursorRequest();
 
-        class Impl implements Context {
+        class Impl<T> implements Context<T> {
             //region Constructors
-            public Impl(OntologyProvider ontologyProvider,QueryResource queryResource, CreateCursorRequest cursorRequest) {
+            public Impl(T schemaProvider,OntologyProvider ontologyProvider,QueryResource queryResource, CreateCursorRequest cursorRequest) {
+                this.schemaProvider = schemaProvider;
                 this.ontologyProvider = ontologyProvider;
                 this.queryResource = queryResource;
                 this.cursorRequest = cursorRequest;
@@ -66,10 +69,16 @@ public interface CursorFactory {
 
 
             @Override
+            public T getSchemaProvider() {
+                return schemaProvider;
+            }
+
+            @Override
             public OntologyProvider getOntologyProvider() {
                 return ontologyProvider;
             }
 
+            private T schemaProvider;
             private OntologyProvider ontologyProvider;
             //region Fields
             private QueryResource queryResource;

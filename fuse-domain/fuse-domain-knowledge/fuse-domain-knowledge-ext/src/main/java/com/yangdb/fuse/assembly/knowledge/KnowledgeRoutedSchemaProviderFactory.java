@@ -275,6 +275,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
         );
 
         return new GraphElementSchemaProvider.Impl(
+                CATEGORY,
                 Arrays.asList(
                         new GraphVirtualVertexSchema.Impl(LOGICAL_ENTITY),
                         new GraphVertexSchema.Impl(

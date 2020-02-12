@@ -101,7 +101,8 @@ public class MockDriver {
             return new CursorResource(
                     cursorId,
                     cursorFactory.createCursor(
-                            new CursorFactory.Context.Impl(
+                            new CursorFactory.Context.Impl<>(
+                                    new Object(),
                                     new OntologyProvider() {
                                         @Override
                                         public Optional<Ontology> get(String id) {

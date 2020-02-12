@@ -35,6 +35,7 @@ import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
  * http://studentwork.prattsi.org/infovis/visualization/les-miserables-character-network-visualization/
  */
 public class KnowledgeInsertLogicalGraphTest {
+    public static final String _NAME = "_name";
 
     //number of elements on les miserables graph
 
@@ -320,9 +321,9 @@ public class KnowledgeInsertLogicalGraphTest {
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
         Assert.assertEquals(3, pageData.getAssignments().get(0).getEntities().size());
 
-        Optional<LogicalNode> node = pageData.getAssignments().get(0).getEntities().stream().filter(p -> p.getProperties().getProperties().containsKey("name")).findAny();
+        Optional<LogicalNode> node = pageData.getAssignments().get(0).getEntities().stream().filter(p -> p.getProperties().getProperties().containsKey(_NAME)).findAny();
         Assert.assertTrue(node.isPresent());
-        Assert.assertEquals(node.get().getProperties().getProperties().get("name"),"Myriel");
+        Assert.assertEquals(node.get().getProperties().getProperties().get(_NAME),"Myriel");
     }
 
 
