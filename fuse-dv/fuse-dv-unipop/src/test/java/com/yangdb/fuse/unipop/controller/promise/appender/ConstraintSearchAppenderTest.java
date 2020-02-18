@@ -8,6 +8,7 @@ import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
 import com.yangdb.fuse.unipop.schemaProviders.*;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.NestedIndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import com.yangdb.fuse.unipop.step.BoostingStepWrapper;
@@ -58,6 +59,7 @@ public class ConstraintSearchAppenderTest {
                                 entity.geteType(),
                                 entity.geteType().equals(OntologyTestUtils.PERSON.name) ? new StaticIndexPartitions(Arrays.asList("Persons1", "Persons2")) :
                                         entity.geteType().equals(OntologyTestUtils.DRAGON.name) ? new StaticIndexPartitions(Arrays.asList("Dragons1", "Dragons2")) :
+                                            entity.geteType().equals(OntologyTestUtils.PROFESSION.name) ? new NestedIndexPartitions("Persons1") :
                                                 new StaticIndexPartitions(Collections.singletonList("idx1"))))
                         .toJavaList();
 

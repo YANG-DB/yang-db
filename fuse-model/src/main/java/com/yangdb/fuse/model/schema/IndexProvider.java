@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.schema;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,9 +33,9 @@ package com.yangdb.fuse.model.schema;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,10 +46,9 @@ package com.yangdb.fuse.model.schema;
 
 import com.fasterxml.jackson.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -69,7 +68,10 @@ public class IndexProvider {
 
     @JsonProperty("entities")
     public List<Entity> getEntities() {
-        return entities;
+        return Stream.concat(entities.stream()
+                    .filter(e -> !e.getNested().isEmpty())
+                    .flatMap(e -> e.getNested().stream()),entities.stream())
+                .collect(Collectors.toList());
     }
 
     @JsonProperty("entities")
@@ -79,7 +81,10 @@ public class IndexProvider {
 
     @JsonProperty("relations")
     public List<Relation> getRelations() {
-        return relations;
+        return Stream.concat(relations.stream()
+                .filter(e -> !e.getNested().isEmpty())
+                .flatMap(e -> e.getNested().stream()),relations.stream())
+                .collect(Collectors.toList());
     }
 
     @JsonProperty("relations")
@@ -109,11 +114,25 @@ public class IndexProvider {
 
     @JsonIgnore
     public Optional<Entity> getEntity(String label) {
-        return getEntities().stream().filter(e->e.getType().equals(label)).findAny();
+        Optional<Entity> nest = getEntities().stream().filter(e -> !e.getNested().isEmpty())
+                .flatMap(e -> e.getNested().stream())
+                .filter(nested -> nested.getType().equals(label))
+                .findAny();
+        if (nest.isPresent())
+            return nest;
+
+        return getEntities().stream().filter(e -> e.getType().equals(label)).findAny();
     }
 
     @JsonIgnore
     public Optional<Relation> getRelation(String label) {
-        return getRelations().stream().filter(relation->relation.getType().equals(label)).findAny();
+        Optional<Relation> nest = getRelations().stream().filter(e -> !e.getNested().isEmpty())
+                .flatMap(e -> e.getNested().stream())
+                .filter(nested -> nested.getType().equals(label))
+                .findAny();
+        if (nest.isPresent())
+            return nest;
+
+        return getRelations().stream().filter(e -> e.getType().equals(label)).findAny();
     }
 }

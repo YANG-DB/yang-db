@@ -35,6 +35,10 @@ public interface GraphVertexSchema extends GraphElementSchema {
 
     class Impl extends GraphElementSchema.Impl implements GraphVertexSchema {
         //region Constructors
+        public Impl(String label ) {
+            super(label);
+        }
+
         public Impl(String label, GraphElementRouting routing) {
             super(label, routing);
         }
@@ -43,8 +47,12 @@ public interface GraphVertexSchema extends GraphElementSchema {
             super(label, indexPartitions);
         }
 
-        public Impl(String label, Optional<GraphElementRouting> routing, Optional<IndexPartitions> indexPartitions) {
+        public Impl(String label, GraphElementRouting routing, IndexPartitions indexPartitions) {
             super(label, routing, indexPartitions);
+        }
+
+        public Impl(String label, IndexPartitions indexPartitions, Iterable<GraphElementPropertySchema> properties) {
+            super(label, indexPartitions, properties);
         }
 
         public Impl(String label,

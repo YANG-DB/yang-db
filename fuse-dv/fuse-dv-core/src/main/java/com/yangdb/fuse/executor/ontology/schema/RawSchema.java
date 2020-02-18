@@ -42,4 +42,5 @@ public interface RawSchema extends IndicesProvider {
 
     List<IndexPartitions.Partition> getPartitions(String type);
 
+
 }

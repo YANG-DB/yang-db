@@ -24,6 +24,7 @@ import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import com.yangdb.fuse.unipop.controller.search.translation.M1QueryTranslator;
 import com.yangdb.fuse.unipop.controller.search.translation.PredicateQueryTranslator;
 import com.yangdb.fuse.unipop.step.BoostingStepWrapper;
+import com.yangdb.fuse.unipop.step.NestedStepWrapper;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -175,6 +176,13 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
     protected Boolean visitBoostingStep(BoostingStepWrapper o) {
         queryBuilder.boost(o.getBoosting());
         super.visitBoostingStep(o);
+        return Boolean.TRUE;
+    }
+
+    @Override
+    protected Boolean visitNestedStep(NestedStepWrapper o) {
+        queryBuilder.nested(o.geteType());
+        super.visitNestedStep(o);
         return Boolean.TRUE;
     }
 

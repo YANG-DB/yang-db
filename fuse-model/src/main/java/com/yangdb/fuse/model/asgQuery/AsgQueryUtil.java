@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.asgQuery;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,6 +48,7 @@ import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
+import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.EndPattern;
 import com.yangdb.fuse.model.query.optional.OptionalComp;
 import com.yangdb.fuse.model.query.properties.*;
@@ -67,7 +68,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.yangdb.fuse.model.Tagged.*;
+import static com.yangdb.fuse.model.Tagged.isSeq;
+import static com.yangdb.fuse.model.Tagged.tagSeq;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -151,7 +153,7 @@ public class AsgQueryUtil {
 
         return elements
                 .stream()
-                .collect(Collectors.groupingBy(o->((Tagged) o.geteBase()).geteTag()));
+                .collect(Collectors.groupingBy(o -> ((Tagged) o.geteBase()).geteTag()));
 
     }
 
@@ -612,13 +614,14 @@ public class AsgQueryUtil {
 
     /**
      * flatten query graph to assignments pathes
+     *
      * @param query
      * @return
      */
     public static List<List<AsgEBase<? extends EBase>>> flattenQuery(AsgQuery query) {
-        List<AsgEBase<EBase>> ends = elements(query.getStart(), emptyIterableFunction,  AsgEBase::getNext, truePredicate, truePredicate, Collections.emptyList())
+        List<AsgEBase<EBase>> ends = elements(query.getStart(), emptyIterableFunction, AsgEBase::getNext, truePredicate, truePredicate, Collections.emptyList())
                 .stream()
-                .filter(e->!e.hasNext()).collect(Collectors.toList());
+                .filter(e -> !e.hasNext()).collect(Collectors.toList());
         List<List<AsgEBase<? extends EBase>>> pathes = ends.stream().map(e -> path(query.getStart(), e)).collect(Collectors.toList());
         return pathes;
 
@@ -626,11 +629,12 @@ public class AsgQueryUtil {
 
     /**
      * print list of pathes
+     *
      * @param pathes
      * @return
      */
     public static List<String> patterns(List<List<AsgEBase<? extends EBase>>> pathes) {
-        return pathes.stream().map(p->pattern(p)).collect(Collectors.toList());
+        return pathes.stream().map(p -> pattern(p)).collect(Collectors.toList());
     }
 
     public static String pattern(AsgQuery query) {
@@ -752,11 +756,11 @@ public class AsgQueryUtil {
         //update etag
         //this will cause creation of new tags that will not be associated with former tags that was cloned from and therefore will not be found
         if ((clone instanceof Tagged) && (((Tagged) clone).geteTag() != null) && cloneTags) {
-            if (isSeq((Tagged) clone) ) {
+            if (isSeq((Tagged) clone)) {
                 Tagged.setSeq(clone.geteNum(), (Tagged) clone);
             } else {
                 //clone tag according to running sequence
-                ((Tagged) clone).seteTag(String.format("%s:%d",((Tagged) clone).geteTag(),clone.geteNum()));
+                ((Tagged) clone).seteTag(String.format("%s:%d", ((Tagged) clone).geteTag(), clone.geteNum()));
             }
         }
 
@@ -835,6 +839,44 @@ public class AsgQueryUtil {
                 .collect(Collectors.toList());
 
     }
+
+    /**
+     * completely remove path elements from query
+     *
+     * @param query
+     * @param source
+     * @param target
+     * @return
+     */
+    public static AsgQuery removeStep(AsgQuery query, AsgEBase<ETyped> source, AsgEBase<ETyped> target) {
+        List<AsgEBase<? extends EBase>> parents = target.getParents();
+        //remove target
+        remove(query, target);
+        //remove source (if exists a quant inside - remove only when quent is empty beside target)
+        parents.stream()
+                .filter(p -> p.geteBase() instanceof QuantBase)
+                .filter(p -> !((QuantBase)p.geteBase()).hasNext())
+                .forEach( p-> remove(query, p));
+        //remove rel
+        parents.stream()
+                .filter(p -> !(p.geteBase() instanceof QuantBase))
+                .forEach(p -> remove(query, p));
+        //dont remove source
+        return query;
+    }
+
+    public static AsgQuery remove(AsgQuery query, AsgEBase<? extends EBase> element) {
+        List<AsgEBase<? extends EBase>> newParents = new ArrayList<>(element.getParents());
+        newParents.forEach(p -> p.getNext().remove(element));
+        newParents.forEach(p -> p.getNext().addAll(element.getNext()));
+        //clean element
+        element.setParent(Collections.emptyList());
+        element.setNext(Collections.emptyList());
+        //clean query from element
+        query.getElements().remove(element);
+        return query;
+    }
+
 
     public static class OptionalStrippedQuery {
         private AsgQuery mainQuery;
@@ -1053,12 +1095,12 @@ public class AsgQueryUtil {
         return newValues;
     }
 
-    public static  <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz) {
+    public static <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz) {
         final List<AsgEBase<? extends EBase>> path = AsgQueryUtil.pathToAncestor(eProp, clazz);
         Optional<AsgEBase<T>> element = Optional.empty();
-        if(!path.isEmpty() && path.size()==2)
+        if (!path.isEmpty() && path.size() == 2)
             element = Optional.of((AsgEBase<T>) path.get(1));
-        if(!path.isEmpty() && path.size()==3 && QuantBase.class.isAssignableFrom(path.get(1).geteBase().getClass()))
+        if (!path.isEmpty() && path.size() == 3 && QuantBase.class.isAssignableFrom(path.get(1).geteBase().getClass()))
             element = Optional.of((AsgEBase<T>) path.get(2));
         return element;
     }

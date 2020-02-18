@@ -52,6 +52,9 @@ public class FilterSourceSearchAppender implements SearchAppender<SelectContext>
             case raw:
                 searchBuilder.getIncludeSourceFields().add(predicate.getValue().toString());
                 break;
+            case intern:
+                searchBuilder.getIncludeSourceFields().add(predicate.getValue().toString());
+                break;
         }
 
         return searchBuilder;

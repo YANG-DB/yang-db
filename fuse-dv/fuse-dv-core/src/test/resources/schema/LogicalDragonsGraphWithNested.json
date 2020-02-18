@@ -55,7 +55,25 @@
         "birthDate": "12/10/1743",
         "deathDate": "21/7/1773",
         "height": "158",
-        "name": "General Napoleon Bonaparte"
+        "name": "General Napoleon Bonaparte",
+        "profession": [
+          {
+            "properties": {
+              "name": "General",
+              "experience": "10 years",
+              "certification": "none",
+              "salary": "10000"
+            }
+          },
+          {
+            "properties": {
+              "name": "Practolog",
+              "experience": "5 years",
+              "certification": "PHD",
+              "salary": "5000"
+            }
+          }
+        ]
       }
     },
     {
@@ -71,7 +89,17 @@
         "birthDate": "1/2/1723",
         "deathDate": "11/12/1783",
         "height": "178",
-        "name": "Mr. Mlle.Baptistine"
+        "name": "Mr. Mlle.Baptistine",
+        "profession": [
+          {
+            "properties": {
+              "name": "dancer",
+              "experience": "7 years",
+              "certification": "school",
+              "salary": "9000"
+            }
+          }
+        ]
       }
     },
     {
@@ -138,7 +166,7 @@
       "properties": {
         "name": "North",
         "king": "George",
-        "independenceDay" : "1/1/1850",
+        "independenceDay": "1/1/1850",
         "funds": 250000
       }
     },
@@ -152,7 +180,7 @@
         "name": "South",
         "king": "Jimmy",
         "queen": "Mercy",
-        "independenceDay" : "12/4/1670",
+        "independenceDay": "12/4/1670",
         "funds": 7650000
       }
     },
@@ -165,7 +193,7 @@
       "properties": {
         "name": "West",
         "queen": "Naomi",
-        "independenceDay" : "1/1/1000",
+        "independenceDay": "1/1/1000",
         "funds": 9320000
       }
     },
@@ -179,7 +207,7 @@
         "name": "East",
         "king": "Banji",
         "queen": "Jespa",
-        "independenceDay" : "21/5/850",
+        "independenceDay": "21/5/850",
         "funds": 50000
       }
     },
@@ -215,7 +243,7 @@
       "label": "Guild",
       "properties": {
         "name": "craft",
-        "description": "\nIn England, specifically in the City of London Corporation, more than 110 guilds,[16] referred to as livery companies, survive today,[17] with the oldest more than a thousand years old.[citation needed] Other groups, such as the Worshipful Company of Tax Advisers, have been formed far more recently. Membership in a livery company is expected for individuals participating in the governance of The City, as the Lord Mayor and the Remembrancer.\n\n\nThe Syndics of the Drapers' Guild by Rembrandt, 1662.\nThe guild system reached a mature state in Germany circa 1300 and held on in German cities into the 19th century, with some special privileges for certain occupations remaining today. In the 15th century, Hamburg had 100 guilds, Cologne 80, and Lübeck 70.[18] The latest guilds to develop in Western Europe were the gremios of Spain: e.g., Valencia (1332) or Toledo (1426).\n\nNot all city economies were controlled by guilds; some cities were \"free.\" Where guilds were in control, they shaped labor, production and trade; they had strong controls over instructional capital, and the modern concepts of a lifetime progression of apprentice to craftsman, and then from journeyman eventually to widely recognized master and grandmaster began to emerge. In order to become a master, a journeyman would have to go on a three-year voyage called journeyman years. The practice of the journeyman years still exists in Germany and France.",
+        "description": "In England, specifically in the City of London Corporation, more than 110 guilds,[16] referred to as livery companies, survive today,[17] with the oldest more than a thousand years old.[citation needed] Other groups, such as the Worshipful Company of Tax Advisers, have been formed far more recently. Membership in a livery company is expected for individuals participating in the governance of The City, as the Lord Mayor and the Remembrancer.\n\n\nThe Syndics of the Drapers' Guild by Rembrandt, 1662.\nThe guild system reached a mature state in Germany circa 1300 and held on in German cities into the 19th century, with some special privileges for certain occupations remaining today. In the 15th century, Hamburg had 100 guilds, Cologne 80, and Lübeck 70.[18] The latest guilds to develop in Western Europe were the gremios of Spain: e.g., Valencia (1332) or Toledo (1426).\n\nNot all city economies were controlled by guilds; some cities were \"free.\" Where guilds were in control, they shaped labor, production and trade; they had strong controls over instructional capital, and the modern concepts of a lifetime progression of apprentice to craftsman, and then from journeyman eventually to widely recognized master and grandmaster began to emerge. In order to become a master, a journeyman would have to go on a three-year voyage called journeyman years. The practice of the journeyman years still exists in Germany and France.",
         "establishDate": "1/2/1330"
       }
     }
@@ -232,7 +260,6 @@
       "properties": {
         "startDate": "01/01/1773"
       }
-
     },
     {
       "id": "OWN_P02D01",
@@ -246,7 +273,6 @@
         "startDate": "4/14/1793",
         "endDate": "1/1/1799"
       }
-
     },
     {
       "id": "OWN_P02D02",
@@ -259,7 +285,6 @@
       "properties": {
         "startDate": "1/11/1800"
       }
-
     },
     {
       "id": "OWN_P02H03",
@@ -272,7 +297,6 @@
       "properties": {
         "startDate": "21/11/1870"
       }
-
     },
     {
       "id": "KNOW_P01P02",
@@ -285,7 +309,6 @@
       "properties": {
         "startDate": "1/11/1800"
       }
-
     },
     {
       "id": "KNOW_P02P03",
@@ -298,7 +321,6 @@
       "properties": {
         "startDate": "3/2/1750"
       }
-
     },
     {
       "id": "KNOW_P03P01",
@@ -311,7 +333,6 @@
       "properties": {
         "startDate": "12/12/1758"
       }
-
     },
     {
       "id": "MEMB_P03G01",
@@ -325,7 +346,6 @@
         "startDate": "12/12/1758",
         "endDate": "12/12/1759"
       }
-
     },
     {
       "id": "MEMB_P03G03",
@@ -351,7 +371,6 @@
         "startDate": "1/1/1778",
         "endDate": "1/1/1785"
       }
-
     },
     {
       "id": "FIRE_D02D01",
@@ -365,7 +384,6 @@
         "date": "1/1/1778",
         "temperature": 500
       }
-
     },
     {
       "id": "FIRE_D02D03",
@@ -379,7 +397,6 @@
         "date": "1/1/1779",
         "temperature": 400
       }
-
     },
     {
       "id": "FREEZ_D01D03",
@@ -393,7 +410,6 @@
         "date": "1/1/779",
         "temperature": -100
       }
-
     },
     {
       "id": "ORIGIN_D01K01",
@@ -406,7 +422,6 @@
       "properties": {
         "startDate": "1/1/500"
       }
-
     },
     {
       "id": "SUBJECT_P01K01",
@@ -419,7 +434,6 @@
       "properties": {
         "startDate": "12/10/1743"
       }
-
     },
     {
       "id": "SUBJECT_P02K02",
@@ -432,7 +446,6 @@
       "properties": {
         "startDate": "1/2/1723"
       }
-
     },
     {
       "id": "SUBJECT_P03K02",
@@ -445,7 +458,6 @@
       "properties": {
         "startDate": "12/22/1599"
       }
-
     },
     {
       "id": "REGISTR_H01K02",
@@ -458,7 +470,6 @@
       "properties": {
         "startDate": "12/22/1799"
       }
-
     },
     {
       "id": "REGISTR_H02K02",
@@ -471,7 +482,6 @@
       "properties": {
         "startDate": "2/1/1759"
       }
-
     },
     {
       "id": "REGISTR_H03K03",
@@ -484,7 +494,6 @@
       "properties": {
         "startDate": "31/1/1749"
       }
-
     },
     {
       "id": "REGISTR_H03K04",
@@ -497,7 +506,6 @@
       "properties": {
         "startDate": "31/1/1749"
       }
-
     },
     {
       "id": "REGISTR_G01K04",
@@ -510,11 +518,10 @@
       "properties": {
         "startDate": "31/1/1000"
       }
-
     },
     {
       "id": "REGISTR_G02K03",
-      "source": "G01-masons",
+      "source": "G02-merchant",
       "target": "K03-West",
       "label": "RegisteredIn",
       "metadata": {
@@ -523,7 +530,6 @@
       "properties": {
         "startDate": "31/1/1000"
       }
-
     },
     {
       "id": "REGISTR_G03K01",
@@ -536,7 +542,6 @@
       "properties": {
         "startDate": "1/1/1100"
       }
-
     }
   ]
 }

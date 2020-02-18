@@ -5,15 +5,17 @@ import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.executor.ontology.schema.load.CSVTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.DataTransformerContext;
 import com.yangdb.fuse.executor.ontology.schema.load.DocumentBuilder;
+import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.Range;
+import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.NestedIndexPartitions;
 import com.yangdb.test.BaseITMarker;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
@@ -21,22 +23,19 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema.getIndexPartitions;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-public class CSVTransformerIT implements BaseITMarker {
+public class EntityTransformerTest {
 
     private static ObjectMapper mapper = new ObjectMapper();
     private static IndexProvider provider;
@@ -61,7 +60,7 @@ public class CSVTransformerIT implements BaseITMarker {
         config = Mockito.mock(Config.class);
         when(config.getString(any())).thenAnswer(invocationOnMock -> "Dragons");
 
-        InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProvider.conf");
+        InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProviderNested.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
 
 
@@ -73,8 +72,9 @@ public class CSVTransformerIT implements BaseITMarker {
         schema = new RawSchema() {
             @Override
             public IndexPartitions getPartition(String type) {
-                return schemaProvider.getVertexSchemas(type).iterator().next().getIndexPartitions().get();
+                return getIndexPartitions(schemaProvider,type);
             }
+
             @Override
             public String getIdPrefix(String type) {
                 return "";
@@ -99,327 +99,26 @@ public class CSVTransformerIT implements BaseITMarker {
 
             @Override
             public Iterable<String> indices() {
-                Stream<String> edges = StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
-                        .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                        .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
-                        .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
-                Stream<String> vertices = StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
-                        .flatMap(p -> StreamSupport.stream(p.getIndexPartitions().get().getPartitions().spliterator(), false))
-                        .filter(p->!(p instanceof IndexPartitions.Partition.Default<?>))
-                        .flatMap(v -> StreamSupport.stream(v.getIndices().spliterator(), false));
-
-                return Stream.concat(edges, vertices)
-                        .collect(Collectors.toSet());
+                return IndexProviderRawSchema.indices(schemaProvider);
             }
 
         };
     }
 
+
     @Test
-    public void testDragons() throws IOException {
+    public void testTransform() throws IOException {
         IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Dragons.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "Dragon";
-            }
-
-            public String type() {
-                return "vertex";
-            }
-
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(3,testTransform(transform).getEntities().size());
-    }
-
-    @Test
-    public void testPerson() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(), anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0, 1000));
-
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Persons.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "Person";
-            }
-
-            public String type() {
-                return "vertex";
-            }
-
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(3,testTransform(transform).getEntities().size());
-    }
-
-    @Test
-    public void testGuild() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(), anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0, 1000));
-
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Guilds.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "Guild";
-            }
-
-            public String type() {
-                return "vertex";
-            }
-
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(3,testTransform(transform).getEntities().size());
-    }
-
-    @Test
-    public void testKingdom() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(), anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0, 1000));
-
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Kingdom.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "Kingdom";
-            }
-
-            public String type() {
-                return "vertex";
-            }
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(4,testTransform(transform).getEntities().size());
-    }
-
-    @Test
-    public void testHorse() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(), anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0, 1000));
-
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Horses.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "Horse";
-            }
-
-            public String type() {
-                return "vertex";
-            }
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(3,testTransform(transform).getEntities().size());
-    }
-
-    @Test
-    public void testFire() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(), anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0, 1000));
-
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Fire.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "Fire";
-            }
-
-            public String type() {
-                return "edge";
-            }
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(4,testTransform(transform).getRelations().size());
-    }
-
-    @Test
-    public void testFreeze() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(), anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0, 1000));
-
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Freeze.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "Freeze";
-            }
-
-            public String type() {
-                return "edge";
-            }
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(2,testTransform(transform).getRelations().size());
-    }
-
-    @Test
-    public void testKnows() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(), anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0, 1000));
-
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Knows.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "Know";
-            }
-
-            public String type() {
-                return "edge";
-            }
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(6,testTransform(transform).getRelations().size());
-    }
-
-    @Test
-    public void testMemberOf() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(), anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0, 1000));
-
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/MemberOf.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "MemberOf";
-            }
-
-            public String type() {
-                return "edge";
-            }
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(6,testTransform(transform).getRelations().size());
-    }
-
-    @Test
-    public void testOwns() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(), anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0, 1000));
-
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Owns.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "Own";
-            }
-
-            public String type() {
-                return "edge";
-            }
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(8,testTransform(transform).getRelations().size());
-    }
-
-    @Test
-    public void testRegisteredIn() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(), anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0, 1000));
-
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/RegisteredIn.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "RegisteredIn";
-            }
-
-            public String type() {
-                return "edge";
-            }
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(14,testTransform(transform).getRelations().size());
-    }
-    @Test
-    public void testSubjectIOf() throws IOException {
-        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
-        when(idGeneratorDriver.getNext(anyString(), anyInt()))
-                .thenAnswer(invocationOnMock -> new Range(0, 1000));
-
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
-        BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/SubjectOf.csv").getPath()));
-        DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
-            @Override
-            public String label() {
-                return "SubjectOf";
-            }
-
-            public String type() {
-                return "edge";
-            }
-            @Override
-            public Reader content() {
-                return reader;
-            }
-        }, GraphDataLoader.Directive.INSERT);
-        Assert.assertEquals(6,testTransform(transform).getRelations().size());
-    }
-
-    public DataTransformerContext testTransform(DataTransformerContext<Object> transform) throws IOException {
+        EntityTransformer transformer = new EntityTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/LogicalDragonsGraph.json");
+        LogicalGraphModel graphModel = mapper.readValue(stream, LogicalGraphModel.class);
+        DataTransformerContext<LogicalGraphModel> transform = transformer.transform(graphModel, GraphDataLoader.Directive.INSERT);
 
         Assert.assertNotNull(transform);
+        Assert.assertEquals(transform.getEntities().size(), graphModel.getNodes().size());
         transform.getEntities().stream().
                 map(DocumentBuilder::getNode)
                 .forEach(e -> {
@@ -496,6 +195,7 @@ public class CSVTransformerIT implements BaseITMarker {
                     }
                 });
 
+        Assert.assertEquals(transform.getRelations().size(), 2 * graphModel.getEdges().size());
         transform.getRelations()
                 .stream()
                 .map(DocumentBuilder::getNode)
@@ -699,6 +399,6 @@ public class CSVTransformerIT implements BaseITMarker {
                     }
                 });
 
-        return transform;
+
     }
 }
