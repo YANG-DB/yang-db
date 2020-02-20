@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.logical;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,42 +22,36 @@ package com.yangdb.fuse.model.logical;
 
 import com.fasterxml.jackson.annotation.*;
 import com.yangdb.fuse.model.ontology.EntityType;
-import com.yangdb.fuse.model.results.AssignmentsQueryResult;
-import com.yangdb.fuse.model.results.CsvQueryResult;
 import com.yangdb.fuse.model.results.Property;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * //example
- *             {
- *                 "id": "0",
- *                 "label": "person",
- *                 "metadata": {
- *                     "user-defined": "values"
- *                 }
- *                 "properties":{
- *                     "fName": "first name",
- *                     "lName":"last name",
- *                     "born": "12/12/2000",
- *                     "age": "19",
- *                     "email": "myName@fuse.com",
- *                     "address": {
- *                             "state": "my state",
- *                             "street": "my street",
- *                             "city": "my city",
- *                             "zip": "gZip"
- *                     }
- *                 }
- *             }
+ * {
+ * "id": "0",
+ * "label": "person",
+ * "metadata": {
+ * "user-defined": "values"
+ * }
+ * "properties":{
+ * "fName": "first name",
+ * "lName":"last name",
+ * "born": "12/12/2000",
+ * "age": "19",
+ * "email": "myName@fuse.com",
+ * "address": {
+ * "state": "my state",
+ * "street": "my street",
+ * "city": "my city",
+ * "zip": "gZip"
+ * }
+ * }
+ * }
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LogicalNode implements Vertex {
+public class LogicalNode implements Vertex<LogicalNode> {
     public static final String NODE = "Node";
 
     @JsonProperty("label")
@@ -65,16 +59,48 @@ public class LogicalNode implements Vertex {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("tag")
+    private String tag;
+
     @JsonProperty("metadata")
     private NodeMetadata metadata = new NodeMetadata();
     @JsonProperty("properties")
-    private NodeProperties properties = new NodeProperties(); ;
+    private NodeProperties properties = new NodeProperties();
 
     public LogicalNode() {}
 
-    public LogicalNode(String id,String label) {
+    public LogicalNode(String id, String label) {
         this.id = id;
         this.label = label;
+    }
+
+    @Override
+    @JsonProperty("label")
+    public LogicalNode label(String label) {
+        setLabel(label);
+        return this;
+    }
+
+    @Override
+    public LogicalNode tag(String tag) {
+        setTag(tag);
+        return this;
+    }
+
+    @Override
+    @JsonProperty("tag")
+    public String tag() {
+        return getTag();
+    }
+
+    @JsonProperty("tag")
+    public String getTag() {
+        return tag;
+    }
+
+    @JsonProperty("tag")
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     @JsonProperty("label")
@@ -107,6 +133,12 @@ public class LogicalNode implements Vertex {
     @JsonProperty("label")
     public String label() {
         return getLabel();
+    }
+
+    @Override
+    public LogicalNode merge(LogicalNode entity) {
+        //todo merge
+        return this;
     }
 
     @JsonProperty("label")
@@ -148,33 +180,34 @@ public class LogicalNode implements Vertex {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"{" +
+        return getClass().getSimpleName() + "{" +
                 "id='" + id + '\'' +
                 "label='" + label + '\'' +
-                ", metadata=" + metadata +
+                ", metadata=" + metadata +  '\'' +
+                ", tag=" + tag +  '\'' +
                 ", properties=" + properties +
                 '}';
     }
 
     @JsonIgnore
     public LogicalNode withMetadata(Collection<Property> properties) {
-        properties.forEach(p->this.metadata.addProperties(p.getpType(),p.getValue()));
+        properties.forEach(p -> this.metadata.addProperties(p.getpType(), p.getValue()));
         return this;
     }
 
     @JsonIgnore
     public LogicalNode withProperty(String property, Object value) {
-        properties.addProperties(property,value);
+        properties.addProperties(property, value);
         return this;
     }
 
     @JsonIgnore
     public LogicalNode withProperty(EntityType type, String property, Object value) {
-        if(type.containsProperty(property)){
-            properties.addProperties(property,value);
+        if (type.containsProperty(property)) {
+            properties.addProperties(property, value);
         } else {
             //add property with _underscore so it can be ignored if needed
-            properties.addProperties(String.format("_%s",property),value);
+            properties.addProperties(String.format("_%s", property), value);
         }
         return this;
     }
@@ -185,13 +218,24 @@ public class LogicalNode implements Vertex {
     }
 
     public LogicalNode withMetadata(EntityType type, Collection<Property> properties) {
-        properties.addAll(properties.stream().filter(p->type.containsProperty(p.getpType())).collect(Collectors.toSet()));
+        properties.stream().filter(p -> type.containsProperty(p.getpType()))
+                .forEach(p -> this.properties.addProperties(p.getpType(), p.getValue()));
+        return this;
+    }
+
+    public LogicalNode withProperties(List<Property> properties) {
+        properties.forEach(p -> this.properties.addProperties(p.getpType(), p.getValue()));
+        return this;
+    }
+
+    public LogicalNode withTag(String tag) {
+        this.tag = tag;
         return this;
     }
 
 
     public static class NodeMetadata implements PropertyFields<NodeMetadata> {
-        private Map<String,Object> properties = new HashMap<>();
+        private Map<String, Object> properties = new HashMap<>();
 
 
         @JsonAnyGetter
@@ -201,20 +245,20 @@ public class LogicalNode implements Vertex {
 
         @JsonAnySetter
         public NodeMetadata addProperties(String key, Object value) {
-            this.properties.put(key,value);
+            this.properties.put(key, value);
             return this;
         }
 
         @Override
         public String toString() {
-            return getClass().getSimpleName()+"{" +
+            return getClass().getSimpleName() + "{" +
                     ", properties=" + properties +
                     '}';
         }
     }
 
-    public static class NodeProperties implements PropertyFields<NodeProperties>{
-        private Map<String,Object> properties = new HashMap<>();
+    public static class NodeProperties implements PropertyFields<NodeProperties> {
+        private Map<String, Object> properties = new HashMap<>();
 
         @JsonAnyGetter
         public Map<String, Object> getProperties() {
@@ -223,13 +267,13 @@ public class LogicalNode implements Vertex {
 
         @JsonAnySetter
         public NodeProperties addProperties(String key, Object value) {
-            this.properties.put(key,value);
+            this.properties.put(key, value);
             return this;
         }
 
         @Override
         public String toString() {
-            return getClass().getSimpleName()+"{" +
+            return getClass().getSimpleName() + "{" +
                     "properties=" + properties +
                     '}';
         }

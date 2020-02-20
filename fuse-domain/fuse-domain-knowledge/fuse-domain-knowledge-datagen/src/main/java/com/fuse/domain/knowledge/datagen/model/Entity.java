@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Date;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Deprecated
 public class Entity extends KnowledgeEntityBase {
     private static final String entityType = "entity";
 

@@ -62,6 +62,11 @@ public class CursorsModule extends ModuleBase {
                 new GraphTraversalCursor.Factory()));
 
         Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
+                CreateGraphQLCursorRequest.CursorType,
+                CreateGraphQLCursorRequest.class,
+                new GraphQLTraversalCursor.Factory()));
+
+        Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
                 CreateGraphHierarchyCursorRequest.CursorType,
                 CreateGraphHierarchyCursorRequest.class,
                 new NewGraphHierarchyTraversalCursor.Factory()));

@@ -28,6 +28,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.yangdb.fuse.model.asgQuery.AsgCompositeQuery;
+import com.yangdb.fuse.model.logical.Edge;
+import com.yangdb.fuse.model.logical.Vertex;
 import javaslang.collection.Stream;
 
 import java.util.*;
@@ -40,7 +42,7 @@ import java.util.*;
         @JsonSubTypes.Type(name = "Assignment", value = AssignmentCount.class)})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Assignment<E,R> {
+public class Assignment<E extends Vertex,R extends Edge> {
     //region Constructors
     public Assignment() {
         this.entities = Collections.emptyList();
@@ -83,7 +85,9 @@ public class Assignment<E,R> {
     private List<R> relationships;
     //endregion
 
-    public static final class Builder {
+    public static final class Builder<E extends Vertex,R extends Edge> {
+        private E current;
+
         //region Constructors
         private Builder() {
             //entities = new HashMap<>();
@@ -94,58 +98,64 @@ public class Assignment<E,R> {
 
         //region Static
         public static Builder instance() {
-            return new Builder();
+            return new Builder<>();
         }
         //endregion
 
         //region Public Methods
-        public Builder withEntities(List<Entity> entities) {
+        public Builder withEntities(List<E> entities) {
             entities.forEach(this::withEntity);
             return this;
         }
 
-        public Builder withEntity(Entity entity) {
-            Entity currentEntity = this.entities.get(entity.geteID());
+        public Builder withEntity(E entity) {
+            E currentEntity = this.entities.get(entity.id());
             if (currentEntity != null) {
-                entity = Entity.Builder.instance().withEntity(currentEntity).withEntity(entity).build();
+                entity.merge(currentEntity);
             }
 
-            entities.put(entity.geteID(), entity);
+            entities.put(entity.id(), entity);
+            this.current = entity;
             return this;
         }
 
-        public Builder withEntity(Entity entity,String tag) {
-            Entity currentEntity = this.entities.get(entity.geteID());
+        public Builder withEntity(E entity,String tag) {
+            E currentEntity = this.entities.get(entity.id());
             if (currentEntity != null) {
-                entity = Entity.Builder.instance().withEntity(currentEntity).withEntity(entity).withETag(tag).build();
+                entity.merge(currentEntity);
             }
 
-            entities.put(entity.geteID(), entity);
+            entities.put(entity.id(), entity);
+            this.current = entity;
             return this;
         }
 
-        public Builder withRelationship(Relationship relationship) {
+        public Builder withRelationship(R relationship) {
             this.relationships.add(relationship);
             return this;
         }
 
-        public Builder withRelationships(List<Relationship> relationships) {
+        public Builder withRelationships(List<R> relationships) {
             this.relationships.addAll(relationships);
             return this;
         }
 
-        public Assignment<Entity,Relationship> build() {
-            Assignment<Entity,Relationship> assignment = new Assignment<>();
+        public E currentEntity() {
+            return current;
+        }
+
+        public Assignment<E,R> build() {
+            Assignment<E,R> assignment = new Assignment<>();
             //assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
-            assignment.setEntities(Stream.ofAll(this.entities.values()).sortBy(Entity::geteType).toJavaList());
+            assignment.setEntities(Stream.ofAll(this.entities.values()).sortBy(E::label).toJavaList());
             assignment.setRelationships(this.relationships);
             return assignment;
         }
         //endregion
 
         //region Fields
-        private Map<String, Entity> entities;
-        private List<Relationship> relationships;
+        private Map<String, E> entities;
+        private List<R> relationships;
 
         //endregion
     }

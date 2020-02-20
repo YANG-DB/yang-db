@@ -24,6 +24,7 @@ public class CreateCursorRequestDeserializerTest {
                 Stream.of(
                         new Binding(CreatePathsCursorRequest.CursorType, CreatePathsCursorRequest.class, null),
                         new Binding(CreateGraphCursorRequest.CursorType, CreateGraphCursorRequest.class, null),
+                        new Binding(CreateGraphQLCursorRequest.CursorType, CreateGraphQLCursorRequest.class, null),
                         new Binding(CreateGraphHierarchyCursorRequest.CursorType, CreateGraphHierarchyCursorRequest.class, null))
                 .toJavaList()));
         objectMapper.registerModule(module);
@@ -47,6 +48,16 @@ public class CreateCursorRequestDeserializerTest {
 
         Assert.assertEquals(CreateGraphCursorRequest.CursorType, createCursorRequest.getCursorType());
         Assert.assertEquals(CreateGraphCursorRequest.class, createCursorRequest.getClass());
+    }
+
+    @Test
+    public void testCreateGraphCursorQLRequest() throws IOException {
+        CreateCursorRequest createCursorRequest = objectMapper.readValue(
+                objectMapper.writeValueAsString(new CreateGraphQLCursorRequest()),
+                CreateCursorRequest.class);
+
+        Assert.assertEquals(CreateGraphQLCursorRequest.CursorType, createCursorRequest.getCursorType());
+        Assert.assertEquals(CreateGraphQLCursorRequest.class, createCursorRequest.getClass());
     }
 
     @Test

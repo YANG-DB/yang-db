@@ -49,6 +49,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "authorization",
         "refs"
 })
+@Deprecated
 public class Entity {
 
     @JsonProperty("techId")
