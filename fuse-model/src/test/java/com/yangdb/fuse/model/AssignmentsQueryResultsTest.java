@@ -1,5 +1,6 @@
 package com.yangdb.fuse.model;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.Query;
@@ -31,7 +32,76 @@ public class AssignmentsQueryResultsTest {
     @Test
     public void testResults1Serialization() throws IOException, JSONException {
         String result1ActualJSON = mapper.writeValueAsString(result1Obj);
-        String result1ExpectedJSONString = "{\"pattern\":{\"ont\":\"Dragons\",\"name\":\"Q1\"},\"assignments\":[{\"entities\":[{\"eTag\":[\"A\",\"C\"],\"eID\":\"12345678\",\"eType\":\"Person\",\"properties\":[{\"pType\":\"1\",\"agg\":\"raw\",\"value\":\"a\"},{\"pType\":\"3\",\"agg\":\"raw\",\"value\":5.35}],\"attachedProperties\":[{\"pName\":\"count(relationships)\",\"value\":53}]}],\"relationships\":[{\"rID\":\"12345678\",\"agg\":true,\"rType\":\"memberof\",\"directional\":true,\"eID1\":\"12345678\",\"eID2\":\"12345679\",\"properties\":[{\"pType\":\"1\",\"agg\":\"max\",\"value\":76},{\"pType\":\"1\",\"agg\":\"avg\",\"value\":34.56}],\"attachedProperties\":[{\"pName\":\"sum(duration)\",\"value\":124}]}]}]}";
+        String result1ExpectedJSONString = "{\n" +
+                "  \"resultType\": \"assignments\",\n" +
+                "  \"pattern\": {\n" +
+                "    \"ont\": \"Dragons\",\n" +
+                "    \"name\": \"Q1\"\n" +
+                "  },\n" +
+                "  \"assignments\": [\n" +
+                "    {\n" +
+                "      \"entities\": [\n" +
+                "        {\n" +
+                "          \"eTag\": [\n" +
+                "            \"A\",\n" +
+                "            \"C\"\n" +
+                "          ],\n" +
+                "          \"eType\": \"Person\",\n" +
+                "          \"properties\": [\n" +
+                "            {\n" +
+                "              \"pType\": \"1\",\n" +
+                "              \"agg\": \"raw\",\n" +
+                "              \"value\": \"a\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"pType\": \"3\",\n" +
+                "              \"agg\": \"raw\",\n" +
+                "              \"value\": 5.35\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"attachedProperties\": [\n" +
+                "            {\n" +
+                "              \"pName\": \"count(relationships)\",\n" +
+                "              \"value\": 53\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"id\": \"12345678\",\n" +
+                "          \"tag\": \"A\",\n" +
+                "          \"label\": \"Person\"\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"relationships\": [\n" +
+                "        {\n" +
+                "          \"rID\": \"12345678\",\n" +
+                "          \"agg\": true,\n" +
+                "          \"rType\": \"memberof\",\n" +
+                "          \"directional\": true,\n" +
+                "          \"eID1\": \"12345678\",\n" +
+                "          \"eID2\": \"12345679\",\n" +
+                "          \"properties\": [\n" +
+                "            {\n" +
+                "              \"pType\": \"1\",\n" +
+                "              \"agg\": \"max\",\n" +
+                "              \"value\": 76\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"pType\": \"1\",\n" +
+                "              \"agg\": \"avg\",\n" +
+                "              \"value\": 34.56\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"attachedProperties\": [\n" +
+                "            {\n" +
+                "              \"pName\": \"sum(duration)\",\n" +
+                "              \"value\": 124\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"resultType\": \"assignments\"\n" +
+                "}";
 //        System.out.println("result1ExpectedJSONString:" + result1ExpectedJSONString);
 //        System.out.println("result1ActualJSON:" + result1ActualJSON);
         JSONAssert.assertEquals(result1ExpectedJSONString, result1ActualJSON,false);
@@ -41,7 +111,7 @@ public class AssignmentsQueryResultsTest {
     @Test
     public void testDeSerialization() throws Exception {
         String result1ExpectedJson = readJsonToString("results1.json");
-        AssignmentsQueryResult resultObj = (AssignmentsQueryResult) (new ObjectMapper()).readValue(result1ExpectedJson, QueryResultBase.class);
+        AssignmentsQueryResult resultObj = (new ObjectMapper()).readValue(result1ExpectedJson, new TypeReference<AssignmentsQueryResult<Entity,Relationship>>(){});
         Assert.assertNotNull(resultObj);
         String result1ActualJSON = mapper.writeValueAsString(resultObj);
         JSONAssert.assertEquals(result1ExpectedJson, result1ActualJSON,false);
