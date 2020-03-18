@@ -48,10 +48,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -137,6 +134,23 @@ public class EntityType {
     @Override
     public String toString() {
         return "EntityType [eType = " + eType + ", name = " + name + ", display = " + display + ", properties = " + properties + ", metadata = " + metadata +", mandatory = " + mandatory + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EntityType that = (EntityType) o;
+        return eType.equals(that.eType) &&
+                name.equals(that.name) &&
+                properties.equals(that.properties) &&
+                Objects.equals(metadata, that.metadata) &&
+                display.equals(that.display);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(eType, name, properties, metadata, display);
     }
 
     //region Fields

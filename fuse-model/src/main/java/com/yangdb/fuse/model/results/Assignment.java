@@ -27,7 +27,6 @@ package com.yangdb.fuse.model.results;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.yangdb.fuse.model.asgQuery.AsgCompositeQuery;
 import com.yangdb.fuse.model.logical.Edge;
 import com.yangdb.fuse.model.logical.Vertex;
 import javaslang.collection.Stream;
@@ -86,7 +85,8 @@ public class Assignment<E extends Vertex,R extends Edge> {
     //endregion
 
     public static final class Builder<E extends Vertex,R extends Edge> {
-        private E current;
+        private E currentNode;
+        private R currentEdge;
 
         //region Constructors
         private Builder() {
@@ -115,7 +115,7 @@ public class Assignment<E extends Vertex,R extends Edge> {
             }
 
             entities.put(entity.id(), entity);
-            this.current = entity;
+            this.currentNode = entity;
             return this;
         }
 
@@ -126,12 +126,13 @@ public class Assignment<E extends Vertex,R extends Edge> {
             }
 
             entities.put(entity.id(), entity);
-            this.current = entity;
+            this.currentNode = entity;
             return this;
         }
 
         public Builder withRelationship(R relationship) {
             this.relationships.add(relationship);
+            this.currentEdge = relationship;
             return this;
         }
 
@@ -140,8 +141,13 @@ public class Assignment<E extends Vertex,R extends Edge> {
             return this;
         }
 
-        public E currentEntity() {
-            return current;
+
+        public E getCurrentNode() {
+            return currentNode;
+        }
+
+        public R getCurrentEdge() {
+            return currentEdge;
         }
 
         public Assignment<E,R> build() {

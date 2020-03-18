@@ -9,9 +9,9 @@ package com.yangdb.fuse.dispatcher.query.graphql;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,10 +23,8 @@ package com.yangdb.fuse.dispatcher.query.graphql;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
 import com.yangdb.fuse.model.ontology.*;
-import graphql.language.ListType;
-import graphql.language.NonNullType;
-import graphql.language.Type;
-import graphql.language.TypeName;
+import com.yangdb.fuse.model.ontology.Value;
+import graphql.language.*;
 import graphql.schema.*;
 import graphql.schema.idl.EchoingWiringFactory;
 import graphql.schema.idl.SchemaGenerator;
@@ -43,10 +41,19 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.yangdb.fuse.dispatcher.query.graphql.GraphQL2OntologyTransformer.WhereSupportGraphQL.*;
+import static graphql.Scalars.*;
+import static graphql.schema.GraphQLSchema.newSchema;
+import static graphql.schema.GraphQLTypeReference.typeRef;
+
 /**
  * API that will transform a GraphQL schema into YangDb ontology schema
  */
-public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<String,Ontology>, GraphQLSchemaUtils {
+public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<String, Ontology>, GraphQLSchemaUtils {
+    //where input object
+    public static final String QUERY = "Query";
+
+
     //graph QL reader and schema parts
     private GraphQLSchema graphQLSchema;
     private SchemaParser schemaParser = new SchemaParser();
@@ -59,13 +66,9 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
 
     @Inject
     public GraphQL2OntologyTransformer() {
-        languageTypes.add("QueryType");
+        languageTypes.addAll(Arrays.asList(QUERY,WHERE_OPERATOR));
     }
 
-    @Override
-    public Ontology transform(String source) {
-        return transform(IOUtils.toInputStream(source));
-    }
 
     /**
      * get the graph QL schema
@@ -82,16 +85,130 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
     }
 
 
+    @Override
+    /**
+     * API that will transform a GraphQL schema into YangDb ontology schema
+     *
+     * @param source
+     * @return
+     */
+    public Ontology transform(String source) {
+        return transform(IOUtils.toInputStream(source));
+    }
+
+    /**
+     * API that will transform a Ontology schema into grpahQL schema
+     *
+     * @param source
+     * @return
+     */
+    public GraphQLSchema transform(Ontology source) {
+        if (graphQLSchema == null) {
+            //create schema
+            GraphQLSchema.Builder builder = newSchema();
+            // each registry is merged into the main registry
+            Ontology.Accessor accessor = new Ontology.Accessor(source);
+            accessor.getEnumeratedTypes().forEach(t -> builder.additionalType(buildEnum(t, accessor)));
+            accessor.entities().forEach(e -> builder.additionalType(buildGraphQLObject(e, accessor)));
+            //add where input type
+            buildWhereInputType(builder);
+            // add query for all concrete types with the where input type
+            builder.query(buildQuery(accessor));
+            graphQLSchema = builder.build();
+        } else {
+            Ontology.Accessor accessor = new Ontology.Accessor(source);
+            accessor.getEnumeratedTypes().forEach(t -> graphQLSchema.getAllTypesAsList().add(buildEnum(t, accessor)));
+            accessor.entities().forEach(e -> graphQLSchema.getAllTypesAsList().add(buildGraphQLObject(e, accessor)));
+        }
+        return graphQLSchema;
+
+    }
+
+    /**
+     * schema query builder for each entity
+     * @param accessor
+     * @return
+     */
+    private GraphQLObjectType buildQuery(Ontology.Accessor accessor) {
+        GraphQLObjectType.Builder builder = GraphQLObjectType.newObject()
+                .name(QUERY);
+        //build input query with where clause for each entity
+        accessor.entities().forEach(e->
+                        builder.field(
+                                GraphQLFieldDefinition.newFieldDefinition()
+                                .name(e.geteType())
+                                .argument(new GraphQLArgument.Builder()
+                                        .name(WHERE)
+                                        .type(typeRef(WHERE))
+                                        .build())
+                                .type(typeRef(e.geteType()))
+                                .definition(new FieldDefinition(e.geteType(),new TypeName(e.geteType())))
+                                .build()));
+
+        return builder.build();
+    }
+
+    private GraphQLEnumType buildEnum(EnumeratedType type, Ontology.Accessor accessor) {
+        return new GraphQLEnumType.Builder()
+                .name(type.geteType())
+                .values(type.getValues().stream()
+                        .map(v -> new GraphQLEnumValueDefinition(v.getName(), v.getName(), v.getVal()))
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    private GraphQLObjectType buildGraphQLObject(EntityType e, Ontology.Accessor accessor) {
+        GraphQLObjectType.Builder builder = GraphQLObjectType.newObject()
+                .name(e.geteType());
+
+        e.getProperties().forEach(p -> builder.field(
+                GraphQLFieldDefinition.newFieldDefinition()
+                        .name(p)
+                        .type(type(accessor.property$(p).getType(), accessor))
+                        .definition(new FieldDefinition(p,new TypeName(accessor.property$(p).getType())))
+                        .build()));
+
+        List<RelationshipType> relationshipTypes = accessor.relationBySideA(e.geteType());
+        relationshipTypes.forEach(rel -> builder.field(
+                GraphQLFieldDefinition.newFieldDefinition()
+                        .name(rel.getName())
+                        .definition(new FieldDefinition(rel.getName(),new ListType(new TypeName(rel.getePairs().get(0).geteTypeB()))))
+                        //all pairs should follow same type pattern (todo check is this always correct)
+                        .type(GraphQLList.list(typeRef(rel.getePairs().get(0).geteTypeB()))))
+                .build());
+
+        return builder.build();
+    }
+
+    private GraphQLOutputType type(String type, Ontology.Accessor accessor) {
+        if (accessor.enumeratedType(type).isPresent())
+            return typeRef(type);
+
+        switch (type) {
+            case "ID":
+                return GraphQLID;
+            case "String":
+                return GraphQLString;
+            case "Long":
+                return GraphQLLong;
+            case "Int":
+                return GraphQLInt;
+            default:
+                return GraphQLString;
+        }
+
+    }
+
     /**
      * API that will transform a GraphQL schema into YangDb ontology schema
      *
      * @param streams
      * @return
      */
-    public Ontology transform(InputStream ... streams) {
+    public Ontology transform(InputStream... streams) {
         if (graphQLSchema == null) {
             // each registry is merged into the main registry
-            Arrays.asList(streams).forEach(s-> typeRegistry.merge(schemaParser.parse(new InputStreamReader(s))));
+            Arrays.asList(streams).forEach(s -> typeRegistry.merge(schemaParser.parse(new InputStreamReader(s))));
             //create schema
             graphQLSchema = schemaGenerator.makeExecutableSchema(
                     SchemaGenerator.Options.defaultOptions().enforceSchemaDirectives(false),
@@ -99,6 +216,16 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
                     EchoingWiringFactory.newEchoingWiring());
         }
         //create a curated list of names for typed schema elements
+        return transform(graphQLSchema);
+
+    }
+
+    /**
+     *
+     * @param graphQLSchema
+     * @return
+     */
+    public Ontology transform(GraphQLSchema graphQLSchema) {
         populateObjectTypes(graphQLSchema);
 
         //transform
@@ -110,7 +237,6 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
         enums(graphQLSchema, builder);
 
         return builder.build();
-
     }
 
     private void populateObjectTypes(GraphQLSchema graphQLSchema) {
@@ -335,4 +461,67 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
         return builder.build();
     }
 
+    static class WhereSupportGraphQL {
+        public static final String WHERE = "Where";
+        public static final String WHERE_OPERATOR = "WhereOperator";
+        public static final String OR = "OR";
+        public static final String AND = "AND";
+        public static final String CONSTRAINT = "Constraint";
+        public static final String OPERAND = "operand";
+        public static final String OPERATOR = "operator";
+        public static final String EXPRESSION = "expression";
+
+        public static void buildWhereInputType(GraphQLSchema.Builder builder) {
+            //where enum
+            builder.additionalType(new GraphQLEnumType.Builder()
+                    .name(WHERE_OPERATOR)
+                    .values(Arrays.asList(new GraphQLEnumValueDefinition(OR, OR, OR),
+                            new GraphQLEnumValueDefinition(AND, AND, AND)))
+                    .build());
+
+            //Constraint
+            /**
+             *     input Constraint {
+             *         operand: String!
+             *         operator: String!
+             *         expression: String
+             *     }
+             */
+            builder.additionalType(GraphQLInputObjectType.newInputObject()
+                    .name(CONSTRAINT)
+                    .field(GraphQLInputObjectField.newInputObjectField()
+                            .name(OPERAND)
+                            .type(new GraphQLNonNull(GraphQLID))
+                            .build())
+                    .field(GraphQLInputObjectField.newInputObjectField()
+                            .name(OPERATOR)
+                            .type(new GraphQLNonNull(GraphQLString))
+                            .build())
+                    .field(GraphQLInputObjectField.newInputObjectField()
+                            .name(EXPRESSION)
+                            .type(GraphQLString)
+                            .build())
+                    .build());
+
+            //where clause
+            /**
+             *     input WhereClause {
+             *         operator: WhereOperator
+             *         constraints: [Constraint]
+             *     }
+             */
+
+            builder.additionalType(GraphQLInputObjectType.newInputObject()
+                    .name(WHERE)
+                    .field(GraphQLInputObjectField.newInputObjectField()
+                            .name(OPERATOR)
+                            .type(typeRef(WHERE_OPERATOR)))
+                    .field(GraphQLInputObjectField.newInputObjectField()
+                            .name(CONSTRAINT)
+                            .type(GraphQLList.list(typeRef(CONSTRAINT))))
+                    .build());
+
+        }
+
+    }
 }

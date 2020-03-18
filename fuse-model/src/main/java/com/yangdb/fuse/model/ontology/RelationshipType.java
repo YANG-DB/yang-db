@@ -181,33 +181,24 @@ public class RelationshipType {
 
     //endregion
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         RelationshipType that = (RelationshipType) o;
-
-        if (!rType.equals(that.rType)) return false;
-        if (directional != that.directional) return false;
-        if (!name.equals(that.name)) return false;
-        if (DBrName != null ? !DBrName.equals(that.DBrName) : that.DBrName != null) return false;
-        if (ePairs != null ? !ePairs.equals(that.ePairs) : that.ePairs != null) return false;
-        if (metadata != null ? metadata.equals(that.metadata) : that.metadata == null) return false;
-        return properties != null ? properties.equals(that.properties) : that.properties == null;
+        return directional == that.directional &&
+                rType.equals(that.rType) &&
+                name.equals(that.name) &&
+                mandatory.equals(that.mandatory) &&
+                ePairs.equals(that.ePairs) &&
+                properties.equals(that.properties) &&
+                metadata.equals(that.metadata);
     }
 
     @Override
     public int hashCode() {
-        int result = rType.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + (directional ? 1 : 0);
-        result = 31 * result + (DBrName != null ? DBrName.hashCode() : 0);
-        result = 31 * result + (ePairs != null ? ePairs.hashCode() : 0);
-        result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
-        result = 31 * result + (properties != null ? properties.hashCode() : 0);
-        result = 31 * result + (mandatory != null ? mandatory.hashCode() : 0);
-        return result;
+        return Objects.hash(rType, name, directional,  mandatory, ePairs, properties, metadata);
     }
 
     @Override
@@ -238,6 +229,16 @@ public class RelationshipType {
     @JsonIgnore
     public boolean containsProperty(String key) {
         return properties.contains(key);
+    }
+
+    @JsonIgnore
+    public boolean hasSideA(String eType) {
+        return ePairs.stream().anyMatch(ep->ep.geteTypeA().equals(eType));
+    }
+
+    @JsonIgnore
+    public boolean hasSideB(String eType) {
+        return ePairs.stream().anyMatch(ep->ep.geteTypeB().equals(eType));
     }
 
 

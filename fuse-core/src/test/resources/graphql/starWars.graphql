@@ -1,11 +1,11 @@
-schema {
-    query: QueryType
+schema{
+    query: Query
 }
 
-type QueryType {
-    hero(where: WhereClause): Character
-    human(where: WhereClause): Human
-    droid(where: WhereClause): Droid
+type Query {
+    Character(where: WhereClause): Character
+    Droid(where: WhereClause): Droid
+    Human(where: WhereClause): Human
 }
 
 

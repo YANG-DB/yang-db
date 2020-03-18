@@ -121,6 +121,22 @@ public class Property {
         return String.format("Property [pType = %s, name = %s, type = %s]", this.pType, this.name, this.type);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !Property.class.isAssignableFrom(o.getClass())) return false;
+        Property property = (Property) o;
+        return pType.equals(property.pType) &&
+                name.equals(property.name) &&
+                type.equals(property.type) &&
+                Objects.equals(searchType, property.searchType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pType, name, type, searchType);
+    }
+
     /**
      * check equality by not using the class type
      * @param source
@@ -133,21 +149,6 @@ public class Property {
                 source.type.equals(other.type);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || !getClass().isAssignableFrom(o.getClass())) return false;
-
-        return equal(this, (Property) o);
-      }
-
-    @Override
-    public int hashCode() {
-        int result = this.pType.hashCode();
-        result = 31 * result + this.name.hashCode();
-        result = 31 * result + this.type.hashCode();
-        return result;
-    }
     //endregion
 
     //region Fields

@@ -144,6 +144,26 @@ public class Ontology {
         return "Ontology [enumeratedTypes = "+enumeratedTypes+", ont = "+ont+", relationshipTypes = "+relationshipTypes+", entityTypes = "+entityTypes+"]";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ontology ontology = (Ontology) o;
+        return ont.equals(ontology.ont) &&
+                entityTypes.equals(ontology.entityTypes) &&
+                relationshipTypes.equals(ontology.relationshipTypes) &&
+                properties.equals(ontology.properties) &&
+                metadata.equals(ontology.metadata) &&
+                enumeratedTypes.equals(ontology.enumeratedTypes) &&
+                compositeTypes.equals(ontology.compositeTypes) &&
+                primitiveTypes.equals(ontology.primitiveTypes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ont, entityTypes, relationshipTypes, properties, metadata, enumeratedTypes, compositeTypes, primitiveTypes);
+    }
+
     //endregion
 
     //region Fields
@@ -160,7 +180,7 @@ public class Ontology {
     //region Builder
 
     public static final class OntologyBuilder {
-        private String ont;
+        private String ont = "Generic";
         private List<EntityType> entityTypes;
         private List<RelationshipType> relationshipTypes;
         private List<Property> properties;
@@ -393,6 +413,14 @@ public class Ontology {
             return Stream.ofAll(ontology.getRelationshipTypes()).toJavaList();
         }
 
+        public List<RelationshipType> relationBySideA(String eType) {
+            return Stream.ofAll(ontology.getRelationshipTypes()).filter(r->r.hasSideA(eType)).toJavaList();
+        }
+
+        public List<RelationshipType> relationBySideB(String eType) {
+            return Stream.ofAll(ontology.getRelationshipTypes()).filter(r->r.hasSideB(eType)).toJavaList();
+        }
+
         public Iterable<String> rTypes() {
             return Stream.ofAll(relations()).map(RelationshipType::getrType).toJavaList();
         }
@@ -409,6 +437,11 @@ public class Ontology {
 
         public PrimitiveType primitiveType$(String typeName) {
             return primitiveType(typeName).get();
+        }
+
+
+        public List<EnumeratedType> getEnumeratedTypes() {
+            return ontology.getEnumeratedTypes();
         }
 
         public Optional<EnumeratedType> enumeratedType(String typeName) {

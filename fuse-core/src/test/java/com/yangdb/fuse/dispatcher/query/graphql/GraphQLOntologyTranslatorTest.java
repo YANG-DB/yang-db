@@ -4,6 +4,7 @@ import com.yangdb.fuse.model.ontology.EnumeratedType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.ontology.Value;
+import graphql.schema.GraphQLSchema;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,12 +16,17 @@ import static com.yangdb.fuse.model.ontology.Property.equal;
 
 public class GraphQLOntologyTranslatorTest {
     public static Ontology ontology;
+    public static GraphQLSchema graphQLSchema;
 
     @BeforeClass
     public static void setUp() throws Exception {
         InputStream schemaInput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/starWars.graphql");
         InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql");
-        ontology = new GraphQL2OntologyTransformer().transform(whereInoput, schemaInput);
+        GraphQL2OntologyTransformer transformer = new GraphQL2OntologyTransformer();
+
+        ontology = transformer.transform(whereInoput, schemaInput);
+        graphQLSchema = transformer.getGraphQLSchema();
+
         Assert.assertNotNull(ontology);
     }
 
@@ -83,6 +89,23 @@ public class GraphQLOntologyTranslatorTest {
 
         Assert.assertEquals(accessor.relation$("friends").getrType(), "friends");
         Assert.assertEquals(accessor.relation$("friends").getePairs().size(), 2);
+
+    }
+
+    @Test
+    public void testOntology2GraphQLTransformation() {
+        GraphQLSchema targetSchema = new GraphQL2OntologyTransformer().transform(ontology);
+        Ontology ontologyTarget = new GraphQL2OntologyTransformer().transform(targetSchema);
+
+        Assert.assertEquals(ontology.getEntityTypes(),ontologyTarget.getEntityTypes());
+        Assert.assertEquals(ontology.getRelationshipTypes(),ontologyTarget.getRelationshipTypes());
+        Assert.assertEquals(ontology.getProperties(),ontologyTarget.getProperties());
+        Assert.assertEquals(ontology.getEnumeratedTypes(),ontologyTarget.getEnumeratedTypes());
+
+        Assert.assertEquals(targetSchema.getQueryType().getFieldDefinitions().size()
+                ,graphQLSchema.getQueryType().getFieldDefinitions().size());
+        Assert.assertEquals(targetSchema.getAllTypesAsList().size()
+                ,graphQLSchema.getAllTypesAsList().size());
 
     }
 

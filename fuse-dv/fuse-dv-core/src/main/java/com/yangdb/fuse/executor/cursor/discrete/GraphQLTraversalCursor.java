@@ -75,10 +75,20 @@ public class GraphQLTraversalCursor extends PathsTraversalCursor {
             String pathLabel = pathlabels.get(objectIndex).iterator().next();
 
             if (Vertex.class.isAssignableFrom(pathObject.getClass())) {
-                builder.withEntity(toEntity((Vertex) pathObject, this.eEntityBases.get(pathLabel)));
+                if(builder.getCurrentNode()!=null &&
+                        builder.getCurrentEdge()!=null)   {
+                    //get current edge label
+                    String label = builder.getCurrentEdge().label();
+                    //todo verify existing current node has a relational field names as the label
+                    //put new node as child node of current node with named relation label
+                    ((CompositeLogicalNode)builder.getCurrentNode())
+                            .withChild(label, (LogicalNode) toEntity((Vertex) pathObject, this.eEntityBases.get(pathLabel)));
+                } else {
+                    builder.withEntity(toEntity((Vertex) pathObject, this.eEntityBases.get(pathLabel)));
+                }
             } else if (Edge.class.isAssignableFrom(pathObject.getClass())) {
                 Tuple3<EEntityBase, Rel, EEntityBase> relTuple = this.eRels.get(pathLabel);
-                //todo check is this "relation" has a property counterpart in the entity
+                builder.withRelationship(toRelationship((Edge)pathObject,relTuple._1,relTuple._2,relTuple._3));
             } else {
                 throw new UnsupportedOperationException("unexpected object in path");
             }
