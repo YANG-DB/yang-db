@@ -191,7 +191,6 @@ input CapsulesFind{
     type: String
 }
 
-
 type Capsule{
     id: ID
     landings: Int

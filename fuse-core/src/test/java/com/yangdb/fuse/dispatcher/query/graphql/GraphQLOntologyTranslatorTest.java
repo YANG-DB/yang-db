@@ -32,7 +32,7 @@ public class GraphQLOntologyTranslatorTest {
 
     @Test
     public void testEnumTranslation() {
-        Assert.assertEquals(ontology.getEnumeratedTypes().size(), 2);
+        Assert.assertEquals(ontology.getEnumeratedTypes().size(), 1);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
 
         Assert.assertEquals(accessor.enumeratedType$("Episode"),
@@ -41,10 +41,7 @@ public class GraphQLOntologyTranslatorTest {
                                 new Value(1, "EMPIRE"),
                                 new Value(2, "JEDI"))));
 
-        Assert.assertEquals(accessor.enumeratedType$("WhereOperator"),
-                new EnumeratedType("WhereOperator",
-                        Arrays.asList(new Value(0, "AND"),
-                                new Value(1, "OR"))));
+
     }
 
     @Test

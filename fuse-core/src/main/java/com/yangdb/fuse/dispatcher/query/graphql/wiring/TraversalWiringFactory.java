@@ -58,6 +58,7 @@ import java.util.stream.Collectors;
 public class TraversalWiringFactory implements WiringFactory {
 
     public static final String WHERE = "where";
+    public static final String QUERY = "query";
     //wiring jackson mapper
     public static final ObjectMapper mapper = new ObjectMapper();
 
@@ -145,7 +146,7 @@ public class TraversalWiringFactory implements WiringFactory {
             GraphQLObjectType type = (GraphQLObjectType) fieldType;
             GraphQLObjectType parentType = (GraphQLObjectType) parent.getType();
             //add the start query element
-            if (parentType.getName().equals("QueryType")) {
+            if (parentType.getName().toLowerCase().equals(QUERY)) {
                 builder.start();
             }
             //populate vertex or relation

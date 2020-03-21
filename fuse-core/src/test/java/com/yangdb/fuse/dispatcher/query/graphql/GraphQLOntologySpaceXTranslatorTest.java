@@ -13,7 +13,8 @@ public class GraphQLOntologySpaceXTranslatorTest {
     @BeforeClass
     public static void setUp() throws Exception {
         InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/spaceX.graphql");
-        ontology = new GraphQL2OntologyTransformer().transform(resource);
+        InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql");
+        ontology = new GraphQL2OntologyTransformer().transform(resource,whereInoput);
         Assert.assertNotNull(ontology);
     }
 
@@ -24,12 +25,12 @@ public class GraphQLOntologySpaceXTranslatorTest {
 
     @Test
     public void testEntitiesTranslation() {
-        Assert.assertEquals(ontology.getEntityTypes().size(), 53);
+        Assert.assertEquals(ontology.getEntityTypes().size(), 52);
     }
 
     @Test
     public void testRelationsTranslation() {
-        Assert.assertEquals(ontology.getRelationshipTypes().size(), 73);
+        Assert.assertEquals(ontology.getRelationshipTypes().size(), 43);
     }
 
 }

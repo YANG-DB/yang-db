@@ -22,8 +22,8 @@ package com.yangdb.fuse.dispatcher.query.graphql;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
-import com.yangdb.fuse.model.ontology.*;
 import com.yangdb.fuse.model.ontology.Value;
+import com.yangdb.fuse.model.ontology.*;
 import graphql.language.*;
 import graphql.schema.*;
 import graphql.schema.idl.EchoingWiringFactory;
@@ -66,7 +66,7 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
 
     @Inject
     public GraphQL2OntologyTransformer() {
-        languageTypes.addAll(Arrays.asList(QUERY,WHERE_OPERATOR));
+        languageTypes.addAll(Arrays.asList(QUERY, WHERE_OPERATOR, WHERE_CLAUSE, CONSTRAINT));
     }
 
 
@@ -126,24 +126,30 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
 
     /**
      * schema query builder for each entity
+     *
      * @param accessor
      * @return
      */
     private GraphQLObjectType buildQuery(Ontology.Accessor accessor) {
         GraphQLObjectType.Builder builder = GraphQLObjectType.newObject()
+                .definition(ObjectTypeDefinition.newObjectTypeDefinition()
+                        .name(QUERY)
+                        .build())
                 .name(QUERY);
+
         //build input query with where clause for each entity
-        accessor.entities().forEach(e->
+        accessor.entities()
+                .forEach(e ->
                         builder.field(
                                 GraphQLFieldDefinition.newFieldDefinition()
-                                .name(e.geteType())
-                                .argument(new GraphQLArgument.Builder()
-                                        .name(WHERE)
-                                        .type(typeRef(WHERE))
-                                        .build())
-                                .type(typeRef(e.geteType()))
-                                .definition(new FieldDefinition(e.geteType(),new TypeName(e.geteType())))
-                                .build()));
+                                        .name(e.geteType())
+                                        .argument(new GraphQLArgument.Builder()
+                                                .name(WHERE_CLAUSE)
+                                                .type(typeRef(WHERE_CLAUSE))
+                                                .build())
+                                        .type(typeRef(e.geteType()))
+                                        .definition(new FieldDefinition(e.geteType(), new TypeName(e.geteType())))
+                                        .build()));
 
         return builder.build();
     }
@@ -154,6 +160,13 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
                 .values(type.getValues().stream()
                         .map(v -> new GraphQLEnumValueDefinition(v.getName(), v.getName(), v.getVal()))
                         .collect(Collectors.toList()))
+                //build definition
+                .definition(EnumTypeDefinition.newEnumTypeDefinition()
+                        .name(type.geteType())
+                        .enumValueDefinitions(type.getValues().stream()
+                                .map(v -> new EnumValueDefinition(v.getName()))
+                                .collect(Collectors.toList()))
+                        .build())
                 .build();
     }
 
@@ -165,18 +178,39 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
                 GraphQLFieldDefinition.newFieldDefinition()
                         .name(p)
                         .type(type(accessor.property$(p).getType(), accessor))
-                        .definition(new FieldDefinition(p,new TypeName(accessor.property$(p).getType())))
-                        .build()));
+                        .definition(new FieldDefinition(p, new TypeName(accessor.property$(p).getType())))
+                        .build()
+        ));
 
         List<RelationshipType> relationshipTypes = accessor.relationBySideA(e.geteType());
         relationshipTypes.forEach(rel -> builder.field(
                 GraphQLFieldDefinition.newFieldDefinition()
                         .name(rel.getName())
-                        .definition(new FieldDefinition(rel.getName(),new ListType(new TypeName(rel.getePairs().get(0).geteTypeB()))))
+                        .definition(new FieldDefinition(rel.getName(), new ListType(new TypeName(rel.getePairs().get(0).geteTypeB()))))
                         //all pairs should follow same type pattern (todo check is this always correct)
                         .type(GraphQLList.list(typeRef(rel.getePairs().get(0).geteTypeB()))))
                 .build());
 
+        //definitions
+        ObjectTypeDefinition.Builder defBuilder = ObjectTypeDefinition.newObjectTypeDefinition();
+        //fields definitions
+        e.getProperties().forEach(p -> defBuilder.fieldDefinition(
+                FieldDefinition.newFieldDefinition()
+                        .name(p)
+                        .type(TypeName.newTypeName(p).build())
+                        .build()
+        ));
+        //additional entities created from relationships (graphQL considers them as embedded relations)
+        relationshipTypes.forEach(rel -> defBuilder.fieldDefinition(
+                FieldDefinition.newFieldDefinition()
+                        .name(rel.getName())
+                        //all pairs should follow same type pattern (todo check is this always correct)
+                        .type(ListType.newListType(
+                                TypeName.newTypeName(rel.getePairs().get(0).geteTypeB()).build())
+                            .build())
+                        .build()));
+
+        builder.definition(defBuilder.build());
         return builder.build();
     }
 
@@ -221,11 +255,11 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
     }
 
     /**
-     *
      * @param graphQLSchema
      * @return
      */
     public Ontology transform(GraphQLSchema graphQLSchema) {
+        validateLanguageType(graphQLSchema);
         populateObjectTypes(graphQLSchema);
 
         //transform
@@ -237,6 +271,15 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
         enums(graphQLSchema, builder);
 
         return builder.build();
+    }
+
+    private void validateLanguageType(GraphQLSchema graphQLSchema) {
+        List<GraphQLNamedType> types = graphQLSchema.getAllTypesAsList().stream()
+                .filter(p -> languageTypes.contains(p.getName()))
+                .collect(Collectors.toList());
+
+        if (types.size() != languageTypes.size())
+            throw new IllegalArgumentException("GraphQL schema doesnt include Query/Where types");
     }
 
     private void populateObjectTypes(GraphQLSchema graphQLSchema) {
@@ -462,8 +505,8 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
     }
 
     static class WhereSupportGraphQL {
-        public static final String WHERE = "Where";
         public static final String WHERE_OPERATOR = "WhereOperator";
+        public static final String WHERE_CLAUSE = "WhereClause";
         public static final String OR = "OR";
         public static final String AND = "AND";
         public static final String CONSTRAINT = "Constraint";
@@ -477,6 +520,12 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
                     .name(WHERE_OPERATOR)
                     .values(Arrays.asList(new GraphQLEnumValueDefinition(OR, OR, OR),
                             new GraphQLEnumValueDefinition(AND, AND, AND)))
+                    //definition
+                    .definition(EnumTypeDefinition.newEnumTypeDefinition()
+                            .name(WHERE_OPERATOR)
+                            .enumValueDefinitions(Arrays.asList(new EnumValueDefinition(OR),
+                                    new EnumValueDefinition(AND)))
+                            .build())
                     .build());
 
             //Constraint
@@ -501,6 +550,29 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
                             .name(EXPRESSION)
                             .type(GraphQLString)
                             .build())
+                    //definition
+                    .definition(InputObjectTypeDefinition.newInputObjectDefinition()
+                            .name(CONSTRAINT)
+                            .inputValueDefinition(InputValueDefinition.newInputValueDefinition()
+                                    .name(OPERAND)
+                                    .type(NonNullType.newNonNullType()
+                                            .type(TypeName.newTypeName(GraphQLID.getName())
+                                                    .build())
+                                            .build())
+                                    .build())
+                            .inputValueDefinition(InputValueDefinition.newInputValueDefinition()
+                                    .name(OPERATOR)
+                                    .type(NonNullType.newNonNullType()
+                                            .type(TypeName.newTypeName(GraphQLString.getName())
+                                                    .build())
+                                            .build())
+                                    .build())
+                            .inputValueDefinition(InputValueDefinition.newInputValueDefinition()
+                                    .name(EXPRESSION)
+                                    .type(TypeName.newTypeName(GraphQLString.getName())
+                                            .build())
+                                    .build())
+                            .build())
                     .build());
 
             //where clause
@@ -512,16 +584,32 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
              */
 
             builder.additionalType(GraphQLInputObjectType.newInputObject()
-                    .name(WHERE)
+                    .name(WHERE_CLAUSE)
                     .field(GraphQLInputObjectField.newInputObjectField()
                             .name(OPERATOR)
                             .type(typeRef(WHERE_OPERATOR)))
                     .field(GraphQLInputObjectField.newInputObjectField()
                             .name(CONSTRAINT)
                             .type(GraphQLList.list(typeRef(CONSTRAINT))))
+
+
+                    //definition
+                    .definition(InputObjectTypeDefinition.newInputObjectDefinition()
+                            .name(WHERE_CLAUSE)
+                            .inputValueDefinition(InputValueDefinition.newInputValueDefinition()
+                                    .name(OPERATOR)
+                                    .type(TypeName.newTypeName(WHERE_OPERATOR)
+                                            .build())
+                                    .build())
+                            .inputValueDefinition(InputValueDefinition.newInputValueDefinition()
+                                    .name(CONSTRAINT)
+                                    .type(ListType.newListType(
+                                            TypeName.newTypeName(CONSTRAINT)
+                                                    .build())
+                                            .build())
+                                    .build())
+                            .build())
                     .build());
-
         }
-
     }
 }

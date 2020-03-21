@@ -6,6 +6,9 @@ import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryInfo;
+import graphql.GraphQLError;
+import graphql.language.Node;
+import graphql.language.SDLDefinition;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import org.junit.Assert;
@@ -14,7 +17,9 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_GRAPH_QL;
 
@@ -26,11 +31,21 @@ public class GraphQLOntologyToQLQueryExecuterTest {
     @BeforeClass
     public static void setUp() throws Exception {
         InputStream schemaInput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/starWars.graphql");
-        InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql");
+        InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql//");
         GraphQL2OntologyTransformer graphQL2OntologyTransformer = new GraphQL2OntologyTransformer();
         ontology = graphQL2OntologyTransformer.transform(schemaInput,whereInoput);
         //creating the graphQL from the newly created ontology
         GraphQLSchema qlSchema = graphQL2OntologyTransformer.transform(ontology);
+        //registry definitions
+        TypeDefinitionRegistry registry = new TypeDefinitionRegistry();
+        Optional<GraphQLError> error = registry.addAll(qlSchema.getAllTypesAsList().stream()
+                .filter(p -> p.getDefinition() != null)
+                .map(p -> (SDLDefinition) p.getDefinition()).collect(Collectors.toList()));
+
+        if(error.isPresent())
+            throw new IllegalArgumentException(error.get().getMessage());
+
+        // transformer
         transformer = new GraphQL2QueryTransformer(new GraphQLSchemaUtils() {
             @Override
             public GraphQLSchema getGraphQLSchema() {
@@ -39,7 +54,7 @@ public class GraphQLOntologyToQLQueryExecuterTest {
 
             @Override
             public TypeDefinitionRegistry getTypeRegistry() {
-                return new TypeDefinitionRegistry();
+                return registry;
             }
         }, new OntologyProvider() {
             @Override
