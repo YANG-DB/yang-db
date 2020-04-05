@@ -37,7 +37,7 @@
         <developer>
             <id>Yang.DB</id>
             <name>The Yang.DB Team</name>
-            <organization>www.yangdb.com</organization>
+            <organization>www.yangdb.org</organization>
         </developer>
     </developers>
 
@@ -114,6 +114,9 @@
         <!-- cypher -->
         <openCypher.frontend.version>9.0.20181012</openCypher.frontend.version>
         <openCypher.spark.version>0.2.3</openCypher.spark.version>
+
+        <!--graph ql java-->
+        <graphql.java.version>2020-01-17T02-41-10-578985f</graphql.java.version>
 
         <!-- commons -->
         <commons-io.version>2.5</commons-io.version>
@@ -341,10 +344,18 @@
                 <artifactId>front-end-9.0</artifactId>
                 <version>${openCypher.frontend.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.opencypher</groupId>
                 <artifactId>graph-ddl</artifactId>
                 <version>${openCypher.spark.version}</version>
+            </dependency>
+
+            <!-- graphql -->
+            <dependency>
+                <groupId>com.graphql-java</groupId>
+                <artifactId>graphql-java</artifactId>
+                <version>${graphql.java.version}</version>
             </dependency>
 
             <!-- jackson -->

@@ -9,6 +9,7 @@ import com.yangdb.fuse.dispatcher.driver.QueryDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.dispatcher.resource.store.InMemoryResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
+import com.yangdb.fuse.executor.cursor.discrete.GraphQLTraversalCursor;
 import com.yangdb.fuse.executor.cursor.discrete.GraphTraversalCursor;
 import com.yangdb.fuse.executor.cursor.discrete.PathsTraversalCursor;
 import com.yangdb.fuse.executor.mock.elasticsearch.MockClient;
@@ -18,6 +19,7 @@ import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
 import com.yangdb.fuse.executor.ontology.schema.load.VoidGraphInitiator;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
+import com.yangdb.fuse.model.transport.cursor.CreateGraphQLCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.yangdb.fuse.services.dispatcher.driver.MockDriver;
 import com.yangdb.fuse.services.engine2.data.schema.InitialTestDataLoader;
@@ -57,6 +59,11 @@ public class DriverTestModule extends ModuleBase {
                 CreateGraphCursorRequest.CursorType,
                 CreateGraphCursorRequest.class,
                 new GraphTraversalCursor.Factory()));
+
+        Multibinder.newSetBinder(binder, CompositeCursorFactory.Binding.class).addBinding().toInstance(new CompositeCursorFactory.Binding(
+                CreateGraphQLCursorRequest.CursorType,
+                CreateGraphQLCursorRequest.class,
+                new GraphQLTraversalCursor.Factory()));
     }
 
 }

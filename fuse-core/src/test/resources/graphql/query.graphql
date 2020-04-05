@@ -1,0 +1,35 @@
+{
+    human {
+        name,
+        friends {
+            name
+        },
+        owns {
+            name,
+            appearsIn,
+            friends {
+                name,
+                description
+            }
+        }
+    }
+}
+
+{
+    human (where: {
+        operator: AND,
+        constraints: [{
+            operand: "name",
+            operator: "like",
+            expression: "jhone"
+        },
+        {
+            operand: "description",
+            operator: "not_empty"
+        }]
+    }) {
+
+        name,
+        description
+    }
+}

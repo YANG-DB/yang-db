@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder._rel;

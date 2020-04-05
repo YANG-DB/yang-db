@@ -1,5 +1,5 @@
 {
-  "resultType":"assignments",
+  "resultType": "assignments",
   "pattern": {
     "ont": "Dragons",
     "name": "Q1"
@@ -9,10 +9,8 @@
       "entities": [
         {
           "eTag": [
-            "A",
-            "C"
+            "A"
           ],
-          "eID": "12345678",
           "eType": "Person",
           "properties": [
             {
@@ -31,7 +29,10 @@
               "pName": "count(relationships)",
               "value": 53
             }
-          ]
+          ],
+          "id": "12345678",
+          "tag": "A",
+          "label": "Person"
         }
       ],
       "relationships": [

@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 
 /**
  * Created by Roman on 21/06/2017.

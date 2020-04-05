@@ -2,8 +2,6 @@ package com.yangdb.fuse.assembly.knowledge.asg;
 
 import com.yangdb.fuse.asg.AsgQueryTransformer;
 import com.yangdb.fuse.asg.strategy.AsgNamedParametersStrategy;
-import com.yangdb.fuse.asg.strategy.AsgStrategy;
-import com.yangdb.fuse.asg.strategy.AsgStrategyRegistrar;
 import com.yangdb.fuse.asg.strategy.RuleBoostProvider;
 import com.yangdb.fuse.asg.strategy.constraint.*;
 import com.yangdb.fuse.asg.strategy.propertyGrouping.*;
@@ -36,7 +34,6 @@ import org.junit.Test;
 import java.util.*;
 
 import static com.yangdb.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.SchemaFields.*;
-import static com.yangdb.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.SchemaFields.DESCRIPTION;
 import static com.yangdb.fuse.assembly.knowledge.consts.physicalElementProperties.PhysicalReferenceProperties.CONTENT;
 import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.*;

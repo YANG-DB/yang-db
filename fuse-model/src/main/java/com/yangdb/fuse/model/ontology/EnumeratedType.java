@@ -48,6 +48,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -83,6 +84,20 @@ public class EnumeratedType {
     public String toString()
     {
         return "EnumeratedType [values = "+values+", eType = "+eType+"]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EnumeratedType that = (EnumeratedType) o;
+        return eType.equals(that.eType) &&
+                values.equals(that.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(eType, values);
     }
 
     //region Fields

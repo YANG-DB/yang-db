@@ -20,8 +20,8 @@ package com.yangdb.fuse.model.schema;
  * #L%
  */
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,7 +33,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
         "type",
         "partition",
-        "props"
+        "props",
+        "nested"
 })
 public class Entity {
 
@@ -45,8 +46,21 @@ public class Entity {
     private String mapping;
     @JsonProperty("props")
     private Props props;
+    @JsonProperty("nested")
+    private List<Entity> nested = Collections.EMPTY_LIST;
+
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    @JsonProperty("nested")
+    public List<Entity> getNested() {
+        return nested;
+    }
+
+    @JsonProperty("nested")
+    public void setNested(List<Entity> nested) {
+        this.nested = nested;
+    }
 
     @JsonProperty("type")
     public String getType() {

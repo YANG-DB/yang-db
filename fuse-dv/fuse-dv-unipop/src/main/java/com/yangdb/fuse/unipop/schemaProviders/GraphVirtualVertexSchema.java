@@ -29,7 +29,7 @@ public interface GraphVirtualVertexSchema extends GraphVertexSchema {
     class Impl extends GraphVertexSchema.Impl implements GraphVirtualVertexSchema {
         //region Constructors
         public Impl(String label) {
-            super(label, Optional.empty(), Optional.empty());
+            super(label);
         }
         //endregion
     }

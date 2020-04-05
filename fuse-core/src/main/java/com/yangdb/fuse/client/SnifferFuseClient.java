@@ -228,8 +228,13 @@ public class SnifferFuseClient implements FuseClient{
     }
 
     @Override
-    public QueryResourceInfo postQuery(String queryStoreUrl, String query, String ontology, PlanTraceOptions planTraceOptions) throws IOException {
-        return selectNode().postQuery(queryStoreUrl,query,ontology,planTraceOptions);
+    public QueryResourceInfo postGraphQLQuery(String queryStoreUrl, String query, String ontology, PlanTraceOptions planTraceOptions) throws IOException {
+        return selectNode().postGraphQLQuery(queryStoreUrl,query,ontology,planTraceOptions);
+    }
+
+    @Override
+    public QueryResourceInfo postCypherQuery(String queryStoreUrl, String query, String ontology, PlanTraceOptions planTraceOptions) throws IOException {
+        return selectNode().postCypherQuery(queryStoreUrl,query,ontology,planTraceOptions);
     }
 
     @Override

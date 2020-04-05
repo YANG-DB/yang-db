@@ -43,8 +43,10 @@ package com.yangdb.fuse.model.transport;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 
 /**
@@ -54,128 +56,162 @@ import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String> {
-    public static final String TYPE_CYPHER = "cypher";
-
-    //region Constructors
     public CreateJsonQueryRequest() {
-        this(TYPE_CYPHER);
-    }
-
-    public CreateJsonQueryRequest(String queryType) {
-        this.queryType = queryType;
         this.planTraceOptions = new PlanTraceOptions();
         this.planTraceOptions.setLevel(PlanTraceOptions.Level.none);
         this.ttl = 300000;
+        this.queryType = QueryType.concrete;
     }
 
-    public CreateJsonQueryRequest(String id, String name,String queryType, String query, String ontology) {
+    //region Constructors
+    public CreateJsonQueryRequest(String type) {
         this();
+        this.type = type;
+    }
+
+    public CreateJsonQueryRequest(String id, String name,String type, String query, String ontology) {
+        this(type);
         this.id = id;
         this.name = name;
-        this.queryType = queryType;
+        this.type = type;
         this.query = query;
         this.ontology = ontology;
     }
 
-    public CreateJsonQueryRequest(String id, String name,String queryType, String query, String ontology, CreateCursorRequest createCursorRequest) {
-        this(id, name, query,ontology, new PlanTraceOptions());
-        this.queryType = queryType;
+    public CreateJsonQueryRequest(String id, String name,String type, String query, String ontology, CreateCursorRequest createCursorRequest) {
+        this(id, name, type,query,ontology, new PlanTraceOptions());
+        this.type = type;
         this.createCursorRequest = createCursorRequest;
     }
 
-    public CreateJsonQueryRequest(String id, String name, String query, String ontology, PlanTraceOptions planTraceOptions) {
-        this(id, name, TYPE_CYPHER, query,ontology);
+    public CreateJsonQueryRequest(String id, String name, String type, String query, String ontology, PlanTraceOptions planTraceOptions) {
+        this(id, name, type, query,ontology);
         this.planTraceOptions = planTraceOptions;
     }
 
-    public CreateJsonQueryRequest(String id, String name, String query, String ontology, CreateCursorRequest createCursorRequest) {
-        this(id, name, query,ontology, new PlanTraceOptions());
-        this.createCursorRequest = createCursorRequest;
-    }
-
-    public CreateJsonQueryRequest(String id, String name, String query, String ontology, PlanTraceOptions planTraceOptions, CreateCursorRequest createCursorRequest) {
-        this(id, name, query,ontology, planTraceOptions);
+    public CreateJsonQueryRequest(String id, String name,String type, String query, String ontology, PlanTraceOptions planTraceOptions, CreateCursorRequest createCursorRequest) {
+        this(id, name,type, query,ontology, planTraceOptions);
         this.createCursorRequest = createCursorRequest;
     }
     //endregion
 
     //region Properties
-    public CreateJsonQueryRequest type(StorageType type) {
-        this.type = type;
+    @JsonIgnore
+    public CreateJsonQueryRequest storeType(StorageType storageType) {
+        this.storageType = storageType;
         return this;
     }
 
+    @JsonIgnore
     public CreateJsonQueryRequest searchPlan(boolean searchPlan) {
         this.searchPlan = searchPlan;
         return this;
     }
 
+    @JsonProperty("searchPlan")
     public boolean isSearchPlan() {
         return searchPlan;
     }
 
+    @JsonProperty("id")
     public String getId() {
         return id;
     }
 
+    @JsonProperty("id")
     public void setId(String id) {
         this.id = id;
     }
 
+    @JsonProperty("name")
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setQuery(String query) {
-        this.query = query;
-    }
-
+    @JsonProperty("name")
     public String getName() {
         return name;
     }
 
+    @JsonProperty("query")
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    @JsonProperty("ontology")
     public void setOntology(String ontology) {
         this.ontology = ontology;
     }
 
+    @JsonProperty("storageType")
+    public void setStorageType(StorageType storageType) {
+        this.storageType = storageType;
+    }
+
+    @JsonProperty("type")
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @JsonProperty("searchPlan")
+    public void setSearchPlan(boolean searchPlan) {
+        this.searchPlan = searchPlan;
+    }
+
     @Override
+    @JsonProperty("ontology")
     public String getOntology() {
         return ontology;
     }
 
+    @JsonProperty("query")
     public String getQuery() {
         return query;
     }
 
+    @JsonProperty("storageType")
     public StorageType getStorageType() {
+        return storageType;
+    }
+
+    @Override
+    @JsonProperty("type")
+    public String getType() {
         return type;
     }
 
+    @JsonProperty("planTraceOptions")
     public PlanTraceOptions getPlanTraceOptions() {
         return planTraceOptions;
     }
 
+    @JsonProperty("planTraceOptions")
     public void setPlanTraceOptions(PlanTraceOptions planTraceOptions) {
         this.planTraceOptions = planTraceOptions;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("createCursorRequest")
     public CreateCursorRequest getCreateCursorRequest() {
         return createCursorRequest;
     }
 
+    @JsonProperty("createCursorRequest")
     public void setCreateCursorRequest(CreateCursorRequest createCursorRequest) {
         this.createCursorRequest = createCursorRequest;
     }
 
+    @JsonProperty("queryType")
     public QueryType getQueryType() {
-        return QueryType.concrete;
+        return queryType;
     }
 
+    @JsonProperty("ttl")
     public long getTtl() {
         return ttl;
     }
 
+    @JsonProperty("ttl")
     public void setTtl(long ttl) {
         this.ttl = ttl;
     }
@@ -188,7 +224,7 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
         return "CreateQueryRequest{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", queryType=" + queryType + "\n"+
+                ", queryType=" + type + "\n"+
                 ", query=" + query + "\n"+
                 ", createCursorRequest=" + (createCursorRequest!=null ? createCursorRequest.toString() : "None" )+
                 '}';
@@ -197,10 +233,11 @@ public class CreateJsonQueryRequest implements CreateQueryRequestMetadata<String
     //region Fields
     private String id;
     //default type is volatile
-    private StorageType type = StorageType._volatile;
+    private StorageType storageType = StorageType._volatile;
     private String name;
     private String query;
-    private String queryType;
+    private QueryType queryType;
+    private String type;
     private String ontology;
     private long ttl;
     private boolean searchPlan = true;

@@ -48,10 +48,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -61,6 +58,12 @@ import java.util.List;
 public class Property {
     //region Constructors
     public Property() {
+    }
+
+    public Property(Property clone) {
+        this.name = clone.name;
+        this.pType = clone.pType;
+        this.type = clone.type;
     }
 
     public Property(String name, String pType, String type) {
@@ -120,22 +123,32 @@ public class Property {
 
     @Override
     public boolean equals(Object o) {
-        if (!super.equals(o)) return false;
-        Property other = (Property) o;
-
-        return this.pType.equals(other.pType) &&
-                this.name.equals(other.name) &&
-                this.type.equals(other.type);
+        if (this == o) return true;
+        if (o == null || !Property.class.isAssignableFrom(o.getClass())) return false;
+        Property property = (Property) o;
+        return pType.equals(property.pType) &&
+                name.equals(property.name) &&
+                type.equals(property.type) &&
+                Objects.equals(searchType, property.searchType);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + this.pType.hashCode();
-        result = 31 * result + this.name.hashCode();
-        result = 31 * result + this.type.hashCode();
-        return result;
+        return Objects.hash(pType, name, type, searchType);
     }
+
+    /**
+     * check equality by not using the class type
+     * @param source
+     * @param other
+     * @return
+     */
+    public static boolean equal(Property source,Property other) {
+        return source.pType.equals(other.pType) &&
+                source.name.equals(other.name) &&
+                source.type.equals(other.type);
+    }
+
     //endregion
 
     //region Fields
@@ -217,6 +230,30 @@ public class Property {
         @JsonValue
         public String getName() {
             return name;
+        }
+    }
+
+    /**
+     * mandatory property name holder
+     */
+    public static class MandatoryProperty extends Property {
+
+        public MandatoryProperty(Property property) {
+            super(property);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return super.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return super.hashCode();
+        }
+
+        public static Optional<Property> of(Optional<Property> property) {
+            return property.map(MandatoryProperty::new);
         }
     }
 

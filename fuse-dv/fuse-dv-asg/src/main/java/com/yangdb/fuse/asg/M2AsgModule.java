@@ -36,27 +36,11 @@ import org.jooby.Env;
 /**
  * Created by roman.margolis on 05/02/2018.
  */
-public class M2AsgModule extends ModuleBase {
+public class M2AsgModule extends AsgModule {
     //region ModuleBase Implementation
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(CypherAsgStrategyRegistrar.class)
-                .to(M1CypherAsgStrategyRegistrar.class)
-                .asEagerSingleton();
-
-        binder.bind(AsgStrategyRegistrar.class)
-                .to(getAsgStrategyRegistrar(conf));
-
-        binder.bind(new TypeLiteral<QueryTransformer<Query, AsgQuery>>(){})
-                .to(QueryToCompositeAsgTransformer.class)
-                .asEagerSingleton();
-
-        binder.bind(new TypeLiteral<QueryTransformer<String, AsgQuery>>(){})
-                .to(AsgCypherTransformer.class)
-                .asEagerSingleton();
-
-        binder.bind(new TypeLiteral<QueryTransformer<AsgQuery, AsgQuery>>(){})
-                .to(AsgQueryTransformer.class);
+        super.configureInner(env,conf,binder);
     }
     //endregion
 

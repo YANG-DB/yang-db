@@ -37,7 +37,7 @@ import java.util.TimeZone;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.domain.FileBuilder._f;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.ValueBuilder._v;
 import static com.yangdb.fuse.model.query.Rel.Direction.L;

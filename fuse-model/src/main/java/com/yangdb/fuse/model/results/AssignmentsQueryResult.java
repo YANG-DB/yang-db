@@ -46,6 +46,8 @@ package com.yangdb.fuse.model.results;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yangdb.fuse.model.logical.Edge;
+import com.yangdb.fuse.model.logical.Vertex;
 import com.yangdb.fuse.model.query.Query;
 
 import java.util.ArrayList;
@@ -58,7 +60,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AssignmentsQueryResult<E,R> extends QueryResultBase {
+public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends QueryResultBase {
     //region Constructors
     public AssignmentsQueryResult() {
         this.assignments = Collections.emptyList();
@@ -113,7 +115,7 @@ public class AssignmentsQueryResult<E,R> extends QueryResultBase {
     }
     //endregion
 
-    public static final class Builder<E,R> {
+    public static final class Builder<E extends Vertex,R extends Edge> {
         //region Constructors
         private Builder() {
             assignments = new ArrayList<>();

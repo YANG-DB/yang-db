@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 import static com.yangdb.fuse.client.FuseClientSupport.countGraphElements;
 import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 
@@ -35,6 +35,7 @@ import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
  * http://studentwork.prattsi.org/infovis/visualization/les-miserables-character-network-visualization/
  */
 public class KnowledgeInsertLogicalGraphTest {
+    public static final String _NAME = "_name";
 
     //number of elements on les miserables graph
 
@@ -312,7 +313,7 @@ public class KnowledgeInsertLogicalGraphTest {
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, KNOWLEDGE);
         // Press on Cursor
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(),
-                new LogicalGraphCursorRequest(Arrays.asList("e1","e2","e3","e4"),new CreatePageRequest(100)));
+                new LogicalGraphCursorRequest(KNOWLEDGE,Arrays.asList("e1","e2","e3","e4"),new CreatePageRequest(100)));
 
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
         TypeReference<AssignmentsQueryResult<LogicalNode, LogicalEdge>> typeReference = new TypeReference<AssignmentsQueryResult<LogicalNode, LogicalEdge>>() {};
@@ -320,9 +321,9 @@ public class KnowledgeInsertLogicalGraphTest {
         //compare Entity created (*2 for both sides + relation entity itself) + relation (*2 in + out)
         Assert.assertEquals(3, pageData.getAssignments().get(0).getEntities().size());
 
-        Optional<LogicalNode> node = pageData.getAssignments().get(0).getEntities().stream().filter(p -> p.getProperties().getProperties().containsKey("name")).findAny();
+        Optional<LogicalNode> node = pageData.getAssignments().get(0).getEntities().stream().filter(p -> p.getProperties().getProperties().containsKey(_NAME)).findAny();
         Assert.assertTrue(node.isPresent());
-        Assert.assertEquals(node.get().getProperties().getProperties().get("name"),"Myriel");
+        Assert.assertEquals(node.get().getProperties().getProperties().get(_NAME),"Myriel");
     }
 
 

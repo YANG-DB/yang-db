@@ -105,6 +105,11 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
     public Iterable<String> getPropertyNames() {
         return this.propertyNames;
     }
+
+    @Override
+    public Optional<String> getLabelFieldName() {
+        return schemaProvider.getLabelFieldName();
+    }
     //endregion
 
     //region Private Methods

@@ -112,6 +112,7 @@ public class ServiceModule extends ModuleBase {
         bindCursorController(env, config, binder);
         bindPageController(env, config, binder);
         bindCatalogController(env, config, binder);
+        bindGraphQLController(env, config, binder);
         bindDataLoaderController(env, config, binder);
         bindIdGeneratorController(env, config, binder);
 
@@ -120,11 +121,14 @@ public class ServiceModule extends ModuleBase {
         binder.bind(DashboardDriver.class).to(StandardDashboardDriver.class).in(RequestScoped.class);
         binder.bind(CreateQueryRequest.class).in(RequestScoped.class);
         binder.bind(CreatePageRequest.class).in(RequestScoped.class);
+
         //cursors type
         binder.bind(CreateCsvCursorRequest.class).in(RequestScoped.class);
         binder.bind(CreateGraphHierarchyCursorRequest.class).in(RequestScoped.class);
         binder.bind(CreateGraphCursorRequest.class).in(RequestScoped.class);
+        binder.bind(CreateGraphQLCursorRequest.class).in(RequestScoped.class);
         binder.bind(CreatePathsCursorRequest.class).in(RequestScoped.class);
+
         //execution scope
         binder.bind(ExecutionScope.class).in(RequestScoped.class);
 
@@ -143,17 +147,17 @@ public class ServiceModule extends ModuleBase {
 
     private void processLifeCycle(Env env, Config config, Binder binder) {
         env.onStart(() -> {
-            logger.info("starting Fuse");
+            logger.info("starting YangDB");
             FuseUtils.onStart();
         });
 
         env.onStop(() -> {
-            logger.info("stopping Fuse");
+            logger.info("stopping YangDB");
             FuseUtils.onStop();
         });
 
         env.onStarted(() -> {
-            logger.info("Fuse started");
+            logger.info("YangDB started");
             FuseUtils.onStarted();
         });
 
@@ -312,6 +316,26 @@ public class ServiceModule extends ModuleBase {
                         .to(LoggingCatalogController.class);
 
                 this.expose(CatalogController.class);
+            }
+        });
+    }
+
+    private void bindGraphQLController(Env env, Config config, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                this.bind(GraphQLController.class)
+                        .annotatedWith(named(LoggingGraphQLController.controllerParameter))
+                        .to(StandardGraphQLController.class);
+
+                this.bind(Logger.class)
+                        .annotatedWith(named(LoggingGraphQLController.loggerParameter))
+                        .toInstance(LoggerFactory.getLogger(StandardGraphQLController.class));
+
+                this.bind(GraphQLController.class)
+                        .to(LoggingGraphQLController.class);
+
+                this.expose(GraphQLController.class);
             }
         });
     }

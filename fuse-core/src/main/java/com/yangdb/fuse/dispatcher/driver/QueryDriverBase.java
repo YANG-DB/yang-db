@@ -21,6 +21,7 @@ package com.yangdb.fuse.dispatcher.driver;
  */
 
 import com.google.inject.Inject;
+import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.PageResource;
@@ -37,6 +38,7 @@ import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.execution.plan.planTree.PlanNode;
 import com.yangdb.fuse.model.query.ParameterizedQuery;
 import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.query.QueryInfo;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.constraint.NamedParameter;
@@ -54,6 +56,7 @@ import javaslang.collection.Stream;
 import javaslang.control.Option;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,6 +64,7 @@ import static com.yangdb.fuse.dispatcher.cursor.CursorFactory.request;
 import static com.yangdb.fuse.model.Utils.getOrCreateId;
 import static com.yangdb.fuse.model.asgQuery.AsgCompositeQuery.hasInnerQuery;
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.parameterized;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.*;
 import static java.util.Collections.EMPTY_LIST;
 
 /**
@@ -73,14 +77,14 @@ public abstract class QueryDriverBase implements QueryDriver {
             CursorDriver cursorDriver,
             PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
-            QueryTransformer<String, AsgQuery> jsonQueryTransformer,
+            JsonQueryTransformerFactory transformerFactory,
             QueryValidator<AsgQuery> queryValidator,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
         this.cursorDriver = cursorDriver;
         this.pageDriver = pageDriver;
         this.queryTransformer = queryTransformer;
-        this.jsonQueryTransformer = jsonQueryTransformer;
+        this.transformerFactory = transformerFactory;
         this.queryValidator = queryValidator;
         this.resourceStore = resourceStore;
         this.urlSupplier = urlSupplier;
@@ -98,7 +102,8 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> run(Query query, int pageSize, String cursorType) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateQueryRequest queryRequest = new CreateQueryRequest(id, id, query, request(cursorType,new CreatePageRequest(pageSize)));
+            CreateQueryRequest queryRequest = new CreateQueryRequest(id, id, query,
+                    request(query.getOnt(),cursorType,new CreatePageRequest(pageSize)));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -118,10 +123,11 @@ public abstract class QueryDriverBase implements QueryDriver {
     }
 
     @Override
-    public Optional<Object> run(String cypher, String ontology, int pageSize, String cursorType) {
+    public Optional<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, cypher, ontology, request(cursorType,new CreatePageRequest(pageSize)));
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHER, cypher, ontology,
+                    request(ontology,cursorType,new CreatePageRequest(pageSize)));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -141,10 +147,54 @@ public abstract class QueryDriverBase implements QueryDriver {
     }
 
     @Override
-    public Optional<Object> run(String cypher, String ontology) {
+    public Optional<Object> runGraphQL(String graphQL, String ontology) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, cypher, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPH_QL, graphQL, ontology,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
+
+    @Override
+    public Optional<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
+        String id = UUID.randomUUID().toString();
+        try {
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPH_QL, graphQL, ontology,
+                    request(ontology,cursorType,new CreatePageRequest(pageSize)));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } catch (Throwable e) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(), "failed building the cursor request " + cursorType)));
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
+
+    @Override
+    public Optional<Object> runCypher(String cypher, String ontology) {
+        String id = UUID.randomUUID().toString();
+        try {
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHER, cypher, ontology,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
                 return Optional.empty();
@@ -300,12 +350,12 @@ public abstract class QueryDriverBase implements QueryDriver {
      *
      * @param request
      * @param metadata
-     * @param query
      * @return
      */
-    protected Optional<QueryResourceInfo> create(CreateJsonQueryRequest request, QueryMetadata metadata, String query) {
+    protected Optional<QueryResourceInfo> create(CreateJsonQueryRequest request, QueryMetadata metadata) {
         try {
-            AsgQuery asgQuery = transform(query);
+            QueryInfo<String> queryInfo = new QueryInfo<>(request.getQuery(), request.getName(), request.getType(), request.getOntology());
+            AsgQuery asgQuery = transform(queryInfo);
             asgQuery.setName(metadata.getName());
             asgQuery.setOnt(request.getOntology());
             //rewrite query
@@ -320,8 +370,10 @@ public abstract class QueryDriverBase implements QueryDriver {
             }
 
             Query build = Query.Builder.instance()
+//                    .withOnt(request.getOntology())
                     .withOnt(asgQuery.getOnt())
-                    .withName(query).build();
+                    .withName(queryInfo.getQueryName())
+                    .build();
 
             //create inner query
             final List<QueryResource> innerQuery = compositeQuery(request, metadata, asgQuery);
@@ -344,6 +396,8 @@ public abstract class QueryDriverBase implements QueryDriver {
                     metadata.getId(),
                     urlSupplier.cursorStoreUrl(metadata.getId()))
                     .withInnerQueryResources(getQueryResourceInfos(innerQuery)));
+        } catch (FuseError.FuseErrorException err) {
+            return Optional.of(new QueryResourceInfo().error(err.getError()));
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(),err)));
@@ -365,16 +419,15 @@ public abstract class QueryDriverBase implements QueryDriver {
         return this.queryTransformer.transform(query);
     }
 
-
-    protected AsgQuery transform(String query) {
-        return this.jsonQueryTransformer.transform(query);
+    protected AsgQuery transform(QueryInfo<String> query) {
+        return this.transformerFactory.transform(query.getQueryType()).transform(query);
     }
 
     @Override
     public Optional<QueryResourceInfo> create(CreateJsonQueryRequest request) {
         try {
             QueryMetadata metadata = getQueryMetadata(request);
-            Optional<QueryResourceInfo> queryResourceInfo = this.create(request, metadata, request.getQuery());
+            Optional<QueryResourceInfo> queryResourceInfo = this.create(request, metadata);
             return getQueryResourceInfo(request, queryResourceInfo);
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
@@ -717,8 +770,8 @@ public abstract class QueryDriverBase implements QueryDriver {
     //region Fields
     private final CursorDriver cursorDriver;
     private final PageDriver pageDriver;
-    private QueryTransformer<String, AsgQuery> jsonQueryTransformer;
     private QueryTransformer<Query, AsgQuery> queryTransformer;
+    private JsonQueryTransformerFactory transformerFactory;
     private QueryValidator<AsgQuery> queryValidator;
     private ResourceStore resourceStore;
     private final AppUrlSupplier urlSupplier;

@@ -1,0 +1,15 @@
+    enum WhereOperator {
+        AND
+        OR
+    }
+
+    input Constraint {
+        operand: String!
+        operator: String!
+        expression: String
+    }
+
+    input WhereClause {
+        operator: WhereOperator
+        constraints: [Constraint]
+    }

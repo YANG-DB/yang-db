@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.typesafe.config.Config;
@@ -42,8 +43,12 @@ import com.yangdb.fuse.model.schema.Relation;
 import javaslang.Tuple2;
 import org.elasticsearch.client.Client;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory.*;
@@ -54,7 +59,7 @@ import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.pars
 /**
  * translator that takes the specific ontology with the actual schema and translates the logical graph model into a set of (schematic according to real mapping) elastic documents
  */
-public class EntityTransformer implements DataTransformer<DataTransformerContext<LogicalGraphModel>,LogicalGraphModel> {
+public class EntityTransformer implements DataTransformer<DataTransformerContext<LogicalGraphModel>, LogicalGraphModel> {
 
 
     private final Ontology.Accessor accessor;
@@ -111,7 +116,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
             //populate metadata
             populateMetadataFields(context, edge, element);
             //populate fields
-            populateFields(context, edge, relation,direction, element);
+            populateFields(context, edge, relation, direction, element);
 
             //partition field in case of none static partitioning index
             Optional<Tuple2<String, String>> partition = Optional.empty();
@@ -140,20 +145,24 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
             ObjectNode element = mapper.createObjectNode();
             Entity entity = indexProvider.getEntity(node.label())
                     .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Logical Graph Transformation Error", "No matching node found with label " + node.label())));
-            //put classifiers
-            element.put(ID, node.getId());
-            element.put(TYPE, entity.getType());
-
-            //populate metadata
-            populateMetadataFields(context, node, element);
-
-            //populate fields
-            populateFields(context, node, entity, element);
+            //translate entity
+            translateEntity(context, node, element, entity);
 
             return new DocumentBuilder(element, node.getId(), entity.getType(), Optional.empty());
         } catch (FuseError.FuseErrorException e) {
             return new DocumentBuilder(e.getError());
         }
+    }
+
+    private void translateEntity(DataTransformerContext<LogicalGraphModel> context, LogicalNode node, ObjectNode element, Entity entity) {
+        element.put(ID, node.getId());
+        element.put(TYPE, entity.getType());
+
+        //populate metadata
+        populateMetadataFields(context, node, element);
+
+        //populate fields
+        populateFields(context, node, entity, element);
     }
 
     /**
@@ -167,8 +176,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
         edge.metadata().entrySet()
                 .stream()
                 .filter(m -> accessor.relation$(edge.getLabel()).containsMetadata(m.getKey()))
-                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                .forEach(m -> populate(context, element, m));
     }
 
     /**
@@ -182,8 +190,49 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
         node.metadata().entrySet()
                 .stream()
                 .filter(m -> accessor.entity$(node.getLabel()).containsMetadata(m.getKey()))
-                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                .forEach(m -> populate(context, element, m));
+    }
+
+    private ObjectNode populate(DataTransformerContext<LogicalGraphModel> context, ObjectNode element, Map.Entry<String, Object> m) {
+        String pType = accessor.property$(m.getKey()).getpType();
+        String type = accessor.property$(m.getKey()).getType();
+
+        Object result = parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf);
+
+        //case of primitive type
+        if (String.class.isAssignableFrom(result.getClass())) {
+            return element.put(pType, result.toString());
+        }
+
+        //check property is of type struct  -
+        if (accessor.entity(type).isPresent() &&
+                indexProvider.getEntity(type).isPresent()) {
+            //if struct manage as entity
+            if (Collection.class.isAssignableFrom(result.getClass())) {
+                AtomicInteger index = new AtomicInteger();
+                ArrayNode nodes = element.putArray(pType);
+                ((Collection) result).forEach(e -> {
+                    try {
+                        ObjectNode nested = mapper.createObjectNode();
+                        LogicalNode node = mapper.readValue(mapper.writeValueAsString(e), LogicalNode.class);
+                        //set metadata
+                        node.setId(String.format("%s.%d", pType, index.incrementAndGet()));
+                        node.setLabel(type);
+                        //transform into document
+                        translateEntity(context, node, nested, indexProvider.getEntity(type).get());
+                        nodes.add(nested);
+                    } catch (IOException ex) {
+                        nodes.addPOJO(e);
+                    }
+                });
+                return element;
+            } else {
+                return element.putPOJO(pType, result);
+            }
+        }
+        //all primitive non string types
+        return element.put(pType, result.toString());
+
     }
 
 
@@ -198,13 +247,13 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
     private void populateFields(DataTransformerContext<LogicalGraphModel> context, LogicalNode node, Entity entity, ObjectNode element) {
         //todo check the structure of the index
         switch (entity.getMapping()) {
+            case CHILD:
             case INDEX:
                 //populate properties
                 node.fields().entrySet()
                         .stream()
                         .filter(m -> accessor.entity$(node.getLabel()).containsProperty(m.getKey()))
-                        .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                        .forEach(m -> populate(context, element, m));
                 break;
             // todo manage nested index fields
             default:
@@ -219,7 +268,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param relation
      * @param element
      */
-    private ObjectNode populateFields(DataTransformerContext<LogicalGraphModel> context, LogicalEdge edge, Relation relation,String direction, ObjectNode element) {
+    private ObjectNode populateFields(DataTransformerContext<LogicalGraphModel> context, LogicalEdge edge, Relation relation, String direction, ObjectNode element) {
         //populate redundant fields A
         switch (direction) {
             case "out":
@@ -241,8 +290,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 edge.fields().entrySet()
                         .stream()
                         .filter(m -> accessor.relation$(edge.getLabel()).containsProperty(m.getKey()))
-                        .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                                parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                        .forEach(m -> populate(context, element, m));
                 break;
             // todo manage nested index fields
             default:

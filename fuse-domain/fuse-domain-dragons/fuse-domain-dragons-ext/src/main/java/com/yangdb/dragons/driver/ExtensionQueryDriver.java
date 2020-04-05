@@ -9,9 +9,9 @@ package com.yangdb.dragons.driver;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import com.yangdb.fuse.core.driver.StandardQueryDriver;
 import com.yangdb.fuse.dispatcher.driver.CursorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.epb.PlanSearcher;
+import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
@@ -57,11 +58,11 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
             QueryTransformer<Query, AsgQuery> queryTransformer,
             QueryValidator<AsgQuery> queryValidator,
             QueryTransformer<AsgQuery, AsgQuery> queryRewriter,
-            QueryTransformer<String, AsgQuery> jsonQueryTransformer,
+            JsonQueryTransformerFactory transformerFactory,
             PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
-        super(cursorDriver, pageDriver, queryTransformer, queryValidator, queryRewriter,jsonQueryTransformer,planSearcher,resourceStore, urlSupplier);
+        super(cursorDriver, pageDriver, queryTransformer, queryValidator, queryRewriter, transformerFactory, planSearcher, resourceStore, urlSupplier);
     }
     //endregion
 
@@ -71,13 +72,13 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
         try {
             QueryMetadata metadata = getQueryMetadata(request);
             Optional<QueryResourceInfo> queryResourceInfo = Optional.empty();
-            if(request.getQueryType().equals(CreateJsonQueryRequest.TYPE_CYPHER)) {
+            if (request.getQueryType().equals(CreateJsonQueryRequest.TYPE_CYPHER)) {
                 //support cypher type
-                queryResourceInfo = this.create(request, metadata, request.getQuery());
-            } else if(request.getQueryType().equals(TYPE_CLAUSE)){
+                queryResourceInfo = this.create(request, metadata);
+            } else if (request.getQueryType().equals(TYPE_CLAUSE)) {
                 //support clause type
                 Query query = transformer.transform(request.getQuery());
-                queryResourceInfo = this.create(new CreateQueryRequest(request.getId(),request.getName(),query,request.getCreateCursorRequest()));
+                queryResourceInfo = this.create(new CreateQueryRequest(request.getId(), request.getName(), query, request.getCreateCursorRequest()));
             }
             return getQueryResourceInfo(request, queryResourceInfo);
         } catch (Exception err) {
@@ -91,13 +92,13 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
     public Optional<Object> runClause(String clause, String ontology) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CLAUSE, clause, ontology,new CreateGraphCursorRequest(new CreatePageRequest()));
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CLAUSE, clause, ontology, new CreateGraphCursorRequest(new CreatePageRequest()));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
 
-            if(!resourceInfo.isPresent())
+            if (!resourceInfo.isPresent())
                 return Optional.empty();
 
-            if(resourceInfo.get().getError()!=null)
+            if (resourceInfo.get().getError() != null)
                 return Optional.of(resourceInfo.get().getError());
 
             return Optional.of(resourceInfo.get());
@@ -107,16 +108,8 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
         }
     }
 
-    protected CreateJsonQueryRequest createJsonQueryRequest(String cypher, String ontology, String id) {
-        return new CreateJsonQueryRequest(id, id, cypher, ontology, new LogicalGraphCursorRequest(new CreatePageRequest()));
-    }
 
-    protected CreateQueryRequest createQueryRequest(Query query, String id) {
-        return new CreateQueryRequest(id, id, query, new LogicalGraphCursorRequest(new CreatePageRequest()));
-    }
-
-
-    //endregion
+        //endregion
     private QueryTransformer<String, Query> transformer;
 
 }

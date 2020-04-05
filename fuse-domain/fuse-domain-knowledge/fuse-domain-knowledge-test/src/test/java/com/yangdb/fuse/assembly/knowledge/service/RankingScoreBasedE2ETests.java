@@ -35,11 +35,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.model.OntologyTestUtils.NAME;
 
 public class RankingScoreBasedE2ETests {
-    public static final String KNOWLEDGE = "knowledge";
     private static Jooby app;
     public static String CONFIG_PATH = Paths.get("resources","assembly","Knowledge","config", "application.test.engine3.m1.dfs.knowledge-test.public.conf").toString();
 

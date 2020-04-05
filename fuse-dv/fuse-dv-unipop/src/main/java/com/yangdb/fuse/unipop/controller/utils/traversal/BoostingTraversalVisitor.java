@@ -21,6 +21,7 @@ package com.yangdb.fuse.unipop.controller.utils.traversal;
  */
 
 import com.yangdb.fuse.unipop.step.BoostingStepWrapper;
+import com.yangdb.fuse.unipop.step.NestedStepWrapper;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.*;
 
@@ -56,6 +57,7 @@ public class BoostingTraversalVisitor {
     protected boolean visitBoostingStep(BoostingStepWrapper o) {
         return true;
     }
+
 
     protected boolean visitNotStep(NotStep<?> notStep) {
         return notStep.getLocalChildren().stream().map(this::visitRecursive).reduce((a,b) -> a || b ).orElse(false);

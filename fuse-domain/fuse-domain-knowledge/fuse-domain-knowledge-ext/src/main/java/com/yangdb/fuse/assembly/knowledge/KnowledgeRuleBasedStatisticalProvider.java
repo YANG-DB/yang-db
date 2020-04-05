@@ -45,6 +45,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
+
 /**
  * Created by lior.perry on 2/18/2018.
  */
@@ -55,7 +57,6 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
     public static final String EDGES = "edges";
     public static final String SELECTIVITY = "selectivity";
     public static final String TOTAL = "total";
-    public static final String KNOWLEDGE = "Knowledge";
     public static final String DEFAULT = "default";
     public static final String DEFAULT_FILTER = "defaultFilter";
     public static final String COMBINERS = "combiners";

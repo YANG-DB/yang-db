@@ -17,7 +17,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 import static com.yangdb.fuse.client.FuseClientSupport.countGraphElements;
 import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 

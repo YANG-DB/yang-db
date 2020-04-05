@@ -28,5 +28,5 @@ import java.util.Set;
  * Created by benishue on 27-Mar-17.
  */
 public interface TraversalValueByKeyProvider<T> {
-    public Set<String> getValueByKey(Traversal traversal, String key);
+    Set<String> getValueByKey(Traversal traversal, String key);
 }

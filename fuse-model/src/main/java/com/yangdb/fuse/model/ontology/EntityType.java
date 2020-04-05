@@ -48,10 +48,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -67,6 +64,15 @@ public class EntityType {
         this.name = name;
         this.properties = properties;
         this.metadata = metadata;
+        this.mandatory = new ArrayList<>();
+    }
+
+    public EntityType(String type, String name, List<String> properties, List<String> metadata, List<String> mandatory) {
+        this.eType = type;
+        this.name = name;
+        this.properties = properties;
+        this.metadata = metadata;
+        this.mandatory = mandatory;
     }
 
     public EntityType(String type, String name, List<String> properties) {
@@ -74,6 +80,7 @@ public class EntityType {
         this.name = name;
         this.properties = properties;
         this.metadata = new ArrayList<>();
+        this.mandatory = new ArrayList<>();
     }
 
     public List<String> getMetadata() {
@@ -104,6 +111,14 @@ public class EntityType {
         return properties!=null ? properties :  Collections.emptyList();
     }
 
+    public List<String> getMandatory() {
+        return mandatory!=null ? mandatory :  Collections.emptyList();
+    }
+
+    public void setMandatory(List<String> mandatory) {
+        this.mandatory = mandatory;
+    }
+
     public void setProperties(List<String> properties) {
         this.properties = properties;
     }
@@ -118,12 +133,30 @@ public class EntityType {
 
     @Override
     public String toString() {
-        return "EntityType [eType = " + eType + ", name = " + name + ", display = " + display + ", properties = " + properties + ", metadata = " + metadata + "]";
+        return "EntityType [eType = " + eType + ", name = " + name + ", display = " + display + ", properties = " + properties + ", metadata = " + metadata +", mandatory = " + mandatory + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EntityType that = (EntityType) o;
+        return eType.equals(that.eType) &&
+                name.equals(that.name) &&
+                properties.equals(that.properties) &&
+                Objects.equals(metadata, that.metadata) &&
+                display.equals(that.display);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(eType, name, properties, metadata, display);
     }
 
     //region Fields
     private String eType;
     private String name;
+    private List<String> mandatory;
     private List<String> properties;
     private List<String> metadata;
     private List<String> display;
@@ -131,6 +164,11 @@ public class EntityType {
     @JsonIgnore
     public boolean containsMetadata(String key) {
         return metadata.contains(key);
+    }
+
+    @JsonIgnore
+    public boolean isMandatory(String key) {
+        return mandatory.contains(key);
     }
 
     @JsonIgnore
@@ -143,6 +181,7 @@ public class EntityType {
     public static final class Builder {
         private String eType;
         private String name;
+        private List<String> mandatory = new ArrayList<>();
         private List<String> properties = new ArrayList<>();
         private List<String> metadata = new ArrayList<>();
         private List<String> display = new ArrayList<>();
@@ -169,6 +208,21 @@ public class EntityType {
             return this;
         }
 
+        public Builder withProperty(String property) {
+            this.properties.add(property);
+            return this;
+        }
+
+        public Builder withMandatory(List<String> mandatory) {
+            this.mandatory = mandatory;
+            return this;
+        }
+
+        public Builder withMandatory(String mandatory) {
+            this.mandatory.add(mandatory);
+            return this;
+        }
+
         public Builder withMetadata(List<String> metadata) {
             this.metadata = metadata;
             return this;
@@ -183,6 +237,7 @@ public class EntityType {
             EntityType entityType = new EntityType();
             entityType.setName(name);
             entityType.setProperties(properties);
+            entityType.setMandatory(mandatory);
             entityType.setMetadata(metadata);
             entityType.setDisplay(display);
             entityType.eType = this.eType;

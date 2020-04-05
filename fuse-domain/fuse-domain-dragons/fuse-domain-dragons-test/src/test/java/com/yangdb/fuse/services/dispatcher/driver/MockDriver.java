@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.client.export.GraphWriterStrategy;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.driver.*;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.PageResource;
@@ -15,12 +17,14 @@ import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -34,11 +38,11 @@ public class MockDriver {
                 CursorDriver cursorDriver,
                 PageDriver pageDriver,
                 QueryTransformer<com.yangdb.fuse.model.query.Query, AsgQuery> queryTransformer,
-                QueryTransformer<String, AsgQuery> queryJasonTransformer,
+                JsonQueryTransformerFactory transformerFactory,
                 QueryValidator<AsgQuery> queryValidator,
                 ResourceStore resourceStore,
                 AppUrlSupplier urlSupplier) {
-            super(cursorDriver, pageDriver, queryTransformer, queryJasonTransformer, queryValidator, resourceStore, urlSupplier);
+            super(cursorDriver, pageDriver, queryTransformer,transformerFactory , queryValidator, resourceStore, urlSupplier);
         }
         //endregion
 
@@ -59,12 +63,12 @@ public class MockDriver {
         }
 
         @Override
-        public Optional<Object> run(String cypher, String ontology) {
+        public Optional<Object> runCypher(String cypher, String ontology) {
             return Optional.empty();
         }
 
         @Override
-        public Optional<Object> run(String cypher, String ontology, int pageSize, String cursorType) {
+        public Optional<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
             return Optional.empty();
         }
 
@@ -97,7 +101,24 @@ public class MockDriver {
             return new CursorResource(
                     cursorId,
                     cursorFactory.createCursor(
-                            new CursorFactory.Context.Impl(
+                            new CursorFactory.Context.Impl<>(
+                                    new Object(),
+                                    new OntologyProvider() {
+                                        @Override
+                                        public Optional<Ontology> get(String id) {
+                                            return Optional.empty();
+                                        }
+
+                                        @Override
+                                        public Collection<Ontology> getAll() {
+                                            return null;
+                                        }
+
+                                        @Override
+                                        public Ontology add(Ontology ontology) {
+                                            return null;
+                                        }
+                                    },
                                     queryResource,
                                     cursorRequest)),
                     cursorRequest);

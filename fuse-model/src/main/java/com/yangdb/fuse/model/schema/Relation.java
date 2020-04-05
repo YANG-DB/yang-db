@@ -36,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "partition",
         "symmetric",
         "props",
+        "nested",
         "redundant"
 })
 public class Relation {
@@ -48,6 +49,8 @@ public class Relation {
     private String mapping;
     @JsonProperty("symmetric")
     private boolean symmetric = false;
+    @JsonProperty("nested")
+    private List<Relation> nested = Collections.EMPTY_LIST;
     @JsonProperty("props")
     private Props props;
     @JsonProperty("redundant")
@@ -106,6 +109,17 @@ public class Relation {
     public void setProps(Props props) {
         this.props = props;
     }
+
+    @JsonProperty("nested")
+    public List<Relation> getNested() {
+        return nested;
+    }
+
+    @JsonProperty("nested")
+    public void setNested(List<Relation> nested) {
+        this.nested = nested;
+    }
+
 
     @JsonProperty("redundant")
     public List<Redundant> getRedundant() {

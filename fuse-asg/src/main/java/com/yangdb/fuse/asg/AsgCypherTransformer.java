@@ -26,11 +26,12 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.asg.translator.cypher.CypherTranslator;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.query.QueryInfo;
 
 /**
- * Created by Roman on 12/15/2017.
+ * Created by liorp on 12/15/2017.
  */
-public class AsgCypherTransformer implements QueryTransformer<String, AsgQuery> {
+public class AsgCypherTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery> {
     //region Constructors
     @Inject
     public AsgCypherTransformer(CypherTranslator cypherTranslator) {
@@ -40,7 +41,7 @@ public class AsgCypherTransformer implements QueryTransformer<String, AsgQuery> 
 
     //region QueryTransformer Implementation
     @Override
-    public AsgQuery transform(String query) {
+    public AsgQuery transform(QueryInfo<String> query) {
         return cypherTranslator.translate(query);
     }
     //endregion

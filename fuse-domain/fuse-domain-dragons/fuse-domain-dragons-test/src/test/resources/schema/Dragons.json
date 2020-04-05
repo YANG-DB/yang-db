@@ -15,7 +15,22 @@
         "birthDate",
         "deathDate",
         "height",
-        "name"
+        "name",
+        "profession"
+      ]
+    },
+    {
+      "eType": "Profession",
+      "name": "Profession",
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "name",
+        "experience",
+        "certification",
+        "salary"
       ]
     },
     {
@@ -222,6 +237,18 @@
       ]
     },
     {
+      "rType": "HasProfession",
+      "name": "HasProfession",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Profession"
+        }
+      ],
+      "metadata": [ "id" ]
+    },
+    {
       "rType": "RegisteredIn",
       "name": "RegisteredIn",
       "directional": true,
@@ -381,9 +408,29 @@
       "type": "string"
     },
     {
+      "pType": "certification",
+      "name": "certification",
+      "type": "string"
+    },
+    {
+      "pType": "experience",
+      "name": "experience",
+      "type": "string"
+    },
+    {
+      "pType": "salary",
+      "name": "salary",
+      "type": "int"
+    },
+    {
       "pType": "type",
       "name": "type",
       "type": "string"
+    },
+    {
+      "pType": "profession",
+      "name": "profession",
+      "type": "Profession"
     }
   ]
 }

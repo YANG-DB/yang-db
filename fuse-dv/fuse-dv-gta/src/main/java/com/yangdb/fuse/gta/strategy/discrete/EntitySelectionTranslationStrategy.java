@@ -86,6 +86,8 @@ public class EntitySelectionTranslationStrategy extends PlanOpTranslationStrateg
                 .filter(hasStep -> isSelectionHasStep((HasStep<?>)hasStep))
                 .forEach(step -> traversal.asAdmin().removeStep(step));
 
+        //process nested (intern) property base group
+
         //process schematic projection fields exclude calculated field from selection
         Stream.ofAll(lastEntityFilterOp.getAsgEbase().geteBase().getProps())
                 .filter(eProp -> eProp.getProj() != null)

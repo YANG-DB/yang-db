@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.logical;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,30 +21,33 @@ package com.yangdb.fuse.model.logical;
  */
 
 import com.fasterxml.jackson.annotation.*;
+import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.results.Property;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * //example
- *             {
- *                 "id": 101,
- *                 "source": "0",
- *                 "target": "1",
- *                 "metadata": {
- *                     "label": "called",
- *                     "user-defined": "values"
- *                 },
- *                 "properties":{
- *                      "date":"01/01/2000",
- *                      "duration":"120",
- *                      "medium": "cellular"
- *                      "sourceLocation": "40.06,-71.34"
- *                      "sourceTarget": "41.12,-70.9"
- *                 }
- *             }
+ * {
+ * "id": 101,
+ * "source": "0",
+ * "target": "1",
+ * "metadata": {
+ * "label": "called",
+ * "user-defined": "values"
+ * },
+ * "properties":{
+ * "date":"01/01/2000",
+ * "duration":"120",
+ * "medium": "cellular"
+ * "sourceLocation": "40.06,-71.34"
+ * "sourceTarget": "41.12,-70.9"
+ * }
+ * }
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -65,9 +68,10 @@ public class LogicalEdge implements Edge {
     @JsonProperty("properties")
     private EdgeProperties properties = new EdgeProperties();
 
-    public LogicalEdge() {}
+    public LogicalEdge() {
+    }
 
-    public LogicalEdge(String id,String label,String source, String target,boolean direction) {
+    public LogicalEdge(String id, String label, String source, String target, boolean direction) {
         this.id = id;
         this.label = label;
         this.source = source;
@@ -76,12 +80,23 @@ public class LogicalEdge implements Edge {
     }
 
     public LogicalEdge withMetadata(Collection<Property> properties) {
-        properties.forEach(p->this.metadata.addProperties(p.getpType(),p.getValue()));
+        properties.forEach(p -> this.metadata.addProperties(p.getpType(), p.getValue()));
         return this;
     }
 
     public LogicalEdge withProperty(String property, Object value) {
-        properties.addProperties(property,value);
+        properties.addProperties(property, value);
+        return this;
+    }
+
+    @JsonIgnore
+    public LogicalEdge withProperty(RelationshipType type, String property, Object value) {
+        if (type.containsProperty(property)) {
+            properties.addProperties(property, value);
+        } else {
+            //add property with _underscore so it can be ignored if needed
+            properties.addProperties(String.format("_%s", property), value);
+        }
         return this;
     }
 
@@ -157,7 +172,7 @@ public class LogicalEdge implements Edge {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"{" +
+        return getClass().getSimpleName() + "{" +
                 "id='" + id + '\'' +
                 "label='" + label + '\'' +
                 ", source='" + source + '\'' +
@@ -171,7 +186,7 @@ public class LogicalEdge implements Edge {
     @Override
     @JsonProperty("id")
     public String id() {
-        return getId()!=null ? id : String.format("%s.%s",source,target);
+        return getId() != null ? id : String.format("%s.%s", source, target);
     }
 
     @Override
@@ -209,8 +224,13 @@ public class LogicalEdge implements Edge {
         return getProperties().properties.get(partition);
     }
 
+    public LogicalEdge withMetadata(RelationshipType type, List<Property> properties) {
+        properties.addAll(properties.stream().filter(p -> type.containsProperty(p.getpType())).collect(Collectors.toSet()));
+        return this;
+    }
+
     public static class EdgeMetadata implements PropertyFields<EdgeMetadata> {
-        private Map<String,Object> properties;
+        private Map<String, Object> properties;
 
         public EdgeMetadata() {
             this.properties = new HashMap<>();
@@ -223,20 +243,20 @@ public class LogicalEdge implements Edge {
 
         @JsonAnySetter
         public EdgeMetadata addProperties(String key, Object value) {
-            this.properties.put(key,value);
+            this.properties.put(key, value);
             return this;
         }
 
         @Override
         public String toString() {
-            return getClass().getSimpleName()+"{" +
+            return getClass().getSimpleName() + "{" +
                     ", properties=" + properties +
                     '}';
         }
     }
 
-    public static class EdgeProperties implements PropertyFields<EdgeProperties>{
-        private Map<String,Object> properties = new HashMap<>();
+    public static class EdgeProperties implements PropertyFields<EdgeProperties> {
+        private Map<String, Object> properties = new HashMap<>();
 
         @JsonAnyGetter
         public Map<String, Object> getProperties() {
@@ -245,13 +265,13 @@ public class LogicalEdge implements Edge {
 
         @JsonAnySetter
         public EdgeProperties addProperties(String key, Object value) {
-            this.properties.put(key,value);
+            this.properties.put(key, value);
             return this;
         }
 
         @Override
         public String toString() {
-            return getClass().getSimpleName()+"{" +
+            return getClass().getSimpleName() + "{" +
                     "properties=" + properties +
                     '}';
         }

@@ -54,6 +54,12 @@ import com.yangdb.fuse.model.Next;
 public class Start extends EBase implements Next<Integer> {
     //region Constructors
     public Start() {}
+
+    public Start(int eNum) {
+        this(eNum,0);
+    }
+
+
     public Start(int eNum, int next) {
         super(eNum);
         this.next = next;

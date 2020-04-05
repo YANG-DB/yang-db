@@ -61,14 +61,17 @@ public class Constraint {
     public Constraint() {
     }
 
-    public Constraint(ConstraintOp op, Object expr) {
+    public Constraint(ConstraintOp op) {
+        this();
         this.op = op;
+    }
+    public Constraint(ConstraintOp op, Object expr) {
+        this(op);
         this.expr = expr;
     }
 
     public Constraint(ConstraintOp op, Object expr, String iType) {
-        this.op = op;
-        this.expr = expr;
+        this(op,expr);
         this.iType = iType;
     }
     //endregion

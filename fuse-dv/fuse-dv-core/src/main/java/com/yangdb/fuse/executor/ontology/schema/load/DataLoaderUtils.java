@@ -173,7 +173,7 @@ public interface DataLoaderUtils {
                         Double.valueOf(value.toString().split("[,]")[1]),
                         Double.valueOf(value.toString().split("[,]")[0]));
         }
-        return value.toString();
+        return value;
     }
 
 }

@@ -28,6 +28,8 @@ import com.yangdb.fuse.executor.utils.ConversionUtil;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
+import com.yangdb.fuse.model.logical.CompositeLogicalNode;
+import com.yangdb.fuse.model.logical.LogicalEdge;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
@@ -49,6 +51,9 @@ import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.insta
  * Created by roman.margolis on 02/10/2017.
  */
 public class PathsTraversalCursor implements Cursor {
+
+    public static final String RAW = "raw";
+
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -130,6 +135,7 @@ public class PathsTraversalCursor implements Cursor {
 
 
     protected Assignment toAssignment(Path path) {
+//     Todo should be:  Assignment.Builder<Entity,Relationship> builder = Assignment.Builder.instance();
         Assignment.Builder builder = Assignment.Builder.instance();
 
         List<Object> pathObjects = path.objects();
@@ -155,7 +161,7 @@ public class PathsTraversalCursor implements Cursor {
         return builder.build();
     }
 
-    protected Entity toEntity( Vertex vertex, EEntityBase element) {
+    protected com.yangdb.fuse.model.logical.Vertex<Entity> toEntity(Vertex vertex, EEntityBase element) {
         String eType = vertex.label();
         List<Property> properties = Stream.ofAll(vertex::properties)
                 .map(this::toProperty)
@@ -205,18 +211,18 @@ public class PathsTraversalCursor implements Cursor {
                 .map(key -> this.ont.property(key))
                 .filter(Optional::isPresent)
                 .filter(property -> !property.get().getpType().equals(this.typeProperty.getpType()))
-                .map(property -> new Property(property.get().getpType(), "raw", vertexProperty.value()))
+                .map(property -> new Property(property.get().getpType(), RAW, vertexProperty.value()))
                 .toJavaOptional();
     }
     //endregion
 
     //region Fields
-    private TraversalCursorContext context;
-    private Ontology.Accessor ont;
-    private Map<String, EEntityBase> eEntityBases;
-    private Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
+    protected TraversalCursorContext context;
+    protected Ontology.Accessor ont;
+    protected Map<String, EEntityBase> eEntityBases;
+    protected Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
 
-    private com.yangdb.fuse.model.ontology.Property typeProperty;
+    protected com.yangdb.fuse.model.ontology.Property typeProperty;
 
     boolean includeEntities;
     boolean includeRelationships;

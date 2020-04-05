@@ -25,6 +25,7 @@ import com.yangdb.fuse.dispatcher.driver.CursorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.driver.QueryDriverBase;
 import com.yangdb.fuse.dispatcher.epb.PlanSearcher;
+import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
@@ -37,12 +38,7 @@ import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryMetadata;
-import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
-import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
-import com.yangdb.fuse.model.validation.ValidationResult;
-
-import java.util.Optional;
 
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.concrete;
 
@@ -58,11 +54,11 @@ public class StandardQueryDriver extends QueryDriverBase {
             QueryTransformer<Query, AsgQuery> queryTransformer,
             QueryValidator<AsgQuery> queryValidator,
             QueryTransformer<AsgQuery, AsgQuery> queryRewriter,
-            QueryTransformer<String, AsgQuery> jsonQueryTransformer,
+            JsonQueryTransformerFactory transformerFactory,
             PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
-        super(cursorDriver, pageDriver, queryTransformer, jsonQueryTransformer, queryValidator, resourceStore, urlSupplier);
+        super(cursorDriver, pageDriver, queryTransformer, transformerFactory , queryValidator, resourceStore, urlSupplier);
         this.queryRewriter = queryRewriter;
         this.planSearcher = planSearcher;
     }

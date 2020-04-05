@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KNOWLEDGE;
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 
 /**
@@ -63,7 +63,7 @@ public class KnowledgeLoadMergeLogicalGraphTest {
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
         QueryResultBase pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         //validate merge did add new property 'Napoleon_1' without removing the former propery 'Napoleon'
-        List<Entity> entities = ((AssignmentsQueryResult<Entity, Relation>) pageData).getAssignments().get(0).getEntities();
+        List<Entity> entities = ((AssignmentsQueryResult<Entity, com.yangdb.fuse.model.results.Relationship>) pageData).getAssignments().get(0).getEntities();
         Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Entity"))
                 .filter(e->e.getProperty("techId").get().getValue().toString().equals("Napoleon")).count());
         Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Evalue"))
@@ -80,7 +80,7 @@ public class KnowledgeLoadMergeLogicalGraphTest {
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
         pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         //validate merge did add new property 'Napoleon_1' without removing the former propery 'Napoleon'
-        entities = ((AssignmentsQueryResult<Entity, Relation>) pageData).getAssignments().get(0).getEntities();
+        entities = ((AssignmentsQueryResult<Entity, com.yangdb.fuse.model.results.Relationship>) pageData).getAssignments().get(0).getEntities();
         Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Entity"))
                 .filter(e->e.getProperty("techId").get().getValue().toString().equals("Myriel")).count());
         Assert.assertEquals(1,entities.stream().filter(e->e.geteType().equals("Evalue"))
@@ -98,7 +98,7 @@ public class KnowledgeLoadMergeLogicalGraphTest {
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
         pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         //validate merge did add new property 'Napoleon_1' without removing the former propery 'Napoleon'
-        List<Relation> relations = ((AssignmentsQueryResult<Entity, Relation>) pageData).getAssignments().get(0).getRelationships();
+        List<com.yangdb.fuse.model.results.Relationship> relations = ((AssignmentsQueryResult<Entity, com.yangdb.fuse.model.results.Relationship>) pageData).getAssignments().get(0).getRelationships();
         Assert.assertEquals(2,relations.size());
 
         query = "Match (e:Entity)-[r:relatedEntity]->(eOut:Entity) where eOut.techId = 'moti' Return *";
@@ -110,7 +110,7 @@ public class KnowledgeLoadMergeLogicalGraphTest {
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,100, query, KNOWLEDGE);
         pageData = nextPage(fuseClient, cursorResourceInfo, 100);
         //validate merge did add new property 'Napoleon_1' without removing the former propery 'Napoleon'
-        relations = ((AssignmentsQueryResult<Entity, Relation>) pageData).getAssignments().get(0).getRelationships();
+        relations = ((AssignmentsQueryResult<Entity, com.yangdb.fuse.model.results.Relationship>) pageData).getAssignments().get(0).getRelationships();
         Assert.assertEquals(2,relations.size());
     }
 

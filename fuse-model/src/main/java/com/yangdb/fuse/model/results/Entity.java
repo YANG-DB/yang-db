@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.results;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,9 +33,9 @@ package com.yangdb.fuse.model.results;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,8 +45,10 @@ package com.yangdb.fuse.model.results;
  */
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yangdb.fuse.model.logical.Vertex;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -59,7 +61,7 @@ import java.util.stream.Collectors;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Entity implements Vertex {
+public class Entity implements Vertex<Entity> {
     //region Constructors
     public Entity() {
         this.properties = new HashMap<>();
@@ -68,6 +70,49 @@ public class Entity implements Vertex {
     //endregion
 
     //region Properties
+
+    @Override
+    @JsonProperty("id")
+    public String id() {
+        return geteID();
+    }
+
+    @JsonProperty("id")
+    public void seteID(String eID) {
+        this.eID = eID;
+    }
+
+    @Override
+    @JsonProperty("label")
+    public String label() {
+        return geteType();
+    }
+
+    @Override
+    @JsonProperty("label")
+    public Entity label(String label) {
+        seteType(label);
+        return this;
+    }
+
+    @Override
+    @JsonProperty("tag")
+    public String tag() {
+        return geteTag().iterator().next();
+    }
+
+    @Override
+    @JsonProperty("tag")
+    public Entity tag(String tag) {
+        seteTag(Collections.singleton(tag));
+        return this;
+    }
+
+    @Override
+    public Entity merge(Entity entity) {
+        return Builder.instance().merge(this,entity);
+    }
+
     public Set<String> geteTag() {
         return eTag;
     }
@@ -80,10 +125,6 @@ public class Entity implements Vertex {
         return eID;
     }
 
-    public void seteID(String eID) {
-        this.eID = eID;
-    }
-
     public String geteType() {
         return eType;
     }
@@ -93,7 +134,7 @@ public class Entity implements Vertex {
     }
 
     public Optional<Property> getProperty(String key) {
-        return getProperties().stream().filter(p->p.getpType().equals(key)).findAny();
+        return getProperties().stream().filter(p -> p.getpType().equals(key)).findAny();
     }
 
     public Collection<Property> getProperties() {
@@ -106,7 +147,7 @@ public class Entity implements Vertex {
     }
 
     public void setProperty(Property property) {
-        this.properties.put(property.getpType(),property);
+        this.properties.put(property.getpType(), property);
     }
 
     public List<AttachedProperty> getAttachedProperties() {
@@ -118,23 +159,15 @@ public class Entity implements Vertex {
     }
 
     @Override
-    public String id() {
-        return geteID();
-    }
-
-    @Override
-    public String label() {
-        return geteType();
-    }
-
-    @Override
-    public Map<String,Object> metadata() {
+    @JsonIgnore()
+    public Map<String, Object> metadata() {
         return getProperties().stream().collect(
                 Collectors.toMap(Property::getpType, Property::getValue));
     }
 
     @Override
-    public Map<String,Object> fields() {
+    @JsonIgnore()
+    public Map<String, Object> fields() {
         return getAttachedProperties().stream().collect(
                 Collectors.toMap(AttachedProperty::getpName, AttachedProperty::getValue));
 
@@ -153,9 +186,8 @@ public class Entity implements Vertex {
     }
 
     @Override
-    public String toString()
-    {
-        return "Entity [eTag = " + eTag + ", attachedProperties = " + attachedProperties + ", eType = " + eType + ", eID = "+eID+", properties = " + properties + "]";
+    public String toString() {
+        return "Entity [eTag = " + eTag + ", attachedProperties = " + attachedProperties + ", eType = " + eType + ", eID = " + eID + ", properties = " + properties + "]";
     }
     //endregion
 
@@ -169,9 +201,9 @@ public class Entity implements Vertex {
     //endregion
 
     //region Builder
-    public static final class Builder {
+    public static class Builder {
         //region Constructors
-        private Builder() {
+        protected Builder() {
             this.eTag = new HashSet<>();
             this.properties = Collections.emptyList();
             this.attachedProperties = Collections.emptyList();
@@ -225,25 +257,27 @@ public class Entity implements Vertex {
             return this;
         }
 
-        public Entity build() {
-            Entity entity = new Entity();
+        protected Entity _build(Entity entity) {
             entity.setProperties(properties);
             entity.setAttachedProperties(attachedProperties);
             entity.eType = this.eType;
             entity.eID = this.eID;
             entity.eTag = this.eTag;
 
-            for(Entity entityToMerge : this.entities) {
+            for (Entity entityToMerge : this.entities) {
                 entity = merge(entity, entityToMerge);
             }
 
-
             return entity;
+        }
+
+        public Entity build() {
+            return _build(new Entity());
         }
         //endregion
 
         //region Private Methods
-        private Entity merge(Entity e1, Entity e2) {
+        public Entity merge(Entity e1, Entity e2) {
             e1.seteID(e1.geteID() == null ? e2.geteID() : e1.geteID());
             e1.seteType(e1.geteType() == null ? e2.geteType() : e1.geteType());
             e1.eTag.addAll(e2.eTag);

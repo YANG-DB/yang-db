@@ -27,14 +27,13 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.Filter.filter;
 import static com.yangdb.fuse.model.OntologyTestUtils.NAME;
 import static com.yangdb.fuse.model.query.Rel.Direction.L;
 import static com.yangdb.fuse.model.query.Rel.Direction.R;
 
 public class KnowledgeReaderContext {
-
-    public static final String KNOWLEDGE = "Knowledge";
 
     static public class KnowledgeQueryBuilder {
         private Query.Builder knowledge;
