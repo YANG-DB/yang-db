@@ -54,7 +54,6 @@ import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.model.query.properties.constraint.NamedParameter;
 import com.yangdb.fuse.model.query.properties.constraint.ParameterizedConstraint;
 import com.yangdb.fuse.model.query.quant.Quant1;
-import com.yangdb.fuse.model.query.quant.Quant2;
 import com.yangdb.fuse.model.query.quant.QuantBase;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -258,7 +257,7 @@ public class AsgQueryUtil {
     public static <T extends EBase> Optional<Boolean> isLeaf(AsgEBase<T> asgEBase) {
         if (!EEntityBase.class.isAssignableFrom(asgEBase.geteBase().getClass()))
             return Optional.empty();
-        return Optional.of(!asgEBase.hasNext() || (isFirst(asgEBase) && !nextDescendant(asgEBase, Quant2.class).isPresent()));
+        return Optional.of(!asgEBase.hasNext() || (isFirst(asgEBase) && !nextDescendant(asgEBase, QuantBase.class).isPresent()));
     }
 
     public static <T extends EBase> boolean isFirst(AsgEBase<T> asgEBase) {

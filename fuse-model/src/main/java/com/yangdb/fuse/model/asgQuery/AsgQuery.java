@@ -46,13 +46,9 @@ package com.yangdb.fuse.model.asgQuery;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.model.Range;
-import com.yangdb.fuse.model.query.EBase;
-import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.Rel;
-import com.yangdb.fuse.model.query.RelPattern;
-import com.yangdb.fuse.model.query.Start;
+import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
+import com.yangdb.fuse.model.query.*;
 import com.yangdb.fuse.model.query.aggregation.CountComp;
 import com.yangdb.fuse.model.query.entity.*;
 import com.yangdb.fuse.model.query.optional.OptionalComp;
@@ -62,7 +58,6 @@ import com.yangdb.fuse.model.query.properties.constraint.NamedParameter;
 import com.yangdb.fuse.model.query.properties.projection.CalculatedFieldProjection;
 import com.yangdb.fuse.model.query.properties.projection.Projection;
 import com.yangdb.fuse.model.query.quant.Quant1;
-import com.yangdb.fuse.model.query.quant.Quant2;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
@@ -302,14 +297,6 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             quant1.setqType(type);
 
             return new AsgEBase<>(quant1);
-        }
-
-        public static AsgEBase<Quant2> quant2(int eNum, QuantType type) {
-            Quant2 quant2 = new Quant2();
-            quant2.seteNum(eNum);
-            quant2.setqType(type);
-
-            return new AsgEBase<>(quant2);
         }
 
         public static AsgEBase<ETyped> typed(int eNum, String eType, String eTag) {
