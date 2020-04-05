@@ -21,22 +21,22 @@ package com.yangdb.fuse.dispatcher.asg.builder;
  */
 
 
-
 import com.yangdb.fuse.dispatcher.asg.BellowFactory;
 import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.RelPattern;
 import com.yangdb.fuse.model.query.Start;
-import com.yangdb.fuse.model.query.aggregation.*;
-import com.yangdb.fuse.model.query.combiner.HComb;
+import com.yangdb.fuse.model.query.aggregation.Agg;
+import com.yangdb.fuse.model.query.aggregation.CountComp;
 import com.yangdb.fuse.model.query.entity.*;
 import com.yangdb.fuse.model.query.optional.OptionalComp;
 import com.yangdb.fuse.model.query.properties.*;
-import com.yangdb.fuse.model.query.quant.HQuant;
 import com.yangdb.fuse.model.query.quant.Quant1;
-import com.yangdb.fuse.model.query.quant.Quant2;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -48,18 +48,8 @@ public class BNextFactory implements BellowFactory{
     //region Constructor
     public BNextFactory() {
         this.map = new HashMap<>() ;
-        this.map.put(AggM5.class, ebase -> ((AggM5)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggM5) ebase).getB()));
-        this.map.put(AggM4.class, ebase -> ((AggM4)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggM4) ebase).getB()));
-        this.map.put(AggM3.class, ebase -> ((AggM3)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggM3) ebase).getB()));
-        this.map.put(AggM2.class, ebase -> ((AggM2)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggM2) ebase).getB()));
-        this.map.put(AggM1.class, ebase -> ((AggM1)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggM1) ebase).getB()));
-        this.map.put(AggL3.class, ebase -> ((AggL3)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggL3) ebase).getB()));
-        this.map.put(AggL2.class, ebase -> ((AggL2)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggL2) ebase).getB()));
-        this.map.put(AggL1.class, ebase -> ((AggL1)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggL1) ebase).getB()));
-        this.map.put(HComb.class, ebase -> ((HComb)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((HComb) ebase).getB()));
-        this.map.put(HQuant.class, ebase -> ((HQuant)ebase).getB());
+        this.map.put(Agg.class, ebase -> ((Agg)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Agg) ebase).getB()));
         this.map.put(Quant1.class, ebase -> ((Quant1)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Quant1) ebase).getB()));
-        this.map.put(Quant2.class, ebase -> (Collections.emptyList()));
         this.map.put(Rel.class, ebase -> ((Rel)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getB()));
         this.map.put(RelPattern.class, ebase -> ((Rel)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getB()));
         this.map.put(EndPattern.class, ebase -> ((EndPattern)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((EndPattern) ebase).getB()));

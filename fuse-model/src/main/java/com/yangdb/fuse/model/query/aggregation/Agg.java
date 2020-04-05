@@ -22,7 +22,7 @@ package com.yangdb.fuse.model.query.aggregation;
 
 /*-
  *
- * AggM3.java - fuse-model - yangdb - 2,016
+ * Agg.java - fuse-model - yangdb - 2,016
  * org.codehaus.mojo-license-maven-plugin-1.16
  * $Id$
  * $HeadURL$
@@ -43,39 +43,23 @@ package com.yangdb.fuse.model.query.aggregation;
  *
  */
 
+import com.yangdb.fuse.model.Tagged;
+
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class AggM3 extends AggMBase {
+public class Agg extends AggLBase implements Tagged {
     //region Properties
-    public String[] getETag() {
+    public String geteTag() {
         return this.eTag;
     }
 
-    public void setETag(String[] value) {
+    public void seteTag(String value) {
         this.eTag = value;
-    }
-
-    public AggLOp getAggOp() {
-        return this.aggOp;
-    }
-
-    public void setAggOp(AggLOp aggOp) {
-        this.aggOp = aggOp;
-    }
-
-    public int getPType() {
-        return this.pType;
-    }
-
-    public void setpType(int value) {
-        this.pType = value;
     }
     //endregion
 
     //region Fields
-    private String[] eTag;
-    private AggLOp aggOp;
-    private int pType;
+    private String eTag;
     //endregion
 }

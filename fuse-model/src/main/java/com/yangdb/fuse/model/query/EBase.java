@@ -48,7 +48,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.yangdb.fuse.model.query.aggregation.*;
+import com.yangdb.fuse.model.query.aggregation.Agg;
+import com.yangdb.fuse.model.query.aggregation.CountComp;
 import com.yangdb.fuse.model.query.combiner.EComb;
 import com.yangdb.fuse.model.query.combiner.RComb;
 import com.yangdb.fuse.model.query.entity.*;
@@ -56,7 +57,6 @@ import com.yangdb.fuse.model.query.optional.OptionalComp;
 import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.model.query.quant.HQuant;
 import com.yangdb.fuse.model.query.quant.Quant1;
-import com.yangdb.fuse.model.query.quant.Quant2;
 
 
 /**
@@ -75,22 +75,13 @@ import com.yangdb.fuse.model.query.quant.Quant2;
         @JsonSubTypes.Type(name = "EUntyped", value = EUntyped.class),
         @JsonSubTypes.Type(name = "HQuant", value = HQuant.class),
         @JsonSubTypes.Type(name = "Quant1", value = Quant1.class),
-        @JsonSubTypes.Type(name = "Quant2", value = Quant2.class),
         @JsonSubTypes.Type(name = "RComb", value = RComb.class),
         @JsonSubTypes.Type(name = "Rel", value = Rel.class),
         @JsonSubTypes.Type(name = "RelPattern", value = RelPattern.class),
         @JsonSubTypes.Type(name = "EndPattern", value = EndPattern.class),
         @JsonSubTypes.Type(name = "RelProp", value = RelProp.class),
         @JsonSubTypes.Type(name = "RelPropGroup", value = RelPropGroup.class),
-        @JsonSubTypes.Type(name = "AggL1", value = AggL1.class),
-        @JsonSubTypes.Type(name = "AggL2", value = AggL2.class),
-        @JsonSubTypes.Type(name = "AggL3", value = AggL3.class),
-        @JsonSubTypes.Type(name = "AggL4", value = AggL4.class),
-        @JsonSubTypes.Type(name = "AggM1", value = AggM1.class),
-        @JsonSubTypes.Type(name = "AggM2", value = AggM2.class),
-        @JsonSubTypes.Type(name = "AggM3", value = AggM3.class),
-        @JsonSubTypes.Type(name = "AggM4", value = AggM4.class),
-        @JsonSubTypes.Type(name = "AggM5", value = AggM5.class),
+        @JsonSubTypes.Type(name = "Agg", value = Agg.class),
         @JsonSubTypes.Type(name = "OptionalComp", value = OptionalComp.class),
         @JsonSubTypes.Type(name = "CountComp", value = CountComp.class),
         @JsonSubTypes.Type(name = "SchematicEProp", value = SchematicEProp.class),
