@@ -29,7 +29,6 @@ public interface DataTransformer<T,G> {
     T transform(G data, GraphDataLoader.Directive directive);
 
     class Utils {
-        public static final String INDEX = "Index";
         public static final String TYPE = "type";
         public static SimpleDateFormat sdf;
 

@@ -146,4 +146,7 @@ public class Relation {
         return getRedundant().stream().filter(r->r.getSide().contains(side)).collect(Collectors.toList());
     }
 
+    public static class Builder {
+
+    }
 }

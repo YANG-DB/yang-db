@@ -28,11 +28,12 @@ import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.executor.elasticsearch.MappingEntitiesFlavor;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
+import com.yangdb.fuse.model.logical.LogicalAssignmentModel;
 import com.yangdb.fuse.model.logical.LogicalEdge;
-import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.logical.LogicalNode;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -44,22 +45,18 @@ import javaslang.Tuple2;
 import org.elasticsearch.client.Client;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory.*;
-import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.INDEX;
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.sdf;
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;
 
 /**
  * translator that takes the specific ontology with the actual schema and translates the logical graph model into a set of (schematic according to real mapping) elastic documents
  */
-public class EntityTransformer implements DataTransformer<DataTransformerContext<LogicalGraphModel>, LogicalGraphModel> {
+public class LogicalAssignmentTransformer implements DataTransformer<DataTransformerContext<LogicalAssignmentModel>, LogicalAssignmentModel> {
 
 
     private final Ontology.Accessor accessor;
@@ -68,9 +65,10 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
     private final IdGeneratorDriver<Range> idGenerator;
     private final Client client;
     private final ObjectMapper mapper;
+    private final Map<String,LogicalNode> nodeCashe;
 
     @Inject
-    public EntityTransformer(Config config, OntologyProvider ontology, IndexProviderIfc indexProvider, RawSchema schema, IdGeneratorDriver<Range> idGenerator, Client client) {
+    public LogicalAssignmentTransformer(Config config, OntologyProvider ontology, IndexProviderIfc indexProvider, RawSchema schema, IdGeneratorDriver<Range> idGenerator, Client client) {
         String assembly = config.getString("assembly");
         this.accessor = new Ontology.Accessor(ontology.get(assembly).orElseThrow(
                 () -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly))));
@@ -80,18 +78,27 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
         this.idGenerator = idGenerator;
         this.client = client;
         this.mapper = new ObjectMapper();
+        this.nodeCashe = new HashMap<>();
     }
 
     @Override
-    public DataTransformerContext<LogicalGraphModel> transform(LogicalGraphModel graph, GraphDataLoader.Directive directive) {
-        DataTransformerContext<LogicalGraphModel> context = new DataTransformerContext<>(mapper);
+    public DataTransformerContext<LogicalAssignmentModel> transform(LogicalAssignmentModel graph, GraphDataLoader.Directive directive) {
+        DataTransformerContext<LogicalAssignmentModel> context = new DataTransformerContext<>(mapper);
+        populate(graph,this.nodeCashe);
         context.withContainer(graph);
-        context.withEntities(graph.getNodes().stream().map(n -> translate(context, n)).collect(Collectors.toList()));
-        //out direction
-        context.withRelations(graph.getEdges().stream().map(e -> translate(context, e, "out")).collect(Collectors.toList()));
-        //in direction
-        context.withRelations(graph.getEdges().stream().map(e -> translate(context, e, "in")).collect(Collectors.toList()));
+        graph.getAssignments().forEach(logicalAssignment -> {
+            context.withEntities(logicalAssignment.getEntities().stream().map(n -> translate(context, n)).collect(Collectors.toList()));
+            //out direction
+            context.withRelations(logicalAssignment.getRelationships().stream().map(e -> translate(context, e, "out")).collect(Collectors.toList()));
+            //in direction
+            context.withRelations(logicalAssignment.getRelationships().stream().map(e -> translate(context, e, "in")).collect(Collectors.toList()));
+        });
         return context;
+    }
+
+    private void populate(LogicalAssignmentModel graph, Map<String, LogicalNode> nodeCashe) {
+        nodeCashe.clear();
+        graph.getAssignments().forEach(a->a.getEntities().forEach(e->nodeCashe.put(e.getId(),e)));
     }
 
     /**
@@ -102,7 +109,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param direction
      * @return
      */
-    private DocumentBuilder translate(DataTransformerContext<LogicalGraphModel> context, LogicalEdge edge, String direction) {
+    private DocumentBuilder translate(DataTransformerContext<LogicalAssignmentModel> context, LogicalEdge edge, String direction) {
         try {
             ObjectNode element = mapper.createObjectNode();
             Relation relation = indexProvider.getRelation(edge.label())
@@ -140,7 +147,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param node
      * @return
      */
-    private DocumentBuilder translate(DataTransformerContext<LogicalGraphModel> context, LogicalNode node) {
+    private DocumentBuilder translate(DataTransformerContext<LogicalAssignmentModel> context, LogicalNode node) {
         try {
             ObjectNode element = mapper.createObjectNode();
             Entity entity = indexProvider.getEntity(node.label())
@@ -154,7 +161,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
         }
     }
 
-    private void translateEntity(DataTransformerContext<LogicalGraphModel> context, LogicalNode node, ObjectNode element, Entity entity) {
+    private void translateEntity(DataTransformerContext<LogicalAssignmentModel> context, LogicalNode node, ObjectNode element, Entity entity) {
         element.put(ID, node.getId());
         element.put(TYPE, entity.getType());
 
@@ -172,7 +179,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param edge
      * @param element
      */
-    private void populateMetadataFields(DataTransformerContext<LogicalGraphModel> context, LogicalEdge edge, ObjectNode element) {
+    private void populateMetadataFields(DataTransformerContext<LogicalAssignmentModel> context, LogicalEdge edge, ObjectNode element) {
         edge.metadata().entrySet()
                 .stream()
                 .filter(m -> accessor.relation$(edge.getLabel()).containsMetadata(m.getKey()))
@@ -186,14 +193,14 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param node
      * @param element
      */
-    private void populateMetadataFields(DataTransformerContext<LogicalGraphModel> context, LogicalNode node, ObjectNode element) {
+    private void populateMetadataFields(DataTransformerContext<LogicalAssignmentModel> context, LogicalNode node, ObjectNode element) {
         node.metadata().entrySet()
                 .stream()
                 .filter(m -> accessor.entity$(node.getLabel()).containsMetadata(m.getKey()))
                 .forEach(m -> populate(context, element, m));
     }
 
-    private ObjectNode populate(DataTransformerContext<LogicalGraphModel> context, ObjectNode element, Map.Entry<String, Object> m) {
+    private ObjectNode populate(DataTransformerContext<LogicalAssignmentModel> context, ObjectNode element, Map.Entry<String, Object> m) {
         String pType = accessor.property$(m.getKey()).getpType();
         String type = accessor.property$(m.getKey()).getType();
 
@@ -244,9 +251,9 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param entity
      * @param element
      */
-    private void populateFields(DataTransformerContext<LogicalGraphModel> context, LogicalNode node, Entity entity, ObjectNode element) {
+    private void populateFields(DataTransformerContext<LogicalAssignmentModel> context, LogicalNode node, Entity entity, ObjectNode element) {
         //todo check the structure of the index
-        switch (entity.getMapping()) {
+        switch (MappingEntitiesFlavor.of(entity.getMapping())) {
             case CHILD:
             case INDEX:
                 //populate properties
@@ -268,7 +275,7 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param relation
      * @param element
      */
-    private ObjectNode populateFields(DataTransformerContext<LogicalGraphModel> context, LogicalEdge edge, Relation relation, String direction, ObjectNode element) {
+    private ObjectNode populateFields(DataTransformerContext<LogicalAssignmentModel> context, LogicalEdge edge, Relation relation, String direction, ObjectNode element) {
         //populate redundant fields A
         switch (direction) {
             case "out":
@@ -284,7 +291,8 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
         }
 
         //populate direct fields
-        switch (relation.getMapping()) {
+
+        switch (MappingEntitiesFlavor.of(relation.getMapping())) {
             case INDEX:
                 //populate properties
                 edge.fields().entrySet()
@@ -309,9 +317,9 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
      * @param relation
      * @return
      */
-    private ObjectNode populateSide(String side, DataTransformerContext<LogicalGraphModel> context, String sideId, Relation relation) {
+    private ObjectNode populateSide(String side, DataTransformerContext<LogicalAssignmentModel> context, String sideId, Relation relation) {
         ObjectNode entitySide = mapper.createObjectNode();
-        Optional<LogicalNode> source = nodeById(context, sideId);
+        Optional<LogicalNode> source = nodeById(sideId);
         if (!source.isPresent()) {
             throw new FuseError.FuseErrorException(new FuseError("Logical Graph Transformation Error", "No matching node found with sideId " + sideId));
         }
@@ -335,8 +343,8 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
                 parseValue(redundant.getType(), o.toString(), sdf).toString()));
     }
 
-    private Optional<LogicalNode> nodeById(DataTransformerContext<LogicalGraphModel> context, String id) {
-        return context.getContainer().getNodes().stream().filter(n -> n.getId().equals(id)).findAny();
+    private Optional<LogicalNode> nodeById(String id) {
+        return Optional.ofNullable(this.nodeCashe.get(id));
     }
 
 

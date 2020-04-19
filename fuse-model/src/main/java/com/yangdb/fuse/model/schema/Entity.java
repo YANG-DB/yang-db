@@ -112,4 +112,8 @@ public class Entity {
         this.additionalProperties.put(name, value);
     }
 
+    public static class Builder {
+
+    }
+
 }

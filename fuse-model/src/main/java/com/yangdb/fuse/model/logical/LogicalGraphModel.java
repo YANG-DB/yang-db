@@ -20,8 +20,10 @@ package com.yangdb.fuse.model.logical;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,19 +117,23 @@ public class LogicalGraphModel {
         this.nodes = new ArrayList<>();
     }
 
+    @JsonProperty("node")
     public List<LogicalNode> getNodes() {
         return nodes;
     }
 
+    @JsonIgnore
     public LogicalGraphModel with(LogicalNode node) {
         getNodes().add(node);
         return this;
     }
 
+    @JsonProperty("edge")
     public List<LogicalEdge> getEdges() {
         return edges;
     }
 
+    @JsonIgnore
     public LogicalGraphModel with(LogicalEdge edge) {
         getEdges().add(edge);
         return this;

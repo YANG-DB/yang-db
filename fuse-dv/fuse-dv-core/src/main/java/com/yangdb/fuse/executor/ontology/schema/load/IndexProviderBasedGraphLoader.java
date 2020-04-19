@@ -22,26 +22,15 @@ package com.yangdb.fuse.executor.ontology.schema.load;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
-import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
-import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
-import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.Tuple2;
-import javaslang.collection.Stream;
 import org.elasticsearch.action.DocWriteRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -77,14 +66,14 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
     }
 
     private Client client;
-    private EntityTransformer transformer;
+    private LogicalGraphTransformer transformer;
     private RawSchema schema;
     private ObjectMapper mapper;
     private IdGeneratorDriver<Range> idGenerator;
 
 
     @Inject
-    public IndexProviderBasedGraphLoader(Client client, EntityTransformer transformer, RawSchema schema, IdGeneratorDriver<Range> idGenerator) {
+    public IndexProviderBasedGraphLoader(Client client, LogicalGraphTransformer transformer, RawSchema schema, IdGeneratorDriver<Range> idGenerator) {
         this.client = client;
         this.schema = schema;
         this.transformer = transformer;

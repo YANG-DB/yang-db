@@ -135,4 +135,30 @@ public class IndexProvider {
 
         return getRelations().stream().filter(e -> e.getType().equals(label)).findAny();
     }
+
+    public static class Builder {
+
+        private IndexProvider provider;
+
+        private Builder(String ontology) {
+            provider = new IndexProvider();
+            provider.setOntology(ontology);
+        }
+
+        public static Builder getInstance(String ontology) {
+            return new Builder(ontology);
+        }
+
+        public Builder entity() {
+            return this;
+        }
+
+        public Builder relation() {
+            return this;
+        }
+
+        public IndexProvider build() {
+            return provider;
+        }
+    }
 }

@@ -1,0 +1,79 @@
+{
+  "assignments" : [
+    {
+      "nodes": [
+        {
+          "metadata": {
+            "group": 1
+          },
+          "id": "P03_CountessdeLo",
+          "label": "Person",
+          "properties": {
+            "firstName": "CountessdeLo",
+            "lastName": "Buffeled",
+            "gender": "male",
+            "birthDate": "12/22/1599",
+            "deathDate": "5/3/1683",
+            "height": "148",
+            "name": "Mr. CountessdeLo Buffeled"
+          }
+        },
+        {
+          "metadata": {
+            "group": 1
+          },
+          "label": "Dragon",
+          "id": "D01_Myriel",
+          "properties": {
+            "name": "Myriel",
+            "birthDate": "02/01/0000",
+            "power": 100,
+            "gender": "female",
+            "color": "gold"
+          }
+        },
+        {
+          "metadata": {
+            "group": 1
+          },
+          "id": "H01-Dong",
+          "label": "Horse",
+          "properties": {
+            "name": "Dong",
+            "weight": 235,
+            "maxSpeed": 48,
+            "distance": 250
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "OWN_P03D01",
+          "source": "P03_CountessdeLo",
+          "target": "D01_Myriel",
+          "label": "Own",
+          "metadata": {
+            "value": 1
+          },
+          "properties": {
+            "startDate": "01/01/1773"
+          }
+
+        },
+        {
+          "id": "OWN_P03H01",
+          "source": "P03_CountessdeLo",
+          "target": "H01-Dong",
+          "label": "Own",
+          "metadata": {
+            "value": 1
+          },
+          "properties": {
+            "startDate": "21/11/1870"
+          }
+
+        }
+     ]
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "assignments" : [
+    {
+      "nodes": [
+        {
+          "metadata": {
+            "group": 1
+          },
+          "id": "P02_Mlle.Baptistine",
+          "label": "Person",
+          "properties": {
+            "firstName": "Mlle",
+            "lastName": "Baptistine",
+            "gender": "male",
+            "birthDate": "1/2/1723",
+            "deathDate": "11/12/1783",
+            "height": "178",
+            "name": "Mr. Mlle.Baptistine"
+          }
+        },
+        {
+          "metadata": {
+            "group": 1
+          },
+          "id": "P03_CountessdeLo",
+          "label": "Person",
+          "properties": {
+            "firstName": "CountessdeLo",
+            "lastName": "Buffeled",
+            "gender": "male",
+            "birthDate": "12/22/1599",
+            "deathDate": "5/3/1683",
+            "height": "148",
+            "name": "Mr. CountessdeLo Buffeled"
+          }
+        },
+        {
+          "metadata": {
+            "group": 1
+          },
+          "id": "K01-North",
+          "label": "Kingdom",
+          "properties": {
+            "name": "North",
+            "king": "George",
+            "independenceDay" : "1/1/1850",
+            "funds": 250000
+          }
+        },
+        {
+          "metadata": {
+            "group": 1
+          },
+          "id": "G01-masons",
+          "label": "Guild",
+          "properties": {
+            "name": "masons",
+            "description": "There were several types of guilds, including the two main categories of merchant guilds and craft guilds[4] but also the frith guild and religious guild.[5] Guilds arose beginning in the High Middle Ages as craftsmen united to protect their common interests. In the German city of Augsburg craft guilds are mentioned in the Towncharter of 1156.[6]",
+            "establishDate": "30/6/1020"
+          }
+        }
+     ],
+      "edges": [
+        {
+          "id": "KNOW_P03P02",
+          "source": "P03_CountessdeLo",
+          "target": "P02_Mlle.Baptistine",
+          "label": "Know",
+          "metadata": {
+            "value": 1
+          },
+          "properties": {
+            "startDate": "1/11/1800"
+          }
+
+        },
+        {
+          "id": "MEMB_P03G01",
+          "source": "P03_CountessdeLo",
+          "target": "G01-masons",
+          "label": "MemberOf",
+          "metadata": {
+            "value": 1
+          },
+          "properties": {
+            "startDate": "12/12/1758",
+            "endDate": "12/12/1759"
+          }
+
+        },
+        {
+          "id": "SUBJECT_P03K01",
+          "source": "P02_Mlle.Baptistine",
+          "target": "K01-North",
+          "label": "SubjectOf",
+          "metadata": {
+            "value": 1
+          },
+          "properties": {
+            "startDate": "12/10/1743"
+          }
+        }
+     ]
+    }
+  ]
+}

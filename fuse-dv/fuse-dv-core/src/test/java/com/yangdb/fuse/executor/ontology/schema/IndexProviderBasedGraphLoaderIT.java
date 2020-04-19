@@ -1,7 +1,7 @@
 package com.yangdb.fuse.executor.ontology.schema;
 
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
-import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
+import com.yangdb.fuse.executor.ontology.schema.load.LogicalGraphTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.IndexProviderBasedGraphLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
@@ -46,7 +46,7 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
 
         String[] indices = StreamSupport.stream(nestedSchema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
-        EntityTransformer transformer = new EntityTransformer(config, ontologyProvider,nestedProviderIfc, nestedSchema, idGeneratorDriver, client);
+        LogicalGraphTransformer transformer = new LogicalGraphTransformer(config, ontologyProvider,nestedProviderIfc, nestedSchema, idGeneratorDriver, client);
 
         Assert.assertEquals(19,indices.length);
 
@@ -83,7 +83,7 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
 
         String[] indices = StreamSupport.stream(nestedSchema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
-        EntityTransformer transformer = new EntityTransformer(config, ontologyProvider,nestedProviderIfc, nestedSchema, idGeneratorDriver, client);
+        LogicalGraphTransformer transformer = new LogicalGraphTransformer(config, ontologyProvider,nestedProviderIfc, nestedSchema, idGeneratorDriver, client);
 
         Assert.assertEquals(19,indices.length);
 

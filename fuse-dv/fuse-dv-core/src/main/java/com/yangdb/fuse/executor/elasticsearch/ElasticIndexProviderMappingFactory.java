@@ -55,9 +55,9 @@ public class ElasticIndexProviderMappingFactory {
     public static final String ENTITY_A = "entityA";
     public static final String ENTITY_B = "entityB";
     public static final String PROPERTIES = "properties";
-    public static final String NESTED = "nested";
-    public static final String CHILD = "child";
-    public static final String EMBEDDED = "embedded";
+    public static final MappingEntitiesFlavor CHILD = MappingEntitiesFlavor.CHILD;
+    public static final MappingEntitiesFlavor NESTED = MappingEntitiesFlavor.NESTED;
+    public static final MappingEntitiesFlavor EMBEDDED = MappingEntitiesFlavor.EMBEDDED;
 
     private Client client;
     private RawSchema schema;
@@ -245,12 +245,12 @@ public class ElasticIndexProviderMappingFactory {
 
         Map<String, Object> mapping = new HashMap<>();
         Map<String, Object> properties = new HashMap<>();
-        switch (nest.getMapping()) {
+        switch (MappingEntitiesFlavor.of(nest.getMapping())) {
             case EMBEDDED:
                 //no specific mapping here -
                 break;
             case CHILD:
-                mapping.put(TYPE, NESTED);
+                mapping.put(TYPE, NESTED.getType());
                 break;
         }
         mapping.put(PROPERTIES, properties);
@@ -273,12 +273,13 @@ public class ElasticIndexProviderMappingFactory {
 
         Map<String, Object> mapping = new HashMap<>();
         Map<String, Object> properties = new HashMap<>();
-        switch (nest.getMapping()) {
+
+        switch (MappingEntitiesFlavor.of(nest.getMapping())) {
             case EMBEDDED:
                 //no specific mapping here -
                 break;
             case CHILD:
-                mapping.put(TYPE, NESTED);
+                mapping.put(TYPE, NESTED.getType());
                 break;
         }
         mapping.put(PROPERTIES, properties);

@@ -7,7 +7,7 @@ import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.schema.load.DataTransformerContext;
 import com.yangdb.fuse.executor.ontology.schema.load.DocumentBuilder;
-import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
+import com.yangdb.fuse.executor.ontology.schema.load.LogicalGraphTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
@@ -15,8 +15,6 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
-import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.NestedIndexPartitions;
-import com.yangdb.test.BaseITMarker;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -28,14 +26,13 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema.getIndexPartitions;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-public class EntityTransformerTest {
+public class LogicalGraphTransformerTest {
 
     private static ObjectMapper mapper = new ObjectMapper();
     private static IndexProvider provider;
@@ -112,7 +109,7 @@ public class EntityTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        EntityTransformer transformer = new EntityTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        LogicalGraphTransformer transformer = new LogicalGraphTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/LogicalDragonsGraph.json");
         LogicalGraphModel graphModel = mapper.readValue(stream, LogicalGraphModel.class);
         DataTransformerContext<LogicalGraphModel> transform = transformer.transform(graphModel, GraphDataLoader.Directive.INSERT);

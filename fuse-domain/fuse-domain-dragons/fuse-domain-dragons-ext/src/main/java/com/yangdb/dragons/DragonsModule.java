@@ -32,7 +32,7 @@ import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.dispatcher.ontology.DirectoryIndexProvider;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
-import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
+import com.yangdb.fuse.executor.ontology.schema.load.LogicalGraphTransformer;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import org.jooby.Env;
@@ -48,7 +48,7 @@ public class DragonsModule extends ModuleBase {
         binder.bindConstant().annotatedWith(named(BasicIdGenerator.indexNameParameter)).to(indexName);
         binder.bind(IndexProviderIfc.class).toInstance(getIndexProvider(conf));
         binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>() {}).to(BasicIdGenerator.class).asEagerSingleton();
-        binder.bind(EntityTransformer.class);
+        binder.bind(LogicalGraphTransformer.class);
 
         Multibinder<CompositeCursorFactory.Binding> bindingMultibinder = Multibinder.newSetBinder(binder, CompositeCursorFactory.Binding.class);
         bindingMultibinder.addBinding().toInstance(new CompositeCursorFactory.Binding(

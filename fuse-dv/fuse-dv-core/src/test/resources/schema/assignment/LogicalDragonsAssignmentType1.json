@@ -1,0 +1,66 @@
+{
+  "assignments" : [
+    {
+      "nodes": [
+        {
+          "metadata": {
+            "group": 2
+          },
+          "label": "Dragon",
+          "id": "D02_Kolbert",
+          "properties": {
+            "name": "Kolbert",
+            "birthDate": "02/01/0400",
+            "power": 200,
+            "gender": "male",
+            "color": "silver"
+          }
+        },
+        {
+          "metadata": {
+            "group": 1
+          },
+          "label": "Dragon",
+          "id": "D03_Neptun",
+          "properties": {
+            "name": "Neptun",
+            "birthDate": "02/01/1300",
+            "power": 50,
+            "gender": "male",
+            "color": "blue"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "FIRE_D02D03",
+          "source": "D02_Kolbert",
+          "target": "D03_Neptun",
+          "label": "Fire",
+          "metadata": {
+            "value": 1
+          },
+          "properties": {
+            "date": "1/1/1778",
+            "temperature": 500
+          }
+
+        },
+        {
+          "id": "FREEZ_D03D02",
+          "source": "D03_Neptun",
+          "target": "D02_Kolbert",
+          "label": "Freeze",
+          "metadata": {
+            "value": 1
+          },
+          "properties": {
+            "date": "1/1/779",
+            "temperature": -100
+          }
+
+        }
+      ]
+    }
+  ]
+}

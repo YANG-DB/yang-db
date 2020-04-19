@@ -41,7 +41,7 @@ import java.util.*;
         @JsonSubTypes.Type(name = "Assignment", value = AssignmentCount.class)})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Assignment<E extends Vertex,R extends Edge> {
+public class Assignment<E extends Vertex,R extends Edge> implements AssignmentIfc<E, R> {
     //region Constructors
     public Assignment() {
         this.entities = Collections.emptyList();
@@ -50,7 +50,8 @@ public class Assignment<E extends Vertex,R extends Edge> {
     //endregion
 
     //region Properties
-    public List<R> getRelationships ()
+    @Override
+    public List<R> getRelationships()
     {
         return relationships;
     }
@@ -60,7 +61,8 @@ public class Assignment<E extends Vertex,R extends Edge> {
         this.relationships = relationships;
     }
 
-    public List<E> getEntities ()
+    @Override
+    public List<E> getEntities()
     {
         return entities;
     }
