@@ -10,6 +10,7 @@ import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
@@ -164,6 +165,7 @@ public class KnowledgeWriterContext {
 
     private static <T extends KnowledgeDomainBuilder> int process(KnowledgeWriterContext ctx, String index, int count, BulkRequestBuilder bulk, List<T> builders) throws JsonProcessingException {
         populateBulk(bulk, index, ctx, (List<KnowledgeDomainBuilder>) builders);
+        bulk.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
         builders.forEach(builder -> {
             try {
                 populateBulk(bulk, index, ctx, builder.additional());

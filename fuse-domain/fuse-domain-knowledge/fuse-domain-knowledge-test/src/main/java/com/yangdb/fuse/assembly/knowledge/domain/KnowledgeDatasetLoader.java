@@ -45,6 +45,7 @@ import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequ
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -612,6 +613,7 @@ public class KnowledgeDatasetLoader {
         on.put("creationTime", _elements.get(idx).get("creationTime").asText());
         bulk.add(client.prepareIndex().setIndex(aIndex).setType(cIndexType).setId(relationId + ".out")
                 .setOpType(IndexRequest.OpType.INDEX).setRouting(aLogicalId)
+                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                 .setSource(_mapper.writeValueAsString(on), XContentType.JSON));
 
         on = _mapper.createObjectNode();
@@ -632,6 +634,7 @@ public class KnowledgeDatasetLoader {
         on.put("creationTime", _elements.get(idx).get("creationTime").asText());
         bulk.add(client.prepareIndex().setIndex(bIndex).setType(cIndexType).setId(relationId + ".in")
                 .setOpType(IndexRequest.OpType.INDEX).setRouting(bLogicalId)
+                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                 .setSource(_mapper.writeValueAsString(on), XContentType.JSON));
     }
 
@@ -715,9 +718,11 @@ public class KnowledgeDatasetLoader {
             if (setRouting) {
                 bulk.add(client.prepareIndex().setIndex(currIndex).setType(cIndexType).setId(currIndexId)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                        .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                         .setSource(_mapper.writeValueAsString(_elements.get(i)), XContentType.JSON));
             } else {
                 bulk.add(client.prepareIndex().setIndex(currIndex).setType(cIndexType).setId(currIndexId)
+                        .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                         .setOpType(IndexRequest.OpType.INDEX)
                         .setSource(_mapper.writeValueAsString(_elements.get(i)), XContentType.JSON));
             }

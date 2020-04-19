@@ -31,6 +31,7 @@ import javaslang.collection.Stream;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
@@ -511,6 +512,7 @@ public class KnowledgeDataInfraManager  {
 
             bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId(insightId)
                     .setOpType(IndexRequest.OpType.INDEX)
+                    .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .setSource(_insights.get(i-1), XContentType.JSON));
         }
 
@@ -525,6 +527,7 @@ public class KnowledgeDataInfraManager  {
 
             bulk.add(client.prepareIndex().setIndex(logicalEntityIndex).setType(cIndexType).setId(logicalEntId + "." + insightId)
                     .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalEntId)
+                    .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .setSource(_insightsEntities.get(i), XContentType.JSON));
         }
         bulk.execute();
@@ -536,7 +539,9 @@ public class KnowledgeDataInfraManager  {
             String referenceId = "ref" + String.format(configManager.getSchema().getIdFormat(cReference), j);
             String index = Stream.ofAll(configManager.getSchema().getPartitions(cReference)).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                     .filter(partition -> partition.isWithin(referenceId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-            bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setOpType(IndexRequest.OpType.INDEX).setId(referenceId).setSource(_references.get(j-1), XContentType.JSON)).get();
+            bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType)
+                    .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                    .setOpType(IndexRequest.OpType.INDEX).setId(referenceId).setSource(_references.get(j-1), XContentType.JSON)).get();
         }
         bulk.execute();
     }
@@ -551,6 +556,7 @@ public class KnowledgeDataInfraManager  {
                     .setType(PGE)
                     .setId(mylogicalId + "." + "context1")
                     .setOpType(IndexRequest.OpType.INDEX)
+                    .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .setRouting(mylogicalId)
                     .setSource(entities.get(i), XContentType.JSON);
             bulk.add(request).get();
@@ -572,6 +578,7 @@ public class KnowledgeDataInfraManager  {
             String logicalId = "e" + String.format(configManager.getSchema().getIdFormat(ENTITY), evalues.get(i-1));
             bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setId("ev" + i)
                     .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                    .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .setSource(_entitiesValues.get(i-1), XContentType.JSON)).get();
         }
         bulk.execute();
@@ -598,15 +605,19 @@ public class KnowledgeDataInfraManager  {
 
             bulk.add(client.prepareIndex().setIndex(personIndex1).setType(cIndexType).setId(relationIdString + ".out")
                     .setOpType(IndexRequest.OpType.INDEX).setRouting(personLogicalId1)
+                    .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .setSource(_outRelations.get(i), XContentType.JSON));
             bulk.add(client.prepareIndex().setIndex(personIndex2).setType(cIndexType).setId(relationIdString + ".in")
                     .setOpType(IndexRequest.OpType.INDEX).setRouting(personLogicalId2)
+                    .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .setSource(_inRelations.get(i), XContentType.JSON));
             bulk.add(client.prepareIndex().setIndex(relationIndex).setType(cIndexType).setId(relationIdString)
                     .setOpType(IndexRequest.OpType.INDEX)
+                    .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .setSource(_relations.get(i), XContentType.JSON));
             bulk.add(client.prepareIndex().setIndex(relationIndex).setType(cIndexType).setId("rv" + i)
                     .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
+                    .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .setSource(_relationValues.get(i), XContentType.JSON));
         }
 

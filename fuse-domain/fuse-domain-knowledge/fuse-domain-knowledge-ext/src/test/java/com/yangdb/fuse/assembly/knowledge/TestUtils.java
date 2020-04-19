@@ -6,6 +6,7 @@ import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 
 import java.text.SimpleDateFormat;
@@ -19,7 +20,7 @@ public abstract class TestUtils {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-    public static long randomDataGenerator(Client client,RawSchema schema) {
+    public static long randomDataGenerator(Client client, RawSchema schema) {
         long count = 0;
         int currentEntityLogicalId = 0;
         int evalueId = 0;
@@ -142,6 +143,8 @@ public abstract class TestUtils {
                 "wise man therefore always holds in these matters to this principle of selection:");
 
         BulkRequestBuilder bulk = client.prepareBulk();
+        bulk.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
+
         for (int refId = 0; refId < 400; refId++) {
             String referenceId = "ref" + String.format(schema.getIdFormat("reference"), refId);
             String index = Stream.ofAll(schema.getPartitions("reference")).map(partition -> (IndexPartitions.Partition.Range<String>) partition)

@@ -20,6 +20,7 @@ import javaslang.collection.Stream;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 
@@ -58,6 +59,7 @@ public class KnowledgeAutomationFunctions {
 
         entities.add(mapper.writeValueAsString(on));
         BulkRequestBuilder bulk = client.prepareBulk();
+        bulk.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
         // Insert knowledge entity directly to elastic
         insertEntities(INDEX,context, manager.getSchema(), client, bulk, entities);
         return logicalId+"."+context;
@@ -66,6 +68,7 @@ public class KnowledgeAutomationFunctions {
     static public int CreateKnowledgeReference(KnowledgeConfigManager manager, BaseFuseElasticClient client, int refNum) {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         BulkRequestBuilder bulk = client.prepareBulk();
+        bulk.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
         RawSchema schema = manager.getSchema();
         for (int refId = 0; refId < refNum; refId++) {
             String referenceId = "ref" + String.format(schema.getIdFormat("reference"), refId + 1);
@@ -93,6 +96,7 @@ public class KnowledgeAutomationFunctions {
     static public int CreateKnowledgeFile(BaseFuseElasticClient client, String fileId, String logicalId, String entityId, int filedNum) {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         BulkRequestBuilder bulk = client.prepareBulk();
+        bulk.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
         for (int refId = 0; refId < filedNum; refId++) {
             bulk.add(client.prepareIndex().setIndex(INDEX).setType("pge").setId(fileId)
                     .setOpType(IndexRequest.OpType.INDEX)

@@ -37,6 +37,7 @@ import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 
@@ -87,6 +88,7 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
     @Override
     public LoadResponse<String, FuseError> load(LogicalGraphModel root, Directive directive) {
         BulkRequestBuilder bulk = client.prepareBulk();
+        bulk.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
         Response upload = new Response("Upload");
         DataTransformerContext<LogicalGraphModel> context = transformer.transform(root, directive);
         //load bulk requests

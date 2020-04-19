@@ -101,7 +101,6 @@ public class BasicIdGenerator implements IdGeneratorDriver<Range> {
                                 .setId(id)
                                 .setIfSeqNo(seqNo)
                                 .setIfPrimaryTerm(primaryTerm)
-                                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                                 .setSource(newValue)
                                 .get();
 

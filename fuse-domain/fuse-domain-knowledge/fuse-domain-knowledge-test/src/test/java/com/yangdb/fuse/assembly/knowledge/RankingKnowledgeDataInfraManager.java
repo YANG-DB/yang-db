@@ -23,6 +23,7 @@ import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateReque
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
@@ -432,17 +433,21 @@ public class RankingKnowledgeDataInfraManager {
 
     private void BulkLoadReferences() {
         BulkRequestBuilder bulk = client.prepareBulk();
+        bulk.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
+
         for(int j=1; j<=_references.size(); j++) {
             String referenceId = "ref" + String.format(schema.getIdFormat(cReference), j);
             String index = Stream.ofAll(schema.getPartitions(cReference)).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                     .filter(partition -> partition.isWithin(referenceId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-            bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType).setOpType(IndexRequest.OpType.INDEX).setId(referenceId).setSource(_references.get(j-1), XContentType.JSON)).get();
+            bulk.add(client.prepareIndex().setIndex(index).setType(cIndexType)
+                    .setOpType(IndexRequest.OpType.INDEX).setId(referenceId).setSource(_references.get(j-1), XContentType.JSON)).get();
         }
         bulk.execute();
     }
 
     private int BulkLoadEntitiesAndEntityValues() throws ExecutionException, InterruptedException {
         BulkRequestBuilder bulk = client.prepareBulk();
+        bulk.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
 
         String index = Stream.ofAll(schema.getPartitions(cEntity)).map(partition -> (IndexPartitions.Partition.Range) partition)
                 .filter(partition -> partition.isWithin(getEntityId(1))).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
