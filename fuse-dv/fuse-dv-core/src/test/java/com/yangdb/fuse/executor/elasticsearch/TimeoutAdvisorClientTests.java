@@ -32,6 +32,7 @@ public class TimeoutAdvisorClientTests extends BaseModuleInjectionTest {
     }
 
     @Test
+    @Ignore
     public void testClientNoTimeout() {
         init(new ModuleBase[]{new TestExecutorModule(100,200)});
         setup();

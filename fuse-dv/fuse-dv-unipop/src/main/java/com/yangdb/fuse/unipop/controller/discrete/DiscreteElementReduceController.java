@@ -87,7 +87,7 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
 
         SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
         SearchResponse response = searchRequest.execute().actionGet();
-        return response.getHits().getTotalHits();
+        return response.getHits().getTotalHits().value;
 
     }
 

@@ -19,19 +19,19 @@
           "knowledge_ngram_analyzer": {
             "type": "custom",
             "tokenizer": "knowledge_ngram_tokenizer",
-            "filter": [ "standard", "knowledge_stopwords","lowercase" ]
+            "filter": [  "knowledge_stopwords","lowercase" ]
           },
           "knowledge_standard_analyzer": {
             "type": "custom",
             "tokenizer": "standard",
-            "filter": [ "standard", "knowledge_stopwords" ,"lowercase"]
+            "filter": [  "knowledge_stopwords" ,"lowercase"]
           }
         },
         "tokenizer": {
           "knowledge_ngram_tokenizer": {
             "type": "ngram",
             "min_gram": "1",
-            "max_gram": "10",
+            "max_gram": "2",
             "token_chars": [ "letter", "digit", "punctuation" ]
           }
         },
@@ -46,10 +46,7 @@
   },
   "mappings": {
     "pge": {
-      "_all": {
-        "enabled": false
-      },
-      "properties": {
+"properties": {
         "type": {
           "type": "keyword"
         },

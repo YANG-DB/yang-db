@@ -1,14 +1,13 @@
 package com.yangdb.fuse.stat.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.stat.model.configuration.Field;
 import com.yangdb.fuse.stat.model.configuration.StatContainer;
 import com.yangdb.fuse.stat.model.configuration.Type;
 import com.yangdb.fuse.stat.model.histogram.Histogram;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.junit.Assert;
@@ -143,7 +142,7 @@ public class StatTestUtil {
     }
 
 
-    public static List<Map<String, Object>> getAllDocs(TransportClient client, String index, String type) {
+    public static List<Map<String, Object>> getAllDocs(BaseFuseElasticClient client, String index, String type) {
         int scrollSize = 1000;
         List<Map<String, Object>> esData = new ArrayList<>();
         SearchResponse response = null;
@@ -165,7 +164,7 @@ public class StatTestUtil {
     }
 
 
-    public static void printAllDocs(TransportClient client, String index, String type) {
+    public static void printAllDocs(BaseFuseElasticClient client, String index, String type) {
         List<Map<String, Object>> allDocs = getAllDocs(client, index, type);
         for ( Map<String, Object> doc : allDocs) {
             for (Map.Entry<String, Object> entry : doc.entrySet()) {
@@ -198,7 +197,7 @@ public class StatTestUtil {
         return histogram;
     }
 
-    public static Set<Map<String, Object>> searchByTerm(TransportClient client, String[] indices, String[] types, String field, String term) {
+    public static Set<Map<String, Object>> searchByTerm(BaseFuseElasticClient client, String[] indices, String[] types, String field, String term) {
         SearchResponse response;
         try {
             response = client.prepareSearch()

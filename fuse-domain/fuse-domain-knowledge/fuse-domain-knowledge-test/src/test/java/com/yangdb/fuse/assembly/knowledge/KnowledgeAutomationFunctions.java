@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
 import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
@@ -20,7 +21,6 @@ import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
 
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class KnowledgeAutomationFunctions {
     public static final String INDEX = "e0";
 
 
-    static public String CreateKnowledgeEntity(ObjectMapper mapper, KnowledgeConfigManager manager, TransportClient client, String type,
+    static public String CreateKnowledgeEntity(ObjectMapper mapper, KnowledgeConfigManager manager, BaseFuseElasticClient client, String type,
                                                String logicalId, String context, String category, String lastUpdateUser,
                                                String creationUser, String lastUpdateTime, String creationTime,
                                                Integer authorizationCount, ArrayNode authorizationNode, ArrayNode refsNode)
@@ -63,7 +63,7 @@ public class KnowledgeAutomationFunctions {
         return logicalId+"."+context;
     }
 
-    static public int CreateKnowledgeReference(KnowledgeConfigManager manager, TransportClient client, int refNum) {
+    static public int CreateKnowledgeReference(KnowledgeConfigManager manager, BaseFuseElasticClient client, int refNum) {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         BulkRequestBuilder bulk = client.prepareBulk();
         RawSchema schema = manager.getSchema();
@@ -90,7 +90,7 @@ public class KnowledgeAutomationFunctions {
         return count;
     }
 
-    static public int CreateKnowledgeFile(TransportClient client, String fileId, String logicalId, String entityId, int filedNum) {
+    static public int CreateKnowledgeFile(BaseFuseElasticClient client, String fileId, String logicalId, String entityId, int filedNum) {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         BulkRequestBuilder bulk = client.prepareBulk();
         for (int refId = 0; refId < filedNum; refId++) {

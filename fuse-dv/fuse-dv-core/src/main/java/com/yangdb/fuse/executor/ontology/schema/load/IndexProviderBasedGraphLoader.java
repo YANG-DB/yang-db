@@ -31,6 +31,7 @@ import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.Tuple2;
 import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -46,6 +47,7 @@ import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
@@ -91,7 +93,8 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         load(bulk, upload, context);
         //submit bulk request
         submit(bulk, upload);
-
+        RefreshResponse refreshResponse = client.admin().indices().prepareRefresh(
+                bulk.request().requests().stream().map(DocWriteRequest::index).toArray(String[]::new)).get();
         return new LoadResponseImpl().response(context.getTransformationResponse()).response(upload);
     }
 

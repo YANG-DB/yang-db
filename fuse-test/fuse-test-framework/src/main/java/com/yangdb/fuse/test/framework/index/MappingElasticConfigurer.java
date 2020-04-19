@@ -22,10 +22,10 @@ package com.yangdb.fuse.test.framework.index;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import javaslang.collection.Stream;
 import org.elasticsearch.ResourceAlreadyExistsException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
 
     //region ElasticIndexConfigurer
     @Override
-    public void configure(TransportClient client) {
+    public void configure(BaseFuseElasticClient client) {
         try {
             addMappings(client);
         } catch (IOException e) {
@@ -69,7 +69,7 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
     //endregion
 
     //region Private Methods
-    protected void addMappings(TransportClient client) throws java.io.IOException {
+    protected void addMappings(BaseFuseElasticClient client) throws java.io.IOException {
         for(String indexName : this.indices) {
             CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate(indexName);
             Map<String, Object> allMappings = (Map<String, Object>) mappings.get("mappings");
@@ -84,6 +84,8 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
             } catch (ResourceAlreadyExistsException ex) {
                 client.admin().indices().prepareDelete(indexName).execute().actionGet();
                 createIndexRequestBuilder.execute().actionGet();
+            } catch (Throwable t){
+                System.out.println(t);
             }
         }
     }

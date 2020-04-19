@@ -1,10 +1,10 @@
-package com.yangdb.fuse.model.transport;
+package com.yangdb.fuse.client.elastic;
 
 /*-
  * #%L
- * fuse-model
+ * fuse-core
  * %%
- * Copyright (C) 2016 - 2020 The YangDb Graph Database Project
+ * Copyright (C) 2016 - 2019 The Fuse Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,5 +20,9 @@ package com.yangdb.fuse.model.transport;
  * #L%
  */
 
-public abstract class MaterializeRequest {
+import org.elasticsearch.client.Client;
+
+public interface BaseFuseElasticClient extends Client {
+
+
 }

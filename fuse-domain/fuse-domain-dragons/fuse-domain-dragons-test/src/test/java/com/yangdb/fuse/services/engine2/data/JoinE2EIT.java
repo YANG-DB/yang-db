@@ -1,6 +1,7 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.execution.plan.PlanAssert;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -31,7 +32,6 @@ import com.yangdb.fuse.services.engine2.JoinE2ETestSuite;
 import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
-import com.yangdb.test.BaseITMarker;
 import com.yangdb.test.data.DragonsOntology;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.MappingFileElasticConfigurer;
@@ -41,7 +41,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.client.transport.TransportClient;
 import org.junit.*;
 
 import java.io.IOException;
@@ -64,7 +63,7 @@ import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
 @Ignore
-public class JoinE2EIT implements BaseITMarker {
+public class JoinE2EIT {
     @BeforeClass
     public static void setup() throws Exception {
         setup(JoinE2ETestSuite.elasticEmbeddedNode.getClient(), true);
@@ -76,7 +75,7 @@ public class JoinE2EIT implements BaseITMarker {
     }
 
 
-    public static void setup(TransportClient client, boolean calcStats) throws Exception {
+    public static void setup(BaseFuseElasticClient client, boolean calcStats) throws Exception {
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
@@ -192,11 +191,11 @@ public class JoinE2EIT implements BaseITMarker {
 
 
 
-    public static void cleanup(TransportClient client) throws Exception {
+    public static void cleanup(BaseFuseElasticClient client) throws Exception {
         cleanup(client, true);
     }
 
-    public static void cleanup(TransportClient client, boolean statsUsed) throws Exception {
+    public static void cleanup(BaseFuseElasticClient client, boolean statsUsed) throws Exception {
         client.admin().indices()
                 .delete(new DeleteIndexRequest(
                         DragonsOntology.PERSON.name.toLowerCase(),

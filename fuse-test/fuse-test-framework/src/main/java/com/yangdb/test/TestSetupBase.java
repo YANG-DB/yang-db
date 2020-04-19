@@ -20,9 +20,9 @@ package com.yangdb.test;
  * #L%
  */
 
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import org.elasticsearch.client.transport.TransportClient;
 
 public abstract class TestSetupBase {
     protected ElasticEmbeddedNode instance;
@@ -37,6 +37,6 @@ public abstract class TestSetupBase {
     }
 
 
-    protected abstract void loadData(TransportClient client) throws Exception;
-    protected abstract void cleanData(TransportClient client);
+    protected abstract void loadData(BaseFuseElasticClient client) throws Exception;
+    protected abstract void cleanData(BaseFuseElasticClient client);
 }

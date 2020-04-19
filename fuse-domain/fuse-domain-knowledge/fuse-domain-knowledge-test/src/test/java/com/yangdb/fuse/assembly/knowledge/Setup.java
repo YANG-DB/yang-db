@@ -4,13 +4,14 @@ import com.typesafe.config.Config;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
 import com.yangdb.fuse.client.BaseFuseClient;
 import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.core.driver.BasicIdGenerator;
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
 import com.yangdb.fuse.services.FuseUtils;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import org.elasticsearch.client.transport.TransportClient;
+import org.jooby.Jooby;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -25,35 +26,35 @@ public abstract class Setup {
     public static ElasticEmbeddedNode elasticEmbeddedNode = null;
     public static KnowledgeConfigManager manager = null;
     public static FuseClient fuseClient = null;
-    public static TransportClient client = null;
+    public static BaseFuseElasticClient client = null;
 
     public static void setup() throws Exception {
         setup(true);
     }
 
     public static void setup(boolean embedded) throws Exception {
-        setup(embedded, true);
+        setup(embedded,true);
     }
 
     public static void setup(boolean embedded, boolean init) throws Exception {
-        init(embedded, init, true);
+        init(embedded,init,true);
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
     }
 
-    public static void setup(boolean embedded, boolean init, boolean startFuse) throws Exception {
-        init(embedded, init, startFuse);
+    public static void setup(boolean embedded, boolean init,boolean startFuse) throws Exception {
+        init(embedded,init,startFuse);
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
     }
 
     public static void setup(boolean embedded, boolean init, boolean startFuse, FuseClient givenFuseClient) throws Exception {
-        init(embedded, init, startFuse);
+        init(embedded,init,startFuse);
         //set fuse client
         fuseClient = givenFuseClient;
     }
 
     private static void init(boolean embedded, boolean init, boolean startFuse) throws Exception {
         // Start embedded ES
-        if (embedded) {
+        if(embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("knowledge");
             client = elasticEmbeddedNode.getClient();
             try {

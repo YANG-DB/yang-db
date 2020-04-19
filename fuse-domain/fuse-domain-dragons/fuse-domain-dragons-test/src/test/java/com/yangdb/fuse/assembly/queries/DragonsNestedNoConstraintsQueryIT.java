@@ -40,15 +40,19 @@ public class DragonsNestedNoConstraintsQueryIT implements BaseITMarker {
 //        Setup.setup();
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+
     }
 
     @AfterClass
-    public static void after() {
+    public static void after() throws InterruptedException {
 //        Setup.cleanup();
+
+
     }
 
     @Test
-    public void testLoadLogicalGraph() throws IOException, URISyntaxException {
+    public void testLoadLogicalGraph() throws IOException, URISyntaxException, InterruptedException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Assert.assertNotNull(fuseResourceInfo);
 

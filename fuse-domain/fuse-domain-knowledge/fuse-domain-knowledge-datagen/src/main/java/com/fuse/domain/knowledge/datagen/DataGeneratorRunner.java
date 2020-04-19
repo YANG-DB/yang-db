@@ -27,14 +27,13 @@ import com.fuse.domain.knowledge.datagen.model.Entity;
 import com.fuse.domain.knowledge.datagen.model.KnowledgeEntityBase;
 import com.fuse.domain.knowledge.datagen.model.Reference;
 import com.fuse.domain.knowledge.datagen.model.Relation;
+import com.yangdb.fuse.client.elastic.TransportFuseElasticClient;
 import com.yangdb.fuse.unipop.controller.search.DefaultSearchOrderProvider;
 import com.yangdb.fuse.unipop.converter.SearchHitScrollIterable;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -577,7 +576,7 @@ public class DataGeneratorRunner {
                 .put("client.transport.ignore_cluster_name", true)
                 .build();
 
-        TransportClient client = new PreBuiltTransportClient(settings);
+        TransportFuseElasticClient client = new TransportFuseElasticClient(settings);
         elasticConfiguration.getHosts().forEach(host -> {
             try {
                 client.addTransportAddress(new TransportAddress(InetAddress.getByName(host), 9300));

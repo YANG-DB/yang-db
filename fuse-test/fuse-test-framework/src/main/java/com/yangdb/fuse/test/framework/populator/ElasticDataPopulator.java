@@ -20,6 +20,7 @@ package com.yangdb.fuse.test.framework.populator;
  * #L%
  */
 
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.test.framework.providers.GenericDataProvider;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -27,7 +28,6 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.WriteRequest;
-import org.elasticsearch.client.transport.TransportClient;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,7 +38,7 @@ import java.util.Map;
  * Created by moti on 3/12/2017.
  */
 public class ElasticDataPopulator implements DataPopulator {
-    private TransportClient client;
+    private BaseFuseElasticClient client;
     private String indexName;
     private String docType;
     private String idField;
@@ -48,12 +48,12 @@ public class ElasticDataPopulator implements DataPopulator {
     private GenericDataProvider provider;
     private static int BULK_SIZE = 10000;
 
-    public ElasticDataPopulator(TransportClient client, String indexName, String docType, String idField, GenericDataProvider provider) {
+    public ElasticDataPopulator(BaseFuseElasticClient client, String indexName, String docType, String idField, GenericDataProvider provider) {
         this(client, indexName, docType, idField, true, null, true, provider);
     }
 
     public ElasticDataPopulator(
-            TransportClient client,
+            BaseFuseElasticClient client,
             String indexName,
             String docType,
             String idField,

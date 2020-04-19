@@ -1,6 +1,7 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.services.TestsConfiguration;
 import com.yangdb.fuse.services.engine2.NonRedundantTestSuite;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
@@ -44,7 +45,7 @@ import static org.mockito.Mockito.when;
  * Created by Elad on 4/25/2017.
  */
 public class PromiseEdgeIT implements BaseITMarker {
-    static TransportClient client;
+    static BaseFuseElasticClient client;
     static ElasticGraphConfiguration configuration;
     static UniGraph graph;
     static MetricRegistry registry;

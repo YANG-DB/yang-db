@@ -25,13 +25,13 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.IOUtils;
-import org.elasticsearch.common.xcontent.DeprecationHandler;
-import org.elasticsearch.common.xcontent.NamedXContentRegistry;
-import org.elasticsearch.common.xcontent.XContentLocation;
-import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.common.CheckedFunction;
+import org.elasticsearch.common.xcontent.*;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class FuseJsonXContentParser extends AbstractFuseXContentParser {
 
@@ -69,19 +69,24 @@ public class FuseJsonXContentParser extends AbstractFuseXContentParser {
         return convertNumberType(parser.getNumberType());
     }
 
-    @Override
-    public boolean isBooleanValueLenient() throws IOException {
-        return interpretedAsLenient;
-    }
-
-    @Override
-    public boolean booleanValueLenient() throws IOException {
-        return false;
-    }
+//    @Override
+//    public boolean isBooleanValueLenient() throws IOException {
+//        return interpretedAsLenient;
+//    }
+//
+//    @Override
+//    public boolean booleanValueLenient() throws IOException {
+//        return false;
+//    }
 
     @Override
     public String currentName() throws IOException {
         return parser.getCurrentName();
+    }
+
+    @Override
+    public <T> Map<String, T> map(Supplier<Map<String, T>> supplier, CheckedFunction<XContentParser, T, IOException> checkedFunction) throws IOException {
+        return null;
     }
 
     @Override

@@ -25,6 +25,9 @@ package com.yangdb.fuse.client;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.typesafe.config.Config;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
+import com.yangdb.fuse.client.elastic.TransportFuseElasticClient;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -34,17 +37,14 @@ import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
-import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -84,7 +84,7 @@ public class SnifferFuseClient implements FuseClient{
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    private Client client;
+    private BaseFuseElasticClient client;
     private LoadingCache<String, FuseClient>  fuseClients;
     private Map<String,Map> nodeStats;
     private ElasticGraphConfiguration configuration;
@@ -371,12 +371,12 @@ public class SnifferFuseClient implements FuseClient{
         return configuration;
     }
 
-    private static Client getClient(ElasticGraphConfiguration configuration) {
+    private static BaseFuseElasticClient getClient(ElasticGraphConfiguration configuration) {
         Settings settings = Settings.builder()
                 .put("cluster.name", configuration.getClusterName())
                 .put("client.transport.ignore_cluster_name", configuration.isClientTransportIgnoreClusterName())
                 .build();
-        TransportClient client = new PreBuiltTransportClient(settings);
+        TransportFuseElasticClient client = new TransportFuseElasticClient(settings);
         configuration.getClusterHosts().forEach(host -> {
             try {
                 client.addTransportAddress(new TransportAddress(InetAddress.getByName(String.valueOf(host)), configuration.getClusterPort()));

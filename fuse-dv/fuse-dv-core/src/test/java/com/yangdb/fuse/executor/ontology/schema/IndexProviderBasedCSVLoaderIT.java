@@ -66,7 +66,7 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
         SearchRequestBuilder builder = client.prepareSearch();
         builder.setIndices("dragons*");
         SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
-        Assert.assertEquals(3,resp.getHits().getTotalHits());
+        Assert.assertEquals(3,resp.getHits().getTotalHits().value);
 
     }
     @Test
@@ -95,7 +95,7 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
         SearchRequestBuilder builder = client.prepareSearch();
         builder.setIndices("idx_fire*");
         SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
-        Assert.assertEquals(4,resp.getHits().getTotalHits());
+        Assert.assertEquals(4,resp.getHits().getTotalHits().value);
 
     }
 }

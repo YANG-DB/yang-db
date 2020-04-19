@@ -34,12 +34,15 @@ public class DragonsSimpleNoConstraintsQueryIT implements BaseITMarker {
     @BeforeClass
     public static void setup() throws Exception {
 //        Setup.setup();
+        Thread.sleep(3000);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     @AfterClass
-    public static void after() {
+    public static void after() throws InterruptedException {
 //        Setup.cleanup();
+        Thread.sleep(3000);
+
     }
 
     @Test

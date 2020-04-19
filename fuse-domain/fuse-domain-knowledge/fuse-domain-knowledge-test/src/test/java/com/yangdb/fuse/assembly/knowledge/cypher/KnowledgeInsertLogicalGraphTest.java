@@ -149,8 +149,8 @@ public class KnowledgeInsertLogicalGraphTest {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         String query = "Match (e:Entity)-[rHasEv:hasEvalue]->(ev:Evalue {stringValue: 'Myriel'}),  " +
-                              "(e:Entity)-[rHasRel:hasRelation]->(rel:Relation) "+
-                              " Return *";
+                "(e:Entity)-[rHasRel:hasRelation]->(rel:Relation) "+
+                " Return *";
 
 
         // get Query URL
@@ -183,8 +183,8 @@ public class KnowledgeInsertLogicalGraphTest {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         String query =
                 "Match (e1:Entity)-[r1:relatedEntity]->(e2:Entity), " +
-                " (e2:Entity)-[r2:relatedEntity]->(e3:Entity) " +
-                " Return *";
+                        " (e2:Entity)-[r2:relatedEntity]->(e3:Entity) " +
+                        " Return *";
 
 
         // get Query URL
@@ -217,9 +217,9 @@ public class KnowledgeInsertLogicalGraphTest {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         String query =
                 "Match (e1:Entity)-[r1:relatedEntity]->(e2:Entity), " +
-                " (e2:Entity)-[r2:relatedEntity]->(e3:Entity), " +
-                " (e3:Entity)-[r3:relatedEntity]->(e4:Entity) " +
-                " Return *";
+                        " (e2:Entity)-[r2:relatedEntity]->(e3:Entity), " +
+                        " (e3:Entity)-[r3:relatedEntity]->(e4:Entity) " +
+                        " Return *";
 
 
         // get Query URL
@@ -247,9 +247,9 @@ public class KnowledgeInsertLogicalGraphTest {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         String query =
                 "Match (e1:Entity)-[r1:relatedEntity]->(e2:Entity), " +
-                " (e2:Entity)-[r2:relatedEntity]->(e3:Entity), " +
-                " (e3:Entity)-[r3:relatedEntity]->(e4:Entity) " +
-                " Return *";
+                        " (e2:Entity)-[r2:relatedEntity]->(e3:Entity), " +
+                        " (e3:Entity)-[r3:relatedEntity]->(e4:Entity) " +
+                        " Return *";
 
 
         // get Query URL
@@ -276,10 +276,10 @@ public class KnowledgeInsertLogicalGraphTest {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         String query =
                 "Match (e1:Entity)-[r1:relatedEntity]->(e2:Entity), " +
-                " (e1:Entity)-[rv:hasEvalue]->(ev:Evalue {stringValue: 'Myriel'}), " +
-                " (e2:Entity)-[r2:relatedEntity]->(e3:Entity), " +
-                " (e3:Entity)-[r3:relatedEntity]->(e4:Entity) " +
-                " Return *";
+                        " (e1:Entity)-[rv:hasEvalue]->(ev:Evalue {stringValue: 'Myriel'}), " +
+                        " (e2:Entity)-[r2:relatedEntity]->(e3:Entity), " +
+                        " (e3:Entity)-[r3:relatedEntity]->(e4:Entity) " +
+                        " Return *";
 
 
         // get Query URL
@@ -306,8 +306,8 @@ public class KnowledgeInsertLogicalGraphTest {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         String query =
                 "Match (e1:Entity)-[r1:relatedEntity]->(e2:Entity), " +
-                " (e1:Entity)-[rv:hasEvalue]->(ev:Evalue {stringValue: 'Myriel'}) " +
-                " Return *";
+                        " (e1:Entity)-[rv:hasEvalue]->(ev:Evalue {stringValue: 'Myriel'}) " +
+                        " Return *";
 
         // get Query URL
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, KNOWLEDGE);

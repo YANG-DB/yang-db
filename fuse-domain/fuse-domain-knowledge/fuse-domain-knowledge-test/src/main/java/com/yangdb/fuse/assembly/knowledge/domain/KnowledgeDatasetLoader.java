@@ -27,11 +27,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.yangdb.fuse.executor.ontology.schema.RawSchema;
-import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
+import com.yangdb.fuse.client.elastic.TransportFuseElasticClient;
+import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -43,11 +45,9 @@ import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequ
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,7 @@ public class KnowledgeDatasetLoader {
     private final String cEntityValue = "e.value";
     private final String cInsight = "insight";
 
-    private TransportClient client;
+    private BaseFuseElasticClient client;
     private SimpleDateFormat sdf;
     private Config conf;
     private RawSchema schema;
@@ -105,10 +105,10 @@ public class KnowledgeDatasetLoader {
     public void client_connect() {
         Settings settings = Settings.builder().put("cluster.name", conf.getConfig("elasticsearch").getString("cluster_name")).build();
         int port = conf.getConfig("elasticsearch").getInt("port");
-        client = new PreBuiltTransportClient(settings);
+        TransportFuseElasticClient client = new TransportFuseElasticClient(settings);
         conf.getConfig("elasticsearch").getList("hosts").unwrapped().forEach(host -> {
             try {
-                client.addTransportAddress(new TransportAddress(InetAddress.getByName(host.toString()), port));
+                this.client = client.addTransportAddress(new TransportAddress(InetAddress.getByName(host.toString()), port));
             } catch (UnknownHostException e) {
                 logger.error(e.getMessage(), e);
             }

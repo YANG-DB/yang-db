@@ -32,6 +32,7 @@ import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -264,7 +265,7 @@ public class KnowledgeWriterContext {
 
         }
         Set<String> indices = Arrays.stream(bulk.get().getItems()).map(BulkItemResponse::getIndex).collect(Collectors.toSet());
-        client.admin().indices().prepareRefresh(indices.toArray(new String[0])).get();
+        RefreshResponse refreshResponse = client.admin().indices().prepareRefresh(indices.toArray(new String[0])).get();
         return response;
 
     }

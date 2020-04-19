@@ -32,6 +32,6 @@ public class DragonsE2EWithNonRedundantEpbTestSuite implements BaseSuiteMarker {
     @AfterClass
     public static void tearDown() throws Exception {
         System.out.println("DragonsE2EWithNonRedundantEpbTestSuite - teardown");
-//        Setup.cleanup();
+        Setup.cleanup();
     }
 }

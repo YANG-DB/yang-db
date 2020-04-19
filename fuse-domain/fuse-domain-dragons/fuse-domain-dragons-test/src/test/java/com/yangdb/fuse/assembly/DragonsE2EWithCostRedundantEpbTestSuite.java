@@ -6,6 +6,7 @@ import com.yangdb.fuse.assembly.queries.DragonsSimpleConstraintsQueryIT;
 import com.yangdb.fuse.assembly.queries.DragonsSimpleNoConstraintsQueryIT;
 import com.yangdb.fuse.assembly.queries.DragonsSimpleFileUploadIT;
 import com.yangdb.test.BaseSuiteMarker;
+import com.yangdb.test.SleepySuite;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -13,13 +14,14 @@ import org.junit.runners.Suite;
 
 import java.nio.file.Paths;
 
-@RunWith(Suite.class)
+@RunWith(SleepySuite.class)
 @Suite.SuiteClasses({
         DragonsSimpleFileUploadIT.class,
         DragonsSimpleNoConstraintsQueryIT.class,
         DragonsSimpleConstraintsQueryIT.class,
         DragonsNestedNoConstraintsQueryIT.class
 })
+@SleepySuite.SleepSec(2)
 public class DragonsE2EWithCostRedundantEpbTestSuite implements BaseSuiteMarker {
 
     @BeforeClass

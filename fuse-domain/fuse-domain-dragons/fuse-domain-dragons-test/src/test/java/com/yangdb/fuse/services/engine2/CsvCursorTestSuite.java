@@ -1,5 +1,6 @@
 package com.yangdb.fuse.services.engine2;
 
+import com.yangdb.fuse.assembly.Setup;
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
 import com.yangdb.fuse.services.engine2.data.CsvCursorIT;
@@ -22,33 +23,21 @@ import java.nio.file.Paths;
         CsvCursorIT.class
 })
 public class CsvCursorTestSuite implements BaseSuiteMarker {
-
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("CsvCursorTestSuite start");
-        start = System.currentTimeMillis();
-
-//        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("Dragons");
-
-        app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.M2.discrete.conf").toString()), "m2.smartEpb");
-
-        app.start("server.join=false");
+        Setup.withPath(Paths.get("src", "test", "conf", "application.engine2.dev.M2.discrete.conf"));
+        Setup.activeProfile("m2.smartEpb");
+        Setup.setup();
     }
 
     @AfterClass
-    public static void cleanup() throws Exception {
-        if (app != null) {
-            app.stop();
-        }
-
-        long elapsed = System.currentTimeMillis() - start;
-        System.out.println("CsvCursorTestSuite elapsed: " + elapsed);
+    public static void tearDown() throws Exception {
+        System.out.println("CsvCursorTestSuite - teardown");
+        Setup.cleanup();
     }
 
-    //region Fields
-    private static long start;
-    private static Jooby app;
+
     public static ElasticEmbeddedNode elasticEmbeddedNode;
     //endregion
 }

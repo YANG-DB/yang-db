@@ -9,6 +9,7 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
+import org.apache.lucene.search.TotalHits;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -59,7 +60,7 @@ public class PromisePromiseElementVertexControllerTest {
 
         //mock response with 2 layers of aggregations
         SearchResponse responseMock = mock(SearchResponse.class);
-        SearchHits hitsMock = new SearchHits(new SearchHit[] {},10,10l );
+        SearchHits hitsMock = new SearchHits(new SearchHit[] {},new TotalHits(10, TotalHits.Relation.GREATER_THAN_OR_EQUAL_TO),10l );
         when(responseMock.getHits()).thenReturn(hitsMock);
 
         Terms.Bucket destBucket = mock(Terms.Bucket.class);

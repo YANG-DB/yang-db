@@ -133,11 +133,11 @@
         <caffeine.version>2.6.2</caffeine.version>
 
         <!-- elasticsearch -->
-        <elasticsearch.version>6.5.4</elasticsearch.version>
-        <elasticsearch.client.version>6.5.4</elasticsearch.client.version>
+        <elasticsearch.version>7.3.1</elasticsearch.version>
+        <elasticsearch.client.version>7.3.1</elasticsearch.client.version>
 
         <!-- lucene -->
-        <lucene.version>7.5.0</lucene.version>
+<!--        <lucene.version>7.5.0</lucene.version>-->
 
         <!-- vividsolutions -->
         <vividsolutions.version>1.13</vividsolutions.version>
@@ -161,10 +161,7 @@
         <jooq.version>0.9.12</jooq.version>
 
         <!--jooby plugin -->
-        <jooby.version>1.6.0</jooby.version>
-
-        <!--netty -->
-        <netty.version>4.1.30</netty.version>
+        <jooby.version>1.6.2</jooby.version>
 
         <!-- fastutil -->
         <fastutil.version>8.1.1</fastutil.version>
@@ -522,11 +519,13 @@
 
 
             <!-- lucene -->
+<!--
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-core</artifactId>
                 <version>${lucene.version}</version>
             </dependency>
+-->
             <!-- lucene -->
 
             <!-- needed for elasticsearch geo coordinates -->
@@ -852,7 +851,7 @@
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.target}</target>
                         <compilerArgs>
-<!--                            <arg>&#45;&#45;enable-preview</arg>-->
+                            <!--                            <arg>&#45;&#45;enable-preview</arg>-->
                         </compilerArgs>
                     </configuration>
                 </plugin>

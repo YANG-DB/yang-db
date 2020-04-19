@@ -692,12 +692,10 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
                         new ETyped(5, "A", "Entity", 6, 0)
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
-
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
                         .build())
                 .build();
-
         // Check if expected results and actual results are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }

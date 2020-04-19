@@ -1,12 +1,16 @@
 package com.yangdb.fuse.services.engine2.discrete;
 
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.query.*;
+import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.ETyped;
+import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
-import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
@@ -15,7 +19,6 @@ import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
 import com.yangdb.fuse.test.framework.index.Mappings.Mapping;
@@ -23,7 +26,6 @@ import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
 import com.yangdb.test.BaseITMarker;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -32,7 +34,6 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.yangdb.fuse.model.OntologyTestUtils.*;
-import static com.yangdb.fuse.model.OntologyTestUtils.NAME;
 import static com.yangdb.fuse.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 
 /**
@@ -49,7 +50,7 @@ public class EntityRelationEntityIT implements BaseITMarker {
 
         String idField = "id";
 
-        TransportClient client = RedundantTestSuite.elasticEmbeddedNode.getClient();
+        BaseFuseElasticClient client = RedundantTestSuite.elasticEmbeddedNode.getClient();
 
         new MappingElasticConfigurer(Arrays.asList("person1", "person2"), new Mappings().addMapping("pge",
                 new Mapping().addProperty("type", new Mapping.Property(keyword))

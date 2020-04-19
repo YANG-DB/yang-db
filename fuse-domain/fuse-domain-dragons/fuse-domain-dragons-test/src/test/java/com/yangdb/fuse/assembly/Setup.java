@@ -3,6 +3,7 @@ package com.yangdb.fuse.assembly;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.client.BaseFuseClient;
 import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.services.FuseApp;
 import com.yangdb.fuse.services.FuseUtils;
@@ -17,12 +18,13 @@ import java.nio.file.Paths;
 
 public abstract class Setup {
     public static Path path = Paths.get( "src","resources", "assembly", "Dragons", "config", "application.test.engine3.m1.dfs.dragons.public.conf");
+    public static String activeProfile = "activeProfile";
     public static String userDir = Paths.get( "src","resources", "assembly", "Dragons").toFile().getAbsolutePath();
 
     public static FuseApp app = null;
     public static ElasticEmbeddedNode elasticEmbeddedNode = null;
     public static FuseClient fuseClient = null;
-    public static TransportClient client = null;
+    public static BaseFuseElasticClient client = null;
 
     public static void withPath(Path path) {
         Setup.path = path;
@@ -52,6 +54,10 @@ public abstract class Setup {
         fuseClient = givenFuseClient;
     }
 
+    public static void activeProfile(String activeProfile) {
+        Setup.activeProfile = activeProfile;
+    }
+
     private static void init(boolean embedded, boolean init, boolean startFuse) throws Exception {
         // Start embedded ES
         if(embedded) {
@@ -74,14 +80,14 @@ public abstract class Setup {
             // Load fuse engine config file
             String confFilePath = path.toString();
             //load configuration
-            Config config = FuseUtils.loadConfig(new File(confFilePath),"activeProfile" );
+            Config config = FuseUtils.loadConfig(new File(confFilePath),activeProfile );
             String[] joobyArgs = new String[]{
                     "logback.configurationFile="+Paths.get("src", "test","resources", "config", "logback.xml").toString() ,
                     "server.join=false"
             };
 
             app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                    .conf(path.toFile(), "activeProfile");
+                    .conf(path.toFile(), activeProfile);
             app.start("server.join=false");
         }
     }
@@ -95,4 +101,5 @@ public abstract class Setup {
         if(elasticEmbeddedNode!=null)
             elasticEmbeddedNode.close();
     }
+
 }

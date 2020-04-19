@@ -66,7 +66,7 @@ public interface StoreAccessor {
                                     .filter(termQuery("type", ENTITY))
                                     .must(termQuery(fieldName, id))));
             SearchResponse response = builder.get();
-            if (response.getHits().totalHits == 0)
+            if (response.getHits().getTotalHits().value == 0)
                 return Optional.empty();
 
             //assuming a single relevant reasult

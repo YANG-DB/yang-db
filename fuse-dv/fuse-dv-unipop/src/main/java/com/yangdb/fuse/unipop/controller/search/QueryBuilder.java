@@ -26,8 +26,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.geo.ShapeRelation;
+import org.elasticsearch.common.geo.builders.CircleBuilder;
+import org.elasticsearch.common.geo.builders.EnvelopeBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
-import org.elasticsearch.common.geo.builders.ShapeBuilders;
+//import org.elasticsearch.common.geo.builders.ShapeBuilders;
+import org.elasticsearch.common.geo.parsers.ShapeParser;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.common.xcontent.DeprecationHandler;
 import org.elasticsearch.common.xcontent.NamedXContentRegistry;
@@ -1940,15 +1943,15 @@ public class QueryBuilder {
         private ShapeBuilder GetShapeBuilder(GeoJsonObject geoJson) {
             try {
                 if (geoJson instanceof Circle) {
-                    Circle cirlce = (Circle) geoJson;
-                    return ShapeBuilders.newCircleBuilder()
+                    Circle cirlce = (Circle)geoJson;
+                    return new CircleBuilder()
                             .center(
                                     cirlce.getCoordinates().getLongitude(),
                                     cirlce.getCoordinates().getLatitude())
                             .radius(new DistanceUnit.Distance(cirlce.getRadius(), DistanceUnit.METERS));
                 } else if (geoJson instanceof Envelope) {
-                    Envelope envelope = (Envelope) geoJson;
-                    return ShapeBuilders.newEnvelope(
+                    Envelope envelope = (Envelope)geoJson;
+                    return new EnvelopeBuilder(
                             new Coordinate(
                                     envelope.getCoordinates().get(0).getLongitude(),
                                     envelope.getCoordinates().get(1).getLatitude()),
@@ -1960,7 +1963,7 @@ public class QueryBuilder {
                     XContentParser parser = JsonXContent.jsonXContent.createParser(NamedXContentRegistry.EMPTY, DeprecationHandler.THROW_UNSUPPORTED_OPERATION, geoJsonString);
                     parser.nextToken();
 
-                    return ShapeBuilder.parse(parser);
+                    return ShapeParser.parse(parser);
                 }
             } catch (Exception e) {
                 return null;

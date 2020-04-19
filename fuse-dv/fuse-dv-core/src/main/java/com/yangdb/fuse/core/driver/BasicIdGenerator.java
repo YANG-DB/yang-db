@@ -29,6 +29,7 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
@@ -78,12 +79,31 @@ public class BasicIdGenerator implements IdGeneratorDriver<Range> {
                     newValue.put("value", currentId + numIds);
 
                     try {
+/*
                         IndexResponse indexResponse = this.client.index(new IndexRequest(
                                 getResponse.getIndex(),
                                 getResponse.getType(),
                                 getResponse.getId()).version(getResponse.getVersion())
                                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                                 .source(newValue)).actionGet();
+*/
+
+                        String index = getResponse.getIndex();
+                        String type = getResponse.getType();
+                        String id = getResponse.getId();
+                        long seqNo = getResponse.getSeqNo();
+                        long primaryTerm = getResponse.getPrimaryTerm();
+                        long version = getResponse.getVersion();
+
+                        IndexResponse indexResponse = this.client.prepareIndex()
+                                .setIndex(index)
+                                .setType(type)
+                                .setId(id)
+                                .setIfSeqNo(seqNo)
+                                .setIfPrimaryTerm(primaryTerm)
+                                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                                .setSource(newValue)
+                                .get();
 
                         if (indexResponse.status().getStatus() == 200) {
                             return new Range(currentId, currentId + numIds);

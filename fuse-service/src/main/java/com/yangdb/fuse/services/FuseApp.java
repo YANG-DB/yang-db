@@ -99,8 +99,8 @@ public class FuseApp extends Jooby {
         get("cypher-queries-samples", () -> Results.redirect("/public/assets/samples/cypher-queries.txt"));
         get("les_miserables-data", () -> Results.redirect("/public/assets/samples/les_miserables-data.json"));
 
-        //internal quarts reporting job scheduler
-        use(new Quartz().with(StatusReportedJob.class));
+        //internal quarts reporting job scheduler - todo add this as configuration param
+//        use(new Quartz().with(StatusReportedJob.class));
 
         //'Access-Control-Allow-Origin' header
         use("*", new CorsHandler());

@@ -12,6 +12,7 @@ import com.yangdb.fuse.unipop.promise.IdPromise;
 import com.yangdb.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.structure.promise.PromiseVertex;
 import javaslang.collection.Stream;
+import org.apache.lucene.search.TotalHits;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -89,7 +90,7 @@ public class ElementControllerCompositTest {
         fields.put("type", new DocumentField("type", Collections.singletonList("myType")));
         SearchHit[] tests = new SearchHit[]{new SearchHit(1, "1", new Text("test"), fields)};
 
-        SearchHits searchHits = new SearchHits(tests, 10, 1.0f);
+        SearchHits searchHits = new SearchHits(tests, new TotalHits(10, TotalHits.Relation.GREATER_THAN_OR_EQUAL_TO), 1.0f);
         when(searchResponse.getHits()).thenReturn(searchHits);
     }
 

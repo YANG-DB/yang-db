@@ -20,20 +20,21 @@ package com.yangdb.fuse.services.embedded;
  * #L%
  */
 
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
+import com.yangdb.fuse.client.elastic.TransportFuseElasticClient;
 import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.logging.LogConfigurator;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -46,14 +47,10 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
-        public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
-            super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins,false);
+        public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins, Path path, String nodeName) {
+            super(InternalSettingsPreparer.prepareEnvironment(settings, null, path, () -> nodeName), classpathPlugins,false);
         }
 
-        @Override
-        protected void registerDerivedNodeNameWithLogger(String nodeName) {
-            LogConfigurator.setNodeName(nodeName);
-        }
     }
     //endregion
 
@@ -66,7 +63,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     static int httpTransportPort;
     static String nodeName;
-    static TransportClient client = null;
+    static BaseFuseElasticClient client = null;
     //endregion
 
     //region Constructors
@@ -107,17 +104,17 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //endregion
 
     //region Methods
-    public static TransportClient getClient() {
+    public static BaseFuseElasticClient getClient() {
         return getClient(nodeName,httpTransportPort);
     }
 
-    public static TransportClient getClient(String nodeName,int httpTransportPort) {
+    public static BaseFuseElasticClient getClient(String nodeName,int httpTransportPort) {
         if (client == null) {
             try {
                 Settings settings = Settings.builder()
                         .put("cluster.name", nodeName)
                         .build();
-                client = new PreBuiltTransportClient(settings)
+                client = new TransportFuseElasticClient(settings)
                         .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
             } catch (UnknownHostException e) {
                 throw new UnknownError(e.getMessage());
@@ -174,7 +171,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         this.node = new PluginConfigurableNode(settings, Arrays.asList(
                 Netty4Plugin.class,
                 CommonAnalysisPlugin.class
-        ));
+        ), Paths.get(esWorkingDir), nodeName);
 
         this.node = this.node.start();
         System.out.println("Node started successfully on " + esWorkingDir);

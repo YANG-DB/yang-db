@@ -325,7 +325,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                         total += ((double) bucketContaining.get().getTotal()) / bucketContaining.get().getCardinality();
                         count += 1;
                     } else {
-                        System.out.println("Bucket not found for "+v);
+//                        System.out.println("Bucket not found for "+v);
                     }
                 }
                 return new Statistics.SummaryStatistics(total,count);

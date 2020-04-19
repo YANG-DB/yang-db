@@ -4,7 +4,7 @@ package com.yangdb.fuse.test.framework.index;
  * #%L
  * fuse-test-framework
  * %%
- * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
+ * Copyright (C) 2016 - 2018 yangdb   ------ www.yangdb.org ------
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,25 @@ package com.yangdb.fuse.test.framework.index;
  * #L%
  */
 
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
+import com.yangdb.fuse.client.elastic.TransportFuseElasticClient;
 import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.logging.LogConfigurator;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 
 import static com.yangdb.fuse.test.framework.TestUtil.deleteFolder;
 
@@ -53,15 +55,14 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
-        public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
-            super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins,false);
+        public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins, Path path, String nodeName) {
+            super(InternalSettingsPreparer.prepareEnvironment(settings, new HashMap<>(), path, () -> nodeName), classpathPlugins,false);
         }
 
-        @Override
-        protected void registerDerivedNodeNameWithLogger(String nodeName) {
-            LogConfigurator.loadLog4jPlugins();
-            LogConfigurator.setNodeName(nodeName);
-        }
+//        @Override
+//        protected void registerDerivedNodeNameWithLogger(String nodeName) {
+//            LogConfigurator.setNodeName(nodeName);
+//        }
     }
     //endregion
 
@@ -73,7 +74,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     static int httpTransportPort;
     static String nodeName;
-    static TransportClient client = null;
+    static BaseFuseElasticClient client = null;
     //endregion
 
     //region Constructors
@@ -113,11 +114,11 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //endregion
 
     //region Methods
-    public static TransportClient getClient() {
+    public static BaseFuseElasticClient getClient() {
         return getClient(nodeName,httpTransportPort);
     }
 
-    public static TransportClient getClient(String nodeName,int httpTransportPort) {
+    public static BaseFuseElasticClient getClient(String nodeName,int httpTransportPort) {
         if (client == null) {
             try {
                 System.out.println("Setting client "+nodeName);
@@ -125,9 +126,9 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                         .put("cluster.name", nodeName)
                         .put("node.name", nodeName)
                         .build();
-                client = new PreBuiltTransportClient(settings)
+                client = new TransportFuseElasticClient(settings)
                         .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
-            } catch (UnknownHostException e) {
+            } catch (Throwable e) {//catch (UnknownHostException e) {
                 throw new UnknownError(e.getMessage());
             }
         }
@@ -137,7 +138,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        System.out.println("Closing E/S embedded");
+        System.out.println("Closing");
         closeClient();
         if (this.node != null) {
             this.node.close();
@@ -164,14 +165,13 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
         Settings settings = Settings.builder()
                 .put("cluster.name", nodeName)
-                .put("node.name", nodeName)
                 .put("path.home", esWorkingDir)
                 .put("path.data", esWorkingDir)
                 .put("path.logs", esWorkingDir)
                 .put("http.port", httpPort)
                 .put("transport.type", "netty4")
                 .put("http.type", "netty4")
-                .put("http.enabled", "true")
+                .put("http.cors.enabled", "true")
 //                .put("script.auto_reload_enabled", "false")
                 .put("transport.tcp.port", httpTransportPort)
                 .build();
@@ -181,7 +181,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 Netty4Plugin.class,
 //                CommonScriptPlugin.class,
                 CommonAnalysisPlugin.class
-        ));
+        ), Paths.get(esWorkingDir), nodeName);
 
         this.node = this.node.start();
         System.out.println("Started E/S Embedded");

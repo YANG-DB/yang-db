@@ -72,7 +72,7 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
         SearchRequestBuilder builder = client.prepareSearch();
         builder.setIndices(indices);
         SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
-        Assert.assertEquals(graphModel.getNodes().size() + 2*graphModel.getEdges().size(),resp.getHits().getTotalHits());
+        Assert.assertEquals(graphModel.getNodes().size() + 2*graphModel.getEdges().size(),resp.getHits().getTotalHits().value);
 
     }
 
@@ -109,7 +109,7 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
         SearchRequestBuilder builder = client.prepareSearch();
         builder.setIndices(indices);
         SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
-        Assert.assertEquals(graphModel.getNodes().size() + 2*graphModel.getEdges().size(),resp.getHits().getTotalHits());
+        Assert.assertEquals(graphModel.getNodes().size() + 2*graphModel.getEdges().size(),resp.getHits().getTotalHits().value);
 
     }
 }

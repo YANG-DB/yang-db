@@ -1,20 +1,20 @@
 package com.yangdb.test;
 
-import com.yangdb.fuse.services.test.TestRunner;
+import com.yangdb.fuse.client.elastic.BaseFuseElasticClient;
 import com.yangdb.fuse.model.OntologyTestUtils;
+import com.yangdb.fuse.services.test.TestRunner;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
-import com.yangdb.test.data.DragonsOntology;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.MappingFileElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
+import com.yangdb.test.data.DragonsOntology;
 import javaslang.collection.Stream;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.client.transport.TransportClient;
 
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -32,7 +32,7 @@ public class DragonsSmartEpbTest5Setup extends TestSetupBase  {
     }
 
     @Override
-    protected void loadData(TransportClient client) throws Exception {
+    protected void loadData(BaseFuseElasticClient client) throws Exception {
         String idField = "id";
         new MappingElasticConfigurer(DRAGON.name.toLowerCase(), new Mappings().addMapping("pge", getDragonMapping()))
                 .configure(client);
@@ -101,7 +101,7 @@ public class DragonsSmartEpbTest5Setup extends TestSetupBase  {
     }
 
     @Override
-    protected void cleanData(TransportClient client) {
+    protected void cleanData(BaseFuseElasticClient client) {
         client.admin().indices()
                 .delete(new DeleteIndexRequest(
                         DRAGON.name.toLowerCase(),

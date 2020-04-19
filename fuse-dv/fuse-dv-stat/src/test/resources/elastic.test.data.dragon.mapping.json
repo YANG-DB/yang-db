@@ -1,9 +1,6 @@
 {
   "mappings": {
     "pge": {
-      "_all": {
-        "enabled": false
-      },
       "properties": {
         "type": {
           "type": "keyword"

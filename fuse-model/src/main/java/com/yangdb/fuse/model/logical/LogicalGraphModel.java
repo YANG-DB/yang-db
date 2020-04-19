@@ -109,7 +109,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LogicalGraphModel {
+    @JsonProperty("nodes")
     private List<LogicalNode> nodes;
+    @JsonProperty("edges")
     private List<LogicalEdge> edges;
 
     public LogicalGraphModel() {
@@ -117,7 +119,7 @@ public class LogicalGraphModel {
         this.nodes = new ArrayList<>();
     }
 
-    @JsonProperty("node")
+    @JsonProperty("nodes")
     public List<LogicalNode> getNodes() {
         return nodes;
     }
@@ -128,7 +130,7 @@ public class LogicalGraphModel {
         return this;
     }
 
-    @JsonProperty("edge")
+    @JsonProperty("edges")
     public List<LogicalEdge> getEdges() {
         return edges;
     }

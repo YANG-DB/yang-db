@@ -154,6 +154,11 @@ public class MockClient implements Client {
     }
 
     @Override
+    public BulkRequestBuilder prepareBulk(String globalIndex, String globalType) {
+        return null;
+    }
+
+    @Override
     public ActionFuture<GetResponse> get(GetRequest getRequest) {
         return null;
     }
@@ -253,25 +258,25 @@ public class MockClient implements Client {
         return null;
     }
 
-    @Override
-    public ActionFuture<TermVectorsResponse> termVector(TermVectorsRequest termVectorsRequest) {
-        return null;
-    }
+//    @Override
+//    public ActionFuture<TermVectorsResponse> termVector(TermVectorsRequest termVectorsRequest) {
+//        return null;
+//    }
+//
+//    @Override
+//    public void termVector(TermVectorsRequest termVectorsRequest, ActionListener<TermVectorsResponse> actionListener) {
+//
+//    }
 
-    @Override
-    public void termVector(TermVectorsRequest termVectorsRequest, ActionListener<TermVectorsResponse> actionListener) {
-
-    }
-
-    @Override
-    public TermVectorsRequestBuilder prepareTermVector() {
-        return null;
-    }
-
-    @Override
-    public TermVectorsRequestBuilder prepareTermVector(String s, String s1, String s2) {
-        return null;
-    }
+//    @Override
+//    public TermVectorsRequestBuilder prepareTermVector() {
+//        return null;
+//    }
+//
+//    @Override
+//    public TermVectorsRequestBuilder prepareTermVector(String s, String s1, String s2) {
+//        return null;
+//    }
 
     @Override
     public ActionFuture<MultiTermVectorsResponse> multiTermVectors(MultiTermVectorsRequest multiTermVectorsRequest) {
@@ -328,19 +333,29 @@ public class MockClient implements Client {
         return null;
     }
 
+//    @Override
+//    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> ActionFuture<Response> execute(Action<Request, Response, RequestBuilder> action, Request request) {
+//        return null;
+//    }
+//
+//    @Override
+//    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> void execute(Action<Request, Response, RequestBuilder> action, Request request, ActionListener<Response> actionListener) {
+//
+//    }
+//
+//    @Override
+//    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> RequestBuilder prepareExecute(Action<Request, Response, RequestBuilder> action) {
+//        return null;
+//    }
+
     @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> ActionFuture<Response> execute(Action<Request, Response, RequestBuilder> action, Request request) {
+    public <Request extends ActionRequest, Response extends ActionResponse> ActionFuture<Response> execute(ActionType<Response> action, Request request) {
         return null;
     }
 
     @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> void execute(Action<Request, Response, RequestBuilder> action, Request request, ActionListener<Response> actionListener) {
+    public <Request extends ActionRequest, Response extends ActionResponse> void execute(ActionType<Response> action, Request request, ActionListener<Response> listener) {
 
-    }
-
-    @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> RequestBuilder prepareExecute(Action<Request, Response, RequestBuilder> action) {
-        return null;
     }
 
     @Override

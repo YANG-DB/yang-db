@@ -8,10 +8,7 @@
   },
   "mappings": {
       "statBucket": {
-        "_all": {
-          "enabled": false
-        },
-        "properties": {
+  "properties": {
           "type": {
             "type": "keyword"
           },
