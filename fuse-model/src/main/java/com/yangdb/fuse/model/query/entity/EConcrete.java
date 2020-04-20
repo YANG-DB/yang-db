@@ -107,8 +107,11 @@ public class EConcrete extends ETyped implements Typed.eTyped{
     @Override
     public EConcrete clone(int eNum) {
         final EConcrete clone = new EConcrete();
+        clone.seteType(geteType());
         clone.seteNum(eNum);
         clone.seteTag(geteTag());
+        clone.setNext(getNext());
+        clone.setB(getB());
         clone.eID = eID;
         clone.eName = eName;
         return clone;

@@ -46,6 +46,7 @@ package com.yangdb.fuse.model.asgQuery;
 import com.yangdb.fuse.model.Tagged;
 import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.query.RelPattern;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.EndPattern;
@@ -834,6 +835,11 @@ public class AsgQueryUtil {
                 .sorted(Comparator.comparing(AsgEBase::geteNum))
                 .collect(Collectors.toList());
 
+    }
+
+    public static AsgEBase<? extends EBase> remove(AsgQuery query, AsgEBase<? extends EBase> ... elements) {
+        //todo
+        throw new UnsupportedOperationException();
     }
 
     public static class OptionalStrippedQuery {
