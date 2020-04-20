@@ -96,7 +96,7 @@
 
     <profiles>
         <profile>
-            <id>Dragons</id>
+            <id>Dragons-E2E Test</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>

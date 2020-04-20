@@ -128,7 +128,7 @@
 
     <profiles>
         <profile>
-            <id>Knowledge</id>
+            <id>Knowledge-E2E Tests</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
