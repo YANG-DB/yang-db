@@ -32,6 +32,9 @@ import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
+import org.unipop.structure.UniElement;
+
+import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
 
@@ -63,7 +66,9 @@ public class ForwardOnlyPathsTraversalCursor extends PathsTraversalCursor {
                 && AsgQueryUtil.element(asgQuery, Quant1.class).get().geteBase().getqType().equals(QuantType.some)) {
             //in case of Union -> return all sub-paths regardless of max elements in path
             (getContext().getTraversal().next(numResults)).forEach(path -> {
-                builder.withAssignment(toAssignment(path));
+                //todo make sure no circle exists in path
+                if(path.objects().stream().map(p-> ((UniElement)p).id().toString()).collect(Collectors.toSet()).size() == path.objects().size())
+                    builder.withAssignment(toAssignment(path));
             });
         } else {
             int nodes = AsgQueryUtil.elements(asgQuery, EEntityBase.class).size();
@@ -74,7 +79,9 @@ public class ForwardOnlyPathsTraversalCursor extends PathsTraversalCursor {
             (getContext().getTraversal().next(numResults)).forEach(path -> {
                 Assignment assignments = toAssignment(path);
                 if (assignments.getEntities().size() == nodes && assignments.getRelationships().size() == edges) {
-                    builder.withAssignment(assignments);
+                    //todo make sure no circle exists in path
+                    if(path.objects().stream().map(p-> ((UniElement)p).id().toString()).collect(Collectors.toSet()).size() == path.objects().size())
+                        builder.withAssignment(assignments);
                 }
             });
         }

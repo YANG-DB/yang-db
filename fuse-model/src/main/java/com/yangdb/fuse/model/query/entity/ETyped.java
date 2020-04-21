@@ -104,7 +104,10 @@ public class ETyped extends EEntityBase implements Typed.eTyped {
 
     @Override
     public ETyped clone(int eNum) {
-        final ETyped clone = new ETyped();
+        return propClone(eNum, new ETyped());
+    }
+
+    protected ETyped propClone(int eNum, ETyped clone) {
         clone.seteNum(eNum);
         clone.seteTag(geteTag());
         clone.eType = eType;

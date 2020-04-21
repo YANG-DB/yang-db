@@ -14,6 +14,7 @@ import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.results.*;
+import com.yangdb.fuse.model.transport.cursor.CreateForwardOnlyPathTraversalCursorRequest;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
 import org.junit.*;
@@ -21,7 +22,6 @@ import org.junit.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
@@ -31,29 +31,28 @@ import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KnowledgeQueryBuilder.start;
-import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RefBuilder._ref;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder._rel;
+import static com.yangdb.fuse.client.FuseClientSupport.query;
 
 public class KnowledgeSimpleEntityWithRelationTests {
     static KnowledgeWriterContext ctx;
     static SimpleDateFormat sdf;
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(false,true);
+//        Setup.setup();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
     @AfterClass
     public static void teardown() throws Exception {
-        Setup.cleanup(true,true);
+//        Setup.cleanup(true,true);
     }
 
     @After
@@ -190,16 +189,13 @@ public class KnowledgeSimpleEntityWithRelationTests {
                 .withConcrete(e2.getETag(),e2.id() )
                 .build();
 
-        AssignmentsQueryResult<Entity,Relationship> pageData = (AssignmentsQueryResult<Entity, Relationship>) query(fuseClient, fuseResourceInfo, query);
+        AssignmentsQueryResult<Entity,Relationship> pageData = (AssignmentsQueryResult<Entity, Relationship>) query(fuseClient, fuseResourceInfo, query,
+                new CreateForwardOnlyPathTraversalCursorRequest());
 
         // Check Entity Response
-        Assert.assertEquals(1, pageData.getSize());
-        Assert.assertEquals(1, pageData.getAssignments().size());
-
-        Assert.assertEquals(2, pageData.getAssignments().get(0).getEntities().size());
-        Assert.assertEquals(2, pageData.getAssignments().get(0).getRelationships().size());
-
+        Assert.assertEquals(0, pageData.getSize());
     }
+
     @Test
     public void testFindByConcretePathBuilderTwoHop() throws IOException, InterruptedException, ParseException {
         String creationTime = "2018-07-17 13:19:20.667";
@@ -227,14 +223,15 @@ public class KnowledgeSimpleEntityWithRelationTests {
                 .withConcrete(e3.getETag(),e3.id() )
                 .build();
 
-        AssignmentsQueryResult<Entity,Relationship> pageData = (AssignmentsQueryResult<Entity, Relationship>) query(fuseClient, fuseResourceInfo, query);
+        AssignmentsQueryResult<Entity,Relationship> pageData = (AssignmentsQueryResult<Entity, Relationship>) query(fuseClient, fuseResourceInfo, query,
+                new CreateForwardOnlyPathTraversalCursorRequest());
+
 
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
-        Assert.assertEquals(1, pageData.getAssignments().size());
 
         Assert.assertEquals(3, pageData.getAssignments().get(0).getEntities().size());
-        Assert.assertEquals(4, pageData.getAssignments().get(0).getRelationships().size());
+        Assert.assertEquals(2, pageData.getAssignments().get(0).getRelationships().size());
 
     }
 
@@ -270,14 +267,18 @@ public class KnowledgeSimpleEntityWithRelationTests {
                 .withConcrete(e4.getETag(),e4.id() )
                 .build();
 
-        AssignmentsQueryResult<Entity,Relationship> pageData = (AssignmentsQueryResult<Entity, Relationship>) query(fuseClient, fuseResourceInfo, query);
+        AssignmentsQueryResult<Entity,Relationship> pageData = (AssignmentsQueryResult<Entity, Relationship>) query(fuseClient, fuseResourceInfo, query,
+                new CreateForwardOnlyPathTraversalCursorRequest());
+
 
         // Check Entity Response
-        Assert.assertEquals(1, pageData.getSize());
-        Assert.assertEquals(1, pageData.getAssignments().size());
+        Assert.assertEquals(2, pageData.getSize());
 
-        Assert.assertEquals(4, pageData.getAssignments().get(0).getEntities().size());
-        Assert.assertEquals(6, pageData.getAssignments().get(0).getRelationships().size());
+        Assert.assertEquals(3, pageData.getAssignments().get(0).getEntities().size());
+        Assert.assertEquals(2, pageData.getAssignments().get(0).getRelationships().size());
+
+        Assert.assertEquals(4, pageData.getAssignments().get(1).getEntities().size());
+        Assert.assertEquals(3, pageData.getAssignments().get(1).getRelationships().size());
 
     }
 
