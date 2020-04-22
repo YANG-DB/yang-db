@@ -122,10 +122,12 @@ public class RelationPatternRangeAsgStrategy implements AsgStrategy {
                 .forEach(value -> {
                     //if value == 0  remove the RelPattern entirely
                     if(value==0) {
-                        //todo remove RelPattern & EndPattern
-                         //final AsgEBase<? extends EBase> simplifiedPath = AsgQueryUtil.remove(query,relPattern,endPattern);
-                         // quantAsg.addNext(simplifiedPath);
-
+                        //take the path after the end pattern section (if exists) & add it as no hop pattern to the Quant
+                        if (endPattern.hasNext()) {
+                            final AsgEBase<? extends EBase> nextAfterEndPattern = endPattern.getNext().get(0);
+                            final AsgEBase<? extends EBase> afterEndPattern = AsgQueryUtil.deepCloneWithEnums(counter, nextAfterEndPattern, e -> true, e -> true);
+                            quantAsg.addNext(afterEndPattern);
+                        }
                     } else {
                         final AsgEBase<? extends EBase> relConcretePattern = addPath(counter, value, relPattern, endPattern);
                         //add the path after the end pattern section

@@ -46,7 +46,6 @@ package com.yangdb.fuse.model.asgQuery;
 import com.yangdb.fuse.model.Tagged;
 import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.Rel;
-import com.yangdb.fuse.model.query.RelPattern;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.EndPattern;
@@ -823,7 +822,7 @@ public class AsgQueryUtil {
     }
 
 
-    public static int count(AsgEBase<? extends EBase> asgEBase, Class<EBase> aClass) {
+    public static int count(AsgEBase<? extends EBase> asgEBase, Class<? extends EBase> aClass) {
         return elements(asgEBase, classPredicateFunction.apply(aClass)).size();
     }
 
@@ -837,9 +836,28 @@ public class AsgQueryUtil {
 
     }
 
-    public static AsgEBase<? extends EBase> remove(AsgQuery query, AsgEBase<? extends EBase> ... elements) {
-        //todo
-        throw new UnsupportedOperationException();
+    /**
+     * removes all elements from query
+     * @param query
+     * @param element
+     * @return
+     */
+    public static AsgQuery remove(AsgQuery query, AsgEBase<? extends EBase> ... element) {
+        for (AsgEBase<? extends EBase> asgEBase : element) {
+           _remove(query, asgEBase);
+        }
+        return query;
+    }
+
+    private static void  _remove(AsgQuery query, AsgEBase<? extends EBase> element) {
+        List<AsgEBase<? extends EBase>> newParents = new ArrayList<>(element.getParents());
+        newParents.forEach(p -> p.removeNextChild(element));
+        newParents.forEach(p -> p.addNextChild(element.getNext()));
+        //clean element
+        element.setParent(new ArrayList<>());
+        element.setNext(new ArrayList<>());
+        //clean query from element
+        query.getElements().remove(element);
     }
 
     public static class OptionalStrippedQuery {

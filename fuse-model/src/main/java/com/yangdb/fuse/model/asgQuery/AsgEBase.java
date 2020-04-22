@@ -212,16 +212,16 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
         return this;
     }
 
-    public AsgEBase<T> nextList(List<AsgEBase<? extends EBase>> elements) {
-        elements.forEach(this::addNextChild);
-        return this;
-    }
 
     public void addNextChild(AsgEBase<? extends EBase> asgEBase) {
         if (!this.next.contains(asgEBase)) {
             this.next.add(asgEBase);
         }
         asgEBase.addToParents(this);
+    }
+
+    public void addNextChild(List<AsgEBase<? extends EBase> >elements) {
+        elements.forEach(this::addNextChild);
     }
 
     public AsgEBase<T> below(AsgEBase<? extends EBase> asgEBase) {

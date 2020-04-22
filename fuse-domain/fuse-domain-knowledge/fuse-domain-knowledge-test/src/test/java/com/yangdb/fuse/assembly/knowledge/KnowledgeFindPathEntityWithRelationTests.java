@@ -88,7 +88,7 @@ public class KnowledgeFindPathEntityWithRelationTests {
                 new CreateForwardOnlyPathTraversalCursorRequest());
 
         // Check Entity Response
-        Assert.assertEquals(0, pageData.getSize());
+        Assert.assertEquals(1, pageData.getSize());
     }
 
     @Test
