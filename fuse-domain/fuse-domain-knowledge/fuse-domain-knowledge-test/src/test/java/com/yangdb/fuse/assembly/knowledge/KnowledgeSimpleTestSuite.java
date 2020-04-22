@@ -34,6 +34,7 @@ import org.junit.runners.Suite;
         KnowledgeSimpleRelationAndRvalueWithFilterE2ETests.class,
         KnowledgeSimpleEntityRelationAndRvalueWithFilterE2ETests.class,
         KnowledgeSimpleEntityEvalueAndReferenceWithFilterE2ETests.class,
+        KnowledgeFindPathEntityWithRelationTests.class,
         KnowledgeSimpleSomeTests.class,
         KnowledgeSimpleEntityWithFilterTests.class,
         KnowledgeSimpleEntityWithAnyDegreeOfRelationTests.class,

@@ -35,6 +35,14 @@ public class PlanUtilTest {
         assertTrue(PlanUtil.isFirst(planOf2, planOpFirst));
         assertFalse(PlanUtil.isFirst(planOf2, planOpSecond));
     }
+    @Test
+    public void isLast() throws Exception {
+        PlanOp planOpFirst = planOf2.getOps().get(0);
+        PlanOp planOpLast= planOf2.getOps().get(planOf2.getOps().size()-1);
+
+        assertTrue(PlanUtil.isLast(planOf2, planOpLast));
+        assertFalse(PlanUtil.isLast(planOf2, planOpFirst));
+    }
 
     @Test
     public void getNext() throws Exception {
