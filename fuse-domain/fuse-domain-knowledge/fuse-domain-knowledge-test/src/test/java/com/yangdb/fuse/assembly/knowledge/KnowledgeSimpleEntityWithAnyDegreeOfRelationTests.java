@@ -91,7 +91,7 @@ public class KnowledgeSimpleEntityWithAnyDegreeOfRelationTests {
         QueryResultBase pageData =  query(fuseClient, fuseResourceInfo, query, new CreateForwardOnlyPathTraversalCursorRequest());
 
         // Check Entity Response
-        Assert.assertEquals(16, pageData.getSize());
+        Assert.assertEquals(10, pageData.getSize());
 
     }
 

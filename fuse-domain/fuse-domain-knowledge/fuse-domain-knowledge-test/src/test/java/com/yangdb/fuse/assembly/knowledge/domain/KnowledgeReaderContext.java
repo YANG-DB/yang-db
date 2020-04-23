@@ -1,29 +1,19 @@
 package com.yangdb.fuse.assembly.knowledge.domain;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.yangdb.fuse.client.FuseClient;
-import com.yangdb.fuse.model.query.EBase;
-import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.Rel;
-import com.yangdb.fuse.model.query.Start;
+import com.yangdb.fuse.model.Tagged;
+import com.yangdb.fuse.model.query.*;
+import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.ETyped;
+import com.yangdb.fuse.model.query.entity.EndPattern;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
-import com.yangdb.fuse.model.resourceInfo.*;
-import com.yangdb.fuse.model.results.AssignmentsQueryResult;
-import com.yangdb.fuse.model.results.QueryResultBase;
-import com.yangdb.fuse.model.transport.CreatePageRequest;
-import com.yangdb.fuse.model.transport.CreateQueryRequest;
-import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
-import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import javaslang.Tuple2;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -75,11 +65,11 @@ public class KnowledgeReaderContext {
 
         public KnowledgeQueryBuilder withGlobalEntityValues(String eTag, Filter... filters) {
             return withGlobalEntity(eTag, Collections.EMPTY_LIST,
-                    Arrays.asList(filter().with(QuantType.all, "fieldId", Constraint.of(ConstraintOp.inSet,Arrays.asList("title", "nicknames")))));
+                    Arrays.asList(filter().with(QuantType.all, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames")))));
         }
 
         public KnowledgeQueryBuilder withGlobalEntity(String eTag) {
-            return withGlobalEntity(eTag,Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+            return withGlobalEntity(eTag, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
         }
 
         public KnowledgeQueryBuilder withGlobalEntity(String eTag, List<Filter> entityFilter, List<Filter> entityValueFilter) {
@@ -87,7 +77,7 @@ public class KnowledgeReaderContext {
             this.elements.add(new Rel(currentEnum(), "hasEntity", L, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), LogicalEntity.type, LogicalEntity.type, nextEnum(), 0));
             this.elements.add(new Rel(currentEnum(), "hasEntity", R, null, nextEnum(), 0));
-            this.elements.add(new ETyped(currentEnum(), eTag+"#"+currentEnum(), EntityBuilder.type, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), eTag + "#" + currentEnum(), EntityBuilder.type, nextEnum(), 0));
             //add global quant
             quant();
             //add global rel + values
@@ -98,7 +88,7 @@ public class KnowledgeReaderContext {
             nextEnum();//continue
             entityStack.peek().getNext().add(currentEnum());
             this.elements.add(new Rel(currentEnum(), "hasEvalue", R, null, nextEnum(), 0));
-            this.elements.add(new ETyped(currentEnum(), eTag+"#"+currentEnum(), ValueBuilder.type, nextEnum(), 0));
+            this.elements.add(new ETyped(currentEnum(), eTag + "#" + currentEnum(), ValueBuilder.type, nextEnum(), 0));
 
             quant();
 
@@ -124,9 +114,26 @@ public class KnowledgeReaderContext {
             return this;
         }
 
+        public KnowledgeQueryBuilder withConcrete(String eTag, String id) {
+            this.elements.add(new EConcrete(currentEnum(), eTag, EntityBuilder.type, id, id, nextEnum(), 0));
+            return this;
+        }
+
+        public KnowledgeQueryBuilder pathToEType(String rType, String eType, int from, int to) {
+            //"relatedEntity"
+            this.elements.add(new RelPattern(currentEnum(), rType, new com.yangdb.fuse.model.Range(from, to), R, null, nextEnum(), 0));
+            this.elements.add(new EndPattern<>(new ETyped(currentEnum(), Tagged.tagSeq("Target"), eType, nextEnum(), 0)));
+            return this;
+        }
+
 
         public KnowledgeQueryBuilder relatedTo(String eTag, String sideB, Filter... filters) {
-            return relatedTo(entityStack.peek(),eTag,sideB,filters);
+            return relatedTo(entityStack.peek(), eTag, sideB, filters);
+        }
+
+        public KnowledgeQueryBuilder withRel(String rType) {
+            this.elements.add(new Rel(currentEnum(), rType, R, EntityBuilder.type, nextEnum(), 0));
+            return this;
         }
 
         public KnowledgeQueryBuilder relatedTo(Quant1 quantEntity, String eTag, String sideB, Filter... filters) {

@@ -111,13 +111,18 @@ public class EConcrete extends ETyped implements Typed.eTyped{
     }
 
     @Override
+    protected EConcrete propClone(int eNum, ETyped clone) {
+        super.propClone(eNum, clone);
+        clone.setNext(getNext());
+        clone.setB(getB());
+        ((EConcrete)clone).eID = eID;
+        ((EConcrete)clone).eName = eName;
+        return ((EConcrete)clone);
+    }
+
+    @Override
     public EConcrete clone(int eNum) {
-        final EConcrete clone = new EConcrete();
-        clone.seteNum(eNum);
-        clone.seteTag(geteTag());
-        clone.eID = eID;
-        clone.eName = eName;
-        return clone;
+        return propClone(eNum,new EConcrete());
     }
     //endregion
 

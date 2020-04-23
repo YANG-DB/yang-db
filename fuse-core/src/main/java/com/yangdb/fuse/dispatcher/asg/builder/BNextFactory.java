@@ -31,6 +31,7 @@ import com.yangdb.fuse.model.query.aggregation.CountComp;
 import com.yangdb.fuse.model.query.entity.*;
 import com.yangdb.fuse.model.query.optional.OptionalComp;
 import com.yangdb.fuse.model.query.properties.*;
+import com.yangdb.fuse.model.query.quant.HQuant;
 import com.yangdb.fuse.model.query.quant.Quant1;
 
 import java.util.Collections;
@@ -48,6 +49,7 @@ public class BNextFactory implements BellowFactory{
     //region Constructor
     public BNextFactory() {
         this.map = new HashMap<>() ;
+        this.map.put(HQuant.class, ebase -> ((HQuant)ebase).getB());
         this.map.put(Agg.class, ebase -> ((Agg)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Agg) ebase).getB()));
         this.map.put(Quant1.class, ebase -> ((Quant1)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Quant1) ebase).getB()));
         this.map.put(Rel.class, ebase -> ((Rel)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getB()));

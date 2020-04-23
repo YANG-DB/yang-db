@@ -158,6 +158,12 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
             Ontology.Accessor ont) {
 
         List<Traversal> entityTraversals = Collections.emptyList();
+
+        //hotfix for concrete filters
+        if (entity instanceof EConcrete) {
+            entityTraversals = Collections.singletonList(__.start().has(T.id, P.eq(((EConcrete)entity).geteID())));
+        }
+
         if (this.options == EntityTranslationOptions.filterEntity) {
             entityTraversals = Collections.singletonList(getEntityFilterTraversal(entity, ont));
         }

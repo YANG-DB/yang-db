@@ -14,6 +14,7 @@ import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.results.*;
+import com.yangdb.fuse.model.transport.cursor.CreateForwardOnlyPathTraversalCursorRequest;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
 import org.junit.*;
@@ -21,38 +22,37 @@ import org.junit.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
+import static com.yangdb.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.LogicalTypes.RELATED_ENTITY;
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KnowledgeQueryBuilder.start;
-import static com.yangdb.fuse.client.FuseClientSupport.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RefBuilder._ref;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder._rel;
+import static com.yangdb.fuse.client.FuseClientSupport.query;
 
 public class KnowledgeSimpleEntityWithRelationTests {
     static KnowledgeWriterContext ctx;
     static SimpleDateFormat sdf;
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(false,true);
+//        Setup.setup();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        //Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
     @AfterClass
     public static void teardown() throws Exception {
-        //Setup.cleanup();
+//        Setup.cleanup(true,true);
     }
 
     @After

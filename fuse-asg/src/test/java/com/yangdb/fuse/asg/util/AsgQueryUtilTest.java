@@ -55,7 +55,7 @@ public class AsgQueryUtilTest {
     @Test
     public void testIsLeaf() {
         AsgQuery query = simpleQuery2("name", "ont");
-        Assert.assertTrue(isLeaf(element$(query,1)).get());
+        Assert.assertFalse(isLeaf(element$(query,1)).get());
         Assert.assertTrue(isLeaf(element$(query,8)).get());
         Assert.assertTrue(isLeaf(element$(query,6)).get());
         Assert.assertTrue(isLeaf(element$(query,8)).get());

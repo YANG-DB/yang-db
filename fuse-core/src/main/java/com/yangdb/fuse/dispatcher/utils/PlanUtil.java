@@ -49,6 +49,10 @@ public class PlanUtil {
         return compositePlanOp.getOps().size() > 0 && compositePlanOp.getOps().get(0) == planOp;
     }
 
+    public static boolean isLast(CompositePlanOp compositePlanOp, PlanOp planOp) {
+        return compositePlanOp.getOps().size() > 0 && compositePlanOp.getOps().get(compositePlanOp.getOps().size()-1) == planOp;
+    }
+
     public static boolean contains(CompositePlanOp compositePlanOp, int eNum) {
         return compositePlanOp.getOps().size() > 0 && compositePlanOp.getOps().stream().anyMatch(planOp -> ((AsgEBaseContainer)planOp).getAsgEbase().geteNum()==eNum);
     }

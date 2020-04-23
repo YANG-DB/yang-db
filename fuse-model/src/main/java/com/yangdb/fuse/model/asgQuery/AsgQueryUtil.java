@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.asgQuery;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -152,7 +152,7 @@ public class AsgQueryUtil {
 
         return elements
                 .stream()
-                .collect(Collectors.groupingBy(o -> ((Tagged) o.geteBase()).geteTag()));
+                .collect(Collectors.groupingBy(o->((Tagged) o.geteBase()).geteTag()));
 
     }
 
@@ -613,14 +613,13 @@ public class AsgQueryUtil {
 
     /**
      * flatten query graph to assignments pathes
-     *
      * @param query
      * @return
      */
     public static List<List<AsgEBase<? extends EBase>>> flattenQuery(AsgQuery query) {
-        List<AsgEBase<EBase>> ends = elements(query.getStart(), emptyIterableFunction, AsgEBase::getNext, truePredicate, truePredicate, Collections.emptyList())
+        List<AsgEBase<EBase>> ends = elements(query.getStart(), emptyIterableFunction,  AsgEBase::getNext, truePredicate, truePredicate, Collections.emptyList())
                 .stream()
-                .filter(e -> !e.hasNext()).collect(Collectors.toList());
+                .filter(e->!e.hasNext()).collect(Collectors.toList());
         List<List<AsgEBase<? extends EBase>>> pathes = ends.stream().map(e -> path(query.getStart(), e)).collect(Collectors.toList());
         return pathes;
 
@@ -628,12 +627,11 @@ public class AsgQueryUtil {
 
     /**
      * print list of pathes
-     *
      * @param pathes
      * @return
      */
     public static List<String> patterns(List<List<AsgEBase<? extends EBase>>> pathes) {
-        return pathes.stream().map(p -> pattern(p)).collect(Collectors.toList());
+        return pathes.stream().map(p->pattern(p)).collect(Collectors.toList());
     }
 
     public static String pattern(AsgQuery query) {
@@ -755,11 +753,11 @@ public class AsgQueryUtil {
         //update etag
         //this will cause creation of new tags that will not be associated with former tags that was cloned from and therefore will not be found
         if ((clone instanceof Tagged) && (((Tagged) clone).geteTag() != null) && cloneTags) {
-            if (isSeq((Tagged) clone)) {
+            if (isSeq((Tagged) clone) ) {
                 Tagged.setSeq(clone.geteNum(), (Tagged) clone);
             } else {
                 //clone tag according to running sequence
-                ((Tagged) clone).seteTag(String.format("%s:%d", ((Tagged) clone).geteTag(), clone.geteNum()));
+                ((Tagged) clone).seteTag(String.format("%s:%d",((Tagged) clone).geteTag(),clone.geteNum()));
             }
         }
 
@@ -825,7 +823,7 @@ public class AsgQueryUtil {
     }
 
 
-    public static int count(AsgEBase<? extends EBase> asgEBase, Class<EBase> aClass) {
+    public static int count(AsgEBase<? extends EBase> asgEBase, Class<? extends EBase> aClass) {
         return elements(asgEBase, classPredicateFunction.apply(aClass)).size();
     }
 
@@ -864,18 +862,31 @@ public class AsgQueryUtil {
         return query;
     }
 
-    public static AsgQuery remove(AsgQuery query, AsgEBase<? extends EBase> element) {
-        List<AsgEBase<? extends EBase>> newParents = new ArrayList<>(element.getParents());
-        newParents.forEach(p -> p.getNext().remove(element));
-        newParents.forEach(p -> p.getNext().addAll(element.getNext()));
-        //clean element
-        element.setParent(Collections.emptyList());
-        element.setNext(Collections.emptyList());
-        //clean query from element
-        query.getElements().remove(element);
+
+
+    /**
+     * removes all elements from query
+     * @param query
+     * @param element
+     * @return
+     */
+    public static AsgQuery remove(AsgQuery query, AsgEBase<? extends EBase> ... element) {
+        for (AsgEBase<? extends EBase> asgEBase : element) {
+           _remove(query, asgEBase);
+        }
         return query;
     }
 
+    private static void  _remove(AsgQuery query, AsgEBase<? extends EBase> element) {
+        List<AsgEBase<? extends EBase>> newParents = new ArrayList<>(element.getParents());
+        newParents.forEach(p -> p.removeNextChild(element));
+        newParents.forEach(p -> p.addNextChild(element.getNext()));
+        //clean element
+        element.setParent(new ArrayList<>());
+        element.setNext(new ArrayList<>());
+        //clean query from element
+        query.getElements().remove(element);
+    }
 
     public static class OptionalStrippedQuery {
         private AsgQuery mainQuery;
@@ -1094,12 +1105,12 @@ public class AsgQueryUtil {
         return newValues;
     }
 
-    public static <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz) {
+    public static  <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz) {
         final List<AsgEBase<? extends EBase>> path = AsgQueryUtil.pathToAncestor(eProp, clazz);
         Optional<AsgEBase<T>> element = Optional.empty();
-        if (!path.isEmpty() && path.size() == 2)
+        if(!path.isEmpty() && path.size()==2)
             element = Optional.of((AsgEBase<T>) path.get(1));
-        if (!path.isEmpty() && path.size() == 3 && QuantBase.class.isAssignableFrom(path.get(1).geteBase().getClass()))
+        if(!path.isEmpty() && path.size()==3 && QuantBase.class.isAssignableFrom(path.get(1).geteBase().getClass()))
             element = Optional.of((AsgEBase<T>) path.get(2));
         return element;
     }

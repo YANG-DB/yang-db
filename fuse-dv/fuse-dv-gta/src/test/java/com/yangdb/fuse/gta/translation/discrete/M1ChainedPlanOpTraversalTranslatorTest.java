@@ -107,19 +107,43 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     }
 
     @Test
+    public void test_concrete_rel_concrete() throws Exception {
+        Plan plan = create_Con_Rel_Con_PathQuery();
+        Ontology.Accessor ont = getOntologyAccessor();
+        Traversal actualTraversal = translator.translate(new PlanWithCost<>(plan, null), new TranslationContext(ont, new PromiseGraph().traversal()));
+
+        Traversal expectedTraversal =
+                new PromiseGraph().traversal().V().as("A")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().and(
+                                __.start().has(T.id, "12345678"),
+                                __.start().has(T.label, "Person"))))
+                        .outE().as("A-->B")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
+                        .otherV().as("B")
+                            .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().and(
+                                __.start().has(T.id, "87654321"),
+                                __.start().has(T.label, "Person"))));
+
+        Assert.assertEquals(expectedTraversal, actualTraversal);
+    }
+
+    @Test
     public void test_typed_rel_concrete() throws Exception {
         Plan plan = create_Typ_Rel_Con_PathQuery();
         Ontology.Accessor ont = getOntologyAccessor();
         Traversal actualTraversal = translator.translate(new PlanWithCost<>(plan, null), new TranslationContext(ont, new PromiseGraph().traversal()));
 
+/*
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Dragon")))
                         .outE().as("B-->A")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
                         .otherV().as("A");
+*/
 
-        Assert.assertEquals(expectedTraversal, actualTraversal);
+        Assert.assertEquals("[GraphStep(vertex,[])@[B], HasStep([constraint.eq(Constraint.by([HasStep([~label.eq(Dragon)])]))]), VertexStep(OUT,edge)@[B-->A], HasStep([constraint.eq(Constraint.by([HasStep([~label.eq(Fire)])]))]), EdgeOtherVertexStep, VertexStep(OUT,[promiseFilter],edge), HasStep([constraint.eq(Constraint.by([HasStep([~id.eq(12345678)])]))]), EdgeOtherVertexStep@[A]]",
+                actualTraversal.toString());
     }
 
     @Test
@@ -221,6 +245,23 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                 new EntityOp(AsgQueryUtil.element$(query, 6)),
                 new EntityFilterOp(AsgQueryUtil.element$(query, 8))
         );
+    }
+
+    private Plan create_Con_Rel_Con_PathQuery() {
+        AsgQuery query = AsgQuery.Builder.start("name", "ont")
+                .next(concrete(1, "12345678", "1", "Dardas Aba", "A"))
+                .next(quant1(2, QuantType.all))
+                .in(ePropGroup(3))
+                .next(rel(4, "1", Rel.Direction.R).below(relProp(5)))
+                .next(concrete(6, "87654321","1","Baba Buba", "B"))
+                .build();
+
+        return new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 3)),
+                new RelationOp(AsgQueryUtil.element$(query, 4)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 5)),
+                new EntityOp(AsgQueryUtil.element$(query, 6)));
     }
 
     private Plan create_Con_Rel_Unt_PathQuery() {

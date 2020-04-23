@@ -120,17 +120,26 @@ public class RelationPatternRangeAsgStrategy implements AsgStrategy {
         LongStream.rangeClosed(range.getLower() , range.getUpper())
                 //this is the Root some quant all pattern premutations will be added to...
                 .forEach(value -> {
-                    final AsgEBase<? extends EBase> relConcretePattern = addPath(counter, value, relPattern, endPattern);
-                    //add the path after the end pattern section
-                    if(endPattern.hasNext()) {
-                        final AsgEBase<? extends EBase> nextAfterEndPattern = endPattern.getNext().get(0);
-                        final AsgEBase<? extends EBase> afterEndPattern = AsgQueryUtil.deepCloneWithEnums(counter, nextAfterEndPattern, e -> true, e -> true);
-                        //get last Descendant of same type of end pattern
-                        final List<AsgEBase<EBase>> endElements = AsgQueryUtil.nextDescendants(relConcretePattern, EndPattern.class);
-                        endElements.get(endElements.size()-1).addNext(afterEndPattern);
+                    //if value == 0  remove the RelPattern entirely
+                    if(value==0) {
+                        //take the path after the end pattern section (if exists) & add it as no hop pattern to the Quant
+                        if (endPattern.hasNext()) {
+                            final AsgEBase<? extends EBase> nextAfterEndPattern = endPattern.getNext().get(0);
+                            final AsgEBase<? extends EBase> afterEndPattern = AsgQueryUtil.deepCloneWithEnums(counter, nextAfterEndPattern, e -> true, e -> true);
+                            quantAsg.addNext(afterEndPattern);
+                        }
+                    } else {
+                        final AsgEBase<? extends EBase> relConcretePattern = addPath(counter, value, relPattern, endPattern);
+                        //add the path after the end pattern section
+                        if (endPattern.hasNext()) {
+                            final AsgEBase<? extends EBase> nextAfterEndPattern = endPattern.getNext().get(0);
+                            final AsgEBase<? extends EBase> afterEndPattern = AsgQueryUtil.deepCloneWithEnums(counter, nextAfterEndPattern, e -> true, e -> true);
+                            //get last Descendant of same type of end pattern
+                            final List<AsgEBase<EBase>> endElements = AsgQueryUtil.nextDescendants(relConcretePattern, EndPattern.class);
+                            endElements.get(endElements.size() - 1).addNext(afterEndPattern);
+                        }
+                        quantAsg.addNext(relConcretePattern);
                     }
-                    quantAsg.addNext(relConcretePattern);
-
                 });
     }
 
