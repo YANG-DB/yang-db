@@ -45,6 +45,7 @@ package com.yangdb.fuse.model.transport;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.query.QueryRef;
 import com.yangdb.fuse.model.query.properties.constraint.NamedParameter;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
@@ -86,5 +87,17 @@ public class ExecuteStoredQueryRequest extends CreateQueryRequest {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public CreatePageRequest getPageCursorRequest() {
         return (getCreateCursorRequest() != null ? getCreateCursorRequest().getCreatePageRequest() : null);
+    }
+
+    @Override
+    public String toString() {
+        return "ExecuteStoredQueryRequest{" +
+                "id='" + getId() + '\'' +
+                ", name='" + getName() + '\'' +
+                ", query=" + QueryDescriptor.toString(getQuery()) + "\n"+
+                ", createCursorRequest=" + (getCreateCursorRequest()!=null ? getCreateCursorRequest().toString() : "None" )+
+                ", parameters=" + parameters +
+                ", executionParams=" + executionParams +
+                '}';
     }
 }

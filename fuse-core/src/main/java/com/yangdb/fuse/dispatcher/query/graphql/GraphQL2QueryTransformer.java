@@ -26,8 +26,8 @@ import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.query.graphql.wiring.TraversalWiringFactory;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.QueryInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.schema.GraphQLSchema;
@@ -35,7 +35,7 @@ import graphql.schema.idl.SchemaGenerator;
 
 import java.util.Optional;
 
-public class GraphQL2QueryTransformer implements QueryTransformer<QueryInfo<String>, Query>  {
+public class GraphQL2QueryTransformer implements QueryTransformer<CreateJsonQueryRequest, Query>  {
 
     private final GraphQLSchemaUtils schemaUtils;
     private OntologyProvider ontologyProvider;
@@ -47,7 +47,7 @@ public class GraphQL2QueryTransformer implements QueryTransformer<QueryInfo<Stri
     }
 
 
-    public Query transform(QueryInfo<String> query) {
+    public Query transform(CreateJsonQueryRequest query) {
         Optional<Ontology> ontology =  ontologyProvider.get(query.getOntology());
         if(!ontology.isPresent())
             throw new FuseError.FuseErrorException(new FuseError("No ontology was found","Ontology not found "+query.getOntology()));

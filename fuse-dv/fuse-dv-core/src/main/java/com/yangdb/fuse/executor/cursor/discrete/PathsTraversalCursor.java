@@ -36,6 +36,7 @@ import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.results.*;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
+import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.Stream;
@@ -126,6 +127,7 @@ public class PathsTraversalCursor implements Cursor {
         AssignmentsQueryResult.Builder builder = instance();
         final Query pattern = context.getQueryResource().getQuery();
         builder.withPattern(pattern);
+        builder.withCursorType(CreatePathsCursorRequest.CursorType);
         //build assignments
         (context.getTraversal().next(numResults)).forEach(path -> {
             builder.withAssignment(toAssignment(path));

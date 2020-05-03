@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.client.export.GraphWriterStrategy;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.driver.*;
+import com.yangdb.fuse.dispatcher.driver.execute.QueryDriverStrategy;
+import com.yangdb.fuse.dispatcher.driver.execute.QueryStrategyRegistrar;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
@@ -19,22 +21,50 @@ import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.QueryMetadata;
+import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by Roman on 12/15/2017.
  */
 public class MockDriver {
+
+    public static class MockQueryStrategyRegistrar implements QueryStrategyRegistrar {
+        @Override
+        public List<QueryDriverStrategy> register() {
+            return Collections.EMPTY_LIST;
+        }
+
+        @Override
+        public QueryDriverStrategy apply(CreateQueryRequestMetadata request) {
+            return new QueryDriverStrategy() {
+                @Override
+                public boolean test(CreateQueryRequestMetadata request) {
+                    return true;
+                }
+
+                @Override
+                public QueryResourceInfo execute(CreateQueryRequestMetadata request, QueryMetadata metadata) {
+                    return new QueryResourceInfo();
+                }
+            };
+        }
+    }
+
     public static class Query extends QueryDriverBase {
         //region Constructors
         @Inject
         public Query(
+                QueryStrategyRegistrar queryStrategyRegistrar,
                 CursorDriver cursorDriver,
                 PageDriver pageDriver,
                 QueryTransformer<com.yangdb.fuse.model.query.Query, AsgQuery> queryTransformer,
@@ -42,7 +72,7 @@ public class MockDriver {
                 QueryValidator<AsgQuery> queryValidator,
                 ResourceStore resourceStore,
                 AppUrlSupplier urlSupplier) {
-            super(cursorDriver, pageDriver, queryTransformer,transformerFactory , queryValidator, resourceStore, urlSupplier);
+            super(queryStrategyRegistrar,cursorDriver, pageDriver, queryTransformer,transformerFactory , queryValidator, resourceStore, urlSupplier);
         }
         //endregion
 

@@ -24,12 +24,9 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.query.QueryInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
-import javaslang.Tuple2;
-
-import java.util.List;
 
 public class BasicJsonQueryTransformerFactory implements JsonQueryTransformerFactory {
 
@@ -44,7 +41,7 @@ public class BasicJsonQueryTransformerFactory implements JsonQueryTransformerFac
 
 
     @Override
-    public QueryTransformer<QueryInfo<String>, AsgQuery> transform(String type) {
+    public QueryTransformer<CreateJsonQueryRequest, AsgQuery> transform(String type) {
         switch (type) {
             case CreateQueryRequestMetadata.TYPE_CYPHER:
                 return cypherTransformer;

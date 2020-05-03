@@ -61,6 +61,8 @@ public interface QueryDriver {
 
     Optional<Object> runGraphQL(String graphQL, String ontology);
 
+    Optional<Object> runGremlin(String query, String ontology, int pageSize, String cursorType);
+
     Optional<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType);
 
     Optional<Object> getNextPageData(String queryId, Optional<String> cursorId,int pageSize, boolean deleteCurrentPage);
@@ -82,4 +84,5 @@ public interface QueryDriver {
     Optional<Boolean> delete(String queryId);
 
     Optional<GraphTraversal> traversal(Query query);
+
 }

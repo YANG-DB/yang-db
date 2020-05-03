@@ -51,7 +51,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static com.yangdb.fuse.dispatcher.logging.LogMessage.Level.*;
-import static com.yangdb.fuse.dispatcher.logging.LogType.*;
+import static com.yangdb.fuse.dispatcher.logging.LogType.log;
 import static com.yangdb.fuse.dispatcher.logging.RequestIdByScope.Builder.query;
 
 /**
@@ -164,6 +164,24 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
                                 .with(cypher).log();
                     }
                     return this.controller.runCypher(cypher,ontology );
+                }, this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<Object> runGremlin(String query, String ontology, int pageSize, String cursorType) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                run,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    if (query != null) {
+                        new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), createAndFetch)
+                                .with(query).log();
+                    }
+                    return this.controller.runGremlin(query,ontology , pageSize, cursorType);
                 }, this.resultHandler());
     }
 
@@ -377,6 +395,7 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
                 Arrays.asList(info, trace))
                 .decorate(() -> this.controller.traversal(query), this.resultHandler());
     }
+
 
 
     @Override

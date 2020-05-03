@@ -97,6 +97,14 @@ public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends Que
     }
     //endregion
 
+    public String getCursorType() {
+        return cursorType;
+    }
+
+    public void setCursorType(String cursorType) {
+        this.cursorType = cursorType;
+    }
+
     //region Override Methods
     @Override
     public String toString()
@@ -107,6 +115,8 @@ public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends Que
 
     //region Fields
     private Query pattern;
+    private String cursorType;
+
     private List<Assignment<E,R>> assignments;
 
     @Override
@@ -134,6 +144,11 @@ public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends Que
             return this;
         }
 
+        public Builder withCursorType(String type) {
+            this.cursorType = type;
+            return this;
+        }
+
         public Builder withAssignment(Assignment<E,R> assignments) {
             this.assignments.add(assignments);
             return this;
@@ -148,12 +163,14 @@ public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends Que
             AssignmentsQueryResult<E,R> assignmentsQueryResult = new AssignmentsQueryResult<>();
             assignmentsQueryResult.setPattern(pattern);
             assignmentsQueryResult.setAssignments(assignments);
+            assignmentsQueryResult.setCursorType(cursorType);
             return assignmentsQueryResult;
         }
         //endregion
 
         //region Fields
         private Query pattern;
+        private String cursorType;
         private List<Assignment<E,R>> assignments;
         //endregion
     }

@@ -76,6 +76,7 @@ public class GraphHierarchyTraversalCursor implements Cursor<TraversalCursorCont
     public AssignmentsQueryResult getNextResults(int numResults) {
         final Query pattern = getContext().getQueryResource().getQuery();
         this.fullGraph.setPattern(pattern);
+        this.fullGraph.setCursorType(CreateGraphHierarchyCursorRequest.CursorType);
 
         AssignmentsQueryResult newResult = (AssignmentsQueryResult) this.cursor.getNextResults(numResults);
         while(newResult.getAssignments().size() > 0) {

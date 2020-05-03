@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.CursorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.driver.QueryDriverBase;
+import com.yangdb.fuse.dispatcher.driver.execute.QueryStrategyRegistrar;
 import com.yangdb.fuse.dispatcher.epb.PlanSearcher;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
@@ -49,6 +50,7 @@ public class StandardQueryDriver extends QueryDriverBase {
     //region Constructors
     @Inject
     public StandardQueryDriver(
+            QueryStrategyRegistrar queryStrategyRegistrar,
             CursorDriver cursorDriver,
             PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
@@ -58,7 +60,7 @@ public class StandardQueryDriver extends QueryDriverBase {
             PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
-        super(cursorDriver, pageDriver, queryTransformer, transformerFactory , queryValidator, resourceStore, urlSupplier);
+        super(queryStrategyRegistrar,cursorDriver, pageDriver, queryTransformer, transformerFactory , queryValidator, resourceStore, urlSupplier);
         this.queryRewriter = queryRewriter;
         this.planSearcher = planSearcher;
     }

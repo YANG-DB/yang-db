@@ -1,10 +1,10 @@
-package com.yangdb.fuse.dispatcher.query;
+package com.yangdb.fuse.dispatcher.driver.execute;
 
 /*-
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
+ * Copyright (C) 2016 - 2020 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,21 @@ package com.yangdb.fuse.dispatcher.query;
  * #L%
  */
 
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 
-import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
+import java.util.List;
 
-public interface JsonQueryTransformerFactory {
-    QueryTransformer<CreateJsonQueryRequest, AsgQuery> transform(String type);
+public interface QueryStrategyRegistrar<T extends CreateQueryRequestMetadata> {
+    /**
+     * get all query execution strategies
+     * @return
+     */
+    List<QueryDriverStrategy> register();
 
-
+    /**
+     * test for the specific (first) strategy that can handle the query request
+     * @param request
+     * @return
+     */
+    QueryDriverStrategy<T> apply(T request) ;
 }

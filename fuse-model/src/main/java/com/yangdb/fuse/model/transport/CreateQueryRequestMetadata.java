@@ -20,7 +20,6 @@ package com.yangdb.fuse.model.transport;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 
@@ -28,6 +27,7 @@ public interface CreateQueryRequestMetadata<T> {
     String TYPE_V1_QUERY = "v1Query";
     String TYPE_CYPHER = "cypher";
     String TYPE_GRAPH_QL = "graphQL";
+    String TYPE_GREMLIN = "gremlin";
 
     boolean isSearchPlan();
 

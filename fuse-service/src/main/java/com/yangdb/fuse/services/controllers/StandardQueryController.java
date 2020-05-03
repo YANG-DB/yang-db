@@ -108,6 +108,13 @@ public class StandardQueryController implements QueryController<QueryController,
                 .compose();
 
     }
+    @Override
+    public ContentResponse<Object> runGremlin(String query, String ontology, int pageSize, String cursorType) {
+        return Builder.builder(CREATED, SERVER_ERROR )
+                .data(driver().runGremlin(query,ontology,pageSize,cursorType))
+                .successPredicate(objectContentResponse -> true)
+                .compose();
+    }
 
     @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
@@ -306,6 +313,7 @@ public class StandardQueryController implements QueryController<QueryController,
                 .data(driver().traversal(query))
                 .compose();
     }
+
     //endregion
 
     /**

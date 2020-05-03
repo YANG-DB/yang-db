@@ -36,7 +36,7 @@ public class KnowledgeSimpleEntityTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(true);
+        Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         e0 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
         e1 =_e(ctx.nextLogicalId()).cat("person").ctx("context1");

@@ -21,6 +21,8 @@ package com.yangdb.fuse.dispatcher.driver;
  */
 
 import com.google.inject.Inject;
+import com.yangdb.fuse.dispatcher.driver.execute.QueryDriverStrategy;
+import com.yangdb.fuse.dispatcher.driver.execute.QueryStrategyRegistrar;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
@@ -38,7 +40,6 @@ import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.execution.plan.planTree.PlanNode;
 import com.yangdb.fuse.model.query.ParameterizedQuery;
 import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.QueryInfo;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.constraint.NamedParameter;
@@ -48,7 +49,7 @@ import com.yangdb.fuse.model.resourceInfo.*;
 import com.yangdb.fuse.model.results.AssignmentUtils;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.transport.*;
-import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.*;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.model.validation.ValidationResult;
@@ -56,7 +57,6 @@ import javaslang.collection.Stream;
 import javaslang.control.Option;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -74,6 +74,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     //region Constructors
     @Inject
     public QueryDriverBase(
+            QueryStrategyRegistrar queryStrategyRegistrar,
             CursorDriver cursorDriver,
             PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
@@ -81,6 +82,7 @@ public abstract class QueryDriverBase implements QueryDriver {
             QueryValidator<AsgQuery> queryValidator,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
+        this.queryStrategyRegistrar = queryStrategyRegistrar;
         this.cursorDriver = cursorDriver;
         this.pageDriver = pageDriver;
         this.queryTransformer = queryTransformer;
@@ -140,6 +142,26 @@ public abstract class QueryDriverBase implements QueryDriver {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(), "failed building the cursor request " + cursorType)));
 
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
+
+    @Override
+    public Optional<Object> runGremlin(String query, String ontology, int pageSize, String cursorType) {
+        String id = UUID.randomUUID().toString();
+        try {
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GREMLIN, query, ontology,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
         } finally {
             //remove stateless query
 //            delete(id);
@@ -353,55 +375,7 @@ public abstract class QueryDriverBase implements QueryDriver {
      * @return
      */
     protected Optional<QueryResourceInfo> create(CreateJsonQueryRequest request, QueryMetadata metadata) {
-        try {
-            QueryInfo<String> queryInfo = new QueryInfo<>(request.getQuery(), request.getName(), request.getType(), request.getOntology());
-            AsgQuery asgQuery = transform(queryInfo);
-            asgQuery.setName(metadata.getName());
-            asgQuery.setOnt(request.getOntology());
-            //rewrite query
-            asgQuery = rewrite(asgQuery);
-
-
-            ValidationResult validationResult = validateAsgQuery(asgQuery);
-            if (!validationResult.valid()) {
-                return Optional.of(new QueryResourceInfo().error(
-                        new FuseError(Query.class.getSimpleName(),
-                                validationResult.getValidator() + ":" + Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
-            }
-
-            Query build = Query.Builder.instance()
-//                    .withOnt(request.getOntology())
-                    .withOnt(asgQuery.getOnt())
-                    .withName(queryInfo.getQueryName())
-                    .build();
-
-            //create inner query
-            final List<QueryResource> innerQuery = compositeQuery(request, metadata, asgQuery);
-
-            //outer most query resource
-            this.resourceStore.addQueryResource(createResource(
-                    new CreateQueryRequest(request.getId(),
-                            request.getName(),
-                            build,
-                            request.getPlanTraceOptions(),
-                            request.getCreateCursorRequest())
-                    , build
-                    , asgQuery
-                    , metadata)
-                    .withInnerQueryResources(innerQuery));
-
-            return Optional.of(new QueryResourceInfo(
-                    metadata.getType(),
-                    urlSupplier.resourceUrl(metadata.getId()),
-                    metadata.getId(),
-                    urlSupplier.cursorStoreUrl(metadata.getId()))
-                    .withInnerQueryResources(getQueryResourceInfos(innerQuery)));
-        } catch (FuseError.FuseErrorException err) {
-            return Optional.of(new QueryResourceInfo().error(err.getError()));
-        } catch (Exception err) {
-            return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(),err)));
-        }
+        return Optional.of(queryStrategyRegistrar.apply(request).execute(request,metadata));
     }
 
     protected ValidationResult validateAsgQuery(AsgQuery query) {
@@ -419,8 +393,8 @@ public abstract class QueryDriverBase implements QueryDriver {
         return this.queryTransformer.transform(query);
     }
 
-    protected AsgQuery transform(QueryInfo<String> query) {
-        return this.transformerFactory.transform(query.getQueryType()).transform(query);
+    protected AsgQuery transform(CreateJsonQueryRequest queryRequest) {
+        return this.transformerFactory.transform(queryRequest.getType()).transform(queryRequest);
     }
 
     @Override
@@ -767,6 +741,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     protected abstract AsgQuery rewrite(AsgQuery asgQuery);
     //endregion
 
+    private QueryStrategyRegistrar queryStrategyRegistrar;
     //region Fields
     private final CursorDriver cursorDriver;
     private final PageDriver pageDriver;

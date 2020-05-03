@@ -39,6 +39,7 @@ import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.results.*;
 import com.yangdb.fuse.model.results.Property;
+import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.yangdb.fuse.unipop.promise.IdPromise;
 import com.yangdb.fuse.unipop.structure.promise.PromiseEdge;
 import com.yangdb.fuse.unipop.structure.promise.PromiseVertex;
@@ -95,6 +96,7 @@ public class TraversalCursor implements Cursor {
     private AssignmentsQueryResult toQuery(int numResults) {
         AssignmentsQueryResult.Builder builder = instance();
         builder.withPattern(context.getQueryResource().getQuery());
+        builder.withCursorType(CreatePathsCursorRequest.CursorType);
         //build assignments
         (context.getTraversal().next(numResults)).forEach(path -> {
             builder.withAssignment(toAssignment(path));

@@ -22,6 +22,7 @@ package com.yangdb.fuse.executor;
 
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
+import com.google.inject.Singleton;
 import com.google.inject.internal.SingletonScope;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
@@ -35,6 +36,8 @@ import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.driver.CursorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.driver.QueryDriver;
+import com.yangdb.fuse.dispatcher.driver.execute.DefaultQueryDriverStrategyRegistrar;
+import com.yangdb.fuse.dispatcher.driver.execute.QueryStrategyRegistrar;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.dispatcher.resource.store.LoggingResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
@@ -86,6 +89,8 @@ public class ExecutorModule extends ModuleBase {
         bindRawSchema(env, conf, binder);
         bindSchemaProviderFactory(env, conf, binder);
         bindUniGraphProvider(env, conf, binder);
+
+        binder.bind(QueryStrategyRegistrar.class).to(DefaultQueryDriverStrategyRegistrar.class).in(new SingletonScope());
 
         binder.bind(QueryDriver.class).to(StandardQueryDriver.class).in(RequestScoped.class);
         binder.bind(CursorDriver.class).to(StandardCursorDriver.class).in(RequestScoped.class);

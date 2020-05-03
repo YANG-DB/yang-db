@@ -6,6 +6,7 @@ import com.yangdb.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.yangdb.fuse.dispatcher.driver.CursorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.driver.QueryDriver;
+import com.yangdb.fuse.dispatcher.driver.execute.QueryStrategyRegistrar;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.dispatcher.resource.store.InMemoryResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
@@ -37,6 +38,8 @@ public class DriverTestModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(ResourceStore.class).toInstance(new InMemoryResourceStore());
+        binder.bind(QueryStrategyRegistrar.class).to(MockDriver.MockQueryStrategyRegistrar.class);
+
         binder.bind(QueryDriver.class).to(MockDriver.Query.class).in(RequestScoped.class);
         binder.bind(CursorDriver.class).to(MockDriver.Cursor.class).in(RequestScoped.class);
         binder.bind(PageDriver.class).to(MockDriver.Page.class).in(RequestScoped.class);

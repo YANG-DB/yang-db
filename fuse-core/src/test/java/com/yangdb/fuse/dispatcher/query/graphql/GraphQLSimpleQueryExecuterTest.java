@@ -5,7 +5,7 @@ import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.QueryInfo;
+import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,7 +19,7 @@ import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_GR
 
 public class GraphQLSimpleQueryExecuterTest {
     public static Ontology ontology;
-    public static QueryTransformer<QueryInfo<String>, Query> transformer;
+    public static QueryTransformer<CreateJsonQueryRequest, Query> transformer;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -54,7 +54,7 @@ public class GraphQLSimpleQueryExecuterTest {
                 "        description\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new CreateJsonQueryRequest("q1","q1", TYPE_GRAPH_QL,q,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4}, \n" +
                 "                          └─?[3]:[name<IdentityProjection>], \n" +
@@ -83,7 +83,7 @@ public class GraphQLSimpleQueryExecuterTest {
                 "        description\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new CreateJsonQueryRequest("q1","q1", TYPE_GRAPH_QL,q,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|5}, \n" +
                 "                            └─?[3]:[name<like,jhone>, description<notEmpty,null>], \n" +
@@ -101,7 +101,8 @@ public class GraphQLSimpleQueryExecuterTest {
                 "        }\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q2", TYPE_GRAPH_QL,"test"));
+
+        Query query = transformer.transform(new CreateJsonQueryRequest("q2","q2", TYPE_GRAPH_QL,q,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3}, \n" +
                 "                        └-> Rel(friends:3)──Typ[Character:4]──Q[5]:{6}, \n" +
@@ -123,7 +124,7 @@ public class GraphQLSimpleQueryExecuterTest {
                 "            }\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q3", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new CreateJsonQueryRequest("q3","q3", TYPE_GRAPH_QL,q,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
                 "                            └─?[3]:[name<IdentityProjection>], \n" +
@@ -153,7 +154,7 @@ public class GraphQLSimpleQueryExecuterTest {
                 "        }\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q4", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new CreateJsonQueryRequest("q4","q4", TYPE_GRAPH_QL,q,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
                 "                            └─?[3]:[name<IdentityProjection>], \n" +

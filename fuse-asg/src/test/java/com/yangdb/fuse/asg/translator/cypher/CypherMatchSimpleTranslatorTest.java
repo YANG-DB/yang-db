@@ -3,8 +3,8 @@ package com.yangdb.fuse.asg.translator.cypher;
 import com.yangdb.fuse.asg.translator.AsgTranslator;
 import com.yangdb.fuse.asg.translator.cypher.strategies.MatchCypherTranslatorStrategy;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.query.QueryInfo;
 import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -39,9 +39,9 @@ public class CypherMatchSimpleTranslatorTest {
     //region Test Methods
     @Test
     public void testMatch_A_Return_A() {
-        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        AsgTranslator<CreateJsonQueryRequest,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a) RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new CreateJsonQueryRequest("q1","q1", TYPE_CYPHER, s,"test"));
 
 
         AsgQuery expected = AsgQuery.Builder
@@ -54,9 +54,9 @@ public class CypherMatchSimpleTranslatorTest {
 
     @Test
     public void testMatch_A_ofType_Dragon_Return_A() {
-        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        AsgTranslator<CreateJsonQueryRequest,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a:Dragon) RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new CreateJsonQueryRequest("q1","q1", TYPE_CYPHER, s,"test"));
 
 
         AsgQuery expected = AsgQuery.Builder
@@ -69,9 +69,9 @@ public class CypherMatchSimpleTranslatorTest {
 
     @Test
     public void testMatch_A_ofType_Dragon_Person_Return_A() {
-        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        AsgTranslator<CreateJsonQueryRequest,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a:Dragon:Person) RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new CreateJsonQueryRequest("q1","q1", TYPE_CYPHER, s,"test"));
 
 
         AsgQuery expected = AsgQuery.Builder
@@ -85,9 +85,9 @@ public class CypherMatchSimpleTranslatorTest {
     @Test
     @Ignore("Not supported multi labels on edges")
     public void testMatch_A_ofRelType_Dragon_Person_Return_A() {
-        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        AsgTranslator<CreateJsonQueryRequest,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a:Dragon)-[c:Fire|Freeze]-(b:Person) RETURN *";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new CreateJsonQueryRequest("q1","q1", TYPE_CYPHER, s,"test"));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -103,9 +103,9 @@ public class CypherMatchSimpleTranslatorTest {
 
     @Test
     public void testMatch_NodeA_NodeB_Return_A() {
-        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        AsgTranslator<CreateJsonQueryRequest,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a)--(b) RETURN a,b";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new CreateJsonQueryRequest("q1","q1", TYPE_CYPHER, s,"test"));
 
 
         AsgQuery expected = AsgQuery.Builder
@@ -122,9 +122,9 @@ public class CypherMatchSimpleTranslatorTest {
 
     @Test
     public void testMatch_Directional_NodeA_NodeB_Return_A() {
-        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        AsgTranslator<CreateJsonQueryRequest,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a)-->(b) RETURN a,b";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new CreateJsonQueryRequest("q1","q1", TYPE_CYPHER, s,"test"));
 
 
         AsgQuery expected = AsgQuery.Builder
@@ -142,9 +142,9 @@ public class CypherMatchSimpleTranslatorTest {
 
     @Test
     public void testMatch_A_ofType_Dragon_B_ofType_Person_Return_A() {
-        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        AsgTranslator<CreateJsonQueryRequest,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a:Dragon)--(b:Person) RETURN a,b";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new CreateJsonQueryRequest("q1","q1", TYPE_CYPHER, s,"test"));
 
 
         AsgQuery expected = AsgQuery.Builder
@@ -161,9 +161,9 @@ public class CypherMatchSimpleTranslatorTest {
 
     @Test
     public void testMatch_NodeA_RelR_NodeB_Return_A() {
-        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        AsgTranslator<CreateJsonQueryRequest,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a:Dragon)-[c]-(b:Person) RETURN a,b,c";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new CreateJsonQueryRequest("q1","q1", TYPE_CYPHER, s,"test"));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -178,9 +178,9 @@ public class CypherMatchSimpleTranslatorTest {
 
     @Test
     public void testMatch_Directional_NodeA_RelR_NodeB_Return_A() {
-        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        AsgTranslator<CreateJsonQueryRequest,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a)-[c]->(b) RETURN a,b,c";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new CreateJsonQueryRequest("q1","q1", TYPE_CYPHER, s,"test"));
 
 
         AsgQuery expected = AsgQuery.Builder
@@ -198,9 +198,9 @@ public class CypherMatchSimpleTranslatorTest {
 
     @Test
     public void testMatch_Labeled_NodeA_RelR_NodeB_Return_A() {
-        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
+        AsgTranslator<CreateJsonQueryRequest,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a:Dragon)-[c:Fire]-(b:Person) RETURN a,b,c";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new CreateJsonQueryRequest("q1","q1", TYPE_CYPHER, s,"test"));
 
 
         AsgQuery expected = AsgQuery.Builder

@@ -28,6 +28,9 @@ import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.properties.CalculatedEProp;
 import com.yangdb.fuse.model.query.properties.projection.CalculatedFieldProjection;
 import com.yangdb.fuse.model.results.*;
+import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
+import com.yangdb.fuse.model.transport.cursor.CreateGraphHierarchyCursorRequest;
+import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
@@ -72,6 +75,7 @@ public class GraphTraversalCursor implements Cursor<TraversalCursorContext> {
     public AssignmentsQueryResult getNextResults(int numResults) {
         final Query pattern = getContext().getQueryResource().getQuery();
         this.fullGraph.setPattern(pattern);
+        this.fullGraph.setCursorType(CreateGraphCursorRequest.CursorType);
 
         AssignmentsQueryResult newResult = (AssignmentsQueryResult) this.cursor.getNextResults(numResults);
         consolidateFullGraph(newResult);

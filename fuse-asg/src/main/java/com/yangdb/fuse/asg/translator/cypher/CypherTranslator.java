@@ -26,12 +26,12 @@ import com.yangdb.fuse.asg.translator.AsgTranslator;
 import com.yangdb.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.yangdb.fuse.asg.translator.cypher.strategies.CypherTranslatorStrategy;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.query.QueryInfo;
+import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 import org.opencypher.v9_0.ast.Statement;
 import org.opencypher.v9_0.parser.CypherParser;
 import scala.Option;
 
-public class CypherTranslator implements AsgTranslator<QueryInfo<String>,AsgQuery> {
+public class CypherTranslator implements AsgTranslator<CreateJsonQueryRequest,AsgQuery> {
 
     @Inject
     public CypherTranslator(CypherAsgStrategyRegistrar strategies) {
@@ -41,7 +41,7 @@ public class CypherTranslator implements AsgTranslator<QueryInfo<String>,AsgQuer
 
 
     @Override
-    public AsgQuery translate(QueryInfo<String> source) {
+    public AsgQuery translate(CreateJsonQueryRequest source) {
 
         final AsgQuery query = AsgQuery.Builder.start("cypher_", source.getOntology()).build();
 

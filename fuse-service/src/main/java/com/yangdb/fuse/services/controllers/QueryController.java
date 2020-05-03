@@ -195,4 +195,14 @@ public interface QueryController<C,D> extends Controller<C,D> {
      * @return
      */
     ContentResponse<GraphTraversal> traversal(Query query);
+
+    /**
+     * run a gremlin query (similar to gremlin server support)_
+     * @param query
+     * @param ontology
+     * @param pageSize
+     * @param cursorType
+     * @return
+     */
+    ContentResponse<Object> runGremlin(String query, String ontology, int pageSize, String cursorType);
 }

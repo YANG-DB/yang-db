@@ -26,6 +26,7 @@ import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.results.AssignmentCount;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
+import com.yangdb.fuse.model.transport.cursor.CountCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCsvCursorRequest;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
@@ -63,6 +64,7 @@ public class CountTraversalCursor extends PathsTraversalCursor {
         AssignmentsQueryResult.Builder builder = instance();
         final Query pattern = getContext().getQueryResource().getQuery();
         builder.withPattern(pattern);
+        builder.withCursorType(CountCursorRequest.CursorType);
         Map<String,AtomicLong> labelsCount = new HashMap<>();
         //build assignments
         while (getContext().getTraversal().hasNext()) {

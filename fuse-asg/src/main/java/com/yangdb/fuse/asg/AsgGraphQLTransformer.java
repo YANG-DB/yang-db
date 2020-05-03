@@ -24,15 +24,15 @@ package com.yangdb.fuse.asg;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.asg.QueryToAsgTransformer;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
-import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2QueryTransformer;
+import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.QueryInfo;
+import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 
 /**
  * Created by liorp on 12/15/2017.
  */
-public class AsgGraphQLTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery>  {
+public class AsgGraphQLTransformer implements QueryTransformer<CreateJsonQueryRequest, AsgQuery>  {
     private GraphQL2QueryTransformer graphQL2QueryTransformer;
     private final QueryToAsgTransformer queryTransformer;
 
@@ -48,7 +48,7 @@ public class AsgGraphQLTransformer implements QueryTransformer<QueryInfo<String>
     //region QueryTransformer Implementation
 
     @Override
-    public AsgQuery transform(QueryInfo<String> query) {
+    public AsgQuery transform(CreateJsonQueryRequest query) {
         Query transform = graphQL2QueryTransformer.transform(query);
         return queryTransformer.transform(transform);
     }

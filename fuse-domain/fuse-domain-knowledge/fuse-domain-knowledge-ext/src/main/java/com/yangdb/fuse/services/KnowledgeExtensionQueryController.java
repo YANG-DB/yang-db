@@ -156,6 +156,11 @@ public class KnowledgeExtensionQueryController implements QueryController<QueryC
     }
 
     @Override
+    public ContentResponse<Object> runGremlin(String query, String ontology, int pageSize, String cursorType) {
+        return controller.runGremlin(query,ontology,pageSize,cursorType);
+    }
+
+    @Override
     public QueryController driver(ExtensionQueryDriver driver) {
         return this;
     }

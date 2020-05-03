@@ -20,6 +20,7 @@ package com.yangdb.fuse.assembly.knowledge.cursor;
  * #L%
  */
 
+import com.yangdb.fuse.assembly.knowledge.KnowledgeGraphHierarchyCursorRequest;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.utils.PlanUtil;
@@ -179,6 +180,7 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor<TraversalC
         final Query pattern = getContext().getQueryResource().getQuery();
         return AssignmentsQueryResult.Builder.instance()
                 .withPattern(pattern)
+                .withCursorType(CreateGraphHierarchyCursorRequest.CursorType)
                 .withAssignment(assignment).build();
     }
 

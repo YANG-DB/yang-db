@@ -32,6 +32,7 @@ import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
+import com.yangdb.fuse.model.transport.cursor.CreateForwardOnlyPathTraversalCursorRequest;
 import org.unipop.structure.UniElement;
 
 import java.util.stream.Collectors;
@@ -75,6 +76,7 @@ public class ForwardOnlyPathsTraversalCursor extends PathsTraversalCursor {
             int edges = AsgQueryUtil.elements(asgQuery, Rel.class).size();
             final Query pattern = getContext().getQueryResource().getQuery();
             builder.withPattern(pattern);
+            builder.withCursorType(CreateForwardOnlyPathTraversalCursorRequest.CursorType);
             //build assignments
             (getContext().getTraversal().next(numResults)).forEach(path -> {
                 Assignment assignments = toAssignment(path);

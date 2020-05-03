@@ -21,9 +21,9 @@ package com.yangdb.fuse.asg;
  */
 
 
-
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
+import com.typesafe.config.Config;
 import com.yangdb.fuse.asg.strategy.AsgStrategyRegistrar;
 import com.yangdb.fuse.asg.strategy.CypherAsgStrategyRegistrar;
 import com.yangdb.fuse.asg.strategy.M1AsgStrategyRegistrar;
@@ -34,8 +34,7 @@ import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.query.Query;
-import com.typesafe.config.Config;
-import com.yangdb.fuse.model.query.QueryInfo;
+import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 import org.jooby.Env;
 
 /**
@@ -55,7 +54,7 @@ public class AsgModule extends ModuleBase {
                 .to(QueryToCompositeAsgTransformer.class)
                 .asEagerSingleton();
 
-        binder.bind(new TypeLiteral<QueryTransformer<QueryInfo<String>, AsgQuery>>(){})
+        binder.bind(new TypeLiteral<QueryTransformer<CreateJsonQueryRequest, AsgQuery>>(){})
                 .to(AsgCypherTransformer.class)
                 .asEagerSingleton();
 

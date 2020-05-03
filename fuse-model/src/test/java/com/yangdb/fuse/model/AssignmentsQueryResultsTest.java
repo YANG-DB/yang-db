@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.results.*;
+import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.junit.Assert;
@@ -188,6 +189,7 @@ public class AssignmentsQueryResultsTest {
 
         assignments.add(assignment);
         result1Obj.setPattern(pattern);
+        result1Obj.setCursorType(CreatePathsCursorRequest.CursorType);
         result1Obj.setAssignments(assignments);
 
 

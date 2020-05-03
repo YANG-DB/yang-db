@@ -114,6 +114,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         graphQLContext(app, appUrlSupplier);
 
 
+        /** call a gremlin query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/gremlin",req -> API.gremlin(app,req,this.getController(app)));
+
         /** call a query */
         app.post(appUrlSupplier.queryStoreUrl() + "/call",req -> API.call(app,req,this.getController(app)));
 
@@ -378,6 +381,21 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             return Results.with(response, response.status());
         }
 
+        public static Result gremlin(Jooby app, Request req, QueryController controller) throws Exception {
+            Route.of("gremlin").write();
+
+            String query = req.param("gremlin").value();
+            String ontology = req.param("ontology").value();
+            req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
+
+            ContentResponse<Object> response = controller.runGremlin(query,ontology,
+                    req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
+                    req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
+            );
+
+            return Results.with(response, response.status());
+
+        }
         public static Result call(Jooby app, Request req, QueryController controller) throws Exception {
             Route.of("callQuery").write();
 
