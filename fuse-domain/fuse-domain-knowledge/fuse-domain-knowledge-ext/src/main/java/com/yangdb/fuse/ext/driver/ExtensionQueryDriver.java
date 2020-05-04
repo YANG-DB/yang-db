@@ -56,7 +56,6 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
     //region Constructors
     @Inject
     public ExtensionQueryDriver(
-            QueryStrategyRegistrar queryStrategyRegistrar,
             CursorDriver cursorDriver,
             PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
@@ -67,7 +66,7 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
             ResourceStore resourceStore,
             BusinessTypesProvider typesProvider,
             AppUrlSupplier urlSupplier) {
-        super(queryStrategyRegistrar,cursorDriver, pageDriver, queryTransformer, queryValidator, queryRewriter, transformerFactory, planSearcher, resourceStore, urlSupplier);
+        super(cursorDriver, pageDriver, queryTransformer, queryValidator, queryRewriter, transformerFactory, planSearcher, resourceStore, urlSupplier);
         this.typesProvider = typesProvider;
         this.transformer = new AsgClauseTransformer(new JsonQueryTranslator(), typesProvider);
     }

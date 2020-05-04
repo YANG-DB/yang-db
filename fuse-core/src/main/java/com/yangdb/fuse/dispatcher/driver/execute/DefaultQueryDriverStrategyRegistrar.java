@@ -22,6 +22,7 @@ package com.yangdb.fuse.dispatcher.driver.execute;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.CursorDriver;
+import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.epb.PlanSearcher;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
@@ -31,6 +32,7 @@ import com.yangdb.fuse.dispatcher.validation.QueryValidator;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 
@@ -39,7 +41,9 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class DefaultQueryDriverStrategyRegistrar implements QueryStrategyRegistrar {
+    private PageDriver pageDriver;
     private final CursorDriver cursorDriver;
+    private QueryTransformer<Query, AsgQuery> queryTransformer;
     private QueryTransformer<AsgQuery, AsgQuery> queryRewriter;
     private final JsonQueryTransformerFactory transformerFactory;
     private final QueryValidator<AsgQuery> queryValidator;
@@ -49,15 +53,18 @@ public class DefaultQueryDriverStrategyRegistrar implements QueryStrategyRegistr
 
     @Inject
     public DefaultQueryDriverStrategyRegistrar(
+            PageDriver pageDriver,
             CursorDriver cursorDriver,
+            QueryTransformer<Query, AsgQuery> queryTransformer,
             QueryTransformer<AsgQuery, AsgQuery> queryRewriter,
             JsonQueryTransformerFactory transformerFactory,
             QueryValidator<AsgQuery> queryValidator,
             ResourceStore resourceStore,
             PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher,
             AppUrlSupplier urlSupplier) {
-
+        this.pageDriver = pageDriver;
         this.cursorDriver = cursorDriver;
+        this.queryTransformer = queryTransformer;
         this.queryRewriter = queryRewriter;
         this.transformerFactory = transformerFactory;
         this.queryValidator = queryValidator;
@@ -68,7 +75,10 @@ public class DefaultQueryDriverStrategyRegistrar implements QueryStrategyRegistr
 
     @Override
     public List<QueryDriverStrategy> register() {
-        return Arrays.asList(new BaseQueryDriverStrategy(cursorDriver, queryRewriter, transformerFactory, queryValidator, resourceStore, planSearcher, urlSupplier));
+        return Arrays.asList(
+                new V1QueryDriverStrategy(pageDriver,cursorDriver, queryRewriter,queryTransformer, queryValidator, resourceStore, planSearcher, urlSupplier),
+                new StoredQueryDriverStrategy(pageDriver,cursorDriver, queryRewriter,queryTransformer, queryValidator, resourceStore, planSearcher, urlSupplier),
+                new CypherQueryDriverStrategy(pageDriver,cursorDriver, queryRewriter, transformerFactory, queryValidator, resourceStore, planSearcher, urlSupplier));
     }
 
 

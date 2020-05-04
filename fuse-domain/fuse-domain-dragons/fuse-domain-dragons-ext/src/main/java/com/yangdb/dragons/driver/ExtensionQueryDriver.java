@@ -42,7 +42,6 @@ import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -54,7 +53,6 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
     //region Constructors
     @Inject
     public ExtensionQueryDriver(
-            QueryStrategyRegistrar queryStrategyRegistrar,
             CursorDriver cursorDriver,
             PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
@@ -64,7 +62,7 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
             PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
-        super(queryStrategyRegistrar,cursorDriver, pageDriver, queryTransformer, queryValidator, queryRewriter, transformerFactory, planSearcher, resourceStore, urlSupplier);
+        super(cursorDriver, pageDriver, queryTransformer, queryValidator, queryRewriter, transformerFactory, planSearcher, resourceStore, urlSupplier);
     }
     //endregion
 

@@ -22,7 +22,10 @@ package com.yangdb.fuse.dispatcher.driver.execute;
 
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
+import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
+
+import java.util.Optional;
 
 public interface QueryDriverStrategy<T extends CreateQueryRequestMetadata> {
     /**
@@ -38,5 +41,13 @@ public interface QueryDriverStrategy<T extends CreateQueryRequestMetadata> {
      * @param metadata
      * @return
      */
-    QueryResourceInfo execute(T request, QueryMetadata metadata);
-}
+    Optional<QueryResourceInfo> execute(T request, QueryMetadata metadata);
+
+    /**
+     *
+     * @param request
+     * @return
+     */
+    Optional<QueryResourceInfo> create(T request);
+
+    }

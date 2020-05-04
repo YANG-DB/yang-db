@@ -53,8 +53,14 @@ public class MockDriver {
                 }
 
                 @Override
-                public QueryResourceInfo execute(CreateQueryRequestMetadata request, QueryMetadata metadata) {
-                    return new QueryResourceInfo();
+                public Optional<QueryResourceInfo> execute(CreateQueryRequestMetadata request, QueryMetadata metadata) {
+                    return Optional.of(new QueryResourceInfo());
+                }
+
+
+                @Override
+                public Optional<QueryResourceInfo> create(CreateQueryRequestMetadata request) {
+                    return Optional.of(new QueryResourceInfo());
                 }
             };
         }
@@ -64,7 +70,6 @@ public class MockDriver {
         //region Constructors
         @Inject
         public Query(
-                QueryStrategyRegistrar queryStrategyRegistrar,
                 CursorDriver cursorDriver,
                 PageDriver pageDriver,
                 QueryTransformer<com.yangdb.fuse.model.query.Query, AsgQuery> queryTransformer,
@@ -72,7 +77,7 @@ public class MockDriver {
                 QueryValidator<AsgQuery> queryValidator,
                 ResourceStore resourceStore,
                 AppUrlSupplier urlSupplier) {
-            super(queryStrategyRegistrar,cursorDriver, pageDriver, queryTransformer,transformerFactory , queryValidator, resourceStore, urlSupplier);
+            super(cursorDriver, pageDriver, queryTransformer,transformerFactory , queryValidator, resourceStore, urlSupplier);
         }
         //endregion
 

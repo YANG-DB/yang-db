@@ -21,8 +21,6 @@ package com.yangdb.fuse.dispatcher.driver;
  */
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.dispatcher.driver.execute.QueryDriverStrategy;
-import com.yangdb.fuse.dispatcher.driver.execute.QueryStrategyRegistrar;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
@@ -74,7 +72,6 @@ public abstract class QueryDriverBase implements QueryDriver {
     //region Constructors
     @Inject
     public QueryDriverBase(
-            QueryStrategyRegistrar queryStrategyRegistrar,
             CursorDriver cursorDriver,
             PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
@@ -82,7 +79,6 @@ public abstract class QueryDriverBase implements QueryDriver {
             QueryValidator<AsgQuery> queryValidator,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
-        this.queryStrategyRegistrar = queryStrategyRegistrar;
         this.cursorDriver = cursorDriver;
         this.pageDriver = pageDriver;
         this.queryTransformer = queryTransformer;
@@ -375,7 +371,54 @@ public abstract class QueryDriverBase implements QueryDriver {
      * @return
      */
     protected Optional<QueryResourceInfo> create(CreateJsonQueryRequest request, QueryMetadata metadata) {
-        return Optional.of(queryStrategyRegistrar.apply(request).execute(request,metadata));
+        try {
+            AsgQuery asgQuery = transform(request);
+            asgQuery.setName(metadata.getName());
+            asgQuery.setOnt(request.getOntology());
+            //rewrite query
+            asgQuery = rewrite(asgQuery);
+
+
+            ValidationResult validationResult = validateAsgQuery(asgQuery);
+            if (!validationResult.valid()) {
+                return Optional.of(new QueryResourceInfo().error(
+                        new FuseError(Query.class.getSimpleName(),
+                                validationResult.getValidator() + ":" + Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
+            }
+
+            Query build = Query.Builder.instance()
+//                    .withOnt(request.getOntology())
+                    .withOnt(asgQuery.getOnt())
+                    .withName(request.getName())
+                    .build();
+
+            //create inner query
+            final List<QueryResource> innerQuery = compositeQuery(request, metadata, asgQuery);
+
+            //outer most query resource
+            this.resourceStore.addQueryResource(createResource(
+                    new CreateQueryRequest(request.getId(),
+                            request.getName(),
+                            build,
+                            request.getPlanTraceOptions(),
+                            request.getCreateCursorRequest())
+                    , build
+                    , asgQuery
+                    , metadata)
+                    .withInnerQueryResources(innerQuery));
+
+            return Optional.of(new QueryResourceInfo(
+                    metadata.getType(),
+                    urlSupplier.resourceUrl(metadata.getId()),
+                    metadata.getId(),
+                    urlSupplier.cursorStoreUrl(metadata.getId()))
+                    .withInnerQueryResources(getQueryResourceInfos(innerQuery)));
+        } catch (FuseError.FuseErrorException err) {
+            return Optional.of(new QueryResourceInfo().error(err.getError()));
+        } catch (Exception err) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(),err)));
+        }
     }
 
     protected ValidationResult validateAsgQuery(AsgQuery query) {
@@ -741,7 +784,6 @@ public abstract class QueryDriverBase implements QueryDriver {
     protected abstract AsgQuery rewrite(AsgQuery asgQuery);
     //endregion
 
-    private QueryStrategyRegistrar queryStrategyRegistrar;
     //region Fields
     private final CursorDriver cursorDriver;
     private final PageDriver pageDriver;

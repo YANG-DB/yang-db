@@ -50,7 +50,6 @@ public class StandardQueryDriver extends QueryDriverBase {
     //region Constructors
     @Inject
     public StandardQueryDriver(
-            QueryStrategyRegistrar queryStrategyRegistrar,
             CursorDriver cursorDriver,
             PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
@@ -60,7 +59,7 @@ public class StandardQueryDriver extends QueryDriverBase {
             PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher,
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
-        super(queryStrategyRegistrar,cursorDriver, pageDriver, queryTransformer, transformerFactory , queryValidator, resourceStore, urlSupplier);
+        super(cursorDriver, pageDriver, queryTransformer, transformerFactory , queryValidator, resourceStore, urlSupplier);
         this.queryRewriter = queryRewriter;
         this.planSearcher = planSearcher;
     }
