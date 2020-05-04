@@ -36,7 +36,7 @@ public class KnowledgeSimpleEntityTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();
+//        Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         e0 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
         e1 =_e(ctx.nextLogicalId()).cat("person").ctx("context1");
@@ -72,12 +72,25 @@ public class KnowledgeSimpleEntityTests {
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
         Assert.assertEquals(1, assignments.size());
+        //Test Suite Context
         Assert.assertEquals(17, assignments.get(0).getRelationships().size());
         Assert.assertEquals(17, assignments.get(0).getRelationships().stream().filter(e->e.getrType().equals("hasEvalue")).count());
 
         Assert.assertEquals(30, assignments.get(0).getEntities().size());
         Assert.assertEquals(16, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Evalue")).count());
         Assert.assertEquals(14, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Entity")).count());
+
+        //Single test context
+/*
+        Assert.assertEquals(3, assignments.get(0).getRelationships().size());
+        Assert.assertEquals(3, assignments.get(0).getRelationships().stream().filter(e->e.getrType().equals("hasEvalue")).count());
+        Assert.assertEquals(3, assignments.get(0).getRelationships().size());
+        Assert.assertEquals(3, assignments.get(0).getRelationships().stream().filter(e->e.getrType().equals("hasEvalue")).count());
+
+        Assert.assertEquals(5, assignments.get(0).getEntities().size());
+        Assert.assertEquals(3, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Evalue")).count());
+        Assert.assertEquals(2, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Entity")).count());
+*/
 
     }
 
@@ -95,12 +108,23 @@ public class KnowledgeSimpleEntityTests {
         // Check Entity Response
         Assert.assertEquals(1, pageData.getSize());
         Assert.assertEquals(1, assignments.size());
+        //Test Suite COntext
         Assert.assertEquals(17, assignments.get(0).getRelationships().size());
         Assert.assertEquals(17, assignments.get(0).getRelationships().stream().filter(e->e.getrType().equals("hasEvalue")).count());
 
         Assert.assertEquals(30, assignments.get(0).getEntities().size());
         Assert.assertEquals(16, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Evalue")).count());
         Assert.assertEquals(14, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Entity")).count());
+        //Single Test Context
+/*
+        Assert.assertEquals(3, assignments.get(0).getRelationships().size());
+        Assert.assertEquals(3, assignments.get(0).getRelationships().stream().filter(e->e.getrType().equals("hasEvalue")).count());
+
+        Assert.assertEquals(5, assignments.get(0).getEntities().size());
+        Assert.assertEquals(3, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Evalue")).count());
+        Assert.assertEquals(2, assignments.get(0).getEntities().stream().filter(e->e.geteType().equals("Entity")).count());
+*/
+
     }
 
     @Test
