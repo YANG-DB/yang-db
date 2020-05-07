@@ -195,6 +195,7 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
         private ArrayList<SearchHit> searchHits;
         private String scrollId;
         private long counter;
+        private long totalHits;
         //endregion
     }
     //endregion

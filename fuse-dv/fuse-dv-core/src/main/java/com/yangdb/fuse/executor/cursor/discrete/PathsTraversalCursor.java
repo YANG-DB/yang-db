@@ -127,9 +127,8 @@ public class PathsTraversalCursor implements Cursor {
         final Query pattern = context.getQueryResource().getQuery();
         builder.withPattern(pattern);
         //build assignments
-        (context.getTraversal().next(numResults)).forEach(path -> {
-            builder.withAssignment(toAssignment(path));
-        });
+        List<Path> paths = context.getTraversal().next(numResults);
+        paths.forEach(path -> builder.withAssignment(toAssignment(path)));
         return builder.build();
     }
 

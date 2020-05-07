@@ -9,9 +9,9 @@ package com.yangdb.fuse.asg.validation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ package com.yangdb.fuse.asg.validation;
  * limitations under the License.
  * #L%
  */
-
 
 
 import com.yangdb.fuse.model.Tagged;
@@ -40,21 +39,28 @@ import static java.util.stream.Collectors.groupingBy;
 
 public class AsgEntityDuplicateETagValidatorStrategy implements AsgValidatorStrategy {
     public static final String ERROR_1 = "ETag %s appears in more than one entity with a different type (label)";
+    public static final String ERROR_2 = "ETag %s cannot begin with any of the preserved symbols : ['_','$'] ";
+    public static final String[] PRESERVED_LANGUAGE_TAG_SYMBOLS = {"_", "$"};
 
     @Override
     public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {
         List<String> errors = new ArrayList<>();
 
+
         Map<String, List<AsgEBase<EBase>>> map = AsgQueryUtil.groupByTags(query.getStart());
+        //dont allow preserved language etag symbols in name
+        map.entrySet().stream()
+                .filter(t -> Arrays.stream(PRESERVED_LANGUAGE_TAG_SYMBOLS).anyMatch(w->t.getKey().startsWith(w)))
+                .anyMatch(p -> errors.add(String.format(ERROR_2, p.getKey())));
 
         map.entrySet().stream()
                 .filter(e -> e.getValue().size() > 1)
                 .forEach(e -> {
-                    if(e.getValue()
+                    if (e.getValue()
                             .stream()
-                            .filter(v->v.geteBase() instanceof Typed)
+                            .filter(v -> v.geteBase() instanceof Typed)
                             .collect(groupingBy(o -> ((Typed) o.geteBase()).getTyped())).size() > 1) {
-                        errors.add(String.format(ERROR_1,e.getKey()));
+                        errors.add(String.format(ERROR_1, e.getKey()));
                     }
                 });
 

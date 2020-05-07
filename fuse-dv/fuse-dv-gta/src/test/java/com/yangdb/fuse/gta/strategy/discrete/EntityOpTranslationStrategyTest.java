@@ -14,6 +14,7 @@ import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
+import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.properties.EProp;
@@ -114,6 +115,22 @@ public class EntityOpTranslationStrategyTest {
                 .build();
     }
 
+    public static AsgQuery simpleQuery3(String queryName, String ontologyName) {
+        return AsgQuery.Builder.start(queryName, ontologyName)
+                .next(typed(1, "1", "A"))
+                .next(rel(2, "1", R).below(relProp(10, RelProp.of(10, "2", of(eq, "value2")))))
+                .next(concrete(3, "123456","2","concrete", "B"))
+                .next(quant1(4, all))
+                .in(ePropGroup(9, EProp.of(9, "1", of(eq, "value1")), EProp.of(9, "3", of(gt, "value3")))
+                        , rel(5, "4", R)
+                                .next(unTyped(6, "C"))
+                        , rel(7, "5", R)
+                                .below(relProp(11, RelProp.of(11, "5", of(eq, "value5")), RelProp.of(11, "4", of(eq, "value4"))))
+                                .next(concrete(8, "concrete1", "3", "Concrete1", "D"))
+                )
+                .build();
+    }
+
     @Test
     public void testOptions_none_entity1() throws Exception {
         AsgQuery query = simpleQuery0("name", "ontName");
@@ -149,8 +166,6 @@ public class EntityOpTranslationStrategyTest {
     }
 
     @Test
-    @Ignore
-    //todo fix the gremlin filter assumptions
     public void testOptions_none_entity1_rel2_entity3() throws Exception {
         AsgQuery query = simpleQuery1("name", "ontName");
         Plan plan = new Plan(
@@ -200,10 +215,35 @@ public class EntityOpTranslationStrategyTest {
     }
 
     @Test
-    @Ignore
-    //todo fix the gremlin filter assumptions
     public void testOptions_none_entity1_rel2_filter10_entity3() throws Exception {
         AsgQuery query = simpleQuery2("name", "ontName");
+        Plan plan = new Plan(
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(query, 2).get()),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>element(query, 10).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 3).get())
+        );
+
+
+        Ontology ontology = Ontology.OntologyBuilder.anOntology().withEntityTypes(Collections.singletonList(
+                EntityType.Builder.get().withEType("2").withName("Person").build()
+        )).build();
+
+        TranslationContext context = Mockito.mock(TranslationContext.class);
+        when(context.getOnt()).thenReturn(new Ontology.Accessor(ontology));
+
+
+        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.none);
+
+        GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(3), context);
+        GraphTraversal expectedTraversal = __.start().otherV().as("B");
+
+        Assert.assertEquals(expectedTraversal, actualTraversal);
+    }
+
+    @Test
+    public void testOptions_none_entity1_concrete_rel2_filter10_entity3() throws Exception {
+        AsgQuery query = simpleQuery3("name", "ontName");
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 1).get()),
                 new RelationOp(AsgQueryUtil.<Rel>element(query, 2).get()),

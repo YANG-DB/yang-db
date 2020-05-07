@@ -45,6 +45,7 @@ import com.yangdb.fuse.model.transport.cursor.CreateInnerQueryCursorRequest;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.unipop.process.Profiler;
 
 import java.util.List;
 import java.util.Optional;
@@ -86,7 +87,8 @@ public class StandardCursorDriver extends CursorDriverBase {
 
         GraphTraversal<?, ?> traversal = createTraversal(executionPlan, ontology);
 
-        //traversal.asAdmin().getSideEffects().register("profiler", Profiler.Impl::new, null);
+        //todo add configuration activation
+        traversal.asAdmin().getSideEffects().register("profiler", Profiler.Impl::new, null);
 
         //todo in case of composite cursor -> add depended cursors for query
         //if query has inner queries -> create new CreateInnerQueryCursorRequest(cursorRequest)

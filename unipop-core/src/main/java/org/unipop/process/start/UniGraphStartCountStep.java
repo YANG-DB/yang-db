@@ -44,6 +44,7 @@ package org.unipop.process.start;
  */
 
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.AbstractStep;
 import org.unipop.process.predicate.ReceivesPredicatesHolder;
@@ -53,8 +54,11 @@ import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.predicates.PredicatesHolder;
 import org.unipop.query.predicates.PredicatesHolderFactory;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Roman on 3/14/2018.
@@ -67,6 +71,7 @@ public class UniGraphStartCountStep<S> extends AbstractStep<S, Long> implements 
         this.predicates = uniGraphStartStep.getPredicates();
         this.controllers = controllerManager.getControllers(ReduceQuery.SearchController.class);
         this.stepDescriptor = new StepDescriptor(this);
+        this.traversal.getSteps().forEach(s->this.labels.addAll(((Step)s).getLabels()));
     }
     //endregion
 
@@ -90,6 +95,11 @@ public class UniGraphStartCountStep<S> extends AbstractStep<S, Long> implements 
     }
 
     @Override
+    public Set<String> getLabels() {
+       return labels;
+    }
+
+    @Override
     public PredicatesHolder getPredicates() {
         return predicates;
     }
@@ -105,5 +115,6 @@ public class UniGraphStartCountStep<S> extends AbstractStep<S, Long> implements 
     private PredicatesHolder predicates = PredicatesHolderFactory.empty();
     private int limit;
     private StepDescriptor stepDescriptor;
+    private Set<String> labels = new HashSet<>();
     //endregion
 }

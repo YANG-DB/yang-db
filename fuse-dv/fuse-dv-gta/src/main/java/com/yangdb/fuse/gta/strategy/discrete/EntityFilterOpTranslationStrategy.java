@@ -30,6 +30,7 @@ import com.yangdb.fuse.dispatcher.gta.TranslationContext;
 import com.yangdb.fuse.model.execution.plan.*;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -57,6 +58,9 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor.STEP_DESCRIPTOR_PREFIX;
+import static com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor.describe;
 
 /**
  * Created by Roman on 09/05/2017.
@@ -124,7 +128,8 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
             traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
                     P.eq(Constraint.by(__.start().and(
                             __.start().has(T.id, P.eq(((EConcrete)entity).geteID())),
-                            __.start().has(T.label, P.eq(EntityTranslationUtil.getValidEntityNames(ont, entity).get(0)))))));
+                            __.start().has(T.label, P.eq(EntityTranslationUtil.getValidEntityNames(ont, entity).get(0)))))))
+            .as(STEP_DESCRIPTOR_PREFIX + describe(entity));
         }
         else if (entity instanceof ETyped || entity instanceof EUntyped) {
             List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ont, entity);
@@ -145,7 +150,8 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
                 constraintTraversal = __.start().and(Stream.ofAll(traversals).toJavaArray(Traversal.class));
             }
 
-            traversal.has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal));
+            traversal.has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal))
+            .as(STEP_DESCRIPTOR_PREFIX + describe(entity,ePropGroup));
         }
 
         return traversal;
@@ -187,7 +193,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
 
         return traversal.outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal))
-                .otherV().as(entity.geteTag());
+                .otherV().as(entity.geteTag(),STEP_DESCRIPTOR_PREFIX + describe(entity,ePropGroup));
     }
 
     private Traversal getEntityFilterTraversal(EEntityBase entity, Ontology.Accessor ont) {

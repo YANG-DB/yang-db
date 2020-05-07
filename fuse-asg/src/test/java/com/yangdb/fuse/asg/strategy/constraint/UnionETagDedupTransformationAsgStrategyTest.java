@@ -64,5 +64,23 @@ public class UnionETagDedupTransformationAsgStrategyTest {
         Assert.assertTrue(validatorStrategy.apply(query,asgStrategyContext).valid());
     }
 
+    @Test
+    public void testQueryWithPreservedTags(){
+        AsgQuery query = AsgQuery.Builder.start("q", "O")
+                .next(typed(1, "entity1", "_A"))
+                .next(rel(2, "rel1", R,"R").below(relProp(2, RelProp.of(2, "2", Constraint.of(eq, "value2")))))
+                .next(typed(3, "entity2", "$B"))
+                .next(quant1(4, all))
+                .in(ePropGroup(5, EProp.of(5, "prop1", Constraint.of(eq, "value1")), EProp.of(5, "prop2", Constraint.of(gt, "value3"))),
+                        rel(6, "rel2", R,"R").next(typed(7, "entity3", "C")),
+                        optional(11)
+                                .next(rel(12, "rel4", R).next(typed(13, "entity4", "D")
+                                        .next(optional(14).next(rel(15, "rel4", R,"R").next(typed(16, "entity4", "B")))))))
+                .build();
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
+        AsgEntityDuplicateETagValidatorStrategy validatorStrategy = new AsgEntityDuplicateETagValidatorStrategy();
+        Assert.assertFalse(validatorStrategy.apply(query,asgStrategyContext).valid());
+    }
+
 
 }

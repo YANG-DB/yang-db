@@ -55,6 +55,7 @@ import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.model.query.quant.QuantBase;
+import com.yangdb.fuse.model.schema.Entity;
 import javaslang.collection.Stream;
 
 import java.util.*;
@@ -63,12 +64,47 @@ import java.util.stream.Collectors;
 import static com.yangdb.fuse.model.query.Query.QueryUtils.findByEnum;
 
 public class QueryDescriptor implements Descriptor<Query> {
+    public static final String STEP_DESCRIPTOR_PREFIX = "_";
+
     //region Descriptor Implementation
     @Override
     public String describe(Query query) {
         return patternValue(query);
     }
     //endregion
+
+    public static String describe(EBase entity) {
+        return label(entity, new StringJoiner(":", "", ""));
+    }
+
+    public static String describe(Rel relation) {
+        return label(relation, new StringJoiner(":", "", ""));
+    }
+    /**
+     * print entity + property filters
+     * @param entity
+     * @param ePropGroup
+     * @return
+     */
+    public static String describe(EEntityBase entity, EPropGroup ePropGroup) {
+        StringJoiner joiner = new StringJoiner(":", "", "");
+        label(entity,joiner);
+        joiner.add(printProps(ePropGroup));
+        return joiner.toString();
+    }
+
+    /**
+     * print relation + property filters
+     * @param rel
+     * @param rPropGroup
+     * @return
+     */
+    public static String describe(Rel rel, RelPropGroup rPropGroup) {
+        StringJoiner joiner = new StringJoiner(":", "", "");
+        label(rel,joiner);
+        joiner.add(printProps(rPropGroup));
+        return joiner.toString();
+    }
 
     //region Private Methods
     private String patternValue(Query query) {
@@ -83,9 +119,12 @@ public class QueryDescriptor implements Descriptor<Query> {
             List<Integer> next = ((Next<List>) e).getNext();
             String join = next.stream().map(Object::toString).collect(Collectors.joining("|"));
             joiner.add(e.getClass().getSimpleName() + "[" + e.geteNum() + "]").add("{" + join + "}");
-        } else
-            joiner.add(e.getClass().getSimpleName() + "[" + e.geteNum() + "]");
-
+        } else {
+            if (e instanceof EConcrete)
+                joiner.add(e.getClass().getSimpleName() + "[" + ((EConcrete) e).geteType() + ":" + e.geteNum() + ":ID["+((EConcrete) e).geteID()+"]]");
+            else
+                joiner.add(e.getClass().getSimpleName() + "[" + e.geteNum() + "]");
+        }
         return joiner.toString();
     }
 
@@ -99,7 +138,7 @@ public class QueryDescriptor implements Descriptor<Query> {
         } else if (e instanceof EUntyped)
             joiner.add("UnTyp" + "[" + e.geteNum() + "]");
         else if (e instanceof EConcrete)
-            joiner.add("Conc" + "[" + ((EConcrete) e).geteType() + ":" + e.geteNum() + "]");
+            joiner.add("Conc" + "[" + ((EConcrete) e).geteType() + ":" + e.geteNum() + ":ID["+((EConcrete) e).geteID()+"]]");
         else if (e instanceof ETyped)
             joiner.add("Typ" + "[" + ((ETyped) e).geteType() + ":" + e.geteNum() + "]");
         else if (e instanceof Rel)

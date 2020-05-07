@@ -49,10 +49,13 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalMetrics;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.unipop.process.start.UniGraphStartStep;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
 
 public class StepDescriptor {
+
+    public static final String STEP_DESCRIPTOR_PREFIX = "_";
 
     private MutableMetrics metrics;
     private Step step;
@@ -69,9 +72,17 @@ public class StepDescriptor {
     public String getId(){
         return step.getId();
     }
+
     public Set<String> getLabels(){
         return step.getLabels();
     }
+
+    public String getDescription(){
+       return (String) step.getLabels().stream()
+               .filter(l->l.toString().startsWith(STEP_DESCRIPTOR_PREFIX))
+               .max(Comparator.comparingInt(String::length)).get();
+    }
+
     public Optional<MutableMetrics> getMetrics(){
         return Optional.ofNullable(metrics);
     }

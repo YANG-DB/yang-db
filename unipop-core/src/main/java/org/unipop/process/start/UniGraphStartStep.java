@@ -89,11 +89,11 @@ public class UniGraphStartStep<S,E extends Element> extends GraphStep<S,E> imple
         limit = -1;
         this.propertyKeys = new HashSet<>();
 
-        /*this.profiler = this.traversal.getSideEffects().exists("profiler") ?
+        this.profiler = this.traversal.getSideEffects().exists("profiler") ?
                 this.traversal.getSideEffects().get("profiler") :
                 Profiler.Noop.instance;
 
-        this.controllers.forEach(controller -> controller.setProfiler(this.profiler));*/
+        this.controllers.forEach(controller -> controller.setProfiler(this.profiler));
     }
 
     private Iterator<E> query() {

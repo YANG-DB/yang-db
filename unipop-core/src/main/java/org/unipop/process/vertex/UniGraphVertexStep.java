@@ -103,7 +103,7 @@ public class UniGraphVertexStep<E extends Element> extends UniPredicatesStep<Ver
         this.stepDescriptor = new StepDescriptor(this);
         limit = -1;
 
-        //this.controllers.forEach(controller -> controller.setProfiler(this.profiler));
+        this.controllers.forEach(controller -> controller.setProfiler(this.profiler));
     }
 
     @Override

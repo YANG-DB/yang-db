@@ -29,6 +29,7 @@ import com.yangdb.fuse.model.execution.plan.PlanOp;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
@@ -43,6 +44,9 @@ import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor.STEP_DESCRIPTOR_PREFIX;
+import static com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor.describe;
 
 /**
  * Created by Roman on 10/05/2017.
@@ -61,7 +65,7 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
         EntityOp entityOp = (EntityOp) planOp;
 
         if (PlanUtil.isFirst(plan.getPlan(), planOp)) {
-            traversal = context.getGraphTraversalSource().V().as(entityOp.getAsgEbase().geteBase().geteTag());
+            traversal = context.getGraphTraversalSource().V().as(entityOp.getAsgEbase().geteBase().geteTag(),STEP_DESCRIPTOR_PREFIX +  describe(entityOp.getAsgEbase().geteBase()));
             appendEntity(traversal, entityOp.getAsgEbase().geteBase(), context.getOnt());
         } else {
             Optional<PlanOp> previousPlanOp = PlanUtil.adjacentPrev(plan.getPlan(), planOp);
@@ -70,7 +74,7 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
                             previousPlanOp.get() instanceof RelationFilterOp)) {
                 switch (this.options) {
                     case none:
-                        return traversalEntity(traversal,context,plan,entityOp);
+                        return traversalEntity(traversal, context, plan, entityOp);
                     case filterEntity:
                         traversalEntity(traversal, context, entityOp);
                 }
@@ -84,17 +88,17 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
         traversal.otherV();
         traversal.outE(GlobalConstants.Labels.PROMISE_FILTER);
         appendEntity(traversal, entityOp.getAsgEbase().geteBase(), context.getOnt());
-        traversal.otherV().as(entityOp.getAsgEbase().geteBase().geteTag());
+        traversal.otherV().as(entityOp.getAsgEbase().geteBase().geteTag(), STEP_DESCRIPTOR_PREFIX + describe(entityOp.getAsgEbase().geteBase()));
         return traversal;
     }
 
     private GraphTraversal traversalEntity(GraphTraversal traversal, TranslationContext context, PlanWithCost<Plan, PlanDetailedCost> plan, EntityOp entityOp) {
         if (PlanUtil.isLast(plan.getPlan(), entityOp)) {
             //last step that is an entity step
-            traversal.otherV().as(entityOp.getAsgEbase().geteBase().geteTag());
+            traversal.otherV().as(entityOp.getAsgEbase().geteBase().geteTag(), STEP_DESCRIPTOR_PREFIX + describe(entityOp.getAsgEbase().geteBase()));
             appendEntity(traversal, entityOp.getAsgEbase().geteBase(), context.getOnt());
         } else {
-            traversal.otherV().as(entityOp.getAsgEbase().geteBase().geteTag());
+            traversal.otherV().as(entityOp.getAsgEbase().geteBase().geteTag(), STEP_DESCRIPTOR_PREFIX + describe(entityOp.getAsgEbase().geteBase()));
         }
         return traversal;
     }
@@ -123,7 +127,8 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
                         Constraint.by(__.start().has(T.label, P.within(eTypeNames))));
             }
         }
-
+        //add step name
+        traversal.as(STEP_DESCRIPTOR_PREFIX + describe(entity));
         return traversal;
     }
     //endregion

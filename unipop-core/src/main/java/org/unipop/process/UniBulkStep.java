@@ -87,9 +87,9 @@ public abstract class UniBulkStep<S, E> extends AbstractStep<S, E> {
 
         this.results = EmptyIterator.instance();
 
-        /*this.profiler = this.traversal.getSideEffects().exists("profiler") ?
+        this.profiler = this.traversal.getSideEffects().exists("profiler") ?
                 this.traversal.getSideEffects().get("profiler") :
-                Profiler.Noop.instance;*/
+                Profiler.Noop.instance;
     }
     //endregion
 

@@ -26,6 +26,7 @@ import org.elasticsearch.client.Client;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by lior.perry on 26/03/2017.
@@ -145,6 +146,7 @@ public class SearchBuilder {
     private Collection<String> excludeSourceFields;
     private Collection<String> indices;
     private Collection<String> routing;
+    private Set<String> labels;
 
     private QueryBuilder queryBuilder;
     private AggregationBuilder aggregationBuilder;

@@ -9,9 +9,9 @@ package com.yangdb.fuse.unipop.process.traversal.traverser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,10 @@ import org.javatuples.Pair;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor.STEP_DESCRIPTOR_PREFIX;
 
 /**
  * Created by Roman on 1/26/2018.
@@ -88,6 +91,7 @@ public class ThinPath implements Path {
         }
 
         for(String label : set) {
+            if(label.startsWith(STEP_DESCRIPTOR_PREFIX)) continue;
             byte labelOrdinal = this.stringOrdinalDictionary.getOrCreateOrdinal(label);
             this.ordinals.set(this.ordinals.size() - 1, labelOrdinal);
             break;
@@ -175,9 +179,13 @@ public class ThinPath implements Path {
             labels.add(label == null ?
                     Collections.emptySet() :
                     Collections.singleton(this.stringOrdinalDictionary.getString(ordinal)));
+
         }
 
-        return Collections.unmodifiableList(labels);
+        return Collections.unmodifiableList(  labels.stream()
+                //ignor step descriptor labels
+                .filter(l-> l.stream().noneMatch(inner-> inner.startsWith(STEP_DESCRIPTOR_PREFIX)))
+                .collect(Collectors.toList()));
     }
 
     @Override
