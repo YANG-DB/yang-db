@@ -30,6 +30,7 @@ import com.yangdb.fuse.unipop.structure.promise.PromiseVertex;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.unipop.process.Profiler;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
@@ -90,7 +91,19 @@ public class AggregationPromiseEdgeIterableConverter implements ElementConverter
 
     }
 
+    //endregion
+    @Override
+    public Profiler getProfiler() {
+        return this.profiler;
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.profiler = profiler;
+    }
+
     //region Fields
+    private Profiler profiler;
     private UniGraph graph;
     private EdgeIdProvider<String> edgeIdProvider;
     private LabelProvider<String> vertexLabelProvider;

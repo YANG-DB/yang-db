@@ -26,10 +26,7 @@ import org.javatuples.Pair;
 
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor.STEP_DESCRIPTOR_PREFIX;
 
 /**
  * Created by Roman on 1/26/2018.
@@ -91,7 +88,6 @@ public class ThinPath implements Path {
         }
 
         for(String label : set) {
-            if(label.startsWith(STEP_DESCRIPTOR_PREFIX)) continue;
             byte labelOrdinal = this.stringOrdinalDictionary.getOrCreateOrdinal(label);
             this.ordinals.set(this.ordinals.size() - 1, labelOrdinal);
             break;
@@ -179,13 +175,9 @@ public class ThinPath implements Path {
             labels.add(label == null ?
                     Collections.emptySet() :
                     Collections.singleton(this.stringOrdinalDictionary.getString(ordinal)));
-
         }
 
-        return Collections.unmodifiableList(  labels.stream()
-                //ignor step descriptor labels
-                .filter(l-> l.stream().noneMatch(inner-> inner.startsWith(STEP_DESCRIPTOR_PREFIX)))
-                .collect(Collectors.toList()));
+        return Collections.unmodifiableList(labels);
     }
 
     @Override

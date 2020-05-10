@@ -107,6 +107,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                 null,
                 new DiscreteVertexFilterControllerContext(
                         this.graph,
+                        searchVertexQuery.getStepDescriptor(),
                         searchVertexQuery.getVertices(),
                         constraint,
                         selectPHasContainers,
@@ -140,7 +141,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                 searchBuilder.getScrollTime()
         );
 
-        ElementConverter<SearchHit, Edge> converter = new DiscreteVertexFilterConverter(context);
+        ElementConverter<SearchHit, Edge> converter = new DiscreteVertexFilterConverter(context,profiler);
 
         return Stream.ofAll(searchHits)
                 .flatMap(converter::convert)

@@ -26,6 +26,7 @@ import com.yangdb.fuse.unipop.schemaProviders.*;
 import com.yangdb.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
+import org.unipop.query.StepDescriptor;
 import org.unipop.structure.UniGraph;
 
 import java.util.ArrayList;
@@ -39,13 +40,14 @@ public class PromiseElementControllerContext extends ElementControllerContext.Im
     //region Constructors
     public PromiseElementControllerContext(
             UniGraph graph,
+            StepDescriptor stepDescriptor,
             Iterable<Promise> promises,
             Optional<TraversalConstraint> constraint,
             Iterable<HasContainer> selectPHasContainers,
             GraphElementSchemaProvider schemaProvider,
             ElementType elementType,
             int limit) {
-        super(graph, elementType, schemaProvider, constraint, selectPHasContainers, limit);
+        super(graph,stepDescriptor, elementType, schemaProvider, constraint, selectPHasContainers, limit);
         this.promises = new ArrayList<>(Stream.ofAll(promises).toJavaList());
     }
     //endregion

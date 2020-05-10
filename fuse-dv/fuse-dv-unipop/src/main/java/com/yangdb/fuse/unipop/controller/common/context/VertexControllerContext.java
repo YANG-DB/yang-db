@@ -26,6 +26,7 @@ import com.yangdb.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.unipop.query.StepDescriptor;
 import org.unipop.structure.UniGraph;
 
 import java.util.LinkedHashMap;
@@ -42,6 +43,7 @@ public interface VertexControllerContext extends BulkContext, DirectionContext, 
         //region Constructors
         public Impl(
                 UniGraph graph,
+                StepDescriptor descriptor,
                 ElementType elementType,
                 GraphElementSchemaProvider schemaProvider,
                 Optional<TraversalConstraint> constraint,
@@ -49,7 +51,7 @@ public interface VertexControllerContext extends BulkContext, DirectionContext, 
                 int limit,
                 Direction direction,
                 Iterable<Vertex> bulkVertices) {
-            super(graph, elementType, schemaProvider, constraint, selectPHasContainers, limit);
+            super(graph, descriptor,elementType, schemaProvider, constraint, selectPHasContainers, limit);
             this.direction = direction;
 //            this.bulkVertices = Stream.ofAll(bulkVertices).toJavaMap(vertex -> new Tuple2<>(vertex.id(), vertex));
             this.bulkVertices = StreamSupport.stream(bulkVertices.spliterator(),false)

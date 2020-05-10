@@ -26,6 +26,7 @@ import com.yangdb.fuse.unipop.structure.promise.PromiseFilterEdge;
 import com.yangdb.fuse.unipop.structure.promise.PromiseVertex;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.elasticsearch.search.SearchHit;
+import org.unipop.process.Profiler;
 import org.unipop.structure.UniGraph;
 
 import java.util.Arrays;
@@ -55,7 +56,19 @@ public class SearchHitPromiseFilterEdgeConverter implements ElementConverter<Sea
         return Arrays.asList(new PromiseFilterEdge(v, graph));
     }
 
+    //endregion
+    @Override
+    public Profiler getProfiler() {
+        return this.profiler;
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.profiler = profiler;
+    }
+
     //region Fields
+    private Profiler profiler;
     private UniGraph graph;
     //endregion
 }

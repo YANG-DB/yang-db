@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.yangdb.fuse.model.asgQuery.AsgCompositeQuery.hasInnerQuery;
+import static org.unipop.process.Profiler.PROFILER;
 
 /**
  * Created by lior.perry on 20/02/2017.
@@ -88,7 +89,7 @@ public class StandardCursorDriver extends CursorDriverBase {
         GraphTraversal<?, ?> traversal = createTraversal(executionPlan, ontology);
 
         //todo add configuration activation
-        traversal.asAdmin().getSideEffects().register("profiler", Profiler.Impl::new, null);
+        traversal.asAdmin().getSideEffects().register(PROFILER, Profiler.Impl::new, null);
 
         //todo in case of composite cursor -> add depended cursors for query
         //if query has inner queries -> create new CreateInnerQueryCursorRequest(cursorRequest)

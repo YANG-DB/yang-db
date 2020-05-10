@@ -106,6 +106,7 @@ public class DiscreteVertexController extends VertexControllerBase {
                 null,
                 new DiscreteVertexControllerContext(
                         this.graph,
+                        searchVertexQuery.getStepDescriptor(),
                         this.schemaProvider,
                         constraint,
                         selectPHasContainers,

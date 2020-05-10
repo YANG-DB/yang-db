@@ -27,6 +27,7 @@ import com.yangdb.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.unipop.query.StepDescriptor;
 import org.unipop.structure.UniGraph;
 
 import java.util.Optional;
@@ -35,7 +36,7 @@ import java.util.Optional;
  * Created by Elad on 4/26/2017.
  */
 public class PromiseVertexControllerContext extends VertexControllerContext.Impl {
-    public PromiseVertexControllerContext(UniGraph graph, GraphElementSchemaProvider schemaProvider, Optional<TraversalConstraint> constraint, Iterable<HasContainer> selectPHasContainers, int limit, Iterable<Vertex> bulkVertices) {
-        super(graph, ElementType.edge, schemaProvider, constraint, selectPHasContainers, limit, Direction.OUT, bulkVertices);
+    public PromiseVertexControllerContext(UniGraph graph, StepDescriptor stepDescriptor,GraphElementSchemaProvider schemaProvider, Optional<TraversalConstraint> constraint, Iterable<HasContainer> selectPHasContainers, int limit, Iterable<Vertex> bulkVertices) {
+        super(graph,stepDescriptor, ElementType.edge, schemaProvider, constraint, selectPHasContainers, limit, Direction.OUT, bulkVertices);
     }
 }

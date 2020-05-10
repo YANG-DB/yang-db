@@ -117,6 +117,7 @@ public class PromiseVertexFilterController extends VertexControllerBase {
                 null,
                 new PromiseVertexFilterControllerContext(
                         this.graph,
+                        searchVertexQuery.getStepDescriptor(),
                         searchVertexQuery.getVertices(),
                         constraint,
                         selectPHasContainers,

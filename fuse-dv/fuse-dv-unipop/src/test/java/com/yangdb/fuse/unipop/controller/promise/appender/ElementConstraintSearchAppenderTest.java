@@ -6,6 +6,7 @@ import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -14,9 +15,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.unipop.query.StepDescriptor;
 
 import java.util.Collections;
 import java.util.Optional;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Created by lior.perry on 29/03/2017.
@@ -29,6 +33,7 @@ public class ElementConstraintSearchAppenderTest {
         ElementConstraintSearchAppender appender = new ElementConstraintSearchAppender();
         boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
                 null,
+                new StepDescriptor(mock(Step.class)),
                 Collections.emptyList(),
                 Optional.empty(),
                 Collections.emptyList(),
@@ -50,6 +55,7 @@ public class ElementConstraintSearchAppenderTest {
         ElementConstraintSearchAppender appender = new ElementConstraintSearchAppender();
         boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
                 null,
+                new StepDescriptor(mock(Step.class)),
                 Collections.emptyList(),
                 Optional.of(Constraint.by(__.has(T.label, "dragon"))),
                 Collections.emptyList(),
@@ -94,6 +100,7 @@ public class ElementConstraintSearchAppenderTest {
         ElementConstraintSearchAppender appender = new ElementConstraintSearchAppender();
         boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
                 null,
+                new StepDescriptor(mock(Step.class)),
                 Collections.emptyList(),
                 Optional.of(Constraint.by(__.and(__.has(T.label, "dragon"), __.has("name", "Drogar")))),
                 Collections.emptyList(),

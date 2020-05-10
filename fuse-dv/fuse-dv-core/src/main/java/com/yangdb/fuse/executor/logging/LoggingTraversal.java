@@ -23,12 +23,15 @@ package com.yangdb.fuse.executor.logging;
 import com.yangdb.fuse.dispatcher.logging.*;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.slf4j.Logger;
+import org.unipop.process.Profiler;
+import sun.java2d.cmm.Profile;
 
 import java.util.List;
 
 import static com.yangdb.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.yangdb.fuse.dispatcher.logging.LogMessage.Level.trace;
 import static com.yangdb.fuse.dispatcher.logging.LogType.*;
+import static org.unipop.process.Profiler.PROFILER;
 
 /**
  * Created by roman.margolis on 07/01/2018.
@@ -74,6 +77,9 @@ public class LoggingTraversal<S, E> implements Traversal<S, E> {
         } finally {
             if (!thrownExcpetion) {
                 new LogMessage.Impl(this.logger, trace, "finish next", sequence, LogType.of(success), next, ElapsedFrom.now()).log();
+                //log profiling message
+                new LogMessage.Impl(this.logger, trace, "traversal profile", sequence, LogType.of(metric), profile,
+                        new LogMessage.MDCWriter.KeyValue(PROFILER, traversal.asAdmin().getSideEffects().get(PROFILER).toString())).log();
             }
         }
     }
@@ -102,6 +108,7 @@ public class LoggingTraversal<S, E> implements Traversal<S, E> {
     private Traversal<S, E> traversal;
     private Logger logger;
 
+    private static LogMessage.MDCWriter profile = MethodName.of("profile");
     private static LogMessage.MDCWriter next = MethodName.of("next");
     private static LogMessage.MDCWriter toList = MethodName.of("toList");
 

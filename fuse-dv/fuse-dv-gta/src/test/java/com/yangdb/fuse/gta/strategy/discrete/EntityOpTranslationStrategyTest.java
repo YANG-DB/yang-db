@@ -183,9 +183,9 @@ public class EntityOpTranslationStrategyTest {
         EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.none);
 
         GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(2), context);
-        GraphTraversal expectedTraversal = __.start().otherV().as("B");
+        String expectedTraversal = "[EdgeOtherVertexStep@[B], HasStep([constraint.eq(Constraint.by([HasStep([~label.eq(Person)])]))])]";
 
-        Assert.assertEquals(expectedTraversal, actualTraversal);
+        Assert.assertEquals(expectedTraversal, actualTraversal.toString());
     }
 
     @Test
@@ -236,9 +236,9 @@ public class EntityOpTranslationStrategyTest {
         EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.none);
 
         GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(3), context);
-        GraphTraversal expectedTraversal = __.start().otherV().as("B");
+        String expectedTraversal = "[EdgeOtherVertexStep@[B], HasStep([constraint.eq(Constraint.by([HasStep([~label.eq(Person)])]))])]";
 
-        Assert.assertEquals(expectedTraversal, actualTraversal);
+        Assert.assertEquals(expectedTraversal, actualTraversal.toString());
     }
 
     @Test
@@ -263,8 +263,8 @@ public class EntityOpTranslationStrategyTest {
         EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.none);
 
         GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(3), context);
-        GraphTraversal expectedTraversal = __.start().otherV().as("B");
+        String expected = "[EdgeOtherVertexStep@[B], HasStep([constraint.eq(Constraint.by([AndStep([[HasStep([~id.eq(123456)])], [HasStep([~label.eq(Person)])]])]))])]";
 
-        Assert.assertEquals(expectedTraversal, actualTraversal);
+        Assert.assertEquals(expected, actualTraversal.toString());
     }
 }

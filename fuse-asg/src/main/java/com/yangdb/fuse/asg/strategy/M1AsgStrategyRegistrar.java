@@ -25,6 +25,7 @@ package com.yangdb.fuse.asg.strategy;
 import com.google.inject.Inject;
 import com.yangdb.fuse.asg.strategy.constraint.*;
 import com.yangdb.fuse.asg.strategy.propertyGrouping.*;
+import com.yangdb.fuse.asg.strategy.selection.DefaultETagAsgStrategy;
 import com.yangdb.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.RelationPatternRangeAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
@@ -47,6 +48,7 @@ public class M1AsgStrategyRegistrar implements AsgStrategyRegistrar {
     @Override
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
+                new DefaultETagAsgStrategy(this.ontologyProvider),
                 new AsgNamedParametersStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
                 new RelationPatternRangeAsgStrategy(),

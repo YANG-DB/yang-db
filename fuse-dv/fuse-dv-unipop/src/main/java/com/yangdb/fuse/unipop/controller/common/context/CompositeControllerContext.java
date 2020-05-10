@@ -26,6 +26,7 @@ import com.yangdb.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.unipop.query.StepDescriptor;
 import org.unipop.structure.UniGraph;
 
 import java.util.Collections;
@@ -71,6 +72,11 @@ public interface CompositeControllerContext extends VertexControllerContext{
         public UniGraph getGraph() {
             return this.elementControllerContext.map(GraphContext::getGraph)
                     .orElseGet(() -> this.vertexControllerContext.get().getGraph());
+        }
+        @Override
+        public StepDescriptor getStepDescriptor() {
+            return this.elementControllerContext.map(StepContext::getStepDescriptor)
+                    .orElseGet(() -> this.vertexControllerContext.get().getStepDescriptor());
         }
 
         @Override

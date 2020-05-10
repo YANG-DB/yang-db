@@ -27,6 +27,7 @@ import com.yangdb.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.unipop.query.StepDescriptor;
 import org.unipop.structure.UniGraph;
 
 import java.util.List;
@@ -39,12 +40,13 @@ public class DiscreteVertexFilterControllerContext  extends VertexControllerCont
     //region Constructors
     public DiscreteVertexFilterControllerContext(
             UniGraph graph,
+            StepDescriptor stepDescriptor,
             List<Vertex> vertices,
             Optional<TraversalConstraint> constraint,
             List<HasContainer> selectPHasContainers,
             GraphElementSchemaProvider schemaProvider,
             int limit) {
-        super(graph, ElementType.vertex, schemaProvider, constraint, selectPHasContainers, limit, Direction.OUT, vertices);
+        super(graph,stepDescriptor, ElementType.vertex, schemaProvider, constraint, selectPHasContainers, limit, Direction.OUT, vertices);
     }
     //endregion
 }

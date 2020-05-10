@@ -25,6 +25,7 @@ import com.yangdb.fuse.unipop.promise.TraversalConstraint;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
+import org.unipop.query.StepDescriptor;
 import org.unipop.structure.UniGraph;
 
 import java.util.Optional;
@@ -33,7 +34,7 @@ import java.util.Optional;
  * Created by roman.margolis on 12/09/2017.
  */
 public class DiscreteElementControllerContext extends ElementControllerContext.Impl {
-    public DiscreteElementControllerContext(UniGraph graph, ElementType elementType, GraphElementSchemaProvider schemaProvider, Optional<TraversalConstraint> constraint, Iterable<HasContainer> selectPHasContainers, int limit) {
-        super(graph, elementType, schemaProvider, constraint, selectPHasContainers, limit);
+    public DiscreteElementControllerContext(UniGraph graph, StepDescriptor stepDescriptor, ElementType elementType, GraphElementSchemaProvider schemaProvider, Optional<TraversalConstraint> constraint, Iterable<HasContainer> selectPHasContainers, int limit) {
+        super(graph, stepDescriptor,elementType, schemaProvider, constraint, selectPHasContainers, limit);
     }
 }

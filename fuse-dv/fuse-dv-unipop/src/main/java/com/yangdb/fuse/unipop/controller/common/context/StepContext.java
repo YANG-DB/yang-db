@@ -1,4 +1,4 @@
-package com.yangdb.fuse.unipop.controller.common.converter;
+package com.yangdb.fuse.unipop.controller.common.context;
 
 /*-
  * #%L
@@ -20,11 +20,11 @@ package com.yangdb.fuse.unipop.controller.common.converter;
  * #L%
  */
 
-import org.unipop.process.ProfilerIfc;
+import org.unipop.query.StepDescriptor;
 
 /**
- * Created by roman on 3/16/2015.
+ * Created by roman.margolis on 14/09/2017.
  */
-public interface ElementConverter<TElementSource, TElementDest> extends ProfilerIfc {
-    Iterable<TElementDest> convert(TElementSource source);
+public interface StepContext {
+    StepDescriptor getStepDescriptor();
 }

@@ -28,6 +28,7 @@ import com.yangdb.fuse.asg.strategy.RuleBoostProvider;
 import com.yangdb.fuse.asg.strategy.constraint.*;
 import com.yangdb.fuse.asg.strategy.propertyGrouping.*;
 import com.yangdb.fuse.asg.strategy.schema.ExactConstraintTransformationAsgStrategy;
+import com.yangdb.fuse.asg.strategy.selection.DefaultETagAsgStrategy;
 import com.yangdb.fuse.asg.strategy.selection.DefaultRelationSelectionAsgStrategy;
 import com.yangdb.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.RelationPatternRangeAsgStrategy;
@@ -65,6 +66,7 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
     @Override
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
+                new DefaultETagAsgStrategy(this.ontologyProvider),
                 new KnowledgeLogicalEntityGraphTranslatorStrategy(this.schemaProviderFactory,this.ontologyProvider, EEntityBase.class),
                 new AsgNamedParametersStrategy(),
                 new RelationPatternRangeAsgStrategy(),

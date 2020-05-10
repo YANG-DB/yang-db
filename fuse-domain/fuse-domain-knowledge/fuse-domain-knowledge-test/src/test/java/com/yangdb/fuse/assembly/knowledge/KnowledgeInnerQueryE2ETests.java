@@ -56,8 +56,7 @@ public class KnowledgeInnerQueryE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-       //Todo remove while running in Suite Context
-//        Setup.setup();
+//        Setup.setup();//Todo remove while running in Suite Context
 
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());

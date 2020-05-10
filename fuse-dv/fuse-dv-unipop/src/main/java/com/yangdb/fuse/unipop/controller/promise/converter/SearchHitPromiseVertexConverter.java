@@ -25,6 +25,7 @@ import com.yangdb.fuse.unipop.promise.Promise;
 import com.yangdb.fuse.unipop.structure.promise.PromiseVertex;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.elasticsearch.search.SearchHit;
+import org.unipop.process.Profiler;
 import org.unipop.structure.UniGraph;
 
 import java.util.Collections;
@@ -51,7 +52,19 @@ public class SearchHitPromiseVertexConverter implements ElementConverter<SearchH
     }
     //endregion
 
+    //endregion
+    @Override
+    public Profiler getProfiler() {
+        return this.profiler;
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.profiler = profiler;
+    }
+
     //region Fields
+    private Profiler profiler;
     private UniGraph graph;
     //endregion
 }

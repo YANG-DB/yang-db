@@ -47,37 +47,70 @@ import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public interface Profiler {
-    Profiler add(String name, long elapsed);
+    String PROFILER = "profiler";
+
+    Profiler add(String name, Impl.Measurement measurement);
+
+    /**
+     * get measurement
+     * @param key
+     * @return
+     */
+    Impl.Measurement get(String key);
+
+    Impl.Measurement getOrCreate(String label);
 
     class Noop implements Profiler {
         public static Noop instance = new Noop();
+        public static Impl.Measurement measurement = new Impl.Measurement("NOOP",-1);
 
         @Override
-        public Profiler add(String name, long elapsed) {
+        public Profiler add(String name, Impl.Measurement measurement) {
             return this;
         }
+
+        @Override
+        public Impl.Measurement get(String key) {
+            return measurement;
+        }
+
+        @Override
+        public Impl.Measurement getOrCreate(String key) {
+            return measurement;
+        }
+
     }
 
     class Impl implements Profiler {
         //region Constructors
         public Impl() {
-            this.measurements = new ArrayList<>(200);
+            this.measurements = new HashMap<>(200);
         }
         //endregion
 
         //region Public Methods
-        public Profiler add(String name, long elapsed) {
-            this.measurements.add(new Measurement(name, elapsed));
+        public Profiler add(String name, Measurement measurement) {
+            this.measurements.put(name,measurement);
             return this;
+        }
+
+        public Measurement get(String key) {
+            return this.measurements.get(key);
+        }
+
+        @Override
+        public Measurement getOrCreate(String key) {
+            return this.measurements.computeIfAbsent(key,s->new Measurement(key,0));
         }
 
         @Override
         public String toString() {
-            Map<String, Tuple2<Integer, Long>> sums = Stream.ofAll(this.measurements).groupBy(Measurement::getName)
+            Map<String, Tuple2<Integer, Long>> sums = Stream.ofAll(this.measurements.values()).groupBy(Measurement::getName)
                     .toJavaMap(grouping -> new Tuple2<>(grouping._1(), new Tuple2<>(grouping._2().size(), grouping._2().map(Measurement::getElapsed).sum().longValue())));
 
             StringBuilder builder = new StringBuilder();
@@ -88,13 +121,13 @@ public interface Profiler {
         //endregion
 
         //region Properties
-        public List<Measurement> getMeasurements() {
-            return measurements;
+        public Measurement getMeasurements(String name) {
+            return measurements.get(name);
         }
         //endregion
 
         //region Fields
-        private List<Measurement> measurements;
+        private Map<String,Measurement> measurements;
         //endregion
 
         public static class Measurement {
@@ -103,7 +136,12 @@ public interface Profiler {
                 this.name = name;
                 this.elapsed = elapsed;
             }
-            //endregion
+
+                //endregion
+            public Measurement inc(long value) {
+                this.elapsed+=value;
+                return this;
+            }
 
             //region Properties
             public String getName() {

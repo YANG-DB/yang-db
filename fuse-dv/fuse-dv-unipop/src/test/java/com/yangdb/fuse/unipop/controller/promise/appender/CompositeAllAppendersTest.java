@@ -18,6 +18,7 @@ import com.yangdb.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.yangdb.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.json.JSONException;
@@ -27,6 +28,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.unipop.query.StepDescriptor;
 import org.unipop.query.search.SearchQuery;
 
 import java.util.*;
@@ -54,13 +56,14 @@ public class CompositeAllAppendersTest {
 
         ElementControllerContext context =
                 new PromiseElementControllerContext(
-                    null,
-                    Collections.emptyList(),
-                    Optional.of(traversalConstraint),
-                    Collections.emptyList(),
-                    schemaProvider,
-                    ElementType.vertex,
-                    searchQuery.getLimit());
+                        null,
+                        new StepDescriptor(mock(Step.class)),
+                        Collections.emptyList(),
+                        Optional.of(traversalConstraint),
+                        Collections.emptyList(),
+                        schemaProvider,
+                        ElementType.vertex,
+                        searchQuery.getLimit());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -105,19 +108,20 @@ public class CompositeAllAppendersTest {
 
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
-        TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has("name", "bubu"), __.has("color", P.within((Collection)Arrays.asList("brown", "red")))));
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has("name", "bubu"), __.has("color", P.within((Collection) Arrays.asList("brown", "red")))));
         SearchQuery searchQuery = mock(SearchQuery.class);
         when(searchQuery.getLimit()).thenReturn(10);
 
         ElementControllerContext context =
                 new PromiseElementControllerContext(
                         null,
-                    Collections.emptyList(),
-                    Optional.of(traversalConstraint),
-                    Collections.emptyList(),
-                    schemaProvider,
-                    ElementType.vertex,
-                    searchQuery.getLimit());
+                        new StepDescriptor(mock(Step.class)),
+                        Collections.emptyList(),
+                        Optional.of(traversalConstraint),
+                        Collections.emptyList(),
+                        schemaProvider,
+                        ElementType.vertex,
+                        searchQuery.getLimit());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -181,13 +185,14 @@ public class CompositeAllAppendersTest {
 
         ElementControllerContext context = new
                 PromiseElementControllerContext(
-                        null,
-                    Collections.emptyList(),
-                    Optional.of(traversalConstraint),
-                    Collections.emptyList(),
-                    schemaProvider,
-                    ElementType.vertex,
-                    searchQuery.getLimit());
+                null,
+                new StepDescriptor(mock(Step.class)),
+                Collections.emptyList(),
+                Optional.of(traversalConstraint),
+                Collections.emptyList(),
+                schemaProvider,
+                ElementType.vertex,
+                searchQuery.getLimit());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -229,7 +234,7 @@ public class CompositeAllAppendersTest {
                         new GraphVertexSchema.Impl("Person", new StaticIndexPartitions(Collections.singletonList("personIndex1")))
                 ),
                 Collections.singletonList(
-                    new GraphEdgeSchema.Impl("", new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"))))
+                        new GraphEdgeSchema.Impl("", new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"))))
         ));
     }
 

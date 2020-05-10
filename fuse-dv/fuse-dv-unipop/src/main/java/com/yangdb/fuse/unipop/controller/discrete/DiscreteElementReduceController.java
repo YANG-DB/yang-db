@@ -46,6 +46,7 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.unipop.process.Profiler;
 import org.unipop.query.aggregation.ReduceEdgeQuery;
 import org.unipop.query.aggregation.ReduceQuery;
 import org.unipop.structure.UniGraph;
@@ -87,7 +88,10 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
 
         SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
         SearchResponse response = searchRequest.execute().actionGet();
-        return response.getHits().getTotalHits();
+        long totalHits = response.getHits().getTotalHits();
+        //report count
+        getProfiler().getOrCreate("Reduce["+reduceQuery.getStepDescriptor().getDescription().orElse("?")+"]").inc(totalHits);
+        return totalHits;
 
     }
 
@@ -146,6 +150,7 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
                 null,
                 new DiscreteVertexControllerContext(
                         this.graph,
+                        reduceQuery.getStepDescriptor(),
                         this.schemaProvider,
                         constraint,
                         selectPHasContainers,
@@ -194,6 +199,7 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
 
         CompositeControllerContext context = new CompositeControllerContext.Impl(
                 new DiscreteElementControllerContext(this.graph,
+                        reduceQuery.getStepDescriptor(),
                         ElementType.vertex,
                         this.schemaProvider,
                         constraint,
@@ -231,7 +237,19 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
     }
     //endregion
 
+    //endregion
+    @Override
+    public Profiler getProfiler() {
+        return this.profiler;
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.profiler = profiler;
+    }
+
     //region Fields
+    private Profiler profiler;
     private Client client;
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;

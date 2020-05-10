@@ -47,6 +47,7 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.AbstractStep;
+import org.unipop.process.Profiler;
 import org.unipop.process.predicate.ReceivesPredicatesHolder;
 import org.unipop.query.StepDescriptor;
 import org.unipop.query.aggregation.ReduceQuery;
@@ -59,6 +60,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.unipop.process.Profiler.PROFILER;
 
 /**
  * Created by Roman on 3/14/2018.
@@ -79,6 +82,8 @@ public class UniGraphStartCountStep<S> extends AbstractStep<S, Long> implements 
     @Override
     protected Traverser.Admin<Long> processNextStart() throws NoSuchElementException {
         ReduceQuery reduceQuery = new ReduceQuery(this.predicates, this.stepDescriptor);
+        Profiler profiler = this.getTraversal().getSideEffects().get(PROFILER);
+        controllers.forEach(c->c.setProfiler(profiler));
 
         long count = Stream.ofAll(this.controllers)
                 .map(controller -> controller.count(reduceQuery))

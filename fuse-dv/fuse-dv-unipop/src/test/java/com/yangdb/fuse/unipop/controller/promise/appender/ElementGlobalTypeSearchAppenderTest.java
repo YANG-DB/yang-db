@@ -14,6 +14,7 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.yangdb.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.yangdb.fuse.unipop.structure.ElementType;
+import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.json.JSONException;
 import org.junit.Assert;
@@ -21,6 +22,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.unipop.query.StepDescriptor;
 
 import java.util.*;
 
@@ -43,6 +45,7 @@ public class ElementGlobalTypeSearchAppenderTest {
 
         ElementControllerContext context = new ElementControllerContext.Impl(
                 null,
+                new StepDescriptor(mock(Step.class)),
                 ElementType.vertex,
                 schemaProvider,
                 Optional.of(Constraint.by(__.has("name", "Sasson"))),

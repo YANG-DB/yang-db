@@ -64,7 +64,6 @@ import java.util.stream.Collectors;
 import static com.yangdb.fuse.model.query.Query.QueryUtils.findByEnum;
 
 public class QueryDescriptor implements Descriptor<Query> {
-    public static final String STEP_DESCRIPTOR_PREFIX = "_";
 
     //region Descriptor Implementation
     @Override

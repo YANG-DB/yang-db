@@ -95,6 +95,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
 
         CompositeControllerContext context = new CompositeControllerContext.Impl(
                     new DiscreteElementControllerContext(this.graph,
+                            searchQuery.getStepDescriptor(),
                             ElementType.vertex,
                             this.schemaProvider,
                             constraint,
@@ -127,7 +128,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                 searchBuilder.getScrollTime()
         );
 
-        ElementConverter<SearchHit, E> elementConverter = new DiscreteVertexConverter<>(context);
+        ElementConverter<SearchHit, E> elementConverter = new DiscreteVertexConverter<>(context,profiler);
 
         return Stream.ofAll(searchHits)
                 .flatMap(elementConverter::convert)

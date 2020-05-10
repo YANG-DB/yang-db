@@ -50,8 +50,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        //Todo remove while running in Suite Context
-        Setup.setup();
+        Setup.setup();//Todo remove while running in Suite Context
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -300,7 +299,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
                         new ETyped(1, "A", "Entity", 2, 0),
                         new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
                         new EProp(3, "category", Constraint.of(ConstraintOp.eq, e5.category)),
-                        new Rel(4, "hasRelation", R, null, 5, 0),
+                        new Rel(4, "hasRelation", R, "A->R", 5, 0),
                         new ETyped(5, "R", "Relation", 6, 0),
                         new EProp(6, "category", Constraint.of(ConstraintOp.eq, rel3.category))
                 )).build();

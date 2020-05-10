@@ -33,6 +33,7 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.search.SearchHit;
+import org.unipop.process.Profiler;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ import java.util.Map;
  */
 public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit, Edge> {
     //region Constructor
-    public DiscreteVertexFilterConverter(VertexControllerContext context) {
+    public DiscreteVertexFilterConverter(VertexControllerContext context,Profiler profiler) {
         this.context = context;
         this.typeToLabelVertexSchemas = Stream.ofAll(context.getSchemaProvider().getVertexSchemas())
                 .toJavaMap(vertexSchema ->
@@ -53,6 +54,7 @@ public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit
                                         T.label.getAccessor()))
                                         .get(0),
                                 vertexSchema));
+        this.profiler = profiler;
     }
     //endregion
 
@@ -68,9 +70,12 @@ public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit
         Map<String, Object> source = new HashMap<>(hit.getSourceAsMap());
         contextVertexProperties.putAll(source);
 
+        String label = this.typeToLabelVertexSchemas.get(source.get("type")).getLabel();
+        profiler.getOrCreate(context.getStepDescriptor().getDescription().orElse(label)).inc(1);
+
         DiscreteVertex v = new DiscreteVertex(
                 hit.getId(),
-                this.typeToLabelVertexSchemas.get(source.get("type")).getLabel(),
+                label,
                 context.getGraph(),
                 contextVertexProperties);
 
@@ -85,7 +90,19 @@ public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit
     }
     //endregion
 
+    //endregion
+    @Override
+    public Profiler getProfiler() {
+        return this.profiler;
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.profiler = profiler;
+    }
+
     //region Fields
+    private Profiler profiler;
     private VertexControllerContext context;
     private Map<String, GraphVertexSchema> typeToLabelVertexSchemas;
     //endregion

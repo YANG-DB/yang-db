@@ -24,6 +24,7 @@ import com.yangdb.fuse.unipop.promise.TraversalConstraint;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
+import org.unipop.query.StepDescriptor;
 import org.unipop.structure.UniGraph;
 
 import java.util.Optional;
@@ -31,17 +32,19 @@ import java.util.Optional;
 /**
  * Created by roman.margolis on 13/09/2017.
  */
-public interface ElementControllerContext extends ConstraintContext, SchemaProviderContext, ElementContext, GraphContext, LimitContext, SelectContext {
+public interface ElementControllerContext extends ConstraintContext, SchemaProviderContext, ElementContext,StepContext, GraphContext, LimitContext, SelectContext {
     class Impl implements ElementControllerContext {
         //region Constructors
         public Impl(
                 UniGraph graph,
+                StepDescriptor stepDescriptor,
                 ElementType elementType,
                 GraphElementSchemaProvider schemaProvider,
                 Optional<TraversalConstraint> constraint,
                 Iterable<HasContainer> selectPHasContainers,
                 int limit) {
             this.graph = graph;
+            this.stepDescriptor = stepDescriptor;
             this.elementType = elementType;
             this.schemaProvider = schemaProvider;
             this.constraint = constraint;
@@ -49,6 +52,11 @@ public interface ElementControllerContext extends ConstraintContext, SchemaProvi
             this.limit = limit;
         }
         //endregion
+
+        @Override
+        public StepDescriptor getStepDescriptor() {
+            return stepDescriptor;
+        }
 
         //region ElementControllerContext Implementation
         @Override
@@ -84,6 +92,7 @@ public interface ElementControllerContext extends ConstraintContext, SchemaProvi
 
         //region Fields
         private UniGraph graph;
+        private StepDescriptor stepDescriptor;
         private ElementType elementType;
         private GraphElementSchemaProvider schemaProvider;
         private Optional<TraversalConstraint> constraint;

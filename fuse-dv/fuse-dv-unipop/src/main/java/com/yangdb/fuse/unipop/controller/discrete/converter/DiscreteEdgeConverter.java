@@ -155,6 +155,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
                 }
             }
         }
+        profiler.getOrCreate(context.getStepDescriptor().getDescription().orElse(contextEdgeLabel)).inc(1);
 
         return edges;
     }
@@ -243,13 +244,23 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     }
     //endregion
 
+    //endregion
+    @Override
+    public Profiler getProfiler() {
+        return this.profiler;
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.profiler = profiler;
+    }
+
     //region Fields
+    private Profiler profiler;
     private VertexControllerContext context;
     private EdgeIdProvider<String> edgeIdProvider;
 
     private String contextVertexLabel;
     private String contextEdgeLabel;
-
-    private Profiler profiler;
     //endregion
 }

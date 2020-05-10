@@ -13,9 +13,11 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.yangdb.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.yangdb.fuse.unipop.structure.ElementType;
+import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Test;
+import org.unipop.query.StepDescriptor;
 
 import java.util.*;
 
@@ -36,6 +38,7 @@ public class IndexSearchAppenderTest {
 
         ElementControllerContext context = new ElementControllerContext.Impl(
                 null,
+                new StepDescriptor(mock(Step.class)),
                 ElementType.vertex,
                 schemaProvider,
                 Optional.of(traversalConstraint),
@@ -62,6 +65,7 @@ public class IndexSearchAppenderTest {
 
         ElementControllerContext context = new ElementControllerContext.Impl(
                 null,
+                new StepDescriptor(mock(Step.class)),
                 ElementType.vertex,
                 schemaProvider,
                 Optional.of(traversalConstraint),
@@ -88,6 +92,7 @@ public class IndexSearchAppenderTest {
 
         ElementControllerContext context = new ElementControllerContext.Impl(
                 null,
+                new StepDescriptor(mock(Step.class)),
                 ElementType.vertex,
                 schemaProvider,
                 Optional.of(traversalConstraint),

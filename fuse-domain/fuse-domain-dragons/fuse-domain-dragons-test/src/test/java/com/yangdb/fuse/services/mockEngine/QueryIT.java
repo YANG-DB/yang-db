@@ -22,6 +22,7 @@ import com.yangdb.test.BaseITMarker;
 import com.yangdb.test.data.DragonsOntology;
 import io.restassured.http.Header;
 import org.apache.commons.lang.StringUtils;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,7 @@ import static org.junit.Assume.assumeTrue;
 public class QueryIT implements BaseITMarker {
     @Before
     public void before() throws Exception {
-//        TestSuite.setup();
+//        TestSuiteAPISuite.setup();//Todo remove while running in Suite Context
         assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 
@@ -328,7 +329,11 @@ public class QueryIT implements BaseITMarker {
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
                         Query data = fuseClient.unwrap(o.toString(), Query.class);
-                        QueryAssert.assertEquals(data, request.getQuery());
+                        //query was augmented with auto tagging on non tagged steps
+                        String actual = QueryDescriptor.print(data);
+                        String expected = "[└── Start, \n" +
+                                "    ──Conc[Person:1:ID[12345678]]--> Rel(own:2)──Typ[Dragon:3]]";
+                        Assert.assertEquals(expected, actual);
                         return data != null;
                     } catch (Exception e) {
                         e.printStackTrace();

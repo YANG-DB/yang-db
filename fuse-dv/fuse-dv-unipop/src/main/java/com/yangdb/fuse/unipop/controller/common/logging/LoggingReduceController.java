@@ -25,6 +25,7 @@ import com.yangdb.fuse.dispatcher.decorators.MethodDecorator.ResultHandler.Passt
 import com.yangdb.fuse.dispatcher.logging.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.unipop.process.Profiler;
 import org.unipop.query.aggregation.ReduceQuery;
 
 import static com.yangdb.fuse.dispatcher.logging.LogMessage.Level.trace;
@@ -44,8 +45,7 @@ public class LoggingReduceController implements ReduceQuery.SearchController {
     @Override
     public long count(ReduceQuery reduceQuery) {
         return new LoggingSyncMethodDecorator<Long>(this.logger, this.metricRegistry, count,
-                StepDescriptorLogWriter.of(reduceQuery.getStepDescriptor().getDescription()),
-                trace)
+                StepDescriptorLogWriter.of("Reduce["+reduceQuery.getStepDescriptor().getDescription().orElse("?")+"]"),trace)
                 .decorate(() -> this.searchController.count(reduceQuery), new Passthrough<>((ex) -> 0L));
     }
 
@@ -66,6 +66,17 @@ public class LoggingReduceController implements ReduceQuery.SearchController {
         return new LoggingSyncMethodDecorator<Long>(this.logger, this.metricRegistry, count, trace)
                 .decorate(() -> this.searchController.avg(reduceQuery), new Passthrough<>((ex) -> 0L));
     }
+
+    @Override
+    public Profiler getProfiler() {
+        return this.searchController.getProfiler();
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.searchController.setProfiler(profiler);
+    }
+
     //endregion
 
     //region Fields

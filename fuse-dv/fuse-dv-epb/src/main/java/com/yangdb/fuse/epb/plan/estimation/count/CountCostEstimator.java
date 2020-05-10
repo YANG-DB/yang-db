@@ -34,8 +34,11 @@ import com.yangdb.fuse.model.execution.plan.costs.DoubleCost;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.ontology.Ontology;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.unipop.process.Profiler;
 
 import java.util.Collections;
+
+import static org.unipop.process.Profiler.PROFILER;
 
 /**
  * Created by Roman on 3/14/2018.
@@ -68,8 +71,14 @@ public class CountCostEstimator implements CostEstimator<Plan, PlanDetailedCost,
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+        //todo add configuration activation
+        traversal.asAdmin().getSideEffects().register(PROFILER, Profiler.Impl::new, null);
 
         long count = traversal.count().next();
+
+        //Todo log profiler
+        Profiler profiler = traversal.asAdmin().getSideEffects().get(PROFILER);
+        System.out.println(profiler);
 
         return new PlanWithCost<>(plan, new PlanDetailedCost(new DoubleCost(count), Collections.emptyList()));
     }

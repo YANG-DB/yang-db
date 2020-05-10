@@ -165,6 +165,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
         CompositeControllerContext context = new CompositeControllerContext.Impl(
                 new PromiseElementControllerContext(
                         this.graph,
+                        searchQuery.getStepDescriptor(),
                         Collections.emptyList(),
                         constraint,
                         selectPHasContainers,

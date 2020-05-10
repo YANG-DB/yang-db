@@ -42,10 +42,12 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.unipop.process.Profiler;
 
 import java.util.*;
 
 import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
+import static org.unipop.process.Profiler.PROFILER;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -128,6 +130,10 @@ public class PathsTraversalCursor implements Cursor {
         builder.withPattern(pattern);
         //build assignments
         List<Path> paths = context.getTraversal().next(numResults);
+        //Todo log profiler
+        Profiler profiler = context.getTraversal().asAdmin().getSideEffects().get(PROFILER);
+        System.out.println(profiler);
+
         paths.forEach(path -> builder.withAssignment(toAssignment(path)));
         return builder.build();
     }

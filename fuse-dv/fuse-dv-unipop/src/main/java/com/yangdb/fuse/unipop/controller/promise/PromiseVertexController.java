@@ -92,7 +92,7 @@ public class PromiseVertexController extends VertexControllerBase {
         }
 
         try {
-            return queryPromiseEdges(searchVertexQuery.getVertices(), constraint);
+            return queryPromiseEdges(searchVertexQuery, constraint);
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyIterator();
@@ -101,18 +101,19 @@ public class PromiseVertexController extends VertexControllerBase {
     //endregion
 
     //region Private Methods
-    private Iterator<Edge> queryPromiseEdges(List<Vertex> startVertices, Optional<TraversalConstraint> constraint) throws Exception {
+    private Iterator<Edge> queryPromiseEdges(SearchVertexQuery searchVertexQuery, Optional<TraversalConstraint> constraint) throws Exception {
         SearchBuilder searchBuilder = new SearchBuilder();
 
         CompositeControllerContext context = new CompositeControllerContext.Impl(
                 null,
                 new PromiseVertexControllerContext(
                         graph,
+                        searchVertexQuery.getStepDescriptor(),
                         schemaProvider,
                         constraint,
                         Collections.emptyList(),
                         0,
-                        startVertices));
+                        searchVertexQuery.getVertices()));
 
         CompositeSearchAppender<CompositeControllerContext> compositeAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,

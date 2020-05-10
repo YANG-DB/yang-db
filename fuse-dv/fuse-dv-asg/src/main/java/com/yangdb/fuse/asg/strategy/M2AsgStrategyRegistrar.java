@@ -29,6 +29,7 @@ import com.yangdb.fuse.asg.strategy.propertyGrouping.RelPropGroupingAsgStrategy;
 import com.yangdb.fuse.asg.strategy.schema.ExactConstraintTransformationAsgStrategy;
 import com.yangdb.fuse.asg.strategy.schema.LikeAnyConstraintTransformationAsgStrategy;
 import com.yangdb.fuse.asg.strategy.schema.LikeConstraintTransformationAsgStrategy;
+import com.yangdb.fuse.asg.strategy.selection.DefaultETagAsgStrategy;
 import com.yangdb.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.RelationPatternRangeAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
@@ -55,6 +56,7 @@ public class M2AsgStrategyRegistrar  implements AsgStrategyRegistrar {
     @Override
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
+                new DefaultETagAsgStrategy(this.ontologyProvider),
                 new AsgNamedParametersStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
                 new RelationPatternRangeAsgStrategy(),

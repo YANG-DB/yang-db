@@ -30,6 +30,7 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.elasticsearch.search.SearchHit;
+import org.unipop.process.Profiler;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ import java.util.Map;
  */
 public class DiscreteVertexConverter<E extends Element> implements ElementConverter<SearchHit, E> {
     //region Constructors
-    public DiscreteVertexConverter(ElementControllerContext context) {
+    public DiscreteVertexConverter(ElementControllerContext context,Profiler profiler) {
         this.context = context;
         this.typeToLabelVertexSchemas = Stream.ofAll(context.getSchemaProvider().getVertexSchemas())
                 .toJavaMap(vertexSchema ->
@@ -51,6 +52,7 @@ public class DiscreteVertexConverter<E extends Element> implements ElementConver
                                         .get(0),
                                 vertexSchema));
 
+        this.profiler = profiler;
     }
     //endregion
 
@@ -64,15 +66,28 @@ public class DiscreteVertexConverter<E extends Element> implements ElementConver
         if(searchHit.getScore() > 0){
             source.put("score", searchHit.getScore());
         }
+
+        String label = this.typeToLabelVertexSchemas.get(source.get("type")).getLabel();
+        profiler.getOrCreate(context.getStepDescriptor().getDescription().orElse(label)).inc(1);
         return Arrays.asList((E)new DiscreteVertex(
                 searchHit.getId(),
-                this.typeToLabelVertexSchemas.get(source.get("type")).getLabel(),
+                label,
                 context.getGraph(),
                 source));
     }
     //endregion
+    @Override
+    public Profiler getProfiler() {
+        return this.profiler;
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        this.profiler = profiler;
+    }
 
     //region Fields
+    private Profiler profiler;
     private ElementControllerContext context;
     private Map<String, GraphVertexSchema> typeToLabelVertexSchemas;
     //endregion

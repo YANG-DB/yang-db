@@ -60,6 +60,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
+import static org.unipop.process.Profiler.PROFILER;
+
 public abstract class UniBulkStep<S, E> extends AbstractStep<S, E> {
     private static Supplier<Supplier<Integer>> cachedBulkSizeSupplierFactory = null;
 
@@ -87,8 +89,8 @@ public abstract class UniBulkStep<S, E> extends AbstractStep<S, E> {
 
         this.results = EmptyIterator.instance();
 
-        this.profiler = this.traversal.getSideEffects().exists("profiler") ?
-                this.traversal.getSideEffects().get("profiler") :
+        this.profiler = this.traversal.getSideEffects().exists(PROFILER) ?
+                this.traversal.getSideEffects().get(PROFILER) :
                 Profiler.Noop.instance;
     }
     //endregion

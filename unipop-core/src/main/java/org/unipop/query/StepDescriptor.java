@@ -55,8 +55,6 @@ import java.util.Set;
 
 public class StepDescriptor {
 
-    public static final String STEP_DESCRIPTOR_PREFIX = "_";
-
     private MutableMetrics metrics;
     private Step step;
 
@@ -77,10 +75,8 @@ public class StepDescriptor {
         return step.getLabels();
     }
 
-    public String getDescription(){
-       return (String) step.getLabels().stream()
-               .filter(l->l.toString().startsWith(STEP_DESCRIPTOR_PREFIX))
-               .max(Comparator.comparingInt(String::length)).get();
+    public Optional<String> getDescription(){
+       return step.getLabels().stream().findFirst();
     }
 
     public Optional<MutableMetrics> getMetrics(){
@@ -90,7 +86,6 @@ public class StepDescriptor {
     @Override
     public String toString() {
         return step.toString()
-                + " { ID: " + step.getId()
-                + " }";
+                + " { ID: " + step.getId()+ " }";
     }
 }
