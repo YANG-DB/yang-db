@@ -68,7 +68,7 @@ public class SearchHitPromiseFilterEdgeConverter implements ElementConverter<Sea
     }
 
     //region Fields
-    private Profiler profiler;
+    private Profiler profiler = Profiler.Noop.instance ;
     private UniGraph graph;
     //endregion
 }

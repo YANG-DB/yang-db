@@ -153,6 +153,6 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
     private SearchOrderProviderFactory orderProviderFactory;
     private GraphElementSchemaProvider schemaProvider;
 
-    private Profiler profiler;
+    private Profiler profiler = Profiler.Noop.instance ;
     //endregion
 }

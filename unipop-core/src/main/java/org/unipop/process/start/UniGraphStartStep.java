@@ -54,6 +54,7 @@ import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.unipop.process.Profiler;
+import org.unipop.process.Profiler.Noop;
 import org.unipop.process.order.Orderable;
 import org.unipop.util.ConversionUtils;
 import org.unipop.process.predicate.ReceivesPredicatesHolder;
@@ -68,6 +69,8 @@ import org.unipop.structure.UniGraph;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static org.unipop.process.Profiler.PROFILER;
+
 public class UniGraphStartStep<S,E extends Element> extends GraphStep<S,E> implements ReceivesPredicatesHolder<S, E>, PropertyFetcher, Orderable, Profiling{
     private static final Logger logger = LoggerFactory.getLogger(UniGraphStartStep.class);
     private StepDescriptor stepDescriptor;
@@ -77,7 +80,7 @@ public class UniGraphStartStep<S,E extends Element> extends GraphStep<S,E> imple
     private int limit;
     private List<Pair<String, Order>> orders;
 
-    private Profiler profiler;
+    private Profiler profiler = Noop.instance ;
 
     public UniGraphStartStep(GraphStep<S, E> originalStep, ControllerManager controllerManager) {
         super(originalStep.getTraversal(), originalStep.getReturnClass(), originalStep.isStartStep(), originalStep.getIds());
@@ -89,9 +92,7 @@ public class UniGraphStartStep<S,E extends Element> extends GraphStep<S,E> imple
         limit = -1;
         this.propertyKeys = new HashSet<>();
 
-        this.profiler = this.traversal.getSideEffects().exists("profiler") ?
-                this.traversal.getSideEffects().get("profiler") :
-                Profiler.Noop.instance;
+        this.profiler = this.traversal.getSideEffects().getOrCreate(PROFILER, Profiler.Impl::new) ;
 
         this.controllers.forEach(controller -> controller.setProfiler(this.profiler));
     }

@@ -24,7 +24,6 @@ import com.yangdb.fuse.dispatcher.logging.*;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.slf4j.Logger;
 import org.unipop.process.Profiler;
-import sun.java2d.cmm.Profile;
 
 import java.util.List;
 
@@ -79,7 +78,7 @@ public class LoggingTraversal<S, E> implements Traversal<S, E> {
                 new LogMessage.Impl(this.logger, trace, "finish next", sequence, LogType.of(success), next, ElapsedFrom.now()).log();
                 //log profiling message
                 new LogMessage.Impl(this.logger, trace, "traversal profile", sequence, LogType.of(metric), profile,
-                        new LogMessage.MDCWriter.KeyValue(PROFILER, traversal.asAdmin().getSideEffects().get(PROFILER).toString())).log();
+                        new LogMessage.MDCWriter.KeyValue(PROFILER, traversal.asAdmin().getSideEffects().getOrCreate(PROFILER, Profiler.Impl::new).toString())).log();
             }
         }
     }

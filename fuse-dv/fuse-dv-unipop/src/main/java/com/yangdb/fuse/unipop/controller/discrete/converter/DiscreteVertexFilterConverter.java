@@ -102,7 +102,7 @@ public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit
     }
 
     //region Fields
-    private Profiler profiler;
+    private Profiler profiler = Profiler.Noop.instance ;
     private VertexControllerContext context;
     private Map<String, GraphVertexSchema> typeToLabelVertexSchemas;
     //endregion

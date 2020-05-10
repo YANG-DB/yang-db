@@ -82,7 +82,7 @@ public class UniGraphStartCountStep<S> extends AbstractStep<S, Long> implements 
     @Override
     protected Traverser.Admin<Long> processNextStart() throws NoSuchElementException {
         ReduceQuery reduceQuery = new ReduceQuery(this.predicates, this.stepDescriptor);
-        Profiler profiler = this.getTraversal().getSideEffects().get(PROFILER);
+        Profiler profiler = this.getTraversal().getSideEffects().getOrCreate(PROFILER, Profiler.Noop::new);
         controllers.forEach(c->c.setProfiler(profiler));
 
         long count = Stream.ofAll(this.controllers)

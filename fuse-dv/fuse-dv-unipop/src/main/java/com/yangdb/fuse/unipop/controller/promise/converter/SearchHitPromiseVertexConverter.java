@@ -64,7 +64,7 @@ public class SearchHitPromiseVertexConverter implements ElementConverter<SearchH
     }
 
     //region Fields
-    private Profiler profiler;
+    private Profiler profiler = Profiler.Noop.instance ;
     private UniGraph graph;
     //endregion
 }

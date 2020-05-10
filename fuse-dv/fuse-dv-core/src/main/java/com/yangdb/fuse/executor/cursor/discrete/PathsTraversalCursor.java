@@ -131,7 +131,7 @@ public class PathsTraversalCursor implements Cursor {
         //build assignments
         List<Path> paths = context.getTraversal().next(numResults);
         //Todo log profiler
-        Profiler profiler = context.getTraversal().asAdmin().getSideEffects().get(PROFILER);
+        Profiler profiler = context.getTraversal().asAdmin().getSideEffects().getOrCreate(PROFILER, Profiler.Impl::new);
         System.out.println(profiler);
 
         paths.forEach(path -> builder.withAssignment(toAssignment(path)));

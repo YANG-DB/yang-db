@@ -87,7 +87,7 @@ public class DiscreteVertexConverter<E extends Element> implements ElementConver
     }
 
     //region Fields
-    private Profiler profiler;
+    private Profiler profiler = Profiler.Noop.instance ;
     private ElementControllerContext context;
     private Map<String, GraphVertexSchema> typeToLabelVertexSchemas;
     //endregion

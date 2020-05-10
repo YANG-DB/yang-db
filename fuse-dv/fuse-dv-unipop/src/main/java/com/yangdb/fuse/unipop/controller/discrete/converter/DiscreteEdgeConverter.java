@@ -256,7 +256,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     }
 
     //region Fields
-    private Profiler profiler;
+    private Profiler profiler = Profiler.Noop.instance ;
     private VertexControllerContext context;
     private EdgeIdProvider<String> edgeIdProvider;
 

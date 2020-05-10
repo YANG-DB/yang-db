@@ -103,7 +103,7 @@ public class AggregationPromiseEdgeIterableConverter implements ElementConverter
     }
 
     //region Fields
-    private Profiler profiler;
+    private Profiler profiler = Profiler.Noop.instance ;
     private UniGraph graph;
     private EdgeIdProvider<String> edgeIdProvider;
     private LabelProvider<String> vertexLabelProvider;

@@ -77,7 +77,7 @@ public class CountCostEstimator implements CostEstimator<Plan, PlanDetailedCost,
         long count = traversal.count().next();
 
         //Todo log profiler
-        Profiler profiler = traversal.asAdmin().getSideEffects().get(PROFILER);
+        Profiler profiler = traversal.asAdmin().getSideEffects().getOrCreate(PROFILER, Profiler.Impl::new);
         System.out.println(profiler);
 
         return new PlanWithCost<>(plan, new PlanDetailedCost(new DoubleCost(count), Collections.emptyList()));

@@ -249,7 +249,7 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
     }
 
     //region Fields
-    private Profiler profiler;
+    private Profiler profiler = Profiler.Noop.instance  ;
     private Client client;
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
