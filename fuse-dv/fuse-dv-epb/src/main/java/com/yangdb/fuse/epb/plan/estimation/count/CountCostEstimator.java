@@ -22,6 +22,7 @@ package com.yangdb.fuse.epb.plan.estimation.count;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.epb.CostEstimator;
+import com.yangdb.fuse.dispatcher.epb.CostEstimatorDriver;
 import com.yangdb.fuse.dispatcher.gta.PlanTraversalTranslator;
 import com.yangdb.fuse.dispatcher.gta.TranslationContext;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
@@ -43,7 +44,7 @@ import static org.unipop.process.Profiler.PROFILER;
 /**
  * Created by Roman on 3/14/2018.
  */
-public class CountCostEstimator implements CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
+public class CountCostEstimator implements CostEstimatorDriver<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>,GraphTraversal<?, ?>> {
     //region Constructors
     @Inject
     public CountCostEstimator(
@@ -74,13 +75,11 @@ public class CountCostEstimator implements CostEstimator<Plan, PlanDetailedCost,
         //todo add configuration activation
         traversal.asAdmin().getSideEffects().register(PROFILER, Profiler.Impl::new, null);
 
-        long count = traversal.count().next();
+        return new PlanWithCost<>(plan, new PlanDetailedCost(new DoubleCost(count(traversal)), Collections.emptyList()));
+    }
 
-        //Todo log profiler
-        Profiler profiler = traversal.asAdmin().getSideEffects().getOrCreate(PROFILER, Profiler.Impl::new);
-        System.out.println(profiler);
-
-        return new PlanWithCost<>(plan, new PlanDetailedCost(new DoubleCost(count), Collections.emptyList()));
+    public Long count(GraphTraversal<?, ?> traversal) {
+        return traversal.count().next();
     }
     //endregion
 
