@@ -1,0 +1,1073 @@
+[
+  {
+    "_id": "95336920-8fd2-11ea-8b35-33b7e5e4ba67",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|Duration|Metrics",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|Duration|Metrics\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":25}}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[75],\"customLabel\":\"\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[95]}},{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[99],\"customLabel\":\"\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardQueryController\",\"params\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postQuery\",\"params\":{\"query\":\"postQuery\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postQuery\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "c1d000f0-9096-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardCursorController|PostCursor|Completed|Piechart",
+      "visState": "{\"title\":\"StandardCursorController|PostCursor|Completed|Piechart\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"top\",\"isDonut\":false,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"logType\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"customLabel\":\"logType\"}}]}",
+      "uiStateJSON": "{\"vis\":{\"colors\":{\"start\":\"#052B51\",\"success\":\"#7EB26D\"},\"legendOpen\":false}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardCursorController\",\"params\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postCursor\",\"params\":{\"query\":\"postCursor\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postCursor\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "e1b73030-8fd0-11ea-8b35-33b7e5e4ba67",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|Completed|Piechart",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|Completed|Piechart\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"top\",\"isDonut\":false,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"logType\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"customLabel\":\"logType\"}}]}",
+      "uiStateJSON": "{\"vis\":{\"colors\":{\"start\":\"#052B51\",\"success\":\"#7EB26D\"},\"legendOpen\":false}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardQueryController\",\"params\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postQuery\",\"params\":{\"query\":\"postQuery\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postQuery\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "ea3e49b0-909c-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|Completed|Piechart",
+      "visState": "{\"title\":\"StandardPageController|PostPage|Completed|Piechart\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"top\",\"isDonut\":false,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"logType\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"customLabel\":\"logType\"}}]}",
+      "uiStateJSON": "{\"vis\":{\"colors\":{\"start\":\"#052B51\",\"success\":\"#7EB26D\"},\"legendOpen\":false}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardPageController\",\"params\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postPage\",\"params\":{\"query\":\"postPage\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postPage\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "c6172b10-9097-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardCursorController|PostCursor|Duration|Metrics",
+      "visState": "{\"title\":\"StandardCursorController|PostCursor|Duration|Metrics\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":25}}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[75],\"customLabel\":\"\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[95]}},{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[99]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardCursorController\",\"params\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postCursor\",\"params\":{\"query\":\"postCursor\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postCursor\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "f3c3a820-909e-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|Duration|Metrics",
+      "visState": "{\"title\":\"StandardPageController|PostPage|Duration|Metrics\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":25}}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[75],\"customLabel\":\"\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[95]}},{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[99]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardPageController\",\"params\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postPage\",\"params\":{\"query\":\"postPage\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postPage\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "bec56d20-90a3-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|DataTable",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|DataTable\",\"type\":\"table\",\"params\":{\"perPage\":3,\"showPartialRows\":false,\"showMetricsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"3\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[75,95,99],\"customLabel\":\"duration\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"logType\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"customLabel\":\"state\"}}]}",
+      "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardQueryController\",\"params\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postQuery\",\"params\":{\"query\":\"postQuery\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postQuery\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"start, success, failure\",\"params\":[\"start\",\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"start\"}},{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "71decad0-8fcf-11ea-8b35-33b7e5e4ba67",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|Started|Metric",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|Started|Metric\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Started Queries\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardQueryController\",\"params\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE\",\"params\":[\"TRACE\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logType\",\"value\":\"start\",\"params\":{\"query\":\"start\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logType\":{\"query\":\"start\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postQuery\",\"params\":{\"query\":\"postQuery\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postQuery\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "3ea91030-9097-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardCursorController|PostCursor|Started|Metric",
+      "visState": "{\"title\":\"StandardCursorController|PostCursor|Started|Metric\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Started Cursors\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE\",\"params\":[\"TRACE\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logType\",\"value\":\"start\",\"params\":{\"query\":\"start\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logType\":{\"query\":\"start\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardCursorController\",\"params\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postCursor\",\"params\":{\"query\":\"postCursor\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postCursor\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "52dc83b0-909d-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|Started|Metric",
+      "visState": "{\"title\":\"StandardPageController|PostPage|Started|Metric\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Started Pages\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE\",\"params\":[\"TRACE\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logType\",\"value\":\"start\",\"params\":{\"query\":\"start\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logType\":{\"query\":\"start\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardPageController\",\"params\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postPage\",\"params\":{\"query\":\"postPage\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postPage\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "57708460-9095-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardCursorController|PostCursor|Count|Timelion",
+      "visState": "{\"title\":\"StandardCursorController|PostCursor|Count|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:postCursor AND logger:*StandardCursorController AND logType:start AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).if(lt,0.01,null).points(weight=1,radius=1,fill=5).color(black).label('started').yaxis(1,position=left, label='count / sec'),\\n\\n.es(q='route:postCursor AND logger:*StandardCursorController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=3).color(green).label('completed'),      \\n                                                                              .es(q='route:postCursor AND logger:*StandardCursorController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=1.5).color(red).label('failed'),\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "42ac6bf0-8f16-11ea-8b35-33b7e5e4ba67",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|Count|Timelion",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|Count|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:postQuery AND logger:*StandardQueryController AND logType:start AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).if(lt,0.01,null).points(weight=1,radius=1,fill=5).color(black).label('started').yaxis(1,position=left, label='count / sec'),\\n\\n.es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=3).color(green).label('completed'),      \\n                                                                              .es(q='route:postQuery AND logger:*StandardQueryController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=1.5).color(red).label('failed'),\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "dfdcc6a0-909b-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|Count|Timelion",
+      "visState": "{\"title\":\"StandardPageController|PostPage|Count|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:postPage AND logger:*StandardPageController AND logType:start AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).if(lt,0.01,null).points(weight=1,radius=1,fill=5).color(black).label('started').yaxis(1,position=left, label='count / sec'),\\n\\n.es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=3).color(green).label('completed'),      \\n                                                                              .es(q='route:postPage AND logger:*StandardPageController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=1.5).color(red).label('failed'),\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "a17bdd80-90f8-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "LoggingClient|PostPage|Count|Timelion",
+      "visState": "{\"title\":\"LoggingClient|PostPage|Count|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:postPage AND logger:*LoggingClient AND logType:start AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).if(lt,0.01,null).points(weight=1,radius=1,fill=5).color(black).label('started').yaxis(1,position=left, label='count / sec'),\\n\\n.es(q='route:postPage AND logger:*LoggingClient AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=3).color(green).label('completed'),      \\n                                                                              .es(q='route:postPage AND logger:*LoggingClient AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=1.5).color(red).label('failed'),\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "fbf77190-90a6-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|Duration|Elapsed|75Percentile",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|Duration|Elapsed|75Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[75],\"customLabel\":\"\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardQueryController\",\"params\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postQuery\",\"params\":{\"query\":\"postQuery\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postQuery\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "cf9ad8a0-9095-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardCursorController|PostCursor|Elapsed|Timelion",
+      "visState": "{\"title\":\"StandardCursorController|PostCursor|Elapsed|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:postCursor AND logger:*StandardCursorController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postCursor AND logger:*StandardCursorController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:elapsed:99')).lines(width=1,fill=1).color(#004444).label('completed 99%'),\\n\\n .es(q='route:postCursor AND logger:*StandardCursorController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postCursor AND logger:*StandardCursorController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:elapsed:95')).lines(width=1,fill=2).color(#007777).label('completed 95%'),\\n\\n.es(q='route:postCursor AND logger:*StandardCursorController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postCursor AND logger:*StandardCursorController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:elapsed:75')).lines(width=1,fill=3).color(#00AAAA).label('completed 75%').yaxis(1, label='duration (ms)'),\\n\\n.es(q='route:postCursor AND logger:*StandardCursorController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postCursor AND logger:*StandardCursorController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='avg:elapsed')).lines(width=1,fill=1.5).color(red).label('failed avg')\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "83243fc0-8fcd-11ea-8b35-33b7e5e4ba67",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|Elapsed|Timelion",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|Elapsed|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:elapsed:99')).lines(width=1,fill=1).color(#004444).label('completed 99%'),\\n\\n .es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:elapsed:95')).lines(width=1,fill=2).color(#007777).label('completed 95%'),\\n\\n.es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:elapsed:75')).lines(width=1,fill=3).color(#00AAAA).label('completed 75%').yaxis(1, label='duration (ms)'),\\n\\n.es(q='route:postQuery AND logger:*StandardQueryController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='avg:elapsed')).lines(width=1,fill=1.5).color(red).label('failed avg')\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "0ea8afb0-909e-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|Elapsed|Timelion",
+      "visState": "{\"title\":\"StandardPageController|PostPage|Elapsed|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:elapsed:99')).lines(width=1,fill=1).color(#004444).label('completed 99%'),\\n\\n .es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:elapsed:95')).lines(width=1,fill=2).color(#007777).label('completed 95%'),\\n\\n.es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:elapsed:75')).lines(width=1,fill=3).color(#00AAAA).label('completed 75%').yaxis(1, label='duration (ms)'),\\n\\n.es(q='route:postPage AND logger:*StandardPageController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='avg:elapsed')).lines(width=1,fill=1.5).color(red).label('failed avg')\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "e8b50610-90a6-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|Elapsed|Metric|95Percentile",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|Elapsed|Metric|95Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[95],\"customLabel\":\"\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardQueryController\",\"params\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postQuery\",\"params\":{\"query\":\"postQuery\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postQuery\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "da720da0-90a6-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|Elapsed|Metric|99Percentile",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|Elapsed|Metric|99Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[99]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardQueryController\",\"params\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postQuery\",\"params\":{\"query\":\"postQuery\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postQuery\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "55b87980-90a8-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardCursorController|PostCursor|Elapsed|Metric|75Percentile",
+      "visState": "{\"title\":\"StandardCursorController|PostCursor|Elapsed|Metric|75Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[75]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardCursorController\",\"params\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postCursor\",\"params\":{\"query\":\"postCursor\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postCursor\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "4d3250b0-90a8-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardCursorController|PostCursor|Elapsed|Metric|95Percentile",
+      "visState": "{\"title\":\"StandardCursorController|PostCursor|Elapsed|Metric|95Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[95]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardCursorController\",\"params\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postCursor\",\"params\":{\"query\":\"postCursor\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postCursor\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "41430c40-90a8-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardCursorController|PostCursor|Elapsed|Metric|99Percentile",
+      "visState": "{\"title\":\"StandardCursorController|PostCursor|Elapsed|Metric|99Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[99]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardCursorController\",\"params\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardCursorController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postCursor\",\"params\":{\"query\":\"postCursor\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postCursor\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "7cc8ab20-90a9-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|Elapsed|Metric|75Percentile",
+      "visState": "{\"title\":\"StandardPageController|PostPage|Elapsed|Metric|75Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[75]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardPageController\",\"params\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postPage\",\"params\":{\"query\":\"postPage\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postPage\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "6eb993f0-90a9-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|Elapsed|Metric|95Percentile",
+      "visState": "{\"title\":\"StandardPageController|PostPage|Elapsed|Metric|95Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[95]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardPageController\",\"params\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postPage\",\"params\":{\"query\":\"postPage\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postPage\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "609b3a80-90a9-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|Elapsed|Metric|99Percentile",
+      "visState": "{\"title\":\"StandardPageController|PostPage|Elapsed|Metric|99Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed\",\"percents\":[99]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardPageController\",\"params\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postPage\",\"params\":{\"query\":\"postPage\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postPage\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "6b9ee1a0-9105-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|NetworkElasticElapsedTotal|Metric|75Percentile",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|NetworkElasticElapsedTotal|Metric|75Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"networkElasticElapsedTotal\",\"percents\":[75]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardQueryController\",\"params\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postQuery\",\"params\":{\"query\":\"postQuery\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postQuery\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "2453f480-9104-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|NetworkElasticElapsedTotal|Metric|75Percentile",
+      "visState": "{\"title\":\"StandardPageController|PostPage|NetworkElasticElapsedTotal|Metric|75Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"networkElasticElapsedTotal\",\"percents\":[75]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardPageController\",\"params\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postPage\",\"params\":{\"query\":\"postPage\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postPage\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "30b13d00-9104-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|NetworkElasticElapsedTotal|Metric|95Percentile",
+      "visState": "{\"title\":\"StandardPageController|PostPage|NetworkElasticElapsedTotal|Metric|95Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"networkElasticElapsedTotal\",\"percents\":[95]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardPageController\",\"params\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postPage\",\"params\":{\"query\":\"postPage\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postPage\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "3b3e5960-9104-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|NetworkElasticElapsedTotal|Metric|99Percentile",
+      "visState": "{\"title\":\"StandardPageController|PostPage|NetworkElasticElapsedTotal|Metric|99Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"networkElasticElapsedTotal\",\"percents\":[99]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardPageController\",\"params\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardPageController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postPage\",\"params\":{\"query\":\"postPage\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postPage\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "10c9b520-9105-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|NetworkElasticElapsedTotal|Timelion",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|NetworkElasticElapsedTotal|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:networkElasticElapsedTotal:99')).lines(width=1,fill=1).color(#004444).label('completed 99%'),\\n\\n .es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:networkElasticElapsedTotal:95')).lines(width=1,fill=2).color(#007777).label('completed 95%'),\\n\\n.es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:networkElasticElapsedTotal:75')).lines(width=1,fill=3).color(#00AAAA).label('completed 75%').yaxis(1, label='duration (ms)'),\\n\\n.es(q='route:postQuery AND logger:*StandardQueryController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='avg:networkElasticElapsedTotal')).lines(width=1,fill=1.5).color(red).label('failed avg')\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "54d0c940-9103-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|PostPage|NetworkElasticElapsedTotal|Timelion",
+      "visState": "{\"title\":\"StandardPageController|PostPage|NetworkElasticElapsedTotal|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:networkElasticElapsedTotal:99')).lines(width=1,fill=1).color(#004444).label('completed 99%'),\\n\\n .es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:networkElasticElapsedTotal:95')).lines(width=1,fill=2).color(#007777).label('completed 95%'),\\n\\n.es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:networkElasticElapsedTotal:75')).lines(width=1,fill=3).color(#00AAAA).label('completed 75%').yaxis(1, label='duration (ms)'),\\n\\n.es(q='route:postPage AND logger:*StandardPageController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:postPage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='avg:networkElasticElapsedTotal')).lines(width=1,fill=1.5).color(red).label('failed avg')\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "8203c2d0-9105-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|NetworkElasticElapsedTotal|Metric|95Percentile",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|NetworkElasticElapsedTotal|Metric|95Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"networkElasticElapsedTotal\",\"percents\":[95]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardQueryController\",\"params\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postQuery\",\"params\":{\"query\":\"postQuery\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postQuery\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "8bf4c640-9105-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|PostQuery|NetworkElasticElapsedTotal|Metric|99Percentile",
+      "visState": "{\"title\":\"StandardQueryController|PostQuery|NetworkElasticElapsedTotal|Metric|99Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"networkElasticElapsedTotal\",\"percents\":[99]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.s.c.StandardQueryController\",\"params\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.s.c.StandardQueryController\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"route\",\"value\":\"postQuery\",\"params\":{\"query\":\"postQuery\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"route\":{\"query\":\"postQuery\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "f72cf090-90fb-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "Title|Markdown|Elastic Queries",
+      "visState": "{\"title\":\"Title|Markdown|Elastic Queries\",\"type\":\"metrics\",\"params\":{\"id\":\"61ca57f0-469d-11e7-af02-69e470af7417\",\"type\":\"markdown\",\"series\":[{\"id\":\"61ca57f1-469d-11e7-af02-69e470af7417\",\"color\":\"#68BC00\",\"split_mode\":\"everything\",\"metrics\":[{\"id\":\"61ca57f2-469d-11e7-af02-69e470af7417\",\"type\":\"count\"}],\"separate_axis\":0,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"fuse-engine-logs-*\",\"interval\":\"auto\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"axis_scale\":\"normal\",\"show_legend\":1,\"show_grid\":1,\"markdown\":\"# Elastic Queries\",\"markdown_less\":\"text-align: center\",\"markdown_css\":\"#markdown-61ca57f0-469d-11e7-af02-69e470af7417{text-align:center}\",\"markdown_vertical_align\":\"middle\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "b6eabe90-90fb-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "Title|Markdown|Queries",
+      "visState": "{\"title\":\"Title|Markdown|Queries\",\"type\":\"metrics\",\"params\":{\"id\":\"61ca57f0-469d-11e7-af02-69e470af7417\",\"type\":\"markdown\",\"series\":[{\"id\":\"61ca57f1-469d-11e7-af02-69e470af7417\",\"color\":\"#68BC00\",\"split_mode\":\"everything\",\"metrics\":[{\"id\":\"61ca57f2-469d-11e7-af02-69e470af7417\",\"type\":\"count\"}],\"separate_axis\":0,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"fuse-engine-logs-*\",\"interval\":\"auto\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"axis_scale\":\"normal\",\"show_legend\":1,\"show_grid\":1,\"markdown\":\"# Queries\",\"markdown_less\":\"text-align: center\",\"markdown_css\":\"#markdown-61ca57f0-469d-11e7-af02-69e470af7417{text-align:center}\",\"markdown_vertical_align\":\"middle\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "e3e6b480-90fb-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "Title|Markdown|Cursors",
+      "visState": "{\"title\":\"Title|Markdown|Cursors\",\"type\":\"metrics\",\"params\":{\"id\":\"61ca57f0-469d-11e7-af02-69e470af7417\",\"type\":\"markdown\",\"series\":[{\"id\":\"61ca57f1-469d-11e7-af02-69e470af7417\",\"color\":\"#68BC00\",\"split_mode\":\"everything\",\"metrics\":[{\"id\":\"61ca57f2-469d-11e7-af02-69e470af7417\",\"type\":\"count\"}],\"separate_axis\":0,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"fuse-engine-logs-*\",\"interval\":\"auto\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"axis_scale\":\"normal\",\"show_legend\":1,\"show_grid\":1,\"markdown\":\"# Cursors\",\"markdown_less\":\"text-align: center\",\"markdown_css\":\"#markdown-61ca57f0-469d-11e7-af02-69e470af7417{text-align:center}\",\"markdown_vertical_align\":\"middle\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "eba43620-90fb-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "Title|Markdown|Pages",
+      "visState": "{\"title\":\"Title|Markdown|Pages\",\"type\":\"metrics\",\"params\":{\"id\":\"61ca57f0-469d-11e7-af02-69e470af7417\",\"type\":\"markdown\",\"series\":[{\"id\":\"61ca57f1-469d-11e7-af02-69e470af7417\",\"color\":\"#68BC00\",\"split_mode\":\"everything\",\"metrics\":[{\"id\":\"61ca57f2-469d-11e7-af02-69e470af7417\",\"type\":\"count\"}],\"separate_axis\":0,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"fuse-engine-logs-*\",\"interval\":\"auto\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"axis_scale\":\"normal\",\"show_legend\":1,\"show_grid\":1,\"markdown\":\"# Pages\",\"markdown_less\":\"text-align: center\",\"markdown_css\":\"#markdown-61ca57f0-469d-11e7-af02-69e470af7417{text-align:center}\",\"markdown_vertical_align\":\"middle\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "d980f340-911c-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardQueryController|DeleteQuery|Count|Timelion",
+      "visState": "{\"title\":\"StandardQueryController|DeleteQuery|Count|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:deleteQuery AND logger:*StandardQueryController AND logType:start AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).if(lt,0.01,null).points(weight=1,radius=1,fill=5).color(black).label('started').yaxis(1,position=left, label='count / sec'),\\n\\n.es(q='route:deleteQuery AND logger:*StandardQueryController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=3).color(green).label('completed'),      \\n                                                                              .es(q='route:deleteQuery AND logger:*StandardQueryController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=1.5).color(red).label('failed'),\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "ded30fa0-911b-11ea-aabb-45fa14852f22",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Yang-db|All Activity",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"embeddableConfig\":{},\"gridData\":{\"x\":0,\"y\":0,\"w\":6,\"h\":8,\"i\":\"1\"},\"id\":\"b6eabe90-90fb-11ea-aabb-45fa14852f22\",\"panelIndex\":\"1\",\"title\":\"\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":0,\"y\":8,\"w\":6,\"h\":8,\"i\":\"2\"},\"id\":\"e3e6b480-90fb-11ea-aabb-45fa14852f22\",\"panelIndex\":\"2\",\"title\":\"\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":0,\"y\":16,\"w\":6,\"h\":8,\"i\":\"3\"},\"id\":\"eba43620-90fb-11ea-aabb-45fa14852f22\",\"panelIndex\":\"3\",\"title\":\"\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":0,\"y\":24,\"w\":6,\"h\":8,\"i\":\"4\"},\"id\":\"f72cf090-90fb-11ea-aabb-45fa14852f22\",\"panelIndex\":\"4\",\"title\":\"\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":6,\"y\":0,\"w\":21,\"h\":8,\"i\":\"5\"},\"id\":\"42ac6bf0-8f16-11ea-8b35-33b7e5e4ba67\",\"panelIndex\":\"5\",\"title\":\"Post Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":6,\"y\":8,\"w\":21,\"h\":8,\"i\":\"6\"},\"id\":\"57708460-9095-11ea-aabb-45fa14852f22\",\"panelIndex\":\"6\",\"title\":\"Post Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":6,\"y\":16,\"w\":14,\"h\":8,\"i\":\"7\"},\"id\":\"dfdcc6a0-909b-11ea-aabb-45fa14852f22\",\"panelIndex\":\"7\",\"title\":\"Post Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":27,\"y\":24,\"w\":21,\"h\":8,\"i\":\"8\"},\"id\":\"a17bdd80-90f8-11ea-aabb-45fa14852f22\",\"panelIndex\":\"8\",\"title\":\"Post Page Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":27,\"y\":0,\"w\":21,\"h\":8,\"i\":\"9\"},\"id\":\"d980f340-911c-11ea-aabb-45fa14852f22\",\"panelIndex\":\"9\",\"title\":\"Delete Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":27,\"y\":8,\"w\":21,\"h\":8,\"i\":\"10\"},\"id\":\"565f80c0-911d-11ea-aabb-45fa14852f22\",\"panelIndex\":\"10\",\"title\":\"Delete Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":34,\"y\":16,\"w\":14,\"h\":8,\"i\":\"11\"},\"id\":\"e754b9b0-911d-11ea-aabb-45fa14852f22\",\"panelIndex\":\"11\",\"title\":\"Delete Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":20,\"y\":16,\"w\":14,\"h\":8,\"i\":\"12\"},\"id\":\"6fa40cd0-911e-11ea-aabb-45fa14852f22\",\"panelIndex\":\"12\",\"title\":\"Get Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"gridData\":{\"x\":6,\"y\":24,\"w\":21,\"h\":8,\"i\":\"13\"},\"version\":\"6.5.4\",\"panelIndex\":\"13\",\"type\":\"visualization\",\"id\":\"21004160-911f-11ea-aabb-45fa14852f22\",\"embeddableConfig\":{},\"title\":\"Post Query Count Plot\"}]",
+      "optionsJSON": "{\"darkTheme\":false,\"hidePanelTitles\":false,\"useMargins\":true}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "1e8c5070-90f9-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "LoggingClient|AllRoutes|Completed|Piechart",
+      "visState": "{\"title\":\"LoggingClient|AllRoutes|Completed|Piechart\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"top\",\"isDonut\":false,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"logType\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"customLabel\":\"logType\"}}]}",
+      "uiStateJSON": "{\"vis\":{\"colors\":{\"start\":\"#052B51\",\"success\":\"#7EB26D\",\"failure\":\"#BF1B00\"},\"legendOpen\":false}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.e.e.l.LoggingClient\",\"params\":{\"query\":\"c.y.f.e.e.l.LoggingClient\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.e.e.l.LoggingClient\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "c4fb5500-90fe-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "LoggingClient|AllRoutes|NetworkElasticElapsed|Timelion",
+      "visState": "{\"title\":\"LoggingClient|AllRoutes|NetworkElasticElapsed|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:* AND logger:*LoggingClient AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:* AND logger:*LoggingClient AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:networkElasticElapsed:99')).lines(width=1,fill=1).color(#004444).label('completed 99%'),\\n\\n .es(q='route:* AND logger:*LoggingClient AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:* AND logger:*LoggingClient AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:networkElasticElapsed:95')).lines(width=1,fill=2).color(#007777).label('completed 95%'),\\n\\n.es(q='route:* AND logger:*LoggingClient AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:* AND logger:*LoggingClient AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='percentiles:networkElasticElapsed:75')).lines(width=1,fill=3).color(#00AAAA).label('completed 75%').yaxis(1, label='duration (ms)'),\\n\\n.es(q='route:* AND logger:*LoggingClient AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(gt,1,1).if(eq,1,.es(q='route:* AND logger:*LoggingClient AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric='avg:networkElasticElapsed')).lines(width=1,fill=1.5).color(red).label('failed avg')\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "565f80c0-911d-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardCursorController|DeleteCursor|Count|Timelion",
+      "visState": "{\"title\":\"StandardCursorController|DeleteCursor|Count|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:deleteCursor AND logger:*StandardCursorController AND logType:start AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).if(lt,0.01,null).points(weight=1,radius=1,fill=5).color(black).label('started').yaxis(1,position=left, label='count / sec'),\\n\\n.es(q='route:deleteCursor AND logger:*StandardCursorController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=3).color(green).label('completed'),      \\n                                                                              .es(q='route:deleteCursor AND logger:*StandardCursorController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=1.5).color(red).label('failed'),\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "6fa40cd0-911e-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|GetPageData|Count|Timelion",
+      "visState": "{\"title\":\"StandardPageController|GetPageData|Count|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:getPageData AND logger:*StandardPageController AND logType:start AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).if(lt,0.01,null).points(weight=1,radius=1,fill=5).color(black).label('started').yaxis(1,position=left, label='count / sec'),\\n\\n.es(q='route:getPageData AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=3).color(green).label('completed'),      \\n                                                                              .es(q='route:getPageData AND logger:*StandardPageController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=1.5).color(red).label('failed'),\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "e754b9b0-911d-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "StandardPageController|DeletePage|Count|Timelion",
+      "visState": "{\"title\":\"StandardPageController|DeletePage|Count|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:deletePage AND logger:*StandardPageController AND logType:start AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).if(lt,0.01,null).points(weight=1,radius=1,fill=5).color(black).label('started').yaxis(1,position=left, label='count / sec'),\\n\\n.es(q='route:deletePage AND logger:*StandardPageController AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=3).color(green).label('completed'),      \\n                                                                              .es(q='route:deletePage AND logger:*StandardPageController AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=1.5).color(red).label('failed'),\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "f2b763a0-911f-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "LoggingClient|AllRoutes|Count|Timelion",
+      "visState": "{\"title\":\"LoggingClient|AllRoutes|Count|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route: * AND logger:*LoggingClient AND logType:start AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).if(lt,0.01,null).points(weight=1,radius=1,fill=5).color(black).label('started').yaxis(1,position=left, label='count / sec'),\\n\\n.es(q='route:* AND logger:*LoggingClient AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=3).color(green).label('completed'),      \\n                                                                              .es(q='route: * AND logger:*LoggingClient AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=1.5).color(red).label('failed'),\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "21004160-911f-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "LoggingClient|PostQuery|Count|Timelion",
+      "visState": "{\"title\":\"LoggingClient|PostQuery|Count|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='route:postQuery AND logger:*LoggingClient AND logType:start AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).if(lt,0.01,null).points(weight=1,radius=1,fill=5).color(black).label('started').yaxis(1,position=left, label='count / sec'),\\n\\n.es(q='route:postQuery AND logger:*LoggingClient AND logType:success AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=3).color(green).label('completed'),      \\n                                                                              .es(q='route:postQuery AND logger:*LoggingClient AND logType:failure AND level:TRACE',index=fuse-engine-logs-*,metric=count).if(eq,0,null).fit(scale).scale_interval(1s).lines(width=1,fill=1.5).color(red).label('failed'),\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "45be0f20-8fce-11ea-8b35-33b7e5e4ba67",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Yang-db|Creation Activity With Duration & ES Queries",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"1\",\"w\":39,\"x\":9,\"y\":3},\"id\":\"42ac6bf0-8f16-11ea-8b35-33b7e5e4ba67\",\"panelIndex\":\"1\",\"title\":\"Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"2\",\"w\":39,\"x\":9,\"y\":10},\"id\":\"83243fc0-8fcd-11ea-8b35-33b7e5e4ba67\",\"panelIndex\":\"2\",\"title\":\"Duration Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"6\",\"w\":39,\"x\":9,\"y\":27},\"id\":\"57708460-9095-11ea-aabb-45fa14852f22\",\"panelIndex\":\"6\",\"title\":\"Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"7\",\"w\":39,\"x\":9,\"y\":34},\"id\":\"cf9ad8a0-9095-11ea-aabb-45fa14852f22\",\"panelIndex\":\"7\",\"title\":\"Duration Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"8\",\"w\":5,\"x\":4,\"y\":27},\"id\":\"c1d000f0-9096-11ea-aabb-45fa14852f22\",\"panelIndex\":\"8\",\"title\":\"Completed\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"9\",\"w\":4,\"x\":0,\"y\":27},\"id\":\"3ea91030-9097-11ea-aabb-45fa14852f22\",\"panelIndex\":\"9\",\"title\":\"Started\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"11\",\"w\":39,\"x\":9,\"y\":44},\"id\":\"dfdcc6a0-909b-11ea-aabb-45fa14852f22\",\"panelIndex\":\"11\",\"title\":\"Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{\"vis\":{\"colors\":{\"start\":\"#052B51\",\"success\":\"#7EB26D\"},\"legendOpen\":false}},\"gridData\":{\"h\":7,\"i\":\"12\",\"w\":5,\"x\":4,\"y\":44},\"id\":\"ea3e49b0-909c-11ea-aabb-45fa14852f22\",\"panelIndex\":\"12\",\"title\":\"Completed\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"13\",\"w\":4,\"x\":0,\"y\":44},\"id\":\"52dc83b0-909d-11ea-aabb-45fa14852f22\",\"panelIndex\":\"13\",\"title\":\"Started\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"14\",\"w\":39,\"x\":9,\"y\":51},\"id\":\"0ea8afb0-909e-11ea-aabb-45fa14852f22\",\"panelIndex\":\"14\",\"title\":\"Duration Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"16\",\"w\":4,\"x\":0,\"y\":3},\"id\":\"71decad0-8fcf-11ea-8b35-33b7e5e4ba67\",\"panelIndex\":\"16\",\"title\":\"Started\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"18\",\"w\":5,\"x\":4,\"y\":3},\"id\":\"e1b73030-8fd0-11ea-8b35-33b7e5e4ba67\",\"panelIndex\":\"18\",\"title\":\"Completed\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"19\",\"w\":3,\"x\":0,\"y\":10},\"id\":\"fbf77190-90a6-11ea-aabb-45fa14852f22\",\"panelIndex\":\"19\",\"title\":\"P75\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"20\",\"w\":3,\"x\":3,\"y\":10},\"id\":\"e8b50610-90a6-11ea-aabb-45fa14852f22\",\"panelIndex\":\"20\",\"title\":\"P95\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"21\",\"w\":3,\"x\":6,\"y\":10},\"id\":\"da720da0-90a6-11ea-aabb-45fa14852f22\",\"panelIndex\":\"21\",\"title\":\"P99\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"22\",\"w\":3,\"x\":6,\"y\":34},\"id\":\"41430c40-90a8-11ea-aabb-45fa14852f22\",\"panelIndex\":\"22\",\"title\":\"P99\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"23\",\"w\":3,\"x\":3,\"y\":34},\"id\":\"4d3250b0-90a8-11ea-aabb-45fa14852f22\",\"panelIndex\":\"23\",\"title\":\"P95\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"24\",\"w\":3,\"x\":0,\"y\":34},\"id\":\"55b87980-90a8-11ea-aabb-45fa14852f22\",\"panelIndex\":\"24\",\"title\":\"P75\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"25\",\"w\":3,\"x\":0,\"y\":51},\"id\":\"7cc8ab20-90a9-11ea-aabb-45fa14852f22\",\"panelIndex\":\"25\",\"title\":\"P75\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"26\",\"w\":3,\"x\":3,\"y\":51},\"id\":\"6eb993f0-90a9-11ea-aabb-45fa14852f22\",\"panelIndex\":\"26\",\"title\":\"P95\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"27\",\"w\":3,\"x\":6,\"y\":51},\"id\":\"609b3a80-90a9-11ea-aabb-45fa14852f22\",\"panelIndex\":\"27\",\"title\":\"P99\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"32\",\"w\":5,\"x\":4,\"y\":67},\"id\":\"1e8c5070-90f9-11ea-aabb-45fa14852f22\",\"panelIndex\":\"32\",\"title\":\"Completed\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"33\",\"w\":4,\"x\":0,\"y\":67},\"id\":\"eca43670-90fa-11ea-aabb-45fa14852f22\",\"panelIndex\":\"33\",\"title\":\"Started\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":3,\"i\":\"34\",\"w\":48,\"x\":0,\"y\":0},\"id\":\"b6eabe90-90fb-11ea-aabb-45fa14852f22\",\"panelIndex\":\"34\",\"title\":\"\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":3,\"i\":\"35\",\"w\":48,\"x\":0,\"y\":24},\"id\":\"e3e6b480-90fb-11ea-aabb-45fa14852f22\",\"panelIndex\":\"35\",\"title\":\"\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":3,\"i\":\"36\",\"w\":48,\"x\":0,\"y\":41},\"id\":\"eba43620-90fb-11ea-aabb-45fa14852f22\",\"panelIndex\":\"36\",\"title\":\"\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":3,\"i\":\"37\",\"w\":48,\"x\":0,\"y\":64},\"id\":\"f72cf090-90fb-11ea-aabb-45fa14852f22\",\"panelIndex\":\"37\",\"title\":\"\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":6,\"i\":\"38\",\"w\":39,\"x\":9,\"y\":74},\"id\":\"c4fb5500-90fe-11ea-aabb-45fa14852f22\",\"panelIndex\":\"38\",\"title\":\"Duration Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":6,\"i\":\"39\",\"w\":3,\"x\":0,\"y\":74},\"id\":\"352cf360-90ff-11ea-aabb-45fa14852f22\",\"panelIndex\":\"39\",\"title\":\"P75\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":6,\"i\":\"40\",\"w\":3,\"x\":3,\"y\":74},\"id\":\"5fae9a80-90ff-11ea-aabb-45fa14852f22\",\"panelIndex\":\"40\",\"title\":\"P95\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":6,\"i\":\"41\",\"w\":3,\"x\":6,\"y\":74},\"id\":\"67b02a00-90ff-11ea-aabb-45fa14852f22\",\"panelIndex\":\"41\",\"title\":\"P99\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":6,\"i\":\"42\",\"w\":39,\"x\":9,\"y\":58},\"id\":\"54d0c940-9103-11ea-aabb-45fa14852f22\",\"panelIndex\":\"42\",\"title\":\"ES Total Duration Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":6,\"i\":\"43\",\"w\":3,\"x\":0,\"y\":58},\"id\":\"2453f480-9104-11ea-aabb-45fa14852f22\",\"panelIndex\":\"43\",\"title\":\"P75\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":6,\"i\":\"44\",\"w\":3,\"x\":3,\"y\":58},\"id\":\"30b13d00-9104-11ea-aabb-45fa14852f22\",\"panelIndex\":\"44\",\"title\":\"P95\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":6,\"i\":\"45\",\"w\":3,\"x\":6,\"y\":58},\"id\":\"3b3e5960-9104-11ea-aabb-45fa14852f22\",\"panelIndex\":\"45\",\"title\":\"P99\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"46\",\"w\":39,\"x\":9,\"y\":17},\"id\":\"10c9b520-9105-11ea-aabb-45fa14852f22\",\"panelIndex\":\"46\",\"title\":\"ES Total Duration Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"47\",\"w\":3,\"x\":0,\"y\":17},\"id\":\"6b9ee1a0-9105-11ea-aabb-45fa14852f22\",\"panelIndex\":\"47\",\"title\":\"P75\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"48\",\"w\":3,\"x\":3,\"y\":17},\"id\":\"8203c2d0-9105-11ea-aabb-45fa14852f22\",\"panelIndex\":\"48\",\"title\":\"P95\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"49\",\"w\":3,\"x\":6,\"y\":17},\"id\":\"8bf4c640-9105-11ea-aabb-45fa14852f22\",\"panelIndex\":\"49\",\"title\":\"P99\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":7,\"i\":\"50\",\"w\":39,\"x\":9,\"y\":67},\"id\":\"f2b763a0-911f-11ea-aabb-45fa14852f22\",\"panelIndex\":\"50\",\"title\":\"Count Plot\",\"type\":\"visualization\",\"version\":\"6.5.4\"}]",
+      "optionsJSON": "{\"darkTheme\":false,\"hidePanelTitles\":false,\"useMargins\":true}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "352cf360-90ff-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "LoggingClient|AllRoutes|NetworkElasticElapsed|Metric|75Percentile",
+      "visState": "{\"title\":\"LoggingClient|AllRoutes|NetworkElasticElapsed|Metric|75Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"networkElasticElapsed\",\"percents\":[75]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.e.e.l.LoggingClient\",\"params\":{\"query\":\"c.y.f.e.e.l.LoggingClient\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.e.e.l.LoggingClient\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "5fae9a80-90ff-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "LoggingClient|AllRoutes|NetworkElasticElapsed|Metric|95Percentile",
+      "visState": "{\"title\":\"LoggingClient|AllRoutes|NetworkElasticElapsed|Metric|95Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"networkElasticElapsed\",\"percents\":[95]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.e.e.l.LoggingClient\",\"params\":{\"query\":\"c.y.f.e.e.l.LoggingClient\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.e.e.l.LoggingClient\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "67b02a00-90ff-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "LoggingClient|AllRoutes|NetworkElasticElapsed|Metric|99Percentile",
+      "visState": "{\"title\":\"LoggingClient|AllRoutes|NetworkElasticElapsed|Metric|99Percentile\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"4\",\"enabled\":true,\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"networkElasticElapsed\",\"percents\":[99]}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"logType\",\"value\":\"success, failure\",\"params\":[\"success\",\"failure\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"logType\":\"success\"}},{\"match_phrase\":{\"logType\":\"failure\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE, ERROR\",\"params\":[\"TRACE\",\"ERROR\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}},{\"match_phrase\":{\"level\":\"ERROR\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.e.e.l.LoggingClient\",\"params\":{\"query\":\"c.y.f.e.e.l.LoggingClient\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.e.e.l.LoggingClient\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "eca43670-90fa-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "LoggingClient|AllRoutes|Started|Metric",
+      "visState": "{\"title\":\"LoggingClient|AllRoutes|Started|Metric\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Started Pages\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"type\":\"phrases\",\"key\":\"level\",\"value\":\"TRACE\",\"params\":[\"TRACE\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"level\":\"TRACE\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logType\",\"value\":\"start\",\"params\":{\"query\":\"start\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logType\":{\"query\":\"start\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"logger\",\"value\":\"c.y.f.e.e.l.LoggingClient\",\"params\":{\"query\":\"c.y.f.e.e.l.LoggingClient\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"logger\":{\"query\":\"c.y.f.e.e.l.LoggingClient\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "eb124730-8f0a-11ea-8b35-33b7e5e4ba67",
+    "_type": "index-pattern",
+    "_source": {
+      "title": "fuse-engine-logs-*",
+      "timeFieldName": "@timestamp",
+      "fields": "[{\"name\":\"@timestamp\",\"type\":\"date\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"_id\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":false},{\"name\":\"_index\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":false},{\"name\":\"_score\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":false,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"_source\",\"type\":\"_source\",\"count\":0,\"scripted\":false,\"searchable\":false,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"_type\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":false},{\"name\":\"elapsed\",\"type\":\"number\",\"count\":1,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"elapsedFrom\",\"type\":\"number\",\"count\":1,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"elasticElapsed\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"elasticElapsedTotal\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"exception\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"exception.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"hits\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"host\",\"type\":\"string\",\"count\":1,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"level\",\"type\":\"string\",\"count\":1,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"logType\",\"type\":\"string\",\"count\":1,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"logger\",\"type\":\"string\",\"count\":1,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"message\",\"type\":\"string\",\"count\":1,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"message.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"methodName\",\"type\":\"string\",\"count\":1,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"networkElasticElapsed\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"networkElasticElapsedTotal\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"requestExternalId\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"requestExternalOperation\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"requestId\",\"type\":\"string\",\"count\":1,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"requestScope\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"requestScope.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"responseLength\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"route\",\"type\":\"string\",\"count\":1,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"scrollId\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"sequence\",\"type\":\"number\",\"count\":1,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"thread\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"thread.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"totalHits\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"totalShards\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true}]"
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "8e0fb470-90ac-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "Markdown|Empty",
+      "visState": "{\"title\":\"Markdown|Empty\",\"type\":\"markdown\",\"params\":{\"fontSize\":12,\"openLinksInNewTab\":true,\"markdown\":\"\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "6a826bf0-9143-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "Host|Piechart",
+      "visState": "{\"title\":\"Host|Piechart\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"host\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"customLabel\":\"Host\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "797ed3e0-9144-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "LogType|Piechart",
+      "visState": "{\"title\":\"LogType|Piechart\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"logType\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\"}}]}",
+      "uiStateJSON": "{\"vis\":{\"colors\":{\"success\":\"#7EB26D\",\"start\":\"#BADFF4\",\"log\":\"#E5AC0E\",\"null\":\"#511749\",\"failure\":\"#BF1B00\"}}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "ed972250-9144-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "Logger-Route|DataTable",
+      "visState": "{\"title\":\"Logger-Route|DataTable\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMetricsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"logger\",\"size\":50,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"customLabel\":\"Logger\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"route\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"customLabel\":\"Route\"}}]}",
+      "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "2cca7500-9148-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "Count|Metric",
+      "visState": "{\"title\":\"Count|Metric\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":false},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":16}}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "fbd1a130-9142-11ea-aabb-45fa14852f22",
+    "_type": "search",
+    "_source": {
+      "title": "CommonFields",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "host",
+        "requestId",
+        "logger",
+        "route",
+        "logType",
+        "level",
+        "elapsed",
+        "elapsedFrom",
+        "sequence",
+        "methodName",
+        "message"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"highlightAll\":true,\"version\":true,\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "fed6d570-9143-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "Level|Piechart",
+      "visState": "{\"title\":\"Level|Piechart\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"level\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\"}}]}",
+      "uiStateJSON": "{\"vis\":{\"colors\":{\"TRACE\":\"#BADFF4\",\"DEBUG\":\"#EAB839\",\"INFO\":\"#9AC48A\",\"ERROR\":\"#BF1B00\",\"start\":\"#447EBC\",\"success\":\"#7EB26D\",\"failure\":\"#BF1B00\"}}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"eb124730-8f0a-11ea-8b35-33b7e5e4ba67\",\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "638e09e0-9147-11ea-aabb-45fa14852f22",
+    "_type": "visualization",
+    "_source": {
+      "title": "Level|Timelion",
+      "visState": "{\"title\":\"Level|Timelion\",\"type\":\"timelion\",\"params\":{\"expression\":\".es(q='level:TRACE', index=fuse-engine-logs-*).lines(width=1, fill=3).color(lightblue).label('TRACE'),\\n\\n.es(q='level:DEBUG', index=fuse-engine-logs-*).lines(width=1, fill=5).color(orange).label('DEBUG'),\\n\\n.es(q='level:INFO').lines(width=1, fill=3).color(#00AA88).label('INFO').yaxis(1, label='Count'),\\n\\n.es(q='level:ERROR', index=fuse-engine-logs-*).lines(width=1, fill=1).color(red).label('ERROR')\",\"interval\":\"auto\"},\"aggs\":[]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  },
+  {
+    "_id": "1abe58e0-9143-11ea-aabb-45fa14852f22",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Yang-db|Log Explorer",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"embeddableConfig\":{},\"gridData\":{\"x\":0,\"y\":19,\"w\":48,\"h\":18,\"i\":\"1\"},\"id\":\"fbd1a130-9142-11ea-aabb-45fa14852f22\",\"panelIndex\":\"1\",\"title\":\"Logs\",\"type\":\"search\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":0,\"y\":7,\"w\":9,\"h\":12,\"i\":\"2\"},\"id\":\"6a826bf0-9143-11ea-aabb-45fa14852f22\",\"panelIndex\":\"2\",\"title\":\"Host\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{\"vis\":{\"colors\":{\"DEBUG\":\"#EAB839\",\"ERROR\":\"#BF1B00\",\"INFO\":\"#9AC48A\",\"TRACE\":\"#BADFF4\",\"failure\":\"#BF1B00\",\"start\":\"#447EBC\",\"success\":\"#7EB26D\"},\"legendOpen\":true}},\"gridData\":{\"x\":9,\"y\":7,\"w\":9,\"h\":12,\"i\":\"3\"},\"id\":\"fed6d570-9143-11ea-aabb-45fa14852f22\",\"panelIndex\":\"3\",\"title\":\"Level\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{\"vis\":{\"colors\":{\"failure\":\"#BF1B00\",\"log\":\"#E5AC0E\",\"null\":\"#511749\",\"start\":\"#BADFF4\",\"success\":\"#7EB26D\"},\"legendOpen\":true}},\"gridData\":{\"x\":18,\"y\":7,\"w\":9,\"h\":12,\"i\":\"4\"},\"id\":\"797ed3e0-9144-11ea-aabb-45fa14852f22\",\"panelIndex\":\"4\",\"title\":\"LogType\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":27,\"y\":7,\"w\":21,\"h\":12,\"i\":\"5\"},\"id\":\"ed972250-9144-11ea-aabb-45fa14852f22\",\"panelIndex\":\"5\",\"title\":\"Logger & Route\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":0,\"y\":0,\"w\":43,\"h\":7,\"i\":\"6\"},\"id\":\"638e09e0-9147-11ea-aabb-45fa14852f22\",\"panelIndex\":\"6\",\"title\":\"Logs Timeline\",\"type\":\"visualization\",\"version\":\"6.5.4\"},{\"embeddableConfig\":{},\"gridData\":{\"x\":43,\"y\":0,\"w\":5,\"h\":7,\"i\":\"7\"},\"id\":\"2cca7500-9148-11ea-aabb-45fa14852f22\",\"panelIndex\":\"7\",\"title\":\"Log Count\",\"type\":\"visualization\",\"version\":\"6.5.4\"}]",
+      "optionsJSON": "{\"darkTheme\":false,\"hidePanelTitles\":false,\"useMargins\":true}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[]}"
+      }
+    },
+    "_meta": {
+      "savedObjectVersion": 2
+    }
+  }
+]
