@@ -157,6 +157,10 @@ public class DiscreteVertexController extends VertexControllerBase {
                 searchBuilder.getScrollTime()
         );
 
+        //log step controller query
+        context.getStepDescriptor().getDescription().ifPresent(v->
+                profiler.get().setAnnotation(v,searchRequest.toString()));
+        //convert hits to elements
         ElementConverter<DataItem, Edge> elementConverter = new CompositeElementConverter<>(
                 new DiscreteEdgeConverter<>(context, this.profiler));
 

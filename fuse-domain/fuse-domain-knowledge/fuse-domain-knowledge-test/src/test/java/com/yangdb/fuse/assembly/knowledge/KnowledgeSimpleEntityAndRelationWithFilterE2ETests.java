@@ -41,6 +41,7 @@ import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 import static com.yangdb.fuse.model.query.Rel.Direction.L;
 import static com.yangdb.fuse.model.query.Rel.Direction.R;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
@@ -53,7 +54,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup();//Todo remove while running in Suite Context
+        Setup.setup();//Todo remove while running in Suite Context
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -359,7 +360,17 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
                 .build();
 
         CursorResourceInfo cursor = fuseClient.getCursor(queryResourceInfo.getCursorStoreUrl(), cursorResourceInfo.getResourceId());
-        assertEquals("{R=2, R<--A=2, Predicate[A]=2}",cursor.getProfileInfo());
+        assertEquals("R",cursor.getProfileInfo().get(0).getStepName());
+        assertEquals(2,(long) cursor.getProfileInfo().get(0).getStepCount());
+        assertNotNull(cursor.getProfileInfo().get(0).getStepQuery());
+
+        assertEquals("R<--A",cursor.getProfileInfo().get(1).getStepName());
+        assertEquals(2,(long) cursor.getProfileInfo().get(1).getStepCount());
+        assertNotNull(cursor.getProfileInfo().get(1).getStepQuery());
+
+        assertEquals("Predicate[A]",cursor.getProfileInfo().get(2).getStepName());
+        assertEquals(2,(long) cursor.getProfileInfo().get(2).getStepCount());
+        assertNotNull(cursor.getProfileInfo().get(2).getStepQuery());
 
         // Check if expected results and actual results are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
@@ -394,7 +405,10 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
         QueryResultBase pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         CursorResourceInfo cursor = fuseClient.getCursor(queryResourceInfo.getCursorStoreUrl(), cursorResourceInfo.getResourceId());
-        assertEquals("{R=0}",cursor.getProfileInfo());
+
+        assertEquals("R",cursor.getProfileInfo().get(0).getStepName());
+        assertEquals(0,(long)cursor.getProfileInfo().get(0).getStepCount());
+        assertNotNull(cursor.getProfileInfo().get(0).getStepQuery());
 
         // Check if expected results and actual results are equal
         assertEquals(1,  ((AssignmentsQueryResult) pageData).getAssignments().size());

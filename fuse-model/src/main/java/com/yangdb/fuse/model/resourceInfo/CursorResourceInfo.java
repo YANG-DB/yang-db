@@ -44,6 +44,7 @@ package com.yangdb.fuse.model.resourceInfo;
  */
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yangdb.fuse.model.profile.QueryProfileStepInfoData;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import javaslang.collection.Stream;
 
@@ -81,7 +82,7 @@ public class CursorResourceInfo extends ResourceInfoBase {
             String resourceUrl,
             String resourceId,
             CreateCursorRequest cursorRequest,
-            String profileInfo,
+            List<QueryProfileStepInfoData> profileInfo,
             String pageStoreUrl,
             Iterable<PageResourceInfo> pageResourceInfos) {
         super(resourceUrl,resourceId);
@@ -92,7 +93,8 @@ public class CursorResourceInfo extends ResourceInfoBase {
     }
     //endregion
 
-    public String getProfileInfo() {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public List<QueryProfileStepInfoData> getProfileInfo() {
         return profileInfo;
     }
 
@@ -146,7 +148,7 @@ public class CursorResourceInfo extends ResourceInfoBase {
     private FuseError error;
     private CreateCursorRequest cursorRequest;
     private String pageStoreUrl;
-    private String profileInfo;
+    private List<QueryProfileStepInfoData> profileInfo;
     private List<PageResourceInfo> pageResourceInfos;
     //endregion
 }

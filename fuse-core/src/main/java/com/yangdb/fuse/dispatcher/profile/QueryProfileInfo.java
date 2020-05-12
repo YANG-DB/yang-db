@@ -20,8 +20,11 @@ package com.yangdb.fuse.dispatcher.profile;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
+import com.yangdb.fuse.model.profile.QueryProfileStepInfoData;
 import org.apache.tinkerpop.gremlin.process.traversal.util.Metrics;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * profiling info for
@@ -30,10 +33,12 @@ public interface QueryProfileInfo {
 
     Metrics measurements();
 
+    List<QueryProfileStepInfoData> infoData();
+
     class QueryProfileInfoImpl implements QueryProfileInfo {
         private Metrics measurements;
 
-        public QueryProfileInfoImpl(Metrics measurements ) {
+        public QueryProfileInfoImpl(Metrics measurements) {
             this.measurements = measurements;
         }
 
@@ -42,11 +47,12 @@ public interface QueryProfileInfo {
             return measurements;
         }
 
-        @Override
-        public String toString() {
-            return StringUtils.join(measurements.getCounts());
+        public List<QueryProfileStepInfoData> infoData() {
+            return this.measurements().getCounts().entrySet().stream()
+                    .map(e->new QueryProfileStepInfoData(e.getKey(),e.getValue(),
+                            this.measurements().getAnnotation(e.getKey()).toString())).collect(Collectors.toList());
         }
-
     }
+
 
 }

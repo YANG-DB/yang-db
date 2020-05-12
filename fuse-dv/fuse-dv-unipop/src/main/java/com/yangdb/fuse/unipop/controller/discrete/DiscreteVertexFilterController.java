@@ -141,6 +141,10 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                 searchBuilder.getScrollTime()
         );
 
+        //log step controller query
+        context.getStepDescriptor().getDescription().ifPresent(v->
+                profiler.get().setAnnotation(v,searchRequest.toString()));
+        //convert hits to elements
         ElementConverter<SearchHit, Edge> converter = new DiscreteVertexFilterConverter(context,profiler);
 
         return Stream.ofAll(searchHits)

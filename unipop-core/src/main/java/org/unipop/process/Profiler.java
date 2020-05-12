@@ -51,8 +51,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.MutableMetrics;
 public interface Profiler {
     String PROFILER = "profiler";
 
-    Profiler add(String name);
-
     /**
      * get measurement
      * @return
@@ -62,12 +60,6 @@ public interface Profiler {
     class Noop implements Profiler {
         public static Noop instance = new Noop();
         public static MutableMetrics measurement = new MutableMetrics(new ImmutableMetrics() {});
-
-
-        @Override
-        public Profiler add(String name) {
-            return instance;
-        }
 
         @Override
         public MutableMetrics get() {

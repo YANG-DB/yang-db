@@ -127,7 +127,10 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime()
         );
-
+        //log step controller query
+        context.getStepDescriptor().getDescription().ifPresent(v->
+                profiler.get().setAnnotation(v,searchRequest.toString()));
+        //convert hits to elements
         ElementConverter<SearchHit, E> elementConverter = new DiscreteVertexConverter<>(context,profiler);
 
         return Stream.ofAll(searchHits)
