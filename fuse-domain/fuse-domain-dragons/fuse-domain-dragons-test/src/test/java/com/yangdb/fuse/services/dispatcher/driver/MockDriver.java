@@ -5,6 +5,7 @@ import com.yangdb.fuse.client.export.GraphWriterStrategy;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.driver.*;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.dispatcher.profile.QueryProfileInfo;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
@@ -23,6 +24,7 @@ import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.util.ImmutableMetrics;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -121,6 +123,7 @@ public class MockDriver {
                                     },
                                     queryResource,
                                     cursorRequest)),
+                    new QueryProfileInfo.QueryProfileInfoImpl(new ImmutableMetrics() {}),
                     cursorRequest);
         }
         //endregion

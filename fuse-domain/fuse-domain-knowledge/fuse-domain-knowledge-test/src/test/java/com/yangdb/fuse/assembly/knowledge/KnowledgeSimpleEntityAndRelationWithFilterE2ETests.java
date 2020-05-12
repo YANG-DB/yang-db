@@ -13,11 +13,13 @@ import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
+import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
-import com.yangdb.fuse.model.results.Assignment;
-import com.yangdb.fuse.model.results.AssignmentsQueryResult;
-import com.yangdb.fuse.model.results.QueryResultAssert;
-import com.yangdb.fuse.model.results.QueryResultBase;
+import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
+import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
+import com.yangdb.fuse.model.results.*;
+import com.yangdb.fuse.model.transport.CreatePageRequest;
+import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -50,7 +52,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();//Todo remove while running in Suite Context
+        Setup.setup(false,true);//Todo remove while running in Suite Context
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -331,7 +333,19 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
                         new ETyped(5, "R", "Relation", 6, 0),
                         new EProp(6, "category", Constraint.of(ConstraintOp.like, "*Whe*"))
                 )).build();
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        // get Query URL
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        if(queryResourceInfo.getError()!=null) {
+            Assert.assertFalse(queryResourceInfo.getError().getErrorDescription(),true);
+        }
+
+        // Press on Cursor
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(1000)));
+        // Press on page to get the relevant page
+        PageResourceInfo pageResourceInfo = getPageResourceInfo(fuseClient, cursorResourceInfo, 1000);
+        // return the relevant data
+        QueryResultBase pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         AssignmentsQueryResult expectedResult = AssignmentsQueryResult.Builder.instance()
                 .withAssignment(Assignment.Builder.instance()
@@ -345,6 +359,9 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
 
         // Check if expected results and actual results are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+
+        CursorResourceInfo cursor = fuseClient.getCursor(queryResourceInfo.getCursorStoreUrl(), cursorResourceInfo.getResourceId());
+        Assert.assertNotNull(cursor);
     }
 
     @Test

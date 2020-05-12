@@ -68,7 +68,8 @@ public class DiscreteVertexConverter<E extends Element> implements ElementConver
         }
 
         String label = this.typeToLabelVertexSchemas.get(source.get("type")).getLabel();
-        profiler.getOrCreate(context.getStepDescriptor().getDescription().orElse(label)).inc(1);
+        String stepName = context.getStepDescriptor().getDescription().orElse(label);
+        profiler.get().incrementCount(stepName,1);
         return Arrays.asList((E)new DiscreteVertex(
                 searchHit.getId(),
                 label,

@@ -23,6 +23,7 @@ package com.yangdb.fuse.dispatcher.resource;
 
 
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
+import com.yangdb.fuse.dispatcher.profile.QueryProfileInfo;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 
 import java.util.Date;
@@ -36,15 +37,16 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class CursorResource {
     //region Constructors
-    public CursorResource(String cursorId, Cursor cursor, CreateCursorRequest cursorRequest) {
+    public CursorResource(String cursorId, Cursor cursor, QueryProfileInfo profileInfo, CreateCursorRequest cursorRequest) {
         this.cursorId = cursorId;
+        this.profileInfo = profileInfo;
         this.pageResources = new HashMap<>();
         this.cursor = cursor;
         this.cursorRequest = cursorRequest;
-
         this.timeCreated = new Date(System.currentTimeMillis());
     }
-    //endregion
+
+        //endregion
 
     //region Public Methods
     public String getCursorId() {
@@ -87,6 +89,10 @@ public class CursorResource {
         return cursor;
     }
 
+    public QueryProfileInfo getProfileInfo() {
+        return profileInfo;
+    }
+
     public CreateCursorRequest getCursorRequest() {
         return this.cursorRequest;
     }
@@ -94,6 +100,7 @@ public class CursorResource {
 
     //region Fields
     private String cursorId;
+    private QueryProfileInfo profileInfo;
     private CreateCursorRequest cursorRequest;
     private Cursor cursor;
     private Date timeCreated;

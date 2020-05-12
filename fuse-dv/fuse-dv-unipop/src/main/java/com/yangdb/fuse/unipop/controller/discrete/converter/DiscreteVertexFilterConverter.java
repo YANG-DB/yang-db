@@ -71,7 +71,8 @@ public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit
         contextVertexProperties.putAll(source);
 
         String label = this.typeToLabelVertexSchemas.get(source.get("type")).getLabel();
-        profiler.getOrCreate(context.getStepDescriptor().getDescription().orElse(label)).inc(1);
+        String stepName = context.getStepDescriptor().getDescription().orElse(label);
+        profiler.get().incrementCount(stepName,1);
 
         DiscreteVertex v = new DiscreteVertex(
                 hit.getId(),

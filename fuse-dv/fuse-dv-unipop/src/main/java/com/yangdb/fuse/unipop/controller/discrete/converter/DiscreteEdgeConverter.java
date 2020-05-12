@@ -155,7 +155,8 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
                 }
             }
         }
-        profiler.getOrCreate(context.getStepDescriptor().getDescription().orElse(contextEdgeLabel)).inc(1);
+        String stepName = context.getStepDescriptor().getDescription().orElse(contextEdgeLabel);
+        profiler.get().incrementCount(stepName,1);
 
         return edges;
     }

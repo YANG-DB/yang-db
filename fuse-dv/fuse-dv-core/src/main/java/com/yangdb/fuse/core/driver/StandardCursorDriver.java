@@ -28,6 +28,7 @@ import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.gta.PlanTraversalTranslator;
 import com.yangdb.fuse.dispatcher.gta.TranslationContext;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.dispatcher.profile.QueryProfileInfo;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
@@ -95,8 +96,9 @@ public class StandardCursorDriver extends CursorDriverBase {
         //if query has inner queries -> create new CreateInnerQueryCursorRequest(cursorRequest)
         TraversalCursorContext context = createContext(queryResource, cursorRequest, ontology, traversal);
         Cursor cursor = this.cursorFactory.createCursor(context);
+        Profiler profiler = traversal.asAdmin().getSideEffects().get(PROFILER);
 
-        return new CursorResource(cursorId, cursor, cursorRequest);
+        return new CursorResource(cursorId, cursor,new QueryProfileInfo.QueryProfileInfoImpl(profiler.get()), cursorRequest);
     }
 
     protected TraversalCursorContext createContext(QueryResource queryResource, CreateCursorRequest cursorRequest, Ontology ontology, GraphTraversal<?, ?> traversal) {
