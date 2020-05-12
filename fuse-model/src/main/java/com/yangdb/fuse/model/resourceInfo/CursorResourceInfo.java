@@ -76,9 +76,28 @@ public class CursorResourceInfo extends ResourceInfoBase {
         this.cursorRequest = cursorRequest;
         this.pageResourceInfos = Stream.ofAll(pageResourceInfos).toJavaList();
     }
+
+    public CursorResourceInfo(
+            String resourceUrl,
+            String resourceId,
+            CreateCursorRequest cursorRequest,
+            String profileInfo,
+            String pageStoreUrl,
+            Iterable<PageResourceInfo> pageResourceInfos) {
+        super(resourceUrl,resourceId);
+        this.profileInfo = profileInfo;
+        this.pageStoreUrl = pageStoreUrl;
+        this.cursorRequest = cursorRequest;
+        this.pageResourceInfos = Stream.ofAll(pageResourceInfos).toJavaList();
+    }
     //endregion
 
+    public String getProfileInfo() {
+        return profileInfo;
+    }
+
     //region Properties
+
     public String getPageStoreUrl() {
         return this.pageStoreUrl;
     }
@@ -127,6 +146,7 @@ public class CursorResourceInfo extends ResourceInfoBase {
     private FuseError error;
     private CreateCursorRequest cursorRequest;
     private String pageStoreUrl;
+    private String profileInfo;
     private List<PageResourceInfo> pageResourceInfos;
     //endregion
 }

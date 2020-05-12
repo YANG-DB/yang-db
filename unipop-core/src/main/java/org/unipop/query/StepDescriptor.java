@@ -9,9 +9,9 @@ package org.unipop.query;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,9 +32,9 @@ package org.unipop.query;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,10 @@ import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.util.MutableMetrics;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalMetrics;
 import org.apache.tinkerpop.gremlin.structure.Element;
+import org.unipop.process.UniBulkStep;
+import org.unipop.process.UniPredicatesStep;
 import org.unipop.process.start.UniGraphStartStep;
+import org.unipop.process.vertex.UniGraphVertexStep;
 
 import java.util.Comparator;
 import java.util.Optional;
@@ -76,7 +79,18 @@ public class StepDescriptor {
     }
 
     public Optional<String> getDescription(){
-       return step.getLabels().stream().findFirst();
+        Optional<String> name = step.getLabels().stream().findFirst();
+        if(name.isPresent())
+            return name;
+
+        if(step instanceof UniPredicatesStep) {
+            Optional<String> nextLabel = (step).getNextStep().getLabels().stream().findFirst();
+            if(nextLabel.isPresent()) return Optional.of("Predicate["+nextLabel.get()+"]");
+
+            Optional<String> previousLabel = (step).getPreviousStep().getLabels().stream().findFirst();
+            if(previousLabel.isPresent()) return Optional.of("Predicate["+previousLabel.get()+"]");
+        }
+        return Optional.empty();
     }
 
     public Optional<MutableMetrics> getMetrics(){

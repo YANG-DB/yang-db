@@ -67,6 +67,8 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
         this.contextEdgeLabel = Stream.ofAll(labels).get(0);
 
         this.profiler = profiler;
+        context.getStepDescriptor().getDescription()
+                .ifPresent(v->this.profiler.get().setCount(v,0));
     }
     //endregion
 

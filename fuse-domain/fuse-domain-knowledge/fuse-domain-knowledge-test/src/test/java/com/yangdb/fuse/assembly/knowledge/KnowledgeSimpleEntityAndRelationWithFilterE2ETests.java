@@ -40,6 +40,7 @@ import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder.REL_INDE
 import static com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder._rel;
 import static com.yangdb.fuse.model.query.Rel.Direction.L;
 import static com.yangdb.fuse.model.query.Rel.Direction.R;
+import static org.junit.Assert.assertEquals;
 
 
 public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
@@ -52,7 +53,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup(false,true);//Todo remove while running in Suite Context
+//        Setup.setup();//Todo remove while running in Suite Context
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -120,13 +121,13 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
         e10.rel(rel5, "in");
 
         // Insert Entity and Reference entities to ES
-        Assert.assertEquals("error loading data ",20, commit(ctx, INDEX, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10));
-        Assert.assertEquals("error loading data ",5, commit(ctx, REL_INDEX, rel1, rel2, rel3, rel4, rel5));
+        assertEquals("error loading data ",20, commit(ctx, INDEX, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10));
+        assertEquals("error loading data ",5, commit(ctx, REL_INDEX, rel1, rel2, rel3, rel4, rel5));
     }
 
     @AfterClass
     public static void after() {
-        if(ctx!=null) Assert.assertEquals(25,ctx.removeCreated());
+        if(ctx!=null) assertEquals(25,ctx.removeCreated());
 
     }
 
@@ -357,11 +358,48 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
                         .build())
                 .build();
 
+        CursorResourceInfo cursor = fuseClient.getCursor(queryResourceInfo.getCursorStoreUrl(), cursorResourceInfo.getResourceId());
+        assertEquals("{R=2, R<--A=2, Predicate[A]=2}",cursor.getProfileInfo());
+
         // Check if expected results and actual results are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
+    }
+
+    @Test
+    public void testNonFoundByEntityCategoryAndRelationContainsCategory() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "A", "Entity", 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
+                        new EProp(3, "category", Constraint.of(ConstraintOp.eq, e7.category)),
+                        new Rel(4, "hasRelation", R, null, 5, 0),
+                        new ETyped(5, "R", "Relation", 6, 0),
+                        new EProp(6, "category", Constraint.of(ConstraintOp.like, "w*Whe*"))
+                )).build();
+
+        // get Query URL
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        if(queryResourceInfo.getError()!=null) {
+            Assert.assertFalse(queryResourceInfo.getError().getErrorDescription(),true);
+        }
+
+        // Press on Cursor
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(1000)));
+        // Press on page to get the relevant page
+        PageResourceInfo pageResourceInfo = getPageResourceInfo(fuseClient, cursorResourceInfo, 1000);
+        // return the relevant data
+        QueryResultBase pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         CursorResourceInfo cursor = fuseClient.getCursor(queryResourceInfo.getCursorStoreUrl(), cursorResourceInfo.getResourceId());
-        Assert.assertNotNull(cursor);
+        assertEquals("{R=0}",cursor.getProfileInfo());
+
+        // Check if expected results and actual results are equal
+        assertEquals(1,  ((AssignmentsQueryResult) pageData).getAssignments().size());
+        assertEquals(0, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
+        assertEquals(0, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().size());
     }
 
     @Test

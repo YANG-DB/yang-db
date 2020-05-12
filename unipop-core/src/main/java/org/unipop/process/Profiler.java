@@ -43,6 +43,7 @@ package org.unipop.process;
  *
  */
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.util.ImmutableMetrics;
 import org.apache.tinkerpop.gremlin.process.traversal.util.Metrics;
 import org.apache.tinkerpop.gremlin.process.traversal.util.MutableMetrics;
@@ -91,6 +92,11 @@ public interface Profiler {
         @Override
         public MutableMetrics get() {
             return measurements;
+        }
+
+        @Override
+        public String toString() {
+            return StringUtils.join(measurements.getCounts());
         }
 
         //region Fields

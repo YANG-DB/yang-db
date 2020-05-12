@@ -53,6 +53,9 @@ public class DiscreteVertexConverter<E extends Element> implements ElementConver
                                 vertexSchema));
 
         this.profiler = profiler;
+        context.getStepDescriptor().getDescription()
+                .ifPresent(v->this.profiler.get().setCount(v,0));
+
     }
     //endregion
 
