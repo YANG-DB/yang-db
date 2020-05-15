@@ -64,6 +64,7 @@ import com.yangdb.fuse.model.query.quant.QuantType;
 import javaslang.Tuple2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -149,8 +150,21 @@ public class Query implements IQuery<EBase> {
             return this;
         }
 
+        public Builder withElement(EBase element) {
+            return withElements(Collections.singletonList(element));
+        }
+
         public Builder withElements(List<EBase> elements) {
             this.elements = elements.stream().map(Wrapper::new).collect(Collectors.toList());
+            return this;
+        }
+
+        public Builder appendElements(EBase element) {
+            return appendElements(Collections.singletonList(element));
+        }
+
+        public Builder appendElements(List<EBase> elements) {
+            getElements().addAll(elements.stream().map(Wrapper::new).collect(Collectors.toList()));
             return this;
         }
 

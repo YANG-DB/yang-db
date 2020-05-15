@@ -8,6 +8,13 @@
     <packaging>pom</packaging>
     <version>0.5-SNAPSHOT</version>
 
+    <name>YangDb open source graph DB project</name>
+    <description>
+        YANGDB Open-source, Scalable, Non-native Graph database (Powered by Elasticsearch)
+    </description>
+
+    <url>http://www.yangdb.org/</url>
+
     <mailingLists>
 
         <mailingList>
@@ -1068,6 +1075,11 @@
             <name>fuse-site</name>
             <url>file://target/site</url>
         </site>
+        <repository>
+            <id>github</id>
+            <name>GitHub Yang-DB Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/YANG-DB/yang-db</url>
+        </repository>
     </distributionManagement>
 
     <reporting>
