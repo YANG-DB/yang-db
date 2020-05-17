@@ -44,6 +44,8 @@ package com.yangdb.fuse.model.query.properties;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
@@ -60,6 +62,7 @@ import java.util.stream.Collectors;
 /**
  * Created by benishue on 25-Apr-17.
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
     //region Constructors
     public EPropGroup() {
@@ -75,6 +78,10 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
     }
 
     public EPropGroup(Iterable<EProp> props) {
+        super(0, props);
+    }
+
+    public EPropGroup(List<EProp> props) {
         super(0, props);
     }
 
@@ -100,10 +107,12 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
     //endregion
 
     //region Public Methods
+    @JsonIgnore
     public List<EProp> findAll(Predicate<EProp> propPredicate) {
         return this.findAll(propPredicate, this);
     }
 
+    @JsonIgnore
     public void consumeAll(Predicate<EProp> propPredicate, BiConsumer<EPropGroup, EProp> consumer) {
         this.consumeAll(propPredicate, this, consumer);
     }
@@ -111,11 +120,13 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
 
     //region Override Methods
     @Override
+    @JsonIgnore
     public EPropGroup clone() {
         return clone(geteNum());
     }
 
     @Override
+    @JsonIgnore
     public EPropGroup clone(int eNum) {
         AtomicInteger propsNum = new AtomicInteger(eNum);
         AtomicInteger groupsNum = new AtomicInteger(eNum);

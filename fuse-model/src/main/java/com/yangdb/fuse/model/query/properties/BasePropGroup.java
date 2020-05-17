@@ -43,6 +43,8 @@ package com.yangdb.fuse.model.query.properties;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
@@ -54,6 +56,7 @@ import java.util.List;
 /**
  * Created by moti on 5/17/2017.
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public abstract class BasePropGroup<T extends BaseProp, S extends BasePropGroup<T, S>> extends EBase {
     //region Constructors
     public BasePropGroup() {
@@ -98,6 +101,7 @@ public abstract class BasePropGroup<T extends BaseProp, S extends BasePropGroup<
 
     //region Override Methods
     @Override
+    @JsonIgnore
     public boolean equals(Object o) {
         if (this == o) {
             return true;

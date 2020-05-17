@@ -9,9 +9,9 @@ package com.yangdb.fuse.asg.strategy.type;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ package com.yangdb.fuse.asg.strategy.type;
  * limitations under the License.
  * #L%
  */
-
 
 
 import com.yangdb.fuse.asg.strategy.AsgStrategy;
@@ -36,6 +35,7 @@ import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.EndPattern;
 import com.yangdb.fuse.model.query.properties.BaseProp;
 import com.yangdb.fuse.model.query.properties.BasePropGroup;
+import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantBase;
 import com.yangdb.fuse.model.query.quant.QuantType;
@@ -94,7 +94,7 @@ public class RelationPatternRangeAsgStrategy implements AsgStrategy {
                             quant.get().addNext(quantAsg);
                         } else {
                             // quant of type some exist -> add the inner or patterns after the quant
-                            addRelPattern(counter, query, quant.get(), relPattern,endPattern.get());
+                            addRelPattern(counter, query, quant.get(), relPattern, endPattern.get());
                             //remove pattern
                             parent.get().removeNextChild(relPattern);
                         }
@@ -103,8 +103,47 @@ public class RelationPatternRangeAsgStrategy implements AsgStrategy {
 
         //replace all EndPatterns with its internal real entity
         AsgQueryUtil.elements(query, EndPattern.class)
-                .forEach(p-> ((AsgEBase) p).seteBase(p.geteBase().getEndEntity()));
+                .forEach(p -> replaceEndPattern(counter, p));
 
+    }
+
+    /**
+     * replace end pattern with the actual type - including its possible filters
+     *
+     * @param counter
+     * @param p
+     */
+    public void replaceEndPattern(AtomicInteger counter, AsgEBase<EndPattern> p) {
+        if (!p.geteBase().getFilter().isEmpty()) {
+            //if end pattern is last in query - add quant for the purpose of the end-pattern filters
+            if (!p.hasNext()) {
+                addEndPatternFilters(counter, p);
+            } else {
+                //if end pattern is not last in query - search for a quant right after
+                Optional<AsgEBase<QuantBase>> quantOp = AsgQueryUtil.nextAdjacentDescendant(p, QuantBase.class, 1);
+                // if quant not present - add one and chain all childs to that quant
+                if (!quantOp.isPresent()) {
+                    AsgEBase<QuantBase> quantAsg = new AsgEBase<>(new Quant1(counter.incrementAndGet(), QuantType.all));
+                    AsgQueryUtil.replaceParents(quantAsg,p);
+                    p.addNext(quantAsg);
+                }
+                // quant present - add end-pattern filter to quant
+                quantOp = AsgQueryUtil.nextAdjacentDescendant(p, QuantBase.class, 1);
+                EPropGroup ePropGroup = new EPropGroup(p.geteBase().getFilter()).clone(counter.incrementAndGet());
+                quantOp.get().addNext(new AsgEBase<>(ePropGroup));
+            }
+        }
+        //change endPattern type to actual type
+        ((AsgEBase) p).seteBase(p.geteBase().getEndEntity());
+    }
+
+    public QuantBase addEndPatternFilters(AtomicInteger counter, AsgEBase<EndPattern> p) {
+        QuantBase newQuant = new Quant1(counter.incrementAndGet(), QuantType.all);
+        AsgEBase<QuantBase> quantAsg = new AsgEBase<>(newQuant);
+        EPropGroup ePropGroup = new EPropGroup(p.geteBase().getFilter()).clone(counter.incrementAndGet());
+        quantAsg.addNext(new AsgEBase<>(ePropGroup));
+        p.addNext(quantAsg);
+        return newQuant;
     }
 
     /**
@@ -117,11 +156,11 @@ public class RelationPatternRangeAsgStrategy implements AsgStrategy {
     private void addRelPattern(AtomicInteger counter, AsgQuery query, AsgEBase<Quant1> quantAsg, AsgEBase<RelPattern> relPattern, AsgEBase<EndPattern> endPattern) {
         Range range = relPattern.geteBase().getLength();
         //duplicate the rel pattern according to the range, range should already be validated by the validator
-        LongStream.rangeClosed(range.getLower() , range.getUpper())
+        LongStream.rangeClosed(range.getLower(), range.getUpper())
                 //this is the Root some quant all pattern premutations will be added to...
                 .forEach(value -> {
                     //if value == 0  remove the RelPattern entirely
-                    if(value==0) {
+                    if (value == 0) {
                         //take the path after the end pattern section (if exists) & add it as no hop pattern to the Quant
                         if (endPattern.hasNext()) {
                             final AsgEBase<? extends EBase> nextAfterEndPattern = endPattern.getNext().get(0);
@@ -145,28 +184,29 @@ public class RelationPatternRangeAsgStrategy implements AsgStrategy {
 
     /**
      * rel pattern premutation generator
+     *
      * @param value
      * @param relPattern
      * @param endPattern
      * @return
      */
-    private AsgEBase<? extends EBase> addPath(AtomicInteger counter,long value, AsgEBase<RelPattern> relPattern, AsgEBase<EndPattern> endPattern) {
+    private AsgEBase<? extends EBase> addPath(AtomicInteger counter, long value, AsgEBase<RelPattern> relPattern, AsgEBase<EndPattern> endPattern) {
         final AtomicReference<AsgEBase<? extends EBase>> current = new AtomicReference<>();
         LongStream.rangeClosed(1, value)
                 .forEach(step -> {
-                    AsgEBase<? extends EBase> node = buildStep(counter,relPattern, endPattern);
+                    AsgEBase<? extends EBase> node = buildStep(counter, relPattern, endPattern);
                     if (current.get() == null) {
                         current.set(node);
                     } else {
                         //the build step returns a cloned pattern  of [rel:Rel]-....->(endPattern:Entity)->...
                         //
-                        if(!(current.get().geteBase() instanceof QuantBase)) {
+                        if (!(current.get().geteBase() instanceof QuantBase)) {
                             final AsgEBase<Quant1> quant = new AsgEBase<>(new Quant1(counter.incrementAndGet(), QuantType.all));
-                            AsgQueryUtil.addAsNext(quant,current.get());
+                            AsgQueryUtil.addAsNext(quant, current.get());
                             current.set(quant);
                         } else {
                             //knowing that the rel pattern has a shape of a line not a tree get the last Descendant
-                            current.set(AsgQueryUtil.nextDescendant(current.get(),EndPattern.class).get());
+                            current.set(AsgQueryUtil.nextDescendant(current.get(), EndPattern.class).get());
                         }
                         current.get().addNext(AsgQueryUtil.ancestorRoot(node).get());
                         current.set(node);
@@ -179,11 +219,12 @@ public class RelationPatternRangeAsgStrategy implements AsgStrategy {
 
     /**
      * build a new complete rel->pattern step cloned from existing step
+     *
      * @param relPattern
      * @param endPattern
      * @return
      */
-    private AsgEBase<? extends EBase> buildStep(AtomicInteger counter,AsgEBase<RelPattern> relPattern, AsgEBase<EndPattern> endPattern) {
+    private AsgEBase<? extends EBase> buildStep(AtomicInteger counter, AsgEBase<RelPattern> relPattern, AsgEBase<EndPattern> endPattern) {
 
         RelPattern pattern = relPattern.geteBase();
         List<AsgEBase<? extends EBase>> belowList = new ArrayList<>(relPattern.getB());

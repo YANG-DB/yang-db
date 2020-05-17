@@ -34,7 +34,7 @@ import static com.yangdb.fuse.model.validation.ValidationResult.OK;
 
 public class AsgCompositeQueryValidatorStrategy implements AsgValidatorStrategy {
 
-    public static final String ERROR_1 = "Ontology Contains Cycle ";
+    public static final String ERROR_1 = "Ontology Composition Error ";
 
     @Override
     public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {

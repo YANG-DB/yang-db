@@ -61,10 +61,7 @@ import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Created by benishue on 23-Feb-17.
@@ -373,6 +370,11 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             rel.seteNum(eNum);
 
             return new AsgEBase<>(rel);
+        }
+
+        public static <T extends EEntityBase> AsgEBase<EndPattern<T>> endPattern(T entity,EProp... props) {
+            EndPattern<T> endPattern = new EndPattern<>(entity, Arrays.asList(props));
+            return new AsgEBase<>(endPattern);
         }
 
         public static <T extends EEntityBase> AsgEBase<EndPattern<T>> endPattern(T entity) {

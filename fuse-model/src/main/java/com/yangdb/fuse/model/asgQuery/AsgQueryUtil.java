@@ -1118,19 +1118,15 @@ public class AsgQueryUtil {
         return newValues;
     }
 
-    public static  <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz) {
+
+    public static  <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz,List<Class<? extends EBase>> allowedInPath) {
         final List<AsgEBase<? extends EBase>> path = AsgQueryUtil.pathToAncestor(eProp, clazz);
         if(path.isEmpty()) return Optional.empty();
+        //go over internal path elements make sure they all comply with allowedInPath restriction
+        if(path.stream().limit(path.size() - 1).skip(1).anyMatch(e -> !allowedInPath.contains(e.geteBase().getClass())))
+            return Optional.empty();
         return Optional.of((AsgEBase<T>) path.get(path.size()-1));
 
-/*
-        Optional<AsgEBase<T>> element = Optional.empty();
-        if(!path.isEmpty() && path.size()==2)
-            element = Optional.of((AsgEBase<T>) path.get(1));
-        if(!path.isEmpty() && path.size()==3 && QuantBase.class.isAssignableFrom(path.get(1).geteBase().getClass()))
-            element = Optional.of((AsgEBase<T>) path.get(2));
-        return element;
-*/
     }
 
     public static List<AsgEBase<? extends EBase>> path(

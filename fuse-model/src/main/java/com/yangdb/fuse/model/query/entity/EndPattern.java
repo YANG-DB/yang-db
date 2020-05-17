@@ -46,8 +46,13 @@ package com.yangdb.fuse.model.query.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yangdb.fuse.model.query.properties.EProp;
+import com.yangdb.fuse.model.query.properties.EPropGroup;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Created by lior.perry on 16-Feb-17.
@@ -55,14 +60,20 @@ import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EndPattern<T extends EEntityBase> extends EEntityBase {
+    private List<EProp> filter = new ArrayList<>();
     private T endEntity;
 
     //region Constructors
     public EndPattern() {}
 
     public EndPattern(T endEntity) {
+        this(endEntity,new ArrayList<>());
+    }
+
+    public EndPattern(T endEntity, List<EProp> filter) {
         super(endEntity.geteNum(),endEntity.geteTag(),endEntity.getNext(),endEntity.getB());
         this.endEntity = endEntity;
+        this.filter = filter;
     }
 
     public T getEndEntity() {
@@ -80,14 +91,18 @@ public class EndPattern<T extends EEntityBase> extends EEntityBase {
         return this.endEntity.geteTag();
     }
 
+    public List<EProp> getFilter() {
+        return filter;
+    }
+
     @Override
     public EndPattern<T> clone() {
-        return new EndPattern<>((T) getEndEntity().clone());
+        return new EndPattern<>((T) getEndEntity().clone(),getFilter());
     }
 
     @Override
     public EndPattern<T > clone(int eNum) {
-        return new EndPattern<>((T) getEndEntity().clone(eNum));
+        return new EndPattern<>((T) getEndEntity().clone(eNum),getFilter());
     }
 
     @Override

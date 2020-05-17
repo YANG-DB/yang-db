@@ -36,6 +36,7 @@ import com.yangdb.fuse.model.query.properties.CalculatedEProp;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
+import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantBase;
 import com.yangdb.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
@@ -62,7 +63,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
         Stream.ofAll(AsgQueryUtil.elements(query, EProp.class))
                 .filter(property -> !(property.geteBase() instanceof CalculatedEProp))
                 .forEach(property -> {
-                    Optional<AsgEBase<EEntityBase>> parent = calculateNextAncestor(property,EEntityBase.class);
+                    Optional<AsgEBase<EEntityBase>> parent = calculateNextAncestor(property,EEntityBase.class,Collections.singletonList(Quant1.class));
                     if (!parent.isPresent()) {
                         errors.add(ERROR_1 + ":" + property);
                     } else {
@@ -72,7 +73,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
 
         Stream.ofAll(AsgQueryUtil.elements(query, EPropGroup.class))
                 .forEach(group -> {
-                    Optional<AsgEBase<EEntityBase>> parent = calculateNextAncestor(group,EEntityBase.class);
+                    Optional<AsgEBase<EEntityBase>> parent = calculateNextAncestor(group,EEntityBase.class,Collections.singletonList(Quant1.class));
                     if (!parent.isPresent()) {
                         errors.add(ERROR_1 + group);
                     } else {
