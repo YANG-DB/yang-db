@@ -43,15 +43,13 @@ public class Quant1AllQuantGroupingAsgStrategy implements AsgStrategy {
         while(hasWorkToDo.get()) {
             hasWorkToDo.set(false);
 
-            AsgQueryUtil.<Quant1>elements(query, Quant1.class).forEach(quant -> {
+            AsgQueryUtil.elements(query, Quant1.class).forEach(quant -> {
                 if (quant.geteBase().getqType().equals(QuantType.all)) {
                     AsgQueryUtil.<Quant1, Quant1>nextAdjacentDescendants(quant, Quant1.class).forEach(childQuant -> {
                         if (childQuant.geteBase().getqType().equals(QuantType.all)) {
                             hasWorkToDo.set(true);
-
-                            List<AsgEBase<? extends EBase>> nextChildren = childQuant.getNext();
-                            nextChildren.forEach(childQuant::removeNextChild);
-                            nextChildren.forEach(quant::addNextChild);
+                            AsgQueryUtil.replaceParents(quant,childQuant);
+                            AsgQueryUtil.remove(query,childQuant);
                         }
                     });
                 }

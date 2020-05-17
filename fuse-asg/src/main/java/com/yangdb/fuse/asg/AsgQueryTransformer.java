@@ -59,7 +59,8 @@ public class AsgQueryTransformer implements QueryTransformer<AsgQuery, AsgQuery>
         }
 
         AsgStrategyContext asgStrategyContext =  new AsgStrategyContext(new Ontology.Accessor(ontology.get()));
-        Stream.ofAll(this.asgStrategies).forEach(strategy -> strategy.apply(query,asgStrategyContext));
+        Stream.ofAll(this.asgStrategies)
+                .forEach(strategy -> strategy.apply(query,asgStrategyContext));
 
         return query;
     }

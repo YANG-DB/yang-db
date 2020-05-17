@@ -822,6 +822,19 @@ public class AsgQueryUtil {
         target.setNext(next);
     }
 
+    /**
+     * replace the targets parent with the new given one
+     * @param newParent
+     * @param oldParent
+     */
+    public static void replaceParents(AsgEBase newParent,AsgEBase oldParent) {
+        //assuming single parent strategy
+        List<AsgEBase<? extends EBase>> next = new ArrayList<>(oldParent.getNext());
+        next.forEach(oldParent::removeNextChild);
+        next.forEach(newParent::addNextChild);
+
+    }
+
 
     public static int count(AsgEBase<? extends EBase> asgEBase, Class<? extends EBase> aClass) {
         return elements(asgEBase, classPredicateFunction.apply(aClass)).size();
@@ -1107,12 +1120,17 @@ public class AsgQueryUtil {
 
     public static  <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz) {
         final List<AsgEBase<? extends EBase>> path = AsgQueryUtil.pathToAncestor(eProp, clazz);
+        if(path.isEmpty()) return Optional.empty();
+        return Optional.of((AsgEBase<T>) path.get(path.size()-1));
+
+/*
         Optional<AsgEBase<T>> element = Optional.empty();
         if(!path.isEmpty() && path.size()==2)
             element = Optional.of((AsgEBase<T>) path.get(1));
         if(!path.isEmpty() && path.size()==3 && QuantBase.class.isAssignableFrom(path.get(1).geteBase().getClass()))
             element = Optional.of((AsgEBase<T>) path.get(2));
         return element;
+*/
     }
 
     public static List<AsgEBase<? extends EBase>> path(

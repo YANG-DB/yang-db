@@ -48,7 +48,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yangdb.fuse.model.Next;
 import com.yangdb.fuse.model.query.EBase;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -147,7 +150,7 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
 
     //region Properties
     public List<AsgEBase<? extends EBase>> getNext() {
-        return Collections.unmodifiableList(this.next);
+        return this.next;
     }
 
     public AsgEBase<? extends EBase> addNext(AsgEBase<? extends EBase> node) {
@@ -174,7 +177,7 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
     }
 
     public List<AsgEBase<? extends EBase>> getB() {
-        return Collections.unmodifiableList(this.b);
+        return this.b;
     }
 
     public T geteBase() {
@@ -196,7 +199,7 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
     @JsonIgnore
     @JsonIgnoreProperties
     public List<AsgEBase<? extends EBase>> getParents() {
-        return Collections.unmodifiableList(this.parent);
+        return this.parent;
     }
 
     public int geteNum() {

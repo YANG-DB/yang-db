@@ -40,12 +40,10 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
 import static com.yangdb.fuse.unipop.schemaProviders.GraphElementPropertySchema.IndexingSchema.Type.exact;
-import static java.util.Collections.unmodifiableList;
 
 /**
  * Created by roman.margolis on 08/02/2018.
