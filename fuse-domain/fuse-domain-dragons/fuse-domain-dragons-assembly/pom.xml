@@ -58,7 +58,7 @@
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-dv-stat</artifactId>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-test-framework</artifactId>
         </dependency>
@@ -133,6 +133,20 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-pgp-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
@@ -185,6 +199,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 
