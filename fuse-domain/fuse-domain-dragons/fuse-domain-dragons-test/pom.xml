@@ -5,7 +5,7 @@
     <parent>
         <artifactId>fuse-domain-dragons</artifactId>
         <groupId>com.yangdb</groupId>
-        <version>0.5-SNAPSHOT</version>
+        <version>0.5</version>
     </parent>
 
     <artifactId>fuse-domain-dragons-test</artifactId>
