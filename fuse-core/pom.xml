@@ -6,8 +6,44 @@
         <version>0.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>fuse-core</artifactId>
+
+    <name>fuse-core</name>
+    <description>
+        YANGDB Open-source, Scalable, Non-native Graph database (Powered by Elasticsearch)
+    </description>
+    <url>http://www.yangdb.org/</url>
+
+    <mailingLists>
+        <mailingList>
+            <name>Apache Yang.DB Developers</name>
+            <post>yang.db.dev@gmail.com</post>
+        </mailingList>
+    </mailingLists>
+
+    <organization>
+        <name>The YangDb Graph Database Project</name>
+    </organization>
+
+    <scm>
+        <connection>scm:git:git:https://github.com/YANG-DB/yang-db.git</connection>
+        <url>git clone https://github.com/YANG-DB/yang-db.git</url>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>The 2.0 version of the Apache License was approved by the ASF in 2004.</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>Yang.DB</id>
+            <name>The Yang.DB Team</name>
+            <organization>www.yangdb.org</organization>
+        </developer>
+    </developers>
 
     <properties>
         <top.dir>${project.basedir}/..</top.dir>
@@ -21,6 +57,10 @@
         <dependency>
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-geojson</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
@@ -73,6 +113,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
