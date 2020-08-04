@@ -26,6 +26,14 @@ import static com.yangdb.fuse.model.query.Rel.Direction.R;
 public class KnowledgeReaderContext {
 
     static public class KnowledgeQueryBuilder {
+        public static final String HAS_OUT_RELATION = "hasOutRelation";
+        public static final String HAS_IN_RELATION = "hasInRelation";
+        public static final String HAS_RELATION = "hasRelation";
+        public static final String HAS_EFILE = "hasEfile";
+        public static final String HAS_EVALUE = "hasEvalue";
+        public static final String HAS_ENTITY_REFERENCE = "hasEntityReference";
+        public static final String HAS_INSIGHT = "hasInsight";
+
         private Query.Builder knowledge;
         private List<EBase> elements;
         private AtomicInteger counter = new AtomicInteger(0);
@@ -127,6 +135,10 @@ public class KnowledgeReaderContext {
         }
 
 
+        public KnowledgeQueryBuilder relatedTo(String relTypeIn,String relTypeOut,String eTag, String sideB, Filter... filters) {
+            return relatedTo(entityStack.peek(),relTypeIn,relTypeOut, eTag, sideB, filters);
+        }
+
         public KnowledgeQueryBuilder relatedTo(String eTag, String sideB, Filter... filters) {
             return relatedTo(entityStack.peek(), eTag, sideB, filters);
         }
@@ -137,8 +149,12 @@ public class KnowledgeReaderContext {
         }
 
         public KnowledgeQueryBuilder relatedTo(Quant1 quantEntity, String eTag, String sideB, Filter... filters) {
+            return relatedTo(quantEntity,HAS_RELATION,HAS_RELATION,eTag,sideB,filters);
+        }
+
+        public KnowledgeQueryBuilder relatedTo(Quant1 quantEntity,String relTypeIn,String relTypeOut, String eTag, String sideB, Filter... filters) {
             quantEntity.getNext().add(currentEnum());
-            this.elements.add(new Rel(currentEnum(), "hasRelation", R, EntityBuilder.type, nextEnum(), 0));
+            this.elements.add(new Rel(currentEnum(), relTypeIn, R, EntityBuilder.type + "_" + eTag+"[IN]", nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, RelationBuilder.type, nextEnum(), 0));
             Quant1 quant1 = new Quant1(currentEnum(), QuantType.all, new ArrayList<>(), 0);
             this.elements.add(quant1);
@@ -146,7 +162,7 @@ public class KnowledgeReaderContext {
             nextEnum();//continue
 
             entityStack.peek().getNext().add(currentEnum());
-            this.elements.add(new Rel(currentEnum(), "hasRelation", L, EntityBuilder.type, nextEnum(), 0));
+            this.elements.add(new Rel(currentEnum(), relTypeOut, L, EntityBuilder.type + "_" + eTag+"[OUT]", nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), sideB, EntityBuilder.type, nextEnum(), 0));
 
             nextEnum();//continue
@@ -155,7 +171,7 @@ public class KnowledgeReaderContext {
 
         public KnowledgeQueryBuilder withFile(String eTag, Filter... filters) {
             entityStack.peek().getNext().add(currentEnum());
-            this.elements.add(new Rel(currentEnum(), "hasEfile", R, null, nextEnum(), 0));
+            this.elements.add(new Rel(currentEnum(), HAS_EFILE, R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, FileBuilder.type, 0, 0));
             nextEnum();//continue
             return this;
@@ -163,7 +179,7 @@ public class KnowledgeReaderContext {
 
         public KnowledgeQueryBuilder withValue(String eTag, Filter... filters) {
             entityStack.peek().getNext().add(currentEnum());
-            this.elements.add(new Rel(currentEnum(), "hasEvalue", R, null, nextEnum(), 0));
+            this.elements.add(new Rel(currentEnum(), HAS_EVALUE, R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, ValueBuilder.type, 0, 0));
             nextEnum();//continue
             Arrays.stream(filters).forEach(filter -> {
@@ -176,7 +192,7 @@ public class KnowledgeReaderContext {
 
         public KnowledgeQueryBuilder withRef(String eTag, Filter... filters) {
             entityStack.peek().getNext().add(currentEnum());
-            this.elements.add(new Rel(currentEnum(), "hasEntityReference", R, null, nextEnum(), 0));
+            this.elements.add(new Rel(currentEnum(), HAS_ENTITY_REFERENCE, R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, RefBuilder.type, 0, 0));
             nextEnum();//continue
             return this;
@@ -184,7 +200,7 @@ public class KnowledgeReaderContext {
 
         public KnowledgeQueryBuilder withInsight(String eTag, Filter... filters) {
             entityStack.peek().getNext().add(currentEnum());
-            this.elements.add(new Rel(currentEnum(), "hasInsight", R, null, nextEnum(), 0));
+            this.elements.add(new Rel(currentEnum(), HAS_INSIGHT, R, null, nextEnum(), 0));
             this.elements.add(new ETyped(currentEnum(), eTag, InsightBuilder.type, 0, 0));
             nextEnum();//continue
             return this;

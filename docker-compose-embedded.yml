@@ -12,6 +12,27 @@ services:
       - fuse-data:/usr/share/fuse
     networks:
       - network
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    environment:
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - "discovery.type=single-node"
+      - "network.publish_host=127.0.0.1"
+      - "cluster.name=${ELASTICSEARCH_CLUSTER_NAME}"
+    networks:
+      - network
+    ports:
+      - target: 9200
+        published: 9200
+        protocol: tcp
+        mode: host
+      - target: 9300
+        published: 9300
+        protocol: tcp
+        mode: host
+    deploy:
+      endpoint_mode: dnsrr
+      mode: 'global'
   elasticsearch_exporter:
     image: justwatch/elasticsearch_exporter:1.1.0
     command:
@@ -38,5 +59,4 @@ volumes:
 
 networks:
   network:
-    driver: overlay
     attachable: true

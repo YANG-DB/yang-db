@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0",
-    "title": "YangFb [Dragons] API"
+    "title": "YangDb [Dragons] API"
   },
   "basePath": "/fuse",
   "tags": [

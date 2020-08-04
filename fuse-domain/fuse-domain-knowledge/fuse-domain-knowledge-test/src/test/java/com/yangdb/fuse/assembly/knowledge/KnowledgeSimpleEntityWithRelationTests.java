@@ -14,6 +14,7 @@ import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.results.*;
+import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateForwardOnlyPathTraversalCursorRequest;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
@@ -26,11 +27,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
-import static com.yangdb.fuse.assembly.knowledge.KnowledgeRoutedSchemaProviderFactory.LogicalTypes.RELATED_ENTITY;
 import static com.yangdb.fuse.assembly.knowledge.Setup.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder.INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder._e;
-import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KnowledgeQueryBuilder.start;
+import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeReaderContext.KnowledgeQueryBuilder.*;
 import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.commit;
 import static com.yangdb.fuse.assembly.knowledge.domain.RefBuilder.REF_INDEX;
 import static com.yangdb.fuse.assembly.knowledge.domain.RefBuilder._ref;
@@ -43,7 +43,7 @@ public class KnowledgeSimpleEntityWithRelationTests {
     static SimpleDateFormat sdf;
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup();
+//        Setup.setup(false,true);//todo remove for CI tests
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -57,7 +57,7 @@ public class KnowledgeSimpleEntityWithRelationTests {
 
     @After
     public void after() {
-        if(ctx!=null) ctx.removeCreated();
+        if(ctx!=null) ctx.removeCreated();//todo restore for CI tests
     }
 
     @Test
@@ -92,6 +92,70 @@ public class KnowledgeSimpleEntityWithRelationTests {
 
         // Check if expected and actual are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true,true);
+    }
+
+    @Test
+    public void testSimpleEntityWithRelationInOut() throws IOException, InterruptedException {
+        // p1 --knows-> p2 --knows-> p3
+        final EntityBuilder p1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final EntityBuilder p2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final EntityBuilder p3 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final RelationBuilder rel_p1_p2 = _rel(ctx.nextRelId()).cat("knows").sideA(p1).sideB(p2);
+        p1.rel(rel_p1_p2,"out");
+        p2.rel(rel_p1_p2,"in");
+
+        final RelationBuilder rel_p1_p3 = _rel(ctx.nextRelId()).cat("knows").sideA(p1).sideB(p3);
+        p1.rel(rel_p1_p3,"out");
+        p3.rel(rel_p1_p3,"in");
+
+
+
+        Assert.assertEquals(7, commit(ctx, INDEX, p1,p2,p3));
+        Assert.assertEquals(2, commit(ctx, REL_INDEX, rel_p1_p3,rel_p1_p2));
+
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = start().withEntity(p1.getETag())
+                .relatedTo(HAS_IN_RELATION,HAS_OUT_RELATION, p1.getETag()+"->"+p2.getETag(),p2.getETag()).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,query,
+                new CreateForwardOnlyPathTraversalCursorRequest(new CreatePageRequest(100)));
+
+        // Check Entity Response
+        Assert.assertEquals(2, pageData.getSize());
+        Assert.assertEquals(2, ((AssignmentsQueryResult) pageData).getAssignments().size());
+
+    }
+
+    @Test
+    public void testSimpleEntityWithGeneralRelationNotion() throws IOException, InterruptedException {
+        // p1 --knows-> p2 --knows-> p3
+        final EntityBuilder p1 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final EntityBuilder p2 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final EntityBuilder p3 = _e(ctx.nextLogicalId()).cat("person").ctx("context1");
+        final RelationBuilder rel_p1_p2 = _rel(ctx.nextRelId()).cat("knows").sideA(p1).sideB(p2);
+        p1.rel(rel_p1_p2,"out");
+        p2.rel(rel_p1_p2,"in");
+
+        final RelationBuilder rel_p1_p3 = _rel(ctx.nextRelId()).cat("knows").sideA(p1).sideB(p3);
+        p1.rel(rel_p1_p3,"out");
+        p3.rel(rel_p1_p3,"in");
+
+
+
+        Assert.assertEquals(7, commit(ctx, INDEX, p1,p2,p3));
+        Assert.assertEquals(2, commit(ctx, REL_INDEX, rel_p1_p3,rel_p1_p2));
+
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = start().withEntity(p1.getETag())
+                .relatedTo(p1.getETag()+"->"+p2.getETag(),p2.getETag()).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo,query,
+                new CreateForwardOnlyPathTraversalCursorRequest(new CreatePageRequest(100)));
+
+        // Check Entity Response
+        Assert.assertEquals(4, pageData.getSize());
+        Assert.assertEquals(4, ((AssignmentsQueryResult) pageData).getAssignments().size());
+
     }
 
 

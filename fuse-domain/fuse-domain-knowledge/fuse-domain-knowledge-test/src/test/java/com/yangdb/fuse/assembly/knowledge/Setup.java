@@ -20,6 +20,8 @@ import java.util.Arrays;
 import static com.yangdb.fuse.services.controllers.IdGeneratorController.IDGENERATOR_INDEX;
 
 public abstract class Setup {
+    public static final String KNOWLEDGE_CLUSTER_NAME = "knowledge";
+
     public static final Path path = Paths.get("resources", "assembly", "Knowledge", "config", "application.test.engine3.m1.dfs.knowledge.public.conf");
     public static FuseApp app = null;
     public static ElasticEmbeddedNode elasticEmbeddedNode = null;
@@ -54,7 +56,7 @@ public abstract class Setup {
     private static void init(boolean embedded, boolean init, boolean startFuse) throws Exception {
         // Start embedded ES
         if (embedded) {
-            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("knowledge");
+            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance(KNOWLEDGE_CLUSTER_NAME);
             client = elasticEmbeddedNode.getClient();
             try {
                 new BasicIdGenerator(client, IDGENERATOR_INDEX).init(Arrays.asList("Entity", "Relation", "Evalue", "Rvalue", "workerId"));
@@ -64,7 +66,7 @@ public abstract class Setup {
             }
         } else {
             //use existing running ES
-            client = elasticEmbeddedNode.getClient("knowledge", 9300);
+            client = elasticEmbeddedNode.getClient(KNOWLEDGE_CLUSTER_NAME, 9300);
         }
         // Load fuse engine config file
         String confFilePath = path.toString();

@@ -27,6 +27,25 @@ elasticdump \
   --output=out.json \
   --type=data
 
+## elastic-loader
+## https://github.com/moshe/elasticsearch_loader
+
+##    Batch upload CSV (actually any *SV) files to Elasticsearch
+##    Batch upload JSON files / JSON lines to Elasticsearch
+##    Batch upload parquet files to Elasticsearch
+##    Pre defining custom mappings
+##    Delete index before upload
+##    Index documents with _id from the document itself
+##    Load data directly from url
+##    SSL and basic auth
+##    Unicode Support
+
+## install
+pip install elasticsearch-loader
+
+## example
+elasticsearch_loader --index incidents --type incident csv file1.csv file2.csv
+
 
 
 ## Bulk API -

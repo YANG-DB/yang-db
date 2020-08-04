@@ -7,7 +7,7 @@ services:
       - 8888:8888
     environment:
       - "elasticsearchHosts=10.6.91.1"
-      - "elasticsearchClusterName=Knowledge"
+      - "elasticsearchClusterName=${ELASTICSEARCH_CLUSTER_NAME}"
     networks:
       - network
   es:
@@ -20,7 +20,7 @@ services:
       - "node.data=false"
       - "node.ingest=false"
       - "network.publish_host=127.0.0.1"
-      - "cluster.name=Knowledge"
+      - "cluster.name=${ELASTICSEARCH_CLUSTER_NAME}"
     networks:
       - network
     ports:
@@ -45,7 +45,7 @@ services:
       - "node.master=true"
       - "node.data=false"
       - "node.ingest=false"
-      - "cluster.name=Knowledge"
+      - "cluster.name=${ELASTICSEARCH_CLUSTER_NAME}"
     networks:
       - network
     deploy:
@@ -61,7 +61,7 @@ services:
       - "node.master=false"
       - "node.data=true"
       - "node.ingest=false"
-      - "cluster.name=Knowledge"
+      - "cluster.name=${ELASTICSEARCH_CLUSTER_NAME}"
     volumes:
       - es-fuse-data:/usr/share/elasticsearch/data
     networks:
@@ -69,7 +69,7 @@ services:
     deploy:
       endpoint_mode: dnsrr
       mode: 'global'
-    grafana:
+  grafana:
       image: grafana/grafana
       container_name: grafana
       volumes:
