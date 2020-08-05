@@ -1,14 +1,11 @@
 From Graph to Elastic - A tail of a Yang-DB...
 =========================================================================================
-http://www.yangdb.org/ 
 
-[![yang-Db](https://img.shields.io/badge/yang--db-Knowledge-green)]
 [![Coverage Status](https://coveralls.io/repos/github/YANG-DB/yang-db/badge.svg?branch=develop)](https://coveralls.io/github/YANG-DB/yang-db?branch=develop)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 [![](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://jitpack.io/#YANG-DB/yang-db)
-[![Docker Pulls](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://hub.docker.com/r/yangdb/yang.db/)
+[![](https://img.shields.io/docker/pulls/yangdb/yang.db?style=flat-square)](https://hub.docker.com/u/yangdb)
 
-### Use 
 * Add [yang.db](https://github.com/YANG-DB/yang-db) as maven dependency https://jitpack.io/#YANG-DB/yang-db
 * Download [yang.db](https://github.com/YANG-DB/yang-db) get latest docker release  docker pull yangdb/yang.db
 
@@ -23,6 +20,7 @@ http://www.yangdb.org/
 > -p 8888:88 -it yangdb/yang.db:Sep-2019-RC1    
 
 #### Project YANG-DB
+* http://www.yangdb.org/ 
 
 * [wiki](https://github.com/YANG-DB/yang-db/wiki)
 
@@ -42,9 +40,10 @@ http://www.yangdb.org/
 
 * [Lior Kogan](https://www.linkedin.com/in/liorkogan/) 
 
-##### Dev/Ops
- 
-* [Yaniv Eliash](https://www.linkedin.com/in/yaniv-eliash-4039a951)
+##### Evangelist:
+
+* [Dana](https://www.linkedin.com/in/dana-perry-51148334/) 
+
 ##### License:
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 
