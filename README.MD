@@ -2,13 +2,11 @@ From Graph to Elastic - A tail of a Yang-DB...
 =========================================================================================
 http://www.yangdb.org/ 
 
-[![yang-Db](https://img.shields.io/badge/yang--db-Knowledge-green)](www.yang-db.org)
-[![Build Status](https://api.travis-ci.org/repos/YANG-DB/yang-db.svg?branch=master)](https://api.travis-ci.org/repos/YANG-DB/yang-db)
+[![yang-Db](https://img.shields.io/badge/yang--db-Knowledge-green)]
 [![Coverage Status](https://coveralls.io/repos/github/YANG-DB/yang-db/badge.svg?branch=develop)](https://coveralls.io/github/YANG-DB/yang-db?branch=develop)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 [![](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://jitpack.io/#YANG-DB/yang-db)
-[![Docker Pulls](https://img.shields.io/docker/pulls/comunica/actor-init-sparql.svg)](https://hub.docker.com/r/comunica/actor-init-sparql/)
-[![Twitter Follow](https://img.shields.io/twitter/follow/db_yang.svg?style=social)](https://twitter.com/db_yang)
+[![Docker Pulls](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://hub.docker.com/r/yangdb/yang.db/)
 
 ### Use 
 * Add [yang.db](https://github.com/YANG-DB/yang-db) as maven dependency https://jitpack.io/#YANG-DB/yang-db
