@@ -32,6 +32,7 @@ import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import javaslang.Tuple2;
 import org.apache.commons.io.IOUtils;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -94,6 +95,15 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
      */
     public Ontology transform(String source) {
         return transform(IOUtils.toInputStream(source));
+    }
+
+    @Override
+    /**
+     * API that will translate a YangDb ontology schema to GraphQL schema
+     */
+    public String translate(Ontology source) {
+        //Todo
+        throw new NotImplementedException();
     }
 
     /**

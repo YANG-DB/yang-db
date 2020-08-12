@@ -13,7 +13,7 @@ import java.io.StringWriter;
 import java.util.Collections;
 
 import static com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
-import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_CYPHER;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_CYPHERQL;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -39,7 +39,7 @@ public class CypherMatchMultiStatementTest {
                 "   (otherPerson:Entity)-[othersActedIn:relatedEntity {category:'ACTED_IN'}]->(m2:Entity) " +
                 " Where m1.name = m2.name " +
                 " Return *";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
 
         String expected = "[└── Start, \n" +
@@ -65,7 +65,7 @@ public class CypherMatchMultiStatementTest {
         String s = "MATCH (a:A)-[c:C]->(b:B), " +
                 " (a:A)-[d:D]->(e:E)-[:F]-(g:G)" +
                 " RETURN *";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         String expected = "[└── Start, \n" +
                             "    ──Typ[:A a#1]──Q[100:all]:{2|4}, \n" +
@@ -84,7 +84,7 @@ public class CypherMatchMultiStatementTest {
                 "       (e.fieldId = 'e' and e.stringValue = 'e') AND" +
                 "       (g.fieldId = 'g' and g.stringValue = 'g') " +
                 " RETURN *";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         String expected = "[└── Start, \n" +
                             "    ──Typ[:A a#1]──Q[100:all]:{2|4}, \n" +
@@ -112,7 +112,7 @@ public class CypherMatchMultiStatementTest {
                 "       (e.fieldId = 'e' and e.stringValue = 'e') OR" +
                 "       (g.fieldId = 'g' and g.stringValue = 'g') " +
                 " RETURN *";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         String expected = "[└── Start, \n" +
                 "    ──Q[700:some]:{8|15|22}, \n" +

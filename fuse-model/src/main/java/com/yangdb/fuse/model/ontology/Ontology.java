@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,9 +33,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -139,9 +139,8 @@ public class Ontology {
     //region Public Methods
 
     @Override
-    public String toString()
-    {
-        return "Ontology [enumeratedTypes = "+enumeratedTypes+", ont = "+ont+", relationshipTypes = "+relationshipTypes+", entityTypes = "+entityTypes+"]";
+    public String toString() {
+        return "Ontology [enumeratedTypes = " + enumeratedTypes + ", ont = " + ont + ", relationshipTypes = " + relationshipTypes + ", entityTypes = " + entityTypes + "]";
     }
 
     @Override
@@ -213,9 +212,14 @@ public class Ontology {
             this.entityTypes.addAll(entityTypes);
             return this;
         }
+
         public OntologyBuilder addEntityType(EntityType entityType) {
             this.entityTypes.add(entityType);
             return this;
+        }
+
+        public Optional<EntityType> getEntityType(String entityType) {
+            return this.entityTypes.stream().filter(et -> et.geteType().equals(entityType)).findAny();
         }
 
         public OntologyBuilder withRelationshipTypes(List<RelationshipType> relationshipTypes) {
@@ -228,15 +232,26 @@ public class Ontology {
             return this;
         }
 
+        public Optional<RelationshipType> getRelationshipType(String relationshipType) {
+            return this.relationshipTypes.stream().filter(et -> et.getrType().equals(relationshipType)).findAny();
+        }
 
         public OntologyBuilder addRelationshipType(RelationshipType relationshipType) {
             this.relationshipTypes.add(relationshipType);
             return this;
         }
 
+        public Optional<Property> getProperty(String property) {
+            return this.properties.stream().filter(et -> et.getType().equals(property)).findAny();
+        }
 
         public OntologyBuilder withEnumeratedTypes(List<EnumeratedType> enumeratedTypes) {
             this.enumeratedTypes = enumeratedTypes;
+            return this;
+        }
+
+        public OntologyBuilder addEnumeratedTypes(EnumeratedType enumeratedType) {
+            this.enumeratedTypes.add(enumeratedType);
             return this;
         }
 
@@ -247,6 +262,16 @@ public class Ontology {
 
         public OntologyBuilder withProperties(List<Property> properties) {
             this.properties = properties;
+            return this;
+        }
+
+        public OntologyBuilder addProperty(Property property) {
+            this.properties.add(property);
+            return this;
+        }
+
+        public OntologyBuilder addProperties(List<Property> properties) {
+            this.properties.addAll(properties);
             return this;
         }
 
@@ -353,8 +378,8 @@ public class Ontology {
         }
 
         public Property $property$(String pType) {
-            if(!$property(pType).isPresent())
-                throw new IllegalArgumentException(String.format("No Such ontology value present %s",pType));
+            if (!$property(pType).isPresent())
+                throw new IllegalArgumentException(String.format("No Such ontology value present %s", pType));
             return $property(pType).get();
         }
 
@@ -389,16 +414,16 @@ public class Ontology {
 
         public List<EntityType> nested$(String eType) {
             return entity$(eType).getProperties().stream()
-                    .filter(p->$entity(p).isPresent())
-                    .map(p->$entity(p).get())
+                    .filter(p -> $entity(p).isPresent())
+                    .map(p -> $entity(p).get())
                     .collect(Collectors.toList());
 
         }
 
         public boolean isNested(String eType) {
-            if(!entity(eType).isPresent()) return false;
+            if (!entity(eType).isPresent()) return false;
 
-            return entity$(eType).getProperties().stream().anyMatch(p->$entity(p).isPresent());
+            return entity$(eType).getProperties().stream().anyMatch(p -> $entity(p).isPresent());
         }
 
         public Iterable<String> eNames() {
@@ -414,11 +439,11 @@ public class Ontology {
         }
 
         public List<RelationshipType> relationBySideA(String eType) {
-            return Stream.ofAll(ontology.getRelationshipTypes()).filter(r->r.hasSideA(eType)).toJavaList();
+            return Stream.ofAll(ontology.getRelationshipTypes()).filter(r -> r.hasSideA(eType)).toJavaList();
         }
 
         public List<RelationshipType> relationBySideB(String eType) {
-            return Stream.ofAll(ontology.getRelationshipTypes()).filter(r->r.hasSideB(eType)).toJavaList();
+            return Stream.ofAll(ontology.getRelationshipTypes()).filter(r -> r.hasSideB(eType)).toJavaList();
         }
 
         public Iterable<String> rTypes() {

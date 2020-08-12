@@ -143,6 +143,9 @@
         <!-- spatial4j -->
         <spatial4j.version>0.7</spatial4j.version>
 
+        <!-- owl -->
+        <owlapi.version>4.0.2</owlapi.version>
+
         <!-- cypher -->
         <openCypher.frontend.version>9.0.20181012</openCypher.frontend.version>
         <openCypher.spark.version>0.2.3</openCypher.spark.version>
@@ -369,6 +372,30 @@
                 <groupId>org.locationtech.jts</groupId>
                 <artifactId>jts-core</artifactId>
                 <version>1.16.0</version>
+            </dependency>
+
+            <!-- owl -->
+            <dependency>
+                <groupId>net.sourceforge.owlapi</groupId>
+                <artifactId>owlapi-api</artifactId>
+                <version>${owlapi.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>net.sourceforge.owlapi</groupId>
+                <artifactId>owlapi-apibinding</artifactId>
+                <version>${owlapi.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- cypher -->

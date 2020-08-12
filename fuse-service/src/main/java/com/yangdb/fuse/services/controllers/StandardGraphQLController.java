@@ -22,13 +22,16 @@ package com.yangdb.fuse.services.controllers;
 
 import com.cedarsoftware.util.io.JsonWriter;
 import com.google.inject.Inject;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.ContentResponse.Builder;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static io.netty.channel.group.ChannelMatchers.compose;
 import static org.jooby.Status.NOT_FOUND;
@@ -40,8 +43,9 @@ import static org.jooby.Status.OK;
 public class StandardGraphQLController implements GraphQLController {
     //region Constructors
     @Inject
-    public StandardGraphQLController(OntologyTransformerIfc<String, Ontology> transformer) {
+    public StandardGraphQLController(OntologyTransformerIfc<String, Ontology> transformer, OntologyProvider provider) {
         this.transformer = transformer;
+        this.provider = provider;
     }
     //endregion
 
@@ -54,12 +58,22 @@ public class StandardGraphQLController implements GraphQLController {
                 .compose();
     }
 
-   //endregion
+    @Override
+    public ContentResponse<String> transform(String ontologyId) {
+        return Builder.<String>builder(OK, NOT_FOUND)
+                .data(Optional.of(this.transformer.translate(provider.get(ontologyId)
+                        .orElseThrow(() -> new FuseError.FuseErrorException(
+                                new FuseError("Ontology Not Found", String.format("Ontology %s is not found in repository", ontologyId)))))))
+                .compose();
+    }
+
+    //endregion
 
     //region Private Methods
 
     //region Fields
     private OntologyTransformerIfc<String,Ontology> transformer;
+    private OntologyProvider provider;
 
     //endregion
 

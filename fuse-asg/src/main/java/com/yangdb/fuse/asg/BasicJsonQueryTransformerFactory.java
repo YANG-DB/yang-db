@@ -27,9 +27,6 @@ import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.query.QueryInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
-import javaslang.Tuple2;
-
-import java.util.List;
 
 public class BasicJsonQueryTransformerFactory implements JsonQueryTransformerFactory {
 
@@ -46,9 +43,9 @@ public class BasicJsonQueryTransformerFactory implements JsonQueryTransformerFac
     @Override
     public QueryTransformer<QueryInfo<String>, AsgQuery> transform(String type) {
         switch (type) {
-            case CreateQueryRequestMetadata.TYPE_CYPHER:
+            case CreateQueryRequestMetadata.TYPE_CYPHERQL:
                 return cypherTransformer;
-            case CreateQueryRequestMetadata.TYPE_GRAPH_QL:
+            case CreateQueryRequestMetadata.TYPE_GRAPHQL:
                 return graphQueryTransformer;
         }
         throw new FuseError.FuseErrorException(new FuseError("No Query translator found","No matching json query translator found for type "+type));

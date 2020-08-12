@@ -67,7 +67,19 @@ public class LoggingGraphQLController extends LoggingControllerBase<GraphQLContr
                 .decorate(() -> this.controller.translate(graphQLSchema), this.resultHandler());
     }
 
-   //endregion
+    @Override
+    public ContentResponse<String> transform(String ontologyId) {
+        return new LoggingSyncMethodDecorator<ContentResponse<String>>(
+                this.logger,
+                this.metricRegistry,
+                translate,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.transform(ontologyId), this.resultHandler());
+    }
+
+    //endregion
 
     //region Fields
     private static MethodName.MDCWriter translate = MethodName.of("translate");

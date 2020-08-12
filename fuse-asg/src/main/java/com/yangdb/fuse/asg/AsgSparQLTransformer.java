@@ -24,20 +24,20 @@ package com.yangdb.fuse.asg;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.asg.QueryToAsgTransformer;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
+import com.yangdb.fuse.dispatcher.query.rdf.SparQL2QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2QueryTransformer;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryInfo;
 
-public class AsgGraphQLTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery>  {
-    private GraphQL2QueryTransformer graphQL2QueryTransformer;
+public class AsgSparQLTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery>  {
+    private SparQL2QueryTransformer ontologyTransformer;
     private final QueryToAsgTransformer queryTransformer;
 
     //region Constructors
     @Inject
-    public AsgGraphQLTransformer(GraphQL2QueryTransformer graphQL2QueryTransformer,
-                                 QueryToAsgTransformer queryTransformer) {
-        this.graphQL2QueryTransformer = graphQL2QueryTransformer;
+    public AsgSparQLTransformer(SparQL2QueryTransformer ontologyTransformer,
+                                QueryToAsgTransformer queryTransformer) {
+        this.ontologyTransformer = ontologyTransformer;
         this.queryTransformer = queryTransformer;
     }
     //endregion
@@ -46,7 +46,7 @@ public class AsgGraphQLTransformer implements QueryTransformer<QueryInfo<String>
 
     @Override
     public AsgQuery transform(QueryInfo<String> query) {
-        Query transform = graphQL2QueryTransformer.transform(query);
+        Query transform = ontologyTransformer.transform(query);
         return queryTransformer.transform(transform);
     }
 
