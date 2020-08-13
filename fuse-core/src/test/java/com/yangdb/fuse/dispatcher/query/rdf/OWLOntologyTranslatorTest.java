@@ -20,6 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.ontology.Property.equal;
 
@@ -35,72 +37,65 @@ public class OWLOntologyTranslatorTest {
         OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
         //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
         ontology = transformer.transform(Sets.newHashSet(
-                new String(Files.readAllBytes(new File(foaf.toURI()).toPath())),
                 new String(Files.readAllBytes(new File(user.toURI()).toPath())),
                 new String(Files.readAllBytes(new File(workspace.toURI()).toPath()))));
         Assert.assertNotNull(ontology);
     }
 
     @Test
-    @Ignore("Todo fix")
     public void testEnumTranslation() {
         Assert.assertEquals(ontology.getEnumeratedTypes().size(), 1);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
 
-        Assert.assertEquals(accessor.enumeratedType$("Episode"),
-                new EnumeratedType("Episode",
-                        Arrays.asList(new Value(0, "NEWHOPE"),
-                                new Value(1, "EMPIRE"),
-                                new Value(2, "JEDI"))));
-
-
+        Assert.assertEquals(accessor.enumeratedType$("countries"),
+                new EnumeratedType("countries",
+                        Arrays.asList(new Value(0, "Eurasia"),
+                                new Value(1, "NorthAmerica"),
+                                new Value(2, "Antarctica"),
+                                new Value(3, "Africa"),
+                                new Value(4, "SouthAmerica"),
+                                new Value(5, "Australia"))));
     }
 
     @Test
-    @Ignore("Todo fix")
     public void testPropertiesTranslation() {
-        Assert.assertEquals(ontology.getProperties().size(), 6);
+        Assert.assertEquals(ontology.getProperties().size(), 18);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
+        List<String> expected = Arrays.asList(
+                "passwordHash", "authorizations", "currentLoginRemoteAddr",
+                "uiPreferences", "username", "createDate", "privileges", "currentLoginDate",
+                "previousLoginDate", "emailAddress", "passwordSalt", "loginCount",
+                "passwordResetToken", "previousLoginRemoteAddr", "currentWorkspace", "displayName",
+                "passwordResetTokenExpirationDate", "status");
 
-        Assert.assertTrue(equal(accessor.property$("id"), new Property.MandatoryProperty(new Property("id", "id", "ID"))));
-        Assert.assertTrue(equal(accessor.property$("name"), new Property.MandatoryProperty(new Property("name", "name", "String"))));
-        Assert.assertTrue(equal(accessor.property$("appearsIn"), new Property.MandatoryProperty(new Property("appearsIn", "appearsIn", "Episode"))));
-        Assert.assertTrue(equal(accessor.property$("description"), new Property("description", "description", "String")));
-        Assert.assertTrue(equal(accessor.property$("primaryFunction"), new Property("primaryFunction", "primaryFunction", "String")));
-        Assert.assertTrue(equal(accessor.property$("homePlanet"), new Property("homePlanet", "homePlanet", "String")));
+        Assert.assertEquals(ontology.getProperties().stream().map(Property::getpType).collect(Collectors.toList()), expected);
     }
 
     @Test
-    @Ignore("Todo fix")
     public void testEntitiesTranslation() {
-        Assert.assertEquals(ontology.getEntityTypes().size(), 3);
+        Assert.assertEquals(ontology.getEntityTypes().size(), 5);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
 
-        Assert.assertEquals(accessor.entity$("Droid").geteType(), "Droid");
-        Assert.assertEquals(accessor.entity$("Droid").getProperties().size(), 5);
-        Assert.assertEquals(accessor.entity$("Droid").getMandatory().size(), 3);
+        Assert.assertEquals(accessor.entity$("Person").geteType(), "Person");
+        Assert.assertEquals(accessor.entity$("Thing").geteType(), "Thing");
+        Assert.assertEquals(accessor.entity$("Corporation").geteType(), "Corporation");
+        Assert.assertEquals(accessor.entity$("img").geteType(), "img");
 
-        Assert.assertEquals(accessor.entity$("Human").geteType(), "Human");
-        Assert.assertEquals(accessor.entity$("Human").getProperties().size(), 5);
-        Assert.assertEquals(accessor.entity$("Human").getMandatory().size(), 3);
-
-        Assert.assertEquals(accessor.entity$("Character").geteType(), "Character");
-        Assert.assertEquals(accessor.entity$("Character").getProperties().size(), 4);
-        Assert.assertEquals(accessor.entity$("Character").getMandatory().size(), 3);
+        Assert.assertEquals(accessor.entity$("user").geteType(), "user");
+        Assert.assertEquals(accessor.entity$("user").getProperties().size(), 18);
+        Assert.assertEquals(accessor.entity$("user").getMandatory().size(), 0);
 
     }
 
     @Test
-    @Ignore("Todo fix")
     public void testRelationsTranslation() {
-        Assert.assertEquals(ontology.getRelationshipTypes().size(), 2);
+        Assert.assertEquals(ontology.getRelationshipTypes().size(), 1);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
 
-        Assert.assertEquals(accessor.relation$("owns").getrType(), "owns");
-        Assert.assertEquals(accessor.relation$("owns").getePairs().size(), 1);
-
-        Assert.assertEquals(accessor.relation$("friends").getrType(), "friends");
-        Assert.assertEquals(accessor.relation$("friends").getePairs().size(), 2);
+        Assert.assertEquals(accessor.relation$("hasImage").getrType(), "hasImage");
+        Assert.assertEquals(accessor.relation$("hasImage").getePairs().size(), 2);
+        Assert.assertEquals(accessor.relation$("hasImage").getePairs().get(0).geteTypeA(), "Corporation");
+        Assert.assertEquals(accessor.relation$("hasImage").getePairs().get(1).geteTypeA(), "Person");
 
     }
 

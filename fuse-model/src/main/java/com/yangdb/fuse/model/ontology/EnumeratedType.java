@@ -46,6 +46,7 @@ package com.yangdb.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -127,6 +128,14 @@ public class EnumeratedType {
 
         public EnumeratedTypeBuilder withValues(List<Value> values) {
             this.values = values;
+            return this;
+        }
+
+        public EnumeratedTypeBuilder values(List<String> values) {
+            this.values = new ArrayList<>();
+            for (int i = 0; i < values.size(); i++) {
+                 this.values.add(new Value(i,values.get(i)));
+            }
             return this;
         }
 

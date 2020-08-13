@@ -30,6 +30,9 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.StringDocumentSource;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
+import org.semanticweb.owlapi.reasoner.NodeSet;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -86,48 +89,93 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
         return builder;
     }
 
+    /**
+     * populate yangDb ontology according to OWL ontology structure
+     * @param builder
+     * @param o
+     * @return
+     */
     private OWLOntology populate(Ontology.OntologyBuilder builder, OWLOntology o) {
+        OWLReasoner reasoner = new StructuralReasonerFactory().createReasoner(o);
         long startTime = System.currentTimeMillis();
         long endTime = System.currentTimeMillis();
         long importAnnotationPropertiesTime = endTime - startTime;
 
         startTime = System.currentTimeMillis();
-        importOntologyClasses(builder, o);
+        importOntologyClasses(builder, o, reasoner);
         endTime = System.currentTimeMillis();
         long importConceptsTime = endTime - startTime;
 
         startTime = System.currentTimeMillis();
-        importObjectProperties(builder, o);
+        importObjectProperties(builder, o, reasoner);
         endTime = System.currentTimeMillis();
         long importObjectPropertiesTime = endTime - startTime;
 
         startTime = System.currentTimeMillis();
-        importDataProperties(builder, o);
+        importDataProperties(builder, o, reasoner);
         endTime = System.currentTimeMillis();
         long importDataPropertiesTime = endTime - startTime;
         return o;
     }
 
-    private void importOntologyClasses(Ontology.OntologyBuilder builder, OWLOntology o) {
-        System.out.println("--------------------------getClassesInSignature--------------------------------------------");
+    /**
+     * import OWL classes (including enum class)
+     * @param builder
+     * @param o
+     * @param reasoner
+     */
+    private void importOntologyClasses(Ontology.OntologyBuilder builder, OWLOntology o, OWLReasoner reasoner) {
         //abstract classes
         for (OWLClass ontologyClass : o.getClassesInSignature()) {
             String type = ontologyClass.getIRI().getRemainder().or(ontologyClass.getIRI().toString());
-            //functional actions: if EntityType does not exist create on, add it to builder and continue
-            builder.getEntityType(type).orElseGet(
-                    () -> builder.addEntityType(
-                            EntityType.Builder.get()
-                                    .withEType(type)
-                                    .withName(type)
-                                    .build())
-                            .getEntityType(type)
-                            .get());
-            System.out.println("Type:" + type);
+            //information used to infer structural inheritance
+            NodeSet<OWLClass> subClasses = reasoner.getSubClasses(ontologyClass, true);
+            NodeSet<OWLClass> superClasses = reasoner.getSuperClasses(ontologyClass, true);
+            NodeSet<OWLNamedIndividual> instances = reasoner.getInstances(ontologyClass, true);
+
+            //enum filter
+            Optional<OWLAxiom> enumAxiom = o.getAxioms().stream()
+                    .filter(ax -> ax.isOfType(Sets.newHashSet(AxiomType.EQUIVALENT_CLASSES))) // get classes
+                    .filter(ax -> ax.getClassesInSignature().contains(ontologyClass)) //verify same class as current
+                    .filter(ax -> !ax.getNestedClassExpressions().isEmpty())
+                    .findFirst();
+
+            if(enumAxiom.isPresent()) {
+                Optional<OWLClassExpression> expression = ((OWLEquivalentClassesAxiom) enumAxiom.get()).getClassExpressions().stream()
+                        .filter(exp -> exp instanceof OWLObjectOneOf)
+                        .findFirst();
+                if(expression.isPresent()) {
+                    List<String> values =((OWLObjectOneOf)expression.get()).getIndividuals().stream()
+                            .map(el -> el.asOWLNamedIndividual().getIRI().getRemainder().or(el.asOWLNamedIndividual().toStringID()))
+                            .collect(Collectors.toList());
+                    //enum type class
+                    builder.addEnumeratedTypes(EnumeratedType.EnumeratedTypeBuilder.anEnumeratedType()
+                                .withEType(type)
+                                .values(values)
+                            .build());
+                }
+            } else {
+                //simple type class
+                //functional actions: if EntityType does not exist create on, add it to builder and continue
+                builder.getEntityType(type).orElseGet(
+                        () -> builder.addEntityType(
+                                EntityType.Builder.get()
+                                        .withEType(type)
+                                        .withName(type)
+                                        .build())
+                                .getEntityType(type)
+                                .get());
+            }
         }
     }
 
-    private void importObjectProperties(Ontology.OntologyBuilder builder, OWLOntology o) {
-        System.out.println("--------------------------getObjectPropertiesInSignature--------------------------------------------");
+    /**
+     * import OWL relationships (objects)
+     * @param builder
+     * @param o
+     * @param reasoner
+     */
+    private void importObjectProperties(Ontology.OntologyBuilder builder, OWLOntology o, OWLReasoner reasoner) {
         // Relationships
         for (OWLObjectProperty objectProperty : o.getObjectPropertiesInSignature()) {
             if (!o.isDeclared(objectProperty, Imports.EXCLUDED)) {
@@ -193,6 +241,18 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
         return Sets.cartesianProduct(sideA,sideB).stream().map(p->new EPair(p.get(0),p.get(1))).collect(Collectors.toList());
     }
 
+    /**
+     * import OWL properties (class fields)
+     * @param builder
+     * @param o
+     * @return
+     */
+    private void importDataProperties(Ontology.OntologyBuilder builder, OWLOntology o, OWLReasoner reasoner) {
+        //DatatypeProperty - nodes properties
+        o.getDataPropertiesInSignature()
+                .forEach(dataTypeProperty -> builder.addProperties(generateProperty(builder, o, dataTypeProperty)));
+    }
+
     private List<Property> generateProperty(Ontology.OntologyBuilder builder, OWLOntology o, OWLDataProperty objectProperty) {
         List<Property> properties = new ArrayList<>();
         List<OWLDataPropertyDomainAxiom> dataPropertyDomainAxioms = new ArrayList<>(o.getDataPropertyDomainAxioms(objectProperty));
@@ -219,20 +279,15 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
         return properties;
     }
 
+    /**
+     * import OWL annotations (directives)
+     * @param o
+     */
     private void importOntologyAnnotationProperties(OWLOntology o) {
-        System.out.println("--------------------------getAnnotationPropertiesInSignature--------------------------------------------");
         //
         for (OWLAnnotationProperty annotation : o.getAnnotationPropertiesInSignature()) {
             //todo -
-            System.out.println(annotation);
         }
-    }
-
-    private void importDataProperties(Ontology.OntologyBuilder builder, OWLOntology o) {
-        //DatatypeProperty - nodes properties
-        System.out.println("--------------------------getDataPropertiesInSignature--------------------------------------------");
-        o.getDataPropertiesInSignature()
-                .forEach(dataTypeProperty -> builder.addProperties(generateProperty(builder, o, dataTypeProperty)));
     }
 
 }

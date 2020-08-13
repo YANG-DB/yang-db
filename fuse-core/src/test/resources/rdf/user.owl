@@ -19,7 +19,6 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
     <owl:ObjectProperty rdf:ID="hasImage">
       <rdfs:domain>
         <owl:Class>
@@ -224,6 +223,36 @@
     </owl:DatatypeProperty>
     
 
+    <!-- http://yangdb.org/user#tennisGameScore -->
+<!--
+    <owl:DatatypeProperty rdf:ID="tennisGameScore" rdf:about="http://yangdb.org/user#tennisGameScore">
+      <rdfs:range>
+        <owl:DataRange>
+          <owl:oneOf>
+            <rdf:List>
+               <rdf:first rdf:datatype="&xsd;integer">0</rdf:first>
+               <rdf:rest>
+                 <rdf:List>
+                   <rdf:first rdf:datatype="&xsd;integer">15</rdf:first>
+                   <rdf:rest>
+                     <rdf:List>
+                       <rdf:first rdf:datatype="&xsd;integer">30</rdf:first>
+                       <rdf:rest>
+                         <rdf:List>
+                           <rdf:first rdf:datatype="&xsd;integer">40</rdf:first>
+                           <rdf:rest rdf:resource="&rdf;nil" />
+                         </rdf:List>
+                       </rdf:rest>
+                     </rdf:List>
+                  </rdf:rest>
+                </rdf:List>
+              </rdf:rest>
+            </rdf:List>
+          </owl:oneOf>
+        </owl:DataRange>
+      </rdfs:range>
+    </owl:DatatypeProperty>
+ -->
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -233,7 +262,16 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+        <owl:Class rdf:about="http://yangdb.org/user#countries">
+          <owl:oneOf rdf:parseType="Collection">
+            <owl:Thing rdf:about="#Eurasia"/>
+            <owl:Thing rdf:about="#Africa"/>
+            <owl:Thing rdf:about="#NorthAmerica"/>
+            <owl:Thing rdf:about="#SouthAmerica"/>
+            <owl:Thing rdf:about="#Australia"/>
+            <owl:Thing rdf:about="#Antarctica"/>
+          </owl:oneOf>
+        </owl:Class>
 
 
     <!-- http://yangdb.org/user#user -->
