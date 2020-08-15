@@ -23,7 +23,7 @@ From Graph to Elastic - A tail of a Yang-DB...
 * http://www.yangdb.org/ 
 
 * [wiki](https://github.com/YANG-DB/yang-db/wiki)
-* [Version Info] (https://github.com/YANG-DB/yang-db/wiki/Version-Features-Summary)
+* [Version Info](https://github.com/YANG-DB/yang-db/wiki/Version-Features-Summary)
 
 ##### Members:
 
