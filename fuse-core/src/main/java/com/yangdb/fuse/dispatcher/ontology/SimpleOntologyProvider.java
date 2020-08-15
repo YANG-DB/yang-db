@@ -40,6 +40,12 @@ public class SimpleOntologyProvider implements OntologyProvider {
 
     private Map<String,Ontology> ontologyMap;
 
+    public SimpleOntologyProvider(Ontology ontology) throws IOException {
+        ontologyMap = new HashMap<>();
+        ontology = OntologyFinalizer.finalize(ontology);
+        ontologyMap.put(ontology.getOnt(), ontology);
+    }
+
     public SimpleOntologyProvider() throws IOException {
         ontologyMap = new HashMap<>();
         Ontology ontology = asObject(readJsonFile(ONTOLOGY + "/" +DRAGONS+".json"), Ontology.class);

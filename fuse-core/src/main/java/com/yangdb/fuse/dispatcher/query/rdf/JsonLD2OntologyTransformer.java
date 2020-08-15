@@ -20,16 +20,32 @@ package com.yangdb.fuse.dispatcher.query.rdf;
  * #L%
  */
 
+import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
 import com.yangdb.fuse.model.ontology.Ontology;
 import org.apache.commons.lang.NotImplementedException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * transform Json-LD RDF ontology schema to YangDB ontology support
  */
 public class JsonLD2OntologyTransformer implements OntologyTransformerIfc<String, Ontology> {
+    private OWL2OntologyTransformer transformer;
+
+    @Inject
+    public JsonLD2OntologyTransformer(OWL2OntologyTransformer transformer) {
+        this.transformer = transformer;
+    }
+
     @Override
     public Ontology transform(String source) {
+        //todo - complete
+        OWLOntologyManager manager = transformer.getManager();
+//        OWLDocumentFormat format = ontology.getNonnullFormat();
+//        manager.saveOntology(ontology, format, IRI.create(file.toURI()));
+//        StreamDocumentTarget documentTarget = new StreamDocumentTarget(new ByteArrayOutputStream());
+
+
         throw new NotImplementedException("");
     }
 

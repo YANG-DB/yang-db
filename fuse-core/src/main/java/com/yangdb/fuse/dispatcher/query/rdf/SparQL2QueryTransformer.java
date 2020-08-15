@@ -27,12 +27,20 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.query.algebra.TupleExpr;
+import org.eclipse.rdf4j.query.parser.ParsedQuery;
+import org.eclipse.rdf4j.query.parser.QueryParserUtil;
+import org.eclipse.rdf4j.query.parser.sparql.SPARQLParser;
+import org.semanticweb.owlapi.model.IRI;
 
 import java.util.Optional;
 
 public class SparQL2QueryTransformer implements QueryTransformer<QueryInfo<String>, Query>  {
 
+    private final SPARQLParser parser = new SPARQLParser();
     private OntologyProvider ontologyProvider;
+
 
     @Inject
     public SparQL2QueryTransformer(OntologyProvider ontologyProvider) {
@@ -54,6 +62,9 @@ public class SparQL2QueryTransformer implements QueryTransformer<QueryInfo<Strin
 
     private Query transform(Ontology ontology, String query) {
         //todo
+//        ParsedQuery parsedQuery = QueryParserUtil.parseQuery(QueryLanguage.SPARQL, query, IRI.create(ontology.getOnt()).toString());
+        ParsedQuery parsedQuery = parser.parseQuery(query, IRI.create(ontology.getOnt()).toString());
+        TupleExpr expr = parsedQuery.getTupleExpr();
         return Query.Builder.instance().build();
     }
 

@@ -1,93 +1,53 @@
 package com.yangdb.fuse.dispatcher.query.rdf;
 
-import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.google.common.collect.Sets;
+import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyProvider;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2OntologyTransformer;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2QueryTransformer;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQLSchemaUtils;
 import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryInfo;
-import graphql.GraphQLError;
-import graphql.language.SDLDefinition;
-import graphql.schema.GraphQLSchema;
-import graphql.schema.idl.TypeDefinitionRegistry;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Files;
 
-import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_GRAPHQL;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_SPARQL;
 
 
+/**
+ * https://dzone.com/articles/sparql-and-cypher
+ * Addapting the example queries for test purpose
+ */
+@Ignore
 public class SPARQLOntologyToV1QLExecuterTest {
     public static Ontology ontology;
-    public static QueryTransformer<QueryInfo<String>, Query> transformer;
+    public static QueryTransformer<QueryInfo<String>, Query> queryTransformer;
 
     @BeforeClass
     @Ignore("Todo fix")
     public static void setUp() throws Exception {
-        InputStream schemaInput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/starWars.graphql");
-        InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql//");
-        GraphQL2OntologyTransformer graphQL2OntologyTransformer = new GraphQL2OntologyTransformer();
-        ontology = graphQL2OntologyTransformer.transform(schemaInput,whereInoput);
-        //creating the graphQL from the newly created ontology
-        GraphQLSchema qlSchema = graphQL2OntologyTransformer.transform(ontology);
-        //registry definitions
-        TypeDefinitionRegistry registry = new TypeDefinitionRegistry();
-        Optional<GraphQLError> error = registry.addAll(qlSchema.getAllTypesAsList().stream()
-                .filter(p -> p.getDefinition() != null)
-                .map(p -> (SDLDefinition) p.getDefinition()).collect(Collectors.toList()));
+        URL personas = Thread.currentThread().getContextClassLoader().getResource("rdf/personasonto.owl");
+        OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
+        //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
+        ontology = transformer.transform(Sets.newHashSet(
+                new String(Files.readAllBytes(new File(personas.toURI()).toPath()))));
 
-        if(error.isPresent())
-            throw new IllegalArgumentException(error.get().getMessage());
-
+        queryTransformer = new SparQL2QueryTransformer(new SimpleOntologyProvider(ontology));
         // transformer
-        transformer = new GraphQL2QueryTransformer(new GraphQLSchemaUtils() {
-            @Override
-            public GraphQLSchema getGraphQLSchema() {
-                return qlSchema;
-            }
-
-            @Override
-            public TypeDefinitionRegistry getTypeRegistry() {
-                return registry;
-            }
-        }, new OntologyProvider() {
-            @Override
-            public Optional<Ontology> get(String id) {
-                return Optional.of(ontology);
-            }
-
-            @Override
-            public Collection<Ontology> getAll() {
-                return null;
-            }
-
-            @Override
-            public Ontology add(Ontology ontology) {
-                return null;
-            }
-        });
         Assert.assertNotNull(ontology);
     }
 
     @Test
-    @Ignore("Todo fix")
+    @Ignore
     public void testQuerySingleVertexWithFewProperties() {
-        String q = " {\n" +
-                "    human {\n" +
-                "        name,\n" +
-                "        description\n" +
-                "    }\n" +
-                "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPHQL,"test"));
+        Query query = queryTransformer.transform(new QueryInfo<>(
+                "SELECT ?ee WHERE { ?ee a <Person>;<name> ?name. FILTER(?name = \"Emil\")}",
+                "q1", TYPE_SPARQL, ontology.getOnt()));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4}, \n" +
                 "                          └─?[3]:[name<IdentityProjection>], \n" +
@@ -96,112 +56,4 @@ public class SPARQLOntologyToV1QLExecuterTest {
     }
 
 
-    @Test
-    @Ignore("Todo fix")
-    public void testConstraintByIdQuerySingleVertexWithFewProperties() {
-        String q = "{\n" +
-                "    human (where: {\n" +
-                "        operator: AND,\n" +
-                "        constraints: [{\n" +
-                "            operand: \"name\",\n" +
-                "            operator: \"like\",\n" +
-                "            expression: \"jhone\"\n" +
-                "        },\n" +
-                "        {\n" +
-                "            operand: \"description\",\n" +
-                "            operator: \"notEmpty\"\n" +
-                "        }]\n" +
-                "    }) {\n" +
-                "\n" +
-                "        name,\n" +
-                "        description\n" +
-                "    }\n" +
-                "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPHQL,"test"));
-        String expected = "[└── Start, \n" +
-                "    ──Typ[Human:1]──Q[2]:{3|4|5}, \n" +
-                "                            └─?[3]:[name<like,jhone>, description<notEmpty,null>], \n" +
-                "                            └─?[4]:[name<IdentityProjection>], \n" +
-                "                            └─?[5]:[description<IdentityProjection>]]";
-        Assert.assertEquals(expected, QueryDescriptor.print(query));
-    }
-
-    @Test
-    @Ignore("Todo fix")
-    public void testQuerySingleVertexWithSinleRelation() {
-        String q = " {\n" +
-                "    human {\n" +
-                "       friends {\n" +
-                "            name\n" +
-                "        }\n" +
-                "    }\n" +
-                "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q2", TYPE_GRAPHQL,"test"));
-        String expected = "[└── Start, \n" +
-                "    ──Typ[Human:1]──Q[2]:{3}, \n" +
-                "                        └-> Rel(friends:3)──Typ[Character:4]──Q[5]:{6}, \n" +
-                "                                                                  └─?[6]:[name<IdentityProjection>]]";
-        Assert.assertEquals(expected, QueryDescriptor.print(query));
-    }
-
-    @Test
-    @Ignore("Todo fix")
-    public void testQuerySingleVertexWithTwoRelationAndProperties() {
-        String q = " {\n" +
-                "    human {\n" +
-                "        name,\n" +
-                "        friends {\n" +
-                "            name\n" +
-                "        },\n" +
-                "        owns {\n" +
-                "            name,\n" +
-                "            appearsIn\n" +
-                "            }\n" +
-                "    }\n" +
-                "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q3", TYPE_GRAPHQL,"test"));
-        String expected = "[└── Start, \n" +
-                "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
-                "                            └─?[3]:[name<IdentityProjection>], \n" +
-                "                            └-> Rel(friends:4)──Typ[Character:5]──Q[6]:{7}, \n" +
-                "                                                                      └─?[7]:[name<IdentityProjection>]──Typ[Droid:9]──Q[10]:{11|12}, \n" +
-                "                            └-> Rel(owns:8), \n" +
-                "                                       └─?[11]:[name<IdentityProjection>], \n" +
-                "                                       └─?[12]:[appearsIn<IdentityProjection>]]";
-        Assert.assertEquals(expected, QueryDescriptor.print(query));
-    }
-
-    @Test
-    @Ignore("Todo fix")
-    public void testQuerySingleVertexWithTwoHopesRelationAndProperties() {
-        String q = "{\n" +
-                "    human {\n" +
-                "        name,\n" +
-                "        friends {\n" +
-                "            name\n" +
-                "        }\n" +
-                "        owns {\n" +
-                "            name,\n" +
-                "            appearsIn,\n" +
-                "            friends {\n" +
-                "                name,\n" +
-                "                description\n" +
-                "            }\n" +
-                "        }\n" +
-                "    }\n" +
-                "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q4", TYPE_GRAPHQL,"test"));
-        String expected = "[└── Start, \n" +
-                "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
-                "                            └─?[3]:[name<IdentityProjection>], \n" +
-                "                            └-> Rel(friends:4)──Typ[Character:5]──Q[6]:{7}, \n" +
-                "                                                                      └─?[7]:[name<IdentityProjection>]──Typ[Droid:9]──Q[10]:{11|12|13}, \n" +
-                "                            └-> Rel(owns:8), \n" +
-                "                                       └─?[11]:[name<IdentityProjection>], \n" +
-                "                                       └─?[12]:[appearsIn<IdentityProjection>], \n" +
-                "                                       └-> Rel(friends:13)──Typ[Character:14]──Q[15]:{16|17}, \n" +
-                "                                                                                        └─?[16]:[name<IdentityProjection>], \n" +
-                "                                                                                        └─?[17]:[description<IdentityProjection>]]";
-        Assert.assertEquals(expected, QueryDescriptor.print(query));
-    }
 }

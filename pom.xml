@@ -146,6 +146,9 @@
         <!-- owl -->
         <owlapi.version>4.0.2</owlapi.version>
 
+        <!-- rdf4j -->
+        <rdf4j.version>3.3.1</rdf4j.version>
+
         <!-- cypher -->
         <openCypher.frontend.version>9.0.20181012</openCypher.frontend.version>
         <openCypher.spark.version>0.2.3</openCypher.spark.version>
@@ -372,6 +375,31 @@
                 <groupId>org.locationtech.jts</groupId>
                 <artifactId>jts-core</artifactId>
                 <version>1.16.0</version>
+            </dependency>
+
+            <!-- rdf4j -->
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-model</artifactId>
+                <version>${rdf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-query</artifactId>
+                <version>${rdf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-queryparser-sparql</artifactId>
+                <version>${rdf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j</artifactId>
+                <version>${rdf4j.version}</version>
             </dependency>
 
             <!-- owl -->

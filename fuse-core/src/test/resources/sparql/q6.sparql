@@ -1,0 +1,4 @@
+SELECT ?name
+    WHERE {?tom a <Person>;<ACTED_IN> ?m.
+            ?co_actor <ACTED_IN> ?m; <name> ?name.
+        FILTER(?tom != ?co_actor)}

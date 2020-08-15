@@ -1,0 +1,4 @@
+SELECT ?title
+    WHERE {?ninties a <Movie>; <released>
+        ?released; <title> ?title.
+        FILTER(?released > 1990 & ?released > 2000}
