@@ -263,6 +263,7 @@ In the last section we took a simple graph query and drilled down into the detai
 
 Start Using
 ---------------
+ - See [Version Info](https://github.com/YANG-DB/yang-db/wiki/Version-Features-Summary)
  - See http://www.yangdb.org 
  - See http://www.yangdb.org/general-info.html
  - See http://www.yangdb.org/docker.html
