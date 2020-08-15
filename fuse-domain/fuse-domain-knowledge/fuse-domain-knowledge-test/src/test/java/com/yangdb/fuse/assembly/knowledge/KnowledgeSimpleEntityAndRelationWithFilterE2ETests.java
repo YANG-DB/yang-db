@@ -54,7 +54,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();//Todo remove while running in Suite Context
+//        Setup.setup();//Todo remove while running in Suite Context
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -322,7 +322,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
     }
 
     @Test
-    public void testEqByEntityCategoryAndRelationContainsCategory() throws IOException, InterruptedException {
+    public void testEqByEntityCategoryAndRelationContainsCategoryWithProfile() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
@@ -343,7 +343,8 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
         }
 
         // Press on Cursor
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(1000)));
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(),
+                new CreateGraphCursorRequest(new CreatePageRequest(1000)).withProfile(true));
         // Press on page to get the relevant page
         PageResourceInfo pageResourceInfo = getPageResourceInfo(fuseClient, cursorResourceInfo, 1000);
         // return the relevant data
@@ -377,7 +378,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
     }
 
     @Test
-    public void testNonFoundByEntityCategoryAndRelationContainsCategory() throws IOException, InterruptedException {
+    public void testNonFoundByEntityCategoryAndRelationContainsCategoryWithProfile() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
@@ -398,7 +399,8 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
         }
 
         // Press on Cursor
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(1000)));
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(),
+                new CreateGraphCursorRequest(new CreatePageRequest(1000)).withProfile(true));
         // Press on page to get the relevant page
         PageResourceInfo pageResourceInfo = getPageResourceInfo(fuseClient, cursorResourceInfo, 1000);
         // return the relevant data

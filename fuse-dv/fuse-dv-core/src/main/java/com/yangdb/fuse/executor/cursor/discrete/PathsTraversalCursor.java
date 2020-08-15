@@ -28,8 +28,6 @@ import com.yangdb.fuse.executor.utils.ConversionUtil;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
-import com.yangdb.fuse.model.logical.CompositeLogicalNode;
-import com.yangdb.fuse.model.logical.LogicalEdge;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
@@ -42,12 +40,10 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.unipop.process.Profiler;
 
 import java.util.*;
 
 import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
-import static org.unipop.process.Profiler.PROFILER;
 
 /**
  * Created by roman.margolis on 02/10/2017.

@@ -76,9 +76,6 @@ public class LoggingTraversal<S, E> implements Traversal<S, E> {
         } finally {
             if (!thrownExcpetion) {
                 new LogMessage.Impl(this.logger, trace, "finish next", sequence, LogType.of(success), next, ElapsedFrom.now()).log();
-                //log profiling message
-                new LogMessage.Impl(this.logger, trace, "traversal profile", sequence, LogType.of(metric), profile,
-                        new LogMessage.MDCWriter.KeyValue(PROFILER, traversal.asAdmin().getSideEffects().getOrCreate(PROFILER, Profiler.Impl::new).toString())).log();
             }
         }
     }

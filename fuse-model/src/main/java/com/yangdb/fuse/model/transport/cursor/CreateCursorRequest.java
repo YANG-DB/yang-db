@@ -52,6 +52,9 @@ import com.yangdb.fuse.model.transport.CreatePageRequest;
 
 public abstract class CreateCursorRequest {
 
+    //default max execution time
+    public static final int DEFAULT_EXECUTION_TIME = 10 * 60 * 1000;
+
     public enum Include {
         all,
         entities,
@@ -138,6 +141,19 @@ public abstract class CreateCursorRequest {
         setOntology(ontology);
         return this;
     }
+
+    public void setMaxExecutionTime(long maxExecutionTime) {
+        this.maxExecutionTime = maxExecutionTime;
+    }
+
+    public boolean isProfile() {
+        return profile;
+    }
+
+    public CreateCursorRequest withProfile(boolean profile) {
+        this.profile = profile;
+        return this;
+    }
     //endregions
 
     @Override
@@ -150,7 +166,8 @@ public abstract class CreateCursorRequest {
     }
 
     //region Fields
-    private long maxExecutionTime = 10* 60 * 1000;
+    private long maxExecutionTime = DEFAULT_EXECUTION_TIME;
+    private boolean profile = false;
     private String cursorType;
     private String ontology;
     private CreatePageRequest createPageRequest;

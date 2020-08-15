@@ -9,9 +9,9 @@ package com.yangdb.fuse.core.driver;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,10 +43,10 @@ import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateInnerQueryCursorRequest;
-import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.unipop.process.Profiler;
+import org.unipop.process.Profiler.Noop;
 
 import java.util.List;
 import java.util.Optional;
@@ -89,8 +89,13 @@ public class StandardCursorDriver extends CursorDriverBase {
 
         GraphTraversal<?, ?> traversal = createTraversal(executionPlan, ontology);
 
-        //todo add configuration activation
-        traversal.asAdmin().getSideEffects().register(PROFILER, Profiler.Impl::new, null);
+        //default no operation profiler - no memory footprint or activity
+        traversal.asAdmin().getSideEffects().register(PROFILER, () -> Noop.instance, null);
+
+//      activate profiling configuration - override noop default profiler with a real one - large memory footprint - caution
+        if (cursorRequest.isProfile()) {
+            traversal.asAdmin().getSideEffects().register(PROFILER, Profiler.Impl::new, null);
+        }
 
         //todo in case of composite cursor -> add depended cursors for query
         //if query has inner queries -> create new CreateInnerQueryCursorRequest(cursorRequest)
@@ -98,7 +103,7 @@ public class StandardCursorDriver extends CursorDriverBase {
         Cursor cursor = this.cursorFactory.createCursor(context);
         Profiler profiler = traversal.asAdmin().getSideEffects().get(PROFILER);
 
-        return new CursorResource(cursorId, cursor,new QueryProfileInfo.QueryProfileInfoImpl(profiler.get()), cursorRequest);
+        return new CursorResource(cursorId, cursor, new QueryProfileInfo.QueryProfileInfoImpl(profiler.get()), cursorRequest);
     }
 
     protected TraversalCursorContext createContext(QueryResource queryResource, CreateCursorRequest cursorRequest, Ontology ontology, GraphTraversal<?, ?> traversal) {
