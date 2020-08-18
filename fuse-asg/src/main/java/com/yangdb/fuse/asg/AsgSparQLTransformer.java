@@ -2,16 +2,16 @@ package com.yangdb.fuse.asg;
 
 /*-
  * #%L
- * fuse-asg
+ * fuse-model
  * %%
- * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
+ * Copyright (C) 2016 - 2020 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,36 +20,31 @@ package com.yangdb.fuse.asg;
  * #L%
  */
 
-
 import com.google.inject.Inject;
-import com.yangdb.fuse.dispatcher.asg.QueryToAsgTransformer;
+import com.yangdb.fuse.asg.translator.sparql.SparqlTranslator;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
-import com.yangdb.fuse.dispatcher.query.rdf.SparQL2QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryInfo;
 
-public class AsgSparQLTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery>  {
-    private SparQL2QueryTransformer ontologyTransformer;
-    private final QueryToAsgTransformer queryTransformer;
+public class AsgSparQLTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery> {
 
-    //region Constructors
+    private SparqlTranslator translator;
+
+
     @Inject
-    public AsgSparQLTransformer(SparQL2QueryTransformer ontologyTransformer,
-                                QueryToAsgTransformer queryTransformer) {
-        this.ontologyTransformer = ontologyTransformer;
-        this.queryTransformer = queryTransformer;
+    public AsgSparQLTransformer(SparqlTranslator translator) {
+        this.translator = translator;
     }
-    //endregion
 
-    //region QueryTransformer Implementation
-
-    @Override
+    /**
+     * transform Spqrql to V1 query
+     *
+     * @param query
+     * @return
+     */
     public AsgQuery transform(QueryInfo<String> query) {
-        Query transform = ontologyTransformer.transform(query);
-        return queryTransformer.transform(transform);
+        return translator.translate(query);
     }
 
-    //endregion
 
 }

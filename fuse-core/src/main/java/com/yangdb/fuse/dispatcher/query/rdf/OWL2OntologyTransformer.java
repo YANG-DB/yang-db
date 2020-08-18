@@ -38,6 +38,8 @@ import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.model.ontology.Ontology.OntologyBuilder.YANGDB_ORG;
+
 /**
  * transform OWL RDF ontology schema to YangDB ontology support
  */
@@ -47,13 +49,21 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
     private IRI root;
 
     public OWL2OntologyTransformer() {
-        root = IRI.create("http://yangdb.org");
+        root = IRI.create(YANGDB_ORG);
         config = new OWLOntologyLoaderConfiguration();
-        OWLOntologyManager m = createOwlOntologyManager(config);
+        manager = createOwlOntologyManager(config);
     }
 
     public OWLOntologyManager getManager() {
         return manager;
+    }
+
+    public IRI getRoot() {
+        return root;
+    }
+
+    public void setRoot(IRI root) {
+        this.root = root;
     }
 
     @Override

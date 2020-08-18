@@ -56,7 +56,7 @@ public class SimpleOntologyProvider implements OntologyProvider {
 
     @Override
     public Optional<Ontology> get(String id) {
-        return Optional.of(ontologyMap.get(id));
+        return Optional.ofNullable(ontologyMap.get(id));
     }
 
     @Override

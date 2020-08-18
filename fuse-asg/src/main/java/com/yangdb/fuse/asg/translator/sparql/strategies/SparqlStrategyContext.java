@@ -20,12 +20,9 @@ package com.yangdb.fuse.asg.translator.sparql.strategies;
  * #L%
  */
 
-import com.yangdb.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.query.EBase;
 import org.eclipse.rdf4j.query.parser.ParsedQuery;
-import org.opencypher.v9_0.ast.Statement;
-import org.opencypher.v9_0.ast.Where;
 
 import java.util.Optional;
 
@@ -45,10 +42,6 @@ public class SparqlStrategyContext {
         return statement;
     }
 
-    public SparqlStrategyContext where(Where where) {
-//        this.where = Optional.of(CypherUtils.reWrite(where.expression()));
-        return this;
-    }
 
     public SparqlStrategyContext scope(AsgEBase<? extends EBase> scope) {
         this.scope = scope;

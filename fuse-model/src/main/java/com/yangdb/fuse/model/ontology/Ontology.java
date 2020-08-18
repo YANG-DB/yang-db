@@ -179,6 +179,8 @@ public class Ontology {
     //region Builder
 
     public static final class OntologyBuilder {
+        public static final String YANGDB_ORG = "http://yangdb.org";
+
         private String ont = "Generic";
         private List<EntityType> entityTypes;
         private List<RelationshipType> relationshipTypes;

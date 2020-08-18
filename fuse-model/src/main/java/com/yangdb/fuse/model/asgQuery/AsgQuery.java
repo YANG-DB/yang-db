@@ -123,6 +123,13 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
         this.elements = elements;
     }
 
+    public List<String> getProjectedFields() {
+        return projectedFields;
+    }
+
+    public void setProjectedFields(List<String> projectedFields) {
+        this.projectedFields = projectedFields;
+    }
 //endregion
 
     @Override
@@ -168,6 +175,7 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
     private String name;
     private AsgEBase<Start> start;
     private Query origin;
+    private List<String> projectedFields = new ArrayList<>();
 
     private Collection<NamedParameter> parameters = new ArrayList<>();
     private Collection<AsgEBase<? extends EBase>> elements = new ArrayList<>();
@@ -216,10 +224,14 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return this;
         }
 
+        public AsgQueryBuilder withProjectedFields(List<String> projectedFields) {
+            this.asgQuery.projectedFields = projectedFields;
+            return this;
+        }
+
         public AsgQuery build() {
             return asgQuery;
         }
-
     }
 
     public static class Builder {

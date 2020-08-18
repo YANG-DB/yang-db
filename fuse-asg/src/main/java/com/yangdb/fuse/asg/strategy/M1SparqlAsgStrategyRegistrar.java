@@ -21,10 +21,11 @@ package com.yangdb.fuse.asg.strategy;
  */
 
 
-
 import com.google.inject.Inject;
-import com.yangdb.fuse.asg.translator.cypher.strategies.*;
-import com.yangdb.fuse.asg.translator.cypher.strategies.expressions.*;
+import com.yangdb.fuse.asg.translator.cypher.strategies.expressions.OrExpression;
+import com.yangdb.fuse.asg.translator.sparql.strategies.*;
+import com.yangdb.fuse.asg.translator.sparql.strategies.expressions.CompareExpressionStrategy;
+import com.yangdb.fuse.asg.translator.sparql.strategies.expressions.ExpressionStrategies;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerProvider;
 
@@ -33,33 +34,25 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class M1CypherAsgStrategyRegistrar implements CypherAsgStrategyRegistrar {
+/**
+ * Todo - Work in progress ...
+ */
+public class M1SparqlAsgStrategyRegistrar implements SparqlAsgStrategyRegistrar {
     private final OntologyProvider ontologyProvider;
-    private final OntologyTransformerProvider transformerProvider;
 
     //region Constructors
     @Inject
-    public M1CypherAsgStrategyRegistrar(OntologyProvider ontologyProvider,OntologyTransformerProvider transformerProvider) {
+    public M1SparqlAsgStrategyRegistrar(OntologyProvider ontologyProvider) {
         this.ontologyProvider = ontologyProvider;
-        this.transformerProvider = transformerProvider;
     }
 
     //endregion
 
     @Override
-    public Iterable<CypherTranslatorStrategy> register() {
-        //translators
-        translatorStrategies = Arrays.asList(
-                new NodePatternCypherTranslatorStrategy(new EqualityExpression()),
-                new StepPatternCypherTranslatorStrategy(
-                        new NodePatternCypherTranslatorStrategy(new EqualityExpression()),
-                        new EqualityExpression()
-                )
-        );
-
+    public Iterable<SparqlTranslatorStrategy> register() {
         //expressions
-        whereExpressionStrategies = new ArrayList<>();
-        whereExpressionStrategies.add(new OrExpression(whereExpressionStrategies));
+        whereExpressionStrategies.add(new CompareExpressionStrategy());
+ /*       whereExpressionStrategies.add(new OrExpression(whereExpressionStrategies));
         whereExpressionStrategies.add(new AndExpression(whereExpressionStrategies));
         whereExpressionStrategies.add(new HasLabelExpression());
         whereExpressionStrategies.add(new HasRelationLabelExpression());
@@ -71,16 +64,24 @@ public class M1CypherAsgStrategyRegistrar implements CypherAsgStrategyRegistrar 
         whereExpressionStrategies.add(new InExpression());
         whereExpressionStrategies.add(new ContainsExpression());
         whereExpressionStrategies.add(new LikeExpression());
+*/
+//        whereClause = new WhereClauseNodeCypherTranslator(whereExpressionStrategies);
+//        match = new MatchCypherTranslatorStrategy(translatorStrategies, whereClause);
 
-        whereClause = new WhereClauseNodeCypherTranslator(whereExpressionStrategies);
-        match = new MatchCypherTranslatorStrategy(translatorStrategies, whereClause);
+        //translators
+        translatorStrategies.addAll(Arrays.asList(
+                new ProjectionPatternTranslatorStrategy(
+                        Arrays.asList(new FilterPatternTranslatorStrategy(translatorStrategies,whereExpressionStrategies))),
+                new NodePatternTranslatorStrategy(),
+                new StepPatternTranslatorStrategy()
+        ));
 
-        return Collections.singleton(match);
+        return Collections.singleton(new RootTranslatorStrategy(translatorStrategies,whereExpressionStrategies));
     }
 
-    private List<CypherElementTranslatorStrategy> translatorStrategies;
-    private List<ExpressionStrategies> whereExpressionStrategies;
+    private List<SparqlElementTranslatorStrategy> translatorStrategies = new ArrayList<>();
+    private List<ExpressionStrategies> whereExpressionStrategies = new ArrayList<>();
 
-    public MatchCypherTranslatorStrategy match;
-    private WhereClauseNodeCypherTranslator whereClause;
+//    public MatchCypherTranslatorStrategy match;
+//    private WhereClauseNodeCypherTranslator whereClause;
 }

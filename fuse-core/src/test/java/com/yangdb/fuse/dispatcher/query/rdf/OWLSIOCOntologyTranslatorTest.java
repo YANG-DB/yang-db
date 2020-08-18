@@ -13,30 +13,23 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.yangdb.fuse.model.ontology.Property.equal;
-
-public class OWLOntologyTranslatorTest {
+@Ignore
+public class OWLSIOCOntologyTranslatorTest {
     public static Ontology ontology;
 
     @BeforeClass
     public static void setUp() throws Exception {
-        URL workspace = Thread.currentThread().getContextClassLoader().getResource("rdf/workspace.owl");
-        URL user = Thread.currentThread().getContextClassLoader().getResource("rdf/user.owl");
+        URL pizza = Thread.currentThread().getContextClassLoader().getResource("rdf/sioc.owl");
         OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
         //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
         ontology = transformer.transform(Sets.newHashSet(
-                new String(Files.readAllBytes(new File(user.toURI()).toPath())),
-                new String(Files.readAllBytes(new File(workspace.toURI()).toPath()))));
+                new String(Files.readAllBytes(new File(pizza.toURI()).toPath()))));
         Assert.assertNotNull(ontology);
     }
 

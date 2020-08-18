@@ -73,6 +73,7 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
                 .withOnt(query.getOnt())
                 .withOrigin(query)
                 .withStart(asgEBaseStart)
+                .withProjectedFields(query.getProjectedFields())
                 .withElements(queryAsgElements.values());
 
         if(query instanceof ParameterizedQuery) {

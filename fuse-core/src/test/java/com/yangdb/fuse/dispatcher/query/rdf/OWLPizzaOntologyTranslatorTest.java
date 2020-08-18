@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 @Ignore
 public class OWLPizzaOntologyTranslatorTest {
     public static Ontology ontology;
-    public static GraphQLSchema graphQLSchema;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -91,22 +90,5 @@ public class OWLPizzaOntologyTranslatorTest {
 
     }
 
-    @Test
-    @Ignore("Todo fix")
-    public void testOntology2GraphQLTransformation() {
-        GraphQLSchema targetSchema = new GraphQL2OntologyTransformer().transform(ontology);
-        Ontology ontologyTarget = new GraphQL2OntologyTransformer().transform(targetSchema);
-
-        Assert.assertEquals(ontology.getEntityTypes(),ontologyTarget.getEntityTypes());
-        Assert.assertEquals(ontology.getRelationshipTypes(),ontologyTarget.getRelationshipTypes());
-        Assert.assertEquals(ontology.getProperties(),ontologyTarget.getProperties());
-        Assert.assertEquals(ontology.getEnumeratedTypes(),ontologyTarget.getEnumeratedTypes());
-
-        Assert.assertEquals(targetSchema.getQueryType().getFieldDefinitions().size()
-                ,graphQLSchema.getQueryType().getFieldDefinitions().size());
-        Assert.assertEquals(targetSchema.getAllTypesAsList().size()
-                ,graphQLSchema.getAllTypesAsList().size());
-
-    }
 
 }

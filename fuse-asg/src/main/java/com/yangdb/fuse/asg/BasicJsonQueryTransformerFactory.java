@@ -32,10 +32,14 @@ public class BasicJsonQueryTransformerFactory implements JsonQueryTransformerFac
 
     private AsgCypherTransformer cypherTransformer;
     private AsgGraphQLTransformer graphQueryTransformer;
+    private AsgSparQLTransformer sparQLTransformer;
 
     @Inject
-    public BasicJsonQueryTransformerFactory(AsgCypherTransformer cypherTransformer, AsgGraphQLTransformer graphQueryTransformer) {
+    public BasicJsonQueryTransformerFactory(AsgCypherTransformer cypherTransformer,
+                                            AsgSparQLTransformer sparQLTransformer,
+                                            AsgGraphQLTransformer graphQueryTransformer) {
         this.cypherTransformer = cypherTransformer;
+        this.sparQLTransformer = sparQLTransformer;
         this.graphQueryTransformer = graphQueryTransformer;
     }
 
@@ -43,6 +47,8 @@ public class BasicJsonQueryTransformerFactory implements JsonQueryTransformerFac
     @Override
     public QueryTransformer<QueryInfo<String>, AsgQuery> transform(String type) {
         switch (type) {
+            case CreateQueryRequestMetadata.TYPE_SPARQL:
+                return sparQLTransformer;
             case CreateQueryRequestMetadata.TYPE_CYPHERQL:
                 return cypherTransformer;
             case CreateQueryRequestMetadata.TYPE_GRAPHQL:
