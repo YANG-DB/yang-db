@@ -72,6 +72,7 @@ public class M1SparqlAsgStrategyRegistrar implements SparqlAsgStrategyRegistrar 
         translatorStrategies.addAll(Arrays.asList(
                 new ProjectionPatternTranslatorStrategy(
                         Arrays.asList(new FilterPatternTranslatorStrategy(translatorStrategies,whereExpressionStrategies))),
+                new JoinPatternTranslatorStrategy(translatorStrategies),
                 new NodePatternTranslatorStrategy(),
                 new StepPatternTranslatorStrategy()
         ));
