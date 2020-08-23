@@ -9,9 +9,9 @@ package com.yangdb.fuse.asg.strategy;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,13 +38,10 @@ import java.util.List;
  * Todo - Work in progress ...
  */
 public class M1SparqlAsgStrategyRegistrar implements SparqlAsgStrategyRegistrar {
-    private final OntologyProvider ontologyProvider;
 
     //region Constructors
     @Inject
-    public M1SparqlAsgStrategyRegistrar(OntologyProvider ontologyProvider) {
-        this.ontologyProvider = ontologyProvider;
-    }
+    public M1SparqlAsgStrategyRegistrar() {}
 
     //endregion
 
@@ -71,13 +68,18 @@ public class M1SparqlAsgStrategyRegistrar implements SparqlAsgStrategyRegistrar 
         //translators
         translatorStrategies.addAll(Arrays.asList(
                 new ProjectionPatternTranslatorStrategy(
-                        Arrays.asList(new FilterPatternTranslatorStrategy(translatorStrategies,whereExpressionStrategies))),
+                        Arrays.asList(
+                                new FilterPatternTranslatorStrategy(translatorStrategies, whereExpressionStrategies),
+                                new JoinPatternTranslatorStrategy(translatorStrategies),
+                                new NodePatternTranslatorStrategy(),
+                                new StepPatternTranslatorStrategy())
+                ),
                 new JoinPatternTranslatorStrategy(translatorStrategies),
                 new NodePatternTranslatorStrategy(),
                 new StepPatternTranslatorStrategy()
         ));
 
-        return Collections.singleton(new RootTranslatorStrategy(translatorStrategies,whereExpressionStrategies));
+        return Collections.singleton(new RootTranslatorStrategy(translatorStrategies, whereExpressionStrategies));
     }
 
     private List<SparqlElementTranslatorStrategy> translatorStrategies = new ArrayList<>();
@@ -86,3 +88,4 @@ public class M1SparqlAsgStrategyRegistrar implements SparqlAsgStrategyRegistrar 
 //    public MatchCypherTranslatorStrategy match;
 //    private WhereClauseNodeCypherTranslator whereClause;
 }
+

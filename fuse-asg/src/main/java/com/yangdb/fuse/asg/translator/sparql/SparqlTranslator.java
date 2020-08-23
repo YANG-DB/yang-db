@@ -25,8 +25,11 @@ import com.yangdb.fuse.asg.strategy.SparqlAsgStrategyRegistrar;
 import com.yangdb.fuse.asg.translator.AsgTranslator;
 import com.yangdb.fuse.asg.translator.sparql.strategies.SparqlStrategyContext;
 import com.yangdb.fuse.asg.translator.sparql.strategies.SparqlTranslatorStrategy;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.QueryInfo;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import org.eclipse.rdf4j.query.parser.ParsedQuery;
 import org.eclipse.rdf4j.query.parser.sparql.SPARQLParser;
 import org.semanticweb.owlapi.model.IRI;
@@ -34,7 +37,8 @@ import org.semanticweb.owlapi.model.IRI;
 public class SparqlTranslator implements AsgTranslator<QueryInfo<String>, AsgQuery> {
 
     @Inject
-    public SparqlTranslator(SparqlAsgStrategyRegistrar strategies) {
+    public SparqlTranslator(OntologyProvider provider,SparqlAsgStrategyRegistrar strategies) {
+        this.provider = provider;
         this.strategies = strategies.register();
     }
     //endregion
@@ -42,18 +46,21 @@ public class SparqlTranslator implements AsgTranslator<QueryInfo<String>, AsgQue
 
     @Override
     public AsgQuery translate(QueryInfo<String> source) {
+        Ontology ontology = provider.get(source.getOntology())
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for Id ", "No Ontology present for id[" + source.getOntology()+"]")));
 
         final AsgQuery query = AsgQuery.Builder.start("sparql_", source.getOntology()).build();
 
         //translate cypher asci into cypher AST
         ParsedQuery statement = new SPARQLParser().parseQuery(source.getQuery(), IRI.create(query.getOnt()).toString());
-        final SparqlStrategyContext context = new SparqlStrategyContext(statement, query.getStart());
+        final SparqlStrategyContext context = new SparqlStrategyContext(ontology,statement,query, query.getStart());
 
         //apply strategies
         strategies.iterator().forEachRemaining(strategy -> strategy.apply(query, context));
         return query;
     }
 
+    private OntologyProvider provider;
     private Iterable<SparqlTranslatorStrategy> strategies;
 
 }

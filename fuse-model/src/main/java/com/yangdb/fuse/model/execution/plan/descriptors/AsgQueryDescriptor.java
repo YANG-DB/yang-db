@@ -55,6 +55,7 @@ import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.model.query.quant.QuantBase;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.management.relation.Relation;
 import java.util.*;
@@ -193,6 +194,8 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
 
     public static String print(AsgQuery query) {
         List<String> builder = new LinkedList<>();
+
+        //query
         builder.add("└── " + "Start");
         Iterator<AsgEBase<EBase>> iterator = AsgQueryUtil.elements(query).iterator();
         if (iterator.hasNext()) {
@@ -200,7 +203,13 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
             if (iterator.hasNext())
                 print(builder, Optional.of(iterator.next()), false, true, 1, 0);
         }
-        return builder.toString();
+        String queryString = builder.toString();
+
+        //projection fields
+        if(!query.getProjectedFields().isEmpty())
+            queryString ="Projected fields:"+ StringUtils.join(query.getProjectedFields(), "|") +"\n" + queryString;
+
+        return queryString;
     }
 
     public static String print(AsgEBase<? extends EBase> element) {

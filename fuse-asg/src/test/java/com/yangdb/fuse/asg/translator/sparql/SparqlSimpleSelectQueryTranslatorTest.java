@@ -30,7 +30,6 @@ import static org.junit.Assert.assertEquals;
  * https://dzone.com/articles/sparql-and-cypher
  * https://www.w3.org/2009/Talks/0615-qbe/
  */
-@Ignore
 public class SparqlSimpleSelectQueryTranslatorTest {
     private AsgSparQLTransformer sparQLTransformer;
     private SparqlTranslatorStrategy match;
@@ -45,7 +44,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 new String(Files.readAllBytes(new File(personas.toURI()).toPath()))));
 
         ontology.setOnt(IRI.create(ontology.getOnt()+"/foaf").toString());
-        sparQLTransformer = new AsgSparQLTransformer(new SparqlTranslator(new M1SparqlAsgStrategyRegistrar(new SimpleOntologyProvider(ontology))));
+        sparQLTransformer = new AsgSparQLTransformer(new SparqlTranslator(new SimpleOntologyProvider(ontology),new M1SparqlAsgStrategyRegistrar()));
         // transformer
         Assert.assertNotNull(ontology);
     }
@@ -54,21 +53,50 @@ public class SparqlSimpleSelectQueryTranslatorTest {
     /**
      * Projection
      *    ProjectionElemList
-     *       ProjectionElem "name"
-     *    StatementPattern
-     *       Var (name=person)
-     *       Var (name=_const_23b7c3b6_uri, value=http://xmlns.com/foaf/0.1/name, anonymous)
-     *       Var (name=name)
+     *       ProjectionElem "x"
+     *       ProjectionElem "y"
+     *    ArbitraryLengthPath
+     *       Var (name=x)
+     *       Join
+     *          StatementPattern
+     *             Var (name=x)
+     *             Var (name=_const_65a0fb1e_uri, value=http://xmlns.com/foaf/0.1/acted_in, anonymous)
+     *             Var (name=_anon_8a454038_62b9_4e1e_a53b_5b2b8ebf090e, anonymous)
+     *          StatementPattern
+     *             Var (name=_anon_8a454038_62b9_4e1e_a53b_5b2b8ebf090e, anonymous)
+     *             Var (name=_const_65a0fb1e_uri, value=http://xmlns.com/foaf/0.1/acted_in, anonymous)
+     *             Var (name=y)
+     *       Var (name=y)
      */
-    public void testSimpleSelectVarsAndPatternTriplet() {
-        String s = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
-                "SELECT ?name\n" +
-                "WHERE {\n" +
-                "    ?person foaf:name ?name .\n" +
-                "}";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
 
-        String expected = "[└── Start, \n" +
+    /**
+     * Projection
+     *    ProjectionElemList
+     *       ProjectionElem "x"
+     *       ProjectionElem "y"
+     *    ArbitraryLengthPath
+     *       Var (name=x)
+     *       Join
+     *          StatementPattern
+     *             Var (name=x)
+     *             Var (name=_const_65a0fb1e_uri, value=http://xmlns.com/foaf/0.1/acted_in, anonymous)
+     *             Var (name=_anon_46f01c96_c07f_4c42_a154_1e9873dac6db, anonymous)
+     *          StatementPattern
+     *             Var (name=y)
+     *             Var (name=_const_65a0fb1e_uri, value=http://xmlns.com/foaf/0.1/acted_in, anonymous)
+     *             Var (name=_anon_46f01c96_c07f_4c42_a154_1e9873dac6db, anonymous)
+     *       Var (name=y)
+     */
+    @Ignore
+    public void testSelectPatternWithDistanceTriplet() {
+        String s1 = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
+                "SELECT ?x ?y\n" +
+                "WHERE {\n" +
+                "    ?x (foaf:acted_in/foaf:acted_in)* ?y .\n" +
+                "}";
+        final AsgQuery query1 = sparQLTransformer.transform(new QueryInfo<>(s1, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+
+        String expected1 = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
                 "                                         └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}, \n" +
                 "                                                                                                              └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{6|801}, \n" +
@@ -82,6 +110,63 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
+        assertEquals(expected1, print(query1));
+
+        String s2 = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
+                "SELECT ?x ?y\n" +
+                "WHERE {\n" +
+                "    ?x (foaf:acted_in/^foaf:acted_in)* ?y .\n" +
+                "}";
+        final AsgQuery query2 = sparQLTransformer.transform(new QueryInfo<>(s2, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        String expected2 = "[└── Start, \n" +
+                "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
+                "                                         └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}, \n" +
+                "                                                                                                              └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{6|801}, \n" +
+                "                                                                                                                      └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
+                "                                         └-> Rel(:relatedEntity tomActedIn#4), \n" +
+                "                                                                                                              └─?[..][400], \n" +
+                "                                                                                                                      └─?[401]:[category<eq,ACTED_IN>], \n" +
+                "                                                                                                                                                  └─Typ[:Entity otherPerson#6]──Q[600:all]:{7}, \n" +
+                "                                                                                                                                                                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
+                "                                                                                                                                                                                                                             └─?[..][700], \n" +
+                "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
+                "                                                                                                                                                  └─?[..][801], \n" +
+                "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
+        assertEquals(expected2, print(query2));
+
+    }
+
+    @Test
+    /**
+     * Projection
+     *    ProjectionElemList
+     *       ProjectionElem "name"
+     *    Join
+     *       StatementPattern
+     *          Var (name=person)
+     *          Var (name=_const_23b7c3b6_uri, value=http://xmlns.com/foaf/0.1/name, anonymous)
+     *          Var (name=name)
+     *       StatementPattern
+     *          Var (name=person)
+     *          Var (name=_const_f5e5585a_uri, value=http://www.w3.org/1999/02/22-rdf-syntax-ns#type, anonymous)
+     *          Var (name=_const_e1df31e0_uri, value=http://xmlns.com/foaf/0.1/Person, anonymous)
+     */
+    public void testSimpleSelectVarsAndPatternTriplet() {
+        String s = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
+                "SELECT ?name\n" +
+                "WHERE {\n" +
+                "    ?person foaf:firstName ?name .\n" +
+                "    ?person rdf:type foaf:Person .\n" +
+                "}";
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+
+        String expected =
+                "Projected fields:name\n" +
+                "[└── Start, \n" +
+                "    ──Typ[:Thing person#1]──Q[100:all]:{101}, \n" +
+                "                                        └─?[..][101], \n" +
+                "                                                └─?[102]:[firstName<IdentityProjection>], \n" +
+                "                                                └─?[103]:[type<eq,http://xmlns.com/foaf/0.1/Person>]]";
         assertEquals(expected, print(query));
 
     }
@@ -126,6 +211,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_51762b45_uri, value=http://xmlns.com/foaf/0.1/Movie, anonymous)
      */
     @Test
+    @Ignore
     public void testSimpleSelectAndProjectTriplet() {
         String s =
                 "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
@@ -177,25 +263,17 @@ public class SparqlSimpleSelectQueryTranslatorTest {
         String s = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
                 "SELECT *\n" +
                 "WHERE {\n" +
-                "    ?person foaf:name ?name .\n" +
+                "    ?person foaf:name ?firstName .\n" +
                 "    ?person foaf:mbox ?email .\n" +
                 "}";
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
 
-        String expected = "[└── Start, \n" +
-                "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
-                "                                         └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}, \n" +
-                "                                                                                                              └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{6|801}, \n" +
-                "                                                                                                                      └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
-                "                                         └-> Rel(:relatedEntity tomActedIn#4), \n" +
-                "                                                                                                              └─?[..][400], \n" +
-                "                                                                                                                      └─?[401]:[category<eq,ACTED_IN>], \n" +
-                "                                                                                                                                                  └─Typ[:Entity otherPerson#6]──Q[600:all]:{7}, \n" +
-                "                                                                                                                                                                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
-                "                                                                                                                                                                                                                             └─?[..][700], \n" +
-                "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
-                "                                                                                                                                                  └─?[..][801], \n" +
-                "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
+        String expected = "Projected fields:person|firstName|email\n" +
+                "[└── Start, \n" +
+                "    ──Typ[:Thing person#1]──Q[100:all]:{101|102}, \n" +
+                "                                            └─?[..][101], \n" +
+                "                                                    └─?[102]:[name<IdentityProjection>], \n" +
+                "                                            └-> Rel(:mbox email#102)]";
         assertEquals(expected, print(query));
 
     }
@@ -216,6 +294,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *          Var (name=_const_aba78b99_uri, value=http://xmlns.com/foaf/0.1/homepage, anonymous)
      *          Var (name=homepage)
      */
+    @Ignore
     public void testSimpleSelectVarsAndMulriPatternTraversingGraphTriplet() {
         String s = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
                 "PREFIX card: <http://www.w3.org/People/Berners-Lee/card#>\n" +
@@ -270,6 +349,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_164421cd_uri, value=http://dbpedia.org/property/populationEstimate, anonymous)
      *             Var (name=population)
      */
+    @Ignore
     public void testSimpleSelectVarsAndMulriPatternWithFilterTriplet() {
         String s = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>        \n" +
                 "PREFIX type: <http://dbpedia.org/class/yago/>\n" +
@@ -334,6 +414,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *          Var (name=_const_e530421f_uri, value=http://xmlns.com/foaf/0.1/based_near, anonymous)
      *          Var (name=loc)
      */
+    @Ignore
     public void testSimpleSelectVarsAndMulriPatternWithOptionalFilterTriplet() {
         String s = "PREFIX mo: <http://purl.org/ontology/mo/>\n" +
                 "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
@@ -421,6 +502,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *                         Var (name=_const_74b6d379_uri, value=http://xmlns.com/foaf/0.1/isPrimaryTopicOf, anonymous)
      *                         Var (name=wikipedia)
      */
+    @Ignore
     public void testSimpleSelectMuseumFilterTriplet() {
         String s = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
                 "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" +
@@ -476,6 +558,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_9285ccfc_uri, value=http://www.w3.org/2000/01/rdf-schema#label, anonymous)
      *             Var (name=label)
      */
+    @Ignore
     public void testSimpleSelectVarsAndMulriPatternWithUnionTriplet() {
         String s = "PREFIX go: <http://purl.org/obo/owl/GO#>\n" +
                 "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
@@ -548,6 +631,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *                Var (name=_const_e1df31e0_uri, value=http://xmlns.com/foaf/0.1/Person, anonymous)
      *                Var (name=g3)
      */
+    @Ignore
     public void testQueryNamedGraphs() {
         String s =
                 "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
@@ -608,6 +692,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *                Var (name=_const_40dab42e_uri, value=http://dbpedia.org/property/establishedDate, anonymous)
      *                Var (name=est)
      */
+    @Ignore
     public void testQueryFreeTextSearch() {
         String s = "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" +
                 "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>        \n" +
@@ -645,11 +730,12 @@ public class SparqlSimpleSelectQueryTranslatorTest {
     @Ignore
     public void testQueryWithAggregation() {
         String s = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
-                "SELECT ?interest COUNT(*) AS ?count where\n" +
+                "SELECT ?interest COUNT(*) AS ?count " +
+                " WHERE \n" +
                 "  {\n" +
                 "    ?p foaf:interest <http://www.livejournal.com/interests.bml?int=harry+potter> .\n" +
                 "    ?p foaf:interest ?interest\n" +
-                "  }\n" +
+                "   }\n" +
                 "GROUP BY ?interest ORDER BY DESC(COUNT(*)) LIMIT 10";
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
 
@@ -690,8 +776,126 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_4d818093_uri, value=http://yangdb.org/name, anonymous)
      *             Var (name=name)
      */
+    @Ignore
     public void testSimpleSelectPersonWithSingleTriplet() {
-        String s = "SELECT ?ee WHERE { ?ee a <Person>;<name> ?name. FILTER(?name = \"Emil\")}";
+        String s = "SELECT ?ee WHERE " +
+                "{" +
+                    " ?ee a <Person>;<name> ?name. FILTER(?name = \"Emil\")" +
+                "}";
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+
+        String expected = "[└── Start, \n" +
+                "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
+                "                                         └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}, \n" +
+                "                                                                                                              └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{6|801}, \n" +
+                "                                                                                                                      └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
+                "                                         └-> Rel(:relatedEntity tomActedIn#4), \n" +
+                "                                                                                                              └─?[..][400], \n" +
+                "                                                                                                                      └─?[401]:[category<eq,ACTED_IN>], \n" +
+                "                                                                                                                                                  └─Typ[:Entity otherPerson#6]──Q[600:all]:{7}, \n" +
+                "                                                                                                                                                                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
+                "                                                                                                                                                                                                                             └─?[..][700], \n" +
+                "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
+                "                                                                                                                                                  └─?[..][801], \n" +
+                "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
+        assertEquals(expected, print(query));
+
+    }
+
+    /**
+     * Projection
+     *    ProjectionElemList
+     *       ProjectionElem "r"
+     *    Order
+     *       OrderElem (ASC)
+     *          MathExpr (+)
+     *             Var (name=_anon_794869e2_45ac_4223_93ec_e9fe6dbd2d99, anonymous)
+     *             Var (name=_anon_b12143ab_647d_47bd_9764_1ea0dc4760a5, anonymous)
+     *       Extension
+     *          ExtensionElem (r)
+     *             MathExpr (/)
+     *                MathExpr (+)
+     *                   Var (name=_anon_0574565c_ca7a_4372_afbe_5d7237ff1ef9, anonymous)
+     *                   Var (name=_anon_5d259c83_1b37_4998_91dd_e4ab6717894b, anonymous)
+     *                ValueConstant (value="2"^^<http://www.w3.org/2001/XMLSchema#integer>)
+     *          Extension
+     *             ExtensionElem (_anon_794869e2_45ac_4223_93ec_e9fe6dbd2d99)
+     *                Count
+     *                   Var (name=x)
+     *             ExtensionElem (_anon_b12143ab_647d_47bd_9764_1ea0dc4760a5)
+     *                Count
+     *                   Var (name=y)
+     *             Filter
+     *                Compare (<)
+     *                   MathExpr (+)
+     *                      Var (name=_anon_cc8845eb_59bf_4ca5_8b69_6d7a944e22f9, anonymous)
+     *                      Var (name=_anon_fab1c8fc_b72b_4fd1_9e07_33104b67b1a7, anonymous)
+     *                   ValueConstant (value="5"^^<http://www.w3.org/2001/XMLSchema#integer>)
+     *                Extension
+     *                   ExtensionElem (_anon_cc8845eb_59bf_4ca5_8b69_6d7a944e22f9)
+     *                      Sum
+     *                         Var (name=x)
+     *                   ExtensionElem (_anon_fab1c8fc_b72b_4fd1_9e07_33104b67b1a7)
+     *                      Sum
+     *                         Var (name=y)
+     *                   Group (_anon_637c4631_017b_483c_95b2_407c2f29ee4c)
+     *                      Extension
+     *                         ExtensionElem (_anon_637c4631_017b_483c_95b2_407c2f29ee4c)
+     *                            FunctionCall (http://www.w3.org/2005/xpath-functions#concat)
+     *                               Var (name=n)
+     *                               Var (name=id)
+     *                         Join
+     *                            Join
+     *                               Join
+     *                                  StatementPattern
+     *                                     Var (name=this)
+     *                                     Var (name=_const_aeffb8f2_uri, value=ex:name, anonymous)
+     *                                     Var (name=n)
+     *                                  StatementPattern
+     *                                     Var (name=this)
+     *                                     Var (name=_const_5c6b942_uri, value=ex:id, anonymous)
+     *                                     Var (name=id)
+     *                               StatementPattern
+     *                                  Var (name=this)
+     *                                  Var (name=_const_311b57a7_uri, value=ex:prop1, anonymous)
+     *                                  Var (name=x)
+     *                            StatementPattern
+     *                               Var (name=this)
+     *                               Var (name=_const_311b57a8_uri, value=ex:prop2, anonymous)
+     *                               Var (name=y)
+     *                      GroupElem
+     *                         Sum
+     *                            Var (name=x)
+     *                      GroupElem
+     *                         Sum
+     *                            Var (name=y)
+     *                      GroupElem
+     *                         Count
+     *                            Var (name=x)
+     *                      GroupElem
+     *                         Count
+     *                            Var (name=y)
+     *                      GroupElem
+     *                         Min
+     *                            MathExpr (+)
+     *                               Var (name=x)
+     *                               ValueConstant (value="+1"^^<http://www.w3.org/2001/XMLSchema#integer>)
+     *                      GroupElem
+     *                         Max
+     *                            MathExpr (+)
+     *                               Var (name=y)
+     *                               ValueConstant (value="-1"^^<http://www.w3.org/2001/XMLSchema#integer>)
+     */
+    @Test
+    @Ignore
+    public void testSimpleSelectAggregations() {
+        String s = "PREFIX ex: <ex:>\n"
+                + "SELECT ((MIN(?x+1) + MAX(?y-1))/2 AS ?r) " +
+                "{\n"
+                + "	?this ex:name ?n . ?this ex:id ?id . ?this ex:prop1 ?x . ?this ex:prop2 ?y .\n"
+                +"} " +
+                "GROUP BY concat(?n, ?id) HAVING (SUM(?x) + SUM(?y) < 5) ORDER BY (COUNT(?x) + COUNT(?y))";
+
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
 
         String expected = "[└── Start, \n" +
@@ -733,6 +937,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *          Var (name=_const_628a3e40_uri, value=http://yangdb.org/knows, anonymous)
      *          Var (name=friends)
      */
+    @Ignore
     public void testSimpleSelectPersonWithFriendTriplet() {
         String s = "SELECT ?ee ?friends\n" +
                 "    WHERE {?ee a <Person>;\n" +
@@ -869,6 +1074,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_4d818093_uri, value=http://yangdb.org/name, anonymous)
      *             Var (name=name)
      */
+    @Ignore
     public void testSimpleSelectMovieWithCoAutorFilterTriplet() {
         String s = "SELECT ?name\n" +
                 "    WHERE {?tom a <Person>;<ACTED_IN> ?m.\n" +

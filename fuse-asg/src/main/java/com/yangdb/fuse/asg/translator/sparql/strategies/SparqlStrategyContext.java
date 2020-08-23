@@ -21,17 +21,18 @@ package com.yangdb.fuse.asg.translator.sparql.strategies;
  */
 
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
+import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.EBase;
 import org.eclipse.rdf4j.query.parser.ParsedQuery;
 
-import java.util.Optional;
-
 public class SparqlStrategyContext {
 
-    public SparqlStrategyContext(ParsedQuery statement, AsgEBase<? extends EBase> scope) {
+    public SparqlStrategyContext(Ontology ontology, ParsedQuery statement, AsgQuery query,AsgEBase<? extends EBase> scope) {
+        this.ontology = new Ontology.Accessor(ontology);
         this.statement = statement;
+        this.query = query;
         this.scope = scope;
-        this.where = Optional.empty();
     }
 
     public AsgEBase<? extends EBase> getScope() {
@@ -42,20 +43,24 @@ public class SparqlStrategyContext {
         return statement;
     }
 
+    public Ontology.Accessor getOntology() {
+        return ontology;
+    }
 
     public SparqlStrategyContext scope(AsgEBase<? extends EBase> scope) {
         this.scope = scope;
         return this;
     }
 
-    public Optional<com.bpodgursky.jbool_expressions.Expression> getWhere() {
-        return where;
+    public AsgQuery getQuery() {
+        return query;
     }
 
+    private Ontology.Accessor ontology;
     //region Fields
     private ParsedQuery statement;
-    private Optional<com.bpodgursky.jbool_expressions.Expression> where ;
 
+    private AsgQuery query;
     private AsgEBase<? extends EBase> scope;
 
     //endregion

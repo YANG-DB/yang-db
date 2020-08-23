@@ -46,6 +46,7 @@ package com.yangdb.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
@@ -494,6 +495,25 @@ public class Ontology {
         private Map<String, Property> propertiesByName;
         private Map<String, Property> propertiesByPtype;
 
+        /**
+         * match named element to true type (included typed value identifier)
+         * @param name
+         * @return
+         */
+        public Optional<Tuple2<NodeType,String>> matchNameToType(String name) {
+            if(eType(name).isPresent())
+                return Optional.of(Tuple.of(NodeType.ENTITY, eType$(name)));
+            if(rType(name).isPresent())
+                return Optional.of(Tuple.of(NodeType.RELATION, rType$(name)));
+            if(property(name).isPresent())
+                return Optional.of(Tuple.of(NodeType.PROPERTY, property$(name).getpType()));
+
+            return Optional.empty();
+        }
+
+        public enum NodeType {
+            PROPERTY,RELATION,ENTITY
+        }
 
         //endregion
     }

@@ -60,27 +60,20 @@ public class EntityType {
     }
 
     public EntityType(String type, String name, List<String> properties, List<String> metadata) {
-        this.eType = type;
-        this.name = name;
-        this.properties = properties;
-        this.metadata = metadata;
-        this.mandatory = new ArrayList<>();
+        this(type,name,properties,metadata,Collections.emptyList(),Collections.emptyList());
     }
 
-    public EntityType(String type, String name, List<String> properties, List<String> metadata, List<String> mandatory) {
+    public EntityType(String type, String name, List<String> properties, List<String> metadata, List<String> mandatory,List<String> parentType) {
         this.eType = type;
         this.name = name;
         this.properties = properties;
         this.metadata = metadata;
         this.mandatory = mandatory;
+        this.parentType = parentType;
     }
 
     public EntityType(String type, String name, List<String> properties) {
-        this.eType = type;
-        this.name = name;
-        this.properties = properties;
-        this.metadata = new ArrayList<>();
-        this.mandatory = new ArrayList<>();
+        this(type,name,properties,Collections.emptyList());
     }
 
     public List<String> getMetadata() {
@@ -109,6 +102,14 @@ public class EntityType {
 
     public List<String> getProperties() {
         return properties!=null ? properties :  Collections.emptyList();
+    }
+
+    public List<String> getParentType() {
+        return parentType !=null ? parentType : Collections.emptyList();
+    }
+
+    public void setParentType(List<String> parentType) {
+        this.parentType = parentType;
     }
 
     public List<String> getMandatory() {
@@ -142,6 +143,7 @@ public class EntityType {
         if (o == null || getClass() != o.getClass()) return false;
         EntityType that = (EntityType) o;
         return eType.equals(that.eType) &&
+                Objects.equals(parentType, that.parentType) &&
                 name.equals(that.name) &&
                 properties.equals(that.properties) &&
                 Objects.equals(metadata, that.metadata) &&
@@ -150,7 +152,7 @@ public class EntityType {
 
     @Override
     public int hashCode() {
-        return Objects.hash(eType, name, properties, metadata, display);
+        return Objects.hash(eType,parentType, name, properties, metadata, display);
     }
 
     //region Fields
@@ -160,6 +162,7 @@ public class EntityType {
     private List<String> properties;
     private List<String> metadata;
     private List<String> display;
+    private List<String> parentType;
 
     @JsonIgnore
     public boolean containsMetadata(String key) {
@@ -175,6 +178,11 @@ public class EntityType {
     public boolean containsProperty(String key) {
         return properties.contains(key);
     }
+
+    @JsonIgnore
+    public boolean containsSuperType(String key) {
+        return parentType.contains(key);
+    }
     //endregion
 
     //region Builder
@@ -185,6 +193,7 @@ public class EntityType {
         private List<String> properties = new ArrayList<>();
         private List<String> metadata = new ArrayList<>();
         private List<String> display = new ArrayList<>();
+        private List<String> parentType = new ArrayList<>();
 
         private Builder() {
         }
@@ -195,6 +204,11 @@ public class EntityType {
 
         public Builder withEType(String eType) {
             this.eType = eType;
+            return this;
+        }
+
+        public Builder withParentType(List<String> superTypes) {
+            this.parentType = superTypes;
             return this;
         }
 
@@ -240,6 +254,7 @@ public class EntityType {
             entityType.setMandatory(mandatory);
             entityType.setMetadata(metadata);
             entityType.setDisplay(display);
+            entityType.setParentType(parentType);
             entityType.eType = this.eType;
             return entityType;
         }

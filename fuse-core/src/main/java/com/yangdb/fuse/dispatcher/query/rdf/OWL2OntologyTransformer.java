@@ -73,7 +73,7 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
      */
     public Ontology transform(Set<String> source) {
         Ontology.OntologyBuilder builder = Ontology.OntologyBuilder.anOntology();
-        return importOWL( builder, source).build();
+        return importOWL(builder, source).build();
     }
 
     @Override
@@ -171,6 +171,12 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
                                 EntityType.Builder.get()
                                         .withEType(type)
                                         .withName(type)
+                                        .withParentType(superClasses.getNodes().stream()
+                                                .flatMap(clazzNode->clazzNode.getEntities().stream())
+                                                .map(clazz->clazz.getIRI().getRemainder().or(ontologyClass.getIRI().toString()))
+                                                //filter out same names
+                                                .filter(name-> !name.equals(type))
+                                                .collect(Collectors.toList()))
                                         .build())
                                 .getEntityType(type)
                                 .get());
@@ -270,9 +276,12 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
         List<OWLDataPropertyRangeAxiom> dataPropertyRangeAxioms = new ArrayList<>(o.getDataPropertyRangeAxioms(objectProperty));
         //match domain & range pairs
         for (int i = 0; i < dataPropertyDomainAxioms.size(); i++) {
-            String dataType = dataPropertyRangeAxioms.get(i).getRange().asOWLDatatype().getIRI().getRemainder()
-                    .or(dataPropertyRangeAxioms.get(i).getRange().asOWLDatatype().getIRI().toString());
-
+            String dataType = null;
+            //verify range axiom exists
+            if (dataPropertyRangeAxioms.size() > i) {
+                dataType = dataPropertyRangeAxioms.get(i).getRange().asOWLDatatype().getIRI().getRemainder()
+                        .or(dataPropertyRangeAxioms.get(i).getRange().asOWLDatatype().getIRI().toString());
+            }
             OWLClassExpression domain = dataPropertyDomainAxioms.get(i).getDomain();
             if (domain.isAnonymous()) {
                 //todo add union or other axiom
