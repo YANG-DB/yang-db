@@ -9,6 +9,7 @@ import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyProvider;
 import com.yangdb.fuse.dispatcher.query.rdf.OWL2OntologyTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.ontology.OntologyNameSpace;
 import com.yangdb.fuse.model.query.QueryInfo;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,7 +22,6 @@ import java.net.URL;
 import java.nio.file.Files;
 
 import static com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
-import static com.yangdb.fuse.model.ontology.Ontology.OntologyBuilder.YANGDB_ORG;
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_SPARQL;
 import static org.junit.Assert.assertEquals;
 
@@ -38,13 +38,15 @@ public class SparqlSimpleSelectQueryTranslatorTest {
     @Before
     public void setUp() throws Exception {
         URL personas = Thread.currentThread().getContextClassLoader().getResource("sparql/foaf.owl");
+        URL dbpedia = Thread.currentThread().getContextClassLoader().getResource("sparql/dbpedia.owl");
         OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
         //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
         Ontology ontology = transformer.transform(Sets.newHashSet(
-                new String(Files.readAllBytes(new File(personas.toURI()).toPath()))));
+                new String(Files.readAllBytes(new File(personas.toURI()).toPath())),
+                new String(Files.readAllBytes(new File(dbpedia.toURI()).toPath()))));
 
-        ontology.setOnt(IRI.create(ontology.getOnt()+"/foaf").toString());
-        sparQLTransformer = new AsgSparQLTransformer(new SparqlTranslator(new SimpleOntologyProvider(ontology),new M1SparqlAsgStrategyRegistrar()));
+        ontology.setOnt(IRI.create(ontology.getOnt() + "foaf").toString());
+        sparQLTransformer = new AsgSparQLTransformer(new SparqlTranslator(new SimpleOntologyProvider(ontology), new M1SparqlAsgStrategyRegistrar()));
         // transformer
         Assert.assertNotNull(ontology);
     }
@@ -94,7 +96,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "WHERE {\n" +
                 "    ?x (foaf:acted_in/foaf:acted_in)* ?y .\n" +
                 "}";
-        final AsgQuery query1 = sparQLTransformer.transform(new QueryInfo<>(s1, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query1 = sparQLTransformer.transform(new QueryInfo<>(s1, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected1 = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -117,7 +119,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "WHERE {\n" +
                 "    ?x (foaf:acted_in/^foaf:acted_in)* ?y .\n" +
                 "}";
-        final AsgQuery query2 = sparQLTransformer.transform(new QueryInfo<>(s2, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query2 = sparQLTransformer.transform(new QueryInfo<>(s2, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
         String expected2 = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
                 "                                         └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}, \n" +
@@ -158,15 +160,15 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "    ?person foaf:firstName ?name .\n" +
                 "    ?person rdf:type foaf:Person .\n" +
                 "}";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected =
                 "Projected fields:name\n" +
-                "[└── Start, \n" +
-                "    ──Typ[:Thing person#1]──Q[100:all]:{101}, \n" +
-                "                                        └─?[..][101], \n" +
-                "                                                └─?[102]:[firstName<IdentityProjection>], \n" +
-                "                                                └─?[103]:[type<eq,http://xmlns.com/foaf/0.1/Person>]]";
+                        "[└── Start, \n" +
+                        "    ──Typ[:http://www.w3.org/2002/07/owl#Thing person#1]──Q[2:all]:{3}, \n" +
+                        "                                                                  └─?[..][3], \n" +
+                        "                                                                        └─?[4]:[http://xmlns.com/foaf/0.1/firstName<IdentityProjection>], \n" +
+                        "                                                                        └─?[5]:[type<eq,http://xmlns.com/foaf/0.1/Person>]]";
         assertEquals(expected, print(query));
 
     }
@@ -215,14 +217,14 @@ public class SparqlSimpleSelectQueryTranslatorTest {
     public void testSimpleSelectAndProjectTriplet() {
         String s =
                 "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
-                "SELECT ?x1 ?x2\n" +
-                "WHERE {\n" +
-                "    ?x1 foaf:acts_in ?x3 . ?x1 rdf:type foaf:Person .\n" +
-                "    ?x2 foaf:acts_in ?x3 . ?x2 rdf:type foaf:Person .\n" +
-                "    ?x3 foaf:title \"Unforgiven\" . ?x3 rdf:type foaf:Movie .\n" +
-                " FILTER (?x1 != ?x2 )" +
-                "}";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+                        "SELECT ?x1 ?x2\n" +
+                        "WHERE {\n" +
+                        "    ?x1 foaf:acts_in ?x3 . ?x1 rdf:type foaf:Person .\n" +
+                        "    ?x2 foaf:acts_in ?x3 . ?x2 rdf:type foaf:Person .\n" +
+                        "    ?x3 foaf:title \"Unforgiven\" . ?x3 rdf:type foaf:Movie .\n" +
+                        " FILTER (?x1 != ?x2 )" +
+                        "}";
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -266,14 +268,14 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "    ?person foaf:name ?firstName .\n" +
                 "    ?person foaf:mbox ?email .\n" +
                 "}";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "Projected fields:person|firstName|email\n" +
                 "[└── Start, \n" +
-                "    ──Typ[:Thing person#1]──Q[100:all]:{101|102}, \n" +
-                "                                            └─?[..][101], \n" +
-                "                                                    └─?[102]:[name<IdentityProjection>], \n" +
-                "                                            └-> Rel(:mbox email#102)]";
+                "    ──Typ[:http://www.w3.org/2002/07/owl#Thing person#1]──Q[2:all]:{3|4}, \n" +
+                "                                                                    └─?[..][3], \n" +
+                "                                                                          └─?[4]:[http://xmlns.com/foaf/0.1/name<IdentityProjection>]──Typ[:http://www.w3.org/2002/07/owl#Thing email#5], \n" +
+                "                                                                    └-> Rel(:http://xmlns.com/foaf/0.1/mbox null#4)]";
         assertEquals(expected, print(query));
 
     }
@@ -294,7 +296,6 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *          Var (name=_const_aba78b99_uri, value=http://xmlns.com/foaf/0.1/homepage, anonymous)
      *          Var (name=homepage)
      */
-    @Ignore
     public void testSimpleSelectVarsAndMulriPatternTraversingGraphTriplet() {
         String s = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
                 "PREFIX card: <http://www.w3.org/People/Berners-Lee/card#>\n" +
@@ -304,22 +305,13 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "    card:i foaf:knows ?known .\n" +
                 "    ?known foaf:homepage ?homepage .\n" +
                 "}";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
-        String expected = "[└── Start, \n" +
-                "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
-                "                                         └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}, \n" +
-                "                                                                                                              └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{6|801}, \n" +
-                "                                                                                                                      └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
-                "                                         └-> Rel(:relatedEntity tomActedIn#4), \n" +
-                "                                                                                                              └─?[..][400], \n" +
-                "                                                                                                                      └─?[401]:[category<eq,ACTED_IN>], \n" +
-                "                                                                                                                                                  └─Typ[:Entity otherPerson#6]──Q[600:all]:{7}, \n" +
-                "                                                                                                                                                                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
-                "                                                                                                                                                                                                                             └─?[..][700], \n" +
-                "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
-                "                                                                                                                                                  └─?[..][801], \n" +
-                "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
+        String expected = "Projected fields:homepage\n" +
+                "[└── Start, \n" +
+                "    ──Conc[:http://www.w3.org/2002/07/owl#Thing http://www.w3.org/People/Berners-Lee/card#i#1]──Q[2:all]:{3}, \n" +
+                "                                                                                                        └-> Rel(:http://xmlns.com/foaf/0.1/knows null#3)──Typ[:http://www.w3.org/2002/07/owl#Thing known#4]──Q[5:all]:{6}, \n" +
+                "                                                                                                                                                                                                                     └-> Rel(:http://xmlns.com/foaf/0.1/homepage null#6)──Typ[:http://www.w3.org/2002/07/owl#Thing homepage#7]]";
         assertEquals(expected, print(query));
 
     }
@@ -349,34 +341,25 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_164421cd_uri, value=http://dbpedia.org/property/populationEstimate, anonymous)
      *             Var (name=population)
      */
-    @Ignore
     public void testSimpleSelectVarsAndMulriPatternWithFilterTriplet() {
-        String s = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>        \n" +
+        String s = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" +
                 "PREFIX type: <http://dbpedia.org/class/yago/>\n" +
-                "PREFIX prop: <http://dbpedia.org/property/>\n" +
+                "PREFIX prop: <http://dbpedia.org/ontology/>\n" +
                 "SELECT ?country_name ?population\n" +
                 "WHERE {\n" +
                 "    ?country a type:LandlockedCountries ;\n" +
-                "             rdfs:label ?country_name ;\n" +
-                "             prop:populationEstimate ?population .\n" +
+                "             rdfs:name ?country_name ;\n" +
+                "             prop:populationTotalRanking ?population .\n" +
                 "    FILTER (?population > 15000000) .\n" +
                 "}";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
-        String expected = "[└── Start, \n" +
-                "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
-                "                                         └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}, \n" +
-                "                                                                                                              └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{6|801}, \n" +
-                "                                                                                                                      └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
-                "                                         └-> Rel(:relatedEntity tomActedIn#4), \n" +
-                "                                                                                                              └─?[..][400], \n" +
-                "                                                                                                                      └─?[401]:[category<eq,ACTED_IN>], \n" +
-                "                                                                                                                                                  └─Typ[:Entity otherPerson#6]──Q[600:all]:{7}, \n" +
-                "                                                                                                                                                                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
-                "                                                                                                                                                                                                                             └─?[..][700], \n" +
-                "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
-                "                                                                                                                                                  └─?[..][801], \n" +
-                "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
+        String expected = "Projected fields:country_name|population\n" +
+                "[└── Start, \n" +
+                "    ──Typ[:http://www.w3.org/2002/07/owl#Thing country#1]──Q[2:all]:{3}, \n" +
+                "                                                                   └─?[..][3], \n" +
+                "                                                                         └─?[4]:[type<eq,http://dbpedia.org/class/yago/LandlockedCountries>], \n" +
+                "                                                                         └─?[5]:[http://dbpedia.org/ontology/populationTotalRanking<gt,15000000>]]";
         assertEquals(expected, print(query));
 
     }
@@ -426,7 +409,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "  OPTIONAL { ?a foaf:homepage ?hp }\n" +
                 "  OPTIONAL { ?a foaf:based_near ?loc }\n" +
                 "}";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -445,6 +428,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
         assertEquals(expected, print(query));
 
     }
+
     @Test
 
     /**
@@ -516,7 +500,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "  ?this <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> ?wikipedia \n" +
                 "}\n" +
                 "ORDER BY ?label LIMIT 5000";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -570,7 +554,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "  { ?process rdfs:subClassOf go:GO_0007165 } # refinement of\n" +
                 "  ?process rdfs:label ?label\n" +
                 "}";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -635,15 +619,15 @@ public class SparqlSimpleSelectQueryTranslatorTest {
     public void testQueryNamedGraphs() {
         String s =
                 "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
-                "SELECT DISTINCT ?person\n" +
-                "WHERE {\n" +
-                "    ?person foaf:name ?name .\n" +
-                "    GRAPH ?g1 { ?person a foaf:Person }\n" +
-                "    GRAPH ?g2 { ?person a foaf:Person }\n" +
-                "    GRAPH ?g3 { ?person a foaf:Person }\n" +
-                "    FILTER(?g1 != ?g2 && ?g1 != ?g3 && ?g2 != ?g3) .\n" +
-                "}     ";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+                        "SELECT DISTINCT ?person\n" +
+                        "WHERE {\n" +
+                        "    ?person foaf:name ?name .\n" +
+                        "    GRAPH ?g1 { ?person a foaf:Person }\n" +
+                        "    GRAPH ?g2 { ?person a foaf:Person }\n" +
+                        "    GRAPH ?g3 { ?person a foaf:Person }\n" +
+                        "    FILTER(?g1 != ?g2 && ?g1 != ?g3 && ?g2 != ?g3) .\n" +
+                        "}     ";
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -706,7 +690,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "      prop:establishedDate ?est .\n" +
                 "  FILTER(?est < \"1920-01-01\"^^xsd:date) .\n" +
                 "}";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -737,7 +721,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "    ?p foaf:interest ?interest\n" +
                 "   }\n" +
                 "GROUP BY ?interest ORDER BY DESC(COUNT(*)) LIMIT 10";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -780,9 +764,9 @@ public class SparqlSimpleSelectQueryTranslatorTest {
     public void testSimpleSelectPersonWithSingleTriplet() {
         String s = "SELECT ?ee WHERE " +
                 "{" +
-                    " ?ee a <Person>;<name> ?name. FILTER(?name = \"Emil\")" +
+                " ?ee a <Person>;<name> ?name. FILTER(?name = \"Emil\")" +
                 "}";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -893,10 +877,10 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 + "SELECT ((MIN(?x+1) + MAX(?y-1))/2 AS ?r) " +
                 "{\n"
                 + "	?this ex:name ?n . ?this ex:id ?id . ?this ex:prop1 ?x . ?this ex:prop2 ?y .\n"
-                +"} " +
+                + "} " +
                 "GROUP BY concat(?n, ?id) HAVING (SUM(?x) + SUM(?y) < 5) ORDER BY (COUNT(?x) + COUNT(?y))";
 
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -943,7 +927,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "    WHERE {?ee a <Person>;\n" +
                 "        <name> \"Emil\";\n" +
                 "        <knows> ?friends }\n";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -971,7 +955,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "        <name> \"Jhone\";\n" +
                 "        <knows>/<knows> ?surfer;\n" +
                 "        ?surfer <hobby> \"surfer\". }";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -998,7 +982,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "    WHERE {?ninties a <Movie>; <released>\n" +
                 "        ?released; <title> ?title.\n" +
                 "        FILTER(?released > 1990 & ?released > 2000}\n";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -1025,7 +1009,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "    WHERE {?tom a <Person>?;\n" +
                 "        <name> \"Tom Hanks\";\n" +
                 "        <ACTED_IN> ?movies}\n";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
@@ -1080,7 +1064,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "    WHERE {?tom a <Person>;<ACTED_IN> ?m.\n" +
                 "            ?co_actor <ACTED_IN> ?m; <name> ?name.\n" +
                 "        FILTER(?tom != ?co_actor)}";
-        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, YANGDB_ORG +"/foaf"));
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
                 "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +

@@ -42,12 +42,13 @@ public class FilterPatternTranslatorStrategy extends UnaryPatternTranslatorStrat
 
     @Override
     public void apply(TupleExpr element, AsgQuery query, SparqlStrategyContext context) {
+        super.apply(element, query, context);
+        //only after building the query structure elements - match the predicate filter elements
         if(Filter.class.isAssignableFrom(element.getClass())) {
             //collect condition
             ValueExpr condition = ((Filter) element).getCondition();
             //apply where strategies
             whereExpressionStrategies.stream().forEach(st->st.apply(condition,query,context));
         }
-        super.apply(element, query, context);
     }
 }

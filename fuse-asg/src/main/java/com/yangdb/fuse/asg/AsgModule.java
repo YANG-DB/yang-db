@@ -24,10 +24,7 @@ package com.yangdb.fuse.asg;
 
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
-import com.yangdb.fuse.asg.strategy.AsgStrategyRegistrar;
-import com.yangdb.fuse.asg.strategy.CypherAsgStrategyRegistrar;
-import com.yangdb.fuse.asg.strategy.M1AsgStrategyRegistrar;
-import com.yangdb.fuse.asg.strategy.M1CypherAsgStrategyRegistrar;
+import com.yangdb.fuse.asg.strategy.*;
 import com.yangdb.fuse.dispatcher.asg.QueryToCompositeAsgTransformer;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
@@ -49,6 +46,10 @@ public class AsgModule extends ModuleBase {
 
         binder.bind(CypherAsgStrategyRegistrar.class)
                 .to(M1CypherAsgStrategyRegistrar.class)
+                .asEagerSingleton();
+
+        binder.bind(SparqlAsgStrategyRegistrar.class)
+                .to(M1SparqlAsgStrategyRegistrar.class)
                 .asEagerSingleton();
 
         binder.bind(new TypeLiteral<QueryTransformer<Query, AsgQuery>>(){})

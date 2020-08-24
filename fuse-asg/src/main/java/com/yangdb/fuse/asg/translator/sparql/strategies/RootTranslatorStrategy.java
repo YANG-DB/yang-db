@@ -45,7 +45,9 @@ public class RootTranslatorStrategy implements SparqlTranslatorStrategy{
     public void apply(AsgQuery query, SparqlStrategyContext context) {
         ParsedQuery statement = context.getStatement();
         Dataset dataset = statement.getDataset();
+        //root parsed query entry level
         TupleExpr expr = statement.getTupleExpr();
+        //structure query elements
         translatorStrategies.iterator().next().apply(expr,query,context);
     }
 

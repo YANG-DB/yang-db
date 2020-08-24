@@ -45,14 +45,14 @@ public class OWLOntologyTranslatorTest {
         Assert.assertEquals(ontology.getEnumeratedTypes().size(), 1);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
 
-        Assert.assertEquals(accessor.enumeratedType$("countries"),
-                new EnumeratedType("countries",
-                        Arrays.asList(new Value(0, "Eurasia"),
-                                new Value(1, "NorthAmerica"),
-                                new Value(2, "Antarctica"),
-                                new Value(3, "Africa"),
-                                new Value(4, "SouthAmerica"),
-                                new Value(5, "Australia"))));
+        Assert.assertEquals(accessor.enumeratedType$("http://yangdb.org/user#countries"),
+                new EnumeratedType("http://yangdb.org/user#countries",
+                        Arrays.asList(new Value(0, "http://yangdb.org/user#Eurasia"),
+                                new Value(1, "http://yangdb.org/user#NorthAmerica"),
+                                new Value(2, "http://yangdb.org/user#Antarctica"),
+                                new Value(3, "http://yangdb.org/user#Africa"),
+                                new Value(4, "http://yangdb.org/user#SouthAmerica"),
+                                new Value(5, "http://yangdb.org/user#Australia"))));
     }
 
     @Test
@@ -60,11 +60,11 @@ public class OWLOntologyTranslatorTest {
         Assert.assertEquals(ontology.getProperties().size(), 18);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
         List<String> expected = Arrays.asList(
-                "passwordHash", "authorizations", "currentLoginRemoteAddr",
-                "uiPreferences", "username", "createDate", "privileges", "currentLoginDate",
-                "previousLoginDate", "emailAddress", "passwordSalt", "loginCount",
-                "passwordResetToken", "previousLoginRemoteAddr", "currentWorkspace", "displayName",
-                "passwordResetTokenExpirationDate", "status");
+                "http://yangdb.org/user#passwordHash", "http://yangdb.org/user#authorizations", "http://yangdb.org/user#currentLoginRemoteAddr",
+                "http://yangdb.org/user#uiPreferences", "http://yangdb.org/user#username", "http://yangdb.org/user#createDate", "http://yangdb.org/user#privileges", "http://yangdb.org/user#currentLoginDate",
+                "http://yangdb.org/user#previousLoginDate", "http://yangdb.org/user#emailAddress", "http://yangdb.org/user#passwordSalt", "http://yangdb.org/user#loginCount",
+                "http://yangdb.org/user#passwordResetToken", "http://yangdb.org/user#previousLoginRemoteAddr", "http://yangdb.org/user#currentWorkspace", "http://yangdb.org/user#displayName",
+                "http://yangdb.org/user#passwordResetTokenExpirationDate", "http://yangdb.org/user#status");
 
         Assert.assertEquals(ontology.getProperties().stream().map(Property::getpType).collect(Collectors.toList()), expected);
     }
@@ -74,14 +74,14 @@ public class OWLOntologyTranslatorTest {
         Assert.assertEquals(ontology.getEntityTypes().size(), 5);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
 
-        Assert.assertEquals(accessor.entity$("Person").geteType(), "Person");
-        Assert.assertEquals(accessor.entity$("Thing").geteType(), "Thing");
-        Assert.assertEquals(accessor.entity$("Corporation").geteType(), "Corporation");
-        Assert.assertEquals(accessor.entity$("img").geteType(), "img");
+        Assert.assertEquals(accessor.entity$("http://yangdb.org/user#Person").geteType(), "http://yangdb.org/user#Person");
+        Assert.assertEquals(accessor.entity$("http://www.w3.org/2002/07/owl#Thing").geteType(), "http://www.w3.org/2002/07/owl#Thing");
+        Assert.assertEquals(accessor.entity$("http://yangdb.org/user#Corporation").geteType(), "http://yangdb.org/user#Corporation");
+        Assert.assertEquals(accessor.entity$("http://xmlns.com/foaf/0.1/img").geteType(), "http://xmlns.com/foaf/0.1/img");
 
-        Assert.assertEquals(accessor.entity$("user").geteType(), "user");
-        Assert.assertEquals(accessor.entity$("user").getProperties().size(), 18);
-        Assert.assertEquals(accessor.entity$("user").getMandatory().size(), 0);
+        Assert.assertEquals(accessor.entity$("http://yangdb.org/user#user").geteType(), "http://yangdb.org/user#user");
+        Assert.assertEquals(accessor.entity$("http://yangdb.org/user#user").getProperties().size(), 18);
+        Assert.assertEquals(accessor.entity$("http://yangdb.org/user#user").getMandatory().size(), 0);
 
     }
 
@@ -90,10 +90,10 @@ public class OWLOntologyTranslatorTest {
         Assert.assertEquals(ontology.getRelationshipTypes().size(), 1);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
 
-        Assert.assertEquals(accessor.relation$("hasImage").getrType(), "hasImage");
-        Assert.assertEquals(accessor.relation$("hasImage").getePairs().size(), 2);
-        Assert.assertEquals(accessor.relation$("hasImage").getePairs().get(0).geteTypeA(), "Corporation");
-        Assert.assertEquals(accessor.relation$("hasImage").getePairs().get(1).geteTypeA(), "Person");
+        Assert.assertEquals(accessor.relation$("http://yangdb.org/user#hasImage").getrType(), "http://yangdb.org/user#hasImage");
+        Assert.assertEquals(accessor.relation$("http://yangdb.org/user#hasImage").getePairs().size(), 2);
+        Assert.assertEquals(accessor.relation$("http://yangdb.org/user#hasImage").getePairs().get(1).geteTypeA(), "http://yangdb.org/user#Corporation");
+        Assert.assertEquals(accessor.relation$("http://yangdb.org/user#hasImage").getePairs().get(0).geteTypeA(), "http://yangdb.org/user#Person");
 
     }
 

@@ -53,6 +53,8 @@ import javaslang.collection.Stream;
 import java.awt.geom.Point2D;
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -180,8 +182,6 @@ public class Ontology {
     //region Builder
 
     public static final class OntologyBuilder {
-        public static final String YANGDB_ORG = "http://yangdb.org";
-
         private String ont = "Generic";
         private List<EntityType> entityTypes;
         private List<RelationshipType> relationshipTypes;
@@ -388,6 +388,10 @@ public class Ontology {
 
         public Optional<Property> property(String propertyName) {
             return Optional.ofNullable(this.propertiesByName.get(propertyName));
+        }
+
+        public List<Property> properties() {
+            return this.ontology.properties;
         }
 
         public Property property$(String propertyName) {

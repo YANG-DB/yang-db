@@ -36,7 +36,7 @@ public class JoinPatternTranslatorStrategy extends BinaryPatternTranslatorStrate
     public void apply(TupleExpr element, AsgQuery query, SparqlStrategyContext context) {
         //combine two statements into a step / FQN (Fully Qualified Node)
         if (Join.class.isAssignableFrom(element.getClass())) {
-            //todo - create a quant - set the current context to that quant
+            //todo -
             super.apply(element, query, context);
         }
     }

@@ -33,8 +33,7 @@ import com.yangdb.fuse.model.query.quant.QuantBase;
 
 import java.util.*;
 
-import static com.yangdb.fuse.model.asgQuery.AsgQueryUtil.maxEntityNum;
-import static com.yangdb.fuse.model.asgQuery.AsgQueryUtil.maxQuantNum;
+import static com.yangdb.fuse.model.asgQuery.AsgQueryUtil.*;
 
 public interface SparqlUtils {
 
@@ -43,13 +42,11 @@ public interface SparqlUtils {
                                            AsgQuery query, SparqlStrategyContext context) {
         //next find the quant associated with this element - if none found create one
         if (!AsgQueryUtil.nextAdjacentDescendant(byTag, QuantBase.class).isPresent()) {
-            final int current = maxEntityNum(query);
-            final int currentQuantMax = maxQuantNum(query);
-            final int newCurrent = current * 100 > currentQuantMax ? (current * 100) : (current+1)*100;
+            final int current = max(query);
 
             final Set<Variable> distinct = distinct(operation);
             //quants will get enum according to the next formula = scopeElement.enum * 100
-            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(newCurrent, CypherUtils.type(operation, distinct), new ArrayList<>(), 0));
+            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(current+1, CypherUtils.type(operation, distinct), new ArrayList<>(), 0));
             //is scope already has next - add them to the newly added quant
             if (context.getScope().hasNext()) {
                 final List<AsgEBase<? extends EBase>> next = context.getScope().getNext();

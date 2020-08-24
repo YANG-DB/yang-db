@@ -71,12 +71,10 @@ public class M1SparqlAsgStrategyRegistrar implements SparqlAsgStrategyRegistrar 
                         Arrays.asList(
                                 new FilterPatternTranslatorStrategy(translatorStrategies, whereExpressionStrategies),
                                 new JoinPatternTranslatorStrategy(translatorStrategies),
-                                new NodePatternTranslatorStrategy(),
-                                new StepPatternTranslatorStrategy())
+                                new NodePatternTranslatorStrategy())
                 ),
                 new JoinPatternTranslatorStrategy(translatorStrategies),
-                new NodePatternTranslatorStrategy(),
-                new StepPatternTranslatorStrategy()
+                new NodePatternTranslatorStrategy()
         ));
 
         return Collections.singleton(new RootTranslatorStrategy(translatorStrategies, whereExpressionStrategies));

@@ -22,11 +22,10 @@ package com.yangdb.fuse.dispatcher.query.rdf;
 
 import com.google.common.collect.Sets;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
-import com.yangdb.fuse.model.ontology.*;
 import com.yangdb.fuse.model.ontology.EntityType;
+import com.yangdb.fuse.model.ontology.*;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import org.apache.commons.lang.NotImplementedException;
-import org.openrdf.rio.RDFFormat;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.StringDocumentSource;
 import org.semanticweb.owlapi.model.*;
@@ -38,8 +37,6 @@ import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.yangdb.fuse.model.ontology.Ontology.OntologyBuilder.YANGDB_ORG;
-
 /**
  * transform OWL RDF ontology schema to YangDB ontology support
  */
@@ -49,7 +46,7 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
     private IRI root;
 
     public OWL2OntologyTransformer() {
-        root = IRI.create(YANGDB_ORG);
+        root = IRI.create(OntologyNameSpace.defaultNameSpace);
         config = new OWLOntologyLoaderConfiguration();
         manager = createOwlOntologyManager(config);
     }
@@ -135,7 +132,7 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
     private void importOntologyClasses(Ontology.OntologyBuilder builder, OWLOntology o, OWLReasoner reasoner) {
         //abstract classes
         for (OWLClass ontologyClass : o.getClassesInSignature()) {
-            String type = ontologyClass.getIRI().getRemainder().or(ontologyClass.getIRI().toString());
+            String type = ontologyClass.getIRI().toString();
             //ToDo add hirarchy information to yangDb ontology
             //information used to infer structural inheritance
             NodeSet<OWLClass> subClasses = reasoner.getSubClasses(ontologyClass, true);
@@ -155,7 +152,7 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
                         .findFirst();
                 if (expression.isPresent()) {
                     List<String> values = ((OWLObjectOneOf) expression.get()).getIndividuals().stream()
-                            .map(el -> el.asOWLNamedIndividual().getIRI().getRemainder().or(el.asOWLNamedIndividual().toStringID()))
+                            .map(el -> el.asOWLNamedIndividual().getIRI().toString())
                             .collect(Collectors.toList());
                     //enum type class
                     builder.addEnumeratedTypes(EnumeratedType.EnumeratedTypeBuilder.anEnumeratedType()
@@ -172,10 +169,10 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
                                         .withEType(type)
                                         .withName(type)
                                         .withParentType(superClasses.getNodes().stream()
-                                                .flatMap(clazzNode->clazzNode.getEntities().stream())
-                                                .map(clazz->clazz.getIRI().getRemainder().or(ontologyClass.getIRI().toString()))
+                                                .flatMap(clazzNode -> clazzNode.getEntities().stream())
+                                                .map(clazz -> clazz.getIRI().toString())
                                                 //filter out same names
-                                                .filter(name-> !name.equals(type))
+                                                .filter(name -> !name.equals(type))
                                                 .collect(Collectors.toList()))
                                         .build())
                                 .getEntityType(type)
@@ -197,7 +194,7 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
             if (!o.isDeclared(objectProperty, Imports.EXCLUDED)) {
                 continue;
             }
-            String type = objectProperty.getIRI().getRemainder().or(objectProperty.getIRI().toString());
+            String type = objectProperty.getIRI().toString();
             //functional actions: if RelType does not exist create on, add it to builder and continue
             builder.getRelationshipType(type).orElseGet(
                     () -> builder.addRelationshipType(
@@ -235,22 +232,18 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
         Set<String> sideB = new HashSet<>();
 
         if (domain.isClassExpressionLiteral()) {
-            sideA.add(domain.asOWLClass().getIRI().getRemainder()
-                    .or(domain.asOWLClass().getIRI().toString()));
+            sideA.add(domain.asOWLClass().getIRI().toString());
         } else {
             sideA.addAll(domain.asDisjunctSet().stream().map(element ->
-                    element.asOWLClass().getIRI().getRemainder()
-                            .or(element.asOWLClass().getIRI().toString()))
+                            element.asOWLClass().getIRI().toString())
                     .collect(Collectors.toSet()));
         }
 
         if (range.isClassExpressionLiteral()) {
-            sideB.add(range.asOWLClass().getIRI().getRemainder()
-                    .or(range.asOWLClass().getIRI().toString()));
+            sideB.add(range.asOWLClass().getIRI().toString());
         } else {
             sideB.addAll(range.asDisjunctSet().stream().map(element ->
-                    element.asOWLClass().getIRI().getRemainder()
-                            .or(element.asOWLClass().getIRI().toString()))
+                            element.asOWLClass().getIRI().toString())
                     .collect(Collectors.toSet()));
         }
         //return cartesian product of the two sides
@@ -274,25 +267,28 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
         List<Property> properties = new ArrayList<>();
         List<OWLDataPropertyDomainAxiom> dataPropertyDomainAxioms = new ArrayList<>(o.getDataPropertyDomainAxioms(objectProperty));
         List<OWLDataPropertyRangeAxiom> dataPropertyRangeAxioms = new ArrayList<>(o.getDataPropertyRangeAxioms(objectProperty));
+
+        if(dataPropertyDomainAxioms.isEmpty()) {
+            //todo log event
+        }
+
         //match domain & range pairs
         for (int i = 0; i < dataPropertyDomainAxioms.size(); i++) {
             String dataType = null;
             //verify range axiom exists
             if (dataPropertyRangeAxioms.size() > i) {
-                dataType = dataPropertyRangeAxioms.get(i).getRange().asOWLDatatype().getIRI().getRemainder()
-                        .or(dataPropertyRangeAxioms.get(i).getRange().asOWLDatatype().getIRI().toString());
+                dataType = dataPropertyRangeAxioms.get(i).getRange().asOWLDatatype().getIRI().toString();
             }
             OWLClassExpression domain = dataPropertyDomainAxioms.get(i).getDomain();
             if (domain.isAnonymous()) {
                 //todo add union or other axiom
                 //domain is a collection of elements
             } else {
-                String eType = domain.asOWLClass().getIRI().getRemainder()
-                        .or(domain.asOWLClass().getIRI().toString());
+                String eType = domain.asOWLClass().getIRI().toString();
 
                 Property property = new Property(
-                        objectProperty.getIRI().getRemainder().or(objectProperty.toStringID()),
-                        objectProperty.getIRI().getRemainder().or(objectProperty.toStringID()),
+                        objectProperty.getIRI().toString(),
+                        objectProperty.getIRI().toString(),
                         dataType);
                 //
                 properties.add(property);

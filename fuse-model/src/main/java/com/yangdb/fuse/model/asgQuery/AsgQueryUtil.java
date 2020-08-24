@@ -129,6 +129,15 @@ public class AsgQueryUtil {
                 truePredicate).get();
     }
 
+
+    public static <T extends EBase> Optional<? extends BaseProp> getByPropTag(AsgEBase<T> asgEBase, String pTag) {
+        return java.util.stream.Stream
+                .concat(getEprops(asgEBase).stream(), getRelProps(asgEBase).stream())
+                .filter(p -> p.getpTag()!=null)
+                .filter(p -> p.getpTag().equals(pTag))
+                .findFirst();
+    }
+
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getByTag(AsgEBase<T> asgEBase, String eTag) {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext,
                 p -> (EEntityBase.class.isAssignableFrom(p.geteBase().getClass()) &&
