@@ -20,33 +20,37 @@ package com.yangdb.fuse.asg.translator.sparql.strategies;
  * #L%
  */
 
-import com.bpodgursky.jbool_expressions.Expression;
 import com.bpodgursky.jbool_expressions.NExpression;
 import com.bpodgursky.jbool_expressions.Variable;
-import com.yangdb.fuse.asg.translator.cypher.strategies.CypherUtils;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantBase;
+import com.yangdb.fuse.model.query.quant.QuantType;
 
 import java.util.*;
 
-import static com.yangdb.fuse.model.asgQuery.AsgQueryUtil.*;
+import static com.yangdb.fuse.model.asgQuery.AsgQueryUtil.max;
 
 public interface SparqlUtils {
 
+    /**
+     * create or get relevant quant element on query
+     * @param byTag
+     * @param query
+     * @param context
+     * @param parentQuantType
+     * @return
+     */
     static AsgEBase<? extends EBase> quant(AsgEBase<? extends EBase> byTag,
-                                           Optional<Expression> operation,
-                                           AsgQuery query, SparqlStrategyContext context) {
+                                           AsgQuery query, SparqlStrategyContext context,
+                                           QuantType parentQuantType) {
         //next find the quant associated with this element - if none found create one
-        if (!AsgQueryUtil.nextAdjacentDescendant(byTag, QuantBase.class).isPresent()) {
-            final int current = max(query);
-
-            final Set<Variable> distinct = distinct(operation);
+        if (AsgQueryUtil.nextAdjacentDescendants(byTag, QuantBase.class).stream().noneMatch(g -> ((QuantBase) g.geteBase()).getqType().equals(parentQuantType))) {
             //quants will get enum according to the next formula = scopeElement.enum * 100
-            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(current+1, CypherUtils.type(operation, distinct), new ArrayList<>(), 0));
+            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(max(query) +1,  parentQuantType, new ArrayList<>(), 0));
             //is scope already has next - add them to the newly added quant
             if (context.getScope().hasNext()) {
                 final List<AsgEBase<? extends EBase>> next = context.getScope().getNext();
@@ -56,21 +60,9 @@ public interface SparqlUtils {
             context.getScope().addNext(quantAsg);
             context.scope(quantAsg);
         }
-        return AsgQueryUtil.nextAdjacentDescendant(byTag, QuantBase.class).get();
-    }
-
-    static Set<Variable> distinct(Optional<com.bpodgursky.jbool_expressions.Expression> operation) {
-        Set<Variable> vars = new HashSet<>();
-        if (!operation.isPresent()) return Collections.emptySet();
-
-        if (NExpression.class.isAssignableFrom(operation.get().getClass())) {
-            final List<com.bpodgursky.jbool_expressions.Expression> children = ((NExpression) operation.get()).getChildren();
-            children.forEach(c -> vars.addAll(distinct(Optional.of(c))));
-        } else if (com.bpodgursky.jbool_expressions.Variable.class.isAssignableFrom(operation.get().getClass())) {
-            return Collections.singleton(((Variable) operation.get()));
-        }
-
-        return vars;
+        return AsgQueryUtil.nextAdjacentDescendants(byTag, QuantBase.class).stream()
+                .filter(g -> ((QuantBase) g.geteBase()).getqType().equals(parentQuantType))
+                .findFirst().get();
     }
 
 }

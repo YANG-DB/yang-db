@@ -21,23 +21,29 @@ package com.yangdb.fuse.asg.translator.sparql.strategies;
  */
 
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import org.eclipse.rdf4j.query.algebra.Join;
-import org.eclipse.rdf4j.query.algebra.TupleExpr;
+import org.eclipse.rdf4j.query.algebra.*;
 
 import java.util.List;
 
-public class JoinPatternTranslatorStrategy extends BinaryPatternTranslatorStrategy {
+/**
+ * Arbitraty path (determine min-max hopes) query element
+ * Todo - implement
+ */
+public class ArbitraryPathTranslatorStrategy extends UnaryPatternTranslatorStrategy{
 
-    public JoinPatternTranslatorStrategy(List<SparqlElementTranslatorStrategy> translatorStrategies) {
+    public ArbitraryPathTranslatorStrategy(List<SparqlElementTranslatorStrategy> translatorStrategies) {
         super(translatorStrategies);
     }
 
     @Override
     public void apply(TupleExpr element, AsgQuery query, SparqlStrategyContext context) {
-        //combine two statements into a step / FQN (Fully Qualified Node)
-        if (Join.class.isAssignableFrom(element.getClass())) {
-            //todo - infer join (Conjunction) knowledge
-            super.apply(element, query, context);
+        if(ArbitraryLengthPath.class.isAssignableFrom(element.getClass())) {
+            //subject
+            Var subjectVar = ((ArbitraryLengthPath) element).getSubjectVar();
+            //arbitrary path expression
+            super.apply(((ArbitraryLengthPath) element).getPathExpression(), query, context);
+            //object
+            Var objectVar = ((ArbitraryLengthPath) element).getObjectVar();
         }
     }
 }

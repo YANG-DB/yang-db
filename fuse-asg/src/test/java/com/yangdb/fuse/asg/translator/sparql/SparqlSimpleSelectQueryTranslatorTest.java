@@ -4,7 +4,6 @@ package com.yangdb.fuse.asg.translator.sparql;
 import com.google.common.collect.Sets;
 import com.yangdb.fuse.asg.AsgSparQLTransformer;
 import com.yangdb.fuse.asg.strategy.M1SparqlAsgStrategyRegistrar;
-import com.yangdb.fuse.asg.translator.sparql.strategies.SparqlTranslatorStrategy;
 import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyProvider;
 import com.yangdb.fuse.dispatcher.query.rdf.OWL2OntologyTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
@@ -12,7 +11,7 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.OntologyNameSpace;
 import com.yangdb.fuse.model.query.QueryInfo;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
@@ -31,12 +30,11 @@ import static org.junit.Assert.assertEquals;
  * https://www.w3.org/2009/Talks/0615-qbe/
  */
 public class SparqlSimpleSelectQueryTranslatorTest {
-    private AsgSparQLTransformer sparQLTransformer;
-    private SparqlTranslatorStrategy match;
+    private static AsgSparQLTransformer sparQLTransformer;
 
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         URL personas = Thread.currentThread().getContextClassLoader().getResource("sparql/foaf.owl");
         URL dbpedia = Thread.currentThread().getContextClassLoader().getResource("sparql/dbpedia.owl");
         OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
@@ -162,13 +160,12 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "}";
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
-        String expected =
-                "Projected fields:name\n" +
-                        "[└── Start, \n" +
-                        "    ──Typ[:http://www.w3.org/2002/07/owl#Thing person#1]──Q[2:all]:{3}, \n" +
-                        "                                                                  └─?[..][3], \n" +
-                        "                                                                        └─?[4]:[http://xmlns.com/foaf/0.1/firstName<IdentityProjection>], \n" +
-                        "                                                                        └─?[5]:[type<eq,http://xmlns.com/foaf/0.1/Person>]]";
+        String expected = "Projected fields:name\n" +
+                "[└── Start, \n" +
+                "    ──Typ[:http://www.w3.org/2002/07/owl#Thing person#1]──Q[2:all]:{4}, \n" +
+                "                                                                  └─?[..][4], \n" +
+                "                                                                        └─?[3]:[http://xmlns.com/foaf/0.1/firstName<IdentityProjection>], \n" +
+                "                                                                        └─?[5]:[type<eq,http://xmlns.com/foaf/0.1/Person>]]";
         assertEquals(expected, print(query));
 
     }
@@ -272,10 +269,10 @@ public class SparqlSimpleSelectQueryTranslatorTest {
 
         String expected = "Projected fields:person|firstName|email\n" +
                 "[└── Start, \n" +
-                "    ──Typ[:http://www.w3.org/2002/07/owl#Thing person#1]──Q[2:all]:{3|4}, \n" +
-                "                                                                    └─?[..][3], \n" +
-                "                                                                          └─?[4]:[http://xmlns.com/foaf/0.1/name<IdentityProjection>]──Typ[:http://www.w3.org/2002/07/owl#Thing email#5], \n" +
-                "                                                                    └-> Rel(:http://xmlns.com/foaf/0.1/mbox null#4)]";
+                "    ──Typ[:http://www.w3.org/2002/07/owl#Thing person#1]──Q[2:all]:{4|5}, \n" +
+                "                                                                    └─?[..][4], \n" +
+                "                                                                          └─?[3]:[http://xmlns.com/foaf/0.1/name<IdentityProjection>]──Typ[:http://www.w3.org/2002/07/owl#Thing email#6], \n" +
+                "                                                                    └-> Rel(:http://xmlns.com/foaf/0.1/mbox null#5)]";
         assertEquals(expected, print(query));
 
     }
@@ -356,9 +353,9 @@ public class SparqlSimpleSelectQueryTranslatorTest {
 
         String expected = "Projected fields:country_name|population\n" +
                 "[└── Start, \n" +
-                "    ──Typ[:http://www.w3.org/2002/07/owl#Thing country#1]──Q[2:all]:{3}, \n" +
-                "                                                                   └─?[..][3], \n" +
-                "                                                                         └─?[4]:[type<eq,http://dbpedia.org/class/yago/LandlockedCountries>], \n" +
+                "    ──Typ[:http://www.w3.org/2002/07/owl#Thing country#1]──Q[2:all]:{4}, \n" +
+                "                                                                   └─?[..][4], \n" +
+                "                                                                         └─?[3]:[type<eq,http://dbpedia.org/class/yago/LandlockedCountries>], \n" +
                 "                                                                         └─?[5]:[http://dbpedia.org/ontology/populationTotalRanking<gt,15000000>]]";
         assertEquals(expected, print(query));
 
@@ -522,54 +519,138 @@ public class SparqlSimpleSelectQueryTranslatorTest {
 
     @Test
     /**
-     * Distinct
-     *    Projection
-     *       ProjectionElemList
-     *          ProjectionElem "label"
-     *          ProjectionElem "process"
+     * Projection
+     *    ProjectionElemList
+     *       ProjectionElem "person"
+     *       ProjectionElem "desc"
+     *       ProjectionElem "date"
+     *    Join
      *       Join
-     *          Union (new scope)
-     *             StatementPattern (new scope)
-     *                Var (name=process)
-     *                Var (name=_const_40e93942_uri, value=http://www.obofoundry.org/ro/ro.owl#part_of, anonymous)
-     *                Var (name=_const_28eb1147_uri, value=http://purl.org/obo/owl/GO#GO_0007165, anonymous)
-     *             StatementPattern (new scope)
-     *                Var (name=process)
-     *                Var (name=_const_4592be07_uri, value=http://www.w3.org/2000/01/rdf-schema#subClassOf, anonymous)
-     *                Var (name=_const_28eb1147_uri, value=http://purl.org/obo/owl/GO#GO_0007165, anonymous)
+     *          Join
+     *             StatementPattern
+     *                Var (name=person)
+     *                Var (name=_const_f5e5585a_uri, value=http://www.w3.org/1999/02/22-rdf-syntax-ns#type, anonymous)
+     *                Var (name=_const_e1df31e0_uri, value=http://xmlns.com/foaf/0.1/Person, anonymous)
+     *             StatementPattern
+     *                Var (name=person)
+     *                Var (name=_const_a437b411_uri, value=http://purl.org/dc/elements/1.1/description, anonymous)
+     *                Var (name=desc)
      *          StatementPattern
-     *             Var (name=process)
-     *             Var (name=_const_9285ccfc_uri, value=http://www.w3.org/2000/01/rdf-schema#label, anonymous)
-     *             Var (name=label)
+     *             Var (name=person)
+     *             Var (name=_const_dd5cdacf_uri, value=http://dbpedia.org/ontology/birthDate, anonymous)
+     *             Var (name=date)
+     *       Union (new scope)
+     *          StatementPattern (new scope)
+     *             Var (name=person)
+     *             Var (name=_const_a437b411_uri, value=http://purl.org/dc/elements/1.1/description, anonymous)
+     *             Var (name=_const_658d2cee_lit_9902a4bf_ca9, value="Novelist"@en, anonymous)
+     *          StatementPattern (new scope)
+     *             Var (name=person)
+     *             Var (name=_const_a437b411_uri, value=http://purl.org/dc/elements/1.1/description, anonymous)
+     *             Var (name=_const_75920dab_lit_9902a4bf_ca9, value="Author"@en, anonymous)
      */
-    @Ignore
-    public void testSimpleSelectVarsAndMulriPatternWithUnionTriplet() {
-        String s = "PREFIX go: <http://purl.org/obo/owl/GO#>\n" +
-                "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                "PREFIX obo: <http://www.obofoundry.org/ro/ro.owl#>\n" +
-                "SELECT DISTINCT ?label ?process\n" +
-                "WHERE {\n" +
-                "  { ?process obo:part_of go:GO_0007165 } # integral to\n" +
-                "      UNION\n" +
-                "  { ?process rdfs:subClassOf go:GO_0007165 } # refinement of\n" +
-                "  ?process rdfs:label ?label\n" +
-                "}";
+    public void testSimpleSelectVarsPatternWithUnionInPropertiesTriplet() {
+        String s = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
+                    "PREFIX onto: <http://dbpedia.org/ontology/>\n" +
+                    "\n" +
+                    "SELECT  ?person ?desc ?date\n" +
+                    "WHERE { ?person rdf:type foaf:Person .\n" +
+                    "      ?person onto:description ?desc .\n" +
+                    "      ?person onto:birthDate ?date .\n" +
+                    "\n" +
+                    "      { ?person onto:description \"Novelist\"@en . }\n" +
+                    "UNION\n" +
+                    "      { ?person onto:description \"Author\"@en . }\n" +
+                    "      } ";
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
-        String expected = "[└── Start, \n" +
-                "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
-                "                                         └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}, \n" +
-                "                                                                                                              └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{6|801}, \n" +
-                "                                                                                                                      └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
-                "                                         └-> Rel(:relatedEntity tomActedIn#4), \n" +
-                "                                                                                                              └─?[..][400], \n" +
-                "                                                                                                                      └─?[401]:[category<eq,ACTED_IN>], \n" +
-                "                                                                                                                                                  └─Typ[:Entity otherPerson#6]──Q[600:all]:{7}, \n" +
-                "                                                                                                                                                                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
-                "                                                                                                                                                                                                                             └─?[..][700], \n" +
-                "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
-                "                                                                                                                                                  └─?[..][801], \n" +
-                "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
+        String expected = "Projected fields:person|desc|date\n" +
+                "[└── Start, \n" +
+                "    ──Typ[:http://www.w3.org/2002/07/owl#Thing person#1]──Q[2:all]:{4|6}, \n" +
+                "                                                                    └─?[..][4], \n" +
+                "                                                                          └─?[3]:[type<eq,http://xmlns.com/foaf/0.1/Person>], \n" +
+                "                                                                          └─?[5]:[http://dbpedia.org/ontology/description<IdentityProjection>], \n" +
+                "                                                                          └─?[5]:[http://dbpedia.org/ontology/birthDate<IdentityProjection>], \n" +
+                "                                                                    └─?[..][6], \n" +
+                "                                                                          └─?[5]:[http://dbpedia.org/ontology/description<eq,Novelist>], \n" +
+                "                                                                          └─?[7]:[http://dbpedia.org/ontology/description<eq,Author>]]";
+        assertEquals(expected, print(query));
+
+    }
+
+    @Test
+    /**
+     * Projection
+     *    ProjectionElemList
+     *       ProjectionElem "person"
+     *       ProjectionElem "desc"
+     *       ProjectionElem "date"
+     *       ProjectionElem "interests"
+     *    Join
+     *       Join
+     *          Join
+     *             Join
+     *                Join
+     *                   StatementPattern
+     *                      Var (name=person)
+     *                      Var (name=_const_f5e5585a_uri, value=http://www.w3.org/1999/02/22-rdf-syntax-ns#type, anonymous)
+     *                      Var (name=_const_e1df31e0_uri, value=http://xmlns.com/foaf/0.1/Person, anonymous)
+     *                   StatementPattern
+     *                      Var (name=person)
+     *                      Var (name=_const_517a953e_uri, value=http://dbpedia.org/ontology/description, anonymous)
+     *                      Var (name=desc)
+     *                StatementPattern
+     *                   Var (name=person)
+     *                   Var (name=_const_dd5cdacf_uri, value=http://dbpedia.org/ontology/birthDate, anonymous)
+     *                   Var (name=date)
+     *             StatementPattern
+     *                Var (name=person)
+     *                Var (name=_const_ea9562d5_uri, value=http://xmlns.com/foaf/0.1/interest, anonymous)
+     *                Var (name=interests)
+     *          StatementPattern
+     *             Var (name=person)
+     *             Var (name=_const_26291f2_uri, value=http://xmlns.com/foaf/0.1/publications, anonymous)
+     *             Var (name=_const_c55e3bb9_uri, value=https://patents.google.com/patent/US9264505B2/en, anonymous)
+     *       Union (new scope)
+     *          StatementPattern (new scope)
+     *             Var (name=person)
+     *             Var (name=_const_531c5f7d_uri, value=http://xmlns.com/foaf/0.1/knows, anonymous)
+     *             Var (name=_const_658d2cee_lit_9902a4bf_ca9, value="Novelist"@en, anonymous)
+     *          StatementPattern (new scope)
+     *             Var (name=person)
+     *             Var (name=_const_531c5f7d_uri, value=http://xmlns.com/foaf/0.1/knows, anonymous)
+     *             Var (name=_const_75920dab_lit_9902a4bf_ca9, value="Author"@en, anonymous)
+     */
+    public void testSimpleSelectVarsPatternWithUnionInStepsTriplet() {
+        String s = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
+                    "PREFIX onto: <http://dbpedia.org/ontology/>\n" +
+                    "\n" +
+                    "SELECT  ?person ?desc ?date ?interests \n" +
+                    "WHERE {" +
+                    "      ?person rdf:type foaf:Person .\n" +
+                    "      ?person onto:description ?desc .\n" +
+                    "      ?person onto:birthDate ?date .\n" +
+                    "      ?person foaf:interest ?interests .\n" +
+                    "      ?person foaf:publications <https://patents.google.com/patent/US9264505B2/en> .\n" +
+                    "\n" +
+                    "      { ?person foaf:knows \"Novelist\"@en . }\n" +
+                    "UNION\n" +
+                    "      { ?person foaf:knows \"Author\"@en . }\n" +
+                    "      } ";
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
+
+        String expected = "Projected fields:person|desc|date\n" +
+                "[└── Start, \n" +
+                "    ──Typ[:http://www.w3.org/2002/07/owl#Thing person#1]──Q[2:all]:{4|6}, \n" +
+                "                                                                    └─?[..][4], \n" +
+                "                                                                          └─?[3]:[type<eq,http://xmlns.com/foaf/0.1/Person>], \n" +
+                "                                                                          └─?[5]:[http://dbpedia.org/ontology/description<IdentityProjection>], \n" +
+                "                                                                          └─?[5]:[http://dbpedia.org/ontology/birthDate<IdentityProjection>], \n" +
+                "                                                                    └─?[..][6], \n" +
+                "                                                                          └─?[5]:[http://dbpedia.org/ontology/description<eq,Novelist>], \n" +
+                "                                                                          └─?[7]:[http://dbpedia.org/ontology/description<eq,Author>]]";
         assertEquals(expected, print(query));
 
     }

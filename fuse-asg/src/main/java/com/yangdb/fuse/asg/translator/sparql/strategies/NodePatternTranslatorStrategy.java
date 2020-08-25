@@ -37,12 +37,12 @@ import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.properties.projection.IdentityProjection;
+import com.yangdb.fuse.model.query.quant.QuantBase;
+import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import javaslang.Tuple2;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.query.algebra.StatementPattern;
-import org.eclipse.rdf4j.query.algebra.TupleExpr;
-import org.eclipse.rdf4j.query.algebra.Var;
+import org.eclipse.rdf4j.query.algebra.*;
 import org.semanticweb.owlapi.model.IRI;
 
 import java.util.Optional;
@@ -59,23 +59,27 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
 
     @Override
     public void apply(TupleExpr element, AsgQuery query, SparqlStrategyContext context) {
-        //todo verify node creation (type & entity)
         if (StatementPattern.class.isAssignableFrom(element.getClass())) {
+            //parent context - Union is SOME, join is ALL
+            QuantType parent = Union.class.isAssignableFrom(element.getParentNode().getClass()) ?
+                    QuantType.some : QuantType.all;
+            //actual statement
             Var subjectVar = ((StatementPattern) element).getSubjectVar();
             if (subjectVar != null) {
                 //subject represents the entity - if not anonymous - tag will identify the subject
-                subjectEval(subjectVar, query, context, o -> o);
+                subjectEval(subjectVar, query, context, parent, o -> o);
             }
 
             Var objectVar = ((StatementPattern) element).getObjectVar();
             Var predicateVar = ((StatementPattern) element).getPredicateVar();
             if (predicateVar != null) {
                 //preidate represents the semantic relation  between the subject & object
-                predicateEval(predicateVar, objectVar, query, context, o -> o);
+                predicateEval(predicateVar, objectVar, query, context, parent, o -> o);
             }
 
             Var contextVar = ((StatementPattern) element).getContextVar();
             if (contextVar != null) {
+                //todo - eval context & infer relevancy
 //                eval(contextVar, query, context, o -> o);
             }
         }
@@ -93,12 +97,12 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
      * @param context
      * @param function
      */
-    private void predicateEval(Var predicate, Var object, AsgQuery query, SparqlStrategyContext context, Function function) {
+    private void predicateEval(Var predicate, Var object, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, Function function) {
         if (predicate.isAnonymous()) {
             //blank node
-            //todo
             Value value = predicate.getValue();
             Optional<Tuple2<Ontology.Accessor.NodeType, String>> result = context.getOntology().matchNameToType(value.stringValue());
+            //fetch relevant node type & name
             if (!result.isPresent()) {
                 result = context.getOntology().matchNameToType(IRI.create(value.stringValue()).getRemainder()
                         .or(value.stringValue()));
@@ -122,21 +126,22 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
                 String type = result.get()._2;
                 switch (result.get()._1) {
                     case ENTITY:
-                        entity(object, query, context, type);
+                        //add query with entity type element
+                        entity(object, query, context, parentQuantType, type);
                         break;
+                    //add query with relationship type element
                     case RELATION:
-                        relation(object, query, context, type);
+                        relation(object, query, context, parentQuantType, type);
                         break;
                     case PROPERTY:
-                        property(object, query, context, type);
+                        //add query with property type element
+                        property(object, query, context, parentQuantType, type);
                         break;
                 }
             }
         } else {
             if (predicate.isConstant()) {
-                //value node
-                //todo
-                Value value = predicate.getValue();
+                //todo - value node
             } else {
                 //parameterized node
                 String name = predicate.getName();
@@ -156,7 +161,16 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
 
     }
 
-    private void entity(Var object, AsgQuery query, SparqlStrategyContext context, String type) {
+    /**
+     * add entity node to query
+     *
+     * @param object
+     * @param query
+     * @param context
+     * @param parentQuantType
+     * @param type
+     */
+    private void entity(Var object, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, String type) {
         String eType = type;
         //add OR update untyped to typed to context entity
         if (EUntyped.class.isAssignableFrom(context.getScope().geteBase().getClass())) {
@@ -169,41 +183,63 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
         return;
     }
 
-    private void relation(Var object, AsgQuery query, SparqlStrategyContext context, String type) {
+    /**
+     * add relationship node to query
+     *
+     * @param object
+     * @param query
+     * @param context
+     * @param parentQuantType
+     * @param type
+     */
+    private void relation(Var object, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, String type) {
         //add relationship to context entity
         // if current context is not a quant - first add quant and than add the property
         String rType = type;
         //add relation to context entity:
         // ** - if current context is not a quant - first add quant and than add the relation
-        AsgEBase<? extends EBase> quant = SparqlUtils.quant(context.getScope(), Optional.empty(), query, context);
-        int current = Math.max(quant.getNext().stream().mapToInt(p -> p.geteNum()).max().orElse(0), quant.geteNum());
+        AsgEBase<? extends EBase> quant = SparqlUtils.quant(context.getScope(), query, context, parentQuantType);
+        //todo verify the quant
+        ((QuantBase) quant.geteBase()).setqType(parentQuantType);
+
         //create relationship & add the PropGroup with the property
-        AsgEBase<Rel> node = new AsgEBase<>(new Rel(current + 1, rType, Rel.Direction.R, null, -1));
+        AsgEBase<Rel> node = new AsgEBase<>(new Rel(AsgQueryUtil.max(query)+1, rType, Rel.Direction.R, null, -1));
         quant.addNext(node);
         context.scope(node);
 
         //relation object (other side) will be evaluated as a subject
-        subjectEval(object, query, context, o -> o);
+        subjectEval(object, query, context, QuantType.all, o -> o);
         return;
     }
 
-    private void property(Var object, AsgQuery query, SparqlStrategyContext context, String type) {
+    /**
+     * add property node to query
+     *
+     * @param object
+     * @param query
+     * @param context
+     * @param parentQuantType
+     * @param type
+     */
+    private void property(Var object, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, String type) {
         AsgEBase<? extends EBase> quant;
         int current;
         String pType = type;
         //add property to context entity:
         // ** - if current context is not a quant - first add quant and than add the property
-        quant = SparqlUtils.quant(context.getScope(), Optional.empty(), query, context);
-        current = Math.max(quant.getNext().stream().mapToInt(p -> p.geteNum()).max().orElse(0), quant.geteNum());
+        quant = SparqlUtils.quant(context.getScope(),  query, context, parentQuantType);
         //create the property
-        EProp eProp = new EProp(current + 2, pType, new IdentityProjection());
-        //add the PropGroup with the property
-        if (!AsgQueryUtil.nextAdjacentDescendant(quant, EPropGroup.class).isPresent()) {
-            quant.addNext(new AsgEBase<>(new EPropGroup(current + 1, eProp)));
+        EProp eProp = new EProp(AsgQueryUtil.max(query)+1, pType, new IdentityProjection());
+        //verify group's quant type compared to parentQuantType
+        if (AsgQueryUtil.nextAdjacentDescendants(quant, EPropGroup.class).stream().anyMatch(g -> ((EPropGroup) g.geteBase()).getQuantType().equals(parentQuantType))) {
+            AsgEBase<EBase> group = AsgQueryUtil.nextAdjacentDescendants(quant, EPropGroup.class).stream()
+                    .filter(g -> ((EPropGroup) g.geteBase()).getQuantType().equals(parentQuantType))
+                    .findFirst().get();
+            //add the PropGroup with the property
+            ((EPropGroup)group.geteBase()).getProps().add(eProp);
         } else {
-            //add the property to the group
-            ((EPropGroup) AsgQueryUtil.nextAdjacentDescendant(quant, EPropGroup.class).get().geteBase())
-                    .getProps().add(eProp);
+            //create a new group with the appropriate quant type
+            quant.addNext(new AsgEBase<>(new EPropGroup(AsgQueryUtil.max(query)+2, parentQuantType, eProp)));
         }
 
         //check object to verify its tagged name
@@ -215,7 +251,6 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
             Value objValue = object.getValue();
             eProp.setCon(new Constraint(ConstraintOp.eq, objValue.stringValue()));
         }
-        return;
     }
 
     /**
@@ -226,7 +261,7 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
      * @param context
      * @param function
      */
-    public void subjectEval(Var var, AsgQuery query, SparqlStrategyContext context, Function function) {
+    public void subjectEval(Var var, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, Function function) {
         if (var.isAnonymous()) {
             //blank node  a concrete entity
             Value value = var.getValue();
@@ -241,13 +276,9 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
                 //return newly generated element
                 return AsgQueryUtil.getByTag(query.getStart(), value.stringValue()).get();
             }));
-
-            //todo
         } else {
             if (var.isConstant()) {
                 //value node
-                Value value = var.getValue();
-                //todo
             } else {
                 //parameterized node
                 String name = var.getName();

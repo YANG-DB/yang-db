@@ -22,12 +22,9 @@ package com.yangdb.fuse.asg.strategy;
 
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.asg.translator.cypher.strategies.expressions.OrExpression;
 import com.yangdb.fuse.asg.translator.sparql.strategies.*;
 import com.yangdb.fuse.asg.translator.sparql.strategies.expressions.CompareExpressionStrategy;
 import com.yangdb.fuse.asg.translator.sparql.strategies.expressions.ExpressionStrategies;
-import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,31 +46,21 @@ public class M1SparqlAsgStrategyRegistrar implements SparqlAsgStrategyRegistrar 
     public Iterable<SparqlTranslatorStrategy> register() {
         //expressions
         whereExpressionStrategies.add(new CompareExpressionStrategy());
- /*       whereExpressionStrategies.add(new OrExpression(whereExpressionStrategies));
-        whereExpressionStrategies.add(new AndExpression(whereExpressionStrategies));
-        whereExpressionStrategies.add(new HasLabelExpression());
-        whereExpressionStrategies.add(new HasRelationLabelExpression());
-        whereExpressionStrategies.add(new InequalityExpression());
-        whereExpressionStrategies.add(new EqualityExpression());
-        whereExpressionStrategies.add(new NotEqualExpression());
-        whereExpressionStrategies.add(new StartsWithExpression());
-        whereExpressionStrategies.add(new EndsWithExpression());
-        whereExpressionStrategies.add(new InExpression());
-        whereExpressionStrategies.add(new ContainsExpression());
-        whereExpressionStrategies.add(new LikeExpression());
-*/
-//        whereClause = new WhereClauseNodeCypherTranslator(whereExpressionStrategies);
-//        match = new MatchCypherTranslatorStrategy(translatorStrategies, whereClause);
 
         //translators
         translatorStrategies.addAll(Arrays.asList(
                 new ProjectionPatternTranslatorStrategy(
                         Arrays.asList(
                                 new FilterPatternTranslatorStrategy(translatorStrategies, whereExpressionStrategies),
+                                new ArbitraryPathTranslatorStrategy(translatorStrategies),
                                 new JoinPatternTranslatorStrategy(translatorStrategies),
+                                new UnionPatternTranslatorStrategy(translatorStrategies),
                                 new NodePatternTranslatorStrategy())
                 ),
+                new FilterPatternTranslatorStrategy(translatorStrategies, whereExpressionStrategies),
+                new ArbitraryPathTranslatorStrategy(translatorStrategies),
                 new JoinPatternTranslatorStrategy(translatorStrategies),
+                new UnionPatternTranslatorStrategy(translatorStrategies),
                 new NodePatternTranslatorStrategy()
         ));
 
@@ -83,7 +70,5 @@ public class M1SparqlAsgStrategyRegistrar implements SparqlAsgStrategyRegistrar 
     private List<SparqlElementTranslatorStrategy> translatorStrategies = new ArrayList<>();
     private List<ExpressionStrategies> whereExpressionStrategies = new ArrayList<>();
 
-//    public MatchCypherTranslatorStrategy match;
-//    private WhereClauseNodeCypherTranslator whereClause;
 }
 

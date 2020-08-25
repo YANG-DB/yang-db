@@ -33,6 +33,9 @@ import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyDomainAxiomImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -270,6 +273,12 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
 
         if(dataPropertyDomainAxioms.isEmpty()) {
             //todo log event
+            //add default "Thing" as domain Axiom
+            dataPropertyDomainAxioms.add(new OWLDataPropertyDomainAxiomImpl(
+                    new OWLDataPropertyImpl(objectProperty.getIRI()),
+                    new OWLClassImpl(IRI.create("http://www.w3.org/2002/07/owl#Thing")),
+                    Collections.emptySet()
+                    ));
         }
 
         //match domain & range pairs
@@ -309,7 +318,7 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
     private void importOntologyAnnotationProperties(OWLOntology o) {
         //
         for (OWLAnnotationProperty annotation : o.getAnnotationPropertiesInSignature()) {
-            //todo -
+            //todo - import annotations directives
         }
     }
 

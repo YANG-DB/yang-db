@@ -147,16 +147,26 @@ public abstract class BaseProp extends EBase{
         return con;
     }
 
+    /**
+     * set constraint (projection & constraints are exclusives)
+     * @param con
+     */
     public void setCon(Constraint con) {
         this.con = con;
+        this.proj = null;
     }
 
     public Projection getProj() {
         return proj;
     }
 
+    /**
+     * set projection (projection & constraints are exclusives)
+     * @param proj
+     */
     public void setProj(Projection proj) {
         this.proj = proj;
+        this.con = null;
     }
 
     public String getF() {
