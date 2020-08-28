@@ -146,15 +146,7 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
                 //parameterized node
                 String name = predicate.getName();
                 //set current working scope
-                context.scope(AsgQueryUtil.getByTag(query.getStart(), name).orElseGet(() -> {
-                    //generate new element - currently unTyped
-                    int index = AsgQueryUtil.maxEntityNum(context.getQuery()) + 1;
-                    //default type is the RDF basic Thing type
-                    EEntityBase element = new ETyped(index, name, context.getOntology().eType$(THING), -1, -1);
-                    context.getScope().addNext(new AsgEBase<>(element));
-                    //return newly generated element
-                    return AsgQueryUtil.getByTag(query.getStart(), name).get();
-                }));
+                context.scope(getOrCreateQueryEntityContext(query, context, name));
             }
         }
 
@@ -265,34 +257,48 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
         if (var.isAnonymous()) {
             //blank node  a concrete entity
             Value value = var.getValue();
-            //set current working scope
-            context.scope(AsgQueryUtil.getByTag(query.getStart(), value.stringValue()).orElseGet(() -> {
-                //generate new element - currently unTyped
-                int index = AsgQueryUtil.maxEntityNum(context.getQuery()) + 1;
-                // type not determined yet - this is the RDF nature...
-                EEntityBase element = new EConcrete(index, value.stringValue(), context.getOntology().eType$(THING),
-                        value.stringValue(), value.stringValue(), -1, -1);
-                context.getScope().addNext(new AsgEBase<>(element));
-                //return newly generated element
-                return AsgQueryUtil.getByTag(query.getStart(), value.stringValue()).get();
-            }));
+            if(value!=null) {
+                //set current working scope (Econcrete type)
+                context.scope(AsgQueryUtil.getByTag(query.getStart(), value.stringValue()).orElseGet(() -> {
+                    //generate new element - currently unTyped
+                    int index = AsgQueryUtil.maxEntityNum(context.getQuery()) + 1;
+                    // type not determined yet - this is the RDF nature...
+                    EEntityBase element = new EConcrete(index, value.stringValue(), context.getOntology().eType$(THING),
+                            value.stringValue(), value.stringValue(), -1, -1);
+                    context.getScope().addNext(new AsgEBase<>(element));
+                    //return newly generated element
+                    return AsgQueryUtil.getByTag(query.getStart(), value.stringValue()).get();
+                }));
+            } else {
+                //set current working scope
+                context.scope(getOrCreateQueryEntityContext(query, context, var.getName()));
+            }
         } else {
             if (var.isConstant()) {
                 //value node
             } else {
                 //parameterized node
-                String name = var.getName();
                 //set current working scope
-                context.scope(AsgQueryUtil.getByTag(query.getStart(), name).orElseGet(() -> {
-                    //generate new element - currently unTyped
-                    int index = AsgQueryUtil.maxEntityNum(context.getQuery()) + 1;
-                    // type not determined yet - this is the RDF nature...
-                    EEntityBase element = new ETyped(index, name, context.getOntology().eType$(THING), -1, -1);
-                    context.getScope().addNext(new AsgEBase<>(element));
-                    //return newly generated element
-                    return AsgQueryUtil.getByTag(query.getStart(), name).get();
-                }));
+                context.scope(getOrCreateQueryEntityContext(query, context, var.getName()));
             }
         }
+    }
+
+    /**
+     *  @param query
+     * @param context
+     * @param name
+     * @return
+     */
+    public AsgEBase<EBase> getOrCreateQueryEntityContext(AsgQuery query, SparqlStrategyContext context, String name) {
+        return AsgQueryUtil.getByTag(query.getStart(), name).orElseGet(() -> {
+            //generate new element - currently unTyped
+            int index = AsgQueryUtil.maxEntityNum(context.getQuery()) + 1;
+            // type not determined yet - this is the RDF nature...
+            EEntityBase element = new ETyped(index, name, context.getOntology().eType$(THING), -1, -1);
+            context.getScope().addNext(new AsgEBase<>(element));
+            //return newly generated element
+            return AsgQueryUtil.getByTag(query.getStart(), name).get();
+        });
     }
 }

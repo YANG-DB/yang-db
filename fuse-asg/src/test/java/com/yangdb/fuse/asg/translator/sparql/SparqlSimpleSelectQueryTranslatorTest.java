@@ -551,18 +551,18 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      */
     public void testSimpleSelectVarsPatternWithUnionInPropertiesTriplet() {
         String s = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
-                    "PREFIX onto: <http://dbpedia.org/ontology/>\n" +
-                    "\n" +
-                    "SELECT  ?person ?desc ?date\n" +
-                    "WHERE { ?person rdf:type foaf:Person .\n" +
-                    "      ?person onto:description ?desc .\n" +
-                    "      ?person onto:birthDate ?date .\n" +
-                    "\n" +
-                    "      { ?person onto:description \"Novelist\"@en . }\n" +
-                    "UNION\n" +
-                    "      { ?person onto:description \"Author\"@en . }\n" +
-                    "      } ";
+                "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
+                "PREFIX onto: <http://dbpedia.org/ontology/>\n" +
+                "\n" +
+                "SELECT  ?person ?desc ?date\n" +
+                "WHERE { ?person rdf:type foaf:Person .\n" +
+                "      ?person onto:description ?desc .\n" +
+                "      ?person onto:birthDate ?date .\n" +
+                "\n" +
+                "      { ?person onto:description \"Novelist\"@en . }\n" +
+                "UNION\n" +
+                "      { ?person onto:description \"Author\"@en . }\n" +
+                "      } ";
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "Projected fields:person|desc|date\n" +
@@ -624,21 +624,21 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      */
     public void testSimpleSelectVarsPatternWithUnionInStepsTriplet() {
         String s = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
-                    "PREFIX onto: <http://dbpedia.org/ontology/>\n" +
-                    "\n" +
-                    "SELECT  ?person ?desc ?date ?interests \n" +
-                    "WHERE {" +
-                    "      ?person rdf:type foaf:Person .\n" +
-                    "      ?person onto:description ?desc .\n" +
-                    "      ?person onto:birthDate ?date .\n" +
-                    "      ?person foaf:interest ?interests .\n" +
-                    "      ?person foaf:publications <https://patents.google.com/patent/US9264505B2/en> .\n" +
-                    "\n" +
-                    "      { ?person foaf:knows \"Novelist\"@en . }\n" +
-                    "UNION\n" +
-                    "      { ?person foaf:knows \"Author\"@en . }\n" +
-                    "      } ";
+                "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
+                "PREFIX onto: <http://dbpedia.org/ontology/>\n" +
+                "\n" +
+                "SELECT  ?person ?desc ?date ?interests \n" +
+                "WHERE {" +
+                "      ?person rdf:type foaf:Person .\n" +
+                "      ?person onto:description ?desc .\n" +
+                "      ?person onto:birthDate ?date .\n" +
+                "      ?person foaf:interest ?interests .\n" +
+                "      ?person foaf:publications <https://patents.google.com/patent/US9264505B2/en> .\n" +
+                "\n" +
+                "      { ?person foaf:knows \"Novelist\"@en . }\n" +
+                "UNION\n" +
+                "      { ?person foaf:knows \"Author\"@en . }\n" +
+                "      } ";
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "Projected fields:person|desc|date\n" +
@@ -802,6 +802,118 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "    ?p foaf:interest ?interest\n" +
                 "   }\n" +
                 "GROUP BY ?interest ORDER BY DESC(COUNT(*)) LIMIT 10";
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
+
+        String expected = "[└── Start, \n" +
+                "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
+                "                                         └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}, \n" +
+                "                                                                                                              └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{6|801}, \n" +
+                "                                                                                                                      └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
+                "                                         └-> Rel(:relatedEntity tomActedIn#4), \n" +
+                "                                                                                                              └─?[..][400], \n" +
+                "                                                                                                                      └─?[401]:[category<eq,ACTED_IN>], \n" +
+                "                                                                                                                                                  └─Typ[:Entity otherPerson#6]──Q[600:all]:{7}, \n" +
+                "                                                                                                                                                                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
+                "                                                                                                                                                                                                                             └─?[..][700], \n" +
+                "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
+                "                                                                                                                                                  └─?[..][801], \n" +
+                "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
+        assertEquals(expected, print(query));
+
+    }
+
+    @Test
+    @Ignore
+    /**
+     * Distinct
+     *    Projection
+     *       ProjectionElemList
+     *          ProjectionElem "uri"
+     *          ProjectionElem "label"
+     *       Order
+     *          OrderElem (ASC)
+     *             Var (name=label)
+     *          Filter
+     *             Or
+     *                Compare (=)
+     *                   Lang
+     *                      Var (name=label)
+     *                   ValueConstant (value="")
+     *                Compare (=)
+     *                   Lang
+     *                      Var (name=label)
+     *                   ValueConstant (value="en")
+     *             Join
+     *                Join
+     *                   Join
+     *                      StatementPattern
+     *                         Var (name=domain)
+     *                         Var (name=_const_f5e5585a_uri, value=http://www.w3.org/1999/02/22-rdf-syntax-ns#type, anonymous)
+     *                         Var (name=_const_540a34f3_uri, value=http://dbpedia.org/ontology/Person, anonymous)
+     *                      StatementPattern
+     *                         Var (name=domain)
+     *                         Var (name=_const_ceec5206_uri, value=http://dbpedia.org/ontology/birthPlace, anonymous)
+     *                         Var (name=_anon_0b64a9cd_775a_4852_8502_eef4e7a49ad1, anonymous)
+     *                   StatementPattern
+     *                      Var (name=_anon_0b64a9cd_775a_4852_8502_eef4e7a49ad1, anonymous)
+     *                      Var (name=_const_2b8b59d8_uri, value=http://dbpedia.org/ontology/country, anonymous)
+     *                      Var (name=uri)
+     *                StatementPattern
+     *                   Var (name=uri)
+     *                   Var (name=_const_9285ccfc_uri, value=http://www.w3.org/2000/01/rdf-schema#label, anonymous)
+     *                   Var (name=label)
+     */
+    public void testFindCountries() {
+        String s = "SELECT DISTINCT ?uri ?label \n" +
+                " WHERE { \n" +
+                "   ?domain a <http://dbpedia.org/ontology/Person> .\n" +
+                "   ?domain <http://dbpedia.org/ontology/birthPlace>/<http://dbpedia.org/ontology/country> ?uri .\n" +
+                "   ?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label .\n" +
+                "    FILTER(lang(?label) = '' || lang(?label) = 'en')\n" +
+                "}\n" +
+                "ORDER BY ?label\n";
+        final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
+
+        String expected = "[└── Start, \n" +
+                "    ──Typ[:Entity person#1]──Q[100:all]:{2|4}, \n" +
+                "                                         └-> Rel(:hasEvalue Rel_#2#2)──Typ[:Evalue personName#3]──Q[300:all]:{301}, \n" +
+                "                                                                                                              └─?[..][301]──Typ[:Entity m1#5]──Q[800:all]:{6|801}, \n" +
+                "                                                                                                                      └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
+                "                                         └-> Rel(:relatedEntity tomActedIn#4), \n" +
+                "                                                                                                              └─?[..][400], \n" +
+                "                                                                                                                      └─?[401]:[category<eq,ACTED_IN>], \n" +
+                "                                                                                                                                                  └─Typ[:Entity otherPerson#6]──Q[600:all]:{7}, \n" +
+                "                                                                                                                                                                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
+                "                                                                                                                                                                                                                             └─?[..][700], \n" +
+                "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
+                "                                                                                                                                                  └─?[..][801], \n" +
+                "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
+        assertEquals(expected, print(query));
+    }
+
+    @Test
+    @Ignore
+    /**
+     *
+     */
+    public void testFindArtworkAndPerson() {
+        String s = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" +
+                "SELECT DISTINCT (STR(?label) AS ?nom) ?wikipedia ?this WHERE {\n" +
+                "  ?this rdf:type <http://dbpedia.org/ontology/Artwork>;\n" +
+                "    <http://dbpedia.org/ontology/author> ?Person1.\n" +
+                "  ?Person1 rdf:type <http://dbpedia.org/ontology/Person>.\n" +
+                "  ?this rdf:type <http://dbpedia.org/ontology/Person>;\n" +
+                "    <http://dbpedia.org/ontology/birthPlace>/<http://dbpedia.org/ontology/country> ?CountryNaN.\n" +
+                "  VALUES ?CountryNaN {\n" +
+                "    <http://fr.dbpedia.org/resource/Canada>\n" +
+                "    <http://fr.dbpedia.org/resource/Chine>\n" +
+                "  }\n" +
+                "  ?Person1 <http://dbpedia.org/ontology/movement> <http://fr.dbpedia.org/resource/Baroque>.\n" +
+                "  ?this rdfs:label ?label FILTER(lang(?label) = 'fr') \n" +
+                "  ?this <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> ?wikipedia \n" +
+                "}\n" +
+                "ORDER BY ?label LIMIT 5000";
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         String expected = "[└── Start, \n" +
