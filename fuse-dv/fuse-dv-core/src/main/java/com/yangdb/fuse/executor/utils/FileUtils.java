@@ -51,6 +51,7 @@ public abstract class FileUtils {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
+                //todo sanitize entry name
                 File entryDestination = new File(target, entry.getName());
                 if (entry.isDirectory()) {
                     entryDestination.mkdirs();

@@ -87,7 +87,7 @@ public class RollBucketNodeList_SORTED implements NodesList {
 				for (Iterator iterator = sortedMinusWeightsMap.iterator(); iterator.hasNext();){
 					Entry<Long,Integer> e = (Entry<Long, Integer>) iterator.next();
 					int i = e.getValue();
-					cumSum += i * groups.get(i).size();					
+					cumSum += (long)i * groups.get(i).size();
 					BAGraphGenerator.numComparisons++;
 					if(cumSum > randNum){	//data is in the current bucket
 						int selectedNodePositionInBucket = random.nextInt(groups.get(i).size());
