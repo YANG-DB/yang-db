@@ -196,7 +196,7 @@ public class EPropGroup extends BasePropGroup<EProp, EPropGroup> {
     }
 
     private void consumeAll(Predicate<EProp> propPredicate, EPropGroup group, BiConsumer<EPropGroup, EProp> consumer) {
-        Stream.ofAll(group.getProps()).filter(propPredicate::test).toJavaList().forEach(eprop -> consumer.accept(group, eprop));
+        Stream.ofAll(group.getProps()).filter(propPredicate).toJavaList().forEach(eprop -> consumer.accept(group, eprop));
         Stream.ofAll(group.getGroups()).forEach(childGroup -> consumeAll(propPredicate, childGroup, consumer));
     }
     //endregion

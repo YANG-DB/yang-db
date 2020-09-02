@@ -26,6 +26,9 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.EBase;
 import org.eclipse.rdf4j.query.parser.ParsedQuery;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SparqlStrategyContext {
 
     public SparqlStrategyContext(Ontology ontology, ParsedQuery statement, AsgQuery query,AsgEBase<? extends EBase> scope) {
@@ -33,6 +36,7 @@ public class SparqlStrategyContext {
         this.statement = statement;
         this.query = query;
         this.scope = scope;
+        this.anonymLabels = new HashMap<>();
     }
 
     public AsgEBase<? extends EBase> getScope() {
@@ -62,6 +66,7 @@ public class SparqlStrategyContext {
 
     private AsgQuery query;
     private AsgEBase<? extends EBase> scope;
+    private Map<String,String> anonymLabels;
 
     //endregion
 }

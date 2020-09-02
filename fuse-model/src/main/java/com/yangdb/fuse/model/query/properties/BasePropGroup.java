@@ -49,9 +49,7 @@ import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by moti on 5/17/2017.
@@ -164,6 +162,15 @@ public abstract class BasePropGroup<T extends BaseProp, S extends BasePropGroup<
     protected List<T> props;
     protected QuantType quantType;
     protected List<S> groups;
+
+    public boolean addIsNoneExist(T prop) {
+        //add prop to list only when no similar prop exists
+        if(this.props.stream().noneMatch(p->
+                p.getpType().equals(prop.getpType())))
+            return this.props.add(prop);
+        return false;
+
+    }
     //endregion
 }
 

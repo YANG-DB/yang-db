@@ -23,6 +23,7 @@ package com.yangdb.fuse.asg.translator.sparql.strategies;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
+import com.yangdb.fuse.model.ontology.DirectiveType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.OntologyNameSpace;
 import com.yangdb.fuse.model.ontology.Property;
@@ -98,48 +99,28 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
      * @param function
      */
     private void predicateEval(Var predicate, Var object, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, Function function) {
+        //named var
         if (predicate.isAnonymous()) {
             //blank node
             Value value = predicate.getValue();
-            Optional<Tuple2<Ontology.Accessor.NodeType, String>> result = context.getOntology().matchNameToType(value.stringValue());
-            //fetch relevant node type & name
-            if (!result.isPresent()) {
-                result = context.getOntology().matchNameToType(IRI.create(value.stringValue()).getRemainder()
-                        .or(value.stringValue()));
-
-            }
-            if (!result.isPresent()) {
-                //verify if value belongs to ontology namespaces
-                if (OntologyNameSpace.inside(value.stringValue())) {
-                    String name = IRI.create(value.stringValue()).getRemainder().get();
-                    //check ontology properties for matching property pType
-                    Optional<Property> property = context.getOntology().properties().stream().filter(prop -> OntologyNameSpace.reminder(prop.getpType()).equals(name)).findFirst();
-                    if (property.isPresent()) {
-                        result = Optional.of(new Tuple2<>(Ontology.Accessor.NodeType.PROPERTY, property.get().getpType()));
-                    }
-                }
-                if (!result.isPresent())
-                    //todo - warning no appropriate ontology type was found for the predicate ...
-                    throw new FuseError.FuseErrorException(new FuseError("Schema query mismatch", "No predicate found for " + value + " in ontology  " + context.getOntology().name()));
-
-            } else {
-                String type = result.get()._2;
-                switch (result.get()._1) {
-                    case ENTITY:
-                        //add query with entity type element
-                        entity(object, query, context, parentQuantType, type);
-                        break;
-                    //add query with relationship type element
-                    case RELATION:
-                        relation(object, query, context, parentQuantType, type);
-                        break;
-                    case PROPERTY:
-                        //add query with property type element
-                        property(object, query, context, parentQuantType, type);
-                        break;
-                }
+            Optional<Tuple2<Ontology.Accessor.NodeType, String>> result = getNodeType(context, value);
+            String type = result.get()._2;
+            switch (result.get()._1) {
+                case ENTITY:
+                    //add query with entity type element
+                    entity(predicate,object, query, context, parentQuantType, type);
+                    break;
+                //add query with relationship type element
+                case RELATION:
+                    relation(predicate,object, query, context, parentQuantType, type);
+                    break;
+                case PROPERTY:
+                    //add query with property type element
+                    property(predicate,object, query, context, parentQuantType, type);
+                    break;
             }
         } else {
+            //constant value
             if (predicate.isConstant()) {
                 //todo - value node
             } else {
@@ -154,15 +135,60 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
     }
 
     /**
+     * extract node class-type and named types
+     * @param context
+     * @param value
+     * @return
+     */
+    private Optional<Tuple2<Ontology.Accessor.NodeType, String>> getNodeType(SparqlStrategyContext context, Value value) {
+        Optional<Tuple2<Ontology.Accessor.NodeType, String>> result = context.getOntology().matchNameToType(value.stringValue());
+        //fetch relevant node type & name
+        if (!result.isPresent()) {
+            result = context.getOntology().matchNameToType(IRI.create(value.stringValue()).getRemainder()
+                    .or(value.stringValue()));
+
+        }
+        if (!result.isPresent()) {
+            //verify if value belongs to ontology namespaces
+            if (OntologyNameSpace.inside(value.stringValue())) {
+                String name = IRI.create(value.stringValue()).getRemainder().get();
+                //check ontology properties for matching property pType
+                Optional<Property> property = context.getOntology().properties().stream().filter(prop -> OntologyNameSpace.reminder(prop.getpType()).equals(name)).findFirst();
+                if (property.isPresent()) {
+                    result = Optional.of(new Tuple2<>(Ontology.Accessor.NodeType.PROPERTY, property.get().getpType()));
+                }
+                //check directives - this are the basic directives which are not part of the domain but a language definition specs
+                if (context.getOntology().$directive(name).isPresent()) {
+                    DirectiveType directiveType = context.getOntology().$directive$(name);
+                    switch (directiveType.getType()) {
+                        case RESOURCE:
+                            break;
+                        case PROPERTY:
+                            //these are graph vertices properties
+                            result = Optional.of(new Tuple2<>(Ontology.Accessor.NodeType.PROPERTY, name));
+                            break;
+                    }
+                }
+            }
+            if (!result.isPresent())
+                //todo - warning no appropriate ontology type was found for the predicate ...
+                throw new FuseError.FuseErrorException(new FuseError("Schema query mismatch", "No predicate found for " + value + " in ontology  " + context.getOntology().name()));
+
+        }
+        return result;
+    }
+
+    /**
      * add entity node to query
      *
+     * @param predicate
      * @param object
      * @param query
      * @param context
      * @param parentQuantType
      * @param type
      */
-    private void entity(Var object, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, String type) {
+    private void entity(Var predicate, Var object, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, String type) {
         String eType = type;
         //add OR update untyped to typed to context entity
         if (EUntyped.class.isAssignableFrom(context.getScope().geteBase().getClass())) {
@@ -172,66 +198,70 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
             //set the type
             ((ETyped) context.getScope().geteBase()).seteType(eType);
         }
-        return;
     }
 
     /**
      * add relationship node to query
      *
+     * @param predicate
      * @param object
      * @param query
      * @param context
      * @param parentQuantType
      * @param type
      */
-    private void relation(Var object, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, String type) {
+    private void relation(Var predicate, Var object, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, String type) {
         //add relationship to context entity
-        // if current context is not a quant - first add quant and than add the property
         String rType = type;
-        //add relation to context entity:
-        // ** - if current context is not a quant - first add quant and than add the relation
-        AsgEBase<? extends EBase> quant = SparqlUtils.quant(context.getScope(), query, context, parentQuantType);
-        //todo verify the quant
-        ((QuantBase) quant.geteBase()).setqType(parentQuantType);
-
         //create relationship & add the PropGroup with the property
-        AsgEBase<Rel> node = new AsgEBase<>(new Rel(AsgQueryUtil.max(query)+1, rType, Rel.Direction.R, null, -1));
-        quant.addNext(node);
+        //set current working scope (Econcrete type)
+        AsgEBase<EBase> node = AsgQueryUtil.getByTag(query.getStart(), object.getName())
+                .orElseGet(() -> {
+                    //add relation to context entity:
+                    // ** - if current context is not a quant - first add quant and than add the relation
+                    AsgEBase<? extends EBase> quant = SparqlUtils.quant(context.getScope(), query, context, parentQuantType);
+                    //todo verify the quant
+                    ((QuantBase) quant.geteBase()).setqType(parentQuantType);
+                    //if relation does not exist - create it & add to quant
+                    quant.addNext(new AsgEBase<>(new Rel(AsgQueryUtil.max(query) + 1, rType, Rel.Direction.R, predicate.getName(), -1)));
+                    //return newly generated element
+                    return AsgQueryUtil.getByTag(query.getStart(), predicate.getName()).get();
+                });
         context.scope(node);
 
         //relation object (other side) will be evaluated as a subject
         subjectEval(object, query, context, QuantType.all, o -> o);
-        return;
     }
 
     /**
      * add property node to query
      *
+     * @param predicate
      * @param object
      * @param query
      * @param context
      * @param parentQuantType
      * @param type
      */
-    private void property(Var object, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, String type) {
+    private void property(Var predicate, Var object, AsgQuery query, SparqlStrategyContext context, QuantType parentQuantType, String type) {
         AsgEBase<? extends EBase> quant;
         int current;
         String pType = type;
         //add property to context entity:
         // ** - if current context is not a quant - first add quant and than add the property
-        quant = SparqlUtils.quant(context.getScope(),  query, context, parentQuantType);
+        quant = SparqlUtils.quant(context.getScope(), query, context, parentQuantType);
         //create the property
-        EProp eProp = new EProp(AsgQueryUtil.max(query)+1, pType, new IdentityProjection());
+        EProp eProp = new EProp(AsgQueryUtil.max(query) + 1, pType, new IdentityProjection());
         //verify group's quant type compared to parentQuantType
         if (AsgQueryUtil.nextAdjacentDescendants(quant, EPropGroup.class).stream().anyMatch(g -> ((EPropGroup) g.geteBase()).getQuantType().equals(parentQuantType))) {
             AsgEBase<EBase> group = AsgQueryUtil.nextAdjacentDescendants(quant, EPropGroup.class).stream()
                     .filter(g -> ((EPropGroup) g.geteBase()).getQuantType().equals(parentQuantType))
                     .findFirst().get();
             //add the PropGroup with the property
-            ((EPropGroup)group.geteBase()).getProps().add(eProp);
+            ((EPropGroup) group.geteBase()).addIsNoneExist(eProp);
         } else {
             //create a new group with the appropriate quant type
-            quant.addNext(new AsgEBase<>(new EPropGroup(AsgQueryUtil.max(query)+2, parentQuantType, eProp)));
+            quant.addNext(new AsgEBase<>(new EPropGroup(AsgQueryUtil.max(query) + 2, parentQuantType, eProp)));
         }
 
         //check object to verify its tagged name
@@ -257,7 +287,7 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
         if (var.isAnonymous()) {
             //blank node  a concrete entity
             Value value = var.getValue();
-            if(value!=null) {
+            if (value != null) {
                 //set current working scope (Econcrete type)
                 context.scope(AsgQueryUtil.getByTag(query.getStart(), value.stringValue()).orElseGet(() -> {
                     //generate new element - currently unTyped
@@ -285,7 +315,7 @@ public class NodePatternTranslatorStrategy implements SparqlElementTranslatorStr
     }
 
     /**
-     *  @param query
+     * @param query
      * @param context
      * @param name
      * @return

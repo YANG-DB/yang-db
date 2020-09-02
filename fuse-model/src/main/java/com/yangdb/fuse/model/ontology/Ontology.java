@@ -58,6 +58,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.model.ontology.DirectiveType.DirectiveClasses.*;
+
 /**
  * Created by benishue on 22-Feb-17.
  */
@@ -65,13 +67,13 @@ import java.util.stream.Collectors;
 @JsonIgnoreProperties({"primitiveTypes"})
 public class Ontology {
     public Ontology() {
+        directives = new ArrayList<>();
         primitiveTypes = new ArrayList<>();
         entityTypes = new ArrayList<>();
         relationshipTypes = new ArrayList<>();
         enumeratedTypes = new ArrayList<>();
         properties = new ArrayList<>();
         compositeTypes = new ArrayList<>();
-
 
         primitiveTypes.add(new PrimitiveType("int", Long.class));
         primitiveTypes.add(new PrimitiveType("string", String.class));
@@ -113,6 +115,14 @@ public class Ontology {
         return relationshipTypes;
     }
 
+    public List<DirectiveType> getDirectives() {
+        return directives;
+    }
+
+    public void setDirectives(List<DirectiveType> directives) {
+        this.directives = directives;
+    }
+
     public void setRelationshipTypes(List<RelationshipType> relationshipTypes) {
         this.relationshipTypes = relationshipTypes;
     }
@@ -152,6 +162,7 @@ public class Ontology {
         if (o == null || getClass() != o.getClass()) return false;
         Ontology ontology = (Ontology) o;
         return ont.equals(ontology.ont) &&
+                directives.equals(ontology.directives) &&
                 entityTypes.equals(ontology.entityTypes) &&
                 relationshipTypes.equals(ontology.relationshipTypes) &&
                 properties.equals(ontology.properties) &&
@@ -163,13 +174,14 @@ public class Ontology {
 
     @Override
     public int hashCode() {
-        return Objects.hash(ont, entityTypes, relationshipTypes, properties, metadata, enumeratedTypes, compositeTypes, primitiveTypes);
+        return Objects.hash(ont,directives, entityTypes, relationshipTypes, properties, metadata, enumeratedTypes, compositeTypes, primitiveTypes);
     }
 
     //endregion
 
     //region Fields
     private String ont;
+    private List<DirectiveType> directives;
     private List<EntityType> entityTypes;
     private List<RelationshipType> relationshipTypes;
     private List<Property> properties;
@@ -183,6 +195,7 @@ public class Ontology {
 
     public static final class OntologyBuilder {
         private String ont = "Generic";
+        private List<DirectiveType> directives;
         private List<EntityType> entityTypes;
         private List<RelationshipType> relationshipTypes;
         private List<Property> properties;
@@ -190,6 +203,7 @@ public class Ontology {
         private List<CompositeType> compositeTypes;
 
         private OntologyBuilder() {
+            this.directives = new ArrayList<>();
             this.entityTypes = new ArrayList<>();
             this.relationshipTypes = new ArrayList<>();
             this.properties = new ArrayList<>();
@@ -248,6 +262,17 @@ public class Ontology {
             return this.properties.stream().filter(et -> et.getType().equals(property)).findAny();
         }
 
+        public OntologyBuilder withDirective(DirectiveType directive) {
+            this.directives.add(directive);
+            return this;
+
+        }
+
+        public OntologyBuilder withDirectives(List<DirectiveType> directives) {
+            this.directives.addAll(directives);
+            return this;
+
+        }
         public OntologyBuilder withEnumeratedTypes(List<EnumeratedType> enumeratedTypes) {
             this.enumeratedTypes = enumeratedTypes;
             return this;
@@ -281,6 +306,7 @@ public class Ontology {
         public Ontology build() {
             Ontology ontology = new Ontology();
             ontology.setOnt(ont);
+            ontology.setDirectives(directives);
             ontology.setEntityTypes(entityTypes);
             ontology.setRelationshipTypes(relationshipTypes);
             ontology.setEnumeratedTypes(enumeratedTypes);
@@ -328,6 +354,14 @@ public class Ontology {
 
         public Optional<EntityType> $entity(String eType) {
             return Optional.ofNullable(this.entitiesByEtype.get(eType));
+        }
+
+        public Optional<DirectiveType> $directive(String name) {
+            return this.ontology.directives.stream().filter(d->d.getName().equals(name)).findFirst();
+        }
+
+        public DirectiveType $directive$(String name) {
+            return this.ontology.directives.stream().filter(d->d.getName().equals(name)).findFirst().get();
         }
 
         public EntityType $entity$(String eType) {

@@ -15,7 +15,7 @@ public interface OntologyNameSpace {
     String defaultNameSpace = namespaces[2];
 
     static boolean inside(String name) {
-        return Arrays.stream(namespaces).anyMatch(name::contains);
+        return Arrays.stream(namespaces).anyMatch(name::startsWith);
     }
 
     static String reminder(String name) {

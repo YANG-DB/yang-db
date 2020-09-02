@@ -34,7 +34,10 @@ public class OWLOntologyTranslatorTest {
         URL user = Thread.currentThread().getContextClassLoader().getResource("rdf/user.owl");
         OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
         //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
-        ontology = transformer.transform(Sets.newHashSet(
+        assert user != null;
+        assert workspace != null;
+
+        ontology = transformer.transform(Arrays.asList(
                 new String(Files.readAllBytes(new File(user.toURI()).toPath())),
                 new String(Files.readAllBytes(new File(workspace.toURI()).toPath()))));
         Assert.assertNotNull(ontology);

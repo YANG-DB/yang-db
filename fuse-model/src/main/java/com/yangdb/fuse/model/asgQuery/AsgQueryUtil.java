@@ -910,6 +910,27 @@ public class AsgQueryUtil {
         query.getElements().remove(element);
     }
 
+    /**
+     * REPLACE all tagged elements with tag name starting with 'statringTagValue' with functional value placer
+     * @param query
+     * @param statringTagValue
+     * @param function
+     * @return
+     */
+    public static AsgQuery replaceTagsStartingWith(AsgQuery query,String statringTagValue,Function<EBase,String> function) {
+        elements(query.getStart(), emptyIterableFunction, AsgEBase::getNext,
+                p -> (EEntityBase.class.isAssignableFrom(p.geteBase().getClass()) &&
+                        ((EEntityBase) p.geteBase()).geteTag() != null &&
+                        ((EEntityBase) p.geteBase()).geteTag().startsWith(statringTagValue))
+                        ||
+                        (Rel.class.isAssignableFrom(p.geteBase().getClass()) &&
+                                ((Rel) p.geteBase()).getWrapper() != null &&
+                                ((Rel) p.geteBase()).getWrapper().startsWith(statringTagValue))
+                , truePredicate,Collections.emptyList())
+                .forEach(e->((Tagged)e.geteBase()).seteTag(function.apply(e.geteBase())));
+        return query;
+    }
+
     public static class OptionalStrippedQuery {
         private AsgQuery mainQuery;
         private List<Tuple2<AsgEBase<OptionalComp>, AsgQuery>> optionalQueries;

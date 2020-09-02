@@ -121,6 +121,7 @@ public abstract class BaseProp extends EBase{
         result = 31 * result + (pType!=null ? pType.hashCode() : 0);
         result = 31 * result + (pTag!=null ? pTag.hashCode() : 0);
         result = 31 * result + (con!=null ? con.hashCode() : 0);
+        result = 31 * result + (proj!=null ? proj.hashCode() : 0);
         result = 31 * result + (f != null ? f.hashCode() : 0);
         return result;
     }

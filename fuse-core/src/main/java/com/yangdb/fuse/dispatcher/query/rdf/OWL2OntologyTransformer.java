@@ -40,18 +40,32 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.model.ontology.DirectiveType.DirectiveClasses.*;
+import static com.yangdb.fuse.model.ontology.DirectiveType.DirectiveClasses.RESOURCE;
+
 /**
  * transform OWL RDF ontology schema to YangDB ontology support
  */
-public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<String>, Ontology> {
+public class OWL2OntologyTransformer implements OntologyTransformerIfc<List<String>, Ontology> {
     private OWLOntologyManager manager;
     private OWLOntologyLoaderConfiguration config;
     private IRI root;
+    private List<DirectiveType> directiveTypes;
 
     public OWL2OntologyTransformer() {
         root = IRI.create(OntologyNameSpace.defaultNameSpace);
         config = new OWLOntologyLoaderConfiguration();
         manager = createOwlOntologyManager(config);
+        directiveTypes = addDefaultRDFDirectives();
+    }
+
+    private List<DirectiveType> addDefaultRDFDirectives() {
+        return Arrays.asList(
+                new DirectiveType("label", PROPERTY, RESOURCE.name(), LITERAL.name()),
+                new DirectiveType("type", PROPERTY, CLASS.name(), RESOURCE.name()),
+                new DirectiveType("language", PROPERTY, LITERAL.name(), LITERAL.name()),
+                new DirectiveType("value", PROPERTY, RESOURCE.name(), RESOURCE.name())
+        );
     }
 
     public OWLOntologyManager getManager() {
@@ -71,13 +85,15 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
      * load owl ontologies -
      *  the order of the ontologies is important in regards with the owl dependencies
      */
-    public Ontology transform(Set<String> source) {
+    public Ontology transform(List<String> source) {
         Ontology.OntologyBuilder builder = Ontology.OntologyBuilder.anOntology();
-        return importOWL(builder, source).build();
+        return importOWL(builder, source)
+                .withDirectives(directiveTypes)
+                .build();
     }
 
     @Override
-    public Set<String> translate(Ontology source) {
+    public List<String> translate(Ontology source) {
         throw new NotImplementedException("");
     }
 
@@ -91,7 +107,7 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
 
     public Ontology.OntologyBuilder importOWL(
             Ontology.OntologyBuilder builder,
-            Set<String> owls) {
+            List<String> owls) {
         try {
             //set ontology name
             builder.withOnt(root.toString());
@@ -238,7 +254,7 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
             sideA.add(domain.asOWLClass().getIRI().toString());
         } else {
             sideA.addAll(domain.asDisjunctSet().stream().map(element ->
-                            element.asOWLClass().getIRI().toString())
+                    element.asOWLClass().getIRI().toString())
                     .collect(Collectors.toSet()));
         }
 
@@ -246,7 +262,7 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
             sideB.add(range.asOWLClass().getIRI().toString());
         } else {
             sideB.addAll(range.asDisjunctSet().stream().map(element ->
-                            element.asOWLClass().getIRI().toString())
+                    element.asOWLClass().getIRI().toString())
                     .collect(Collectors.toSet()));
         }
         //return cartesian product of the two sides
@@ -271,14 +287,14 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<Set<Strin
         List<OWLDataPropertyDomainAxiom> dataPropertyDomainAxioms = new ArrayList<>(o.getDataPropertyDomainAxioms(objectProperty));
         List<OWLDataPropertyRangeAxiom> dataPropertyRangeAxioms = new ArrayList<>(o.getDataPropertyRangeAxioms(objectProperty));
 
-        if(dataPropertyDomainAxioms.isEmpty()) {
+        if (dataPropertyDomainAxioms.isEmpty()) {
             //todo log event
             //add default "Thing" as domain Axiom
             dataPropertyDomainAxioms.add(new OWLDataPropertyDomainAxiomImpl(
                     new OWLDataPropertyImpl(objectProperty.getIRI()),
                     new OWLClassImpl(IRI.create("http://www.w3.org/2002/07/owl#Thing")),
                     Collections.emptySet()
-                    ));
+            ));
         }
 
         //match domain & range pairs

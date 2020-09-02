@@ -1,12 +1,9 @@
 package com.yangdb.fuse.dispatcher.query.rdf;
 
-import com.google.common.collect.Sets;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2OntologyTransformer;
 import com.yangdb.fuse.model.ontology.EnumeratedType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.ontology.Value;
-import graphql.schema.GraphQLSchema;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -16,6 +13,7 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,11 +23,13 @@ public class OWLSIOCOntologyTranslatorTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        URL pizza = Thread.currentThread().getContextClassLoader().getResource("rdf/sioc.owl");
+        URL sioc = Thread.currentThread().getContextClassLoader().getResource("rdf/sioc.owl");
         OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
         //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
-        ontology = transformer.transform(Sets.newHashSet(
-                new String(Files.readAllBytes(new File(pizza.toURI()).toPath()))));
+        assert sioc != null;
+
+        ontology = transformer.transform(Collections.singletonList(
+                new String(Files.readAllBytes(new File(sioc.toURI()).toPath()))));
         Assert.assertNotNull(ontology);
     }
 

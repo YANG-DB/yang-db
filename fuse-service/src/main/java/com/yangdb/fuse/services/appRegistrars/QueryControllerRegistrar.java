@@ -427,7 +427,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         public static Result planPrint(Jooby app, Request req, QueryControllerRegistrar registrar) {
             ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = registrar.getController(app).explain(req.param("queryId").value());
-            String print = PlanWithCostDescriptor.print(response.getData());
+            String print = PlanWithCostDescriptor.print(response.getData(),true);
             ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                     .data(Optional.of(print))
                     .compose();

@@ -48,7 +48,7 @@ public class RootTranslatorStrategy implements SparqlTranslatorStrategy{
         //root parsed query entry level
         TupleExpr expr = statement.getTupleExpr();
         //structure query elements
-        translatorStrategies.iterator().next().apply(expr,query,context);
+        translatorStrategies.forEach(strategy->strategy.apply(expr,query,context));
     }
 
 

@@ -16,6 +16,7 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,9 @@ public class OWLPizzaOntologyTranslatorTest {
         URL pizza = Thread.currentThread().getContextClassLoader().getResource("rdf/pizza.owl");
         OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
         //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
-        ontology = transformer.transform(Sets.newHashSet(
+        assert pizza != null;
+
+        ontology = transformer.transform(Collections.singletonList(
                 new String(Files.readAllBytes(new File(pizza.toURI()).toPath()))));
         Assert.assertNotNull(ontology);
     }
