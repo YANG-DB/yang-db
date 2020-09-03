@@ -32,6 +32,9 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.impl.DefaultNodeSet;
+import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet;
+import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyDomainAxiomImpl;
@@ -151,52 +154,69 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<List<Stri
     private void importOntologyClasses(Ontology.OntologyBuilder builder, OWLOntology o, OWLReasoner reasoner) {
         //abstract classes
         for (OWLClass ontologyClass : o.getClassesInSignature()) {
-            String type = ontologyClass.getIRI().toString();
-            //ToDo add hirarchy information to yangDb ontology
-            //information used to infer structural inheritance
-            NodeSet<OWLClass> subClasses = reasoner.getSubClasses(ontologyClass, true);
-            NodeSet<OWLClass> superClasses = reasoner.getSuperClasses(ontologyClass, true);
-            NodeSet<OWLNamedIndividual> instances = reasoner.getInstances(ontologyClass, true);
+            //build classes entities
+            generateEntity(builder, o, reasoner, ontologyClass);
+        }
+        for (OWLNamedIndividual individual : o.getIndividualsInSignature()) {
+            //build individual entity
+            buildEntity(builder, individual.getIRI().toString(), new OWLClassNodeSet());
+        }
+    }
 
-            //enum filter
-            Optional<OWLAxiom> enumAxiom = o.getAxioms().stream()
-                    .filter(ax -> ax.isOfType(Sets.newHashSet(AxiomType.EQUIVALENT_CLASSES))) // get classes
-                    .filter(ax -> ax.getClassesInSignature().contains(ontologyClass)) //verify same class as current
-                    .filter(ax -> !ax.getNestedClassExpressions().isEmpty())
-                    .findFirst();
+    private void generateEntity(Ontology.OntologyBuilder builder, OWLOntology o, OWLReasoner reasoner, OWLClass ontologyClass) {
+        String type = ontologyClass.getIRI().toString();
+        //ToDo add hirarchy information to yangDb ontology
+        //information used to infer structural inheritance
+        NodeSet<OWLClass> subClasses = reasoner.getSubClasses(ontologyClass, true);
+        NodeSet<OWLClass> superClasses = reasoner.getSuperClasses(ontologyClass, true);
+        NodeSet<OWLNamedIndividual> instances = reasoner.getInstances(ontologyClass, true);
 
-            if (enumAxiom.isPresent()) {
-                Optional<OWLClassExpression> expression = ((OWLEquivalentClassesAxiom) enumAxiom.get()).getClassExpressions().stream()
-                        .filter(exp -> exp instanceof OWLObjectOneOf)
-                        .findFirst();
-                if (expression.isPresent()) {
-                    List<String> values = ((OWLObjectOneOf) expression.get()).getIndividuals().stream()
-                            .map(el -> el.asOWLNamedIndividual().getIRI().toString())
-                            .collect(Collectors.toList());
-                    //enum type class
-                    builder.addEnumeratedTypes(EnumeratedType.EnumeratedTypeBuilder.anEnumeratedType()
-                            .withEType(type)
-                            .values(values)
-                            .build());
-                }
-            } else {
-                //simple type class
-                //functional actions: if EntityType does not exist create on, add it to builder and continue
-                builder.getEntityType(type).orElseGet(
-                        () -> builder.addEntityType(
-                                EntityType.Builder.get()
-                                        .withEType(type)
-                                        .withName(type)
-                                        .withParentType(superClasses.getNodes().stream()
-                                                .flatMap(clazzNode -> clazzNode.getEntities().stream())
-                                                .map(clazz -> clazz.getIRI().toString())
-                                                //filter out same names
-                                                .filter(name -> !name.equals(type))
-                                                .collect(Collectors.toList()))
-                                        .build())
-                                .getEntityType(type)
-                                .get());
-            }
+        //enum filter
+        Optional<OWLAxiom> enumAxiom = o.getAxioms().stream()
+                .filter(ax -> ax.isOfType(Sets.newHashSet(AxiomType.EQUIVALENT_CLASSES))) // get classes
+                .filter(ax -> ax.getClassesInSignature().contains(ontologyClass)) //verify same class as current
+                .filter(ax -> !ax.getNestedClassExpressions().isEmpty())
+                .findFirst();
+
+        if (enumAxiom.isPresent()) {
+            generateEnum(builder, type, enumAxiom);
+        } else {
+            buildEntity(builder, type, superClasses);
+        }
+    }
+
+    private void buildEntity(Ontology.OntologyBuilder builder, String type, NodeSet<OWLClass> superClasses) {
+        //simple type class
+        //functional actions: if EntityType does not exist create on, add it to builder and continue
+        builder.getEntityType(type).orElseGet(
+                () -> builder.addEntityType(
+                        EntityType.Builder.get()
+                                .withEType(type)
+                                .withName(type)
+                                .withParentType(superClasses.getNodes().stream()
+                                        .flatMap(clazzNode -> clazzNode.getEntities().stream())
+                                        .map(clazz -> clazz.getIRI().toString())
+                                        //filter out same names
+                                        .filter(name -> !name.equals(type))
+                                        .collect(Collectors.toList()))
+                                .build())
+                        .getEntityType(type)
+                        .get());
+    }
+
+    private void generateEnum(Ontology.OntologyBuilder builder, String type, Optional<OWLAxiom> enumAxiom) {
+        Optional<OWLClassExpression> expression = ((OWLEquivalentClassesAxiom) enumAxiom.get()).getClassExpressions().stream()
+                .filter(exp -> exp instanceof OWLObjectOneOf)
+                .findFirst();
+        if (expression.isPresent()) {
+            List<String> values = ((OWLObjectOneOf) expression.get()).getIndividuals().stream()
+                    .map(el -> el.asOWLNamedIndividual().getIRI().toString())
+                    .collect(Collectors.toList());
+            //enum type class
+            builder.addEnumeratedTypes(EnumeratedType.EnumeratedTypeBuilder.anEnumeratedType()
+                    .withEType(type)
+                    .values(values)
+                    .build());
         }
     }
 
@@ -237,6 +257,17 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<List<Stri
         //todo add Thing to list ?
         if (objectPropertyRangeAxioms.isEmpty()) return Collections.emptyList();
 
+        //enlarge objectPropertyRangeAxioms size to match objectPropertyDomainAxioms size
+        while (objectPropertyRangeAxioms.size() < objectPropertyDomainAxioms.size()) {
+            //duplicate last one
+            objectPropertyRangeAxioms.add(objectPropertyRangeAxioms.get(objectPropertyRangeAxioms.size() - 1));
+        }
+
+        //enlarge objectPropertyDomainAxioms size to match objectPropertyRangeAxioms size
+        while (objectPropertyDomainAxioms.size() < objectPropertyRangeAxioms.size()) {
+            //duplicate last one
+            objectPropertyDomainAxioms.add(objectPropertyDomainAxioms.get(objectPropertyDomainAxioms.size() - 1));
+        }
         //match domain & range pairs
         for (int i = 0; i < objectPropertyDomainAxioms.size(); i++) {
             pairs.addAll(
@@ -261,9 +292,17 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<List<Stri
         if (range.isClassExpressionLiteral()) {
             sideB.add(range.asOWLClass().getIRI().toString());
         } else {
-            sideB.addAll(range.asDisjunctSet().stream().map(element ->
-                    element.asOWLClass().getIRI().toString())
-                    .collect(Collectors.toSet()));
+            if (range.isAnonymous()) {
+                if (OWLObjectOneOf.class.isAssignableFrom(range.getClass())) {
+                    sideB.addAll(((OWLObjectOneOf) range).getIndividuals().stream().map(element ->
+                            element.asOWLNamedIndividual().toString())
+                            .collect(Collectors.toSet()));
+                } else {
+                    sideB.addAll(range.asDisjunctSet().stream().map(element ->
+                            element.asOWLClass().getIRI().toString())
+                            .collect(Collectors.toSet()));
+                }
+            }
         }
         //return cartesian product of the two sides
         return Sets.cartesianProduct(sideA, sideB).stream().map(p -> new EPair(p.get(0), p.get(1))).collect(Collectors.toList());
@@ -282,7 +321,8 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<List<Stri
                 .forEach(dataTypeProperty -> builder.addProperties(generateProperty(builder, o, dataTypeProperty)));
     }
 
-    private List<Property> generateProperty(Ontology.OntologyBuilder builder, OWLOntology o, OWLDataProperty objectProperty) {
+    private List<Property> generateProperty(Ontology.OntologyBuilder builder, OWLOntology o, OWLDataProperty
+            objectProperty) {
         List<Property> properties = new ArrayList<>();
         List<OWLDataPropertyDomainAxiom> dataPropertyDomainAxioms = new ArrayList<>(o.getDataPropertyDomainAxioms(objectProperty));
         List<OWLDataPropertyRangeAxiom> dataPropertyRangeAxioms = new ArrayList<>(o.getDataPropertyRangeAxioms(objectProperty));

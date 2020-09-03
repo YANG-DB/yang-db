@@ -9,7 +9,6 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
     <owl:Ontology rdf:about="http://yangdb.org/workspace">
         <owl:imports rdf:resource="http://yangdb.org/user"/>
-        <owl:imports rdf:resource="http://yangdb.org"/>
     </owl:Ontology>
     
 

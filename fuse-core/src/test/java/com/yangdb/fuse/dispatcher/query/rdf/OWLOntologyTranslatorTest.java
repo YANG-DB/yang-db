@@ -1,29 +1,19 @@
 package com.yangdb.fuse.dispatcher.query.rdf;
 
-import com.google.common.collect.Sets;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2OntologyTransformer;
 import com.yangdb.fuse.model.ontology.EnumeratedType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.ontology.Value;
-import graphql.schema.GraphQLSchema;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.yangdb.fuse.model.ontology.Property.equal;
 
 public class OWLOntologyTranslatorTest {
     public static Ontology ontology;
@@ -74,7 +64,7 @@ public class OWLOntologyTranslatorTest {
 
     @Test
     public void testEntitiesTranslation() {
-        Assert.assertEquals(ontology.getEntityTypes().size(), 5);
+        Assert.assertEquals(ontology.getEntityTypes().size(), 11);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
 
         Assert.assertEquals(accessor.entity$("http://yangdb.org/user#Person").geteType(), "http://yangdb.org/user#Person");
