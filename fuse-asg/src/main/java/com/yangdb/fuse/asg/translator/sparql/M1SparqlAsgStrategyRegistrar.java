@@ -1,4 +1,4 @@
-package com.yangdb.fuse.asg.strategy;
+package com.yangdb.fuse.asg.translator.sparql;
 
 /*-
  * #%L
@@ -22,6 +22,7 @@ package com.yangdb.fuse.asg.strategy;
 
 
 import com.google.inject.Inject;
+import com.yangdb.fuse.asg.strategy.SparqlAsgStrategyRegistrar;
 import com.yangdb.fuse.asg.translator.sparql.strategies.*;
 import com.yangdb.fuse.asg.translator.sparql.strategies.expressions.CompareExpressionStrategy;
 import com.yangdb.fuse.asg.translator.sparql.strategies.expressions.ExpressionStrategies;

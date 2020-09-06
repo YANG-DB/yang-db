@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 
 public interface CreateQueryRequestMetadata<T> {
-    String TYPE_V1QL = "v1Query";
+    String TYPE_V1QL = "v1";
     String TYPE_CYPHERQL = "cypher";
     String TYPE_GRAPHQL = "graphQL";
     String TYPE_SPARQL = "sparkQL";
@@ -65,6 +65,10 @@ public interface CreateQueryRequestMetadata<T> {
     long getTtl();
 
     PlanTraceOptions getPlanTraceOptions();
+
+    enum QueryLanguage {
+        v1,cypher,sparql,graphql
+    }
 
     enum StorageType {
         _stored,

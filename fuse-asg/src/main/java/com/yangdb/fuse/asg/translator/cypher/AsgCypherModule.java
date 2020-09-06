@@ -1,4 +1,4 @@
-package com.yangdb.fuse.asg;
+package com.yangdb.fuse.asg.translator.cypher;
 
 /*-
  * #%L
@@ -24,35 +24,30 @@ package com.yangdb.fuse.asg;
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
 import com.typesafe.config.Config;
-import com.yangdb.fuse.asg.strategy.AsgStrategyRegistrar;
-import com.yangdb.fuse.asg.strategy.M1AsgStrategyRegistrar;
-import com.yangdb.fuse.dispatcher.asg.QueryToCompositeAsgTransformer;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.query.QueryInfo;
 import org.jooby.Env;
+
+import static com.google.inject.name.Names.named;
+import static com.yangdb.fuse.asg.translator.cypher.AsgCypherTransformer.transformerName;
 
 /**
  * Created by lior.perry on 22/02/2017.
  */
-public class AsgModule extends ModuleBase {
+public class AsgCypherModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(AsgStrategyRegistrar.class)
-                .to(getAsgStrategyRegistrar(conf));
-
-        binder.bind(new TypeLiteral<QueryTransformer<Query, AsgQuery>>(){})
-                .to(QueryToCompositeAsgTransformer.class)
+        binder.bind(CypherAsgStrategyRegistrar.class)
+                .to(M1CypherAsgStrategyRegistrar.class)
                 .asEagerSingleton();
 
-        binder.bind(new TypeLiteral<QueryTransformer<AsgQuery, AsgQuery>>(){})
-                .to(AsgQueryTransformer.class)
+        binder.bind(new TypeLiteral<QueryTransformer<QueryInfo<String>, AsgQuery>>(){})
+                .annotatedWith(named(transformerName))
+                .to(AsgCypherTransformer.class)
                 .asEagerSingleton();
 
     }
 
-    protected Class<? extends AsgStrategyRegistrar> getAsgStrategyRegistrar(Config conf) throws ClassNotFoundException {
-        return M1AsgStrategyRegistrar.class;
-    }
 }

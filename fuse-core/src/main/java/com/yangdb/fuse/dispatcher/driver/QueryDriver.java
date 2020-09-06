@@ -63,6 +63,8 @@ public interface QueryDriver {
 
     Optional<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType);
 
+    Optional<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType);
+
     Optional<Object> getNextPageData(String queryId, Optional<String> cursorId,int pageSize, boolean deleteCurrentPage);
 
     Optional<StoreResourceInfo> getInfo();

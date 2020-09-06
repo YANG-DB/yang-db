@@ -205,6 +205,24 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     }
 
     @Override
+    public ContentResponse<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                run,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    if (sparql != null) {
+                        new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), createAndFetch)
+                                .with(sparql).log();
+                    }
+                    return this.controller.runSparql(sparql,ontology , pageSize, cursorType);
+                }, this.resultHandler());
+    }
+
+    @Override
     public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryRequest request) {
         return new LoggingSyncMethodDecorator<ContentResponse<QueryResourceInfo>>(
                 this.logger,

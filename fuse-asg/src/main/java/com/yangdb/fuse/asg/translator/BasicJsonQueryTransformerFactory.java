@@ -1,4 +1,4 @@
-package com.yangdb.fuse.asg;
+package com.yangdb.fuse.asg.translator;
 
 /*-
  * #%L
@@ -21,6 +21,9 @@ package com.yangdb.fuse.asg;
  */
 
 import com.google.inject.Inject;
+import com.yangdb.fuse.asg.translator.cypher.AsgCypherTransformer;
+import com.yangdb.fuse.asg.translator.graphql.AsgGraphQLTransformer;
+import com.yangdb.fuse.asg.translator.sparql.AsgSparQLTransformer;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;

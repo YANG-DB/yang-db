@@ -79,9 +79,11 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
         if (query.getOnt().equals(KNOWLEDGE))
             return;
 
-        String labelFieldName = schemaProviderFactory.get(ontologyProvider.get(KNOWLEDGE).get()).getLabelFieldName().get();
-        Ontology.Accessor logicalOntAccessor = new Ontology.Accessor(this.ontologyProvider.get(query.getOnt()).get());
-        Ontology.Accessor knowledgeOntAccessor = new Ontology.Accessor(this.ontologyProvider.get(KNOWLEDGE).get());
+        Ontology rdfOntology = ontologyProvider.get(KNOWLEDGE).get();
+        String labelFieldName = schemaProviderFactory.get(rdfOntology).getLabelFieldName().get();
+        Ontology logicalOntology = this.ontologyProvider.get(query.getOnt()).get();
+        Ontology.Accessor logicalOntAccessor = new Ontology.Accessor(logicalOntology);
+        Ontology.Accessor knowledgeOntAccessor = new Ontology.Accessor(rdfOntology);
 
         AtomicInteger counter = new AtomicInteger(AsgQueryUtil.max(query));
 

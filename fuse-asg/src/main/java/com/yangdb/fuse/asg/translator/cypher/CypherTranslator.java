@@ -21,7 +21,6 @@ package com.yangdb.fuse.asg.translator.cypher;
  */
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.asg.strategy.CypherAsgStrategyRegistrar;
 import com.yangdb.fuse.asg.translator.AsgTranslator;
 import com.yangdb.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.yangdb.fuse.asg.translator.cypher.strategies.CypherTranslatorStrategy;

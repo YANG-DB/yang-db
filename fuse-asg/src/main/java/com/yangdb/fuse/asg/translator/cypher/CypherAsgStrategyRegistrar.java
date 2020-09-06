@@ -1,4 +1,4 @@
-package com.yangdb.fuse.asg.strategy;
+package com.yangdb.fuse.asg.translator.cypher;
 
 /*-
  * #%L

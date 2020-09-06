@@ -1,4 +1,4 @@
-package com.yangdb.fuse.services.controllers.logging;
+package com.yangdb.fuse.services.controllers.languages.graphql;
 
 /*-
  * #%L
@@ -27,7 +27,8 @@ import com.yangdb.fuse.dispatcher.logging.LoggingSyncMethodDecorator;
 import com.yangdb.fuse.dispatcher.logging.MethodName;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.ContentResponse;
-import com.yangdb.fuse.services.controllers.GraphQLController;
+import com.yangdb.fuse.services.controllers.SchemaTranslatorController;
+import com.yangdb.fuse.services.controllers.logging.LoggingControllerBase;
 import com.yangdb.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.yangdb.fuse.services.suppliers.RequestIdSupplier;
 import org.slf4j.Logger;
@@ -38,14 +39,14 @@ import java.util.Collections;
 import static com.yangdb.fuse.dispatcher.logging.LogMessage.Level.info;
 import static com.yangdb.fuse.dispatcher.logging.LogMessage.Level.trace;
 
-public class LoggingGraphQLController extends LoggingControllerBase<GraphQLController> implements GraphQLController {
+public class LoggingGraphQLController extends LoggingControllerBase<SchemaTranslatorController> implements SchemaTranslatorController {
     public static final String controllerParameter = "LoggingGraphQLController.@controller";
     public static final String loggerParameter = "LoggingGraphQLController.@logger";
 
     //region Constructors
     @Inject
     public LoggingGraphQLController(
-            @Named(controllerParameter) GraphQLController controller,
+            @Named(controllerParameter) SchemaTranslatorController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
             RequestExternalMetadataSupplier requestExternalMetadataSupplier,
@@ -56,7 +57,7 @@ public class LoggingGraphQLController extends LoggingControllerBase<GraphQLContr
 
     //region CatalogController Implementation
     @Override
-    public ContentResponse<Ontology> translate(String graphQLSchema) {
+    public ContentResponse<Ontology> translate(String graphqlschema) {
         return new LoggingSyncMethodDecorator<ContentResponse<Ontology>>(
                 this.logger,
                 this.metricRegistry,
@@ -64,7 +65,7 @@ public class LoggingGraphQLController extends LoggingControllerBase<GraphQLContr
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.translate(graphQLSchema), this.resultHandler());
+                .decorate(() -> this.controller.translate(graphqlschema), this.resultHandler());
     }
 
     @Override

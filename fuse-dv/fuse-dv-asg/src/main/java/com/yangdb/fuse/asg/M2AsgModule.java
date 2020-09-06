@@ -21,15 +21,9 @@ package com.yangdb.fuse.asg;
  */
 
 import com.google.inject.Binder;
-import com.google.inject.TypeLiteral;
 import com.yangdb.fuse.asg.strategy.AsgStrategyRegistrar;
-import com.yangdb.fuse.asg.strategy.CypherAsgStrategyRegistrar;
-import com.yangdb.fuse.asg.strategy.M1CypherAsgStrategyRegistrar;
-import com.yangdb.fuse.dispatcher.asg.QueryToCompositeAsgTransformer;
-import com.yangdb.fuse.dispatcher.modules.ModuleBase;
-import com.yangdb.fuse.dispatcher.query.QueryTransformer;
-import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.asg.translator.BasicJsonQueryTransformerFactory;
+import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 
@@ -41,6 +35,8 @@ public class M2AsgModule extends AsgModule {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         super.configureInner(env,conf,binder);
+        //configure the different query languages transformer factory
+        binder.bind(JsonQueryTransformerFactory.class).to(BasicJsonQueryTransformerFactory.class);
     }
     //endregion
 

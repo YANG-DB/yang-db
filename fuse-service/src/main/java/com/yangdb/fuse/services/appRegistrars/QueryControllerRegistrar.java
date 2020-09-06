@@ -219,6 +219,13 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.get(appUrlSupplier.queryStoreUrl() + "/cypher/run",req -> API.runCypher(app,req,this.getController(app)));
     }
 
+    private void sparqlContext(Jooby app, AppUrlSupplier appUrlSupplier) {
+        /** create a sparql query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/sparql",req -> API.postSparql(app,req,this.getController(app)));
+        /** run a sparql query */
+        app.get(appUrlSupplier.queryStoreUrl() + "/sparql/run",req -> API.runSparql(app,req,this.getController(app)));
+    }
+
     private void graphQLContext(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** create a cypher query */
         app.post(appUrlSupplier.queryStoreUrl() + "/graphQL",req -> API.postGraphQL(app,req,this.getController(app)));
@@ -249,24 +256,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         public static Result postGraphQL(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("postGraphQL").write();
-
-            CreateJsonQueryRequest createQueryRequest = req.body(CreateJsonQueryRequest.class);
-            req.set(CreateJsonQueryRequest.class, createQueryRequest);
-            req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
-            final long maxExecTime = createQueryRequest.getCreateCursorRequest() != null
-                    ? createQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
-            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, TIMEOUT)));
-
-            ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
-                    controller.create(createQueryRequest) :
-                    controller.createAndFetch(createQueryRequest);
-
-            return Results.with(response, response.status());
-
-        }
-
-        public static Result postCypher(Jooby app, final Request req, QueryController controller) throws Exception {
-            Route.of("postCypher").write();
 
             CreateJsonQueryRequest createQueryRequest = req.body(CreateJsonQueryRequest.class);
             req.set(CreateJsonQueryRequest.class, createQueryRequest);
@@ -333,6 +322,42 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             return Results.with(response, response.status());
         }
 
+        public static Result postCypher(Jooby app, final Request req, QueryController controller) throws Exception {
+            Route.of("postCypher").write();
+
+            CreateJsonQueryRequest createQueryRequest = req.body(CreateJsonQueryRequest.class);
+            req.set(CreateJsonQueryRequest.class, createQueryRequest);
+            req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
+            final long maxExecTime = createQueryRequest.getCreateCursorRequest() != null
+                    ? createQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
+            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, TIMEOUT)));
+
+            ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
+                    controller.create(createQueryRequest) :
+                    controller.createAndFetch(createQueryRequest);
+
+            return Results.with(response, response.status());
+
+        }
+
+        public static Result postSparql(Jooby app, final Request req, QueryController controller) throws Exception {
+            Route.of("postSparql").write();
+
+            CreateJsonQueryRequest createQueryRequest = req.body(CreateJsonQueryRequest.class);
+            req.set(CreateJsonQueryRequest.class, createQueryRequest);
+            req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
+            final long maxExecTime = createQueryRequest.getCreateCursorRequest() != null
+                    ? createQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
+            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, TIMEOUT)));
+
+            ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
+                    controller.create(createQueryRequest) :
+                    controller.createAndFetch(createQueryRequest);
+
+            return Results.with(response, response.status());
+
+        }
+
         public static Result runV1(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("runQuery").write();
 
@@ -356,6 +381,20 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
             ContentResponse<Object> response = controller.runCypher(query,ontology,
+                    req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
+                    req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
+            );
+
+            return Results.with(response, response.status());
+        }
+        public static Result runSparql(Jooby app, final Request req, QueryController controller) throws Throwable {
+            Route.of("runSparql").write();
+
+            String query = req.param("sparql").value();
+            String ontology = req.param("ontology").value();
+            req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
+
+            ContentResponse<Object> response = controller.runSparql(query,ontology,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
                     req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
             );

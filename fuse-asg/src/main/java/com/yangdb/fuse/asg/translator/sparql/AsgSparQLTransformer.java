@@ -1,4 +1,4 @@
-package com.yangdb.fuse.asg;
+package com.yangdb.fuse.asg.translator.sparql;
 
 /*-
  * #%L
@@ -25,8 +25,15 @@ import com.yangdb.fuse.asg.translator.sparql.SparqlTranslator;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.query.QueryInfo;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 
-public class AsgSparQLTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery> {
+import java.util.function.Function;
+
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryLanguage.cypher;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryLanguage.sparql;
+
+public class AsgSparQLTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery>, Function<QueryInfo<String>,Boolean> {
+    public static final String transformerName = "AsgSparQLTransformer.@transformer";
 
     private SparqlTranslator translator;
 
@@ -46,5 +53,9 @@ public class AsgSparQLTransformer implements QueryTransformer<QueryInfo<String>,
         return translator.translate(query);
     }
 
+    @Override
+    public Boolean apply(QueryInfo<String> queryInfo) {
+        return sparql.name().equalsIgnoreCase(queryInfo.getQueryType());
+    }
 
 }

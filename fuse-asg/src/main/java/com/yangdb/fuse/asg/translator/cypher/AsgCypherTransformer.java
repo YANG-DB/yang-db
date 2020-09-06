@@ -1,4 +1,4 @@
-package com.yangdb.fuse.asg;
+package com.yangdb.fuse.asg.translator.cypher;
 
 /*-
  * #%L
@@ -22,34 +22,40 @@ package com.yangdb.fuse.asg;
 
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.dispatcher.asg.QueryToAsgTransformer;
+import com.yangdb.fuse.asg.translator.cypher.CypherTranslator;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2QueryTransformer;
-import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryInfo;
 
-public class AsgGraphQLTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery>  {
-    private GraphQL2QueryTransformer graphQL2QueryTransformer;
-    private final QueryToAsgTransformer queryTransformer;
+import java.util.function.Function;
 
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryLanguage.cypher;
+
+/**
+ * Created by liorp on 12/15/2017.
+ */
+public class AsgCypherTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery>, Function<QueryInfo<String>,Boolean> {
+    public static final String transformerName = "AsgCypherTransformer.@transformer";
     //region Constructors
     @Inject
-    public AsgGraphQLTransformer(GraphQL2QueryTransformer graphQL2QueryTransformer,
-                                 QueryToAsgTransformer queryTransformer) {
-        this.graphQL2QueryTransformer = graphQL2QueryTransformer;
-        this.queryTransformer = queryTransformer;
+    public AsgCypherTransformer(CypherTranslator cypherTranslator) {
+        this.cypherTranslator = cypherTranslator;
     }
     //endregion
 
     //region QueryTransformer Implementation
-
     @Override
     public AsgQuery transform(QueryInfo<String> query) {
-        Query transform = graphQL2QueryTransformer.transform(query);
-        return queryTransformer.transform(transform);
+        return cypherTranslator.translate(query);
     }
-
     //endregion
 
+    //region Fields
+    private CypherTranslator cypherTranslator;
+
+    @Override
+    public Boolean apply(QueryInfo<String> queryInfo) {
+        return cypher.name().equalsIgnoreCase(queryInfo.getQueryType());
+    }
+    //endregion
 }

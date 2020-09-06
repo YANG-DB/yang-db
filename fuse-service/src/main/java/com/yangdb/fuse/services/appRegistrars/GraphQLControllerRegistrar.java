@@ -24,17 +24,14 @@ import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.logging.Route;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.ContentResponse;
-import com.yangdb.fuse.services.controllers.CatalogController;
-import com.yangdb.fuse.services.controllers.GraphQLController;
+import com.yangdb.fuse.services.controllers.SchemaTranslatorController;
 import org.jooby.Jooby;
 import org.jooby.Results;
 
-import java.util.List;
-
-public class GraphQLControllerRegistrar extends AppControllerRegistrarBase<GraphQLController> {
+public class GraphQLControllerRegistrar extends AppControllerRegistrarBase<SchemaTranslatorController> {
     //region Constructors
     public GraphQLControllerRegistrar() {
-        super(GraphQLController.class);
+        super(SchemaTranslatorController.class);
     }
     //endregion
 

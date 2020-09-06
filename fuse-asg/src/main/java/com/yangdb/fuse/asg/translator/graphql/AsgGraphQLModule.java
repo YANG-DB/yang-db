@@ -1,4 +1,4 @@
-package com.yangdb.fuse.asg;
+package com.yangdb.fuse.asg.translator.graphql;
 
 /*-
  * #%L
@@ -21,32 +21,30 @@ package com.yangdb.fuse.asg;
  */
 
 
-
-import com.google.inject.Inject;
-import com.yangdb.fuse.asg.translator.cypher.CypherTranslator;
+import com.google.inject.Binder;
+import com.google.inject.TypeLiteral;
+import com.typesafe.config.Config;
+import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.query.QueryInfo;
+import org.jooby.Env;
+
+import static com.google.inject.name.Names.named;
+import static com.yangdb.fuse.asg.translator.graphql.AsgGraphQLTransformer.transformerName;
 
 /**
- * Created by liorp on 12/15/2017.
+ * Created by lior.perry on 22/02/2017.
  */
-public class AsgCypherTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery> {
-    //region Constructors
-    @Inject
-    public AsgCypherTransformer(CypherTranslator cypherTranslator) {
-        this.cypherTranslator = cypherTranslator;
-    }
-    //endregion
+public class AsgGraphQLModule extends ModuleBase {
 
-    //region QueryTransformer Implementation
     @Override
-    public AsgQuery transform(QueryInfo<String> query) {
-        return cypherTranslator.translate(query);
-    }
-    //endregion
+    public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
+        binder.bind(new TypeLiteral<QueryTransformer<QueryInfo<String>, AsgQuery>>(){})
+                .annotatedWith(named(transformerName))
+                .to(AsgGraphQLTransformer.class)
+                .asEagerSingleton();
 
-    //region Fields
-    private CypherTranslator cypherTranslator;
-    //endregion
+    }
+
 }

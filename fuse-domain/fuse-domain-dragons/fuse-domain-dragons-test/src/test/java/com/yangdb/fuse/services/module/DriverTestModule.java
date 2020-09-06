@@ -2,11 +2,13 @@ package com.yangdb.fuse.services.module;
 
 import com.google.inject.Binder;
 import com.google.inject.multibindings.Multibinder;
+import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.yangdb.fuse.dispatcher.driver.CursorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.driver.QueryDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
+import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.resource.store.InMemoryResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.executor.cursor.discrete.GraphQLTraversalCursor;
@@ -18,6 +20,7 @@ import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
 import com.yangdb.fuse.executor.ontology.schema.load.VoidGraphInitiator;
+import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphQLCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
@@ -25,7 +28,6 @@ import com.yangdb.fuse.services.dispatcher.driver.MockDriver;
 import com.yangdb.fuse.services.engine2.data.schema.InitialTestDataLoader;
 import com.yangdb.fuse.services.engine2.data.schema.discrete.M2DragonsPhysicalSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.OntologySchemaProvider;
-import com.typesafe.config.Config;
 import org.elasticsearch.client.Client;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
@@ -36,6 +38,7 @@ import org.jooby.scope.RequestScoped;
 public class DriverTestModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
+        binder.bind(JsonQueryTransformerFactory.class).toInstance(type -> query -> AsgQuery.AsgQueryBuilder.anAsgQuery().build());
         binder.bind(ResourceStore.class).toInstance(new InMemoryResourceStore());
         binder.bind(QueryDriver.class).to(MockDriver.Query.class).in(RequestScoped.class);
         binder.bind(CursorDriver.class).to(MockDriver.Cursor.class).in(RequestScoped.class);

@@ -25,7 +25,7 @@ import com.yangdb.fuse.model.transport.ContentResponse;
 
 import java.util.List;
 
-public interface GraphQLController {
+public interface SchemaTranslatorController {
     /**
      * translate the graphQL schema to Ontology schema
      * @param graphQLSchema

@@ -1,8 +1,6 @@
 
 package com.yangdb.fuse.asg.translator.sparql;
 
-import com.yangdb.fuse.asg.AsgSparQLTransformer;
-import com.yangdb.fuse.asg.strategy.M1SparqlAsgStrategyRegistrar;
 import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyProvider;
 import com.yangdb.fuse.dispatcher.query.rdf.OWL2OntologyTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
@@ -560,6 +558,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_a437b411_uri, value=http://purl.org/dc/elements/1.1/description, anonymous)
      *             Var (name=_const_75920dab_lit_9902a4bf_ca9, value="Author"@en, anonymous)
      */
+    @Ignore
     public void testSimpleSelectVarsPatternWithUnionInPropertiesTriplet() {
         String s = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
                 "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
@@ -634,6 +633,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_531c5f7d_uri, value=http://xmlns.com/foaf/0.1/knows, anonymous)
      *             Var (name=_const_75920dab_lit_9902a4bf_ca9, value="Author"@en, anonymous)
      */
+    @Ignore
     public void testSimpleSelectVarsPatternWithUnionInStepsTriplet() {
         String s = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
                 "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +

@@ -22,15 +22,11 @@ package com.yangdb.fuse.dispatcher.modules;
 
 
 import com.google.inject.Binder;
-import com.google.inject.TypeLiteral;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.yangdb.fuse.dispatcher.ontology.*;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2OntologyTransformer;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQLSchemaUtils;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
-import com.yangdb.fuse.model.ontology.Ontology;
 import org.jooby.Env;
 
 import java.lang.reflect.InvocationTargetException;
@@ -43,18 +39,13 @@ import java.net.UnknownHostException;
  * <p>
  * This module is called by the fuse-service scanner class loader
  */
-public class NewDispatcherModule extends ModuleBase {
+public class CoreDispatcherModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(AppUrlSupplier.class).toInstance(getAppUrlSupplier(conf));
         binder.bind(OntologyProvider.class).toInstance(getOntologyProvider(conf));
         binder.bind(OntologyTransformerProvider.class).toInstance(getTransformerProvider(conf));
-        binder.bind(GraphQLSchemaUtils.class)
-                .to(GraphQL2OntologyTransformer.class)
-                .asEagerSingleton();
-        binder.bind(new TypeLiteral<OntologyTransformerIfc<String, Ontology>>() {}).to(GraphQL2OntologyTransformer.class);
-
     }
 
     //region Private Methods

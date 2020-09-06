@@ -1,4 +1,4 @@
-package com.yangdb.fuse.services.controllers;
+package com.yangdb.fuse.services.controllers.languages.sparql;
 
 /*-
  * #%L
@@ -20,7 +20,6 @@ package com.yangdb.fuse.services.controllers;
  * #L%
  */
 
-import com.cedarsoftware.util.io.JsonWriter;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
@@ -28,33 +27,32 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.ContentResponse.Builder;
-import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.yangdb.fuse.services.controllers.SchemaTranslatorController;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
-import static io.netty.channel.group.ChannelMatchers.compose;
 import static org.jooby.Status.NOT_FOUND;
 import static org.jooby.Status.OK;
 
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class StandardGraphQLController implements GraphQLController {
+public class StandardSparqlController implements SchemaTranslatorController {
+    public static final String transformerName = "StandardSparqlController.@transformer";
+
     //region Constructors
     @Inject
-    public StandardGraphQLController(OntologyTransformerIfc<String, Ontology> transformer, OntologyProvider provider) {
+    public StandardSparqlController(OntologyTransformerIfc<String, Ontology> transformer, OntologyProvider provider) {
         this.transformer = transformer;
         this.provider = provider;
     }
     //endregion
 
-    //region CatalogController Implementation
 
     @Override
-    public ContentResponse<Ontology> translate(String graphQLSchema) {
+    public ContentResponse<Ontology> translate(String owlSchema) {
         return Builder.<Ontology>builder(OK, NOT_FOUND)
-                .data(Optional.of(this.transformer.transform(graphQLSchema)))
+                .data(Optional.of(this.transformer.transform(owlSchema)))
                 .compose();
     }
 
