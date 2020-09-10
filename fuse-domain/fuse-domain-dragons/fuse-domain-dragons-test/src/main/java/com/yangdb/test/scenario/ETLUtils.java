@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.yangdb.fuse.model.Utils.readJsonFile;
-import static com.yangdb.test.data.DragonsOntologyPhysicalIndexProviderFactory.*;
+import static com.yangdb.test.scenario.DragonsOntologyPhysicalIndexProviderFactory.*;
 
 /**
  * Created by moti on 6/7/2017.

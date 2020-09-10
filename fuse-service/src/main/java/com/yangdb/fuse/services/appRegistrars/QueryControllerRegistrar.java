@@ -113,6 +113,8 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /**  register graphQL API context **/
         graphQLContext(app, appUrlSupplier);
 
+        /**  register sparql API context **/
+        sparqlContext(app, appUrlSupplier);
 
         /** call a query */
         app.post(appUrlSupplier.queryStoreUrl() + "/call",req -> API.call(app,req,this.getController(app)));

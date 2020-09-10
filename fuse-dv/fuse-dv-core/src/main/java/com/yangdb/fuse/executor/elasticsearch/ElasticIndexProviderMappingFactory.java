@@ -32,7 +32,7 @@ import com.yangdb.fuse.model.schema.Relation;
 import javaslang.Tuple2;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
+import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateAction;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
@@ -88,9 +88,14 @@ public class ElasticIndexProviderMappingFactory {
 
     public List<Tuple2<String, Boolean>> generateMappings() {
         List<Tuple2<String, AcknowledgedResponse>> responses = new ArrayList<>();
-        responses.addAll(mapEntities());
-        responses.addAll(mapRelations());
-        return responses.stream().map(r -> new Tuple2<>(r._1, r._2.isAcknowledged())).collect(Collectors.toList());
+        responses.addAll(mapEntities(client).stream()
+                .map(r -> new Tuple2<>(r.request().name(), r.execute().actionGet()))
+                .collect(Collectors.toList()));
+        responses.addAll(mapRelations(client).stream()
+                .map(r -> new Tuple2<>(r.request().name(), r.execute().actionGet()))
+                .collect(Collectors.toList()));
+        return responses.stream().map(r -> new Tuple2<>(r._1, r._2.isAcknowledged()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -98,82 +103,122 @@ public class ElasticIndexProviderMappingFactory {
      *
      * @return
      */
-    private List<Tuple2<String, AcknowledgedResponse>> mapRelations() {
-        List<Tuple2<String, AcknowledgedResponse>> responses = new ArrayList<>();
+    private List<ESPutIndexTemplateRequestBuilder> mapRelations(Client client) {
+        List<ESPutIndexTemplateRequestBuilder> requests = new ArrayList<>();
         ontology.relations().forEach(r -> {
             String mapping = indexProvider.getRelation(r.getName()).orElseThrow(
                     () -> new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + r + " found in ontology")))
                     .getPartition();
 
             Relation relation = indexProvider.getRelation(r.getName()).get();
-            switch (mapping) {
-                case "static":
+            MappingIndexType type = MappingIndexType.valueOf(mapping.toUpperCase());
+            switch (type) {
+                case UNIFIED:
+                case STATIC:
                     //static index
                     relation.getProps().getValues().forEach(v -> {
                         String label = r.getrType();
-                        PutIndexTemplateRequest request = new PutIndexTemplateRequest(label.toLowerCase());
-                        request.patterns(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format("%s%s", v, "*")))
-                                .settings(generateSettings(r,relation, label))
-                                .mapping(label, generateMapping(r,relation, label));
+                        ESPutIndexTemplateRequestBuilder request =  new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE,label.toLowerCase());
+                        request.setPatterns(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format("%s%s", v, "*")))
+                                .setSettings(generateSettings(r, relation, label))
+                                .addMapping(label, generateMapping(r, relation, label));
                         //add response to list of responses
-                        responses.add(new Tuple2<>(v, client.admin().indices().putTemplate(request).actionGet()));
+                        requests.add(request);
                     });
                     break;
-                case "time":
+                case TIME:
                     String label = r.getrType();
-                    PutIndexTemplateRequest request = new PutIndexTemplateRequest(relation.getType().toLowerCase());
-                    request.patterns(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format(relation.getProps().getIndexFormat(), "*")))
-                            .settings(generateSettings(r,relation, label))
-                            .mapping(label, generateMapping(r,relation, label));
+                    ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client,PutIndexTemplateAction.INSTANCE,relation.getType().toLowerCase());
+                    request.setPatterns(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format(relation.getProps().getIndexFormat(), "*")))
+                            .setSettings(generateSettings(r, relation, label))
+                            .addMapping(label, generateMapping(r, relation, label));
                     //add response to list of responses
-                    responses.add(new Tuple2<>(label.toLowerCase(), client.admin().indices().putTemplate(request).actionGet()));
+                    requests.add(request);
                     break;
                 default:
                     String result = "No mapping found";
                     break;
             }
         });
-        return responses;
+        return requests;
     }
 
     /**
      * add the mapping part of the template according to the ontology entities
      *
      * @return
+     * @param client
      */
-    private List<Tuple2<String, AcknowledgedResponse>> mapEntities() {
-        List<Tuple2<String, AcknowledgedResponse>> responses = new ArrayList<>();
-        StreamSupport.stream(ontology.entities().spliterator(), false).forEach(e -> {
+    private List<ESPutIndexTemplateRequestBuilder> mapEntities(Client client) {
+        List<ESPutIndexTemplateRequestBuilder> requests = new ArrayList<>();
+        StreamSupport.stream(ontology.entities().spliterator(), false)
+                .forEach(e -> {
             String mapping = indexProvider.getEntity(e.getName()).orElseThrow(
                     () -> new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + e + " found in ontology")))
                     .getPartition();
 
             Entity entity = indexProvider.getEntity(e.getName()).get();
-            switch (mapping) {
-                case "static":
-                    //static index
-                    entity.getProps().getValues().forEach(v -> {
-                        String label = e.geteType();
-                        PutIndexTemplateRequest request = new PutIndexTemplateRequest(v.toLowerCase());
-                        request.patterns(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*")))
-                                .settings(generateSettings(e, entity, label))
-                                .mapping(label, generateMapping(e, entity, label));
+            try {
+                MappingIndexType type = MappingIndexType.valueOf(mapping.toUpperCase());
+                switch (type) {
+                    case UNIFIED:
+                        //common general index - unifies all entities under the same physical index
+                        entity.getProps().getValues().forEach(v -> {
+                            String label = e.geteType();
+                            String unifiedName = entity.getProps().getValues().isEmpty() ?  label : entity.getProps().getValues().get(0);
+                            Optional<ESPutIndexTemplateRequestBuilder> indexTemplateRequest = requests.stream().filter(p -> p.request().name().equals(unifiedName)).findFirst();
+                            ESPutIndexTemplateRequestBuilder request = indexTemplateRequest.orElseGet(() -> new ESPutIndexTemplateRequestBuilder(client,PutIndexTemplateAction.INSTANCE,unifiedName));
+
+                            List<String> patterns = Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*"));
+                            if (Objects.isNull(request.request().patterns())) {
+                                request.setPatterns(new ArrayList<>(patterns));
+                            } else {
+                                request.request().patterns().addAll(patterns);
+                            }
+                            //no specific index sort order since it contains multiple entity types -
+                            if (request.request().settings().isEmpty()) {
+                                request.setSettings(getSettings());
+                            }
+                            //create new mapping only when no prior entity set this mapping before
+                            if (request.request().mappings().isEmpty()) {
+                                request.addMapping(unifiedName, generateMapping(e, entity, unifiedName));
+                            } else {
+                                populateProperty(entity,request.getMappingsProperties(unifiedName),e);
+                            }
+                            //add response to list of responses
+                            requests.add(request);
+                        });
+
+                        break;
+                    case STATIC:
+                        //static index
+                        entity.getProps().getValues().forEach(v -> {
+                            String label = e.geteType();
+                            ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE,v.toLowerCase());
+                            request.setPatterns(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*")))
+                                    .setSettings(generateSettings(e, entity, label))
+                                    .addMapping(label, generateMapping(e, entity, label));
+                            //add response to list of responses
+                            requests.add(request);
+                        });
+                        break;
+                    case TIME:
+                        //time partitioned index
+                        ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE,e.getName().toLowerCase());
+                        String label = entity.getType();
+                        request.setPatterns(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format(entity.getProps().getIndexFormat(), "*")))
+                                .setSettings(generateSettings(e, entity, label))
+                                .addMapping(label, generateMapping(e, entity, label.toLowerCase()));
                         //add response to list of responses
-                        responses.add(new Tuple2<>(label.toLowerCase(), client.admin().indices().putTemplate(request).actionGet()));
-                    });
-                    break;
-                case "time":
-                    PutIndexTemplateRequest request = new PutIndexTemplateRequest(e.getName().toLowerCase());
-                    String label = entity.getType();
-                    request.patterns(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format(entity.getProps().getIndexFormat(), "*")))
-                            .settings(generateSettings(e, entity, label))
-                            .mapping(label, generateMapping(e, entity, label.toLowerCase()));
-                    //add response to list of responses
-                    responses.add(new Tuple2<>(label.toLowerCase(), client.admin().indices().putTemplate(request).actionGet()));
-                    break;
+                        requests.add(request);
+                        break;
+                }
+            } catch (Throwable typeNotFound) {
+                //log error
             }
         });
-        return responses;
+
+        return requests;
     }
 
     /**
@@ -190,19 +235,27 @@ public class ElasticIndexProviderMappingFactory {
             throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + label + " found in ontology"));
 
         Map<String, Object> jsonMap = new HashMap<>();
-
-        Map<String, Object> properties = new HashMap<>();
-        Map<String, Object> mapping = new HashMap<>();
-        mapping.put("properties", properties);
-        //populate fields & metadata
-        entity.get().getMetadata().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
-        entity.get().getProperties().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
-        //populate nested documents
-        //populate nested documents
-        ent.getNested().forEach(nest->generateNestedEntMapping(properties,nest));
-        jsonMap.put(label, mapping);
+        //populate index fields
+        jsonMap.put(label, populateMappingIndexFields(ent, entity));
 
         return jsonMap;
+    }
+
+    public Map<String, Object> populateMappingIndexFields(Entity ent, Optional<EntityType> entity) {
+        Map<String, Object> mapping = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
+        mapping.put(PROPERTIES, properties);
+        //populate fields & metadata
+        EntityType entityType = entity.get();
+        populateProperty(ent, properties, entityType);
+        return mapping;
+    }
+
+    public void populateProperty(Entity ent, Map<String, Object> properties, EntityType entityType) {
+        entityType.getMetadata().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
+        entityType.getProperties().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
+        //populate nested documents
+        ent.getNested().forEach(nest -> generateNestedEntMapping(properties, nest));
     }
 
     /**
@@ -212,7 +265,7 @@ public class ElasticIndexProviderMappingFactory {
      * @param label
      * @return
      */
-    public Map<String, Object> generateMapping(RelationshipType relationshipType,Relation rel, String label) {
+    public Map<String, Object> generateMapping(RelationshipType relationshipType, Relation rel, String label) {
         Optional<RelationshipType> relation = ontology.relation(relationshipType.getName());
         if (!relation.isPresent())
             throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No relation    with name " + label + " found in ontology"));
@@ -232,7 +285,7 @@ public class ElasticIndexProviderMappingFactory {
         //populate  sideB (entityB)
         populateRedundand(ENTITY_B, relationshipType.getName(), properties);
         //populate nested documents
-        rel.getNested().forEach(nest->generateNestedRelMapping(properties,nest));
+        rel.getNested().forEach(nest -> generateNestedRelMapping(properties, nest));
 
         jsonMap.put(label, mapping);
         return jsonMap;
@@ -259,7 +312,7 @@ public class ElasticIndexProviderMappingFactory {
         relation.get().getProperties().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
 
         //inner child nested population
-        nest.getNested().forEach(inner->generateNestedRelMapping(properties,inner));
+        nest.getNested().forEach(inner -> generateNestedRelMapping(properties, inner));
         //assuming single value exists (this is the field name)
         String nestedName = nest.getProps().getValues().get(0);
         parent.put(nestedName, mapping);
@@ -283,13 +336,9 @@ public class ElasticIndexProviderMappingFactory {
         }
         mapping.put(PROPERTIES, properties);
         //populate fields & metadata
-        entity.get().getMetadata().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
-        entity.get().getProperties().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
-
-        //inner child nested population
-        nest.getNested().forEach(inner->generateNestedEntMapping(properties,inner));
+        populateProperty(nest, properties, entity.get());
         //assuming single value exists (this is the field name)
-        if(nest.getProps().getValues().isEmpty())
+        if (nest.getProps().getValues().isEmpty())
             throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "Nested entity with name " + nest.getType() + " has no property value in mapping file"));
 
         String nestedName = nest.getProps().getValues().get(0);
@@ -313,38 +362,43 @@ public class ElasticIndexProviderMappingFactory {
     /**
      * parse ontology primitive type to elastic primitive type
      *
-     * @param type
+     * @param nameType
      * @return
      */
-    private Map<String, Object> parseType(String type) {
+    private Map<String, Object> parseType(String nameType) {
         Map<String, Object> map = new HashMap<>();
-        switch (type) {
-            case "string":
-                map.put("type", "keyword");
-                break;
-            case "text":
-                map.put("type", "text");
-                map.put("fields", singletonMap("keyword", singletonMap("type", "keyword")));
-                break;
-            case "date":
-                map.put("type", "date");
-                map.put("format", "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS");
-                break;
-            case "long":
-                map.put("type", "long");
-                break;
-            case "int":
-                map.put("type", "integer");
-                break;
-            case "float":
-                map.put("type", "float");
-                break;
-            case "double":
-                map.put("type", "double");
-                break;
-            case "geo":
-                map.put("type", "geo_point");
-                break;
+        try {
+            OntologyPrimitiveType type = OntologyPrimitiveType.valueOf(nameType.toUpperCase());
+            switch (type) {
+                case STRING:
+                    map.put("type", "keyword");
+                    break;
+                case TEXT:
+                    map.put("type", "text");
+                    map.put("fields", singletonMap("keyword", singletonMap("type", "keyword")));
+                    break;
+                case DATE:
+                    map.put("type", "date");
+                    map.put("format", "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS");
+                    break;
+                case LONG:
+                    map.put("type", "long");
+                    break;
+                case INT:
+                    map.put("type", "integer");
+                    break;
+                case FLOAT:
+                    map.put("type", "float");
+                    break;
+                case DOUBLE:
+                    map.put("type", "double");
+                    break;
+                case GEO:
+                    map.put("type", "geo_point");
+                    break;
+            }
+        } catch (Throwable typeNotFound) {
+            //log type not found
         }
         return map;
     }
@@ -367,7 +421,7 @@ public class ElasticIndexProviderMappingFactory {
      *
      * @return
      */
-    public Settings generateSettings(RelationshipType relationType,Relation rel, String label) {
+    public Settings generateSettings(RelationshipType relationType, Relation rel, String label) {
         if (!ontology.relation(relationType.getName()).get().getMetadata().contains("id"))
             throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Relationship " + label + " not containing id metadata property "));
 
@@ -378,7 +432,7 @@ public class ElasticIndexProviderMappingFactory {
         Settings.Builder builder = getSettings();
         if (relation.getNested().isEmpty()) {
             //assuming id is a mandatory part of metadata/properties
-                builder.put("sort.field", "id")
+            builder.put("sort.field", "id")
                     .put("sort.order", "asc");
         }
         return builder.build();

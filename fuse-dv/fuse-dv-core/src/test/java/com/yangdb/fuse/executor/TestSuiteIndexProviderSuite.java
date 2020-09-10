@@ -48,11 +48,11 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
     public static Config config;
     public static Ontology ontology;
 
-    public static RawSchema nestedSchema,embeddedSchema;
-    public static IndexProvider nestedProvider,embeddedProvider;
+    public static RawSchema nestedSchema,embeddedSchema,singleIndexSchema;
+    public static IndexProvider nestedProvider,embeddedProvider,singleIndexProvider;
 
     public static OntologyProvider ontologyProvider;
-    public static IndexProviderIfc nestedProviderIfc,embeddedProviderIfc;
+    public static IndexProviderIfc nestedProviderIfc,embeddedProviderIfc,singleIndexProviderIfc;
 
     public static Client client;
 
@@ -60,10 +60,12 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         client = ElasticEmbeddedNode.getClient();
         InputStream providerNestedStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProviderNested.conf");
         InputStream providerEmbeddedStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProviderEmbedded.conf");
+        InputStream providerSingleIndexStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsSingleIndexProvider.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
 
         nestedProvider = mapper.readValue(providerNestedStream, IndexProvider.class);
         embeddedProvider = mapper.readValue(providerEmbeddedStream, IndexProvider.class);
+        singleIndexProvider = mapper.readValue(providerSingleIndexStream, IndexProvider.class);
         ontology = mapper.readValue(ontologyStream, Ontology.class);
 
 
@@ -73,6 +75,9 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         embeddedProviderIfc = Mockito.mock(IndexProviderIfc.class);
         when(embeddedProviderIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(embeddedProvider));
 
+        singleIndexProviderIfc = Mockito.mock(IndexProviderIfc.class);
+        when(singleIndexProviderIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(singleIndexProvider));
+
         ontologyProvider = Mockito.mock(OntologyProvider.class);
         when(ontologyProvider.get(any())).thenAnswer(invocationOnMock -> Optional.of(ontology));
 
@@ -81,6 +86,7 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
 
         GraphElementSchemaProvider nestedSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, nestedProviderIfc,ontologyProvider).get(ontology);
         GraphElementSchemaProvider embeddedSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, embeddedProviderIfc,ontologyProvider).get(ontology);
+        GraphElementSchemaProvider singleIndexSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, singleIndexProviderIfc,ontologyProvider).get(ontology);
 
         nestedSchema = new RawSchema() {
             @Override
@@ -147,11 +153,45 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
                 return IndexProviderRawSchema.indices(embeddedSchemaProvider);
             }
         };
+
+        singleIndexSchema = new RawSchema() {
+            @Override
+            public IndexPartitions getPartition(String type) {
+                return getIndexPartitions(singleIndexSchemaProvider,type);
+            }
+
+            @Override
+            public String getIdPrefix(String type) {
+                return "";
+            }
+            @Override
+            public String getIdFormat(String type) {
+                return "";
+            }
+
+            @Override
+            public String getIndexPrefix(String type) {
+                return "";
+            }
+
+            @Override
+            public List<IndexPartitions.Partition> getPartitions(String type) {
+                return StreamSupport.stream(getPartition(type).getPartitions().spliterator(), false)
+                        .collect(Collectors.toList());
+
+            }
+
+            @Override
+            public Iterable<String> indices() {
+                return IndexProviderRawSchema.indices(singleIndexSchemaProvider);
+            }
+        };
     }
 
     @BeforeClass
     public static void setup() throws Exception {
         init(true);
+        //init elasticsearch provider mapping factory
         setUpInternal();
     }
 

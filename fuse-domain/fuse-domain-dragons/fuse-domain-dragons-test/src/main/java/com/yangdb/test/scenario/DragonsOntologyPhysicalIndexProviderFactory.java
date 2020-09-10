@@ -1,4 +1,4 @@
-package com.yangdb.test.data;
+package com.yangdb.test.scenario;
 
 /*-
  * #%L
