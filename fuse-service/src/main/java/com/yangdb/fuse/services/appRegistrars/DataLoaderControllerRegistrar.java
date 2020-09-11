@@ -60,20 +60,30 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
     //region AppControllerRegistrarBase Implementation
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
-        // Initiate Graph
+        // create mapping according to ontology & given indexProvider instructions
+        app.post("/fuse/load/ontology/:id/mapping",
+                req -> Results.with(this.getController(app)
+                        .createMapping(req.param("id").value(),req.body(String.class))));
+        // create indices according to ontology & given indexProvider instructions
+        app.post("/fuse/load/ontology/:id/indices",
+                req -> Results.with(this.getController(app)
+                        .createIndices(req.param("id").value(),req.body(String.class))));
+
+        // Initiate Graph indices
         app.get("/fuse/load/ontology/:id/init",
                 req -> Results.with(this.getController(app).init(req.param("id").value())));
+        // drop Graph indices
         app.get("/fuse/load/ontology/:id/drop",
                 req -> Results.with(this.getController(app).drop(req.param("id").value())));
 
-        // Upload data
+        // Upload string data in json graph format
         app.post("/fuse/load/ontology/:id/graph/load",
                 req -> Results.json(this.getController(app)
                         .loadGraph(req.param("id").value(), req.body(LogicalGraphModel.class),
                                 req.param("directive").isSet() ?
                                         GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT )));
 
-
+        // Upload string data in csv format
        app.post("/fuse/load/ontology/:id/csv/load",
                 req -> Results.json(this.getController(app)
                         .loadCsv(req.param("id").value(),
@@ -82,6 +92,7 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                                 req.body(String.class), req.param("directive").isSet() ?
                                 GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT)));
 
+        // Upload file data in json format
         app.post("/fuse/load/ontology/:id/graph/upload",
                 req -> {
                     Upload upload = req.file("file");
@@ -97,6 +108,7 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                     }
                 });
 
+        // Upload file data in csv format
         app.post("/fuse/load/ontology/:id/csv/upload",
                 req -> {
                     Upload upload = req.file("file");

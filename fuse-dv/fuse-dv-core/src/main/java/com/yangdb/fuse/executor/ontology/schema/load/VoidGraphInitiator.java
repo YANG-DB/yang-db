@@ -34,5 +34,15 @@ public class VoidGraphInitiator implements GraphInitiator {
     public long drop() throws IOException {
         return 0;
     }
+
+    @Override
+    public long createTemplate(String ontology, String schemaProvider) {
+        return 0;
+    }
+
+    @Override
+    public long createIndices(String ontology, String schemaProvider) throws IOException {
+        return 0;
+    }
     //endregion
 }

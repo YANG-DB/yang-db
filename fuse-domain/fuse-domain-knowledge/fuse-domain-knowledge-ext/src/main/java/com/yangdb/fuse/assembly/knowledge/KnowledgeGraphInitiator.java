@@ -49,5 +49,15 @@ public class KnowledgeGraphInitiator implements GraphInitiator {
         return DataLoaderUtils.drop(client,schema);
     }
 
+    @Override
+    public long createTemplate(String ontology, String schemaProvider) {
+        return 0;
+    }
+
+    @Override
+    public long createIndices(String ontology, String schemaProvider) throws IOException {
+        return 0;
+    }
+
 
 }

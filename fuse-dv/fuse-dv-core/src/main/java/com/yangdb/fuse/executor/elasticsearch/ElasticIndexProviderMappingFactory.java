@@ -74,6 +74,16 @@ public class ElasticIndexProviderMappingFactory {
         this.ontology = new Ontology.Accessor(ontology);
     }
 
+    public ElasticIndexProviderMappingFactory indexProvider(IndexProvider indexProvider) {
+        this.indexProvider = indexProvider;
+        return this;
+    }
+
+    public ElasticIndexProviderMappingFactory ontology(Ontology ontology) {
+        this.ontology = new Ontology.Accessor(ontology);
+        return this;
+    }
+
     /**
      * create indices according to ontology
      *

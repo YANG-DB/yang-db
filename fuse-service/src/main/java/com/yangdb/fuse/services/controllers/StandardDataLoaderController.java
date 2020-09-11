@@ -229,6 +229,40 @@ public class StandardDataLoaderController implements DataLoaderController {
     }
 
     @Override
+    public ContentResponse<String> createMapping(String ontology, String indexProvider) {
+        if (ontologyProvider.get(ontology).isPresent()) {
+            try {
+                return Builder.<String>builder(OK, NOT_FOUND)
+                        .data(Optional.of("mapping created:" + this.initiator.createTemplate(ontology,indexProvider)))
+                        .compose();
+            } catch (IOException e) {
+                return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)
+                        .data(Optional.of(e.getMessage()))
+                        .compose();
+            }
+        }
+
+        return ContentResponse.notFound();
+    }
+
+    @Override
+    public ContentResponse<String> createIndices(String ontology, String indexProvider) {
+        if (ontologyProvider.get(ontology).isPresent()) {
+            try {
+                return Builder.<String>builder(OK, NOT_FOUND)
+                        .data(Optional.of("indices created:" + this.initiator.createIndices(ontology,indexProvider)))
+                        .compose();
+            } catch (IOException e) {
+                return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)
+                        .data(Optional.of(e.getMessage()))
+                        .compose();
+            }
+        }
+
+        return ContentResponse.notFound();
+    }
+
+    @Override
     public ContentResponse<String> drop(String ontology) {
         if (ontologyProvider.get(ontology).isPresent()) {
             try {

@@ -120,6 +120,28 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 Arrays.asList(info, trace))
                 .decorate(() -> this.controller.init(ontology), this.resultHandler());
     }
+    @Override
+    public ContentResponse<String> createMapping(String ontology,String indexProvider ) {
+        return new LoggingSyncMethodDecorator<ContentResponse<String>>(
+                this.logger,
+                this.metricRegistry,
+                init,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.createMapping(ontology,indexProvider), this.resultHandler());
+    }
+    @Override
+    public ContentResponse<String> createIndices(String ontology,String indexProvider ) {
+        return new LoggingSyncMethodDecorator<ContentResponse<String>>(
+                this.logger,
+                this.metricRegistry,
+                init,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.createIndices(ontology,indexProvider), this.resultHandler());
+    }
 
     @Override
     public ContentResponse<String> drop(String ontology ) {

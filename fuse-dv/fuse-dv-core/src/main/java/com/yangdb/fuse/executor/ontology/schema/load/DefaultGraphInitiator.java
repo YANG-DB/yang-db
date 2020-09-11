@@ -20,6 +20,7 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
@@ -37,6 +38,7 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsReques
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -45,17 +47,21 @@ import java.util.List;
 public class DefaultGraphInitiator implements GraphInitiator {
     private final Client client;
     private final RawSchema schema;
+    private final OntologyProvider ontologyProvider;
     private IndexProvider indexProvider;
+    private ObjectMapper objectMapper;
     private ElasticIndexProviderMappingFactory mappingFactory;
 
     @Inject
-    public DefaultGraphInitiator(Config config, Client client, IndexProviderIfc indexProviderFactory, OntologyProvider ontology, RawSchema schema) {
+    public DefaultGraphInitiator(Config config, Client client, IndexProviderIfc indexProviderFactory, OntologyProvider ontologyProvider, RawSchema schema) {
+        this.ontologyProvider = ontologyProvider;
         String assembly = config.getString("assembly");
+        this.objectMapper = new ObjectMapper();
         this.client = client;
         this.schema = schema;
         this.indexProvider = indexProviderFactory.get(assembly)
                 .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Index Provider present for assembly", "No Index Provider present for assembly" + assembly)));
-        Ontology ont = ontology.get(assembly)
+        Ontology ont = ontologyProvider.get(assembly)
                 .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly)));
         this.mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ont, indexProvider);
 
@@ -73,6 +79,29 @@ public class DefaultGraphInitiator implements GraphInitiator {
         return Stream.ofAll(indices).count(s -> !s.isEmpty());
     }
 
+    @Override
+    public long createTemplate(String ontology, String schemaProvider) throws IOException {
+        IndexProvider indexProvider = objectMapper.readValue(schemaProvider, IndexProvider.class);
+        mappingFactory.indexProvider(indexProvider)
+                        .ontology(ontologyProvider.get(ontology)
+                                .orElseThrow(() ->new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + ontology))));
+        List<Tuple2<String, Boolean>> results = mappingFactory.generateMappings();
+        return results.stream().filter(t->t._2).count();
+    }
+
+    @Override
+    public long createIndices(String ontology, String schemaProvider) throws IOException {
+        IndexProvider indexProvider = objectMapper.readValue(schemaProvider, IndexProvider.class);
+        mappingFactory.indexProvider(indexProvider)
+                        .ontology(ontologyProvider.get(ontology)
+                                .orElseThrow(() ->new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + ontology))));
+        //first generate the index mapping
+        mappingFactory.generateMappings();
+        //create the indices
+        List<String> indices = mappingFactory.createIndices();
+        return indices.size();
+    }
+
 
     @Override
     public long init() {
@@ -80,17 +109,10 @@ public class DefaultGraphInitiator implements GraphInitiator {
         List<Tuple2<String, Boolean>> mappingResults = mappingFactory.generateMappings();
         //todo log indices names
         //create indices
-        Iterable<String> allIndices = schema.indices();
-
-        Stream.ofAll(allIndices)
-                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
-                .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-        Stream.ofAll(allIndices).forEach(index -> client.admin().indices()
-                .create(new CreateIndexRequest(index.toLowerCase())).actionGet());
-
+        List<String> indices = mappingFactory.createIndices();
         //refresh cluster
         client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
-        return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
+        return Stream.ofAll(indices).count(s -> !s.isEmpty());
 
     }
 }
