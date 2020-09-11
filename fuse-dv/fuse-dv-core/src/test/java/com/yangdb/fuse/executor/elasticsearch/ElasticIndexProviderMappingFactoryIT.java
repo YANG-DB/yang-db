@@ -402,7 +402,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
     }
 
     @Test
-    @Ignore
+    @Ignore("Rejecting mapping update to [own] as the final mapping would have more than 1 type: [Own, ontology]")
     public void createEmbeddedIndicesTest() {
         RawSchema schema = embeddedSchema;
         ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ontology, embeddedProvider);

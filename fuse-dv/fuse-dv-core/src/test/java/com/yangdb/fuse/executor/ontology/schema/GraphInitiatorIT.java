@@ -6,6 +6,7 @@ import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.test.BaseITMarker;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -36,6 +37,25 @@ public class GraphInitiatorIT implements BaseITMarker {
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
         GraphInitiator initiator = new DefaultGraphInitiator(config,client,nestedProviderIfc,ontologyProvider,nestedSchema);
         Assert.assertEquals(19,initiator.init());
+    }
+
+    @Test
+    public void testCreateMappings() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(),anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0,1000));
+        GraphInitiator initiator = new DefaultGraphInitiator(config,client,nestedProviderIfc,ontologyProvider,nestedSchema);
+        Assert.assertEquals(13,initiator.createTemplate("Dragons",mapper.writeValueAsString(nestedProvider)));
+    }
+
+    @Test
+    @Ignore("Remove the existing template mapping before calling the API")
+    public void testCreateIndices() throws IOException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(),anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0,1000));
+        GraphInitiator initiator = new DefaultGraphInitiator(config,client,nestedProviderIfc,ontologyProvider,nestedSchema);
+        Assert.assertEquals(13,initiator.createIndices("Dragons",mapper.writeValueAsString(nestedProvider)));
     }
 
     @Test
