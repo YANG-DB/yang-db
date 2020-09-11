@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RelationshipType {
+public class RelationshipType implements BaseElement {
     public RelationshipType() {
         properties = new ArrayList<>();
         metadata = new ArrayList<>();
@@ -116,6 +116,7 @@ public class RelationshipType {
     public Set<String> getSources() {
         return ePairs.stream().map(EPair::geteTypeA).collect(Collectors.toSet());
     }
+
     public Set<String> getTargets() {
         return ePairs.stream().map(EPair::geteTypeB).collect(Collectors.toSet());
     }
@@ -130,7 +131,7 @@ public class RelationshipType {
     }
 
     public List<String> getMetadata() {
-        return metadata !=null ? metadata : Collections.emptyList();
+        return metadata != null ? metadata : Collections.emptyList();
     }
 
     public void setMetadata(List<String> metadata) {
@@ -138,11 +139,11 @@ public class RelationshipType {
     }
 
     public List<String> getProperties() {
-        return properties !=null ? properties : Collections.emptyList();
+        return properties != null ? properties : Collections.emptyList();
     }
 
     public List<String> getMandatory() {
-        return mandatory!=null ? mandatory :  Collections.emptyList();
+        return mandatory != null ? mandatory : Collections.emptyList();
     }
 
     public void setMandatory(List<String> mandatory) {
@@ -174,7 +175,7 @@ public class RelationshipType {
     }
 
     @JsonIgnore
-    public RelationshipType withEPairs(EPair ... pairs) {
+    public RelationshipType withEPairs(EPair... pairs) {
         this.setePairs(Arrays.asList(pairs));
         return this;
     }
@@ -198,12 +199,12 @@ public class RelationshipType {
 
     @Override
     public int hashCode() {
-        return Objects.hash(rType, name, directional,  mandatory, ePairs, properties, metadata);
+        return Objects.hash(rType, name, directional, mandatory, ePairs, properties, metadata);
     }
 
     @Override
     public String toString() {
-        return "RelationshipType [ePairs = " + ePairs + ", rType = " + rType + ", directional = " + directional + ", name = " + name + ", properties = " + properties + ", metadata = " + metadata  +", mandatory = " + mandatory + "]";
+        return "RelationshipType [ePairs = " + ePairs + ", rType = " + rType + ", directional = " + directional + ", name = " + name + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
     }
 
     //region Fields
@@ -233,12 +234,12 @@ public class RelationshipType {
 
     @JsonIgnore
     public boolean hasSideA(String eType) {
-        return ePairs.stream().anyMatch(ep->ep.geteTypeA().equals(eType));
+        return ePairs.stream().anyMatch(ep -> ep.geteTypeA().equals(eType));
     }
 
     @JsonIgnore
     public boolean hasSideB(String eType) {
-        return ePairs.stream().anyMatch(ep->ep.geteTypeB().equals(eType));
+        return ePairs.stream().anyMatch(ep -> ep.geteTypeB().equals(eType));
     }
 
 

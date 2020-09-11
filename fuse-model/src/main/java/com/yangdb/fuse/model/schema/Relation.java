@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "nested",
         "redundant"
 })
-public class Relation {
+public class Relation implements BaseTypeElement<Relation> {
 
     @JsonProperty("type")
     private String type;

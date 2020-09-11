@@ -55,7 +55,7 @@ import java.util.*;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class EntityType {
+public class EntityType implements BaseElement{
     public EntityType() {
     }
 

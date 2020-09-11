@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "props",
         "nested"
 })
-public class Entity {
+public class Entity implements BaseTypeElement<Entity> {
 
     @JsonProperty("type")
     private String type;

@@ -22,12 +22,14 @@ package com.yangdb.fuse.executor.elasticsearch;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.ontology.BaseElement;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.Entity;
 import com.yangdb.fuse.model.schema.IndexProvider;
+import com.yangdb.fuse.model.schema.BaseTypeElement;
 import com.yangdb.fuse.model.schema.Relation;
 import javaslang.Tuple2;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -88,10 +90,12 @@ public class ElasticIndexProviderMappingFactory {
 
     public List<Tuple2<String, Boolean>> generateMappings() {
         List<Tuple2<String, AcknowledgedResponse>> responses = new ArrayList<>();
-        responses.addAll(mapEntities(client).stream()
-                .map(r -> new Tuple2<>(r.request().name(), r.execute().actionGet()))
-                .collect(Collectors.toList()));
-        responses.addAll(mapRelations(client).stream()
+        //generate the index template requests
+        Map<String,ESPutIndexTemplateRequestBuilder> requests = new HashMap<>();
+        mapEntities(client,requests);
+        mapRelations(client,requests);
+        //execute template requesst
+        responses.addAll(requests.values().stream()
                 .map(r -> new Tuple2<>(r.request().name(), r.execute().actionGet()))
                 .collect(Collectors.toList()));
         return responses.stream().map(r -> new Tuple2<>(r._1, r._2.isAcknowledged()))
@@ -103,8 +107,7 @@ public class ElasticIndexProviderMappingFactory {
      *
      * @return
      */
-    private List<ESPutIndexTemplateRequestBuilder> mapRelations(Client client) {
-        List<ESPutIndexTemplateRequestBuilder> requests = new ArrayList<>();
+    private Collection<ESPutIndexTemplateRequestBuilder> mapRelations(Client client,Map<String,ESPutIndexTemplateRequestBuilder> requests) {
         ontology.relations().forEach(r -> {
             String mapping = indexProvider.getRelation(r.getName()).orElseThrow(
                     () -> new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + r + " found in ontology")))
@@ -114,6 +117,30 @@ public class ElasticIndexProviderMappingFactory {
             MappingIndexType type = MappingIndexType.valueOf(mapping.toUpperCase());
             switch (type) {
                 case UNIFIED:
+                    //common general index - unifies all entities under the same physical index
+                    relation.getProps().getValues().forEach(v -> {
+                        String label = r.getrType();
+                        String unifiedName = relation.getProps().getValues().isEmpty() ?  label : relation.getProps().getValues().get(0);
+                        ESPutIndexTemplateRequestBuilder request = requests.computeIfAbsent(unifiedName, s -> new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, unifiedName));
+
+                        List<String> patterns = Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format("%s%s", v, "*"));
+                        if (Objects.isNull(request.request().patterns())) {
+                            request.setPatterns(new ArrayList<>(patterns));
+                        } else {
+                            request.request().patterns().addAll(patterns);
+                        }
+                        //no specific index sort order since it contains multiple entity types -
+                        if (request.request().settings().isEmpty()) {
+                            request.setSettings(getSettings());
+                        }
+                        //create new mapping only when no prior entity set this mapping before
+                        if (request.request().mappings().isEmpty()) {
+                            request.addMapping(unifiedName, generateRelationMapping(r, relation, unifiedName));
+                        } else {
+                            populateProperty(relation,request.getMappingsProperties(unifiedName),r);
+                        }
+                    });
+                    break;
                 case STATIC:
                     //static index
                     relation.getProps().getValues().forEach(v -> {
@@ -121,9 +148,9 @@ public class ElasticIndexProviderMappingFactory {
                         ESPutIndexTemplateRequestBuilder request =  new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE,label.toLowerCase());
                         request.setPatterns(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format("%s%s", v, "*")))
                                 .setSettings(generateSettings(r, relation, label))
-                                .addMapping(label, generateMapping(r, relation, label));
+                                .addMapping(label, generateRelationMapping(r, relation, label));
                         //add response to list of responses
-                        requests.add(request);
+                        requests.put(label.toLowerCase(),request);
                     });
                     break;
                 case TIME:
@@ -131,16 +158,16 @@ public class ElasticIndexProviderMappingFactory {
                     ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client,PutIndexTemplateAction.INSTANCE,relation.getType().toLowerCase());
                     request.setPatterns(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format(relation.getProps().getIndexFormat(), "*")))
                             .setSettings(generateSettings(r, relation, label))
-                            .addMapping(label, generateMapping(r, relation, label));
+                            .addMapping(label, generateRelationMapping(r, relation, label));
                     //add response to list of responses
-                    requests.add(request);
+                    requests.put(relation.getType().toLowerCase(),request);
                     break;
                 default:
                     String result = "No mapping found";
                     break;
             }
         });
-        return requests;
+        return requests.values();
     }
 
     /**
@@ -149,8 +176,7 @@ public class ElasticIndexProviderMappingFactory {
      * @return
      * @param client
      */
-    private List<ESPutIndexTemplateRequestBuilder> mapEntities(Client client) {
-        List<ESPutIndexTemplateRequestBuilder> requests = new ArrayList<>();
+    private Collection<ESPutIndexTemplateRequestBuilder> mapEntities(Client client,Map<String,ESPutIndexTemplateRequestBuilder> requests) {
         StreamSupport.stream(ontology.entities().spliterator(), false)
                 .forEach(e -> {
             String mapping = indexProvider.getEntity(e.getName()).orElseThrow(
@@ -166,8 +192,7 @@ public class ElasticIndexProviderMappingFactory {
                         entity.getProps().getValues().forEach(v -> {
                             String label = e.geteType();
                             String unifiedName = entity.getProps().getValues().isEmpty() ?  label : entity.getProps().getValues().get(0);
-                            Optional<ESPutIndexTemplateRequestBuilder> indexTemplateRequest = requests.stream().filter(p -> p.request().name().equals(unifiedName)).findFirst();
-                            ESPutIndexTemplateRequestBuilder request = indexTemplateRequest.orElseGet(() -> new ESPutIndexTemplateRequestBuilder(client,PutIndexTemplateAction.INSTANCE,unifiedName));
+                            ESPutIndexTemplateRequestBuilder request = requests.computeIfAbsent(unifiedName, s -> new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, unifiedName));
 
                             List<String> patterns = Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*"));
                             if (Objects.isNull(request.request().patterns())) {
@@ -181,14 +206,11 @@ public class ElasticIndexProviderMappingFactory {
                             }
                             //create new mapping only when no prior entity set this mapping before
                             if (request.request().mappings().isEmpty()) {
-                                request.addMapping(unifiedName, generateMapping(e, entity, unifiedName));
+                                request.addMapping(unifiedName, generateEntityMapping(e, entity, unifiedName));
                             } else {
                                 populateProperty(entity,request.getMappingsProperties(unifiedName),e);
                             }
-                            //add response to list of responses
-                            requests.add(request);
                         });
-
                         break;
                     case STATIC:
                         //static index
@@ -197,9 +219,9 @@ public class ElasticIndexProviderMappingFactory {
                             ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE,v.toLowerCase());
                             request.setPatterns(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*")))
                                     .setSettings(generateSettings(e, entity, label))
-                                    .addMapping(label, generateMapping(e, entity, label));
+                                    .addMapping(label, generateEntityMapping(e, entity, label));
                             //add response to list of responses
-                            requests.add(request);
+                            requests.put(v.toLowerCase(),request);
                         });
                         break;
                     case TIME:
@@ -208,9 +230,9 @@ public class ElasticIndexProviderMappingFactory {
                         String label = entity.getType();
                         request.setPatterns(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format(entity.getProps().getIndexFormat(), "*")))
                                 .setSettings(generateSettings(e, entity, label))
-                                .addMapping(label, generateMapping(e, entity, label.toLowerCase()));
+                                .addMapping(label, generateEntityMapping(e, entity, label.toLowerCase()));
                         //add response to list of responses
-                        requests.add(request);
+                        requests.put(e.getName().toLowerCase(),request);
                         break;
                 }
             } catch (Throwable typeNotFound) {
@@ -218,28 +240,9 @@ public class ElasticIndexProviderMappingFactory {
             }
         });
 
-        return requests;
+        return requests.values();
     }
 
-    /**
-     * generate specific entity type mapping
-     *
-     * @param entityType
-     * @param ent
-     * @param label
-     * @return
-     */
-    public Map<String, Object> generateMapping(EntityType entityType, Entity ent, String label) {
-        Optional<EntityType> entity = ontology.entity(entityType.getName());
-        if (!entity.isPresent())
-            throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + label + " found in ontology"));
-
-        Map<String, Object> jsonMap = new HashMap<>();
-        //populate index fields
-        jsonMap.put(label, populateMappingIndexFields(ent, entity));
-
-        return jsonMap;
-    }
 
     public Map<String, Object> populateMappingIndexFields(Entity ent, Optional<EntityType> entity) {
         Map<String, Object> mapping = new HashMap<>();
@@ -251,11 +254,31 @@ public class ElasticIndexProviderMappingFactory {
         return mapping;
     }
 
-    public void populateProperty(Entity ent, Map<String, Object> properties, EntityType entityType) {
+    public void populateProperty(BaseTypeElement<? extends BaseTypeElement> nested, Map<String, Object> properties, BaseElement entityType) {
         entityType.getMetadata().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
         entityType.getProperties().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
         //populate nested documents
-        ent.getNested().forEach(nest -> generateNestedEntMapping(properties, nest));
+        nested.getNested().forEach(nest -> generateNestedEntityMapping(properties, nest));
+    }
+
+    /**
+     * generate specific entity type mapping
+     *
+     * @param entityType
+     * @param ent
+     * @param label
+     * @return
+     */
+    public Map<String, Object> generateEntityMapping(EntityType entityType, Entity ent, String label) {
+        Optional<EntityType> entity = ontology.entity(entityType.getName());
+        if (!entity.isPresent())
+            throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + label + " found in ontology"));
+
+        Map<String, Object> jsonMap = new HashMap<>();
+        //populate index fields
+        jsonMap.put(label, populateMappingIndexFields(ent, entity));
+
+        return jsonMap;
     }
 
     /**
@@ -265,7 +288,7 @@ public class ElasticIndexProviderMappingFactory {
      * @param label
      * @return
      */
-    public Map<String, Object> generateMapping(RelationshipType relationshipType, Relation rel, String label) {
+    public Map<String, Object> generateRelationMapping(RelationshipType relationshipType, Relation rel, String label) {
         Optional<RelationshipType> relation = ontology.relation(relationshipType.getName());
         if (!relation.isPresent())
             throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No relation    with name " + label + " found in ontology"));
@@ -285,13 +308,13 @@ public class ElasticIndexProviderMappingFactory {
         //populate  sideB (entityB)
         populateRedundand(ENTITY_B, relationshipType.getName(), properties);
         //populate nested documents
-        rel.getNested().forEach(nest -> generateNestedRelMapping(properties, nest));
+        rel.getNested().forEach(nest -> generateNestedRelationMapping(properties, nest));
 
         jsonMap.put(label, mapping);
         return jsonMap;
     }
 
-    private void generateNestedRelMapping(Map<String, Object> parent, Relation nest) {
+    private void generateNestedRelationMapping(Map<String, Object> parent, BaseTypeElement<? extends BaseTypeElement>  nest) {
         Optional<RelationshipType> relation = ontology.relation(nest.getType());
         if (!relation.isPresent())
             throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No relation with name " + nest.getType() + " found in ontology"));
@@ -308,18 +331,20 @@ public class ElasticIndexProviderMappingFactory {
         }
         mapping.put(PROPERTIES, properties);
         //populate fields & metadata
-        relation.get().getMetadata().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
-        relation.get().getProperties().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
+        populateProperty(nest, properties, relation.get());
+        //assuming single value exists (this is the field name)
+        if (nest.getProps().getValues().isEmpty())
+            throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "Nested Rel with name " + nest.getType() + " has no property value in mapping file"));
 
         //inner child nested population
-        nest.getNested().forEach(inner -> generateNestedRelMapping(properties, inner));
+        nest.getNested().forEach(inner -> generateNestedRelationMapping(properties, inner));
         //assuming single value exists (this is the field name)
         String nestedName = nest.getProps().getValues().get(0);
         parent.put(nestedName, mapping);
 
     }
 
-    private void generateNestedEntMapping(Map<String, Object> parent, Entity nest) {
+    private void generateNestedEntityMapping(Map<String, Object> parent, BaseTypeElement<? extends BaseTypeElement>  nest) {
         Optional<EntityType> entity = ontology.entity(nest.getType());
         if (!entity.isPresent())
             throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + nest.getType() + " found in ontology"));
