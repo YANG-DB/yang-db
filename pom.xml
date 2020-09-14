@@ -348,6 +348,18 @@
                 <version>${fuse.version}</version>
             </dependency>
 
+            <!-- Cyber Deployment Assemblies   -->
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-cyber-ext</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-cyber-assembly</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+
             <!-- Property Graph Deployment Assemblies   -->
 
             <!-- jmx monitoring    -->

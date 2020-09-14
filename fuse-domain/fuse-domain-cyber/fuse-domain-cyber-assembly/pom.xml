@@ -129,7 +129,7 @@
     </dependencies>
 
     <build>
-        <finalName>dragon</finalName>
+        <finalName>cyber</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -191,7 +191,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>dragon</id>
+                        <id>cyber</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
