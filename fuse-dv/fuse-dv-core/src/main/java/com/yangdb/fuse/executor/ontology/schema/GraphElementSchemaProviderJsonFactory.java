@@ -74,7 +74,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     public GraphElementSchemaProviderJsonFactory(Config config, IndexProviderIfc indexProvider, OntologyProvider ontologyProvider) {
         String assembly = config.getString("assembly");
         this.indexProvider = indexProvider.get(assembly).orElseThrow(() ->
-                new FuseError.FuseErrorException(new FuseError("No Index Provider present for assembly", "No Index Provider  present for assembly" + assembly)));
+                new FuseError.FuseErrorException(new FuseError("No Index Provider present for assembly ", "No Index Provider  present for assembly " + assembly)));
         this.accessor = new Ontology.Accessor(ontologyProvider.get(assembly).orElseThrow(() ->
                 new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly))));
     }
