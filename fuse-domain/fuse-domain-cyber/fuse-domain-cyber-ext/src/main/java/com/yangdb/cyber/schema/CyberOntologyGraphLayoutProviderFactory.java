@@ -2,7 +2,7 @@ package com.yangdb.cyber.schema;
 
 /*-
  * #%L
- * fuse-domain-dragons-ext
+ * fuse-domain-cyber-ext
  * %%
  * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
@@ -44,7 +44,7 @@ import java.util.Optional;
 public class CyberOntologyGraphLayoutProviderFactory implements GraphLayoutProviderFactory {
 
 
-    public static final String INDEX_PROVIDER_CONF = "DragonsIndexProvider.conf";
+    public static final String INDEX_PROVIDER_CONF = "CyberIndexProvider.conf";
 
     @Inject
     public CyberOntologyGraphLayoutProviderFactory(String dirName) throws IOException, URISyntaxException {
@@ -62,7 +62,7 @@ public class CyberOntologyGraphLayoutProviderFactory implements GraphLayoutProvi
         this.graphLayoutProviders = new HashMap<>();
         String conf = IOUtils.toString(new FileInputStream(file));
         GraphLayoutProvider provider = getGraphLayoutProvider(conf);
-        this.graphLayoutProviders.put("Dragons", provider);
+        this.graphLayoutProviders.put("Cyber", provider);
     }
 
     private GraphLayoutProvider getGraphLayoutProvider(String conf) {

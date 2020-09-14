@@ -68,7 +68,7 @@
         </dependency>
         <dependency>
             <groupId>com.yangdb</groupId>
-            <artifactId>fuse-domain-dragons-ext</artifactId>
+            <artifactId>fuse-domain-cyber-ext</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

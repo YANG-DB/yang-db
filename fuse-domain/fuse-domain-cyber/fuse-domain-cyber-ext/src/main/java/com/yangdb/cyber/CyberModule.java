@@ -2,7 +2,7 @@ package com.yangdb.cyber;
 
 /*-
  * #%L
- * fuse-domain-dragons-ext
+ * fuse-domain-cyber-ext
  * %%
  * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
