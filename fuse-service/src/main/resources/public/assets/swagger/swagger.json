@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0",
-    "title": "YangDb [Knowledge] API"
+    "title": "YangDb [Knowledge-Graph DB] API"
   },
   "basePath": "/fuse",
   "tags": [
@@ -62,6 +62,7 @@
         }
       }
     },
+
     "/internal/version": {
       "get": {
         "tags": [
@@ -92,6 +93,7 @@
         }
       }
     },
+
     "/catalog/ontology": {
       "post": {
         "tags": [
@@ -194,10 +196,11 @@
         }
       }
     },
+
     "/graphql/ontology": {
       "post": {
         "tags": [
-          "graphQL"
+          "catalog"
         ],
         "summary": "graphQL IDL into Ontology",
         "description": "Transform a graphQL IDL into V1 Ontology - see https://graphql.org/learn/schema/" ,
@@ -222,6 +225,35 @@
         }
       }
     },
+    "/sparql/ontology": {
+      "post": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "OWL IDL into Ontology",
+        "description": "Transform a OWL IDL into V1 Ontology - see https://www.w3.org/TR/owl-features/" ,
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "OWL IDL  ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OWLSchema"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an Ontology object",
+            "schema": {
+              "$ref": "#/definitions/Ontology"
+            }
+          }
+        }
+      }
+    },
+
     "/query/cypher": {
       "post": {
         "tags": [
@@ -298,6 +330,7 @@
         }
       }
     },
+
     "/query/graphQL": {
       "post": {
         "tags": [
@@ -374,6 +407,84 @@
         }
       }
     },
+
+    "/query/sparql": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit a sparql query request",
+        "description": "submit a sparql to the engine",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "sparql Query json request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SparqlQueryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/sparql/run": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run sparql query directly  ",
+        "description": "submit & run a sparql query to the engine",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sparql",
+            "in": "query",
+            "description": "sparql query",
+            "required": true,
+            "type": "string",
+            "default": "\"PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\\n\" +\n \"SELECT ?name\\n\" +\n \"WHERE {\\n\" +\n \"    ?person foaf:firstName ?name .\\n\" +\n \"    ?person rdf:type foaf:Person .\\n\" +\n \"}\""
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+
     "/query/v1": {
       "post": {
         "tags": [
@@ -549,6 +660,7 @@
         }
       }
     },
+
     "/query/{id}": {
       "get": {
         "tags": [
@@ -904,6 +1016,7 @@
         }
       }
     },
+
     "/dashboard/entities": {
       "get": {
         "tags": [
@@ -965,6 +1078,77 @@
         "responses": {
           "200": {
             "description": "Returns <code>200</code> Show summery of different server statistical metrics or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+
+    "/load/ontology/{id}/indices": {
+      "get": {
+        "tags": [
+          "init"
+        ],
+        "summary": "Generate E/S indices with related mapping associated with the ontology according to given physical provider",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "Provider physical layer",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OntologyPhysicalProvider"
+            }
+          }
+        ],
+        "description": "Generate E/S indices with related mapping associated with the ontology according to given physical provider",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of indices created || or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/mapping": {
+      "get": {
+        "tags": [
+          "init"
+        ],
+        "summary": "Generate E/S templates mapping related to the ontology according to given physical provider",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "Provider physical layer",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OntologyPhysicalProvider"
+            }
+          }
+        ],
+        "description": "Generate E/S templates mapping related to the ontology according to given physical provider",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of mapping templates created || or <code>404</code>"
           },
           "404": {
             "description": "Not Found"
@@ -1120,6 +1304,7 @@
         }
       }
     },
+
     "/load/ontology/{id}/graph/upload": {
       "post": {
         "tags": [
@@ -1223,6 +1408,7 @@
       }
     }
   },
+
   "definitions": {
     "SequenceNames": {
       "type": "string",
@@ -1336,6 +1522,27 @@
         "name": "Q1",
         "ontology": "Knowledge",
         "query": "match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue), (e:Entity)-[hasRelEn:relatedEntity]->(e2:Entity) return *"
+      }
+    },
+    "SparqlQueryRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "id": "1",
+        "name": "q1",
+        "ontology": "Knowledge",
+        "query": "\"PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\\n\" +\n \"SELECT ?name\\n\" +\n \"WHERE {\\n\" +\n  \"    ?person foaf:firstName ?name .\\n\" +\n \"    ?person rdf:type foaf:Person .\\n\" +\n \"}\""
       }
     },
     "GraphQLQueryRequest": {
@@ -1605,6 +1812,21 @@
           "format": "int32"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "OntologyPhysicalProvider": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "error": {
           "type": "string"
         }
       }
@@ -4550,6 +4772,9 @@
       }
     },
     "GraphQLSchema": {
+      "type": "string"
+    },
+    "OWLSchema": {
       "type": "string"
     },
     "LogicalNode": {
