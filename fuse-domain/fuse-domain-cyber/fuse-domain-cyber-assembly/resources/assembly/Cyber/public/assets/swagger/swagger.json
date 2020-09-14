@@ -1,0 +1,4600 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "YangDb [Dragons] API"
+  },
+  "basePath": "/fuse",
+  "tags": [
+    {
+      "name": "YangDb",
+      "description": "\nEverything about YangDb Graph Engine."
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json",
+    "application/xml"
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "API"
+        ],
+        "summary": "Get API Info",
+        "description": "API Info",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "API resources urls"
+          }
+        }
+      }
+    },
+    "/idgen/init": {
+      "get": {
+        "tags": [
+          "management"
+        ],
+        "summary": "Init DB id Sequencer",
+        "description": "Initialize DB id Sequencer tables",
+        "parameters": [
+          {
+            "name": "names",
+            "in": "query",
+            "description": "Sequence names [Entity,Relation,Evalue,Rvalue,workerId]  ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SequenceNames"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Initiated"
+          }
+        }
+      }
+    },
+    "/internal/version": {
+      "get": {
+        "tags": [
+          "management"
+        ],
+        "summary": "Get server version",
+        "description": "Server versions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Server version"
+          }
+        }
+      }
+    },
+    "/internal/config": {
+      "get": {
+        "tags": [
+          "management"
+        ],
+        "summary": "Get server configurations (according to app.config)",
+        "description": "Server configuration",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Server configuration"
+          }
+        }
+      }
+    },
+    "/catalog/ontology": {
+      "post": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "add an ontology to catalog",
+        "description": "add an ontology to catalog",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "Ontology",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Ontology"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get all Ontology catalog resources",
+        "description": "Ontology catalog resources",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "All Ontology "
+          }
+        }
+      }
+    },
+    "/catalog/ontology/{id}": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Ontology resource by name ",
+        "description": "Ontology resource",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ontology Json"
+          }
+        }
+      }
+    },
+    "/catalog/schema": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get available schemas",
+        "description": "Ontology schema resource",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Schema Json array"
+          }
+        }
+      }
+    },
+    "/catalog/schema/{id}": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get schemas by Id",
+        "description": "Get Ontology schema resource",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Schema Json"
+          }
+        }
+      }
+    },
+    "/graphql/ontology": {
+      "post": {
+        "tags": [
+          "graphQL"
+        ],
+        "summary": "graphQL IDL into Ontology",
+        "description": "Transform a graphQL IDL into V1 Ontology - see https://graphql.org/learn/schema/" ,
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "graphQL IDL  ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GraphQLSchema"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an Ontology object",
+            "schema": {
+              "$ref": "#/definitions/Ontology"
+            }
+          }
+        }
+      }
+    },
+    "/query/cypher": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit a cypher query request",
+        "description": "submit a query to the engine",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "Cypher Query json request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CypherQueryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/cypher/run": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run cypher query directly  ",
+        "description": "submit & run a query to the engine",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "cypher",
+            "in": "query",
+            "description": "cypher query",
+            "required": true,
+            "type": "string",
+            "default": "Match  (p1:Entity)-[hasEv1:hasEvalue]->(value1:Evalue),\n       (p1:Entity)-[hasRelEn:relatedEntity]->(p2:Entity ),\n       (p2:Entity)-[hasEv2:hasEvalue]->(value2:Evalue {stringValue:'Myriel'})  return *"
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/graphQL": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit a graphQL query request",
+        "description": "submit a graphQL to the engine",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "graphQL Query json request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GraphQLQueryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/graphQL/run": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run graphQL query directly  ",
+        "description": "submit & run a graphQL query to the engine",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "graphQL",
+            "in": "query",
+            "description": "graphQL query",
+            "required": true,
+            "type": "string",
+            "default": "{\n    human {\n        name,\n        friends {\n            name\n        },\n        owns {\n            name,\n            appearsIn,\n            friends {\n                name,\n                description\n            }\n        }\n    }\n}"
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/v1": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit a (V1) query request",
+        "description": "submit a query to the engine",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "V1 Query json request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/QueryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery (HATEOAS Rest Specification).",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/validate": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & validate V1 query directly  ",
+        "description": "submit & validate a query to the engine",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "V1 Query json ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Query"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query validation summery ",
+            "schema": {
+              "$ref": "#/definitions/QueryValidation"
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/plan": {
+      "post": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "submit V1 query and see generated plan ",
+        "description": "submit V1 query and see generated plan ",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "V1 Query json ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Query"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Plan",
+            "schema": {
+              "$ref": "#/definitions/PlanInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/traversal": {
+      "post": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "submit V1 query and see generated execution traversal gremlin ",
+        "description": "submit V1 query and see generated execution traversal gremlin ",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "V1 Query json ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Query"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Traversal gremlin",
+            "schema": {
+              "$ref": "#/definitions/TraversalInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/run": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run V1 query directly  ",
+        "description": "submit & run a query to the engine",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "V1 Query json ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Query"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Basic general query Info",
+        "description": "Basic query Info",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Basic query Info",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QueryInfo"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Fetch query info by ID",
+        "description": "Fetch query info by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Deletes a query by ID",
+        "description": "Deletes a query by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A <code>204</code>"
+          }
+        }
+      }
+    },
+    "/query/{id}/plan/json": {
+      "get": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "Fetch query plan by query ID",
+        "description": "Fetch query plan by query ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}": {
+      "get": {
+        "tags": [
+          "cursor"
+        ],
+        "summary": "Fetch cursor info by ID",
+        "description": "Fetch cursor info by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "cursor"
+        ],
+        "summary": "Deletes a cursor by ID",
+        "description": "Deletes a cursor by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A <code>204</code>"
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}/page/{pageId}": {
+      "get": {
+        "tags": [
+          "page"
+        ],
+        "summary": "Fetch page info by ID",
+        "description": "Fetch page info by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "page"
+        ],
+        "summary": "Deletes a page by ID",
+        "description": "Deletes a page by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A <code>204</code>"
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}/page/{pageId}/data": {
+      "get": {
+        "tags": [
+          "page"
+        ],
+        "summary": "Fetch Page data by id",
+        "description": "Fetch Page data by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}/page/{pageId}/format/{format}/data": {
+      "get": {
+        "tags": [
+          "page"
+        ],
+        "summary": "Fetch Page data with format ",
+        "description": "Fetch Page data with format ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "path",
+            "description": "data format",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{queryId}/cursor/{cursorId}/nextPageData": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Fetch Next Page data ",
+        "description": "Fetch Next Page data with given size ",
+        "parameters": [
+          {
+            "name": "queryId",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size.",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "deletePage",
+            "in": "query",
+            "description": "deletePage flag.",
+            "required": true,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/dashboard/entities": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Show summery of DB existing entities",
+        "description": "summery of DB entities",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> summery of db elements created (entities / properties) or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/dashboard/fields": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Show summery of DB existing fields types and histogram",
+        "description": "summery of DB fields",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> summery of db fields types (histogram) or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/dashboard/created": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Show summery of created DB elements by creation time ",
+        "description": "summery of time bases created DB elements ",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> Show summery of created DB elements by creation time  or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/dashboard/count": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Show summery of different server statistical metrics",
+        "description": "summery server statistical metrics",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> Show summery of different server statistical metrics or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/init": {
+      "get": {
+        "tags": [
+          "init"
+        ],
+        "summary": "Initialize (Drop & Create) E/S templates & Indices related to the ontology",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "description": "Initialize (Drop & Create) E/S templates & Indices related to the ontology",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of indices created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/drop": {
+      "get": {
+        "tags": [
+          "init"
+        ],
+        "summary": "Drop E/S templates & Indices related to the ontology",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "description": "Drop  E/S templates & Indices related to the ontology",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of indices dropped or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/graph/load": {
+      "post": {
+        "tags": [
+          "load"
+        ],
+        "summary": "Load Logical graph into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "parameters": [
+          {
+            "name": "directive",
+            "in": "query",
+            "description": "Directive [UPSERT/INSERT] ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "Logical Graph",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LogicalGraph"
+            }
+          }
+        ],
+        "description": "Load Logical graph into DB according to specific ontology Transformer ",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/csv/load": {
+      "post": {
+        "tags": [
+          "load"
+        ],
+        "summary": "Load csv into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "parameters": [
+          {
+            "name": "directive",
+            "in": "query",
+            "description": "Directive [UPSERT/INSERT] ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "File Ontological type - edge / vertex",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "label",
+            "in": "query",
+            "description": "File Ontological label - Person/Dragon/Kingdom ...",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "CSV",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "description": "Load Logical graph into DB according to specific ontology Transformer ",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/graph/upload": {
+      "post": {
+        "tags": [
+          "upload"
+        ],
+        "summary": "Upload json/zip File with Logical graph into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "directive",
+            "in": "query",
+            "description": "Directive [UPSERT/INSERT] ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "file",
+            "description": "file",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "description": "Load Logical graph into DB according to specific ontology Transformer ",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/csv/upload": {
+      "post": {
+        "tags": [
+          "upload"
+        ],
+        "summary": "Upload json/zip File with CSV file into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "directive",
+            "in": "query",
+            "description": "Directive [UPSERT/INSERT] ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "File Ontological type - edge / vertex",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "label",
+            "in": "query",
+            "description": "File Ontological label - Person/Dragon/Kingdom ...",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "file",
+            "description": "file",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "description": "Load CSV into DB according to specific ontology Transformer ",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "SequenceNames": {
+      "type": "string",
+      "example": "Entity,Relation,Evalue,Rvalue"
+    },
+    "Ontology": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "ont": "LesMiserables",
+        "entityTypes": [
+          {
+            "eType": "Person",
+            "name": "Person",
+            "metadata": [],
+            "properties": [
+              "id",
+              "firstName",
+              "lastName",
+              "gender",
+              "birthDate",
+              "deathDate",
+              "name"
+            ]
+          }
+        ],
+        "relationshipTypes": [
+          {
+            "rType": "knows",
+            "name": "knows",
+            "directional": true,
+            "ePairs": [
+              {
+                "eTypeA": "Person",
+                "eTypeB": "Person"
+              }
+            ],
+            "metadata": [],
+            "properties": [
+              "id",
+              "startDate"
+            ]
+          }
+        ],
+        "properties": [
+          {
+            "pType": "id",
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "pType": "firstName",
+            "name": "firstName",
+            "type": "string"
+          },
+          {
+            "pType": "lastName",
+            "name": "lastName",
+            "type": "string"
+          },
+          {
+            "pType": "gender",
+            "name": "gender",
+            "type": "string"
+          },
+          {
+            "pType": "birthDate",
+            "name": "birthDate",
+            "type": "date"
+          },
+          {
+            "pType": "deathDate",
+            "name": "deathDate",
+            "type": "string"
+          },
+          {
+            "pType": "name",
+            "name": "name",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "CypherQueryRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "id": "1",
+        "name": "Q1",
+        "ontology": "Knowledge",
+        "query": "match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue), (e:Entity)-[hasRelEn:relatedEntity]->(e2:Entity) return *"
+      }
+    },
+    "GraphQLQueryRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "id": "1",
+        "name": "Q1",
+        "ontology": "Knowledge",
+        "query": "{\n    person {\n        name,\n        knows {\n            name\n        },\n        owns {\n            name,\n            appearsIn,\n            knows {\n                name,\n                description\n            }\n        }\n    }\n}"
+      }
+    },
+    "QueryRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "query": {
+          "$ref": "#/definitions/Query"
+        },
+        "createCursorRequest": {
+          "$ref": "#/definitions/CreateCursorRequest"
+        }
+      },
+      "example": {
+        "id": "1",
+        "name": "Q1",
+        "query": {
+          "ont": "Knowledge",
+          "elements": [
+            {
+              "type": "Start",
+              "eNum": 0,
+              "next": 1
+            },
+            {
+              "type": "ETyped",
+              "eNum": 1,
+              "next": 2,
+              "eTag": "A",
+              "eType": "Entity"
+            },
+            {
+              "eNum": 2,
+              "type": "Quant1",
+              "qType": "all",
+              "next": [
+                3,
+                5
+              ]
+            },
+            {
+              "type": "Rel",
+              "dir": "R",
+              "eNum": 3,
+              "next": 4,
+              "rType": "relatedEntity"
+            },
+            {
+              "type": "ETyped",
+              "eNum": 4,
+              "eTag": "B",
+              "eType": "Entity"
+            },
+            {
+              "type": "Rel",
+              "dir": "R",
+              "eNum": 5,
+              "next": 6,
+              "rType": "hasEvalue"
+            },
+            {
+              "type": "ETyped",
+              "eNum": 6,
+              "eTag": "Ev",
+              "eType": "Evalue"
+            }
+          ]
+        },
+        "createCursorRequest": {
+          "maxExecutionTime": 600000,
+          "cursorType": "LogicalGraphCursorRequest",
+          "format": "XML",
+          "createPageRequest": {
+            "pageSize": 100,
+            "fetch": false
+          },
+          "include": "all"
+        }
+      }
+    },
+    "CreateCursorRequest": {
+      "type": "object",
+      "properties": {
+        "maxExecutionTime": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cursorType": {
+          "type": "string"
+        },
+        "include": {
+          "type": "string"
+        },
+        "createPageRequest": {
+          "$ref": "#/definitions/CreatePageRequest"
+        }
+      },
+      "example": {
+        "maxExecutionTime": 600000,
+        "cursorType": "graph",
+        "createPageRequest": {
+          "pageSize": 100,
+          "fetch": false
+        },
+        "include": "all"
+      }
+    },
+    "CreatePageRequest": {
+      "type": "object",
+      "properties": {
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "fetch": {
+          "type": "boolean"
+        }
+      },
+      "example": {
+        "pageSize": 100,
+        "fetch": false
+      }
+    },
+    "Query": {
+      "type": "object",
+      "properties": {
+        "ont": {
+          "type": "string"
+        },
+        "elements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Element"
+          }
+        }
+      },
+      "example": {
+        "ont": "Knowledge",
+        "elements": [
+          {
+            "type": "Start",
+            "eNum": 0,
+            "next": 1
+          },
+          {
+            "type": "ETyped",
+            "eNum": 1,
+            "next": 2,
+            "eTag": "A",
+            "eType": "Entity"
+          },
+          {
+            "eNum": 2,
+            "type": "Quant1",
+            "qType": "all",
+            "next": [
+              3,
+              5
+            ]
+          },
+          {
+            "type": "Rel",
+            "dir": "R",
+            "eNum": 3,
+            "next": 4,
+            "rType": "relatedEntity"
+          },
+          {
+            "type": "ETyped",
+            "eNum": 4,
+            "eTag": "B",
+            "eType": "Entity"
+          },
+          {
+            "type": "Rel",
+            "dir": "R",
+            "eNum": 5,
+            "next": 6,
+            "rType": "hasEvalue"
+          },
+          {
+            "type": "ETyped",
+            "eNum": 6,
+            "eTag": "Ev",
+            "eType": "Evalue"
+          }
+        ]
+      }
+    },
+    "Element": {
+      "type": "object",
+      "properties": {
+        "eNum": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string"
+        },
+        "eTag": {
+          "type": "string"
+        },
+        "eType": {
+          "type": "string"
+        },
+        "eID": {
+          "type": "string"
+        }
+      }
+    },
+    "QueryInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "PlanInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "TraversalInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "QueryValidation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "LogicalGraph": {
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LogicalNode"
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LogicalEdge"
+          }
+        }
+      },
+      "example": {
+        "nodes": [
+          {
+            "metadata": {
+              "group": 1
+            },
+            "id": "Myriel",
+            "label": "Person",
+            "properties": {
+              "name": "Myriel",
+              "age": 43
+            }
+          },
+          {
+            "metadata": {
+              "group": 1
+            },
+            "id": "Napoleon",
+            "label": "Person",
+            "properties": {
+              "name": "Napoleon",
+              "age": 68
+            }
+          },
+          {
+            "metadata": {
+              "group": 1
+            },
+            "id": "Mlle.Baptistine",
+            "label": "Person",
+            "properties": {
+              "name": "Mlle.Baptistine",
+              "age": 21
+            }
+          },
+          {
+            "metadata": {
+              "group": 1
+            },
+            "id": "Mme.Magloire",
+            "label": "Person",
+            "properties": {
+              "name": "Mme.Magloire",
+              "age": 13
+            }
+          },
+          {
+            "metadata": {
+              "group": 1
+            },
+            "id": "CountessdeLo",
+            "label": "Person",
+            "properties": {
+              "name": "CountessdeLo",
+              "age": 32
+            }
+          },
+          {
+            "metadata": {
+              "group": 1
+            },
+            "id": "Geborand",
+            "label": "Person",
+            "properties": {
+              "name": "Geborand",
+              "age": 73
+            }
+          },
+          {
+            "metadata": {
+              "group": 1
+            },
+            "id": "Champtercier",
+            "label": "Person",
+            "properties": {
+              "name": "Champtercier",
+              "age": 51
+            }
+          },
+          {
+            "metadata": {
+              "group": 1
+            },
+            "id": "Cravatte",
+            "label": "Person",
+            "properties": {
+              "name": "Cravatte",
+              "age": 23
+            }
+          },
+          {
+            "metadata": {
+              "group": 1
+            },
+            "id": "Count",
+            "label": "Person",
+            "properties": {
+              "name": "Count",
+              "age": 58
+            }
+          },
+          {
+            "metadata": {
+              "group": 1
+            },
+            "id": "OldMan",
+            "label": "Person",
+            "properties": {
+              "name": "OldMan",
+              "age": 70
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Labarre",
+            "label": "Person",
+            "properties": {
+              "name": "Labarre",
+              "age": 27
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Valjean",
+            "label": "Person",
+            "properties": {
+              "name": "Valjean",
+              "age": 25
+            }
+          },
+          {
+            "metadata": {
+              "group": 3
+            },
+            "id": "Marguerite",
+            "label": "Person",
+            "properties": {
+              "name": "Marguerite",
+              "age": 40
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Mme.deR",
+            "label": "Person",
+            "properties": {
+              "name": "Mme.deR",
+              "age": 9
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Isabeau",
+            "label": "Person",
+            "properties": {
+              "name": "Isabeau",
+              "age": 10
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Gervais",
+            "label": "Person",
+            "properties": {
+              "name": "Gervais",
+              "age": 36
+            }
+          },
+          {
+            "metadata": {
+              "group": 3
+            },
+            "id": "Tholomyes",
+            "label": "Person",
+            "properties": {
+              "name": "Tholomyes",
+              "age": 42
+            }
+          },
+          {
+            "metadata": {
+              "group": 3
+            },
+            "id": "Listolier",
+            "label": "Person",
+            "properties": {
+              "name": "Listolier",
+              "age": 31
+            }
+          },
+          {
+            "metadata": {
+              "group": 3
+            },
+            "id": "Fameuil",
+            "label": "Person",
+            "properties": {
+              "name": "Fameuil",
+              "age": 30
+            }
+          },
+          {
+            "metadata": {
+              "group": 3
+            },
+            "id": "Blacheville",
+            "label": "Person",
+            "properties": {
+              "name": "Blacheville",
+              "age": 27
+            }
+          },
+          {
+            "metadata": {
+              "group": 3
+            },
+            "id": "Favourite",
+            "label": "Person",
+            "properties": {
+              "name": "Favourite",
+              "age": 20
+            }
+          },
+          {
+            "metadata": {
+              "group": 3
+            },
+            "id": "Dahlia",
+            "label": "Person",
+            "properties": {
+              "name": "Dahlia",
+              "age": 19
+            }
+          },
+          {
+            "metadata": {
+              "group": 3
+            },
+            "id": "Zephine",
+            "label": "Person",
+            "properties": {
+              "name": "Zephine",
+              "age": 17
+            }
+          },
+          {
+            "metadata": {
+              "group": 3
+            },
+            "id": "Fantine",
+            "label": "Person",
+            "properties": {
+              "name": "Fantine",
+              "age": 16
+            }
+          },
+          {
+            "metadata": {
+              "group": 4
+            },
+            "id": "Mme.Thenardier",
+            "label": "Person",
+            "properties": {
+              "name": "Mme.Thenardier",
+              "age": 37
+            }
+          },
+          {
+            "metadata": {
+              "group": 4
+            },
+            "id": "Thenardier",
+            "label": "Person",
+            "properties": {
+              "name": "Thenardier",
+              "age": 19
+            }
+          },
+          {
+            "metadata": {
+              "group": 5
+            },
+            "id": "Cosette",
+            "label": "Person",
+            "properties": {
+              "name": "Cosette",
+              "age": 24
+            }
+          },
+          {
+            "metadata": {
+              "group": 4
+            },
+            "id": "Javert",
+            "label": "Person",
+            "properties": {
+              "name": "Javert",
+              "age": 31
+            }
+          },
+          {
+            "metadata": {
+              "group": 0
+            },
+            "id": "Fauchelevent",
+            "label": "Person",
+            "properties": {
+              "name": "Fauchelevent",
+              "age": 38
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Bamatabois",
+            "label": "Person",
+            "properties": {
+              "name": "Bamatabois",
+              "age": 21
+            }
+          },
+          {
+            "metadata": {
+              "group": 3
+            },
+            "id": "Perpetue",
+            "label": "Person",
+            "properties": {
+              "name": "Perpetue",
+              "age": 29
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Simplice",
+            "label": "Person",
+            "properties": {
+              "name": "Simplice",
+              "age": 19
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Scaufflaire",
+            "label": "Person",
+            "properties": {
+              "name": "Scaufflaire",
+              "age": 19
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Woman1",
+            "label": "Person",
+            "properties": {
+              "name": "Woman1",
+              "age": 20
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Judge",
+            "label": "Person",
+            "properties": {
+              "name": "Judge",
+              "age": 39
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Champmathieu",
+            "label": "Person",
+            "properties": {
+              "name": "Champmathieu",
+              "age": 45
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Brevet",
+            "label": "Person",
+            "properties": {
+              "name": "Brevet",
+              "age": 35
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Chenildieu",
+            "label": "Person",
+            "properties": {
+              "name": "Chenildieu",
+              "age": 30
+            }
+          },
+          {
+            "metadata": {
+              "group": 2
+            },
+            "id": "Cochepaille",
+            "label": "Person",
+            "properties": {
+              "name": "Cochepaille",
+              "age": 32
+            }
+          },
+          {
+            "metadata": {
+              "group": 4
+            },
+            "id": "Pontmercy",
+            "label": "Person",
+            "properties": {
+              "name": "Pontmercy",
+              "age": 22
+            }
+          },
+          {
+            "metadata": {
+              "group": 6
+            },
+            "id": "Boulatruelle",
+            "label": "Person",
+            "properties": {
+              "name": "Boulatruelle",
+              "age": 21
+            }
+          },
+          {
+            "metadata": {
+              "group": 4
+            },
+            "id": "Eponine",
+            "label": "Person",
+            "properties": {
+              "name": "Eponine",
+              "age": 20
+            }
+          },
+          {
+            "metadata": {
+              "group": 4
+            },
+            "id": "Anzelma",
+            "label": "Person",
+            "properties": {
+              "name": "Anzelma",
+              "age": 190
+            }
+          },
+          {
+            "metadata": {
+              "group": 5
+            },
+            "id": "Woman2",
+            "label": "Person",
+            "properties": {
+              "name": "Woman2",
+              "age": 18
+            }
+          },
+          {
+            "metadata": {
+              "group": 0
+            },
+            "id": "MotherInnocent",
+            "label": "Person",
+            "properties": {
+              "name": "MotherInnocent",
+              "age": 28
+            }
+          },
+          {
+            "metadata": {
+              "group": 0
+            },
+            "id": "Gribier",
+            "label": "Person",
+            "properties": {
+              "name": "Gribier",
+              "age": 41
+            }
+          },
+          {
+            "metadata": {
+              "group": 7
+            },
+            "id": "Jondrette",
+            "label": "Person",
+            "properties": {
+              "name": "Jondrette",
+              "age": 45
+            }
+          },
+          {
+            "metadata": {
+              "group": 7
+            },
+            "id": "Mme.Burgon",
+            "label": "Person",
+            "properties": {
+              "name": "Mme.Burgon",
+              "age": 43
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Gavroche",
+            "label": "Person",
+            "properties": {
+              "name": "Gavroche",
+              "age": 23
+            }
+          },
+          {
+            "metadata": {
+              "group": 5
+            },
+            "id": "Gillenormand",
+            "label": "Person",
+            "properties": {
+              "name": "Gillenormand",
+              "age": 23
+            }
+          },
+          {
+            "metadata": {
+              "group": 5
+            },
+            "id": "Magnon",
+            "label": "Person",
+            "properties": {
+              "name": "Magnon",
+              "age": 36
+            }
+          },
+          {
+            "metadata": {
+              "group": 5
+            },
+            "id": "Mlle.Gillenormand",
+            "label": "Person",
+            "properties": {
+              "name": "Mlle.Gillenormand",
+              "age": 37
+            }
+          },
+          {
+            "metadata": {
+              "group": 5
+            },
+            "id": "Mme.Pontmercy",
+            "label": "Person",
+            "properties": {
+              "name": "Mme.Pontmercy",
+              "age": 38
+            }
+          },
+          {
+            "metadata": {
+              "group": 5
+            },
+            "id": "Mlle.Vaubois",
+            "label": "Person",
+            "properties": {
+              "name": "Mlle.Vaubois",
+              "age": 28
+            }
+          },
+          {
+            "metadata": {
+              "group": 5
+            },
+            "id": "Lt.Gillenormand",
+            "label": "Person",
+            "properties": {
+              "name": "Lt.Gillenormand",
+              "age": 24
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Marius",
+            "label": "Person",
+            "properties": {
+              "name": "Marius",
+              "age": 22
+            }
+          },
+          {
+            "metadata": {
+              "group": 5
+            },
+            "id": "BaronessT",
+            "label": "Person",
+            "properties": {
+              "name": "BaronessT",
+              "age": 12
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Mabeuf",
+            "label": "Person",
+            "properties": {
+              "name": "Mabeuf",
+              "age": 11
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Enjolras",
+            "label": "Person",
+            "properties": {
+              "name": "Enjolras",
+              "age": 10
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Combeferre",
+            "label": "Person",
+            "properties": {
+              "name": "Combeferre",
+              "age": 9
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Prouvaire",
+            "label": "Person",
+            "properties": {
+              "name": "Prouvaire",
+              "age": 8
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Feuilly",
+            "label": "Person",
+            "properties": {
+              "name": "Feuilly",
+              "age": 7
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Courfeyrac",
+            "label": "Person",
+            "properties": {
+              "name": "Courfeyrac",
+              "age": 6
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Bahorel",
+            "label": "Person",
+            "properties": {
+              "name": "Bahorel",
+              "age": 18
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Bossuet",
+            "label": "Person",
+            "properties": {
+              "name": "Bossuet",
+              "age": 17
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Joly",
+            "label": "Person",
+            "properties": {
+              "name": "Joly",
+              "age": 16
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Grantaire",
+            "label": "Person",
+            "properties": {
+              "name": "Grantaire",
+              "age": 15
+            }
+          },
+          {
+            "metadata": {
+              "group": 9
+            },
+            "id": "MotherPlutarch",
+            "label": "Person",
+            "properties": {
+              "name": "MotherPlutarch",
+              "age": 25
+            }
+          },
+          {
+            "metadata": {
+              "group": 4
+            },
+            "id": "Gueulemer",
+            "label": "Person",
+            "properties": {
+              "name": "Gueulemer",
+              "age": 27
+            }
+          },
+          {
+            "metadata": {
+              "group": 4
+            },
+            "id": "Babet",
+            "label": "Person",
+            "properties": {
+              "name": "Babet",
+              "age": 29
+            }
+          },
+          {
+            "metadata": {
+              "group": 4
+            },
+            "id": "Claquesous",
+            "label": "Person",
+            "properties": {
+              "name": "Claquesous",
+              "age": 30
+            }
+          },
+          {
+            "metadata": {
+              "group": 4
+            },
+            "id": "Montparnasse",
+            "label": "Person",
+            "properties": {
+              "name": "Montparnasse",
+              "age": 60
+            }
+          },
+          {
+            "metadata": {
+              "group": 5
+            },
+            "id": "Toussaint",
+            "label": "Person",
+            "properties": {
+              "name": "Toussaint",
+              "age": 68
+            }
+          },
+          {
+            "metadata": {
+              "group": 10
+            },
+            "id": "Child1",
+            "label": "Person",
+            "properties": {
+              "name": "Child1",
+              "age": 8
+            }
+          },
+          {
+            "metadata": {
+              "group": 10
+            },
+            "id": "Child2",
+            "label": "Person",
+            "properties": {
+              "name": "Child2",
+              "age": 8
+            }
+          },
+          {
+            "metadata": {
+              "group": 4
+            },
+            "id": "Brujon",
+            "label": "Person",
+            "properties": {
+              "name": "Brujon",
+              "age": 28
+            }
+          },
+          {
+            "metadata": {
+              "group": 8
+            },
+            "id": "Mme.Hucheloup",
+            "label": "Person",
+            "properties": {
+              "name": "Mme.Hucheloup",
+              "age": 78
+            }
+          }
+        ],
+        "edges": [
+          {
+            "label": "knows",
+            "source": "Napoleon",
+            "target": "Myriel",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mlle.Baptistine",
+            "target": "Myriel",
+            "metadata": {
+              "value": 8
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Magloire",
+            "target": "Myriel",
+            "metadata": {
+              "value": 10
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Magloire",
+            "target": "Mlle.Baptistine",
+            "metadata": {
+              "value": 6
+            }
+          },
+          {
+            "label": "knows",
+            "source": "CountessdeLo",
+            "target": "Myriel",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Geborand",
+            "target": "Myriel",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Champtercier",
+            "target": "Myriel",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Cravatte",
+            "target": "Myriel",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Count",
+            "target": "Myriel",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "OldMan",
+            "target": "Myriel",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Valjean",
+            "target": "Labarre",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Valjean",
+            "target": "Mme.Magloire",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Valjean",
+            "target": "Mlle.Baptistine",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Valjean",
+            "target": "Myriel",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Marguerite",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.deR",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Isabeau",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gervais",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Listolier",
+            "target": "Tholomyes",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fameuil",
+            "target": "Tholomyes",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fameuil",
+            "target": "Listolier",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Blacheville",
+            "target": "Tholomyes",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Blacheville",
+            "target": "Listolier",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Blacheville",
+            "target": "Fameuil",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Favourite",
+            "target": "Tholomyes",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Favourite",
+            "target": "Listolier",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Favourite",
+            "target": "Fameuil",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Favourite",
+            "target": "Blacheville",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Dahlia",
+            "target": "Tholomyes",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Dahlia",
+            "target": "Listolier",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Dahlia",
+            "target": "Fameuil",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Dahlia",
+            "target": "Blacheville",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Dahlia",
+            "target": "Favourite",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Zephine",
+            "target": "Tholomyes",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Zephine",
+            "target": "Listolier",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Zephine",
+            "target": "Fameuil",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Zephine",
+            "target": "Blacheville",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Zephine",
+            "target": "Favourite",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Zephine",
+            "target": "Dahlia",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fantine",
+            "target": "Tholomyes",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fantine",
+            "target": "Listolier",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fantine",
+            "target": "Fameuil",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fantine",
+            "target": "Blacheville",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fantine",
+            "target": "Favourite",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fantine",
+            "target": "Dahlia",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fantine",
+            "target": "Zephine",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fantine",
+            "target": "Marguerite",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fantine",
+            "target": "Valjean",
+            "metadata": {
+              "value": 9
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Thenardier",
+            "target": "Fantine",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Thenardier",
+            "target": "Valjean",
+            "metadata": {
+              "value": 7
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Thenardier",
+            "target": "Mme.Thenardier",
+            "metadata": {
+              "value": 13
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Thenardier",
+            "target": "Fantine",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Thenardier",
+            "target": "Valjean",
+            "metadata": {
+              "value": 12
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Cosette",
+            "target": "Mme.Thenardier",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Cosette",
+            "target": "Valjean",
+            "metadata": {
+              "value": 31
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Cosette",
+            "target": "Tholomyes",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Cosette",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Javert",
+            "target": "Valjean",
+            "metadata": {
+              "value": 17
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Javert",
+            "target": "Fantine",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Javert",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Javert",
+            "target": "Mme.Thenardier",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Javert",
+            "target": "Cosette",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fauchelevent",
+            "target": "Valjean",
+            "metadata": {
+              "value": 8
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Fauchelevent",
+            "target": "Javert",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bamatabois",
+            "target": "Fantine",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bamatabois",
+            "target": "Javert",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bamatabois",
+            "target": "Valjean",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Perpetue",
+            "target": "Fantine",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Simplice",
+            "target": "Perpetue",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Simplice",
+            "target": "Valjean",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Simplice",
+            "target": "Fantine",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Simplice",
+            "target": "Javert",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Scaufflaire",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Woman1",
+            "target": "Valjean",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Woman1",
+            "target": "Javert",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Judge",
+            "target": "Valjean",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Judge",
+            "target": "Bamatabois",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Champmathieu",
+            "target": "Valjean",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Champmathieu",
+            "target": "Judge",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Champmathieu",
+            "target": "Bamatabois",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Brevet",
+            "target": "Judge",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Brevet",
+            "target": "Champmathieu",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Brevet",
+            "target": "Valjean",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Brevet",
+            "target": "Bamatabois",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Chenildieu",
+            "target": "Judge",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Chenildieu",
+            "target": "Champmathieu",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Chenildieu",
+            "target": "Brevet",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Chenildieu",
+            "target": "Valjean",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Chenildieu",
+            "target": "Bamatabois",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Cochepaille",
+            "target": "Judge",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Cochepaille",
+            "target": "Champmathieu",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Cochepaille",
+            "target": "Brevet",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Cochepaille",
+            "target": "Chenildieu",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Cochepaille",
+            "target": "Valjean",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Cochepaille",
+            "target": "Bamatabois",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Pontmercy",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Boulatruelle",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Eponine",
+            "target": "Mme.Thenardier",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Eponine",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Anzelma",
+            "target": "Eponine",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Anzelma",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Anzelma",
+            "target": "Mme.Thenardier",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Woman2",
+            "target": "Valjean",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Woman2",
+            "target": "Cosette",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Woman2",
+            "target": "Javert",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "MotherInnocent",
+            "target": "Fauchelevent",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "MotherInnocent",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gribier",
+            "target": "Fauchelevent",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Burgon",
+            "target": "Jondrette",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gavroche",
+            "target": "Mme.Burgon",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gavroche",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gavroche",
+            "target": "Javert",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gavroche",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gillenormand",
+            "target": "Cosette",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gillenormand",
+            "target": "Valjean",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Magnon",
+            "target": "Gillenormand",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Magnon",
+            "target": "Mme.Thenardier",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mlle.Gillenormand",
+            "target": "Gillenormand",
+            "metadata": {
+              "value": 9
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mlle.Gillenormand",
+            "target": "Cosette",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mlle.Gillenormand",
+            "target": "Valjean",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Pontmercy",
+            "target": "Mlle.Gillenormand",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Pontmercy",
+            "target": "Pontmercy",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mlle.Vaubois",
+            "target": "Mlle.Gillenormand",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Lt.Gillenormand",
+            "target": "Mlle.Gillenormand",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Lt.Gillenormand",
+            "target": "Gillenormand",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Lt.Gillenormand",
+            "target": "Cosette",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Marius",
+            "target": "Mlle.Gillenormand",
+            "metadata": {
+              "value": 6
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Marius",
+            "target": "Gillenormand",
+            "metadata": {
+              "value": 12
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Marius",
+            "target": "Pontmercy",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Marius",
+            "target": "Lt.Gillenormand",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Marius",
+            "target": "Cosette",
+            "metadata": {
+              "value": 21
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Marius",
+            "target": "Valjean",
+            "metadata": {
+              "value": 19
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Marius",
+            "target": "Tholomyes",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Marius",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Marius",
+            "target": "Eponine",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Marius",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "BaronessT",
+            "target": "Gillenormand",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "BaronessT",
+            "target": "Marius",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mabeuf",
+            "target": "Marius",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mabeuf",
+            "target": "Eponine",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mabeuf",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Enjolras",
+            "target": "Marius",
+            "metadata": {
+              "value": 7
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Enjolras",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 7
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Enjolras",
+            "target": "Javert",
+            "metadata": {
+              "value": 6
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Enjolras",
+            "target": "Mabeuf",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Enjolras",
+            "target": "Valjean",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Combeferre",
+            "target": "Enjolras",
+            "metadata": {
+              "value": 15
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Combeferre",
+            "target": "Marius",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Combeferre",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 6
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Combeferre",
+            "target": "Mabeuf",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Prouvaire",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Prouvaire",
+            "target": "Enjolras",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Prouvaire",
+            "target": "Combeferre",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Feuilly",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Feuilly",
+            "target": "Enjolras",
+            "metadata": {
+              "value": 6
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Feuilly",
+            "target": "Prouvaire",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Feuilly",
+            "target": "Combeferre",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Feuilly",
+            "target": "Mabeuf",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Feuilly",
+            "target": "Marius",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Courfeyrac",
+            "target": "Marius",
+            "metadata": {
+              "value": 9
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Courfeyrac",
+            "target": "Enjolras",
+            "metadata": {
+              "value": 17
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Courfeyrac",
+            "target": "Combeferre",
+            "metadata": {
+              "value": 13
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Courfeyrac",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 7
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Courfeyrac",
+            "target": "Mabeuf",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Courfeyrac",
+            "target": "Eponine",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Courfeyrac",
+            "target": "Feuilly",
+            "metadata": {
+              "value": 6
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Courfeyrac",
+            "target": "Prouvaire",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bahorel",
+            "target": "Combeferre",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bahorel",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bahorel",
+            "target": "Courfeyrac",
+            "metadata": {
+              "value": 6
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bahorel",
+            "target": "Mabeuf",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bahorel",
+            "target": "Enjolras",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bahorel",
+            "target": "Feuilly",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bahorel",
+            "target": "Prouvaire",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bahorel",
+            "target": "Marius",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bossuet",
+            "target": "Marius",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bossuet",
+            "target": "Courfeyrac",
+            "metadata": {
+              "value": 12
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bossuet",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bossuet",
+            "target": "Bahorel",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bossuet",
+            "target": "Enjolras",
+            "metadata": {
+              "value": 10
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bossuet",
+            "target": "Feuilly",
+            "metadata": {
+              "value": 6
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bossuet",
+            "target": "Prouvaire",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bossuet",
+            "target": "Combeferre",
+            "metadata": {
+              "value": 9
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bossuet",
+            "target": "Mabeuf",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Bossuet",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Joly",
+            "target": "Bahorel",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Joly",
+            "target": "Bossuet",
+            "metadata": {
+              "value": 7
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Joly",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Joly",
+            "target": "Courfeyrac",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Joly",
+            "target": "Enjolras",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Joly",
+            "target": "Feuilly",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Joly",
+            "target": "Prouvaire",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Joly",
+            "target": "Combeferre",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Joly",
+            "target": "Mabeuf",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Joly",
+            "target": "Marius",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Grantaire",
+            "target": "Bossuet",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Grantaire",
+            "target": "Enjolras",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Grantaire",
+            "target": "Combeferre",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Grantaire",
+            "target": "Courfeyrac",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Grantaire",
+            "target": "Joly",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Grantaire",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Grantaire",
+            "target": "Bahorel",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Grantaire",
+            "target": "Feuilly",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Grantaire",
+            "target": "Prouvaire",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "MotherPlutarch",
+            "target": "Mabeuf",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gueulemer",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 5
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gueulemer",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gueulemer",
+            "target": "Mme.Thenardier",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gueulemer",
+            "target": "Javert",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gueulemer",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Gueulemer",
+            "target": "Eponine",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Babet",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 6
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Babet",
+            "target": "Gueulemer",
+            "metadata": {
+              "value": 6
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Babet",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Babet",
+            "target": "Mme.Thenardier",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Babet",
+            "target": "Javert",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Babet",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Babet",
+            "target": "Eponine",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Claquesous",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Claquesous",
+            "target": "Babet",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Claquesous",
+            "target": "Gueulemer",
+            "metadata": {
+              "value": 4
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Claquesous",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Claquesous",
+            "target": "Mme.Thenardier",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Claquesous",
+            "target": "Javert",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Claquesous",
+            "target": "Eponine",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Claquesous",
+            "target": "Enjolras",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Montparnasse",
+            "target": "Javert",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Montparnasse",
+            "target": "Babet",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Montparnasse",
+            "target": "Gueulemer",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Montparnasse",
+            "target": "Claquesous",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Montparnasse",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Montparnasse",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Montparnasse",
+            "target": "Eponine",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Montparnasse",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Toussaint",
+            "target": "Cosette",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Toussaint",
+            "target": "Javert",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Toussaint",
+            "target": "Valjean",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Child1",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Child2",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 2
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Child2",
+            "target": "Child1",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Brujon",
+            "target": "Babet",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Brujon",
+            "target": "Gueulemer",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Brujon",
+            "target": "Thenardier",
+            "metadata": {
+              "value": 3
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Brujon",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Brujon",
+            "target": "Eponine",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Brujon",
+            "target": "Claquesous",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Brujon",
+            "target": "Montparnasse",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Hucheloup",
+            "target": "Bossuet",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Hucheloup",
+            "target": "Joly",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Hucheloup",
+            "target": "Grantaire",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Hucheloup",
+            "target": "Bahorel",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Hucheloup",
+            "target": "Courfeyrac",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Hucheloup",
+            "target": "Gavroche",
+            "metadata": {
+              "value": 1
+            }
+          },
+          {
+            "label": "knows",
+            "source": "Mme.Hucheloup",
+            "target": "Enjolras",
+            "metadata": {
+              "value": 1
+            }
+          }
+        ]
+      }
+    },
+    "LogicalEdge": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "properties": {
+          "$ref": "#/definitions/Properties"
+        },
+        "metadata": {
+          "$ref": "#/definitions/Metadata"
+        }
+      }
+    },
+    "GraphQLSchema": {
+      "type": "string"
+    },
+    "LogicalNode": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "properties": {
+          "$ref": "#/definitions/Properties"
+        },
+        "metadata": {
+          "$ref": "#/definitions/Metadata"
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "anyOf": {
+          "$ref": "#/definitions/Property"
+        }
+      }
+    },
+    "Properties": {
+      "type": "object",
+      "properties": {
+        "anyOf": {
+          "$ref": "#/definitions/Property"
+        }
+      }
+    },
+    "Property": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

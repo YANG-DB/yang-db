@@ -1,0 +1,51 @@
+{
+  "structure": [
+    {
+      "type":"quantifier",
+      "typeOptionals": [
+        { "op":"optional"},
+        { "op":"some"},
+        { "op":"all"}
+      ]
+    },
+    {
+      "type":"entity",
+      "typeOptionals": [
+        { "op":"concrete"},
+        { "op":"typed"},
+        { "op":"untyped"}
+      ]
+    },
+    {
+      "type":"relation",
+      "typeOptionals": [
+        { "op":"typed"},
+        { "op":"untyped"}
+      ]
+    }
+  ],
+  "primitives": ["string","int","date","text","float","array","geo_point","datetime"],
+  "operators": {
+    "unary" : [
+          {"empty":  ["string","int","date","text","float","array","geo_point","datetime"]},
+          {"notEmpty":  ["string","int","date","text","float","array","geo_point","datetime"]}
+    ],
+
+    "binary" : [
+      {"eq":  ["string","int","date","text","float","array","geo_point","datetime"]},
+      {"ne":  ["string","int","date","text","float","array","geo_point","datetime"]},
+      {"gt": ["string","int","date","text","float","datetime"]},
+      {"ge": ["string","int","date","text","float","datetime"]},
+      {"lt": ["string","int","date","text","float","datetime"]},
+      {"le": ["string","int","date","text","float","datetime"]},
+      {"contains": ["string","text"]},
+      {"like": ["string","text"]}
+    ],
+
+    "multiple" : [
+        {"likeAny": ["string","text"]},
+        {"inSet": ["string","int","date","text","float","array","geo_point","datetime"]},
+        {"notInSet": ["string","int","date","text","float","array","geo_point","datetime"]}
+      ]
+    }
+  }
