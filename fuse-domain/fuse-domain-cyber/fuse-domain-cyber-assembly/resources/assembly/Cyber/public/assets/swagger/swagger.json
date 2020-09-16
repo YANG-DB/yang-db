@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0",
-    "title": "YangDb [Knowledge-Graph DB] API"
+    "title": "YangDb [Cyber-Graph DB] API"
   },
   "basePath": "/fuse",
   "tags": [
