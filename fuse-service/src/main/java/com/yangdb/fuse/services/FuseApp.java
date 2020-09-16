@@ -55,6 +55,7 @@ import org.jooby.Jooby;
 import org.jooby.RequestLogger;
 import org.jooby.Results;
 import org.jooby.caffeine.CaffeineCache;
+import org.jooby.handlers.AssetHandler;
 import org.jooby.handlers.CorsHandler;
 import org.jooby.metrics.Metrics;
 import org.jooby.quartz.Quartz;
@@ -63,6 +64,8 @@ import org.reflections.Reflections;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
@@ -96,6 +99,11 @@ public class FuseApp extends Jooby {
         get("swagger/swagger.json", () -> Results.redirect("/public/assets/swagger/swagger.json"));
         // elasticsearch bigDesk support (
         get("bigdesk", () -> Results.redirect("/public/assets/bigdesk/index.html"));
+        get("queryBuilder/sparql", () -> Results.redirect("/public/assets/query/sparql/index.html"));
+        get("queryBuilder/graphql", () -> Results.redirect("/public/assets/query/graphql/index.html"));
+        get("queryBuilder/cypher", () -> Results.redirect("/public/assets/query/cypher/index.html"));
+
+
         get("cypher-queries-samples", () -> Results.redirect("/public/assets/samples/cypher-queries.txt"));
         get("les_miserables-data", () -> Results.redirect("/public/assets/samples/les_miserables-data.json"));
 
@@ -105,6 +113,7 @@ public class FuseApp extends Jooby {
         //'Access-Control-Allow-Origin' header
         use("*", new CorsHandler());
         //expose html assets
+        assets("public/**",new AssetHandler(Paths.get("public")));
         assets("/assets/**");
         assets("public/assets/**");
         assets("public/assets/samples/**");

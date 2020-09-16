@@ -23,6 +23,10 @@
             <directory>${project.basedir}/resources/assembly/Cyber/dataset</directory>
             <outputDirectory>./dataset</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/resources/assembly/Cyber/public</directory>
+            <outputDirectory>./public</outputDirectory>
+        </fileSet>
     </fileSets>
 
     <files>

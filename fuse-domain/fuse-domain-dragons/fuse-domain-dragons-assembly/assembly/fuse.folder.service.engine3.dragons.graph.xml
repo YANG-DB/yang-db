@@ -23,6 +23,11 @@
             <directory>${project.basedir}/resources/assembly/Dragons/dataset</directory>
             <outputDirectory>./dataset</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/resources/assembly/Dragons/public</directory>
+            <outputDirectory>./public</outputDirectory>
+        </fileSet>
+
     </fileSets>
 
     <files>
