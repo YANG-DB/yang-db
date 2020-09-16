@@ -53,6 +53,7 @@ import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
 import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.transport.*;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
@@ -77,6 +78,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
      */
     public static final int TIMEOUT = 1000 * 60 * 10;
     public static final int PAGE_SIZE = 1000;
+    public static final String GRAPH_QL = "graphQL";
 
     //region Constructors
     public QueryControllerRegistrar() {
@@ -217,22 +219,25 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
     private void cypherContext(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** create a cypher query */
         app.post(appUrlSupplier.queryStoreUrl() + "/cypher",req -> API.postCypher(app,req,this.getController(app)));
-        /** run a cypher query */
+        /** run a cypher query (support both get/post protocols)  */
         app.get(appUrlSupplier.queryStoreUrl() + "/cypher/run",req -> API.runCypher(app,req,this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/cypher/run",req -> API.runCypher(app,req,this.getController(app)));
     }
 
     private void sparqlContext(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** create a sparql query */
         app.post(appUrlSupplier.queryStoreUrl() + "/sparql",req -> API.postSparql(app,req,this.getController(app)));
-        /** run a sparql query */
+        /** run a sparql query (support both get/post protocols) */
         app.get(appUrlSupplier.queryStoreUrl() + "/sparql/run",req -> API.runSparql(app,req,this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/sparql/run",req -> API.runSparql(app,req,this.getController(app)));
     }
 
     private void graphQLContext(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** create a cypher query */
         app.post(appUrlSupplier.queryStoreUrl() + "/graphQL",req -> API.postGraphQL(app,req,this.getController(app)));
-        /** run a cypher query */
+        /** run a cypher query (support both get/post protocols) */
         app.get(appUrlSupplier.queryStoreUrl() + "/graphQL/run",req -> API.runGraphQL(app,req,this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/graphQL/run",req -> API.runGraphQL(app,req,this.getController(app)));
     }
 
     private void v1Context(Jooby app, AppUrlSupplier appUrlSupplier) {
@@ -255,6 +260,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
 
     public static class API {
+
+        public static final String CYPHER = "cypher";
+        public static final String SPARQL = "sparql";
 
         public static Result postGraphQL(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("postGraphQL").write();
@@ -378,25 +386,46 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         public static Result runCypher(Jooby app, final Request req, QueryController controller) throws Throwable {
             Route.of("runCypher").write();
 
-            String query = req.param("cypher").value();
+            Optional<String> query;
+            if(req.param(CYPHER).isSet()) {
+                query = Optional.of(req.param(CYPHER).value());
+            } else {
+                query = Optional.of(req.body(String.class));
+            }
+
+            //verify query value exists
+            query.orElseThrow(
+                    () -> new FuseError.FuseErrorException(new FuseError("Request Error", "No query parameter found in request")));
+
             String ontology = req.param("ontology").value();
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
-            ContentResponse<Object> response = controller.runCypher(query,ontology,
+            ContentResponse<Object> response = controller.runCypher(query.get(),ontology,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
                     req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
             );
 
             return Results.with(response, response.status());
         }
+
         public static Result runSparql(Jooby app, final Request req, QueryController controller) throws Throwable {
             Route.of("runSparql").write();
 
-            String query = req.param("sparql").value();
+            Optional<String> query;
+            if(req.param(SPARQL).isSet()) {
+                query = Optional.of(req.param(SPARQL).value());
+            } else {
+                query = Optional.of(req.body(String.class));
+            }
+
+            //verify query value exists
+            query.orElseThrow(
+                    () -> new FuseError.FuseErrorException(new FuseError("Request Error", "No query parameter found in request")));
+
             String ontology = req.param("ontology").value();
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
-            ContentResponse<Object> response = controller.runSparql(query,ontology,
+            ContentResponse<Object> response = controller.runSparql(query.get(),ontology,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
                     req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
             );
@@ -407,11 +436,21 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         public static Result runGraphQL(Jooby app, final Request req, QueryController controller) throws Throwable {
             Route.of("runGraphQL").write();
 
-            String query = req.param("graphQL").value();
+            Optional<String> query;
+            if(req.param(GRAPH_QL).isSet()) {
+                query = Optional.of(req.param(GRAPH_QL).value());
+            } else {
+                query = Optional.of(req.body(String.class));
+            }
+
+            //verify query value exists
+            query.orElseThrow(
+                    () -> new FuseError.FuseErrorException(new FuseError("Request Error", "No query parameter found in request")));
+
             String ontology = req.param("ontology").value();
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
-            ContentResponse<Object> response = controller.runGraphQL(query,ontology,
+            ContentResponse<Object> response = controller.runGraphQL(query.get(),ontology,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
                     req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
             );
