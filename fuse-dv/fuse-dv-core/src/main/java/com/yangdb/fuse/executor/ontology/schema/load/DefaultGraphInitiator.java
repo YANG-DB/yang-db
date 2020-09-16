@@ -98,7 +98,7 @@ public class DefaultGraphInitiator implements GraphInitiator {
         //first generate the index mapping
         mappingFactory.generateMappings();
         //create the indices
-        List<String> indices = mappingFactory.createIndices();
+        List<Tuple2<Boolean,String>> indices = mappingFactory.createIndices();
         return indices.size();
     }
 
@@ -109,10 +109,10 @@ public class DefaultGraphInitiator implements GraphInitiator {
         List<Tuple2<String, Boolean>> mappingResults = mappingFactory.generateMappings();
         //todo log indices names
         //create indices
-        List<String> indices = mappingFactory.createIndices();
+        List<Tuple2<Boolean,String>> indices = mappingFactory.createIndices();
         //refresh cluster
         client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
-        return Stream.ofAll(indices).count(s -> !s.isEmpty());
+        return Stream.ofAll(indices).count(s -> !s._2.isEmpty());
 
     }
 }

@@ -103,10 +103,6 @@ public class FuseApp extends Jooby {
         get("queryBuilder/graphql", () -> Results.redirect("/public/assets/query/graphql/index.html"));
         get("queryBuilder/cypher", () -> Results.redirect("/public/assets/query/cypher/index.html"));
 
-
-        get("cypher-queries-samples", () -> Results.redirect("/public/assets/samples/cypher-queries.txt"));
-        get("les_miserables-data", () -> Results.redirect("/public/assets/samples/les_miserables-data.json"));
-
         //internal quarts reporting job scheduler
         use(new Quartz().with(StatusReportedJob.class));
 

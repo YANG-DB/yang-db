@@ -314,15 +314,15 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
 
-        Set<String> indices =  new HashSet<>(mappingFactory.createIndices());
+        Set<Tuple2<Boolean,String>> indices =  new HashSet<>(mappingFactory.createIndices());
         Set<String> names = new HashSet<>(Arrays.asList("idx_fire_500", "idx_freeze_2000", "idx_fire_1500", "idx_freeze_1000", "guilds", "own", "subjectof", "idx_freeze_1500", "people", "idx_fire_2000", "idx_fire_1000", "idx_freeze_500", "kingdoms", "know", "registeredin", "originatedin", "memberof", "horses", "dragons"));
 
-        Assert.assertEquals(indices, names);
+        Assert.assertEquals(indices.stream().map(i->i._2).collect(Collectors.toSet()), names);
         indices.forEach(index -> {
             GetMappingsRequest request = new GetMappingsRequest();
-            request.indices(index);
+            request.indices(index._2);
             GetMappingsResponse response = client.admin().indices().getMappings(request).actionGet();
-            switch (index) {
+            switch (index._2) {
                 case "Own":
                 case "own":
                     Assert.assertEquals(response.toString(),"{\"own\":{\"mappings\":{\"Own\":{\"properties\":{\"direction\":{\"type\":\"keyword\"},\"endDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"entityA\":{\"properties\":{\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"type\":{\"type\":\"keyword\"}}}}}}");
@@ -343,7 +343,8 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 case "fire":
                     try {
                         Map map = mapper.readValue(response.toString(), Map.class);
-                        Assert.assertEquals(map.get(index).toString(),"{mappings={Fire={properties={date={type=date, format=epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS}, direction={type=keyword}, entityA={properties={color={type=keyword}, id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, entityB={properties={color={type=keyword}, id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, id={type=keyword}, temperature={type=integer}, type={type=keyword}}}}}");
+                        Assert.assertNotNull(map.get(index._2));
+                        Assert.assertEquals(map.get(index._2).toString(),"{mappings={Fire={properties={date={type=date, format=epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS}, direction={type=keyword}, entityA={properties={color={type=keyword}, id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, entityB={properties={color={type=keyword}, id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, id={type=keyword}, temperature={type=integer}, type={type=keyword}}}}}");
                     } catch (IOException e) {
                         Assert.fail("Not expecting non registered type "+ index);
                     }
@@ -356,7 +357,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 case "freeze":
                     try {
                         Map map = mapper.readValue(response.toString(), Map.class);
-                        Assert.assertEquals(map.get(index).toString(),"{mappings={Freeze={properties={date={type=date, format=epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS}, direction={type=keyword}, entityA={properties={id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, entityB={properties={id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, id={type=keyword}, temperature={type=integer}, type={type=keyword}}}}}");
+                        Assert.assertEquals(map.get(index._2).toString(),"{mappings={Freeze={properties={date={type=date, format=epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS}, direction={type=keyword}, entityA={properties={id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, entityB={properties={id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, id={type=keyword}, temperature={type=integer}, type={type=keyword}}}}}");
                     } catch (IOException e) {
                         Assert.fail("Not expecting non registered type "+ index);
                     }
@@ -416,15 +417,15 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
 
-        Set<String> indices =  new HashSet<>(mappingFactory.createIndices());
+        Set<Tuple2<Boolean,String>> indices =  new HashSet<>(mappingFactory.createIndices());
         Set<String> names = new HashSet<>(Arrays.asList("idx_fire_500", "idx_freeze_2000", "idx_fire_1500", "idx_freeze_1000", "guilds", "own", "subjectof", "idx_freeze_1500", "people", "idx_fire_2000", "idx_fire_1000", "idx_freeze_500", "kingdoms", "know", "registeredin", "originatedin", "memberof", "horses", "dragons"));
 
-        Assert.assertEquals(indices, names);
+        Assert.assertEquals(indices.stream().map(i->i._2).collect(Collectors.toSet()), names);
         indices.forEach(index -> {
             GetMappingsRequest request = new GetMappingsRequest();
-            request.indices(index);
+            request.indices(index._2);
             GetMappingsResponse response = client.admin().indices().getMappings(request).actionGet();
-            switch (index) {
+            switch (index._2) {
                 case "Own":
                 case "own":
                     Assert.assertEquals(response.toString(),"{\"own\":{\"mappings\":{\"Own\":{\"properties\":{\"direction\":{\"type\":\"keyword\"},\"endDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"entityA\":{\"properties\":{\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"type\":{\"type\":\"keyword\"}}}}}}");
@@ -445,7 +446,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 case "fire":
                     try {
                         Map map = mapper.readValue(response.toString(), Map.class);
-                        Assert.assertEquals(map.get(index).toString(),"{mappings={Fire={properties={date={type=date, format=epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS}, direction={type=keyword}, entityA={properties={color={type=keyword}, id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, entityB={properties={color={type=keyword}, id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, id={type=keyword}, temperature={type=integer}, type={type=keyword}}}}}");
+                        Assert.assertEquals(map.get(index._2).toString(),"{mappings={Fire={properties={date={type=date, format=epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS}, direction={type=keyword}, entityA={properties={color={type=keyword}, id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, entityB={properties={color={type=keyword}, id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, id={type=keyword}, temperature={type=integer}, type={type=keyword}}}}}");
                     } catch (IOException e) {
                         Assert.fail("Not expecting non registered type "+ index);
                     }
@@ -458,7 +459,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 case "freeze":
                     try {
                         Map map = mapper.readValue(response.toString(), Map.class);
-                        Assert.assertEquals(map.get(index).toString(),"{mappings={Freeze={properties={date={type=date, format=epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS}, direction={type=keyword}, entityA={properties={id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, entityB={properties={id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, id={type=keyword}, temperature={type=integer}, type={type=keyword}}}}}");
+                        Assert.assertEquals(map.get(index._2).toString(),"{mappings={Freeze={properties={date={type=date, format=epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS}, direction={type=keyword}, entityA={properties={id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, entityB={properties={id={type=keyword}, name={type=text, fields={keyword={type=keyword}}}, type={type=keyword}}}, id={type=keyword}, temperature={type=integer}, type={type=keyword}}}}}");
                     } catch (IOException e) {
                         Assert.fail("Not expecting non registered type "+ index);
                     }
@@ -518,15 +519,15 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
 
-        Set<String> indices =  new HashSet<>(mappingFactory.createIndices());
+        Set<Tuple2<Boolean,String>> indices =  new HashSet<>(mappingFactory.createIndices());
         Set<String> names = new HashSet<>(ImmutableList.of("ontology"));
 
-        Assert.assertEquals(indices, names);
+        Assert.assertEquals(indices.stream().map(i->i._2).collect(Collectors.toSet()), names);
         indices.forEach(index -> {
             GetMappingsRequest request = new GetMappingsRequest();
-            request.indices(index);
+            request.indices(index._2);
             GetMappingsResponse response = client.admin().indices().getMappings(request).actionGet();
-            switch (index) {
+            switch (index._2) {
                 case "Ontology":
                 case "ontology":
                     Assert.assertEquals(response.toString(),"{\"ontology\":{\"mappings\":{\"ontology\":{\"properties\":{\"birthDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"color\":{\"type\":\"keyword\"},\"date\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"deathDate\":{\"type\":\"keyword\"},\"description\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"distance\":{\"type\":\"integer\"},\"endDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"establishDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"funds\":{\"type\":\"float\"},\"gender\":{\"type\":\"keyword\"},\"height\":{\"type\":\"integer\"},\"iconId\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"independenceDay\":{\"type\":\"keyword\"},\"king\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"lastName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"maxSpeed\":{\"type\":\"integer\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"power\":{\"type\":\"integer\"},\"profession\":{\"type\":\"nested\",\"properties\":{\"certification\":{\"type\":\"keyword\"},\"experience\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"salary\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"}}},\"queen\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"temperature\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"},\"url\":{\"type\":\"keyword\"},\"weight\":{\"type\":\"integer\"}}}}}}");
