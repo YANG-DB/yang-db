@@ -196,7 +196,8 @@
         <javaslang.version>2.0.4</javaslang.version>
 
         <!-- jooq -->
-        <jooq.version>0.9.12</jooq.version>
+        <jooq.version>3.13.4</jooq.version>
+        <jool.version>0.9.14</jool.version>
 
         <!--jooby plugin -->
         <jooby.version>1.6.0</jooby.version>
@@ -691,10 +692,16 @@
             <!-- javaslang -->
 
             <!-- jooq -->
+            <!-- https://mvnrepository.com/artifact/org.jooq/jooq -->
+            <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq</artifactId>
+                <version>${jooq.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jooq</groupId>
                 <artifactId>jool</artifactId>
-                <version>${jooq.version}</version>
+                <version>${jool.version}</version>
             </dependency>
             <!-- jooq -->
 
