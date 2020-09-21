@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.executor.elasticsearch.MappingIndexType;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.model.ontology.EPair;
 import com.yangdb.fuse.model.ontology.EntityType;
@@ -63,10 +64,6 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     public static final String OUT = "out";
     public static final String IN = "in";
 
-    public static final String STATIC = "static";
-    public static final String TIME = "time";
-    public static final String NESTED = "nested";
-
     private IndexProvider indexProvider;
     private Ontology.Accessor accessor;
 
@@ -93,7 +90,13 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     }
 
     private List<GraphEdgeSchema> generateGraphEdgeSchema(Relation r) {
-        switch (r.getPartition()) {
+        MappingIndexType type = MappingIndexType.valueOf(r.getPartition().toUpperCase());
+        switch (type) {
+            case UNIFIED:
+                //todo verify correctness
+                return r.getProps().getValues().stream()
+                        .flatMap(v -> generateGraphEdgeSchema(r, r.getType(), new StaticIndexPartitions(v)).stream())
+                        .collect(Collectors.toList());
             case STATIC:
                 return r.getProps().getValues().stream()
                         .flatMap(v -> generateGraphEdgeSchema(r, r.getType(), new StaticIndexPartitions(v)).stream())
@@ -118,26 +121,32 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     }
 
     private List<GraphVertexSchema> generateGraphVertexSchema(Entity e) {
-        switch (e.getPartition()) {
+        MappingIndexType type = MappingIndexType.valueOf(e.getPartition().toUpperCase());
+        switch (type) {
+            case UNIFIED:
+                //todo verify correctness
+                return  e.getProps().getValues().stream()
+                                .map(v -> new GraphVertexSchema.Impl(
+                                        e.getType(),
+                                        new StaticIndexPartitions(v),
+                                        getGraphElementPropertySchemas(e.getType())))
+                                .collect(Collectors.toList());
             case NESTED:
-                return
-                        e.getProps().getValues().stream()
+                return  e.getProps().getValues().stream()
                                 .map(v -> new GraphVertexSchema.Impl(
                                         e.getType(),
                                         new NestedIndexPartitions(v),
                                         getGraphElementPropertySchemas(e.getType())))
                                 .collect(Collectors.toList());
             case STATIC:
-                return
-                        e.getProps().getValues().stream()
+                return  e.getProps().getValues().stream()
                                 .map(v -> new GraphVertexSchema.Impl(
                                         e.getType(),
                                         new StaticIndexPartitions(v),
                                         getGraphElementPropertySchemas(e.getType())))
                                 .collect(Collectors.toList());
             case TIME:
-                return
-                        e.getProps().getValues().stream()
+                return e.getProps().getValues().stream()
                                 .map(v -> new GraphVertexSchema.Impl(
                                         e.getType(),
                                         new TimeBasedIndexPartitions(e.getProps()),

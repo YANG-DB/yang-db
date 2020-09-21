@@ -20,6 +20,8 @@ package com.yangdb.fuse.unipop.schemaProviders;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -66,6 +68,8 @@ public interface GraphElementSchemaProvider {
                 .toJavaList();
     }
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     class Impl implements GraphElementSchemaProvider {
         //region Constructors
         public Impl(Iterable<GraphVertexSchema> vertexSchemas,

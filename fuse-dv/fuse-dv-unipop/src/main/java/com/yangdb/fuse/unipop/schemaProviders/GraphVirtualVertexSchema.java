@@ -20,12 +20,15 @@ package com.yangdb.fuse.unipop.schemaProviders;
  * #L%
  */
 
-import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Created by roman.margolis on 13/12/2017.
  */
 public interface GraphVirtualVertexSchema extends GraphVertexSchema {
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     class Impl extends GraphVertexSchema.Impl implements GraphVirtualVertexSchema {
         //region Constructors
         public Impl(String label) {

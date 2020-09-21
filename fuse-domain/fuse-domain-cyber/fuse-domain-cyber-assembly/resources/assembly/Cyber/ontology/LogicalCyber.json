@@ -1,0 +1,457 @@
+{
+  "ont": "LogicalCyber",
+  "entityTypes": [
+    {
+      "eType": "Person",
+      "name": "Person",
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "firstName",
+        "lastName",
+        "birthDate",
+        "deathDate",
+        "height",
+        "name",
+        "gender",
+        "profession"
+      ]
+    },
+    {
+      "eType": "Profession",
+      "name": "Profession",
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "name",
+        "experience",
+        "certification",
+        "salary"
+      ]
+    },
+    {
+      "eType": "Horse",
+      "name": "Horse",
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "name",
+        "weight",
+        "maxSpeed",
+        "distance"
+      ]
+    },
+    {
+      "eType": "Dragon",
+      "name": "Dragon",
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "name",
+        "birthDate",
+        "power",
+        "gender",
+        "color"
+      ]
+    },
+    {
+      "eType": "Kingdom",
+      "name": "Kingdom",
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "name",
+        "king",
+        "queen",
+        "independenceDay",
+        "funds"
+      ]
+    },
+    {
+      "eType": "Guild",
+      "name": "Guild",
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "name",
+        "description",
+        "iconId",
+        "url",
+        "establishDate"
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "rType": "Own",
+      "name": "Own",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Dragon"
+        },
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Horse"
+        }
+      ],
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "rType": "Know",
+      "name": "Know",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Person"
+        }
+      ],
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "startDate"
+      ]
+    },
+    {
+      "rType": "MemberOf",
+      "name": "MemberOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Guild"
+        }
+      ],
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "rType": "Fire",
+      "name": "Fire",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Dragon"
+        }
+      ],
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "date",
+        "temperature"
+      ]
+    },
+    {
+      "rType": "Freeze",
+      "name": "Freeze",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Dragon"
+        }
+      ],
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "date",
+        "temperature"
+      ]
+    },
+    {
+      "rType": "OriginatedIn",
+      "name": "OriginatedIn",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Kingdom"
+        },
+        {
+          "eTypeA": "Horse",
+          "eTypeB": "Kingdom"
+        },
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Kingdom"
+        }
+      ],
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "startDate"
+      ]
+    },
+    {
+      "rType": "SubjectOf",
+      "name": "SubjectOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Kingdom"
+        }
+      ],
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "startDate"
+      ]
+    },
+    {
+      "rType": "HasProfession",
+      "name": "HasProfession",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Profession"
+        }
+      ],
+      "metadata": [
+        "id"
+      ]
+    },
+    {
+      "rType": "RegisteredIn",
+      "name": "RegisteredIn",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Guild",
+          "eTypeB": "Kingdom"
+        },
+        {
+          "eTypeA": "Horse",
+          "eTypeB": "Kingdom"
+        }
+      ],
+      "metadata": [
+        "id",
+        "type"
+      ],
+      "properties": [
+        "startDate"
+      ]
+    }
+  ],
+  "enumeratedTypes": [
+    {
+      "eType": "TYPE_Gender",
+      "values": [
+        {
+          "val": 1,
+          "name": "Female"
+        },
+        {
+          "val": 2,
+          "name": "Male"
+        },
+        {
+          "val": 3,
+          "name": "Other"
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": "id",
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "pType": "firstName",
+      "name": "firstName",
+      "type": "text"
+    },
+    {
+      "pType": "lastName",
+      "name": "lastName",
+      "type": "text"
+    },
+    {
+      "pType": "birthDate",
+      "name": "birthDate",
+      "type": "date"
+    },
+    {
+      "pType": "deathDate",
+      "name": "deathDate",
+      "type": "string"
+    },
+    {
+      "pType": "name",
+      "name": "name",
+      "type": "text"
+    },
+    {
+      "pType": "height",
+      "name": "height",
+      "type": "int"
+    },
+    {
+      "pType": "weight",
+      "name": "weight",
+      "type": "int"
+    },
+    {
+      "pType": "maxSpeed",
+      "name": "maxSpeed",
+      "type": "int"
+    },
+    {
+      "pType": "distance",
+      "name": "distance",
+      "type": "int"
+    },
+    {
+      "pType": "establishDate",
+      "name": "establishDate",
+      "type": "date"
+    },
+    {
+      "pType": "description",
+      "name": "description",
+      "type": "text"
+    },
+    {
+      "pType": "iconId",
+      "name": "iconId",
+      "type": "string"
+    },
+    {
+      "pType": "url",
+      "name": "url",
+      "type": "string"
+    },
+    {
+      "pType": "king",
+      "name": "king",
+      "type": "text"
+    },
+    {
+      "pType": "queen",
+      "name": "queen",
+      "type": "text"
+    },
+    {
+      "pType": "independenceDay",
+      "name": "independenceDay",
+      "type": "string"
+    },
+    {
+      "pType": "funds",
+      "name": "funds",
+      "type": "float"
+    },
+    {
+      "pType": "color",
+      "name": "color",
+      "type": "string"
+    },
+    {
+      "pType": "date",
+      "name": "date",
+      "type": "date"
+    },
+    {
+      "pType": "gender",
+      "name": "gender",
+      "type": "TYPE_Gender"
+    },
+    {
+      "pType": "startDate",
+      "name": "startDate",
+      "type": "date"
+    },
+    {
+      "pType": "endDate",
+      "name": "endDate",
+      "type": "date"
+    },
+    {
+      "pType": "temperature",
+      "name": "temperature",
+      "type": "int"
+    },
+    {
+      "pType": "timestamp",
+      "name": "timestamp",
+      "type": "date"
+    },
+    {
+      "pType": "power",
+      "name": "power",
+      "type": "int"
+    },
+    {
+      "pType": "id",
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "pType": "certification",
+      "name": "certification",
+      "type": "string"
+    },
+    {
+      "pType": "experience",
+      "name": "experience",
+      "type": "string"
+    },
+    {
+      "pType": "salary",
+      "name": "salary",
+      "type": "int"
+    },
+    {
+      "pType": "type",
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "pType": "profession",
+      "name": "profession",
+      "type": "Profession"
+    }
+  ]
+}

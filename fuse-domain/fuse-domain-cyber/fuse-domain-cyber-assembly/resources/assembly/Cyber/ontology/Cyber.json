@@ -2,8 +2,8 @@
   "ont": "Cyber",
   "entityTypes": [
     {
-      "eType": "Person",
-      "name": "Person",
+      "eType": "Entity",
+      "name": "Entity",
       "metadata": [
         "id",
         "type"
@@ -16,96 +16,41 @@
         "deathDate",
         "height",
         "name",
-        "profession"
-      ]
-    },
-    {
-      "eType": "Profession",
-      "name": "Profession",
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "name",
+        "profession",
+
         "experience",
         "certification",
-        "salary"
-      ]
-    },
-    {
-      "eType": "Horse",
-      "name": "Horse",
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "name",
+        "salary",
+
         "weight",
         "maxSpeed",
-        "distance"
-      ]
-    },
-    {
-      "eType": "Dragon",
-      "name": "Dragon",
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "name",
-        "birthDate",
+        "distance",
+
         "power",
-        "gender",
-        "color"
-      ]
-    },
-    {
-      "eType": "Kingdom",
-      "name": "Kingdom",
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "name",
+        "color",
+
         "king",
         "queen",
         "independenceDay",
-        "funds"
-      ]
-    },
-    {
-      "eType": "Guild",
-      "name": "Guild",
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "name",
+        "funds",
+
         "description",
         "iconId",
         "url",
         "establishDate"
+
       ]
     }
   ],
   "relationshipTypes": [
     {
-      "rType": "Own",
-      "name": "Own",
+      "rType": "Relationship",
+      "name": "Relationship",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": "Person",
-          "eTypeB": "Dragon"
-        },
-        {
-          "eTypeA": "Person",
-          "eTypeB": "Horse"
+          "eTypeA": "Entity",
+          "eTypeB": "Entity"
         }
       ],
       "metadata": [
@@ -113,161 +58,97 @@
         "type"
       ],
       "properties": [
+        "temperature",
         "startDate",
         "endDate"
       ]
-    },
+    }
+  ],
+  "enumeratedTypes": [
     {
-      "rType": "Know",
-      "name": "Know",
-      "directional": true,
-      "ePairs": [
+      "eType": "TYPE_Gender",
+      "values": [
         {
-          "eTypeA": "Person",
-          "eTypeB": "Person"
-        }
-      ],
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "startDate"
-      ]
-    },
-    {
-      "rType": "MemberOf",
-      "name": "MemberOf",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": "Person",
-          "eTypeB": "Guild"
-        }
-      ],
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "startDate",
-        "endDate"
-      ]
-    },
-    {
-      "rType": "Fire",
-      "name": "Fire",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": "Dragon",
-          "eTypeB": "Dragon"
-        }
-      ],
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "date",
-        "temperature"
-      ]
-    },
-    {
-      "rType": "Freeze",
-      "name": "Freeze",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": "Dragon",
-          "eTypeB": "Dragon"
-        }
-      ],
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "date",
-        "temperature"
-      ]
-    },
-    {
-      "rType": "OriginatedIn",
-      "name": "OriginatedIn",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": "Dragon",
-          "eTypeB": "Kingdom"
+          "val": 1,
+          "name": "Female"
         },
         {
-          "eTypeA": "Horse",
-          "eTypeB": "Kingdom"
+          "val": 2,
+          "name": "Male"
         },
         {
-          "eTypeA": "Person",
-          "eTypeB": "Kingdom"
+          "val": 3,
+          "name": "Other"
         }
-      ],
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "startDate"
       ]
     },
     {
-      "rType": "SubjectOf",
-      "name": "SubjectOf",
-      "directional": true,
-      "ePairs": [
+      "eType": "TYPE_Element",
+      "values": [
         {
-          "eTypeA": "Person",
-          "eTypeB": "Kingdom"
-        }
-      ],
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "startDate"
-      ]
-    },
-    {
-      "rType": "HasProfession",
-      "name": "HasProfession",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": "Person",
-          "eTypeB": "Profession"
-        }
-      ],
-      "metadata": [ "id" ]
-    },
-    {
-      "rType": "RegisteredIn",
-      "name": "RegisteredIn",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": "Guild",
-          "eTypeB": "Kingdom"
+          "val": 0,
+          "name": "Person"
         },
         {
-          "eTypeA": "Horse",
-          "eTypeB": "Kingdom"
+          "val": 1,
+          "name": "Profession"
+        },
+        {
+          "val": 2,
+          "name": "Horse"
+        },
+        {
+          "val": 3,
+          "name": "Dragon"
+        },
+        {
+          "val": 4,
+          "name": "Dragon"
+        },
+        {
+          "val": 5,
+          "name": "Kingdom"
+        },
+        {
+          "val": 6,
+          "name": "Guild"
+        },
+        {
+          "val": 100,
+          "name": "Own"
+        },
+        {
+          "val": 101,
+          "name": "Fire"
+        },
+        {
+          "val": 102,
+          "name": "Freeze"
+        },
+        {
+          "val": 103,
+          "name": "MemberOf"
+        },
+        {
+          "val": 108,
+          "name": "Know"
+        },
+        {
+          "val": 104,
+          "name": "RegisteredIn"
+        },
+        {
+          "val": 105,
+          "name": "HasProfession"
+        },
+        {
+          "val": 106,
+          "name": "SubjectOf"
+        },
+        {
+          "val": 107,
+          "name": "OriginatedIn"
         }
-      ],
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "startDate"
       ]
     }
   ],
@@ -378,6 +259,11 @@
       "type": "date"
     },
     {
+      "pType": "gender",
+      "name": "gender",
+      "type": "TYPE_Gender"
+    },
+    {
       "pType": "startDate",
       "name": "startDate",
       "type": "date"
@@ -425,7 +311,7 @@
     {
       "pType": "type",
       "name": "type",
-      "type": "string"
+      "type": "Element"
     },
     {
       "pType": "profession",
