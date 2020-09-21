@@ -169,11 +169,6 @@
       "type": "text"
     },
     {
-      "pType": "gender",
-      "name": "gender",
-      "type": "string"
-    },
-    {
       "pType": "birthDate",
       "name": "birthDate",
       "type": "date"

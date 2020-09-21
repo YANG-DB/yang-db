@@ -438,7 +438,25 @@ public class ElasticIndexProviderMappingFactory {
                     break;
             }
         } catch (Throwable typeNotFound) {
-            //log type not found
+            // manage non-primitive type such as enum or nested typed
+            Optional<Tuple2<Ontology.Accessor.NodeType, String>> type = ontology.matchNameToType(nameType);
+            if(type.isPresent()) {
+                switch (type.get()._1()) {
+                    case ENTITY:
+                        //todo - manage the nested-embedded type here
+                        break;
+                    case ENUM:
+                        //enum is always backed by integer
+                        map.put("type", "integer");
+                        break;
+                    case RELATION:
+                        break;
+                }
+            } else {
+                //default
+                map.put("type", "text");
+                map.put("fields", singletonMap("keyword", singletonMap("type", "keyword")));
+            }
         }
         return map;
     }

@@ -549,18 +549,24 @@ public class Ontology {
          * @return
          */
         public Optional<Tuple2<NodeType,String>> matchNameToType(String name) {
+            //entity TYPE
             if(eType(name).isPresent())
                 return Optional.of(Tuple.of(NodeType.ENTITY, eType$(name)));
+            //relation TYPE
             if(rType(name).isPresent())
                 return Optional.of(Tuple.of(NodeType.RELATION, rType$(name)));
+            //property TYPE
             if(property(name).isPresent())
                 return Optional.of(Tuple.of(NodeType.PROPERTY, property$(name).getpType()));
+            //ENUMERATED TYPE
+            if(enumeratedType(name).isPresent())
+                return Optional.of(Tuple.of(NodeType.ENUM, enumeratedType$(name).geteType()));
 
             return Optional.empty();
         }
 
         public enum NodeType {
-            PROPERTY,RELATION,ENTITY
+            ENUM,PROPERTY,RELATION,ENTITY
         }
 
         //endregion
