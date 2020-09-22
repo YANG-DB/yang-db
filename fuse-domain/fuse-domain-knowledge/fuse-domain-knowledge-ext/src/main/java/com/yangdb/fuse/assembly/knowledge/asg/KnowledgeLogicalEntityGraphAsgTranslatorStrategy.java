@@ -56,7 +56,7 @@ import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
 /**
  * replace logical graph query (fields within the Entity) into knowledge graph query (RDF structure - fields as separate nodes)
  */
-public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrategy {
+public class KnowledgeLogicalEntityGraphAsgTranslatorStrategy implements AsgStrategy {
     public static final String ENTITY = "Entity";
     public static final String EVALUE = "Evalue";
     public static final String FIELD_ID = "fieldId";
@@ -64,8 +64,8 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
 
     //region Constructors
 
-    public KnowledgeLogicalEntityGraphTranslatorStrategy(GraphElementSchemaProviderFactory schemaProviderFactory, OntologyProvider ontologyProvider,
-                                                         Class<? extends EBase> clazz) {
+    public KnowledgeLogicalEntityGraphAsgTranslatorStrategy(GraphElementSchemaProviderFactory schemaProviderFactory, OntologyProvider ontologyProvider,
+                                                            Class<? extends EBase> clazz) {
         this.schemaProviderFactory = schemaProviderFactory;
         this.ontologyProvider = ontologyProvider;
         this.clazz = clazz;
@@ -79,22 +79,22 @@ public class KnowledgeLogicalEntityGraphTranslatorStrategy implements AsgStrateg
         if (query.getOnt().equals(KNOWLEDGE))
             return;
 
-        Ontology rdfOntology = ontologyProvider.get(KNOWLEDGE).get();
-        String labelFieldName = schemaProviderFactory.get(rdfOntology).getLabelFieldName().get();
+        Ontology schema = ontologyProvider.get(KNOWLEDGE).get();
+        String labelFieldName = schemaProviderFactory.get(schema).getLabelFieldName().get();
         Ontology logicalOntology = this.ontologyProvider.get(query.getOnt()).get();
         Ontology.Accessor logicalOntAccessor = new Ontology.Accessor(logicalOntology);
-        Ontology.Accessor knowledgeOntAccessor = new Ontology.Accessor(rdfOntology);
+        Ontology.Accessor schemaOntAccessor = new Ontology.Accessor(schema);
 
         AtomicInteger counter = new AtomicInteger(AsgQueryUtil.max(query));
 
         //break logical properties consttaints to knowledge entity constraint (Evalue)
-        translateLogicalProperties(labelFieldName, query, counter, logicalOntAccessor,knowledgeOntAccessor);
+        translateLogicalProperties(labelFieldName, query, counter, logicalOntAccessor,schemaOntAccessor);
 
         //break logical entity to knowledge entity with constraint on Category (label)
-        translateLogicalEntity(labelFieldName,query, counter,logicalOntAccessor, knowledgeOntAccessor);
+        translateLogicalEntity(labelFieldName,query, counter,logicalOntAccessor, schemaOntAccessor);
 
         //break logical relations to knowledge entity with constraint on Category (label)
-        translateLogicalRelation(labelFieldName, query, counter,logicalOntAccessor, knowledgeOntAccessor);
+        translateLogicalRelation(labelFieldName, query, counter,logicalOntAccessor, schemaOntAccessor);
 
         // after logical transformation finished, change ontology to Knowledge
         query.setOnt(KNOWLEDGE);

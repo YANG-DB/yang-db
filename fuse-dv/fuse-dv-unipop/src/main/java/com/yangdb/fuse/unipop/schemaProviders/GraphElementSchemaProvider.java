@@ -171,7 +171,7 @@ public interface GraphElementSchemaProvider {
 
         @Override
         public Optional<String> getLabelFieldName() {
-            return labelFieldName;
+            return Objects.isNull(labelFieldName) ? Optional.empty() : labelFieldName;
         }
         //endregion
 

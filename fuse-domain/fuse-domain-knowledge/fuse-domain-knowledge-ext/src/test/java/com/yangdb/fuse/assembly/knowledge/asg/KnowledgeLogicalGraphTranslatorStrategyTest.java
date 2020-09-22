@@ -75,7 +75,7 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
     @Test
     public void asgLogicalDragonGraphQueryTransformationTest() throws Exception {
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(knowledgeOnt);
-        KnowledgeLogicalEntityGraphTranslatorStrategy translatorStrategy = new KnowledgeLogicalEntityGraphTranslatorStrategy(
+        KnowledgeLogicalEntityGraphAsgTranslatorStrategy translatorStrategy = new KnowledgeLogicalEntityGraphAsgTranslatorStrategy(
                 new KnowledgeRoutedSchemaProviderFactory(new KnowledgeRawSchemaShort()), provider, EEntityBase.class);
 
         String before = AsgQueryDescriptor.print(QIgnore());

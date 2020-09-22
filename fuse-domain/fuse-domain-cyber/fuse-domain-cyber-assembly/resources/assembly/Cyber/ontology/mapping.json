@@ -1,0 +1,19 @@
+{
+  "source.ontology": "LogicalCyber",
+  "target.ontology": "Cyber",
+  "entityTypes": [
+    {
+      "source": ["Person","Dragon","Profession","Guild","Kingdom","Horse"],
+      "target": "Entity"
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "source": ["Own","Fire","Freeze","Know","MemberOf","RegisteredIn","HasProfession","SubjectOf","OriginatedIn"],
+      "target": "Relationship"
+    }
+  ],
+  "properties": [
+    {}
+  ]
+}
