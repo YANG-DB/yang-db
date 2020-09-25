@@ -22,10 +22,14 @@ package com.yangdb.fuse.dispatcher.query.sql;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
+import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.jooq.impl.DSL.*;
 import org.jooq.*;
 import org.jooq.impl.*;
@@ -34,13 +38,19 @@ import org.jooq.impl.*;
  */
 public class DDL2OntologyTransformer implements OntologyTransformerIfc<List<String>, Ontology> {
     private DefaultDSLContext context;
+    private Parser parser;
 
     @Inject
-    public DDL2OntologyTransformer() {}
+    public DDL2OntologyTransformer() {
+
+    }
 
     @Override
     public Ontology transform(List<String> source) {
-        return Ontology.OntologyBuilder.anOntology().build();
+        Ontology.OntologyBuilder ontologyBuilder = Ontology.OntologyBuilder.anOntology();
+        parser = using(new DefaultConfiguration()).parser();
+        source.forEach(s->parseTable(s,ontologyBuilder));
+        return ontologyBuilder.build();
     }
 
     @Override
@@ -48,7 +58,30 @@ public class DDL2OntologyTransformer implements OntologyTransformerIfc<List<Stri
         return Collections.emptyList();
     }
 
-    private void init() {
+    private void parseTable(String table,Ontology.OntologyBuilder builder) {
         context = new DefaultDSLContext(SQLDialect.DEFAULT);
+        Queries queries = parser.parse(table);
+        Arrays.stream(queries.queries())
+                .filter(q->q.getClass().getSimpleName().endsWith("CreateTableImpl"))
+                .forEach(q->parse(q,builder));
     }
+
+    private void parse(Query createTable, Ontology.OntologyBuilder builder)  {
+        CreateTableStatement statement = new CreateTableStatement(createTable);
+
+        Table<?> table = statement.getTable();
+        //build relations
+        List<ConstraintStatement> constraints = statement.getConstraints();
+        List<DataType<?>> dataTypes = statement.getDataTypes();
+        //build properties (if none exist)
+        List<Field<?>> fields = statement.getFields();
+        //build entity
+        EntityType entityType = new EntityType(table.getName(),table.getName(),
+                fields.stream().map(Field::getName).collect(Collectors.toList()),
+                Collections.emptyList());
+
+        builder.addEntityType(entityType);
+    }
+
+
 }

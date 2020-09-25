@@ -20,10 +20,15 @@ package com.yangdb.fuse.dispatcher.convertion;
  * #L%
  */
 
+import org.apache.commons.lang.NotImplementedException;
+
 /**
  * https://github.com/AtomGraph/CSV2RDF
  */
 public class CsvToRdfConverter {
-    //ToDo
+    public static String csvToRdf(String csv) {
+        //ToDo
+        throw new NotImplementedException();
+    }
 }
 

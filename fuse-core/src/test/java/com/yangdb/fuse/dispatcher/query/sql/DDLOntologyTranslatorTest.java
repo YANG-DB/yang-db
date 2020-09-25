@@ -7,28 +7,38 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.Arrays;
+import java.nio.file.Paths;
+import java.util.*;
 
-@Ignore("Work in Progress")
+//@Ignore("Work in Progress")
 public class DDLOntologyTranslatorTest {
     public static Ontology ontology;
+    public static List<String> tables ;
+    public static DDL2OntologyTransformer transformer;
 
     @BeforeClass
     public static void setUp() throws Exception {
-        URL schema = Thread.currentThread().getContextClassLoader().getResource("sql/schema.ddl");
-        DDL2OntologyTransformer transformer = new DDL2OntologyTransformer();
-        //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
-        assert schema != null;
-
-        ontology = transformer.transform(Arrays.asList(
-                new String(Files.readAllBytes(new File(schema.toURI()).toPath()))));
-        Assert.assertNotNull(ontology);
+        tables = new ArrayList<>();
+        String sqlPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("sql")).getPath();
+        Files.newDirectoryStream(Paths.get(sqlPath),
+                path -> path.toString().endsWith(".ddl")).
+                forEach(file-> {
+                    try {
+                        tables.add(new String(Files.readAllBytes(file.toFile().toPath())));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+        transformer = new DDL2OntologyTransformer();
     }
 
     @Test
     public void testEnumTranslation() {
+        ontology = transformer.transform(tables);
+        Assert.assertNotNull(ontology);
         Assert.assertEquals(ontology.getEnumeratedTypes().size(), 1);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
 
