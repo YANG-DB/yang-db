@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-//@Ignore("Work in Progress")
 public class DDLOntologyTranslatorTest {
     public static Ontology ontology;
     public static List<String> tables ;
@@ -36,35 +35,48 @@ public class DDLOntologyTranslatorTest {
     }
 
     @Test
-    public void testEnumTranslation() {
+    public void testTranslation() {
         ontology = transformer.transform(tables);
         Assert.assertNotNull(ontology);
-        Assert.assertEquals(ontology.getEnumeratedTypes().size(), 1);
+        Assert.assertEquals(ontology.getEnumeratedTypes().size(), 0);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
+        Assert.assertEquals(5,accessor.get().getEntityTypes().size());
+        Assert.assertEquals(4,accessor.get().getRelationshipTypes().size());
+        Assert.assertEquals(18,accessor.get().getProperties().size());
+
+        Assert.assertEquals(1,accessor.$entity$("BOOK").getMandatory().size());
+        Assert.assertEquals(5,accessor.$entity$("BOOK").getProperties().size());
+        Assert.assertEquals(2,accessor.relationBySideA("BOOK").size());
+        Assert.assertEquals(1,accessor.relationBySideB("BOOK").size());
+
+        Assert.assertEquals(1,accessor.$entity$("LANGUAGE").getMandatory().size());
+        Assert.assertEquals(3,accessor.$entity$("LANGUAGE").getProperties().size());
+        Assert.assertEquals(0,accessor.relationBySideA("LANGUAGE").size());
+        Assert.assertEquals(1,accessor.relationBySideB("LANGUAGE").size());
+
+        Assert.assertEquals(0,accessor.$entity$("BOOK_STORE").getMandatory().size());
+        Assert.assertEquals(1,accessor.$entity$("BOOK_STORE").getProperties().size());
+        Assert.assertEquals(0,accessor.relationBySideA("BOOK_STORE").size());
+        Assert.assertEquals(1,accessor.relationBySideB("BOOK_STORE").size());
+
+        Assert.assertEquals(1,accessor.$entity$("AUTHOR").getMandatory().size());
+        Assert.assertEquals(6,accessor.$entity$("AUTHOR").getProperties().size());
+        Assert.assertEquals(0,accessor.relationBySideA("AUTHOR").size());
+        Assert.assertEquals(1,accessor.relationBySideB("AUTHOR").size());
+
+        Assert.assertEquals(1,accessor.$entity$("BOOK_TO_BOOK_STORE").getMandatory().size());
+        Assert.assertEquals(3,accessor.$entity$("BOOK_TO_BOOK_STORE").getProperties().size());
+        Assert.assertEquals(2,accessor.relationBySideA("BOOK_TO_BOOK_STORE").size());
+        Assert.assertEquals(0,accessor.relationBySideB("BOOK_TO_BOOK_STORE").size());
+
+        Assert.assertEquals(1,accessor.$relation$("FK_BOOK_AUTHOR").getePairs().size());
+        Assert.assertEquals(1,accessor.$relation$("FK_BOOK_LANGUAGE").getePairs().size());
+        Assert.assertEquals(1,accessor.$relation$("FK_B2BS_BOOK_STORE").getePairs().size());
+        Assert.assertEquals(1,accessor.$relation$("FK_B2BS_BOOK").getePairs().size());
+
+
 
     }
 
-    @Test
-    public void testPropertiesTranslation() {
-        Assert.assertEquals(ontology.getProperties().size(), 18);
-//        Ontology.Accessor accessor = new Ontology.Accessor(ontology);
-//        Assert.assertEquals(ontology.getProperties().stream().map(Property::getpType).collect(Collectors.toList()), expected);
-    }
-
-    @Test
-    public void testEntitiesTranslation() {
-        Assert.assertEquals(ontology.getEntityTypes().size(), 11);
-        Ontology.Accessor accessor = new Ontology.Accessor(ontology);
-
-
-    }
-
-    @Test
-    public void testRelationsTranslation() {
-        Assert.assertEquals(ontology.getRelationshipTypes().size(), 1);
-        Ontology.Accessor accessor = new Ontology.Accessor(ontology);
-
-
-    }
 
 }

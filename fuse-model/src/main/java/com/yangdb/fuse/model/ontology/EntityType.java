@@ -202,46 +202,55 @@ public class EntityType implements BaseElement{
             return new Builder();
         }
 
+        @JsonIgnore
         public Builder withEType(String eType) {
             this.eType = eType;
             return this;
         }
 
+        @JsonIgnore
         public Builder withParentType(List<String> superTypes) {
             this.parentType = superTypes;
             return this;
         }
 
+        @JsonIgnore
         public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
+        @JsonIgnore
         public Builder withProperties(List<String> properties) {
             this.properties = properties;
             return this;
         }
 
+        @JsonIgnore
         public Builder withProperty(String property) {
             this.properties.add(property);
             return this;
         }
 
+        @JsonIgnore
         public Builder withMandatory(List<String> mandatory) {
             this.mandatory = mandatory;
             return this;
         }
 
+        @JsonIgnore
         public Builder withMandatory(String mandatory) {
             this.mandatory.add(mandatory);
             return this;
         }
 
+        @JsonIgnore
         public Builder withMetadata(List<String> metadata) {
             this.metadata = metadata;
             return this;
         }
 
+        @JsonIgnore
         public Builder withDisplay(List<String> display) {
             this.display = display;
             return this;

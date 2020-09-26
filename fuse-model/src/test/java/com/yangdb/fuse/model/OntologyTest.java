@@ -11,6 +11,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Created by benishue on 22-Feb-17.
  */
@@ -27,7 +29,8 @@ public class OntologyTest {
         Ontology resultObj = new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class);
         Assert.assertNotNull(resultObj);
         String ontologyActualJSON = mapper.writeValueAsString(resultObj);
-        JSONAssert.assertEquals(ontologyExpectedJson, ontologyActualJSON, false);
+        assertEquals(mapper.readTree(ontologyExpectedJson), mapper.readTree(ontologyActualJSON));
+
     }
 
     @Test
@@ -35,12 +38,12 @@ public class OntologyTest {
         String ontologyExpectedJson = readJsonToString("Dragons_Ontology.json");
         Ontology resultObj = new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class);
         Assert.assertNotNull(resultObj);
-        Assert.assertEquals(resultObj.getEntityTypes().size(),5);
-        Assert.assertEquals(resultObj.getRelationshipTypes().size(),7);
-        Assert.assertEquals(resultObj.getProperties().size(),13);
-        Assert.assertEquals(resultObj.getPrimitiveTypes().size(),8);
-        Assert.assertEquals(resultObj.getEnumeratedTypes().size(),2);
-        Assert.assertEquals(resultObj.getProperties().stream().flatMap(p -> p.getSearchType().stream()).count(),0);
+        assertEquals(resultObj.getEntityTypes().size(),5);
+        assertEquals(resultObj.getRelationshipTypes().size(),7);
+        assertEquals(resultObj.getProperties().size(),13);
+        assertEquals(resultObj.getPrimitiveTypes().size(),8);
+        assertEquals(resultObj.getEnumeratedTypes().size(),2);
+        assertEquals(resultObj.getProperties().stream().flatMap(p -> p.getSearchType().stream()).count(),0);
     }
 
     @Test
@@ -48,12 +51,12 @@ public class OntologyTest {
         String ontologyExpectedJson = readJsonToString("Dragons_Ontology_search_type.json");
         Ontology resultObj = new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class);
         Assert.assertNotNull(resultObj);
-        Assert.assertEquals(resultObj.getEntityTypes().size(),5);
-        Assert.assertEquals(resultObj.getRelationshipTypes().size(),7);
-        Assert.assertEquals(resultObj.getProperties().size(),13);
-        Assert.assertEquals(resultObj.getPrimitiveTypes().size(),8);
-        Assert.assertEquals(resultObj.getEnumeratedTypes().size(),2);
-        Assert.assertEquals(resultObj.getProperties().stream().flatMap(p -> p.getSearchType().stream()).count(),9);
+        assertEquals(resultObj.getEntityTypes().size(),5);
+        assertEquals(resultObj.getRelationshipTypes().size(),7);
+        assertEquals(resultObj.getProperties().size(),13);
+        assertEquals(resultObj.getPrimitiveTypes().size(),8);
+        assertEquals(resultObj.getEnumeratedTypes().size(),2);
+        assertEquals(resultObj.getProperties().stream().flatMap(p -> p.getSearchType().stream()).count(),9);
     }
 
     private String readJsonToString(String jsonFileName) throws Exception {

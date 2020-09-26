@@ -1,4 +1,4 @@
 CREATE TABLE book_store
 (
-    name            VARCHAR2(400) NOT NULL UNIQUE
+    name            VARCHAR(400) NOT NULL UNIQUE
 );

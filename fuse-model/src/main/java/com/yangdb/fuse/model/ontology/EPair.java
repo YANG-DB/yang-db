@@ -44,6 +44,7 @@ package com.yangdb.fuse.model.ontology;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Objects;
@@ -53,9 +54,9 @@ import java.util.Objects;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class EPair {
-    public EPair() {
-    }
+    public EPair() {}
 
     public EPair(String eTypeA, String eTypeB) {
         this.eTypeA = eTypeA;
@@ -101,6 +102,7 @@ public class EPair {
     //region Fields
     private String eTypeA;
     private String eTypeB;
+
     //endregion
 
     public static final class EPairBuilder {

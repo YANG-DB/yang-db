@@ -109,22 +109,25 @@ public class RelationshipType implements BaseElement {
         this.DBrName = DBrName;
     }
 
-    public List<EPair> getePairs() {
-        return ePairs;
-    }
-
-    public Set<String> getSources() {
-        return ePairs.stream().map(EPair::geteTypeA).collect(Collectors.toSet());
-    }
-
-    public Set<String> getTargets() {
-        return ePairs.stream().map(EPair::geteTypeB).collect(Collectors.toSet());
-    }
-
     public void setePairs(List<EPair> ePairs) {
         this.ePairs = ePairs;
     }
 
+    public List<EPair> getePairs() {
+        return ePairs;
+    }
+
+    @JsonIgnore
+    public Set<String> getSources() {
+        return ePairs.stream().map(EPair::geteTypeA).collect(Collectors.toSet());
+    }
+
+    @JsonIgnore
+    public Set<String> getTargets() {
+        return ePairs.stream().map(EPair::geteTypeB).collect(Collectors.toSet());
+    }
+
+    @JsonIgnore
     public RelationshipType addPair(EPair pair) {
         this.getePairs().add(pair);
         return this;
@@ -154,21 +157,25 @@ public class RelationshipType implements BaseElement {
         this.properties = properties;
     }
 
+    @JsonIgnore
     public RelationshipType addProperty(String type) {
         this.properties.add(type);
         return this;
     }
 
+    @JsonIgnore
     public RelationshipType withProperty(String... properties) {
         this.properties.addAll(Arrays.asList(properties));
         return this;
     }
 
+    @JsonIgnore
     public RelationshipType addMetadata(String type) {
         this.metadata.add(type);
         return this;
     }
 
+    @JsonIgnore
     public RelationshipType withMetadata(String... properties) {
         this.metadata.addAll(Arrays.asList(properties));
         return this;
@@ -317,14 +324,14 @@ public class RelationshipType implements BaseElement {
 
         public RelationshipType build() {
             RelationshipType relationshipType = new RelationshipType();
+            relationshipType.setrType(this.rType);
             relationshipType.setName(name);
             relationshipType.setDirectional(directional);
             relationshipType.setDBrName(DBrName);
             relationshipType.setProperties(properties);
             relationshipType.setMetadata(metatada);
             relationshipType.setMandatory(mandatory);
-            relationshipType.ePairs = this.ePairs;
-            relationshipType.rType = this.rType;
+            relationshipType.setePairs(ePairs);
             return relationshipType;
         }
     }

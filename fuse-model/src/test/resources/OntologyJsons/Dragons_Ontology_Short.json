@@ -1,24 +1,6 @@
 {
   "ont": "Dragons",
-  "enumeratedTypes": [
-    {
-      "eType": "TYPE_Gender",
-      "values": [
-        {
-          "val": 1,
-          "name": "Female"
-        },
-        {
-          "val": 2,
-          "name": "Male"
-        },
-        {
-          "val": 3,
-          "name": "Other"
-        }
-      ]
-    }
-  ],
+  "directives": [],
   "properties": [
     {
       "pType": "firstName",
@@ -66,6 +48,26 @@
       "type": "date"
     }
   ],
+  "enumeratedTypes": [
+    {
+      "eType": "TYPE_Gender",
+      "values": [
+        {
+          "val": 1,
+          "name": "Female"
+        },
+        {
+          "val": 2,
+          "name": "Male"
+        },
+        {
+          "val": 3,
+          "name": "Other"
+        }
+      ]
+    }
+  ],
+
   "entityTypes": [
     {
       "eType": "Person",
@@ -125,5 +127,6 @@
         "endDate"
       ]
     }
-  ]
+  ],
+  "compositeTypes": []
 }

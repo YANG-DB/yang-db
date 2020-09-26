@@ -347,7 +347,7 @@ public class OntologyTestUtils {
 
         //add relations
         RelationshipType hasOrder = new RelationshipType("HasOrder", "hasOrder", true);
-        hasOrder.getePairs().add(new EPair(DRAGON.type, order.geteType()));
+        hasOrder.addPair(new EPair(DRAGON.type, order.geteType()));
         ontology.getRelationshipTypes().add(hasOrder);
 
         //add order entity as nested type
@@ -355,7 +355,7 @@ public class OntologyTestUtils {
         ontology.getEntityTypes().add(origin);
 
         RelationshipType hasOrigin = new RelationshipType("HasOrigin", "hasOrigin", true);
-        hasOrder.getePairs().add(new EPair(order.geteType(), origin.geteType()));
+        hasOrder.addPair(new EPair(order.geteType(), origin.geteType()));
         ontology.getRelationshipTypes().add(hasOrigin);
 
         return ontology;

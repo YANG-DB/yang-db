@@ -1,6 +1,6 @@
 CREATE TABLE book_to_book_store
 (
-    name    VARCHAR2(400) NOT NULL,
+    name    VARCHAR(400) NOT NULL,
     book_id INTEGER       NOT NULL,
     stock   INTEGER,
 
