@@ -24,15 +24,15 @@ import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.logging.Route;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.ContentResponse;
-import com.yangdb.fuse.services.controllers.SchemaTranslatorController;
 import com.yangdb.fuse.services.controllers.languages.graphql.StandardGraphQLController;
+import com.yangdb.fuse.services.controllers.languages.sql.StandardSqlController;
 import org.jooby.Jooby;
 import org.jooby.Results;
 
-public class GraphQLControllerRegistrar extends AppControllerRegistrarBase<StandardGraphQLController> {
+public class SQLControllerRegistrar extends AppControllerRegistrarBase<StandardSqlController> {
     //region Constructors
-    public GraphQLControllerRegistrar() {
-        super(StandardGraphQLController.class);
+    public SQLControllerRegistrar() {
+        super(StandardSqlController.class);
     }
     //endregion
 
@@ -40,7 +40,7 @@ public class GraphQLControllerRegistrar extends AppControllerRegistrarBase<Stand
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** create new ontology*/
-        app.post("/fuse/graphql/ontology"
+        app.post("/fuse/sql/ontology"
                 ,req -> {
                     Route.of("translateGraphQLSchema").write();
                     String graphQLSchemas = req.body(String.class);

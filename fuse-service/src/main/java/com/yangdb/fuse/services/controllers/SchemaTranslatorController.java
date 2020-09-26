@@ -28,10 +28,10 @@ import java.util.List;
 public interface SchemaTranslatorController {
     /**
      * translate the graphQL schema to Ontology schema
-     * @param graphQLSchema
+     * @param graphqlschema
      * @return
      */
-    ContentResponse<Ontology> translate(String graphQLSchema);
+    ContentResponse<Ontology> translate(String graphqlschema);
 
     /**
      * transform the ontology schema to a graphQL schema

@@ -26,13 +26,14 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.services.controllers.SchemaTranslatorController;
 import com.yangdb.fuse.services.controllers.languages.graphql.StandardGraphQLController;
+import com.yangdb.fuse.services.controllers.languages.sparql.StandardSparqlController;
 import org.jooby.Jooby;
 import org.jooby.Results;
 
-public class GraphQLControllerRegistrar extends AppControllerRegistrarBase<StandardGraphQLController> {
+public class SparqlControllerRegistrar extends AppControllerRegistrarBase<StandardSparqlController> {
     //region Constructors
-    public GraphQLControllerRegistrar() {
-        super(StandardGraphQLController.class);
+    public SparqlControllerRegistrar() {
+        super(StandardSparqlController.class);
     }
     //endregion
 
@@ -40,12 +41,12 @@ public class GraphQLControllerRegistrar extends AppControllerRegistrarBase<Stand
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** create new ontology*/
-        app.post("/fuse/graphql/ontology"
+        app.post("/fuse/sparql/ontology"
                 ,req -> {
-                    Route.of("translateGraphQLSchema").write();
-                    String graphQLSchemas = req.body(String.class);
-                    req.set(String.class, graphQLSchemas);
-                    ContentResponse<Ontology> response = this.getController(app).translate(graphQLSchemas);
+                    Route.of("translateOwlSchema").write();
+                    String owlSchmea = req.body(String.class);
+                    req.set(String.class, owlSchmea);
+                    ContentResponse<Ontology> response = this.getController(app).translate(owlSchmea);
                     return Results.with(response, response.status());
                 });
     }
