@@ -42,9 +42,7 @@ public class SqlModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(new TypeLiteral<OntologyTransformerIfc<List<String>, Ontology>>(){})
-                .to(DDL2OntologyTransformer.class)
-                .asEagerSingleton();
+        binder.bind(DDL2OntologyTransformer.class).asEagerSingleton();
     }
 
     //endregion

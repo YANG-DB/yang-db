@@ -54,11 +54,9 @@ public class GraphQLModule extends ModuleBase {
         binder.bind(GraphQLSchemaUtils.class)
                 .to(GraphQL2OntologyTransformer.class)
                 .asEagerSingleton();
-        binder.bind(new TypeLiteral<QueryTransformer<QueryInfo<String>, Query>>(){})
-                .to(GraphQL2QueryTransformer.class)
+        binder.bind(GraphQL2QueryTransformer.class)
                 .asEagerSingleton();
-        binder.bind(new TypeLiteral<OntologyTransformerIfc<String, Ontology>>() {})
-                .to(GraphQL2OntologyTransformer.class)
+        binder.bind(GraphQL2OntologyTransformer.class)
                 .asEagerSingleton();
 
 

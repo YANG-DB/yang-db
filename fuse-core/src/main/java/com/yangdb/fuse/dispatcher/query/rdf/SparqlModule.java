@@ -23,20 +23,9 @@ package com.yangdb.fuse.dispatcher.query.rdf;
 
 
 import com.google.inject.Binder;
-import com.google.inject.TypeLiteral;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
-import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
-import com.yangdb.fuse.dispatcher.query.QueryTransformer;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2OntologyTransformer;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2QueryTransformer;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQLSchemaUtils;
-import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.QueryInfo;
 import org.jooby.Env;
-
-import java.util.List;
 
 /**
  * Created by lior.perry on 15/02/2017.
@@ -47,9 +36,7 @@ public class SparqlModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(new TypeLiteral<OntologyTransformerIfc<List<String>, Ontology>>(){})
-                .to(OWL2OntologyTransformer.class)
-                .asEagerSingleton();
+        binder.bind(OWL2OntologyTransformer.class).asEagerSingleton();
     }
 
     //endregion

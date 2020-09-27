@@ -22,13 +22,14 @@ package com.yangdb.fuse.services.controllers.languages.sql;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
+import com.yangdb.fuse.dispatcher.query.sql.DDL2OntologyTransformer;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.ContentResponse.Builder;
 import com.yangdb.fuse.services.controllers.SchemaTranslatorController;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.jooby.Status.NOT_FOUND;
@@ -42,7 +43,7 @@ public class StandardSqlController implements SchemaTranslatorController {
 
     //region Constructors
     @Inject
-    public StandardSqlController(OntologyTransformerIfc<String, Ontology> transformer, OntologyProvider provider) {
+    public StandardSqlController(DDL2OntologyTransformer transformer, OntologyProvider provider) {
         this.transformer = transformer;
         this.provider = provider;
     }
@@ -50,9 +51,9 @@ public class StandardSqlController implements SchemaTranslatorController {
 
 
     @Override
-    public ContentResponse<Ontology> translate(String owlSchema) {
+    public ContentResponse<Ontology> translate(String ddlSchema) {
         return Builder.<Ontology>builder(OK, NOT_FOUND)
-                .data(Optional.of(this.transformer.transform(owlSchema)))
+                .data(Optional.of(this.transformer.transform(Arrays.asList(ddlSchema))))
                 .compose();
     }
 
@@ -61,7 +62,8 @@ public class StandardSqlController implements SchemaTranslatorController {
         return Builder.<String>builder(OK, NOT_FOUND)
                 .data(Optional.of(this.transformer.translate(provider.get(ontologyId)
                         .orElseThrow(() -> new FuseError.FuseErrorException(
-                                new FuseError("Ontology Not Found", String.format("Ontology %s is not found in repository", ontologyId)))))))
+                                new FuseError("Ontology Not Found", String.format("Ontology %s is not found in repository", ontologyId)))))
+                        .stream().reduce("", String::concat)))
                 .compose();
     }
 
@@ -70,7 +72,7 @@ public class StandardSqlController implements SchemaTranslatorController {
     //region Private Methods
 
     //region Fields
-    private OntologyTransformerIfc<String,Ontology> transformer;
+    private DDL2OntologyTransformer transformer;
     private OntologyProvider provider;
 
     //endregion

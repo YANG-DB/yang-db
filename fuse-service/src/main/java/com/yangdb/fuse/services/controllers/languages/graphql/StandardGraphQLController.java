@@ -22,7 +22,7 @@ package com.yangdb.fuse.services.controllers.languages.graphql;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
+import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2OntologyTransformer;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;
@@ -42,7 +42,7 @@ public class StandardGraphQLController implements SchemaTranslatorController {
 
     //region Constructors
     @Inject
-    public StandardGraphQLController(OntologyTransformerIfc<String, Ontology> transformer, OntologyProvider provider) {
+    public StandardGraphQLController(GraphQL2OntologyTransformer transformer, OntologyProvider provider) {
         this.transformer = transformer;
         this.provider = provider;
     }
@@ -71,7 +71,7 @@ public class StandardGraphQLController implements SchemaTranslatorController {
     //region Private Methods
 
     //region Fields
-    private OntologyTransformerIfc<String,Ontology> transformer;
+    private GraphQL2OntologyTransformer transformer;
     private OntologyProvider provider;
 
     //endregion
