@@ -171,6 +171,30 @@ public abstract class BasePropGroup<T extends BaseProp, S extends BasePropGroup<
         return false;
 
     }
+
+    /**
+     * return true if created, false if replaced
+     * @param prop
+     * @return
+     */
+    public boolean addOrReplace(T prop) {
+        //add prop to list only when no similar prop exists
+        if(this.props.stream().noneMatch(p->
+                p.getpType().equals(prop.getpType())))
+            return this.props.add(prop);
+        //replace existing
+        T matchedProp = this.props.stream().findFirst().get();
+        //replace fields
+        matchedProp.setpType(prop.getpType());
+        matchedProp.setF(prop.getF());
+        matchedProp.setpTag(prop.getpTag());
+        if(prop.isConstraint())
+            matchedProp.setCon(prop.getCon());
+        else
+            matchedProp.setProj(prop.getProj());
+        return false;
+
+    }
     //endregion
 }
 

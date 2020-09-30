@@ -9,9 +9,9 @@ package com.yangdb.fuse.dispatcher.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ package com.yangdb.fuse.dispatcher.ontology;
  * limitations under the License.
  * #L%
  */
-
 
 
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -38,20 +37,17 @@ public class SimpleOntologyProvider implements OntologyProvider {
     public static final String DRAGONS = "Dragons";
     public static final String ONTOLOGY = "ontology";
 
-    private Map<String,Ontology> ontologyMap;
+    private Map<String, Ontology> ontologyMap;
 
-    public SimpleOntologyProvider(Ontology ontology) throws IOException {
+    public SimpleOntologyProvider(Ontology... ontology) throws IOException {
         ontologyMap = new HashMap<>();
-        ontology = OntologyFinalizer.finalize(ontology);
-        ontologyMap.put(ontology.getOnt(), ontology);
+        Arrays.asList(ontology).forEach(ont ->
+                ontologyMap.put(ont.getOnt(), ont));
     }
 
     public SimpleOntologyProvider() throws IOException {
         ontologyMap = new HashMap<>();
-        Ontology ontology = asObject(readJsonFile(ONTOLOGY + "/" +DRAGONS+".json"), Ontology.class);
-        ontology = OntologyFinalizer.finalize(ontology);
-
-        ontologyMap.put(DRAGONS, ontology);
+        ontologyMap.put(DRAGONS, asObject(readJsonFile(ONTOLOGY + "/" + DRAGONS + ".json"), Ontology.class));
     }
 
     @Override
@@ -66,7 +62,7 @@ public class SimpleOntologyProvider implements OntologyProvider {
 
     @Override
     public Ontology add(Ontology ontology) {
-        ontologyMap.put(ontology.getOnt(),ontology);
+        ontologyMap.put(ontology.getOnt(), ontology);
         return ontology;
     }
 }

@@ -522,7 +522,7 @@ public class Ontology {
 
         public Optional<EnumeratedType> enumeratedType(String typeName) {
             return Stream.ofAll(ontology.getEnumeratedTypes())
-                    .filter(type -> type.geteType().equals(typeName))
+                    .filter(type -> type.isOfType(typeName))
                     .toJavaOptional();
         }
 

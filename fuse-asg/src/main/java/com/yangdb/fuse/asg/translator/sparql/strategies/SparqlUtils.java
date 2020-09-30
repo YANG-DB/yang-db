@@ -20,8 +20,6 @@ package com.yangdb.fuse.asg.translator.sparql.strategies;
  * #L%
  */
 
-import com.bpodgursky.jbool_expressions.NExpression;
-import com.bpodgursky.jbool_expressions.Variable;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
@@ -30,7 +28,8 @@ import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantBase;
 import com.yangdb.fuse.model.query.quant.QuantType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.yangdb.fuse.model.asgQuery.AsgQueryUtil.max;
 

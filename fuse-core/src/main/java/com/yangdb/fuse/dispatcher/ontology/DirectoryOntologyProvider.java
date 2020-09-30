@@ -57,7 +57,7 @@ public class DirectoryOntologyProvider implements OntologyProvider {
                     .toJavaMap(file -> {
                         try {
                             return new Tuple2<>(FilenameUtils.getBaseName(file.getName()),
-                                    OntologyFinalizer.finalize(mapper.readValue(file, Ontology.class)));
+                                    mapper.readValue(file, Ontology.class));
                         } catch (IOException e) {
                             return new Tuple2<>(FilenameUtils.getBaseName(file.getName()), new Ontology());
                         }

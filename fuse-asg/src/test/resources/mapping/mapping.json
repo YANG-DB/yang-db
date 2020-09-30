@@ -1,6 +1,6 @@
 {
-  "source.ontology": "LogicalCyber",
-  "target.ontology": "Cyber",
+  "source.ontology": "LogicalDragons",
+  "target.ontology": "Dragons",
   "entityTypes": [
     {
       "source": ["Person","Dragon","Profession","Guild","Kingdom","Horse"],

@@ -56,6 +56,7 @@ import com.yangdb.fuse.model.query.properties.constraint.NamedParameter;
 import com.yangdb.fuse.model.query.properties.constraint.ParameterizedConstraint;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantBase;
+import com.yangdb.fuse.model.query.quant.QuantType;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
@@ -110,6 +111,46 @@ public class AsgQueryUtil {
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> get(AsgEBase<T> asgEBase, int eNum) {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext, p -> p.geteBase().geteNum() == eNum, truePredicate);
+    }
+
+    /**
+     *
+     * @param byTag
+     * @param query
+     * @param parentQuantType
+     * @return
+     */
+    public static AsgEBase<? extends EBase> createOrGetQuant(AsgEBase<? extends EBase> byTag,
+                                           AsgQuery query,QuantType parentQuantType) {
+       return createOrGetQuant(byTag,query,byTag,parentQuantType);
+    }
+
+    /**
+     * create or get relevant quant element on query
+     * @param byTag
+     * @param query
+     * @param context
+     * @param parentQuantType
+     * @return
+     */
+    public static AsgEBase<? extends EBase> createOrGetQuant(AsgEBase<? extends EBase> byTag,
+                                           AsgQuery query,
+                                          AsgEBase<? extends EBase> context,
+                                           QuantType parentQuantType) {
+        //next find the quant associated with this element - if none found create one
+        if (AsgQueryUtil.nextAdjacentDescendants(byTag, QuantBase.class).stream().noneMatch(g -> ((QuantBase) g.geteBase()).getqType().equals(parentQuantType))) {
+            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(max(query) +1,  parentQuantType, new ArrayList<>(), 0));
+            //is scope already has next - add them to the newly added quant
+            if (context.hasNext()) {
+                final List<AsgEBase<? extends EBase>> next = context.getNext();
+                quantAsg.setNext(new ArrayList<>(next));
+                context.setNext(new ArrayList<>());
+            }
+            context.addNext(quantAsg);
+        }
+        return AsgQueryUtil.nextAdjacentDescendants(byTag, QuantBase.class).stream()
+                .filter(g -> ((QuantBase) g.geteBase()).getqType().equals(parentQuantType))
+                .findFirst().get();
     }
 
     /**

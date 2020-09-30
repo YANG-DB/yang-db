@@ -33,6 +33,7 @@ import com.yangdb.fuse.asg.strategy.selection.DefaultRelationSelectionAsgStrateg
 import com.yangdb.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.RelationPatternRangeAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
+import com.yangdb.fuse.dispatcher.ontology.OntologyMappingProvider;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
@@ -43,26 +44,20 @@ public class CyberM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
     //region Constructors
     @Inject
     public CyberM2AsgStrategyRegistrar(OntologyProvider ontologyProvider,
+                                       OntologyMappingProvider mappingProvider,
                                        GraphElementSchemaProviderFactory schemaProviderFactory) {
         this.ontologyProvider = ontologyProvider;
+        this.mappingProvider = mappingProvider;
         this.schemaProviderFactory = schemaProviderFactory;
     }
-
-    public CyberM2AsgStrategyRegistrar(OntologyProvider ontologyProvider,
-                                       GraphElementSchemaProviderFactory schemaProviderFactory,
-                                       RuleBoostProvider ruleBoostProvider) {
-        this.ontologyProvider = ontologyProvider;
-        this.schemaProviderFactory = schemaProviderFactory;
-        this.ruleBoostProvider = ruleBoostProvider;
-    }
-    //endregion
+   //endregion
 
     //region AsgStrategyRegistrar Implementation
     @Override
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
                 new DefaultETagAsgStrategy(this.ontologyProvider),
-                new CyberLogicalEntityGraphAsgTranslatorStrategy(this.schemaProviderFactory,this.ontologyProvider, EEntityBase.class),
+                new CyberLogicalMappingAsgTranslatorStrategy(this.ontologyProvider,this.mappingProvider),
                 new AsgNamedParametersStrategy(),
                 new RelationPatternRangeAsgStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
@@ -91,7 +86,7 @@ public class CyberM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
 
     //region Fields
     private OntologyProvider ontologyProvider;
+    private OntologyMappingProvider mappingProvider;
     private GraphElementSchemaProviderFactory schemaProviderFactory;
-    private RuleBoostProvider ruleBoostProvider;
     //endregion
 }

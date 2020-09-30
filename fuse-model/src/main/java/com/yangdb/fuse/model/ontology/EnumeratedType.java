@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,9 +33,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,12 +44,10 @@ package com.yangdb.fuse.model.ontology;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -57,6 +55,8 @@ import java.util.stream.Collectors;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EnumeratedType {
+    public static final String TYPE = "TYPE_";
+
     public EnumeratedType() {
     }
 
@@ -81,10 +81,24 @@ public class EnumeratedType {
         this.values = values;
     }
 
+    @JsonIgnore
+    public Optional<Value> valueOf(String name) {
+        return getValues().stream().filter(v -> v.getName().equals(name)).findFirst();
+    }
+
+    @JsonIgnore
+    public boolean isOfType(String name) {
+        return eType.equals(name) || eType.equals(TYPE +name);
+    }
+
+    @JsonIgnore
+    public Optional<Value> nameOf(int index) {
+        return getValues().stream().filter(v -> v.getVal() == index).findFirst();
+    }
+
     @Override
-    public String toString()
-    {
-        return "EnumeratedType [values = "+values+", eType = "+eType+"]";
+    public String toString() {
+        return "EnumeratedType [values = " + values + ", eType = " + eType + "]";
     }
 
     @Override
@@ -106,9 +120,10 @@ public class EnumeratedType {
     private List<Value> values;
     //endregion
 
-    public static EnumeratedType from(String name,Enum[] enums) {
-        return new EnumeratedType(name, Arrays.stream(enums).map(v-> new Value(v.ordinal(), v.name())).collect(Collectors.toList()));
+    public static EnumeratedType from(String name, Enum[] enums) {
+        return new EnumeratedType(name, Arrays.stream(enums).map(v -> new Value(v.ordinal(), v.name())).collect(Collectors.toList()));
     }
+
 
     public static final class EnumeratedTypeBuilder {
         private String eType;
@@ -134,13 +149,13 @@ public class EnumeratedType {
         public EnumeratedTypeBuilder values(List<String> values) {
             this.values = new ArrayList<>();
             for (int i = 0; i < values.size(); i++) {
-                 this.values.add(new Value(i,values.get(i)));
+                this.values.add(new Value(i, values.get(i)));
             }
             return this;
         }
 
         public EnumeratedType build() {
-            return new EnumeratedType(this.eType,values);
+            return new EnumeratedType(this.eType, values);
         }
     }
 
