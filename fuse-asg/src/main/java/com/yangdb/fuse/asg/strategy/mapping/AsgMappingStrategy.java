@@ -21,7 +21,6 @@ package com.yangdb.fuse.asg.strategy.mapping;
  */
 
 
-import com.yangdb.fuse.asg.AsgQueryTransformer;
 import com.yangdb.fuse.asg.strategy.AsgStrategy;
 import com.yangdb.fuse.dispatcher.ontology.OntologyMappingProvider;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
@@ -34,21 +33,20 @@ import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.ontology.Value;
 import com.yangdb.fuse.model.ontology.mapping.MappingOntologies;
 import com.yangdb.fuse.model.query.EBase;
+import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.EPropGroup;
+import com.yangdb.fuse.model.query.properties.RelProp;
+import com.yangdb.fuse.model.query.properties.RelPropGroup;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
-import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
-import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import javaslang.Tuple2;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import static com.yangdb.fuse.model.asgQuery.AsgQueryUtil.max;
-import static com.yangdb.fuse.model.query.properties.EPropGroup.findInGroupRecursive;
 import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.eq;
 import static com.yangdb.fuse.model.query.quant.QuantType.all;
 
@@ -85,6 +83,31 @@ public class AsgMappingStrategy implements AsgStrategy {
     }
 
     private void replaceRelType(MappingOntologies.RelationshipType relationshipType, AsgQuery query, AsgStrategyContext context) {
+        // for each mapping.source.relTypes[]
+        //      - find all such rel in query
+        List<AsgEBase<EBase>> elements = AsgQueryUtil.elements(query, asgEBase -> (asgEBase.geteBase() instanceof Rel)
+                && relationshipType.getSource().contains(((Rel) asgEBase.geteBase()).getrType()));
+
+        /*     - replace each with mapping.target.relType according to source.field to target.field mapping instruction
+         *          - switch (typeOf(target.field))
+         *              case: string - copy the source
+         *              case: enum - set enum.value(source)
+         */
+        Tuple2<Ontology.Accessor.NodeType, String> fieldType = targetAccessor.matchNameToType(relationshipType.getTargetField())
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology field found for " + relationshipType.getTargetField())));
+
+        switch (fieldType._1) {
+            case ENTITY:
+                //todo
+                break;
+            case ENUM:
+                //todo
+                break;
+            case PROPERTY:
+                Property property = targetAccessor.property$(fieldType._2);
+                replaceByProperty(relationshipType, property, elements, query, context);
+                break;
+        }
 
     }
 
@@ -131,6 +154,19 @@ public class AsgMappingStrategy implements AsgStrategy {
     /**
      * replace the property type according to the mapping schema
      *
+     * @param relationshipType
+     * @param property
+     * @param elements
+     * @param query
+     * @param context
+     */
+    private void replaceByProperty(MappingOntologies.RelationshipType relationshipType , Property property, List<AsgEBase<EBase>> elements, AsgQuery query, AsgStrategyContext context) {
+        elements.forEach(element -> replaceRel(element, property, relationshipType, query, context));
+
+    }
+    /**
+     * replace the property type according to the mapping schema
+     *
      * @param entityType
      * @param property
      * @param elements
@@ -158,18 +194,42 @@ public class AsgMappingStrategy implements AsgStrategy {
         if (AsgQueryUtil.nextAdjacentDescendant(element, EPropGroup.class, 2).isPresent()) {
             //add field to group
             AsgEBase<EBase> groupAsg = AsgQueryUtil.nextAdjacentDescendant(element, EPropGroup.class, 2).get();
-            ((EPropGroup) groupAsg.geteBase()).addOrReplace(new EProp(groupAsg.geteBase().geteNum(), entityType.getTargetField(), constraintTransformed(element, property, entityType)));
+            ((EPropGroup) groupAsg.geteBase()).addOrReplace(new EProp(groupAsg.geteBase().geteNum(), entityType.getTargetField(), constraintTransformed(((ETyped) element.geteBase()).geteType(), property)));
         } else {
             //create quant if needed and add group to quant - that group contains the needed type prop
             AsgEBase<? extends EBase> quant = AsgQueryUtil.createOrGetQuant(element, query, all);
-            quant.addNext(new AsgEBase<>(new EPropGroup(max(query)+1,new EProp(max(query)+1, entityType.getTargetField(), constraintTransformed(element, property, entityType)))));
+            quant.addNext(new AsgEBase<>(new EPropGroup(max(query)+1,new EProp(max(query)+1, entityType.getTargetField(), constraintTransformed(((ETyped) element.geteBase()).geteType(), property)))));
         }
         //finally replace with the target designated entity Type
         ((ETyped) element.geteBase()).seteType(entityType.getTarget());
     }
 
-    private Constraint constraintTransformed(AsgEBase<EBase> element, Property property, MappingOntologies.EntityType entityType) {
-        String type = ((ETyped) element.geteBase()).geteType();
+    /**
+     * search for descendent field of name $target.field if exist ?
+     * - replace content using relationshipType.getSourceField()
+     * otherwise
+     * - add this new field as property to query
+     *
+     * @param element
+     * @param property
+     * @param relationshipType
+     * @param query
+     * @param context
+     */
+    private void replaceRel(AsgEBase<EBase> element, Property property, MappingOntologies.RelationshipType relationshipType, AsgQuery query, AsgStrategyContext context) {
+        if (AsgQueryUtil.bAdjacentDescendant(element, RelPropGroup.class).isPresent()) {
+            //add field to group
+            AsgEBase<EBase> groupAsg = AsgQueryUtil.bAdjacentDescendant(element, RelPropGroup.class).get();
+            ((RelPropGroup) groupAsg.geteBase()).addOrReplace(new RelProp(groupAsg.geteBase().geteNum(), relationshipType.getTargetField(), constraintTransformed(((Rel) element.geteBase()).getrType(), property)));
+        } else {
+            //create quant if needed and add group to quant - that group contains the needed type prop
+            element.getB().add(new AsgEBase<>(new RelPropGroup(max(query)+1,new RelProp(max(query)+1, relationshipType.getTargetField(), constraintTransformed(((Rel) element.geteBase()).getrType(), property)))));
+        }
+        //finally replace with the target designated rel Type
+        ((Rel) element.geteBase()).setrType(relationshipType.getTarget());
+    }
+
+    private Constraint constraintTransformed(String type, Property property) {
         if (targetAccessor.enumeratedType(property.getType()).isPresent()) {
             //if target type is enum - use the source value for enum.valueOf for target constraint
             Value value = targetAccessor.enumeratedType$(property.getType()).valueOf(type)
