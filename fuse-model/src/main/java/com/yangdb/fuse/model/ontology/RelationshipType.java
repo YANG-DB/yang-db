@@ -162,7 +162,7 @@ public class RelationshipType implements BaseElement {
 
     @JsonIgnore
     public List<String> fields() {
-        return concat(properties.stream(),metadata.stream()).collect(Collectors.toList());
+        return concat(properties.stream(), metadata.stream()).collect(Collectors.toList());
     }
 
     @JsonIgnore
@@ -227,10 +227,10 @@ public class RelationshipType implements BaseElement {
     private String name;
     private boolean directional;
     private String DBrName;
-    private List<String> mandatory;
-    private List<EPair> ePairs;
-    private List<String> properties;
-    private List<String> metadata;
+    private List<String> mandatory = new ArrayList<>();
+    private List<EPair> ePairs = new ArrayList<>();
+    private List<String> properties = new ArrayList<>();
+    private List<String> metadata = new ArrayList<>();
 
     @JsonIgnore
     public boolean containsMetadata(String key) {

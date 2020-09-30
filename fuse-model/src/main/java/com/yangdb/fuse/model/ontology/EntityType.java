@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,15 +59,15 @@ import static com.google.common.collect.Streams.concat;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class EntityType implements BaseElement{
+public class EntityType implements BaseElement {
     public EntityType() {
     }
 
     public EntityType(String type, String name, List<String> properties, List<String> metadata) {
-        this(type,name,properties,metadata,Collections.emptyList(),Collections.emptyList());
+        this(type, name, properties, metadata, Collections.emptyList(), Collections.emptyList());
     }
 
-    public EntityType(String type, String name, List<String> properties, List<String> metadata, List<String> mandatory,List<String> parentType) {
+    public EntityType(String type, String name, List<String> properties, List<String> metadata, List<String> mandatory, List<String> parentType) {
         this.eType = type;
         this.name = name;
         this.properties = properties;
@@ -77,11 +77,11 @@ public class EntityType implements BaseElement{
     }
 
     public EntityType(String type, String name, List<String> properties) {
-        this(type,name,properties,Collections.emptyList());
+        this(type, name, properties, Collections.emptyList());
     }
 
     public List<String> getMetadata() {
-        return metadata!=null ? metadata : Collections.emptyList();
+        return metadata != null ? metadata : Collections.emptyList();
     }
 
     public void setMetadata(List<String> metadata) {
@@ -105,11 +105,11 @@ public class EntityType implements BaseElement{
     }
 
     public List<String> getProperties() {
-        return properties!=null ? properties :  Collections.emptyList();
+        return properties != null ? properties : Collections.emptyList();
     }
 
     public List<String> getParentType() {
-        return parentType !=null ? parentType : Collections.emptyList();
+        return parentType != null ? parentType : Collections.emptyList();
     }
 
     public void setParentType(List<String> parentType) {
@@ -117,7 +117,7 @@ public class EntityType implements BaseElement{
     }
 
     public List<String> getMandatory() {
-        return mandatory!=null ? mandatory :  Collections.emptyList();
+        return mandatory != null ? mandatory : Collections.emptyList();
     }
 
     public void setMandatory(List<String> mandatory) {
@@ -138,12 +138,12 @@ public class EntityType implements BaseElement{
 
     @Override
     public String toString() {
-        return "EntityType [eType = " + eType + ", name = " + name + ", display = " + display + ", properties = " + properties + ", metadata = " + metadata +", mandatory = " + mandatory + "]";
+        return "EntityType [eType = " + eType + ", name = " + name + ", display = " + display + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
     }
 
     @JsonIgnore
     public List<String> fields() {
-        return concat(properties.stream(),metadata.stream()).collect(Collectors.toList());
+        return concat(properties.stream(), metadata.stream()).collect(Collectors.toList());
     }
 
     @Override
@@ -161,17 +161,17 @@ public class EntityType implements BaseElement{
 
     @Override
     public int hashCode() {
-        return Objects.hash(eType,parentType, name, properties, metadata, display);
+        return Objects.hash(eType, parentType, name, properties, metadata, display);
     }
 
     //region Fields
     private String eType;
     private String name;
-    private List<String> mandatory;
-    private List<String> properties;
-    private List<String> metadata;
-    private List<String> display;
-    private List<String> parentType;
+    private List<String> mandatory = new ArrayList<>();
+    private List<String> properties = new ArrayList<>();
+    private List<String> metadata = new ArrayList<>();
+    private List<String> display = new ArrayList<>();
+    private List<String> parentType = new ArrayList<>();
 
     @JsonIgnore
     public boolean containsMetadata(String key) {
