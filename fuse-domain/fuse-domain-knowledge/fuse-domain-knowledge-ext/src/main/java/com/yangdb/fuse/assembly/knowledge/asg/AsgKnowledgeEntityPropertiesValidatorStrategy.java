@@ -70,13 +70,13 @@ public class AsgKnowledgeEntityPropertiesValidatorStrategy extends AsgEntityProp
             //if eType is of parent - check is that child also contains the property
             String finalPType = pType;
             if (entityType.geteType().equals(parentPtype)) {
-                if (entityType.getProperties().stream().noneMatch(p -> p.equals(finalPType)) &&
-                        accessor.$entity$(childPtype).getProperties().stream().noneMatch(p -> p.equals(finalPType))) {
+                if (entityType.fields().stream().noneMatch(p -> p.equals(finalPType)) &&
+                        accessor.$entity$(childPtype).fields().stream().noneMatch(p -> p.equals(finalPType))) {
                     errors.add(ERROR_2 + ":" + print(base, property));
                 }
             } else {
                 //regular fallback check
-                if (entityType.getProperties().stream().noneMatch(p -> p.equals(finalPType))) {
+                if (entityType.fields().stream().noneMatch(p -> p.equals(finalPType))) {
                     errors.add(ERROR_2 + ":" + print(base, property));
                 }
             }

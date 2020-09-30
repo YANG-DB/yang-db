@@ -7,6 +7,7 @@ import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.services.TestsConfiguration;
 import com.yangdb.test.BaseITMarker;
 import io.restassured.http.Header;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,12 +15,10 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static io.restassured.RestAssured.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 
 public class CatalogIT implements BaseITMarker {
     @Before
-    public void before() {
+    public void before() throws Exception {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
 //        TestSuite.setup();
     }
@@ -29,7 +28,7 @@ public class CatalogIT implements BaseITMarker {
      * execute query with expected plan result
      */
     public void catalog() throws IOException {
-        Ontology ontology = OntologyFinalizer.finalize(TestUtils.loadOntology("Dragons.json"));
+        Ontology ontology = TestUtils.loadOntology("Dragons.json");
         given()
                 .contentType("application/json")
                 .header(new Header("fuse-external-id", "test"))
@@ -41,7 +40,9 @@ public class CatalogIT implements BaseITMarker {
                     try {
                         String expected = new ObjectMapper().writeValueAsString(ontology);
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
-                        return new ObjectMapper().writeValueAsString(contentResponse.getData()).equals(expected);
+                        String result = new ObjectMapper().writeValueAsString(contentResponse.getData());
+                        Assert.assertEquals(expected,result);
+                        return result.equals(expected);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;
@@ -68,7 +69,8 @@ public class CatalogIT implements BaseITMarker {
                     try {
                         String expected = new ObjectMapper().writeValueAsString(ontology);
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
-                        //todo compare to expected
+                        String result = new ObjectMapper().writeValueAsString(contentResponse.getData());
+                        Assert.assertEquals(expected,result);
                         return contentResponse.getData() != null;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -95,7 +97,8 @@ public class CatalogIT implements BaseITMarker {
                     try {
                         String expected = new ObjectMapper().writeValueAsString(ontology);
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
-                        //todo compare to expected
+                        String result = new ObjectMapper().writeValueAsString(contentResponse.getData());
+                        Assert.assertEquals(expected,result);
                         return contentResponse.getData() != null;
                     } catch (Exception e) {
                         e.printStackTrace();

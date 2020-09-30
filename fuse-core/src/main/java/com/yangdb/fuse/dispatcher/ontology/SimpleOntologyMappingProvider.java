@@ -36,7 +36,7 @@ public class SimpleOntologyMappingProvider implements OntologyMappingProvider {
 
     private Map<String, MappingOntologies> ontologyMap;
 
-    public SimpleOntologyMappingProvider(MappingOntologies ontology) throws IOException {
+    public SimpleOntologyMappingProvider(MappingOntologies ontology)  {
         ontologyMap = new HashMap<>();
         ontologyMap.put(ontology.getSourceOntology(), ontology);
     }

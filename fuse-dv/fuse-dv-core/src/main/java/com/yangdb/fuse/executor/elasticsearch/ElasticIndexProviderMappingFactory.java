@@ -98,6 +98,8 @@ public class ElasticIndexProviderMappingFactory {
                 responses.add(new Tuple2<>(true,client.admin().indices().create(request).actionGet().index()));
             } catch (ResourceAlreadyExistsException e) {
                 responses.add(new Tuple2<>(false,e.getIndex().getName()));
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
         });
         return responses;
@@ -105,16 +107,21 @@ public class ElasticIndexProviderMappingFactory {
 
     public List<Tuple2<String, Boolean>> generateMappings() {
         List<Tuple2<String, AcknowledgedResponse>> responses = new ArrayList<>();
-        //generate the index template requests
-        Map<String, ESPutIndexTemplateRequestBuilder> requests = new HashMap<>();
-        mapEntities(client, requests);
-        mapRelations(client, requests);
-        //execute template requesst
-        responses.addAll(requests.values().stream()
-                .map(r -> new Tuple2<>(r.request().name(), r.execute().actionGet()))
-                .collect(Collectors.toList()));
-        return responses.stream().map(r -> new Tuple2<>(r._1, r._2.isAcknowledged()))
-                .collect(Collectors.toList());
+        try {
+            //generate the index template requests
+            Map<String, ESPutIndexTemplateRequestBuilder> requests = new HashMap<>();
+            mapEntities(client, requests);
+            mapRelations(client, requests);
+            //execute template requesst
+            responses.addAll(requests.values().stream()
+                    .map(r -> new Tuple2<>(r.request().name(), r.execute().actionGet()))
+                    .collect(Collectors.toList()));
+            return responses.stream().map(r -> new Tuple2<>(r._1, r._2.isAcknowledged()))
+                    .collect(Collectors.toList());
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return Collections.emptyList();
     }
 
     /**

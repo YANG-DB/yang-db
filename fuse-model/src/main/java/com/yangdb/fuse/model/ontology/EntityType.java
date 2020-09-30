@@ -47,8 +47,12 @@ package com.yangdb.fuse.model.ontology;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.common.collect.Streams;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.google.common.collect.Streams.concat;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -135,6 +139,11 @@ public class EntityType implements BaseElement{
     @Override
     public String toString() {
         return "EntityType [eType = " + eType + ", name = " + name + ", display = " + display + ", properties = " + properties + ", metadata = " + metadata +", mandatory = " + mandatory + "]";
+    }
+
+    @JsonIgnore
+    public List<String> fields() {
+        return concat(properties.stream(),metadata.stream()).collect(Collectors.toList());
     }
 
     @Override

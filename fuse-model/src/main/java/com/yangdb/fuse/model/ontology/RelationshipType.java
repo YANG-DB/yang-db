@@ -52,6 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Streams.concat;
+
 /**
  * Created by benishue on 22-Feb-17.
  */
@@ -137,6 +139,7 @@ public class RelationshipType implements BaseElement {
         return metadata != null ? metadata : Collections.emptyList();
     }
 
+
     public void setMetadata(List<String> metadata) {
         this.metadata = metadata;
     }
@@ -155,6 +158,11 @@ public class RelationshipType implements BaseElement {
 
     public void setProperties(List<String> properties) {
         this.properties = properties;
+    }
+
+    @JsonIgnore
+    public List<String> fields() {
+        return concat(properties.stream(),metadata.stream()).collect(Collectors.toList());
     }
 
     @JsonIgnore

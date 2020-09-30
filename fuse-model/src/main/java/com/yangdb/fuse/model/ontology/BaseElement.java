@@ -27,5 +27,6 @@ import java.util.List;
  */
 public interface BaseElement {
     List<String> getMetadata();
+    List<String> fields();
     List<String> getProperties();
 }

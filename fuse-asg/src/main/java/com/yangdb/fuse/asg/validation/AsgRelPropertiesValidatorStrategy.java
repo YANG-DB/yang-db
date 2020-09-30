@@ -81,7 +81,7 @@ public class AsgRelPropertiesValidatorStrategy implements AsgValidatorStrategy {
         RelationshipType relationshipType = accessor.$relation$(base.geteBase().getrType());
         String pType = property.getpType();
 
-        if (relationshipType.getProperties().stream().noneMatch(p -> p.equals(pType))) {
+        if (relationshipType.fields().stream().noneMatch(p -> p.equals(pType))) {
             errors.add(ERROR_2 + ":" + print(base, property));
         }
 

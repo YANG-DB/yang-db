@@ -80,6 +80,9 @@ public class AsgMappingStrategy implements AsgStrategy {
         //for each entity replace source entity type with target entity type according to mapping by source.field to target.field
         mappingOntologies.getRelationshipTypes().forEach(r -> replaceRelType(r, query, context));
 
+        //replace ontology name with the newly mapped one
+        query.setOnt(mappingOntologies.getTargetOntology());
+
     }
 
     private void replaceRelType(MappingOntologies.RelationshipType relationshipType, AsgQuery query, AsgStrategyContext context) {

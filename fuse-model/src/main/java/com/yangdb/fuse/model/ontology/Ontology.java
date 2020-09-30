@@ -464,7 +464,7 @@ public class Ontology {
         }
 
         public List<EntityType> nested$(String eType) {
-            return entity$(eType).getProperties().stream()
+            return entity$(eType).fields().stream()
                     .filter(p -> $entity(p).isPresent())
                     .map(p -> $entity(p).get())
                     .collect(Collectors.toList());
@@ -474,7 +474,7 @@ public class Ontology {
         public boolean isNested(String eType) {
             if (!entity(eType).isPresent()) return false;
 
-            return entity$(eType).getProperties().stream().anyMatch(p -> $entity(p).isPresent());
+            return entity$(eType).fields().stream().anyMatch(p -> $entity(p).isPresent());
         }
 
         public Iterable<String> eNames() {

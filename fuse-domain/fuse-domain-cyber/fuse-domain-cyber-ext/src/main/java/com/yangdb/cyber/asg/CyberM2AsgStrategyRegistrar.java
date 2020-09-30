@@ -24,8 +24,8 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.asg.strategy.AsgNamedParametersStrategy;
 import com.yangdb.fuse.asg.strategy.AsgStrategy;
 import com.yangdb.fuse.asg.strategy.AsgStrategyRegistrar;
-import com.yangdb.fuse.asg.strategy.RuleBoostProvider;
 import com.yangdb.fuse.asg.strategy.constraint.*;
+import com.yangdb.fuse.asg.strategy.mapping.AsgMappingStrategy;
 import com.yangdb.fuse.asg.strategy.propertyGrouping.*;
 import com.yangdb.fuse.asg.strategy.schema.ExactConstraintTransformationAsgStrategy;
 import com.yangdb.fuse.asg.strategy.selection.DefaultETagAsgStrategy;
@@ -36,7 +36,6 @@ import com.yangdb.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStra
 import com.yangdb.fuse.dispatcher.ontology.OntologyMappingProvider;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
-import com.yangdb.fuse.model.query.entity.EEntityBase;
 
 import java.util.Arrays;
 
@@ -57,7 +56,7 @@ public class CyberM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
                 new DefaultETagAsgStrategy(this.ontologyProvider),
-                new CyberLogicalMappingAsgTranslatorStrategy(this.ontologyProvider,this.mappingProvider),
+                new AsgMappingStrategy(this.ontologyProvider,this.mappingProvider),
                 new AsgNamedParametersStrategy(),
                 new RelationPatternRangeAsgStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
