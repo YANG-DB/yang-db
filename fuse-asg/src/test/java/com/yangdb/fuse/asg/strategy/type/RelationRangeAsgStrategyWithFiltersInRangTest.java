@@ -86,7 +86,7 @@ public class RelationRangeAsgStrategyWithFiltersInRangTest {
                 .next(typed(1,OntologyTestUtils.PERSON.type))
                 .next(relPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R)
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(endPattern(new ETyped(3,tagSeq("end"),OntologyTestUtils.PERSON.type,-1),
+                .next(endTypedPattern(new ETyped(3,tagSeq("end"),OntologyTestUtils.PERSON.type,-1),
                         new EProp(3,GENDER.type,of(eq,"Person"))))
                 .build();
 
@@ -122,7 +122,7 @@ public class RelationRangeAsgStrategyWithFiltersInRangTest {
                 .next(typed(1,OntologyTestUtils.PERSON.type))
                 .next(relPattern(2, KNOW.getrType(), new Range(0, 3), R)
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(endPattern(new ETyped(3,tagSeq("end"),OntologyTestUtils.PERSON.type,-1),
+                .next(endTypedPattern(new ETyped(3,tagSeq("end"),OntologyTestUtils.PERSON.type,-1),
                         new EProp(4,FIRST_NAME.type,of(eq,"Person")),
                         new EProp(5,NAME.type,of(eq,"Other"))))
                 .build();
@@ -160,7 +160,7 @@ public class RelationRangeAsgStrategyWithFiltersInRangTest {
                 .next(typed(1,OntologyTestUtils.PERSON.type))
                 .next(relPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R)
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(endPattern(new ETyped(3,tagSeq("end"), OntologyTestUtils.PERSON.type,0,-1),
+                .next(endTypedPattern(new ETyped(3,tagSeq("end"), OntologyTestUtils.PERSON.type,0,-1),
                         new EProp(5,NAME.type,of(eq,"Other"))))
                 .next(eProp(4, OntologyTestUtils.FIRST_NAME.type, of(eq, "abc")))
                 .build();
@@ -199,7 +199,7 @@ public class RelationRangeAsgStrategyWithFiltersInRangTest {
                 .next(typed(1,OntologyTestUtils.PERSON.type))
                 .next(relPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(0, 3), R)
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(endPattern(new ETyped(3,tagSeq("end"), OntologyTestUtils.PERSON.type,0,-1),
+                .next(endTypedPattern(new ETyped(3,tagSeq("end"), OntologyTestUtils.PERSON.type,0,-1),
                         new EProp(5,NAME.type,of(eq,"Other"))))
                 .next(eProp(4, OntologyTestUtils.FIRST_NAME.type, of(eq, "abc")))
                 .build();
@@ -244,7 +244,7 @@ public class RelationRangeAsgStrategyWithFiltersInRangTest {
                         eProp(4, OntologyTestUtils.FIRST_NAME.type, of(eq, "abc")),
                         relPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R)
                                 .next(
-                                        endPattern(new ETyped(3,tagSeq("end"), OntologyTestUtils.PERSON.type,0),
+                                        endTypedPattern(new ETyped(3,tagSeq("end"), OntologyTestUtils.PERSON.type,0),
                                                 new EProp(5,NAME.type,of(eq,"Other")))
                                                 .addNext(eProp(4, OntologyTestUtils.LAST_NAME.type, of(eq, "abc")))))
 
@@ -282,7 +282,7 @@ public class RelationRangeAsgStrategyWithFiltersInRangTest {
                 .next(typed(1,OntologyTestUtils.PERSON.type))
                 .next(relPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R)
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(endPattern(new ETyped(3, tagSeq("end"),OntologyTestUtils.PERSON.type,0),
+                .next(endTypedPattern(new ETyped(3, tagSeq("end"),OntologyTestUtils.PERSON.type,0),
         new EProp(5,NAME.type,of(eq,"Other"))))
                 .next(quant1(4, all))
                 .in(ePropGroup(5,
@@ -324,7 +324,7 @@ public class RelationRangeAsgStrategyWithFiltersInRangTest {
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(quant1(3, all))
                 .in(relPropGroup(11, all, RelProp.of(11, END_DATE.type, of(eq, new Date()))),
-                        endPattern(new ETyped(4, tagSeq("end"),OntologyTestUtils.PERSON.type,0),
+                        endTypedPattern(new ETyped(4, tagSeq("end"),OntologyTestUtils.PERSON.type,0),
                                 new EProp(5,NAME.type,of(eq,"Other")))
                                 .next(quant1(5, all)
                                         .addNext(ePropGroup(12, EProp.of(12, OntologyTestUtils.FIRST_NAME.type, Constraint.of(ConstraintOp.like, "Dormir"))))
@@ -367,7 +367,7 @@ public class RelationRangeAsgStrategyWithFiltersInRangTest {
                         EProp.of(3, OntologyTestUtils.FIRST_NAME.type, Constraint.of(ConstraintOp.like, "Dormir"))))
                 .next(relPattern(2, OntologyTestUtils.KNOW.getrType(), new Range(1, 3), R)
                         .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
-                .next(endPattern(new ETyped(3,tagSeq("end"), OntologyTestUtils.PERSON.type,0),
+                .next(endTypedPattern(new ETyped(3,tagSeq("end"), OntologyTestUtils.PERSON.type,0),
                         new EProp(5,NAME.type,of(eq,"Other"))))
                 .next(eProp(4, OntologyTestUtils.NAME.type, of(eq, "abc")))
                 .build();

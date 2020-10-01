@@ -40,6 +40,7 @@ import com.yangdb.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
 import com.yangdb.fuse.model.ontology.OntologyFinalizer;
 import com.yangdb.fuse.model.query.properties.*;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -177,7 +178,8 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
             return PatternCostEstimator.EmptyResult.get();
         }
 
-        StatisticsProvider statisticsProvider = this.statisticsProviderFactory.get(this.ontologyProvider.get(context.getQuery().getOnt()).get());
+        StatisticsProvider statisticsProvider = this.statisticsProviderFactory.get(this.ontologyProvider.get(context.getQuery().getOnt())
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology found for " + context.getQuery().getOnt()))));
         return calculateFullStep(config, statisticsProvider, context.getPreviousCost().get(), (EntityRelationEntityPattern) pattern);
     }
     //endregion

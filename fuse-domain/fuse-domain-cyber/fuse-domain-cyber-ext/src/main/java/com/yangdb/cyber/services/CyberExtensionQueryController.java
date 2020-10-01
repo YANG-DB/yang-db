@@ -141,6 +141,11 @@ public class CyberExtensionQueryController implements QueryController<QueryContr
     }
 
     @Override
+    public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity, String targetId, String relationType, int maxHops) {
+        return controller.findPath(ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops);
+    }
+
+    @Override
     public ContentResponse<PlanNode<Plan>> planVerbose(String queryId) {
         return controller.planVerbose(queryId);
     }

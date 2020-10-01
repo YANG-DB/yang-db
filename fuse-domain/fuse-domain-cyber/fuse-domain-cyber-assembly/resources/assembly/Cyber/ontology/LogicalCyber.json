@@ -162,6 +162,14 @@
         {
           "eTypeA": "Dragon",
           "eTypeB": "Dragon"
+        },
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Person"
+        },
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Horse"
         }
       ],
       "metadata": [
@@ -181,6 +189,14 @@
         {
           "eTypeA": "Dragon",
           "eTypeB": "Dragon"
+        },
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Person"
+        },
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Horse"
         }
       ],
       "metadata": [

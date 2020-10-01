@@ -384,13 +384,23 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return new AsgEBase<>(rel);
         }
 
-        public static <T extends EEntityBase> AsgEBase<EndPattern<T>> endPattern(T entity,EProp... props) {
-            EndPattern<T> endPattern = new EndPattern<>(entity, Arrays.asList(props));
+        public static <T extends ETyped> AsgEBase<TypedEndPattern<T>> endTypedPattern(T entity, EProp... props) {
+            TypedEndPattern<T> endPattern = new TypedEndPattern<>(entity, Arrays.asList(props));
             return new AsgEBase<>(endPattern);
         }
 
-        public static <T extends EEntityBase> AsgEBase<EndPattern<T>> endPattern(T entity) {
-            EndPattern<T> endPattern = new EndPattern<>(entity);
+        public static <T extends ETyped> AsgEBase<TypedEndPattern<T>> endTypedPattern(T entity) {
+            TypedEndPattern<T> endPattern = new TypedEndPattern<>(entity);
+            return new AsgEBase<>(endPattern);
+        }
+
+        public static <T extends EUntyped> AsgEBase<UnTypedEndPattern<T>> endUnTypedPattern(T entity, EProp... props) {
+            UnTypedEndPattern<T> endPattern = new UnTypedEndPattern<>(entity, Arrays.asList(props));
+            return new AsgEBase<>(endPattern);
+        }
+
+        public static <T extends EUntyped> AsgEBase<UnTypedEndPattern<T>> endUnTypedPattern(T entity) {
+            UnTypedEndPattern<T> endPattern = new UnTypedEndPattern<>(entity);
             return new AsgEBase<>(endPattern);
         }
 

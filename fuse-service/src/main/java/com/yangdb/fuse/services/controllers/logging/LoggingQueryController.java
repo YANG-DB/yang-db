@@ -150,6 +150,23 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     }
 
     @Override
+    public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops){
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                validate,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                        new LogMessage.Impl(this.logger, debug, String.format("findPath: [%s,%s,%s,%s,%s,%s,%d] { }",
+                                ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops), Sequence.incr(), LogType.of(log), createAndFetch)
+                                .log();
+                    return this.controller.findPath(ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops);
+                }, this.resultHandler());
+    }
+
+    @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology) {
         return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
                 this.logger,

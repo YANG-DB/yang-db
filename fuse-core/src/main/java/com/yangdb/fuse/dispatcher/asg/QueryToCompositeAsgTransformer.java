@@ -32,6 +32,7 @@ import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.properties.BaseProp;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.constraint.*;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 
 import java.util.Collection;
 import java.util.List;
@@ -61,7 +62,8 @@ public class QueryToCompositeAsgTransformer extends QueryToAsgTransformer {
     public AsgCompositeQuery transform(Query query) {
         AsgCompositeQuery asgQuery = new AsgCompositeQuery(super.transform(query));
         Optional<Ontology> ontology = ontologyProvider.get(query.getOnt());
-        apply(asgQuery, new AsgStrategyContext(new Ontology.Accessor(ontology.get())));
+        apply(asgQuery, new AsgStrategyContext(new Ontology.Accessor(ontology
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology field found for " + query.getOnt()))))));
         return asgQuery;
     }
     //endregion

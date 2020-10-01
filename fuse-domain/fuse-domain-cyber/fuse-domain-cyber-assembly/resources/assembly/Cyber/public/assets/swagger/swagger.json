@@ -265,7 +265,7 @@
             "description": "DDL SQL  ",
             "required": true,
             "type": "string",
-            "default":"CREATE TABLE book\n(\n    id           NUMBER(7)     NOT NULL PRIMARY KEY,\n    author_id    NUMBER(7)     NOT NULL,\n    title        VARCHAR(400) NOT NULL,\n    published_in NUMBER(7)     NOT NULL,\n    language_id  NUMBER(7)     NOT NULL,\n\n    CONSTRAINT fk_book_author FOREIGN KEY (author_id) REFERENCES author(id),\n    CONSTRAINT fk_book_language FOREIGN KEY (language_id) REFERENCES language(id)\n);"
+            "default": "CREATE TABLE book\n(\n    id           NUMBER(7)     NOT NULL PRIMARY KEY,\n    author_id    NUMBER(7)     NOT NULL,\n    title        VARCHAR(400) NOT NULL,\n    published_in NUMBER(7)     NOT NULL,\n    language_id  NUMBER(7)     NOT NULL,\n\n    CONSTRAINT fk_book_author FOREIGN KEY (author_id) REFERENCES author(id),\n    CONSTRAINT fk_book_language FOREIGN KEY (language_id) REFERENCES language(id)\n);"
           }
         ],
         "responses": {
@@ -278,28 +278,72 @@
         }
       }
     },
-    "/sql/ontology": {
-      "post": {
+
+
+    "/query/graph/api/findPath": {
+      "get": {
         "tags": [
-          "catalog"
+          "GraphApi"
         ],
-        "summary": "SQL DDL into Ontology",
-        "description": "Transform a SQL DDL into V1 Ontology " ,
+        "summary": "Execute find Path graph query",
+        "description": "Execute find Path graph query between two concrete vertices",
         "parameters": [
           {
-            "in": "body",
-            "name": "<body>",
-            "description": "DDL SQL  ",
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
             "required": true,
-            "type": "string",
-            "default": "CREATE TABLE book\n(\n    id           NUMBER(7)     NOT NULL PRIMARY KEY,\n    author_id    NUMBER(7)     NOT NULL,\n    title        VARCHAR(400) NOT NULL,\n    published_in NUMBER(7)     NOT NULL,\n    language_id  NUMBER(7)     NOT NULL,\n\n    CONSTRAINT fk_book_author FOREIGN KEY (author_id) REFERENCES author(id),\n    CONSTRAINT fk_book_language FOREIGN KEY (language_id) REFERENCES language(id)\n);"
+            "type": "string"
+          },
+          {
+            "name": "sourceEntity",
+            "in": "query",
+            "description": "source entity type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sourceId",
+            "in": "query",
+            "description": "vertex source Id ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "targetEntity",
+            "in": "query",
+            "description": "target entity type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "targetId",
+            "in": "query",
+            "description": "vertex target Id ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "relationType",
+            "in": "query",
+            "description": "Relation Type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "maxHops",
+            "in": "query",
+            "description": "maximum number of hops",
+            "required": true,
+            "type": "integer"
           }
+
         ],
         "responses": {
           "200": {
-            "description": "Returns an Ontology object",
+            "description": "Returns a Query summery with first page result data",
             "schema": {
-              "$ref": "#/definitions/Ontology"
+              "$ref": "#/definitions/QueryInfo"
             }
           }
         }

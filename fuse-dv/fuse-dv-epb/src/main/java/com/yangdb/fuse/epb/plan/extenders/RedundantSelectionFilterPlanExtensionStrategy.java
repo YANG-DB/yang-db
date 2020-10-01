@@ -38,6 +38,7 @@ import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.model.query.properties.projection.CalculatedFieldProjection;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
@@ -70,7 +71,8 @@ public class RedundantSelectionFilterPlanExtensionStrategy implements PlanExtens
             return Collections.emptyList();
         }
 
-        Ontology.Accessor $ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt()).get());
+        Ontology.Accessor $ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt())
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology found for " + query.getOnt()))));
 
         Plan flatPlan = PlanUtil.flat(plan.get());
 

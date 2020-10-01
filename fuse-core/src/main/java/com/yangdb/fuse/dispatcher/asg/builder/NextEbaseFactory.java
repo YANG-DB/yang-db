@@ -62,7 +62,8 @@ public class NextEbaseFactory implements NextFactory {
         this.map.put(Quant1.class, (ebase) -> ((Quant1) ebase).getNext());
         this.map.put(Rel.class, (ebase) -> ((Rel)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getNext()));
         this.map.put(RelPattern.class, (ebase) -> ((Rel)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getNext()));
-        this.map.put(EndPattern.class, (ebase) -> ((EndPattern)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((EndPattern) ebase).getNext()));
+        this.map.put(TypedEndPattern.class, (ebase) -> ((TypedEndPattern)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((TypedEndPattern) ebase).getNext()));
+        this.map.put(UnTypedEndPattern.class, (ebase) -> ((UnTypedEndPattern)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((UnTypedEndPattern) ebase).getNext()));
         this.map.put(Start.class, (ebase) -> ((Start)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((Start) ebase).getNext()));
         this.map.put(OptionalComp.class, (ebase) -> ((OptionalComp)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((OptionalComp)ebase).getNext()));
         this.map.put(CountComp.class, (ebase) -> ((CountComp)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((CountComp)ebase).getNext()));

@@ -91,6 +91,11 @@ public class DragonsExtensionQueryController implements QueryController<QueryCon
     }
 
     @Override
+    public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity, String targetId, String relationType, int maxHops) {
+        return controller.findPath(ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops);
+    }
+
+    @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology) {
         return controller.runCypher(cypher,ontology);
     }

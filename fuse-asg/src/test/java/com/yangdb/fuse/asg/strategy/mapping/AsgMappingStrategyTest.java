@@ -1,8 +1,10 @@
 package com.yangdb.fuse.asg.strategy.mapping;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.dispatcher.asg.QueryToAsgTransformer;
 import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyMappingProvider;
 import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyProvider;
+import com.yangdb.fuse.dispatcher.utils.GraphApiUtils;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -17,6 +19,7 @@ import org.junit.Test;
 
 import java.io.InputStream;
 
+import static com.yangdb.fuse.dispatcher.utils.GraphApiUtils.findPathQuery;
 import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.yangdb.fuse.model.query.Rel.Direction.L;
 import static com.yangdb.fuse.model.query.Rel.Direction.R;
@@ -27,7 +30,7 @@ import static com.yangdb.fuse.model.query.quant.QuantType.all;
 public class AsgMappingStrategyTest extends TestCase {
     private ObjectMapper mapper;
     private AsgMappingStrategy strategy;
-
+    private QueryToAsgTransformer asgTransformer;
 
     @Override
     public void setUp() throws Exception {
@@ -40,6 +43,7 @@ public class AsgMappingStrategyTest extends TestCase {
         Ontology schema = mapper.readValue(schemaSource, Ontology.class);
         MappingOntologies mapping = mapper.readValue(mappingSource, MappingOntologies.class);
 
+        asgTransformer = new QueryToAsgTransformer();
         strategy = new AsgMappingStrategy(new SimpleOntologyProvider(ontology, schema), new SimpleOntologyMappingProvider(mapping));
     }
 
@@ -90,6 +94,30 @@ public class AsgMappingStrategyTest extends TestCase {
                         "                                           └─?[18]:[type<eq,3>]]",
                 AsgQueryDescriptor.print(query));
     }
+    @Test
+    public void testQ4TransformMapping() {
+        AsgQuery query = Q4();
+        strategy.apply(query, null);
+        Assert.assertEquals("[└── Start, \n" +
+                        "    ──Typ[:Entity A#1]──Q[17:all]:{2|18}, \n" +
+                        "                                    └-> Rel(:Relationship R#2)──Typ[:Entity B#3]──Q[4:all]:{5|6|11}, \n" +
+                        "                                                          └─?[..][2], \n" +
+                        "                                                                └─?[2]:[2<eq,value2>], \n" +
+                        "                                                                └─?[2]:[type<eq,101>], \n" +
+                        "                                                                                 └─?[..][5], \n" +
+                        "                                                                                       └─?[5]:[prop1<eq,value1>]──Typ[:Entity C#7]──Q[19:all]:{20}, \n" +
+                        "                                                                                       └─?[5]:[prop2<gt,value3>], \n" +
+                        "                                                                                       └─?[5]:[type<eq,0>], \n" +
+                        "                                                                                 └-> Rel(:Relationship R1#6), \n" +
+                        "                                                                                       └─?[..][25], \n" +
+                        "                                                                                              └─?[25]:[type<eq,100>], \n" +
+                        "                                                                                                                └─?[..][20], \n" +
+                        "                                                                                                                       └─?[20]:[type<eq,2>], \n" +
+                        "                                                                                 └─AsgEBase[11], \n" +
+                        "                                    └─?[..][18], \n" +
+                        "                                           └─?[18]:[type<eq,3>]]",
+                AsgQueryDescriptor.print(query));
+    }
 
 
     private AsgQuery Q1() {
@@ -107,6 +135,10 @@ public class AsgMappingStrategyTest extends TestCase {
                 .next(quant1(2, all))
                 .in(ePropGroup(3, EProp.of(3, "type", Constraint.of(ConstraintOp.like, "a*"))))
                 .build();
+    }
+    private AsgQuery Q4() {
+        return asgTransformer.transform(
+                findPathQuery("LogicalDragons","Dragon","d01","Person","p01","Fire",3));
     }
 
     private AsgQuery Q3() {

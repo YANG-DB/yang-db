@@ -75,6 +75,12 @@ public interface QueryController<C,D> extends Controller<C,D> {
     ContentResponse<ValidationResult> validate(Query query);
 
     /**
+     * run findPath graph query
+     *
+     * */
+    ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops);
+
+    /**
      * run a stateless cypher query and get immediate graph results (first page only)
      * type may be volatile or persistent
      * @param cypher

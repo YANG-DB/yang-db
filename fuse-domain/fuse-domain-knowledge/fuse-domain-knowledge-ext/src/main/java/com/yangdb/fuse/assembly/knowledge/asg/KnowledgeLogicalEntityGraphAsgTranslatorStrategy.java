@@ -42,6 +42,7 @@ import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantBase;
 import com.yangdb.fuse.model.query.quant.QuantType;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import javaslang.collection.Stream;
 
 import java.util.HashSet;
@@ -79,9 +80,11 @@ public class KnowledgeLogicalEntityGraphAsgTranslatorStrategy implements AsgStra
         if (query.getOnt().equals(KNOWLEDGE))
             return;
 
-        Ontology schema = ontologyProvider.get(KNOWLEDGE).get();
+        Ontology schema = ontologyProvider.get(KNOWLEDGE)
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology found for " + KNOWLEDGE)));
         String labelFieldName = schemaProviderFactory.get(schema).getLabelFieldName().get();
-        Ontology logicalOntology = this.ontologyProvider.get(query.getOnt()).get();
+        Ontology logicalOntology = this.ontologyProvider.get(query.getOnt())
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology found for " + query.getOnt())));
         Ontology.Accessor logicalOntAccessor = new Ontology.Accessor(logicalOntology);
         Ontology.Accessor schemaOntAccessor = new Ontology.Accessor(schema);
 

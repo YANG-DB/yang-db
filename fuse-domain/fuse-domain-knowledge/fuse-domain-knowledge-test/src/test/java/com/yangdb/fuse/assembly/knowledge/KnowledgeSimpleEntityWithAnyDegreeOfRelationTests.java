@@ -9,7 +9,8 @@ import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.RelPattern;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.ETyped;
-import com.yangdb.fuse.model.query.entity.EndPattern;
+import com.yangdb.fuse.model.query.entity.TypedEndPattern;
+import com.yangdb.fuse.model.query.entity.UnTypedEndPattern;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
@@ -43,11 +44,9 @@ public class KnowledgeSimpleEntityWithAnyDegreeOfRelationTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(false,true);
+//        Setup.setup(true,true);//todo - remark when running in IT tests
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        //Setup.setup();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 
@@ -85,7 +84,7 @@ public class KnowledgeSimpleEntityWithAnyDegreeOfRelationTests {
                         new Start(0, 1),
                         new ETyped(1, "A", "Entity", 2, 0),
                         new RelPattern(2, "relatedEntity",new com.yangdb.fuse.model.Range(1,2), R, null, 3, 0),
-                        new EndPattern<>(new ETyped(3, Tagged.tagSeq("B"), "Entity", 0, 0))
+                        new TypedEndPattern<>(new ETyped(3, Tagged.tagSeq("B"), "Entity", 0, 0))
                 )).build();
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
         QueryResultBase pageData =  query(fuseClient, fuseResourceInfo, query, new CreateForwardOnlyPathTraversalCursorRequest());
@@ -126,7 +125,7 @@ public class KnowledgeSimpleEntityWithAnyDegreeOfRelationTests {
                         new Quant1(2,QuantType.all, Arrays.asList(3,4)),
                         new EProp(3,"context",Constraint.of(ConstraintOp.eq,"start")),
                         new RelPattern(4, "relatedEntity",new com.yangdb.fuse.model.Range(1,3), R, null, 5, 0),
-                        new EndPattern<>(new ETyped(5, Tagged.tagSeq("Target"), "Entity", 6, 0)),
+                        new TypedEndPattern<>(new ETyped(5, Tagged.tagSeq("Target"), "Entity", 6, 0)),
                         new EProp(6,"context",Constraint.of(ConstraintOp.eq,"end"))
                 )).build();
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
@@ -167,7 +166,7 @@ public class KnowledgeSimpleEntityWithAnyDegreeOfRelationTests {
                         new Quant1(2,QuantType.all, Arrays.asList(3,4)),
                         new EProp(3,"context",Constraint.of(ConstraintOp.eq,"start")),
                         new RelPattern(4, "relatedEntity",new com.yangdb.fuse.model.Range(1,2), R, null, 5, 0),
-                        new EndPattern<>(new ETyped(5, Tagged.tagSeq("Target"), "Entity", 6, 0)),
+                        new TypedEndPattern<>(new ETyped(5, Tagged.tagSeq("Target"), "Entity", 6, 0)),
                         new EProp(6,"context",Constraint.of(ConstraintOp.eq,"end"))
                 )).build();
 //        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);

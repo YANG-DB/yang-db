@@ -41,6 +41,7 @@ import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateInnerQueryCursorRequest;
 import javaslang.collection.Stream;
@@ -85,7 +86,9 @@ public class StandardCursorDriver extends CursorDriverBase {
     @Override
     protected CursorResource createResource(QueryResource queryResource, String cursorId, CreateCursorRequest cursorRequest) {
         PlanWithCost<Plan, PlanDetailedCost> executionPlan = queryResource.getExecutionPlan();
-        Ontology ontology = this.ontologyProvider.get(queryResource.getQuery().getOnt()).get();
+        //get the ontology name from the asg query since a transformation between ontologies might have occurred - see AsgMappingStrategy
+        Ontology ontology = this.ontologyProvider.get(queryResource.getAsgQuery().getOnt())
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology field found for " + queryResource.getAsgQuery().getOnt())));
 
         GraphTraversal<?, ?> traversal = createTraversal(executionPlan, ontology);
 
@@ -143,7 +146,8 @@ public class StandardCursorDriver extends CursorDriverBase {
 
     @Override
     public Optional<GraphTraversal> traversal(PlanWithCost plan, String ontology) {
-        return Optional.of(createTraversal(plan, this.ontologyProvider.get(ontology).get()));
+        return Optional.of(createTraversal(plan, this.ontologyProvider.get(ontology)
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology found for " + ontology)))));
     }
 
     //endregion

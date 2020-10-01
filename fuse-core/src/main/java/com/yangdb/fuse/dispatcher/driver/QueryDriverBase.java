@@ -48,7 +48,7 @@ import com.yangdb.fuse.model.resourceInfo.*;
 import com.yangdb.fuse.model.results.AssignmentUtils;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.transport.*;
-import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.*;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.model.validation.ValidationResult;
@@ -60,6 +60,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.dispatcher.cursor.CursorFactory.request;
+import static com.yangdb.fuse.dispatcher.utils.GraphApiUtils.findPathQuery;
 import static com.yangdb.fuse.model.Utils.getOrCreateId;
 import static com.yangdb.fuse.model.asgQuery.AsgCompositeQuery.hasInnerQuery;
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.parameterized;
@@ -228,6 +229,31 @@ public abstract class QueryDriverBase implements QueryDriver {
         }
     }
 
+    @Override
+    public Optional<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops) {
+        String id = UUID.randomUUID().toString();
+        try {
+            Query pathQuery = findPathQuery(ontology, sourceEntity, sourceId, targetEntity, targetId, relationType, maxHops);
+            CreateQueryRequest queryRequest = new CreateQueryRequest(id,
+                    id,
+                    pathQuery,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } catch (Throwable e) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(), "failed building the findPath query request ")));
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
 
     @Override
     public Optional<Object> getNextPageData(String queryId, Optional<String> cursorId, int pageSize, boolean deleteCurrentPage) {

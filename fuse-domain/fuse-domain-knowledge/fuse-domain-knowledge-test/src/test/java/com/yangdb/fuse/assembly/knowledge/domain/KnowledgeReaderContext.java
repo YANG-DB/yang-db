@@ -2,10 +2,7 @@ package com.yangdb.fuse.assembly.knowledge.domain;
 
 import com.yangdb.fuse.model.Tagged;
 import com.yangdb.fuse.model.query.*;
-import com.yangdb.fuse.model.query.entity.EConcrete;
-import com.yangdb.fuse.model.query.entity.EEntityBase;
-import com.yangdb.fuse.model.query.entity.ETyped;
-import com.yangdb.fuse.model.query.entity.EndPattern;
+import com.yangdb.fuse.model.query.entity.*;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
@@ -130,7 +127,7 @@ public class KnowledgeReaderContext {
         public KnowledgeQueryBuilder pathToEType(String rType, String eType, int from, int to) {
             //"relatedEntity"
             this.elements.add(new RelPattern(currentEnum(), rType, new com.yangdb.fuse.model.Range(from, to), R, null, nextEnum(), 0));
-            this.elements.add(new EndPattern<>(new ETyped(currentEnum(), Tagged.tagSeq("Target"), eType, nextEnum(), 0)));
+            this.elements.add(new TypedEndPattern<>(new ETyped(currentEnum(), Tagged.tagSeq("Target"), eType, nextEnum(), 0)));
             return this;
         }
 

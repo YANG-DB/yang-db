@@ -84,4 +84,6 @@ public interface QueryDriver {
     Optional<Boolean> delete(String queryId);
 
     Optional<GraphTraversal> traversal(Query query);
+
+    Optional<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops);
 }

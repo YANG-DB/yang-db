@@ -49,7 +49,8 @@ import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.ETyped;
-import com.yangdb.fuse.model.query.entity.EndPattern;
+import com.yangdb.fuse.model.query.entity.TypedEndPattern;
+import com.yangdb.fuse.model.query.entity.UnTypedEndPattern;
 import com.yangdb.fuse.model.query.optional.OptionalComp;
 import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.model.query.properties.constraint.NamedParameter;
@@ -795,8 +796,10 @@ public class AsgQueryUtil {
             clone = (T) asgEBase.geteBase().clone(max[0] * 100);
         } else if (BasePropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
             clone = (T) asgEBase.geteBase().clone(max[0] * 100);
-        } else if (EndPattern.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
-            clone = (T) ((EndPattern) asgEBase.geteBase()).getEndEntity().clone(++max[0]);
+        } else if (UnTypedEndPattern.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
+            clone = (T) ((UnTypedEndPattern) asgEBase.geteBase()).getEndEntity().clone(++max[0]);
+        } else if (TypedEndPattern.class.isAssignableFrom(asgEBase.geteBase().getClass())) {
+            clone = (T) ((TypedEndPattern) asgEBase.geteBase()).getEndEntity().clone(++max[0]);
         } else {
             clone = (T) asgEBase.geteBase().clone(++max[0]);
         }

@@ -101,6 +101,14 @@ public class StandardQueryController implements QueryController<QueryController,
     }
 
     @Override
+    public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops) {
+        return Builder.builder(CREATED, SERVER_ERROR )
+                .data(Optional.of(driver().findPath(ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops)))
+                .successPredicate(objectContentResponse -> true)
+                .compose();
+    }
+
+    @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology) {
         return Builder.builder(CREATED, SERVER_ERROR )
                 .data(driver().runCypher(cypher,ontology))

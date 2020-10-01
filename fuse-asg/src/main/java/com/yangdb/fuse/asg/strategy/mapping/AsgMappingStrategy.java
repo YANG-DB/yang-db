@@ -129,7 +129,8 @@ public class AsgMappingStrategy implements AsgStrategy {
     private void replaceEtype(MappingOntologies.EntityType entityType, AsgQuery query, AsgStrategyContext context) {
         // for each mapping.source.entityTypes[]
         //      - find all such entities in query
-        List<AsgEBase<EBase>> elements = AsgQueryUtil.elements(query, asgEBase -> (asgEBase.geteBase() instanceof ETyped)
+        List<AsgEBase<EBase>> elements = AsgQueryUtil.elements(query,
+                asgEBase -> (asgEBase.geteBase() instanceof ETyped)
                 && entityType.getSource().contains(((ETyped) asgEBase.geteBase()).geteType()));
 
         /*     - replace each with mapping.target.entityType according to source.field to target.field mapping instruction
