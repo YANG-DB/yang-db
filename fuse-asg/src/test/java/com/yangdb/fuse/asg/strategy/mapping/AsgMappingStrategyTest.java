@@ -5,10 +5,13 @@ import com.yangdb.fuse.dispatcher.asg.QueryToAsgTransformer;
 import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyMappingProvider;
 import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyProvider;
 import com.yangdb.fuse.dispatcher.utils.GraphApiUtils;
+import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.mapping.MappingOntologies;
+import com.yangdb.fuse.model.query.entity.TypedEndPattern;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.RelProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
@@ -99,24 +102,19 @@ public class AsgMappingStrategyTest extends TestCase {
         AsgQuery query = Q4();
         strategy.apply(query, null);
         Assert.assertEquals("[└── Start, \n" +
-                        "    ──Typ[:Entity A#1]──Q[17:all]:{2|18}, \n" +
-                        "                                    └-> Rel(:Relationship R#2)──Typ[:Entity B#3]──Q[4:all]:{5|6|11}, \n" +
-                        "                                                          └─?[..][2], \n" +
-                        "                                                                └─?[2]:[2<eq,value2>], \n" +
-                        "                                                                └─?[2]:[type<eq,101>], \n" +
-                        "                                                                                 └─?[..][5], \n" +
-                        "                                                                                       └─?[5]:[prop1<eq,value1>]──Typ[:Entity C#7]──Q[19:all]:{20}, \n" +
-                        "                                                                                       └─?[5]:[prop2<gt,value3>], \n" +
-                        "                                                                                       └─?[5]:[type<eq,0>], \n" +
-                        "                                                                                 └-> Rel(:Relationship R1#6), \n" +
-                        "                                                                                       └─?[..][25], \n" +
-                        "                                                                                              └─?[25]:[type<eq,100>], \n" +
-                        "                                                                                                                └─?[..][20], \n" +
-                        "                                                                                                                       └─?[20]:[type<eq,2>], \n" +
-                        "                                                                                 └─AsgEBase[11], \n" +
-                        "                                    └─?[..][18], \n" +
-                        "                                           └─?[18]:[type<eq,3>]]",
+                        "    ──Conc[:Entity Dragon_d01#1]──Q[4:all]:{2|5}, \n" +
+                        "                                            └-> Rel(:Relationship null#2)──Typ[:Entity Person$:{}#3]──Q[6:all]:{7}, \n" +
+                        "                                                                     └─?[..][8], \n" +
+                        "                                                                           └─?[8]:[type<eq,101>], \n" +
+                        "                                                                                            └─?[..][7], \n" +
+                        "                                                                                                  └─?[7]:[type<eq,0>], \n" +
+                        "                                            └─?[..][5], \n" +
+                        "                                                  └─?[5]:[type<eq,3>]]",
                 AsgQueryDescriptor.print(query));
+
+        Assert.assertTrue(AsgQueryUtil.element(query, TypedEndPattern.class).isPresent());
+        //verify type was mapped inside the EndPattern fields as well
+        Assert.assertEquals("Entity", AsgQueryUtil.element(query, TypedEndPattern.class).get().geteBase().getEndEntity().geteType());
     }
 
 
