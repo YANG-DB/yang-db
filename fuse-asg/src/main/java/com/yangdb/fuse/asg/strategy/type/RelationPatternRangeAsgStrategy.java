@@ -71,7 +71,7 @@ public class RelationPatternRangeAsgStrategy implements AsgStrategy {
                     //get end Pattern entity - should exist according to the validation
                     final Optional<AsgEBase<EBase>> endPattern = Optional.of(
                             AsgQueryUtil.nextDescendant(relPattern, UnTypedEndPattern.class)
-                                    .orElse(AsgQueryUtil.nextDescendant(relPattern, TypedEndPattern.class).get()));
+                                    .orElseGet(()->AsgQueryUtil.nextDescendant(relPattern, TypedEndPattern.class).get()));
 
                     //get parent element of type Entity
                     Optional<AsgEBase<EEntityBase>> parent = AsgQueryUtil.ancestor(relPattern, EEntityBase.class);
@@ -222,7 +222,7 @@ public class RelationPatternRangeAsgStrategy implements AsgStrategy {
                             //knowing that the rel pattern has a shape of a line not a tree get the last Descendant
                             current.set(
                                     AsgQueryUtil.nextDescendant(current.get(), UnTypedEndPattern.class)
-                                            .orElse(AsgQueryUtil.nextDescendant(current.get(), TypedEndPattern.class).get()));
+                                            .orElseGet(()->AsgQueryUtil.nextDescendant(current.get(), TypedEndPattern.class).get()));
                         }
                         current.get().addNext(AsgQueryUtil.ancestorRoot(node).get());
                         current.set(node);
