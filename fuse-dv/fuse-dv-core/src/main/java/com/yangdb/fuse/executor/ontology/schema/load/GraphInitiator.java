@@ -30,8 +30,27 @@ public interface GraphInitiator {
      *
      * @return
      * @throws IOException
+     * @param ontology
      */
-    long init() throws IOException;
+    long init(String ontology) ;
+
+    /**
+     * create the indexTemplates
+     * create the vertices and edges indices according to schema
+     *
+     * @return
+     * @throws IOException
+     */
+    long init() ;
+
+    /**
+     * drop the vertices and edges indices to schema
+     *
+     * @return
+     * @throws IOException
+     * @param ontology
+     */
+    long drop(String ontology) ;
 
     /**
      * drop the vertices and edges indices to schema
@@ -48,7 +67,7 @@ public interface GraphInitiator {
      * @param schemaProvider
      * @return
      */
-    long createTemplate(String ontology, String schemaProvider) throws IOException;
+    long createTemplate(String ontology, String schemaProvider) ;
 
     /**
      * create indices according to ontology and index schema provider json instructions
@@ -57,5 +76,5 @@ public interface GraphInitiator {
      * @return
      * @throws IOException
      */
-    long createIndices(String ontology, String schemaProvider) throws IOException;
+    long createIndices(String ontology, String schemaProvider) ;
 }

@@ -122,7 +122,7 @@ public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
 
     private void initIndices() throws IOException {
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(), "indices created:20");
+        Assert.assertEquals(map.get("data").toString().trim(), "indices created:19");
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
     }

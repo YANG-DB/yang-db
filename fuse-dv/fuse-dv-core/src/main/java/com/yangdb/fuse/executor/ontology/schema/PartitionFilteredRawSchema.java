@@ -106,7 +106,8 @@ public class PartitionFilteredRawSchema implements RawSchema {
 
     private Iterable<String> filterIndices(Iterable<String> indices) {
         return Stream.ofAll(indices)
-                .filter(index -> client.get().admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
+                //todo - verify why is this necessary ???
+//                .filter(index -> client.get().admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .toJavaList();
     }
     //endregion

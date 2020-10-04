@@ -111,6 +111,7 @@ public class RelationRangeAsgStrategyTest {
         Assert.assertNotNull(AsgQueryDescriptor.print(query));
 
     }
+
     @Test
     public void testUntypedToTypedStrategyWithoutQuantsInPathWithRangeFromZero() {
         Ontology.Accessor ont = new Ontology.Accessor(ontology);

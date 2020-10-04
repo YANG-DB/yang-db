@@ -1,10 +1,10 @@
 create table Traces
 (
-    insert_time timestamp default "sysdate"() not null,
-    update_time timestamp default "sysdate"() not null,
+    insert_time timestamp  not null,
+    update_time timestamp  not null,
     customer_id int not null,
     source_id numeric(39) not null,
-    trace_id int not null,
+    trace_id int not null         primary key,
     trace_type int not null,
     trace_status int not null,
     closing_reason int,

@@ -15,7 +15,16 @@ create table TraceEntities
     entity_file_type int,
     is_linked_entity boolean not null,
     is_in_merge boolean not null,
-    insert_time timestamp default "sysdate"() not null,
-    update_time timestamp default "sysdate"()
+    insert_time timestamp not null,
+    update_time timestamp,
+
+-- Does this state this table is a relation ?
+    CONSTRAINT pk_trace_entities primary key (trace_id,entity_id),
+
+    CONSTRAINT fk_traces FOREIGN KEY (trace_id) REFERENCES Traces(trace_id),
+    CONSTRAINT fk_trace_behavior FOREIGN KEY (behavior_id) REFERENCES Behaviors(behavior_id),
+    CONSTRAINT fk_trace_behavior_types FOREIGN KEY (behavior_type_id) REFERENCES lov_BehaviorTypes(type_id),
+    CONSTRAINT fk_trace_entities FOREIGN KEY (entity_id) REFERENCES Entities(entity_hash)
+
 );
 

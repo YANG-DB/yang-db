@@ -37,7 +37,7 @@ public class DragonsNestedNoConstraintsQueryIT implements BaseITMarker {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup();
+//        Setup.setup();//todo remove remark when running IT tests
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
@@ -71,7 +71,7 @@ public class DragonsNestedNoConstraintsQueryIT implements BaseITMarker {
 
     private void initIndices() throws IOException {
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(), "indices created:20");
+        Assert.assertEquals(map.get("data").toString().trim(), "indices created:19");
 
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
@@ -106,6 +106,7 @@ public class DragonsNestedNoConstraintsQueryIT implements BaseITMarker {
         Assert.assertEquals(3,((Assignment)((AssignmentsQueryResult)pageData).getAssignments().get(0)).getRelationships().size());
 
     }
+
     @Test
     public void testPersonHasProfession() throws IOException, InterruptedException, URISyntaxException {
         // Create v1 query to fetch newly created entity

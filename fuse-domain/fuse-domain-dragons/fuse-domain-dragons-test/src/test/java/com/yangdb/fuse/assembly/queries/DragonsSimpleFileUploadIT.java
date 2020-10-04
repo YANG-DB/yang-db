@@ -42,7 +42,7 @@ public class DragonsSimpleFileUploadIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/LogicalDragonsGraph.json");
         ResultResourceInfo<String> info = fuseClient.uploadGraphFile(DRAGONS, stream);
@@ -63,7 +63,7 @@ public class DragonsSimpleFileUploadIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/Dragons.csv");
         ResultResourceInfo<String> info = fuseClient.uploadCsvFile(DRAGONS,"Entity","Dragon" , stream);
@@ -82,7 +82,7 @@ public class DragonsSimpleFileUploadIT implements BaseITMarker {
         Assert.assertNotNull(fuseResourceInfo);
 
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(),"indices created:20");
+        Assert.assertEquals(map.get("data").toString().trim(),"indices created:19");
 
         URL stream = Thread.currentThread().getContextClassLoader().getResource("schema/Fire.csv");
         ResultResourceInfo<String> info = fuseClient.uploadCsvFile(DRAGONS,"Relation" ,"Fire", stream);

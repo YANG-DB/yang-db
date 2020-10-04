@@ -48,6 +48,15 @@ public class IndexProviderRawSchema implements RawSchema {
         this.schemaProvider = schemaProviderFactory.get(ont);
     }
 
+
+    public IndexProviderRawSchema(Ontology ontology,GraphElementSchemaProviderFactory schemaProviderFactory) {
+        this.schemaProvider = schemaProviderFactory.get(ontology);
+    }
+
+    public IndexProviderRawSchema(GraphElementSchemaProvider elementSchemaProvider) {
+        this.schemaProvider = elementSchemaProvider;
+    }
+
     @Override
     public IndexPartitions getPartition(String type) {
         return getIndexPartitions(schemaProvider,type);

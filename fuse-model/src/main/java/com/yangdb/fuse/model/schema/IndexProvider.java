@@ -45,6 +45,8 @@ package com.yangdb.fuse.model.schema;
  */
 
 import com.fasterxml.jackson.annotation.*;
+import com.google.common.collect.ImmutableList;
+import com.yangdb.fuse.model.ontology.Ontology;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -134,5 +136,29 @@ public class IndexProvider {
             return nest;
 
         return getRelations().stream().filter(e -> e.getType().equals(label)).findAny();
+    }
+
+    public static class Builder {
+        /**
+         * creates default index provider according to the given ontology - simple static index strategy
+         * @param ontology
+         * @return
+         */
+        public static IndexProvider generate(Ontology ontology) {
+            IndexProvider provider = new IndexProvider();
+            provider.ontology = ontology.getOnt();
+            //generate entities
+            provider.entities = ontology.getEntityTypes().stream().map(e->
+                    new Entity(e.getName(),"static","Index",
+                            new Props(ImmutableList.of(e.getName())),Collections.emptyList(), Collections.emptyMap()))
+                    .collect(Collectors.toList());
+            //generate relations
+            provider.relations = ontology.getRelationshipTypes().stream().map(e->
+                    new Relation(e.getName(),"static","Index",false, Collections.emptyList(),
+                            new Props(ImmutableList.of(e.getName())),Collections.emptyList(), Collections.emptyMap()))
+                    .collect(Collectors.toList());
+
+            return provider;
+        }
     }
 }

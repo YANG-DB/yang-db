@@ -58,6 +58,18 @@ public class Relation implements BaseTypeElement<Relation> {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
+    public Relation() {}
+
+    public Relation(String type, String partition, String mapping, boolean symmetric, List<Relation> nested, Props props, List<Redundant> redundant, Map<String, Object> additionalProperties) {
+        this.type = type;
+        this.partition = partition;
+        this.mapping = mapping;
+        this.symmetric = symmetric;
+        this.nested = nested;
+        this.props = props;
+        this.redundant = redundant;
+        this.additionalProperties = additionalProperties;
+    }
 
     @JsonProperty("symmetric")
     public boolean isSymmetric() {

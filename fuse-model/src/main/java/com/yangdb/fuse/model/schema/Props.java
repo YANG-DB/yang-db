@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.schema;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,6 +45,21 @@ public class Props {
     private String dateFormat;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    public Props() {}
+
+    public Props(List<String> values) {
+        this.values = values;
+    }
+
+    public Props(List<String> values, String partitionField, String prefix, String indexFormat, String dateFormat, Map<String, Object> additionalProperties) {
+        this.values = values;
+        this.partitionField = partitionField;
+        this.prefix = prefix;
+        this.indexFormat = indexFormat;
+        this.dateFormat = dateFormat;
+        this.additionalProperties = additionalProperties;
+    }
 
     @JsonProperty("values")
     public List<String> getValues() {

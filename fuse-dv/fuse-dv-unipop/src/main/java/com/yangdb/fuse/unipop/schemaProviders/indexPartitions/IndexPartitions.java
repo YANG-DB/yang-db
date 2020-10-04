@@ -9,9 +9,9 @@ package com.yangdb.fuse.unipop.schemaProviders.indexPartitions;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,10 +24,22 @@ import javaslang.collection.Stream;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public interface IndexPartitions {
     Optional<String> getPartitionField();
+
     Iterable<Partition> getPartitions();
+
+    /**
+     * collect all indices names from index partitions
+     */
+    default Iterable<String> getIndices() {
+        return StreamSupport.stream(getPartitions().spliterator(), false)
+                .flatMap(p -> StreamSupport.stream(p.getIndices().spliterator(), false))
+                .collect(Collectors.toList());
+    }
 
     interface Partition {
         Iterable<String> getIndices();
@@ -96,15 +108,18 @@ public interface IndexPartitions {
                 }
             }
         }
+
         interface Default<T extends Comparable<T>> extends Range {
             @Override
-            default boolean isWithin(Comparable value) { return true; }
+            default boolean isWithin(Comparable value) {
+                return true;
+            }
         }
     }
 
     class Impl implements IndexPartitions {
         //region Constructors
-        public Impl(Partition...partitions) {
+        public Impl(Partition... partitions) {
             this(Stream.of(partitions));
         }
 
@@ -113,7 +128,7 @@ public interface IndexPartitions {
             this.partitionField = Optional.empty();
         }
 
-        public Impl(String partitionField, Partition...partitions) {
+        public Impl(String partitionField, Partition... partitions) {
             this(partitionField, Stream.of(partitions));
         }
 

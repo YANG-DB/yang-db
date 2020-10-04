@@ -22,26 +22,15 @@ package com.yangdb.fuse.executor.ontology.schema.load;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
-import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
-import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
-import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.Tuple2;
-import javaslang.collection.Stream;
 import org.elasticsearch.action.DocWriteRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -94,7 +83,8 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
     }
 
     @Override
-    public LoadResponse<String, FuseError> load(LogicalGraphModel root, Directive directive) {
+    public LoadResponse<String, FuseError> load(String ontology, LogicalGraphModel root, Directive directive) {
+        //todo load correct ontology graph transformer and use it to transform data to the actual schema structure
         BulkRequestBuilder bulk = client.prepareBulk();
         Response upload = new Response("Upload");
         DataTransformerContext<LogicalGraphModel> context = transformer.transform(root, directive);
@@ -180,12 +170,13 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
             String indexName = ((TimeSeriesIndexPartitions) partitions).getIndexName(sdf.parse(field.get()._2));
             if (indexName != null) return indexName;
         }
-        return partitions.getPartitions().iterator().next().getIndices().iterator().next();
+        //get the first matching index to populate
+        return partitions.getIndices().iterator().next();
     }
 
 
     @Override
-    public LoadResponse<String, FuseError> load(File data, Directive directive) throws IOException {
+    public LoadResponse<String, FuseError> load(String ontology, File data, Directive directive) throws IOException {
         String contentType = Files.probeContentType(data.toPath());
         if (Arrays.asList("application/gzip", "application/zip").contains(contentType)) {
             ByteArrayOutputStream stream = null; //unzip
@@ -199,12 +190,12 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
             }
 
             String graph = new String(stream.toByteArray());
-            return load(mapper.readValue(graph, LogicalGraphModel.class), directive);
+            return load(ontology , mapper.readValue(graph, LogicalGraphModel.class), directive);
         }
         String graph = new String(Files.readAllBytes(data.toPath()));
         //read
         LogicalGraphModel root = mapper.readValue(graph, LogicalGraphModel.class);
-        return load(root, directive);
+        return load(ontology, root, directive);
     }
 
 

@@ -109,12 +109,14 @@ public interface GraphDataLoader<S,F> {
      *             }
      *         ]
      * }
+     *
+     * @param ontology
      * @param root
      * @param directive
      * @return
      * @throws IOException
      */
-    LoadResponse<S, F> load(LogicalGraphModel root, Directive directive) throws IOException;
+    LoadResponse<S, F> load(String ontology, LogicalGraphModel root, Directive directive) throws IOException;
 
     /**
      * does:
@@ -124,7 +126,7 @@ public interface GraphDataLoader<S,F> {
      *      - convert into bulk set
      *      - commit to repository
      */
-    LoadResponse<S, F> load(File data, Directive directive) throws IOException;
+    LoadResponse<S, F> load(String ontology, File data, Directive directive) throws IOException;
 
     enum Directive {
         INSERT,UPSERT

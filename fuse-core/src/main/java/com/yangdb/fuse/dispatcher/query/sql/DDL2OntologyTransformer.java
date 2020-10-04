@@ -34,6 +34,7 @@ import static java.util.Collections.singletonList;
 import static org.jooq.impl.ConstraintStatement.*;
 import static org.jooq.impl.DSL.*;
 
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import org.jooq.*;
 import org.jooq.impl.*;
 
@@ -62,12 +63,16 @@ public class DDL2OntologyTransformer implements OntologyTransformerIfc<List<Stri
         return Collections.emptyList();
     }
 
-    private void parseTable(String table, Ontology.OntologyBuilder builder) {
-        context = new DefaultDSLContext(SQLDialect.DEFAULT);
-        Queries queries = parser.parse(table);
-        Arrays.stream(queries.queries())
-                .filter(q -> q.getClass().getSimpleName().endsWith("CreateTableImpl"))
-                .forEach(q -> parse(q, builder));
+    private void parseTable(String table, Ontology.OntologyBuilder builder) throws FuseError.FuseErrorException {
+        try {
+            context = new DefaultDSLContext(SQLDialect.DEFAULT);
+            Queries queries = parser.parse(table);
+            Arrays.stream(queries.queries())
+                    .filter(q -> q.getClass().getSimpleName().endsWith("CreateTableImpl"))
+                    .forEach(q -> parse(q, builder));
+        }catch (Throwable t) {
+            throw new FuseError.FuseErrorException("Error Parsing DDL file "+table,t);
+        }
     }
 
     private void parse(Query createTable, Ontology.OntologyBuilder builder) {

@@ -76,6 +76,17 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
                 new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly))));
     }
 
+    public GraphElementSchemaProviderJsonFactory(IndexProviderIfc indexProviderFactory, Ontology ontology) {
+        this.accessor = new Ontology.Accessor(ontology);
+        this.indexProvider = indexProviderFactory.get(ontology.getOnt())
+                .orElseGet(() -> IndexProvider.Builder.generate(ontology));
+    }
+
+    public GraphElementSchemaProviderJsonFactory(IndexProvider indexProvider, Ontology ontology) {
+        this.accessor = new Ontology.Accessor(ontology);
+        this.indexProvider = indexProvider;
+    }
+
     @Override
     public GraphElementSchemaProvider get(Ontology ontology) {
         return new GraphElementSchemaProvider.Impl(

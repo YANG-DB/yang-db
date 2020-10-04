@@ -55,7 +55,7 @@ public class FuseError {
 
     public FuseError() {}
 
-    public FuseError(String errorCode, Exception e) {
+    public FuseError(String errorCode, Throwable e) {
         this.errorCode = errorCode;
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
@@ -111,6 +111,11 @@ public class FuseError {
         public FuseErrorException(String message, Throwable cause, FuseError error) {
             super(message, cause);
             this.error = error;
+        }
+
+        public FuseErrorException(String message, Throwable cause) {
+            super(message, cause);
+            this.error = new FuseError(message,cause);
         }
 
         public FuseError getError() {

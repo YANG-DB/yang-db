@@ -138,6 +138,9 @@ public class ElasticIndexProviderMappingFactory {
             Relation relation = indexProvider.getRelation(r.getName()).get();
             MappingIndexType type = MappingIndexType.valueOf(mapping.toUpperCase());
             switch (type) {
+                case NESTED:
+                    //this is implement in the populateNested() method
+                    break;
                 case UNIFIED:
                     //common general index - unifies all entities under the same physical index
                     relation.getProps().getValues().forEach(v -> {
@@ -209,6 +212,9 @@ public class ElasticIndexProviderMappingFactory {
                     try {
                         MappingIndexType type = MappingIndexType.valueOf(mapping.toUpperCase());
                         switch (type) {
+                            case NESTED:
+                                //this is implement in the populateNested() method
+                                break;
                             case UNIFIED:
                                 //common general index - unifies all entities under the same physical index
                                 entity.getProps().getValues().forEach(v -> {
@@ -276,11 +282,15 @@ public class ElasticIndexProviderMappingFactory {
         return mapping;
     }
 
-    public void populateProperty(BaseTypeElement<? extends BaseTypeElement> nested, Map<String, Object> properties, BaseElement entityType) {
+    public void populateProperty(BaseTypeElement<? extends BaseTypeElement> element, Map<String, Object> properties, BaseElement entityType) {
         entityType.getMetadata().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
         entityType.getProperties().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
         //populate nested documents
-        nested.getNested().forEach(nest -> generateNestedEntityMapping(properties, nest));
+        populateNested(element, properties);
+    }
+
+    public void populateNested(BaseTypeElement<? extends BaseTypeElement> element, Map<String, Object> properties) {
+        element.getNested().forEach(nest -> generateNestedEntityMapping(properties, nest));
     }
 
     /**
