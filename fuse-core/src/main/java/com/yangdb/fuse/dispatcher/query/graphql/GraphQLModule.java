@@ -23,24 +23,9 @@ package com.yangdb.fuse.dispatcher.query.graphql;
 
 
 import com.google.inject.Binder;
-import com.google.inject.TypeLiteral;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigException;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
-import com.yangdb.fuse.dispatcher.ontology.*;
-import com.yangdb.fuse.dispatcher.query.QueryTransformer;
-import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
-import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
-import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.QueryInfo;
 import org.jooby.Env;
-
-import java.lang.reflect.InvocationTargetException;
-import java.net.InetAddress;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 
 /**
  * Created by lior.perry on 15/02/2017.

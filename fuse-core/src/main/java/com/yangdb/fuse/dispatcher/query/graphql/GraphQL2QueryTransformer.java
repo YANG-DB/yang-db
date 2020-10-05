@@ -34,7 +34,6 @@ import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.SchemaGenerator;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 public class GraphQL2QueryTransformer implements QueryTransformer<QueryInfo<String>, Query> {
 

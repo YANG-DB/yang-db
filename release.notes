@@ -1,0 +1,93 @@
+
+V0.51
+Planned Features:
+************************************************************************************************************************
+ - multi-QL endpoint - this will enable any type of graph based language (cypher, gremlin, V1, Sparql, graphQL)
+  to run against yangDb and return the logical graph/assigbnments.
+
+ - OWL ontology translator - this will translate to / from V1 ontology languege the OWL schema
+ - SPARQL query translator - this will translate to V1 query language and enable query against the DB
+ - JSONLD graph translation - this will translate JsonLD format to / from standard json query results
+ - Adding GraphQL Internal Domain entities representation
+
+**
+   All public domain entities & API will be translated into graphQL entities & mutations
+   Adding specific columns projections according to Query
+**
+   Adding the projected columns according to the fields projected in the actual query
+   Adding parent type notion to V1 query (ETyped entity, Relation type)
+**
+   Add explicit physical E/S schema mapping (GraphLayoutProviderFactory) for a single index support - relations are mapped into same index
+   Adding the parent type will produce and enable inference of properties from parents
+   Adding Cyber assembly resource with sample cyber ontology and index support
+**
+   Adding OpenSource Visual Query tools support & Usage examples:
+**
+   GraphQL Query: https://github.com/graphql/graphiql
+   Ontology View: http://vowl.visualdataweb.org/webvowl.html
+   RDF Query Builder: https://leipert.github.io/vsb/evaluation/#/workspace
+   SPARQL Query Builder: http://labs.sparna.fr/sparnatural-demo-dbpedia/?lang=en
+**
+   new Cyber Distribution example
+
+************************************************************************************************************************
+Issues Fixes:
+------------------
+
+Modularization:
+  - added AsgCypherModule
+  - added AsgGraphQLModule
+  - added AsgSparqlModule
+  - added AsgSqlModule
+
+  - added SQLModule
+  - added SparqlModule
+  - added CypherModule
+  - added GraphQLModule
+
+  - added CypherControllerRegistrar
+  - added GraphQLControllerRegistrar
+  - added SQLControllerRegistrar
+  - added SparQLControllerRegistrar
+
+  - added assembly unique deployment public
+    - add unique swagger file per deployment
+
+
+Features:
+ - Added Ontology Based data ingestion in GraphDataLoader
+ - Added Ontology Based indices creation in GraphInitiator
+ - Add GraphAPI endpoint with access to activating findPath() API specific designated API
+ - Adding mapping capabilities between logical & schematic ontologies - using AsgMappingStrategy which relies on MappingProvider
+    - DataLoaderControllerRegistrar add mapping endpoints
+    - DataLoaderControllerRegistrar add mapping endpoints
+    - StandardDataLoaderController add API
+
+ - Added Ability to translate DDL query to Ontology - using JooQ framework
+    - workaround for ConstraintStatement / CreateTableStatement no parser access
+
+- Add projectedFields support for Query/AsgQuery - not yet fulfilled in API
+- Add directives support for Ontology - not yet fulfilled in API
+
+Bugs:
+ - Add Typed/Untyped RelPattern to manage both typed & untyped end vertex (at the end of the internal relations )...
+ - Every Access to ontologyProvider is wrapped with orElseThrow if ontology not found
+ - Add fields() api to EntityType / Relationship to collect both mandatory and regular properties
+ - Change Folder providers to take ontology name from json content rather from file name
+ - PartitionFilteredRawSchema - remove internal check against Elastic Index existance
+ - Adding Profile able createCursor instruction in Cursor.createResource() for additional query profiling
+ - EnumType fix naming and conventions issue
+ - OntologyFinalizer fix auto adding of mandatory fields - only when not exist already
+
+ - Add IndexProvider Builder
+ - Add profiling concepts to cursor requests
+
+Refactorization:
+ - Complete re-factor for ElasticIndexProviderMappingFactory
+    - add support for Nested / Embedded / Unified style schema mapping
+
+ - Complete re-factore for DataLoaderUtils
+    - add support for ontology depended loading
+ -
+ - Complete re-factore for DefaultGraphInitiator
+    - add support for ontology depended loading

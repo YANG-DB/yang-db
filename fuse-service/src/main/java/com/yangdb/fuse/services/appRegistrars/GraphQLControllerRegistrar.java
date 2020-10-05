@@ -24,7 +24,6 @@ import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.logging.Route;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.ContentResponse;
-import com.yangdb.fuse.services.controllers.SchemaTranslatorController;
 import com.yangdb.fuse.services.controllers.languages.graphql.StandardGraphQLController;
 import org.jooby.Jooby;
 import org.jooby.Results;

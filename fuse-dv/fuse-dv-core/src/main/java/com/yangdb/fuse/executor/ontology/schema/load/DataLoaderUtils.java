@@ -20,25 +20,17 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
-import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
-import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateRequest;
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
-import org.elasticsearch.action.bulk.BulkItemResponse;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;

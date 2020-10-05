@@ -25,7 +25,6 @@ import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.client.Client;
 
 import java.util.List;

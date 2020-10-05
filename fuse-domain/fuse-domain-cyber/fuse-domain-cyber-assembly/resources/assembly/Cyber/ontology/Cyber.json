@@ -1,317 +1,2894 @@
 {
   "ont": "Cyber",
+  "directives": [],
   "entityTypes": [
     {
-      "eType": "Entity",
-      "name": "Entity",
-      "metadata": [
-        "id",
-        "type"
+      "eType": "TRACES",
+      "name": "TRACES",
+      "mandatory": [
+        "TRACE_ID"
       ],
       "properties": [
-        "firstName",
-        "lastName",
-        "gender",
-        "birthDate",
-        "deathDate",
-        "height",
-        "name",
-        "profession",
-
-        "experience",
-        "certification",
-        "salary",
-
-        "weight",
-        "maxSpeed",
-        "distance",
-
-        "power",
-        "color",
-
-        "king",
-        "queen",
-        "independenceDay",
-        "funds",
-
-        "description",
-        "iconId",
-        "url",
-        "establishDate"
-
+        "INSERT_TIME",
+        "UPDATE_TIME",
+        "CUSTOMER_ID",
+        "SOURCE_ID",
+        "TRACE_ID",
+        "TRACE_TYPE",
+        "TRACE_STATUS",
+        "CLOSING_REASON",
+        "IS_ALERT",
+        "TRACE_SEVERITY",
+        "START_TIME",
+        "END_TIME",
+        "MIN_DETECTED_TIME",
+        "MAX_DETECTED_TIME",
+        "STATUS_UPDATE_TIME",
+        "UPDATE_BY",
+        "DISTINCT_ALERTING_BEHAVIOR_COUNT",
+        "TRACE_IDENTIFIER"
+      ]
+    },
+    {
+      "eType": "ENRICHMENTEVENTS",
+      "name": "ENRICHMENTEVENTS",
+      "mandatory": [
+        "EVENT_ID"
+      ],
+      "properties": [
+        "NETWORK_ID",
+        "SOURCE_TYPE",
+        "SESSION_ID",
+        "CUSTOMER_ID",
+        "SOURCE_ID",
+        "EVENT_ID",
+        "EVENT_TYPE_ID",
+        "EVENT_SEVERITY",
+        "EVENT_DETECTED_TIME",
+        "BEHAVIOR_ENTITY_SIDE",
+        "BEHAVIOR_ENTITY_UID",
+        "BEHAVIOR_ENTITY_MD5",
+        "BEHAVIOR_ENTITY_NAME",
+        "BEHAVIOR_ENTITY_TYPE",
+        "BEHAVIOR_ENTITY_LINKED_UID",
+        "BEHAVIOR_ENTITY_FILE_TYPE",
+        "LINKED_ENTITY_UID",
+        "LINKED_ENTITY_MD5",
+        "LINKED_ENTITY_NAME",
+        "LINKED_ENTITY_TYPE",
+        "LINKED_ENTITY_LINKED_UID",
+        "LINKED_ENTITY_FILE_TYPE",
+        "IS_ENRICHMENT_REL",
+        "IS_INSIGHT",
+        "IS_MD5_LINKED_NULL",
+        "IS_MD5_BEHAVIOR_NULL",
+        "MD5_BEHAVIOR_HASH",
+        "MD5_LINKED_HASH",
+        "BY_UID",
+        "BY_NAME",
+        "BY_TYPE_ID",
+        "BY_LINKED_ENTITY_UID",
+        "BY_FILE_TYPE",
+        "BY_FILE_MD5",
+        "TO_UID",
+        "TO_NAME",
+        "TO_TYPE_ID",
+        "TO_LINKED_ENTITY_UID",
+        "TO_FILE_TYPE",
+        "TO_FILE_MD5",
+        "BY_SID",
+        "BY_FILE_DIRECTORY",
+        "BY_PROCESS_PID",
+        "BY_PROCESS_DIRECTORY",
+        "BY_FILE_ALTERNATE_FILE_STREAM",
+        "TO_REGISTRY_KEY",
+        "TO_REGISTRY_VALUE_TYPE",
+        "TO_REGISTRY_PERMISSIONS",
+        "TO_REGISTRY_DATA",
+        "TO_FILE_DIRECTORY",
+        "TO_FILE_ALTERNATE_FILE_STREAM",
+        "TO_PROCESS_PID",
+        "TO_PROCESS_DIRECTORY",
+        "TO_ENDPOINT_IP",
+        "TO_ENDPOINT_REMOTEIP",
+        "TO_ENDPOINT_REMOTEPORT",
+        "TO_ENDPOINT_PORT",
+        "DATA_REMOTE_IP",
+        "INSERT_TIME",
+        "STAGE_ID",
+        "REL_ID"
+      ]
+    },
+    {
+      "eType": "LOV_BEHAVIORSTYPES",
+      "name": "LOV_BEHAVIORSTYPES",
+      "mandatory": [
+        "TYPE_ID"
+      ],
+      "properties": [
+        "TYPE_ID",
+        "CLASSIFICATION_ID",
+        "ALERT_CLASSIFICATION",
+        "TITLE",
+        "WORKFLOW_NAME",
+        "IS_EXTERNAL",
+        "DESCRIPTION",
+        "GRAPHVISIBILITY_VALUE",
+        "CATEGORY_VALUE"
+      ]
+    },
+    {
+      "eType": "TRACESTOBEHAVIORS",
+      "name": "TRACESTOBEHAVIORS",
+      "mandatory": [
+        "TRACE_ID"
+      ],
+      "properties": [
+        "INSERT_TIME",
+        "CUSTOMER_ID",
+        "SOURCE_ID",
+        "TRACE_ID",
+        "TRACE_TYPE",
+        "BEHAVIOR_ID",
+        "BEHAVIOR_TYPE_ID",
+        "BY_UID",
+        "BY_NAME",
+        "BY_TYPE_ID",
+        "BY_LINKED_ENTITY_UID",
+        "BY_FILE_MD5",
+        "TO_UID",
+        "TO_NAME",
+        "TO_TYPE_ID",
+        "TO_LINKED_ENTITY_UID",
+        "TO_FILE_MD5",
+        "BEHAVIOR_IS_ALERT",
+        "ATTRIBUTES_HASH"
+      ]
+    },
+    {
+      "eType": "BEHAVIORS",
+      "name": "BEHAVIORS",
+      "mandatory": [
+        "BEHAVIOR_ID"
+      ],
+      "properties": [
+        "BEHAVIOR_ID",
+        "BEHAVIOR_HASH",
+        "CUSTOMER_ID",
+        "SOURCE_ID",
+        "NETWORK_ID",
+        "SOURCE_TYPE",
+        "SESSION_ID",
+        "LONE_BEHAVIOR",
+        "TYPE_ID",
+        "FREQUENCY",
+        "BY_UID",
+        "BY_NAME",
+        "BY_TYPE_ID",
+        "BY_LINKED_ENTITY_UID",
+        "BY_IS_LINKED",
+        "BY_FILE_MD5",
+        "TO_UID",
+        "TO_NAME",
+        "TO_TYPE_ID",
+        "TO_LINKED_ENTITY_UID",
+        "TO_IS_LINKED",
+        "TO_FILE_MD5",
+        "DATA_NETWORK_RATIO",
+        "DATA_FILE_EXTENSION",
+        "DATA_OPERATION_SYSTEM_HASH",
+        "DATA_DIRECTORY",
+        "CREATED_BY_ANALYSIS_ID",
+        "PORT",
+        "TO_PROCESS_PID",
+        "DATA_MEMORY_FUNCTIONNAME",
+        "INSERT_TIME",
+        "STAGE_ID"
+      ]
+    },
+    {
+      "eType": "LOV_EVENTSTYPES",
+      "name": "LOV_EVENTSTYPES",
+      "mandatory": [
+        "TYPE_ID"
+      ],
+      "properties": [
+        "TYPE_ID",
+        "TITLE",
+        "IS_EXTERNAL",
+        "TYPE_NAME",
+        "GROUP_NAME",
+        "COPY_PATH",
+        "MOVE_PATH"
+      ]
+    },
+    {
+      "eType": "ALERTSTOBEHAVIORS",
+      "name": "ALERTSTOBEHAVIORS",
+      "mandatory": [
+        "BEHAVIOR_ID"
+      ],
+      "properties": [
+        "INSERT_TIME",
+        "CUSTOMER_ID",
+        "SOURCE_ID",
+        "TRACE_ID",
+        "TRACE_TYPE",
+        "BEHAVIOR_ID",
+        "BEHAVIOR_TYPE_ID",
+        "BY_UID",
+        "BY_NAME",
+        "BY_TYPE_ID",
+        "BY_LINKED_ENTITY_UID",
+        "BY_FILE_MD5",
+        "TO_UID",
+        "TO_NAME",
+        "TO_TYPE_ID",
+        "TO_LINKED_ENTITY_UID",
+        "TO_FILE_MD5",
+        "BEHAVIOR_IS_ALERT",
+        "ATTRIBUTES_HASH"
+      ]
+    },
+    {
+      "eType": "TRACEEVENTS",
+      "name": "TRACEEVENTS",
+      "mandatory": [
+        "TRACE_ID"
+      ],
+      "properties": [
+        "TRACE_ID",
+        "TRACE_TYPE",
+        "BEHAVIOR_ID",
+        "BEHAVIOR_TYPE_ID",
+        "CUSTOMER_ID",
+        "SOURCE_ID",
+        "NETWORK_ID",
+        "SOURCE_TYPE",
+        "SESSION_ID",
+        "EVENT_ID",
+        "EVENT_TYPE_ID",
+        "EVENT_SEVERITY",
+        "EVENT_DETECTED_TIME",
+        "BY_UID",
+        "BY_NAME",
+        "BY_TYPE_ID",
+        "BY_LINKED_ENTITY_UID",
+        "BY_FILE_TYPE",
+        "BY_FILE_MD5",
+        "BY_PROCESS_PID",
+        "BY_FILE_DIRECTORY",
+        "BY_SID",
+        "TO_UID",
+        "TO_NAME",
+        "TO_TYPE_ID",
+        "TO_LINKED_ENTITY_UID",
+        "TO_FILE_TYPE",
+        "TO_FILE_MD5",
+        "TO_PROCESS_PID",
+        "IS_INSIGHT",
+        "INSERT_TIME",
+        "STAGE_ID"
+      ]
+    },
+    {
+      "eType": "ENTITIES",
+      "name": "ENTITIES",
+      "mandatory": [
+        "ENTITY_HASH"
+      ],
+      "properties": [
+        "ENTITY_HASH",
+        "UID",
+        "CUSTOMER_ID",
+        "SOURCE_ID",
+        "NAME",
+        "TYPE_ID",
+        "PARENT_UID",
+        "PARENT_NAME",
+        "INSERT_TIME",
+        "UPDATE_TIME",
+        "LINKED_ENTITY_UID",
+        "DIRECTORY_TYPE",
+        "DRIVER_DESCRIPTION",
+        "DRIVER_SIGNED_BY",
+        "DRIVER_PATH",
+        "ENDPOINT_IP",
+        "ENDPOINT_SID",
+        "ENDPOINT_PID",
+        "ENDPOINT_PORT",
+        "ENDPOINT_PROTOCOL",
+        "ENDPOINT_REMOTEIP",
+        "ENDPOINT_REMOTEPORT",
+        "ENDPOINT_IP_VERSION",
+        "FILE_EXTENSION",
+        "FILE_DIRECTORY",
+        "FILE_SIZE",
+        "FILE_ATTRIBUTES",
+        "FILE_EXECUTABLE",
+        "FILE_MD5",
+        "FILE_SHA1",
+        "FILE_SHA256",
+        "FILE_TYPE",
+        "FILE_PE_TYPE",
+        "FILE_ALTERNATE_FILE_STREAM",
+        "FILE_NORMALIZED_PATH",
+        "FILE_IS_DIRECTORY",
+        "FILE_DRIVE_TYPE",
+        "PROCESS_PID",
+        "PROCESS_CREATION_TIME",
+        "PROCESS_DIRECTORY",
+        "PROCESS_NORMALIZED_PATH",
+        "PROCESS_COMMAND_LINE",
+        "PROCESS_COMMAND_LINE_TRUNCATED",
+        "PROCESS_COMMAND_LINE_LENGTH",
+        "PROCESS_DRIVE_TYPE",
+        "PROCESS_INTEGRITY_LEVEL",
+        "PROFILE_USERNAME",
+        "SID",
+        "REGISTRY_KEY",
+        "REGISTRY_VALUE_TYPE",
+        "REGISTRY_VALUE_SIZE",
+        "REGISTRY_PERMISSIONS",
+        "REGISTRY_DATA",
+        "SERVICE_SIGNED_BY",
+        "SERVICE_DESCRIPTION",
+        "SERVICE_IMAGEPATH",
+        "SERVICE_STARTMODE",
+        "SERVICE_STARTNAME",
+        "SERVICE_SERVICETYPE",
+        "SERVICE_SERVICEDLL",
+        "SERVICE_ISSIGNED",
+        "STRIPPED_IMAGEPATH",
+        "GROUP_IS_ADMIN",
+        "SHARE_PATH",
+        "NIC_ADAPTER_NAME",
+        "NIC_DESCRIPTION",
+        "NIC_PHYSICAL_ADDRESS",
+        "NIC_IP_ADDRESS",
+        "NIC_SUBNET_MASK",
+        "NIC_GATEWAY",
+        "NIC_DNS_SERVER_LIST",
+        "NIC_DHCP_ENABLED",
+        "NIC_DHCP_SERVER",
+        "NIC_DHCP_LEASE_OBTAINED",
+        "NIC_DHCP_LEASE_EXPIRES",
+        "NIC_WINS_PRIMARY_SERVER",
+        "NIC_WINS_SECONDAY_SERVER",
+        "NIC_INTERFACE_INDEX",
+        "LOGIN_USER_SID",
+        "LOGIN_DOMAIN",
+        "LOGIN_USER_NAME",
+        "LOGIN_LOGON_SERVER",
+        "LOGIN_USER_OU",
+        "LOGIN_CREATION_DATE",
+        "LOGIN_SESSION_ID",
+        "LOGOFF_SESSION_ID",
+        "ROUTING_DESTINATION",
+        "ROUTING_INTERFACE_INDEX",
+        "ROUTING_MASK",
+        "ROUTING_NEXT_HOP",
+        "ROUTING_METRIC",
+        "ROUTING_IS_PERSISTENT",
+        "SESSION_BOOT_TIME",
+        "SYSTEMINFO_ACTIVE_DIRECTORY_OU",
+        "SYSTEMINFO_OS_TYPE",
+        "SYSTEMINFO_OS_MAJOR",
+        "SYSTEMINFO_OS_MINOR",
+        "SYSTEMINFO_OS_SP",
+        "SYSTEMINFO_PLATFORM",
+        "SYSTEMINFO_HOST_NAME",
+        "SYSTEMINFO_DOMAIN",
+        "SYSTEMINFO_PRODUCT_TYPE",
+        "SYSTEMINFO_RAM_IN_MB",
+        "SYSTEMINFO_NUM_OF_CORES",
+        "PARTITION_DEVICEID",
+        "PARTITION_CAPTION",
+        "PARTITION_NUMBER_OF_BLOCKS",
+        "PARTITION_INDEX",
+        "PARTITION_STARTING_OFFSET",
+        "PARTITION_PARTITION_TYPE",
+        "PARTITION_IS_BOOT",
+        "PARTITION_BOOTABLE",
+        "PARTITION_SIZE",
+        "PARTITION_VOLUME_LETTER",
+        "PARTITION_SERIAL_NUMBER",
+        "PARTITION_FILE_SYSTEM_NAME",
+        "PARTITION_FILE_SYSTEM_FLAG",
+        "PARTITION_DISK_DEVICE_ID",
+        "DISK_DRIVE_DEVICEID",
+        "DISK_DRIVE_CAPTION",
+        "DISK_DRIVE_MODEL",
+        "DISK_DRIVE_PARTITIONS",
+        "DISK_DRIVE_MANUFACTURER",
+        "DISK_DRIVE_SIZE",
+        "DISK_DRIVE_TOTAL_CYLINDERS",
+        "DISK_DRIVE_TOTAL_HEADS",
+        "DISK_DRIVE_TOTAL_SECTORS",
+        "DISK_DRIVE_SECTORS_PER_TRACK",
+        "DISK_DRIVE_TOTAL_TRACKS",
+        "DISK_DRIVE_TRACKS_PER_CYLINDER",
+        "DISK_DRIVE_BYTES_PER_SECTOR",
+        "DISK_DRIVE_SERIAL_NUMBER",
+        "BIOS_VERSION",
+        "COMPUTER_NAME",
+        "DAYLIGHT_IN_EFFECT",
+        "COMPUTER_CURRENT_TIME_ZONE",
+        "COMPUTER_DAYLIGHT_IN_EFFECT",
+        "COMPUTER_DOMAIN",
+        "COMPUTER_MANUFACTURER",
+        "COMPUTER_MODEL",
+        "COMPUTER_SYSTEM_TYPE",
+        "COMPUTER_TOTAL_PHYSICAL_MEMORY",
+        "OS_NAME",
+        "OS_BUILD_NUMBER",
+        "OS_BUILD_TYPE",
+        "OS_SERVICE_PACK",
+        "OS_INSTALL_DATE",
+        "OS_BOOT_DEVICE",
+        "OS_LOCALE",
+        "OS_SYSTEM_DIR",
+        "OS_TOTAL_VIRTUAL_MEMORY_SIZE",
+        "OS_OS_VERSION",
+        "OS_WINDOWS_DIR",
+        "PAGE_FILE_CAPTION",
+        "PAGE_FILE_DESCRIPTION",
+        "PAGE_FILE_INITIAL_SIZE_MB",
+        "PAGE_FILE_MAXIMUM_SIZE_MB",
+        "PAGE_FILE_NAME",
+        "PAGE_FILE_SETTING_ID",
+        "HOTFIX_HOTFIX_ID",
+        "HOTFIX_INSTALLED_BY",
+        "HOTFIX_INSTALLED_ON",
+        "SCHEDULED_TASK_INTERVAL",
+        "SCHEDULED_TASK_DESCRIPTION",
+        "FILE_OWNER_ACCOUNT",
+        "FILE_DATE_CREATED",
+        "FILE_DATE_MODIFIED",
+        "FILE_DATE_ACCESSED",
+        "FILE_LANGUAGE",
+        "FILE_SIGNATURE_HASH",
+        "ENTITY_ATTRIBUTES"
+      ]
+    },
+    {
+      "eType": "TRACEENTITIES",
+      "name": "TRACEENTITIES",
+      "mandatory": [
+        "TRACE_ID"
+      ],
+      "properties": [
+        "TRACE_ID",
+        "TRACE_TYPE",
+        "BEHAVIOR_ID",
+        "BEHAVIOR_TYPE_ID",
+        "CUSTOMER_ID",
+        "SOURCE_ID",
+        "SESSION_ID",
+        "ENTITY_ID",
+        "MD5",
+        "ENTITY_HASH",
+        "ENTITY_NAME",
+        "ENTITY_TYPE_ID",
+        "ENTITY_FILE_TYPE",
+        "IS_LINKED_ENTITY",
+        "IS_IN_MERGE",
+        "INSERT_TIME",
+        "UPDATE_TIME"
+      ]
+    },
+    {
+      "eType": "LOV_CYBEROBJECTTYPES",
+      "name": "LOV_CYBEROBJECTTYPES",
+      "mandatory": [
+        "TYPE_ID"
+      ],
+      "properties": [
+        "TYPE_ID",
+        "TITLE",
+        "VARIABLE_NAME"
+      ]
+    },
+    {
+      "eType": "ALERTS",
+      "name": "ALERTS",
+      "properties": [
+        "INSERT_TIME",
+        "UPDATE_TIME",
+        "CUSTOMER_ID",
+        "SOURCE_ID",
+        "TRACE_ID",
+        "TRACE_TYPE",
+        "TRACE_STATUS",
+        "CLOSING_REASON",
+        "IS_ALERT",
+        "TRACE_SEVERITY",
+        "START_TIME",
+        "END_TIME",
+        "MIN_DETECTED_TIME",
+        "MAX_DETECTED_TIME",
+        "STATUS_UPDATE_TIME",
+        "UPDATE_BY",
+        "DISTINCT_ALERTING_BEHAVIOR_COUNT",
+        "TRACE_IDENTIFIER"
       ]
     }
   ],
   "relationshipTypes": [
     {
-      "rType": "Relationship",
-      "name": "Relationship",
+      "rType": "FK_EVENTS_BEHAVIORS",
+      "name": "FK_EVENTS_BEHAVIORS",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": "Entity",
-          "eTypeB": "Entity"
-        }
-      ],
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "temperature",
-        "startDate",
-        "endDate"
-      ]
-    }
-  ],
-  "enumeratedTypes": [
-    {
-      "eType": "TYPE_Gender",
-      "values": [
-        {
-          "val": 1,
-          "name": "Female"
-        },
-        {
-          "val": 2,
-          "name": "Male"
-        },
-        {
-          "val": 3,
-          "name": "Other"
+          "eTypeA": "ENRICHMENTEVENTS",
+          "eTypeB": "BEHAVIORS"
         }
       ]
     },
     {
-      "eType": "TYPE_Element",
-      "values": [
+      "rType": "FK_EVENTS_BEHAVIORS_TYPE",
+      "name": "FK_EVENTS_BEHAVIORS_TYPE",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 0,
-          "name": "Person"
-        },
+          "eTypeA": "ENRICHMENTEVENTS",
+          "eTypeB": "LOV_BEHAVIORSTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_EVENTS_ENTITIES",
+      "name": "FK_EVENTS_ENTITIES",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 1,
-          "name": "Profession"
-        },
+          "eTypeA": "ENRICHMENTEVENTS",
+          "eTypeB": "ENTITIES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_EVENTS_TYPE",
+      "name": "FK_EVENTS_TYPE",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 2,
-          "name": "Horse"
-        },
+          "eTypeA": "ENRICHMENTEVENTS",
+          "eTypeB": "LOV_EVENTSTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_EVENTS_BY_TYPE_OBJ",
+      "name": "FK_EVENTS_BY_TYPE_OBJ",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 3,
-          "name": "Dragon"
-        },
+          "eTypeA": "ENRICHMENTEVENTS",
+          "eTypeB": "LOV_CYBEROBJECTTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_EVENTS_TO_TYPE_OBJ",
+      "name": "FK_EVENTS_TO_TYPE_OBJ",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 4,
-          "name": "Dragon"
-        },
+          "eTypeA": "ENRICHMENTEVENTS",
+          "eTypeB": "LOV_CYBEROBJECTTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_BEHAVIOR",
+      "name": "FK_TRACE_BEHAVIOR",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 5,
-          "name": "Kingdom"
-        },
+          "eTypeA": "TRACESTOBEHAVIORS",
+          "eTypeB": "TRACES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_BEHAVIOR",
+      "name": "FK_TRACE_BEHAVIOR",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 6,
-          "name": "Guild"
-        },
+          "eTypeA": "TRACESTOBEHAVIORS",
+          "eTypeB": "BEHAVIORS"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_BEHAVIOR_TYPES",
+      "name": "FK_TRACE_BEHAVIOR_TYPES",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 100,
-          "name": "Own"
-        },
+          "eTypeA": "TRACESTOBEHAVIORS",
+          "eTypeB": "LOV_BEHAVIORSTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_ALRETS_BY_TYPE_OBJ",
+      "name": "FK_ALRETS_BY_TYPE_OBJ",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 101,
-          "name": "Fire"
-        },
+          "eTypeA": "TRACESTOBEHAVIORS",
+          "eTypeB": "LOV_CYBEROBJECTTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_ALRETS_TO_TYPE_OBJ",
+      "name": "FK_ALRETS_TO_TYPE_OBJ",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 102,
-          "name": "Freeze"
-        },
+          "eTypeA": "TRACESTOBEHAVIORS",
+          "eTypeB": "LOV_CYBEROBJECTTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_BEHAVIOR_TYPES",
+      "name": "FK_BEHAVIOR_TYPES",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 103,
-          "name": "MemberOf"
-        },
+          "eTypeA": "BEHAVIORS",
+          "eTypeB": "LOV_BEHAVIORSTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_BEHAVIOR_TYPES",
+      "name": "FK_BEHAVIOR_TYPES",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 108,
-          "name": "Know"
-        },
+          "eTypeA": "BEHAVIORS",
+          "eTypeB": "LOV_BEHAVIORSTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_BEHAVIOR_BY_TYPE_OBJ",
+      "name": "FK_BEHAVIOR_BY_TYPE_OBJ",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 104,
-          "name": "RegisteredIn"
-        },
+          "eTypeA": "BEHAVIORS",
+          "eTypeB": "LOV_CYBEROBJECTTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_BEHAVIOR_TO_TYPE_OBJ",
+      "name": "FK_BEHAVIOR_TO_TYPE_OBJ",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 105,
-          "name": "HasProfession"
-        },
+          "eTypeA": "BEHAVIORS",
+          "eTypeB": "LOV_CYBEROBJECTTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_ALERTS_BEHAVIORS",
+      "name": "FK_ALERTS_BEHAVIORS",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 106,
-          "name": "SubjectOf"
-        },
+          "eTypeA": "ALERTSTOBEHAVIORS",
+          "eTypeB": "BEHAVIORS"
+        }
+      ]
+    },
+    {
+      "rType": "FK_ALERTS_BEHAVIOR_TYPES",
+      "name": "FK_ALERTS_BEHAVIOR_TYPES",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 107,
-          "name": "OriginatedIn"
+          "eTypeA": "ALERTSTOBEHAVIORS",
+          "eTypeB": "LOV_BEHAVIORSTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_ALRETS_BY_TYPE_OBJ",
+      "name": "FK_ALRETS_BY_TYPE_OBJ",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "ALERTSTOBEHAVIORS",
+          "eTypeB": "LOV_CYBEROBJECTTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_ALRETS_TO_TYPE_OBJ",
+      "name": "FK_ALRETS_TO_TYPE_OBJ",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "ALERTSTOBEHAVIORS",
+          "eTypeB": "LOV_CYBEROBJECTTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_ALERTS_TRACES",
+      "name": "FK_ALERTS_TRACES",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "ALERTSTOBEHAVIORS",
+          "eTypeB": "TRACES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_ENTITIES",
+      "name": "FK_TRACE_ENTITIES",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "TRACEEVENTS",
+          "eTypeB": "TRACES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_EVENTS",
+      "name": "FK_TRACE_EVENTS",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "TRACEEVENTS",
+          "eTypeB": "ENRICHMENTEVENTS"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_BEHAVIOR",
+      "name": "FK_TRACE_BEHAVIOR",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "TRACEEVENTS",
+          "eTypeB": "BEHAVIORS"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_BEHAVIOR_TYPES",
+      "name": "FK_TRACE_BEHAVIOR_TYPES",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "TRACEEVENTS",
+          "eTypeB": "LOV_BEHAVIORSTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_BY_TYPE_OBJ",
+      "name": "FK_TRACE_BY_TYPE_OBJ",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "TRACEEVENTS",
+          "eTypeB": "LOV_CYBEROBJECTTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_TO_TYPE_OBJ",
+      "name": "FK_TRACE_TO_TYPE_OBJ",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "TRACEEVENTS",
+          "eTypeB": "LOV_CYBEROBJECTTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACES",
+      "name": "FK_TRACES",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "TRACEENTITIES",
+          "eTypeB": "TRACES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_BEHAVIOR",
+      "name": "FK_TRACE_BEHAVIOR",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "TRACEENTITIES",
+          "eTypeB": "BEHAVIORS"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_BEHAVIOR_TYPES",
+      "name": "FK_TRACE_BEHAVIOR_TYPES",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "TRACEENTITIES",
+          "eTypeB": "LOV_BEHAVIORTYPES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_TRACE_ENTITIES",
+      "name": "FK_TRACE_ENTITIES",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "TRACEENTITIES",
+          "eTypeB": "ENTITIES"
+        }
+      ]
+    },
+    {
+      "rType": "FK_ALERT_TRACE",
+      "name": "FK_ALERT_TRACE",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "ALERTS",
+          "eTypeB": "TRACES"
         }
       ]
     }
   ],
   "properties": [
     {
-      "pType": "id",
-      "name": "id",
-      "type": "string"
+      "pType": "INSERT_TIME",
+      "name": "INSERT_TIME",
+      "type": "java.sql.Timestamp"
     },
     {
-      "pType": "firstName",
-      "name": "firstName",
-      "type": "text"
+      "pType": "UPDATE_TIME",
+      "name": "UPDATE_TIME",
+      "type": "java.sql.Timestamp"
     },
     {
-      "pType": "lastName",
-      "name": "lastName",
-      "type": "text"
+      "pType": "CUSTOMER_ID",
+      "name": "CUSTOMER_ID",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "birthDate",
-      "name": "birthDate",
-      "type": "date"
+      "pType": "SOURCE_ID",
+      "name": "SOURCE_ID",
+      "type": "java.math.BigDecimal"
     },
     {
-      "pType": "deathDate",
-      "name": "deathDate",
-      "type": "string"
+      "pType": "TRACE_ID",
+      "name": "TRACE_ID",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "name",
-      "name": "name",
-      "type": "text"
+      "pType": "TRACE_TYPE",
+      "name": "TRACE_TYPE",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "height",
-      "name": "height",
-      "type": "int"
+      "pType": "TRACE_STATUS",
+      "name": "TRACE_STATUS",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "weight",
-      "name": "weight",
-      "type": "int"
+      "pType": "CLOSING_REASON",
+      "name": "CLOSING_REASON",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "maxSpeed",
-      "name": "maxSpeed",
-      "type": "int"
+      "pType": "IS_ALERT",
+      "name": "IS_ALERT",
+      "type": "java.lang.Boolean"
     },
     {
-      "pType": "distance",
-      "name": "distance",
-      "type": "int"
+      "pType": "TRACE_SEVERITY",
+      "name": "TRACE_SEVERITY",
+      "type": "java.lang.Double"
     },
     {
-      "pType": "establishDate",
-      "name": "establishDate",
-      "type": "date"
+      "pType": "START_TIME",
+      "name": "START_TIME",
+      "type": "java.sql.Timestamp"
     },
     {
-      "pType": "description",
-      "name": "description",
-      "type": "text"
+      "pType": "END_TIME",
+      "name": "END_TIME",
+      "type": "java.sql.Timestamp"
     },
     {
-      "pType": "iconId",
-      "name": "iconId",
-      "type": "string"
+      "pType": "MIN_DETECTED_TIME",
+      "name": "MIN_DETECTED_TIME",
+      "type": "java.sql.Timestamp"
     },
     {
-      "pType": "url",
-      "name": "url",
-      "type": "string"
+      "pType": "MAX_DETECTED_TIME",
+      "name": "MAX_DETECTED_TIME",
+      "type": "java.sql.Timestamp"
     },
     {
-      "pType": "king",
-      "name": "king",
-      "type": "text"
+      "pType": "STATUS_UPDATE_TIME",
+      "name": "STATUS_UPDATE_TIME",
+      "type": "java.sql.Timestamp"
     },
     {
-      "pType": "queen",
-      "name": "queen",
-      "type": "text"
+      "pType": "UPDATE_BY",
+      "name": "UPDATE_BY",
+      "type": "java.lang.String"
     },
     {
-      "pType": "independenceDay",
-      "name": "independenceDay",
-      "type": "string"
+      "pType": "DISTINCT_ALERTING_BEHAVIOR_COUNT",
+      "name": "DISTINCT_ALERTING_BEHAVIOR_COUNT",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "funds",
-      "name": "funds",
-      "type": "float"
+      "pType": "TRACE_IDENTIFIER",
+      "name": "TRACE_IDENTIFIER",
+      "type": "java.math.BigDecimal"
     },
     {
-      "pType": "color",
-      "name": "color",
-      "type": "string"
+      "pType": "NETWORK_ID",
+      "name": "NETWORK_ID",
+      "type": "java.lang.String"
     },
     {
-      "pType": "date",
-      "name": "date",
-      "type": "date"
+      "pType": "SOURCE_TYPE",
+      "name": "SOURCE_TYPE",
+      "type": "java.lang.String"
     },
     {
-      "pType": "gender",
-      "name": "gender",
-      "type": "TYPE_Gender"
+      "pType": "SESSION_ID",
+      "name": "SESSION_ID",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "startDate",
-      "name": "startDate",
-      "type": "date"
+      "pType": "CUSTOMER_ID",
+      "name": "CUSTOMER_ID",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "endDate",
-      "name": "endDate",
-      "type": "date"
+      "pType": "SOURCE_ID",
+      "name": "SOURCE_ID",
+      "type": "java.math.BigDecimal"
     },
     {
-      "pType": "temperature",
-      "name": "temperature",
-      "type": "int"
+      "pType": "EVENT_ID",
+      "name": "EVENT_ID",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "timestamp",
-      "name": "timestamp",
-      "type": "date"
+      "pType": "EVENT_TYPE_ID",
+      "name": "EVENT_TYPE_ID",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "power",
-      "name": "power",
-      "type": "int"
+      "pType": "EVENT_SEVERITY",
+      "name": "EVENT_SEVERITY",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "id",
-      "name": "id",
-      "type": "string"
+      "pType": "EVENT_DETECTED_TIME",
+      "name": "EVENT_DETECTED_TIME",
+      "type": "java.sql.Timestamp"
     },
     {
-      "pType": "certification",
-      "name": "certification",
-      "type": "string"
+      "pType": "BEHAVIOR_ENTITY_SIDE",
+      "name": "BEHAVIOR_ENTITY_SIDE",
+      "type": "java.lang.String"
     },
     {
-      "pType": "experience",
-      "name": "experience",
-      "type": "string"
+      "pType": "BEHAVIOR_ENTITY_UID",
+      "name": "BEHAVIOR_ENTITY_UID",
+      "type": "java.lang.Integer"
     },
     {
-      "pType": "salary",
-      "name": "salary",
-      "type": "int"
+      "pType": "BEHAVIOR_ENTITY_MD5",
+      "name": "BEHAVIOR_ENTITY_MD5",
+      "type": "java.lang.String"
     },
     {
-      "pType": "type",
-      "name": "type",
-      "type": "Element"
+      "pType": "BEHAVIOR_ENTITY_NAME",
+      "name": "BEHAVIOR_ENTITY_NAME",
+      "type": "java.lang.String"
     },
     {
-      "pType": "profession",
-      "name": "profession",
-      "type": "Profession"
+      "pType": "BEHAVIOR_ENTITY_TYPE",
+      "name": "BEHAVIOR_ENTITY_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BEHAVIOR_ENTITY_LINKED_UID",
+      "name": "BEHAVIOR_ENTITY_LINKED_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BEHAVIOR_ENTITY_FILE_TYPE",
+      "name": "BEHAVIOR_ENTITY_FILE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "LINKED_ENTITY_UID",
+      "name": "LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "LINKED_ENTITY_MD5",
+      "name": "LINKED_ENTITY_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "LINKED_ENTITY_NAME",
+      "name": "LINKED_ENTITY_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "LINKED_ENTITY_TYPE",
+      "name": "LINKED_ENTITY_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "LINKED_ENTITY_LINKED_UID",
+      "name": "LINKED_ENTITY_LINKED_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "LINKED_ENTITY_FILE_TYPE",
+      "name": "LINKED_ENTITY_FILE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "IS_ENRICHMENT_REL",
+      "name": "IS_ENRICHMENT_REL",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "IS_INSIGHT",
+      "name": "IS_INSIGHT",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "IS_MD5_LINKED_NULL",
+      "name": "IS_MD5_LINKED_NULL",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "IS_MD5_BEHAVIOR_NULL",
+      "name": "IS_MD5_BEHAVIOR_NULL",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "MD5_BEHAVIOR_HASH",
+      "name": "MD5_BEHAVIOR_HASH",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "MD5_LINKED_HASH",
+      "name": "MD5_LINKED_HASH",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_UID",
+      "name": "BY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_NAME",
+      "name": "BY_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BY_TYPE_ID",
+      "name": "BY_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_LINKED_ENTITY_UID",
+      "name": "BY_LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_FILE_TYPE",
+      "name": "BY_FILE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_FILE_MD5",
+      "name": "BY_FILE_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_UID",
+      "name": "TO_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_NAME",
+      "name": "TO_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_TYPE_ID",
+      "name": "TO_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_LINKED_ENTITY_UID",
+      "name": "TO_LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_FILE_TYPE",
+      "name": "TO_FILE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_FILE_MD5",
+      "name": "TO_FILE_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BY_SID",
+      "name": "BY_SID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BY_FILE_DIRECTORY",
+      "name": "BY_FILE_DIRECTORY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BY_PROCESS_PID",
+      "name": "BY_PROCESS_PID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_PROCESS_DIRECTORY",
+      "name": "BY_PROCESS_DIRECTORY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BY_FILE_ALTERNATE_FILE_STREAM",
+      "name": "BY_FILE_ALTERNATE_FILE_STREAM",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_REGISTRY_KEY",
+      "name": "TO_REGISTRY_KEY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_REGISTRY_VALUE_TYPE",
+      "name": "TO_REGISTRY_VALUE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_REGISTRY_PERMISSIONS",
+      "name": "TO_REGISTRY_PERMISSIONS",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_REGISTRY_DATA",
+      "name": "TO_REGISTRY_DATA",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_FILE_DIRECTORY",
+      "name": "TO_FILE_DIRECTORY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_FILE_ALTERNATE_FILE_STREAM",
+      "name": "TO_FILE_ALTERNATE_FILE_STREAM",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_PROCESS_PID",
+      "name": "TO_PROCESS_PID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_PROCESS_DIRECTORY",
+      "name": "TO_PROCESS_DIRECTORY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_ENDPOINT_IP",
+      "name": "TO_ENDPOINT_IP",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_ENDPOINT_REMOTEIP",
+      "name": "TO_ENDPOINT_REMOTEIP",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_ENDPOINT_REMOTEPORT",
+      "name": "TO_ENDPOINT_REMOTEPORT",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_ENDPOINT_PORT",
+      "name": "TO_ENDPOINT_PORT",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DATA_REMOTE_IP",
+      "name": "DATA_REMOTE_IP",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "INSERT_TIME",
+      "name": "INSERT_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "STAGE_ID",
+      "name": "STAGE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "REL_ID",
+      "name": "REL_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TYPE_ID",
+      "name": "TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "CLASSIFICATION_ID",
+      "name": "CLASSIFICATION_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ALERT_CLASSIFICATION",
+      "name": "ALERT_CLASSIFICATION",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "TITLE",
+      "name": "TITLE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "WORKFLOW_NAME",
+      "name": "WORKFLOW_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "IS_EXTERNAL",
+      "name": "IS_EXTERNAL",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "DESCRIPTION",
+      "name": "DESCRIPTION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "GRAPHVISIBILITY_VALUE",
+      "name": "GRAPHVISIBILITY_VALUE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "CATEGORY_VALUE",
+      "name": "CATEGORY_VALUE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "INSERT_TIME",
+      "name": "INSERT_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "CUSTOMER_ID",
+      "name": "CUSTOMER_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SOURCE_ID",
+      "name": "SOURCE_ID",
+      "type": "java.math.BigDecimal"
+    },
+    {
+      "pType": "TRACE_ID",
+      "name": "TRACE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TRACE_TYPE",
+      "name": "TRACE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BEHAVIOR_ID",
+      "name": "BEHAVIOR_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BEHAVIOR_TYPE_ID",
+      "name": "BEHAVIOR_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_UID",
+      "name": "BY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_NAME",
+      "name": "BY_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BY_TYPE_ID",
+      "name": "BY_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_LINKED_ENTITY_UID",
+      "name": "BY_LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_FILE_MD5",
+      "name": "BY_FILE_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_UID",
+      "name": "TO_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_NAME",
+      "name": "TO_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_TYPE_ID",
+      "name": "TO_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_LINKED_ENTITY_UID",
+      "name": "TO_LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_FILE_MD5",
+      "name": "TO_FILE_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BEHAVIOR_IS_ALERT",
+      "name": "BEHAVIOR_IS_ALERT",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "ATTRIBUTES_HASH",
+      "name": "ATTRIBUTES_HASH",
+      "type": "java.math.BigDecimal"
+    },
+    {
+      "pType": "BEHAVIOR_ID",
+      "name": "BEHAVIOR_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BEHAVIOR_HASH",
+      "name": "BEHAVIOR_HASH",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "CUSTOMER_ID",
+      "name": "CUSTOMER_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SOURCE_ID",
+      "name": "SOURCE_ID",
+      "type": "java.math.BigDecimal"
+    },
+    {
+      "pType": "NETWORK_ID",
+      "name": "NETWORK_ID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SOURCE_TYPE",
+      "name": "SOURCE_TYPE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SESSION_ID",
+      "name": "SESSION_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "LONE_BEHAVIOR",
+      "name": "LONE_BEHAVIOR",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "TYPE_ID",
+      "name": "TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "FREQUENCY",
+      "name": "FREQUENCY",
+      "type": "java.lang.Double"
+    },
+    {
+      "pType": "BY_UID",
+      "name": "BY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_NAME",
+      "name": "BY_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BY_TYPE_ID",
+      "name": "BY_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_LINKED_ENTITY_UID",
+      "name": "BY_LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_IS_LINKED",
+      "name": "BY_IS_LINKED",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "BY_FILE_MD5",
+      "name": "BY_FILE_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_UID",
+      "name": "TO_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_NAME",
+      "name": "TO_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_TYPE_ID",
+      "name": "TO_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_LINKED_ENTITY_UID",
+      "name": "TO_LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_IS_LINKED",
+      "name": "TO_IS_LINKED",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "TO_FILE_MD5",
+      "name": "TO_FILE_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "DATA_NETWORK_RATIO",
+      "name": "DATA_NETWORK_RATIO",
+      "type": "java.lang.Double"
+    },
+    {
+      "pType": "DATA_FILE_EXTENSION",
+      "name": "DATA_FILE_EXTENSION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "DATA_OPERATION_SYSTEM_HASH",
+      "name": "DATA_OPERATION_SYSTEM_HASH",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DATA_DIRECTORY",
+      "name": "DATA_DIRECTORY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "CREATED_BY_ANALYSIS_ID",
+      "name": "CREATED_BY_ANALYSIS_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PORT",
+      "name": "PORT",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_PROCESS_PID",
+      "name": "TO_PROCESS_PID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DATA_MEMORY_FUNCTIONNAME",
+      "name": "DATA_MEMORY_FUNCTIONNAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "INSERT_TIME",
+      "name": "INSERT_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "STAGE_ID",
+      "name": "STAGE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TYPE_ID",
+      "name": "TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TITLE",
+      "name": "TITLE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "IS_EXTERNAL",
+      "name": "IS_EXTERNAL",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "TYPE_NAME",
+      "name": "TYPE_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "GROUP_NAME",
+      "name": "GROUP_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "COPY_PATH",
+      "name": "COPY_PATH",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "MOVE_PATH",
+      "name": "MOVE_PATH",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "INSERT_TIME",
+      "name": "INSERT_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "CUSTOMER_ID",
+      "name": "CUSTOMER_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SOURCE_ID",
+      "name": "SOURCE_ID",
+      "type": "java.math.BigDecimal"
+    },
+    {
+      "pType": "TRACE_ID",
+      "name": "TRACE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TRACE_TYPE",
+      "name": "TRACE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BEHAVIOR_ID",
+      "name": "BEHAVIOR_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BEHAVIOR_TYPE_ID",
+      "name": "BEHAVIOR_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_UID",
+      "name": "BY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_NAME",
+      "name": "BY_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BY_TYPE_ID",
+      "name": "BY_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_LINKED_ENTITY_UID",
+      "name": "BY_LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_FILE_MD5",
+      "name": "BY_FILE_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_UID",
+      "name": "TO_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_NAME",
+      "name": "TO_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_TYPE_ID",
+      "name": "TO_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_LINKED_ENTITY_UID",
+      "name": "TO_LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_FILE_MD5",
+      "name": "TO_FILE_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BEHAVIOR_IS_ALERT",
+      "name": "BEHAVIOR_IS_ALERT",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "ATTRIBUTES_HASH",
+      "name": "ATTRIBUTES_HASH",
+      "type": "java.math.BigDecimal"
+    },
+    {
+      "pType": "TRACE_ID",
+      "name": "TRACE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TRACE_TYPE",
+      "name": "TRACE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BEHAVIOR_ID",
+      "name": "BEHAVIOR_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BEHAVIOR_TYPE_ID",
+      "name": "BEHAVIOR_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "CUSTOMER_ID",
+      "name": "CUSTOMER_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SOURCE_ID",
+      "name": "SOURCE_ID",
+      "type": "java.math.BigDecimal"
+    },
+    {
+      "pType": "NETWORK_ID",
+      "name": "NETWORK_ID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SOURCE_TYPE",
+      "name": "SOURCE_TYPE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SESSION_ID",
+      "name": "SESSION_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "EVENT_ID",
+      "name": "EVENT_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "EVENT_TYPE_ID",
+      "name": "EVENT_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "EVENT_SEVERITY",
+      "name": "EVENT_SEVERITY",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "EVENT_DETECTED_TIME",
+      "name": "EVENT_DETECTED_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "BY_UID",
+      "name": "BY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_NAME",
+      "name": "BY_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BY_TYPE_ID",
+      "name": "BY_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_LINKED_ENTITY_UID",
+      "name": "BY_LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_FILE_TYPE",
+      "name": "BY_FILE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_FILE_MD5",
+      "name": "BY_FILE_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BY_PROCESS_PID",
+      "name": "BY_PROCESS_PID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BY_FILE_DIRECTORY",
+      "name": "BY_FILE_DIRECTORY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BY_SID",
+      "name": "BY_SID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_UID",
+      "name": "TO_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_NAME",
+      "name": "TO_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_TYPE_ID",
+      "name": "TO_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_LINKED_ENTITY_UID",
+      "name": "TO_LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_FILE_TYPE",
+      "name": "TO_FILE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TO_FILE_MD5",
+      "name": "TO_FILE_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TO_PROCESS_PID",
+      "name": "TO_PROCESS_PID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "IS_INSIGHT",
+      "name": "IS_INSIGHT",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "INSERT_TIME",
+      "name": "INSERT_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "STAGE_ID",
+      "name": "STAGE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ENTITY_HASH",
+      "name": "ENTITY_HASH",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "UID",
+      "name": "UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "CUSTOMER_ID",
+      "name": "CUSTOMER_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SOURCE_ID",
+      "name": "SOURCE_ID",
+      "type": "java.math.BigDecimal"
+    },
+    {
+      "pType": "NAME",
+      "name": "NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TYPE_ID",
+      "name": "TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PARENT_UID",
+      "name": "PARENT_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PARENT_NAME",
+      "name": "PARENT_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "INSERT_TIME",
+      "name": "INSERT_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "UPDATE_TIME",
+      "name": "UPDATE_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "LINKED_ENTITY_UID",
+      "name": "LINKED_ENTITY_UID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DIRECTORY_TYPE",
+      "name": "DIRECTORY_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DRIVER_DESCRIPTION",
+      "name": "DRIVER_DESCRIPTION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "DRIVER_SIGNED_BY",
+      "name": "DRIVER_SIGNED_BY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "DRIVER_PATH",
+      "name": "DRIVER_PATH",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "ENDPOINT_IP",
+      "name": "ENDPOINT_IP",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ENDPOINT_SID",
+      "name": "ENDPOINT_SID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "ENDPOINT_PID",
+      "name": "ENDPOINT_PID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "ENDPOINT_PORT",
+      "name": "ENDPOINT_PORT",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ENDPOINT_PROTOCOL",
+      "name": "ENDPOINT_PROTOCOL",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ENDPOINT_REMOTEIP",
+      "name": "ENDPOINT_REMOTEIP",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ENDPOINT_REMOTEPORT",
+      "name": "ENDPOINT_REMOTEPORT",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ENDPOINT_IP_VERSION",
+      "name": "ENDPOINT_IP_VERSION",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "FILE_EXTENSION",
+      "name": "FILE_EXTENSION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "FILE_DIRECTORY",
+      "name": "FILE_DIRECTORY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "FILE_SIZE",
+      "name": "FILE_SIZE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "FILE_ATTRIBUTES",
+      "name": "FILE_ATTRIBUTES",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "FILE_EXECUTABLE",
+      "name": "FILE_EXECUTABLE",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "FILE_MD5",
+      "name": "FILE_MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "FILE_SHA1",
+      "name": "FILE_SHA1",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "FILE_SHA256",
+      "name": "FILE_SHA256",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "FILE_TYPE",
+      "name": "FILE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "FILE_PE_TYPE",
+      "name": "FILE_PE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "FILE_ALTERNATE_FILE_STREAM",
+      "name": "FILE_ALTERNATE_FILE_STREAM",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "FILE_NORMALIZED_PATH",
+      "name": "FILE_NORMALIZED_PATH",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "FILE_IS_DIRECTORY",
+      "name": "FILE_IS_DIRECTORY",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "FILE_DRIVE_TYPE",
+      "name": "FILE_DRIVE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PROCESS_PID",
+      "name": "PROCESS_PID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PROCESS_CREATION_TIME",
+      "name": "PROCESS_CREATION_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "PROCESS_DIRECTORY",
+      "name": "PROCESS_DIRECTORY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PROCESS_NORMALIZED_PATH",
+      "name": "PROCESS_NORMALIZED_PATH",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PROCESS_COMMAND_LINE",
+      "name": "PROCESS_COMMAND_LINE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PROCESS_COMMAND_LINE_TRUNCATED",
+      "name": "PROCESS_COMMAND_LINE_TRUNCATED",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "PROCESS_COMMAND_LINE_LENGTH",
+      "name": "PROCESS_COMMAND_LINE_LENGTH",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PROCESS_DRIVE_TYPE",
+      "name": "PROCESS_DRIVE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PROCESS_INTEGRITY_LEVEL",
+      "name": "PROCESS_INTEGRITY_LEVEL",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PROFILE_USERNAME",
+      "name": "PROFILE_USERNAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SID",
+      "name": "SID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "REGISTRY_KEY",
+      "name": "REGISTRY_KEY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "REGISTRY_VALUE_TYPE",
+      "name": "REGISTRY_VALUE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "REGISTRY_VALUE_SIZE",
+      "name": "REGISTRY_VALUE_SIZE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "REGISTRY_PERMISSIONS",
+      "name": "REGISTRY_PERMISSIONS",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "REGISTRY_DATA",
+      "name": "REGISTRY_DATA",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SERVICE_SIGNED_BY",
+      "name": "SERVICE_SIGNED_BY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SERVICE_DESCRIPTION",
+      "name": "SERVICE_DESCRIPTION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SERVICE_IMAGEPATH",
+      "name": "SERVICE_IMAGEPATH",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SERVICE_STARTMODE",
+      "name": "SERVICE_STARTMODE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SERVICE_STARTNAME",
+      "name": "SERVICE_STARTNAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SERVICE_SERVICETYPE",
+      "name": "SERVICE_SERVICETYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SERVICE_SERVICEDLL",
+      "name": "SERVICE_SERVICEDLL",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SERVICE_ISSIGNED",
+      "name": "SERVICE_ISSIGNED",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "STRIPPED_IMAGEPATH",
+      "name": "STRIPPED_IMAGEPATH",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "GROUP_IS_ADMIN",
+      "name": "GROUP_IS_ADMIN",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "SHARE_PATH",
+      "name": "SHARE_PATH",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "NIC_ADAPTER_NAME",
+      "name": "NIC_ADAPTER_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "NIC_DESCRIPTION",
+      "name": "NIC_DESCRIPTION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "NIC_PHYSICAL_ADDRESS",
+      "name": "NIC_PHYSICAL_ADDRESS",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "NIC_IP_ADDRESS",
+      "name": "NIC_IP_ADDRESS",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "NIC_SUBNET_MASK",
+      "name": "NIC_SUBNET_MASK",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "NIC_GATEWAY",
+      "name": "NIC_GATEWAY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "NIC_DNS_SERVER_LIST",
+      "name": "NIC_DNS_SERVER_LIST",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "NIC_DHCP_ENABLED",
+      "name": "NIC_DHCP_ENABLED",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "NIC_DHCP_SERVER",
+      "name": "NIC_DHCP_SERVER",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "NIC_DHCP_LEASE_OBTAINED",
+      "name": "NIC_DHCP_LEASE_OBTAINED",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "NIC_DHCP_LEASE_EXPIRES",
+      "name": "NIC_DHCP_LEASE_EXPIRES",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "NIC_WINS_PRIMARY_SERVER",
+      "name": "NIC_WINS_PRIMARY_SERVER",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "NIC_WINS_SECONDAY_SERVER",
+      "name": "NIC_WINS_SECONDAY_SERVER",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "NIC_INTERFACE_INDEX",
+      "name": "NIC_INTERFACE_INDEX",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "LOGIN_USER_SID",
+      "name": "LOGIN_USER_SID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "LOGIN_DOMAIN",
+      "name": "LOGIN_DOMAIN",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "LOGIN_USER_NAME",
+      "name": "LOGIN_USER_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "LOGIN_LOGON_SERVER",
+      "name": "LOGIN_LOGON_SERVER",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "LOGIN_USER_OU",
+      "name": "LOGIN_USER_OU",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "LOGIN_CREATION_DATE",
+      "name": "LOGIN_CREATION_DATE",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "LOGIN_SESSION_ID",
+      "name": "LOGIN_SESSION_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "LOGOFF_SESSION_ID",
+      "name": "LOGOFF_SESSION_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ROUTING_DESTINATION",
+      "name": "ROUTING_DESTINATION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "ROUTING_INTERFACE_INDEX",
+      "name": "ROUTING_INTERFACE_INDEX",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ROUTING_MASK",
+      "name": "ROUTING_MASK",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ROUTING_NEXT_HOP",
+      "name": "ROUTING_NEXT_HOP",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ROUTING_METRIC",
+      "name": "ROUTING_METRIC",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ROUTING_IS_PERSISTENT",
+      "name": "ROUTING_IS_PERSISTENT",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "SESSION_BOOT_TIME",
+      "name": "SESSION_BOOT_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "SYSTEMINFO_ACTIVE_DIRECTORY_OU",
+      "name": "SYSTEMINFO_ACTIVE_DIRECTORY_OU",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SYSTEMINFO_OS_TYPE",
+      "name": "SYSTEMINFO_OS_TYPE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SYSTEMINFO_OS_MAJOR",
+      "name": "SYSTEMINFO_OS_MAJOR",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SYSTEMINFO_OS_MINOR",
+      "name": "SYSTEMINFO_OS_MINOR",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SYSTEMINFO_OS_SP",
+      "name": "SYSTEMINFO_OS_SP",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SYSTEMINFO_PLATFORM",
+      "name": "SYSTEMINFO_PLATFORM",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SYSTEMINFO_HOST_NAME",
+      "name": "SYSTEMINFO_HOST_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SYSTEMINFO_DOMAIN",
+      "name": "SYSTEMINFO_DOMAIN",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SYSTEMINFO_PRODUCT_TYPE",
+      "name": "SYSTEMINFO_PRODUCT_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SYSTEMINFO_RAM_IN_MB",
+      "name": "SYSTEMINFO_RAM_IN_MB",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SYSTEMINFO_NUM_OF_CORES",
+      "name": "SYSTEMINFO_NUM_OF_CORES",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PARTITION_DEVICEID",
+      "name": "PARTITION_DEVICEID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PARTITION_CAPTION",
+      "name": "PARTITION_CAPTION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PARTITION_NUMBER_OF_BLOCKS",
+      "name": "PARTITION_NUMBER_OF_BLOCKS",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PARTITION_INDEX",
+      "name": "PARTITION_INDEX",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PARTITION_STARTING_OFFSET",
+      "name": "PARTITION_STARTING_OFFSET",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PARTITION_PARTITION_TYPE",
+      "name": "PARTITION_PARTITION_TYPE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PARTITION_IS_BOOT",
+      "name": "PARTITION_IS_BOOT",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "PARTITION_BOOTABLE",
+      "name": "PARTITION_BOOTABLE",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "PARTITION_SIZE",
+      "name": "PARTITION_SIZE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PARTITION_VOLUME_LETTER",
+      "name": "PARTITION_VOLUME_LETTER",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PARTITION_SERIAL_NUMBER",
+      "name": "PARTITION_SERIAL_NUMBER",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PARTITION_FILE_SYSTEM_NAME",
+      "name": "PARTITION_FILE_SYSTEM_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PARTITION_FILE_SYSTEM_FLAG",
+      "name": "PARTITION_FILE_SYSTEM_FLAG",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PARTITION_DISK_DEVICE_ID",
+      "name": "PARTITION_DISK_DEVICE_ID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "DISK_DRIVE_DEVICEID",
+      "name": "DISK_DRIVE_DEVICEID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "DISK_DRIVE_CAPTION",
+      "name": "DISK_DRIVE_CAPTION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "DISK_DRIVE_MODEL",
+      "name": "DISK_DRIVE_MODEL",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "DISK_DRIVE_PARTITIONS",
+      "name": "DISK_DRIVE_PARTITIONS",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DISK_DRIVE_MANUFACTURER",
+      "name": "DISK_DRIVE_MANUFACTURER",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "DISK_DRIVE_SIZE",
+      "name": "DISK_DRIVE_SIZE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DISK_DRIVE_TOTAL_CYLINDERS",
+      "name": "DISK_DRIVE_TOTAL_CYLINDERS",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DISK_DRIVE_TOTAL_HEADS",
+      "name": "DISK_DRIVE_TOTAL_HEADS",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DISK_DRIVE_TOTAL_SECTORS",
+      "name": "DISK_DRIVE_TOTAL_SECTORS",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DISK_DRIVE_SECTORS_PER_TRACK",
+      "name": "DISK_DRIVE_SECTORS_PER_TRACK",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DISK_DRIVE_TOTAL_TRACKS",
+      "name": "DISK_DRIVE_TOTAL_TRACKS",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DISK_DRIVE_TRACKS_PER_CYLINDER",
+      "name": "DISK_DRIVE_TRACKS_PER_CYLINDER",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DISK_DRIVE_BYTES_PER_SECTOR",
+      "name": "DISK_DRIVE_BYTES_PER_SECTOR",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "DISK_DRIVE_SERIAL_NUMBER",
+      "name": "DISK_DRIVE_SERIAL_NUMBER",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "BIOS_VERSION",
+      "name": "BIOS_VERSION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "COMPUTER_NAME",
+      "name": "COMPUTER_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "DAYLIGHT_IN_EFFECT",
+      "name": "DAYLIGHT_IN_EFFECT",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "COMPUTER_CURRENT_TIME_ZONE",
+      "name": "COMPUTER_CURRENT_TIME_ZONE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "COMPUTER_DAYLIGHT_IN_EFFECT",
+      "name": "COMPUTER_DAYLIGHT_IN_EFFECT",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "COMPUTER_DOMAIN",
+      "name": "COMPUTER_DOMAIN",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "COMPUTER_MANUFACTURER",
+      "name": "COMPUTER_MANUFACTURER",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "COMPUTER_MODEL",
+      "name": "COMPUTER_MODEL",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "COMPUTER_SYSTEM_TYPE",
+      "name": "COMPUTER_SYSTEM_TYPE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "COMPUTER_TOTAL_PHYSICAL_MEMORY",
+      "name": "COMPUTER_TOTAL_PHYSICAL_MEMORY",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "OS_NAME",
+      "name": "OS_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "OS_BUILD_NUMBER",
+      "name": "OS_BUILD_NUMBER",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "OS_BUILD_TYPE",
+      "name": "OS_BUILD_TYPE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "OS_SERVICE_PACK",
+      "name": "OS_SERVICE_PACK",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "OS_INSTALL_DATE",
+      "name": "OS_INSTALL_DATE",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "OS_BOOT_DEVICE",
+      "name": "OS_BOOT_DEVICE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "OS_LOCALE",
+      "name": "OS_LOCALE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "OS_SYSTEM_DIR",
+      "name": "OS_SYSTEM_DIR",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "OS_TOTAL_VIRTUAL_MEMORY_SIZE",
+      "name": "OS_TOTAL_VIRTUAL_MEMORY_SIZE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "OS_OS_VERSION",
+      "name": "OS_OS_VERSION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "OS_WINDOWS_DIR",
+      "name": "OS_WINDOWS_DIR",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PAGE_FILE_CAPTION",
+      "name": "PAGE_FILE_CAPTION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PAGE_FILE_DESCRIPTION",
+      "name": "PAGE_FILE_DESCRIPTION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PAGE_FILE_INITIAL_SIZE_MB",
+      "name": "PAGE_FILE_INITIAL_SIZE_MB",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PAGE_FILE_MAXIMUM_SIZE_MB",
+      "name": "PAGE_FILE_MAXIMUM_SIZE_MB",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "PAGE_FILE_NAME",
+      "name": "PAGE_FILE_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "PAGE_FILE_SETTING_ID",
+      "name": "PAGE_FILE_SETTING_ID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "HOTFIX_HOTFIX_ID",
+      "name": "HOTFIX_HOTFIX_ID",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "HOTFIX_INSTALLED_BY",
+      "name": "HOTFIX_INSTALLED_BY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "HOTFIX_INSTALLED_ON",
+      "name": "HOTFIX_INSTALLED_ON",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SCHEDULED_TASK_INTERVAL",
+      "name": "SCHEDULED_TASK_INTERVAL",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "SCHEDULED_TASK_DESCRIPTION",
+      "name": "SCHEDULED_TASK_DESCRIPTION",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "FILE_OWNER_ACCOUNT",
+      "name": "FILE_OWNER_ACCOUNT",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "FILE_DATE_CREATED",
+      "name": "FILE_DATE_CREATED",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "FILE_DATE_MODIFIED",
+      "name": "FILE_DATE_MODIFIED",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "FILE_DATE_ACCESSED",
+      "name": "FILE_DATE_ACCESSED",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "FILE_LANGUAGE",
+      "name": "FILE_LANGUAGE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "FILE_SIGNATURE_HASH",
+      "name": "FILE_SIGNATURE_HASH",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ENTITY_ATTRIBUTES",
+      "name": "ENTITY_ATTRIBUTES",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "TRACE_ID",
+      "name": "TRACE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TRACE_TYPE",
+      "name": "TRACE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BEHAVIOR_ID",
+      "name": "BEHAVIOR_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "BEHAVIOR_TYPE_ID",
+      "name": "BEHAVIOR_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "CUSTOMER_ID",
+      "name": "CUSTOMER_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SOURCE_ID",
+      "name": "SOURCE_ID",
+      "type": "java.math.BigDecimal"
+    },
+    {
+      "pType": "SESSION_ID",
+      "name": "SESSION_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ENTITY_ID",
+      "name": "ENTITY_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "MD5",
+      "name": "MD5",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "ENTITY_HASH",
+      "name": "ENTITY_HASH",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ENTITY_NAME",
+      "name": "ENTITY_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "ENTITY_TYPE_ID",
+      "name": "ENTITY_TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "ENTITY_FILE_TYPE",
+      "name": "ENTITY_FILE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "IS_LINKED_ENTITY",
+      "name": "IS_LINKED_ENTITY",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "IS_IN_MERGE",
+      "name": "IS_IN_MERGE",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "INSERT_TIME",
+      "name": "INSERT_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "UPDATE_TIME",
+      "name": "UPDATE_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "TYPE_ID",
+      "name": "TYPE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TITLE",
+      "name": "TITLE",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "VARIABLE_NAME",
+      "name": "VARIABLE_NAME",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "INSERT_TIME",
+      "name": "INSERT_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "UPDATE_TIME",
+      "name": "UPDATE_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "CUSTOMER_ID",
+      "name": "CUSTOMER_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "SOURCE_ID",
+      "name": "SOURCE_ID",
+      "type": "java.math.BigDecimal"
+    },
+    {
+      "pType": "TRACE_ID",
+      "name": "TRACE_ID",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TRACE_TYPE",
+      "name": "TRACE_TYPE",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TRACE_STATUS",
+      "name": "TRACE_STATUS",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "CLOSING_REASON",
+      "name": "CLOSING_REASON",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "IS_ALERT",
+      "name": "IS_ALERT",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "pType": "TRACE_SEVERITY",
+      "name": "TRACE_SEVERITY",
+      "type": "java.lang.Double"
+    },
+    {
+      "pType": "START_TIME",
+      "name": "START_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "END_TIME",
+      "name": "END_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "MIN_DETECTED_TIME",
+      "name": "MIN_DETECTED_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "MAX_DETECTED_TIME",
+      "name": "MAX_DETECTED_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "STATUS_UPDATE_TIME",
+      "name": "STATUS_UPDATE_TIME",
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "pType": "UPDATE_BY",
+      "name": "UPDATE_BY",
+      "type": "java.lang.String"
+    },
+    {
+      "pType": "DISTINCT_ALERTING_BEHAVIOR_COUNT",
+      "name": "DISTINCT_ALERTING_BEHAVIOR_COUNT",
+      "type": "java.lang.Integer"
+    },
+    {
+      "pType": "TRACE_IDENTIFIER",
+      "name": "TRACE_IDENTIFIER",
+      "type": "java.math.BigDecimal"
     }
-  ]
+  ],
+  "enumeratedTypes": [],
+  "compositeTypes": []
 }

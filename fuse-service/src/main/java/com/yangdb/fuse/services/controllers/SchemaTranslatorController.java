@@ -23,8 +23,6 @@ package com.yangdb.fuse.services.controllers;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.ContentResponse;
 
-import java.util.List;
-
 public interface SchemaTranslatorController {
     /**
      * translate the graphQL schema to Ontology schema
