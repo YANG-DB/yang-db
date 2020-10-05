@@ -34,6 +34,7 @@ import static java.util.Collections.singletonList;
 import static org.jooq.impl.ConstraintStatement.*;
 import static org.jooq.impl.DSL.*;
 
+import com.yangdb.fuse.model.ontology.Ontology.OntologyPrimitiveType;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import org.jooq.*;
 import org.jooq.impl.*;
@@ -82,23 +83,24 @@ public class DDL2OntologyTransformer implements OntologyTransformerIfc<List<Stri
 
         //build ontology entity
         EntityType.Builder entityTypeBuilder = EntityType.Builder.get()
-                .withName(table.getName()).withEType(table.getName());
+                .withName(table.getName().toLowerCase())
+                .withEType(table.getName().toLowerCase());
 
         //build PK fields constraints
         primaryKey(statement.getConstraints())
-                    .forEach(pk -> entityTypeBuilder.withMandatory(pk.getPrimaryKey()[0].getName()));
+                    .forEach(pk -> entityTypeBuilder.withMandatory(pk.getPrimaryKey()[0].getName().toLowerCase()));
 
         //build ontology properties (if none exist)
         List<Field<?>> fields = statement.getFields();
 
         //build entity fields
-        fields.forEach(field -> entityTypeBuilder.withProperty(field.getName()));
+        fields.forEach(field -> entityTypeBuilder.withProperty(field.getName().toLowerCase()));
         //add fields as general properties in ontology
         fields.forEach(f -> {
-            String name = f.getName();
+            String name = f.getName().toLowerCase();
             if (!builder.getProperty(name).isPresent()) {
                 //add field to properties
-                builder.addProperty(new Property(name, name, f.getType().getName()));
+                builder.addProperty(new Property(name, name, OntologyPrimitiveType.translate( f.getType().getName()).name().toLowerCase()));
             }
         });
 
@@ -107,11 +109,11 @@ public class DDL2OntologyTransformer implements OntologyTransformerIfc<List<Stri
                         .forEach(fk ->
                                 builder.addRelationshipType(
                                         RelationshipType.Builder.get()
-                                                .withName(fk.getName())
-                                                .withRType(fk.getName())
+                                                .withName(fk.getName().toLowerCase())
+                                                .withRType(fk.getName().toLowerCase())
                                                 .withDirectional(true)
                                                 .withEPairs(singletonList(
-                                                        new EPair(table.getName(),fk.get$referencesTable().getName())))
+                                                        new EPair(table.getName().toLowerCase(),fk.get$referencesTable().getName().toLowerCase())))
                                                 .build()));
 
 

@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.promise;
  * #L%
  */
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.VertexControllerBase;
 import com.yangdb.fuse.unipop.controller.common.appender.CompositeSearchAppender;
@@ -38,7 +39,6 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;

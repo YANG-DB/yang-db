@@ -22,7 +22,7 @@ package com.yangdb.fuse.unipop.controller.discrete.converter;
 
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.yangdb.fuse.unipop.controller.common.converter.ElementConverter;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.yangdb.fuse.unipop.structure.discrete.DiscreteEdge;

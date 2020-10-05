@@ -20,13 +20,9 @@ package com.yangdb.fuse.executor.elasticsearch;
  * #L%
  */
 
-public enum OntologyPrimitiveType {
-    STRING,
-    TEXT,
-    DATE,
-    LONG,
-    INT,
-    FLOAT,
-    DOUBLE,
-    GEO
-}
+import org.geojson.GeoJsonObject;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+

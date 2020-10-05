@@ -19,7 +19,7 @@ import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.RelProp;
 import com.yangdb.fuse.model.query.properties.RelPropGroup;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.promise.PromiseGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;

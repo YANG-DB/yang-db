@@ -1,6 +1,7 @@
 package com.yangdb.fuse.assembly.knowledge.cypher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.model.logical.LogicalEdge;
 import com.yangdb.fuse.model.logical.LogicalNode;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
@@ -42,9 +43,11 @@ public class KnowledgeInsertLogicalGraphTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(true);
-//        loadData();
+    //    Setup.setup(true); //todo remove remark when running IT tests
+    //   loadData();       //todo remove remark when running IT tests
     }
+
+
 
     private static void loadData() throws IOException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("./data/logical/les_miserables.json");

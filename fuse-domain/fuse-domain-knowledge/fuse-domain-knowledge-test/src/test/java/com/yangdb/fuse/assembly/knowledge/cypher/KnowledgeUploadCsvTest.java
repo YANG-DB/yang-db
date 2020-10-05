@@ -37,7 +37,7 @@ public class KnowledgeUploadCsvTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(true);
+//        Setup.setup(true); //todo remove remark when running IT tests
     }
 
 

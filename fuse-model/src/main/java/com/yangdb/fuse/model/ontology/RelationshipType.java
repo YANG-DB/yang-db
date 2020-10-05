@@ -48,6 +48,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yangdb.fuse.model.GlobalConstants;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -139,6 +140,13 @@ public class RelationshipType implements BaseElement {
         return metadata != null ? metadata : Collections.emptyList();
     }
 
+    public String getIdField() {
+        return idField;
+    }
+
+    public void setIdField(String idField) {
+        this.idField = idField;
+    }
 
     public void setMetadata(List<String> metadata) {
         this.metadata = metadata;
@@ -195,6 +203,7 @@ public class RelationshipType implements BaseElement {
         return this;
     }
 
+
     //endregion
 
 
@@ -204,6 +213,7 @@ public class RelationshipType implements BaseElement {
         if (o == null || getClass() != o.getClass()) return false;
         RelationshipType that = (RelationshipType) o;
         return directional == that.directional &&
+                idField.equals(that.idField) &&
                 rType.equals(that.rType) &&
                 name.equals(that.name) &&
                 mandatory.equals(that.mandatory) &&
@@ -214,15 +224,16 @@ public class RelationshipType implements BaseElement {
 
     @Override
     public int hashCode() {
-        return Objects.hash(rType, name, directional, mandatory, ePairs, properties, metadata);
+        return Objects.hash(idField,rType, name, directional, mandatory, ePairs, properties, metadata);
     }
 
     @Override
     public String toString() {
-        return "RelationshipType [ePairs = " + ePairs + ", rType = " + rType + ", directional = " + directional + ", name = " + name + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
+        return "RelationshipType [ePairs = " + ePairs + ", idField = " + idField + ", rType = " + rType + ", directional = " + directional + ", name = " + name + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
     }
 
     //region Fields
+    private String idField = GlobalConstants.ID;
     private String rType;
     private String name;
     private boolean directional;
@@ -262,6 +273,7 @@ public class RelationshipType implements BaseElement {
 
     //region Builder
     public static final class Builder {
+        private String idField = "id";
         private String rType;
         private String name;
         private boolean directional;
@@ -324,6 +336,11 @@ public class RelationshipType implements BaseElement {
             return this;
         }
 
+        public Builder withIdField(String idField) {
+            this.idField = idField;
+            return this;
+        }
+
 
         public Builder withMetadata(List<String> metatada) {
             this.metatada = metatada;
@@ -333,6 +350,7 @@ public class RelationshipType implements BaseElement {
         public RelationshipType build() {
             RelationshipType relationshipType = new RelationshipType();
             relationshipType.setrType(this.rType);
+            relationshipType.setIdField(idField);
             relationshipType.setName(name);
             relationshipType.setDirectional(directional);
             relationshipType.setDBrName(DBrName);

@@ -1,6 +1,7 @@
 package com.yangdb.fuse.stat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.stat.model.bucket.BucketRange;
 import com.yangdb.fuse.stat.model.bucket.BucketTerm;
 import com.yangdb.fuse.stat.model.enums.DataType;
@@ -95,11 +96,11 @@ public class StatConfigurationTest {
         Field genderField = new Field("gender", histogramTerm);
         Field dragonTypeField = new Field("type", histogramDocType);
 
-        Field fireEntityAOutField = new Field("entityA.id",
+        Field fireEntityAOutField = new Field(GlobalConstants.EdgeSchema.SOURCE_ID,
                 histogramFireEntity,
                 Arrays.asList(new Filter("direction", "OUT")));
 
-        Field fireEntityAInField = new Field("entityA.id",
+        Field fireEntityAInField = new Field(GlobalConstants.EdgeSchema.SOURCE_ID,
                 histogramFireEntity,
                 Arrays.asList(new Filter("direction", "IN")));
 

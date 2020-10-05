@@ -54,7 +54,7 @@ public class KnowledgeMassInsertionPathTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(true);
+//        Setup.setup(true); //todo remove remark when running IT tests
         mapper = new ObjectMapper();
         rand = new Random();
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());

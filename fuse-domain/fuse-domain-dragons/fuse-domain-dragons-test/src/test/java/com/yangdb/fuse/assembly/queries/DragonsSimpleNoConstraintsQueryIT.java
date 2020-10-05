@@ -33,7 +33,7 @@ public class DragonsSimpleNoConstraintsQueryIT implements BaseITMarker {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup();
+//        Setup.setup(); //todo remove remark when running IT tests
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 

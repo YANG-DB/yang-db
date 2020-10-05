@@ -22,7 +22,7 @@ package com.yangdb.fuse.unipop.controller.promise.appender;
 
 import com.yangdb.fuse.unipop.controller.common.appender.SearchAppender;
 import com.yangdb.fuse.unipop.controller.common.context.ElementControllerContext;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 
 /**

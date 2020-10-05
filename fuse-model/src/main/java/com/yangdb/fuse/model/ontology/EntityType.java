@@ -47,9 +47,12 @@ package com.yangdb.fuse.model.ontology;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.google.common.collect.Streams;
+import com.yangdb.fuse.model.GlobalConstants;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Streams.concat;
@@ -136,9 +139,17 @@ public class EntityType implements BaseElement {
         this.display = display;
     }
 
+    public String getIdField() {
+        return idField;
+    }
+
+    public void setIdField(String idField) {
+        this.idField = idField;
+    }
+
     @Override
     public String toString() {
-        return "EntityType [eType = " + eType + ", name = " + name + ", display = " + display + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
+        return "EntityType [idField = " + idField + ",eType = " + eType + ", name = " + name + ", display = " + display + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
     }
 
     @JsonIgnore
@@ -151,7 +162,8 @@ public class EntityType implements BaseElement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EntityType that = (EntityType) o;
-        return eType.equals(that.eType) &&
+        return  idField.equals(that.idField) &&
+                eType.equals(that.eType) &&
                 Objects.equals(parentType, that.parentType) &&
                 name.equals(that.name) &&
                 properties.equals(that.properties) &&
@@ -161,10 +173,11 @@ public class EntityType implements BaseElement {
 
     @Override
     public int hashCode() {
-        return Objects.hash(eType, parentType, name, properties, metadata, display);
+        return Objects.hash(idField,eType, parentType, name, properties, metadata, display);
     }
 
     //region Fields
+    private String idField = GlobalConstants.ID;
     private String eType;
     private String name;
     private List<String> mandatory = new ArrayList<>();

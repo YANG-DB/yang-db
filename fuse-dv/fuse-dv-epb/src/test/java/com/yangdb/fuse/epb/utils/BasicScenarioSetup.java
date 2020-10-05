@@ -1,6 +1,7 @@
 package com.yangdb.fuse.epb.utils;
 
 import com.yangdb.fuse.epb.plan.statistics.Statistics;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.structure.ElementType;
 
 import java.util.Arrays;
@@ -12,7 +13,7 @@ public class BasicScenarioSetup {
 
     public static ScenarioMockUtil setup(){
         return ScenarioMockUtil.start(10, 100).withElementCardinality("Person", 100L).withElementCardinality("Dragon", 500L).withElementCardinality("Guild", 10L).
-                withLayoutRedundancy("own", "name", "entityB.name").
+                withLayoutRedundancy("own", "name", GlobalConstants.EdgeSchema.DEST_NAME).
                 withTimeSeriesIndex("own", ElementType.edge, "startDate", 3).
                 withHistogram("firstName", generateStringHistogram())
                 .build();

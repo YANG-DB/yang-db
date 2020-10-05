@@ -49,6 +49,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Objects;
 
+import static com.yangdb.fuse.model.GlobalConstants.EdgeSchema.DEST_ID;
+import static com.yangdb.fuse.model.GlobalConstants.EdgeSchema.SOURCE_ID;
+
 /**
  * Created by benishue on 22-Feb-17.
  */
@@ -79,6 +82,22 @@ public class EPair {
         this.eTypeB = eTypeB;
     }
 
+    public String getSideAIdField() {
+        return sideAIdField;
+    }
+
+    public void setSideAIdField(String sideAIdField) {
+        this.sideAIdField = sideAIdField;
+    }
+
+    public String getSideBIdField() {
+        return sideBIdField;
+    }
+
+    public void setSideBIdField(String sideBIdField) {
+        this.sideBIdField = sideBIdField;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -101,7 +120,9 @@ public class EPair {
 
     //region Fields
     private String eTypeA;
+    private String sideAIdField = SOURCE_ID;
     private String eTypeB;
+    private String sideBIdField = DEST_ID;
 
     //endregion
 

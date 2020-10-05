@@ -22,6 +22,7 @@ package com.yangdb.fuse.executor.elasticsearch;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.BaseElement;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -54,9 +55,9 @@ public class ElasticIndexProviderMappingFactory {
 
     public static final String ID = "id";
     public static final String TYPE = "type";
-    public static final String DIRECTION = "direction";
-    public static final String ENTITY_A = "entityA";
-    public static final String ENTITY_B = "entityB";
+    public static final String DIRECTION = GlobalConstants.EdgeSchema.DIRECTION;
+    public static final String ENTITY_A = GlobalConstants.EdgeSchema.SOURCE;
+    public static final String ENTITY_B = GlobalConstants.EdgeSchema.DEST;
     public static final String PROPERTIES = "properties";
     public static final String NESTED = "nested";
     public static final String CHILD = "child";
@@ -425,7 +426,7 @@ public class ElasticIndexProviderMappingFactory {
     private Map<String, Object> parseType(String nameType) {
         Map<String, Object> map = new HashMap<>();
         try {
-            OntologyPrimitiveType type = OntologyPrimitiveType.valueOf(nameType.toUpperCase());
+            Ontology.OntologyPrimitiveType type = Ontology.OntologyPrimitiveType.valueOf(nameType.toUpperCase());
             switch (type) {
                 case STRING:
                     map.put("type", "keyword");

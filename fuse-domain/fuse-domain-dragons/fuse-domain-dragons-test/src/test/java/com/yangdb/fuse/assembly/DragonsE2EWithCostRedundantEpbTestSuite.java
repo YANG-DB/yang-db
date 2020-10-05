@@ -26,7 +26,7 @@ public class DragonsE2EWithCostRedundantEpbTestSuite implements BaseSuiteMarker 
     public static void setup() throws Exception {
         System.out.println("DragonsE2EWithCostRedundantEpbTestSuite - setup");
         Setup.withPath(Paths.get( "src","resources", "assembly", "Dragons", "config", "application.test.engine3.count.redundant.m1.dfs.dragons.public.conf"));
-        Setup.setup();
+        Setup.setup();//DO NOT REMOVE
     }
 
     @AfterClass

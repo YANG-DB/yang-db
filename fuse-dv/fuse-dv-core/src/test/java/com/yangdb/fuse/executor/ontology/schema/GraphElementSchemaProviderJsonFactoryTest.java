@@ -214,18 +214,18 @@ public class GraphElementSchemaProviderJsonFactoryTest {
      *                                 "fire",
      *                                 new GraphElementConstraint.Impl(__.has(T.label, "fire")),
      *                                 Optional.of(new GraphEdgeSchema.End.Impl(
-     *                                         Collections.singletonList("entityA.id"),
+     *                                         Collections.singletonList(GlobalConstants.EdgeSchema.SOURCE_ID),
      *                                         Optional.of("Dragon"),
      *                                         Arrays.asList(
-     *                                                 new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-     *                                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+     *                                                 new GraphRedundantPropertySchema.Impl("id", GlobalConstants.EdgeSchema.DEST_ID, "string"),
+     *                                                 new GraphRedundantPropertySchema.Impl("type", GlobalConstants.EdgeSchema.DEST_TYPE, "string")
      *                                         ))),
      *                                 Optional.of(new GraphEdgeSchema.End.Impl(
-     *                                         Collections.singletonList("entityB.id"),
+     *                                         Collections.singletonList(GlobalConstants.EdgeSchema.DEST_ID),
      *                                         Optional.of("Dragon"),
      *                                         Arrays.asList(
-     *                                                 new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-     *                                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+     *                                                 new GraphRedundantPropertySchema.Impl("id", GlobalConstants.EdgeSchema.DEST_ID, "string"),
+     *                                                 new GraphRedundantPropertySchema.Impl("type", GlobalConstants.EdgeSchema.DEST_TYPE, "string")
      *                                         ))),
      *                                 Direction.OUT,
      *                                 Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),

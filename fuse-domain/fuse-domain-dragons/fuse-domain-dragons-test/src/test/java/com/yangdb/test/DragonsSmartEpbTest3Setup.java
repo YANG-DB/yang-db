@@ -1,5 +1,6 @@
 package com.yangdb.test;
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.OntologyTestUtils;
 import com.yangdb.fuse.services.test.TestRunner;
 import com.yangdb.fuse.stat.StatCalculator;
@@ -136,10 +137,10 @@ public class DragonsSmartEpbTest3Setup extends TestSetupBase  {
         return new Mappings.Mapping()
                 .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                 .addProperty("direction", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
-                .addProperty("entityA", new Mappings.Mapping.Property()
+                .addProperty(GlobalConstants.EdgeSchema.SOURCE, new Mappings.Mapping.Property()
                         .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                         .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)))
-                .addProperty("entityB", new Mappings.Mapping.Property()
+                .addProperty(GlobalConstants.EdgeSchema.DEST, new Mappings.Mapping.Property()
                         .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                         .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)));
     }
@@ -166,11 +167,11 @@ public class DragonsSmartEpbTest3Setup extends TestSetupBase  {
             kingdomEntity.put("id", "Kingdom_" + i % numKingdoms);
             kingdomEntity.put("type", OntologyTestUtils.KINGDOM.name);
 
-            originEdgeOut.put("entityA", dragonEntity);
-            originEdgeOut.put("entityB", kingdomEntity);
+            originEdgeOut.put(GlobalConstants.EdgeSchema.SOURCE, dragonEntity);
+            originEdgeOut.put(GlobalConstants.EdgeSchema.DEST, kingdomEntity);
 
-            originEdgeIn.put("entityA", kingdomEntity);
-            originEdgeIn.put("entityB", dragonEntity);
+            originEdgeIn.put(GlobalConstants.EdgeSchema.SOURCE, kingdomEntity);
+            originEdgeIn.put(GlobalConstants.EdgeSchema.DEST, dragonEntity);
 
             originEdges.add(originEdgeOut);
             originEdges.add(originEdgeIn);

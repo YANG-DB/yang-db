@@ -29,8 +29,8 @@ public class KnowledgePathMultiStepsForwardOnlyCursorTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(true);
-//        loadData();
+//        Setup.setup(true); //todo remove remark when running IT tests
+//        loadData();       //todo remove remark when running IT tests
     }
 
 

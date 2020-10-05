@@ -19,7 +19,7 @@ import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.query.Rel;
 
 import com.yangdb.fuse.model.query.quant.QuantType;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.promise.PromiseGraph;
 import com.yangdb.fuse.unipop.structure.FuseUniGraph;

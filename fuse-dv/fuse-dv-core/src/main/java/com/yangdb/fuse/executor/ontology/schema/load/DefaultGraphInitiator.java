@@ -66,10 +66,11 @@ public class DefaultGraphInitiator implements GraphInitiator {
         this.objectMapper = new ObjectMapper();
         this.client = client;
         this.schema = schema;
-        this.indexProvider = indexProviderFactory.get(assembly)
-                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Index Provider present for assembly", "No Index Provider present for assembly" + assembly)));
         Ontology ont = ontologyProvider.get(assembly)
                 .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly)));
+
+        //if no index provider found with assembly name - generate default one accoring to ontology and simple Static Index Partitioning strategy
+        this.indexProvider = indexProviderFactory.get(assembly).orElseGet(() -> IndexProvider.Builder.generate(ont));
         this.mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ont, indexProvider);
 
     }

@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.promise;
  * #L%
  */
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.appender.CompositeSearchAppender;
 import com.yangdb.fuse.unipop.controller.common.appender.FilterSourceSearchAppender;

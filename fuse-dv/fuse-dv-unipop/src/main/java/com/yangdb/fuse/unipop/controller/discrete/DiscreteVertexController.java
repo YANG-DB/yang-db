@@ -28,7 +28,7 @@ import com.yangdb.fuse.unipop.controller.common.converter.*;
 import com.yangdb.fuse.unipop.controller.discrete.appender.DualEdgeDirectionSearchAppender;
 import com.yangdb.fuse.unipop.controller.discrete.context.DiscreteVertexControllerContext;
 import com.yangdb.fuse.unipop.controller.discrete.converter.DiscreteEdgeConverter;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;

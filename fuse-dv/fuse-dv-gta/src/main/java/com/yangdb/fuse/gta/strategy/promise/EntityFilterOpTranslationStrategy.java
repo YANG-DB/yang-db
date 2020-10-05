@@ -41,7 +41,7 @@ import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.SchematicEProp;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;

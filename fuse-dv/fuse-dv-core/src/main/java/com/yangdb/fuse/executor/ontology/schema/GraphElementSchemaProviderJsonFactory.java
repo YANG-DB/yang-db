@@ -26,6 +26,7 @@ import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.elasticsearch.MappingIndexType;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.EPair;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -56,11 +57,11 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     public static final String _ID = "_id";
 
     public static final String ID = "id";
-    public static final String ENTITY_A = "entityA";
-    public static final String ENTITY_A_ID = "entityA.id";
-    public static final String ENTITY_B = "entityB";
-    public static final String ENTITY_B_ID = "entityB.id";
-    public static final String DIRECTION = "direction";
+    public static final String ENTITY_A = GlobalConstants.EdgeSchema.SOURCE;
+    public static final String ENTITY_A_ID = GlobalConstants.EdgeSchema.SOURCE_ID;
+    public static final String ENTITY_B = GlobalConstants.EdgeSchema.DEST;
+    public static final String ENTITY_B_ID = GlobalConstants.EdgeSchema.DEST_ID;
+    public static final String DIRECTION = GlobalConstants.EdgeSchema.DIRECTION;
     public static final String OUT = "out";
     public static final String IN = "in";
 
@@ -70,10 +71,14 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     @Inject
     public GraphElementSchemaProviderJsonFactory(Config config, IndexProviderIfc indexProvider, OntologyProvider ontologyProvider) {
         String assembly = config.getString("assembly");
-        this.indexProvider = indexProvider.get(assembly).orElseThrow(() ->
-                new FuseError.FuseErrorException(new FuseError("No Index Provider present for assembly ", "No Index Provider  present for assembly " + assembly)));
+
         this.accessor = new Ontology.Accessor(ontologyProvider.get(assembly).orElseThrow(() ->
                 new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly))));
+
+        //if no index provider found with assembly name - generate default one accoring to ontology and simple Static Index Partitioning strategy
+        this.indexProvider = indexProvider.get(assembly).orElseGet(() ->
+                IndexProvider.Builder.generate(accessor.get()));
+
     }
 
     public GraphElementSchemaProviderJsonFactory(IndexProviderIfc indexProviderFactory, Ontology ontology) {
@@ -301,21 +306,21 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
      * "fire",
      * new GraphElementConstraint.Impl(__.has(T.label, "fire")),
      * Optional.of(new GraphEdgeSchema.End.Impl(
-     * Collections.singletonList("entityA.id"),
+     * Collections.singletonList(GlobalConstants.EdgeSchema.SOURCE_ID),
      * Optional.of("Dragon"),
      * Arrays.asList(
-     * new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-     * new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+     * new GraphRedundantPropertySchema.Impl("id", GlobalConstants.EdgeSchema.DEST_ID, "string"),
+     * new GraphRedundantPropertySchema.Impl("type", GlobalConstants.EdgeSchema.DEST_TYPE, "string")
      * ))),
      * Optional.of(new GraphEdgeSchema.End.Impl(
-     * Collections.singletonList("entityB.id"),
+     * Collections.singletonList(GlobalConstants.EdgeSchema.DEST_ID),
      * Optional.of("Dragon"),
      * Arrays.asList(
-     * new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-     * new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+     * new GraphRedundantPropertySchema.Impl("id", GlobalConstants.EdgeSchema.DEST_ID, "string"),
+     * new GraphRedundantPropertySchema.Impl("type", GlobalConstants.EdgeSchema.DEST_TYPE, "string")
      * ))),
      * Direction.OUT,
-     * Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+     * Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(GlobalConstants.EdgeSchema.DIRECTION, "out", "in")),
      * Optional.empty(),
      * Optional.of(new StaticIndexPartitions(Collections.singletonList(FIRE.getName().toLowerCase()))),
      * Collections.emptyList(),

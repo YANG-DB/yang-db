@@ -9,6 +9,7 @@ import com.yangdb.fuse.executor.ontology.schema.load.DataTransformerContext;
 import com.yangdb.fuse.executor.ontology.schema.load.DocumentBuilder;
 import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -204,13 +205,13 @@ public class EntityTransformerTest {
                     Assert.assertNotNull(r.get("direction"));
                     Assert.assertNotNull(r.get("id"));
 
-                    Assert.assertNotNull(r.get("entityA"));
-                    Assert.assertNotNull(r.get("entityA").get("id"));
-                    Assert.assertNotNull(r.get("entityA").get("type"));
+                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.SOURCE));
+                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.SOURCE).get("id"));
+                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.SOURCE).get("type"));
 
-                    Assert.assertNotNull(r.get("entityB"));
-                    Assert.assertNotNull(r.get("entityB").get("id"));
-                    Assert.assertNotNull(r.get("entityB").get("type"));
+                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.DEST));
+                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.DEST).get("id"));
+                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.DEST).get("type"));
 
                     //"fire" "freeze" "own", "know", "memberOf", "originatedIn", "subjectOf", "registeredIn"
                     switch (r.get("type").asText()) {
@@ -223,14 +224,14 @@ public class EntityTransformerTest {
                             Assert.assertNotNull(r.get("temperature"));
 
                             //side A redundant
-                            Assert.assertEquals(r.get("entityA").get("type").asText(), "Dragon");
-                            Assert.assertNotNull(r.get("entityA").get("name"));
-                            Assert.assertNotNull(r.get("entityA").get("color"));
+                            Assert.assertEquals(r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText(), "Dragon");
+                            Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.SOURCE).get("name"));
+                            Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.SOURCE).get("color"));
 
                             //side B redundant
-                            Assert.assertEquals(r.get("entityB").get("type").asText(), "Dragon");
-                            Assert.assertNotNull(r.get("entityB").get("name"));
-                            Assert.assertNotNull(r.get("entityB").get("color"));
+                            Assert.assertEquals(r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText(), "Dragon");
+                            Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.DEST).get("name"));
+                            Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.DEST).get("color"));
                             break;
                         case "Freeze":
                             //check all fields exist
@@ -241,12 +242,12 @@ public class EntityTransformerTest {
                             Assert.assertNotNull(r.get("temperature"));
 
                             //side A redundant
-                            Assert.assertEquals(r.get("entityA").get("type").asText(), "Dragon");
-                            Assert.assertNotNull(r.get("entityA").get("name"));
+                            Assert.assertEquals(r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText(), "Dragon");
+                            Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.SOURCE).get("name"));
 
                             //side B redundant
-                            Assert.assertEquals(r.get("entityB").get("type").asText(), "Dragon");
-                            Assert.assertNotNull(r.get("entityB").get("name"));
+                            Assert.assertEquals(r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText(), "Dragon");
+                            Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.DEST).get("name"));
                             break;
                         case "Own":
                             //         "startDate",
@@ -258,24 +259,24 @@ public class EntityTransformerTest {
                             //side A redundant
                             switch (r.get("direction").asText()) {
                                 case "out":
-                                    Assert.assertEquals(r.get("entityA").get("type").asText(), "Person");
-                                    Assert.assertNotNull(r.get("entityA").get("name"));
-                                    Assert.assertNotNull(r.get("entityA").get("firstName"));
+                                    Assert.assertEquals(r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText(), "Person");
+                                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.SOURCE).get("name"));
+                                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.SOURCE).get("firstName"));
 
                                     //side B redundant
-                                    Assert.assertTrue(r.get("entityB").get("type").asText().equals("Horse") ||
-                                            r.get("entityB").get("type").asText().equals("Dragon"));
-                                    Assert.assertNotNull(r.get("entityB").get("name"));
+                                    Assert.assertTrue(r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText().equals("Horse") ||
+                                            r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText().equals("Dragon"));
+                                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.DEST).get("name"));
                                     break;
                                 case "in":
-                                    Assert.assertEquals(r.get("entityB").get("type").asText(), "Person");
-                                    Assert.assertNotNull(r.get("entityB").get("name"));
-                                    Assert.assertNotNull(r.get("entityB").get("firstName"));
+                                    Assert.assertEquals(r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText(), "Person");
+                                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.DEST).get("name"));
+                                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.DEST).get("firstName"));
 
                                     //side B redundant
-                                    Assert.assertTrue(r.get("entityA").get("type").asText().equals("Horse") ||
-                                            r.get("entityA").get("type").asText().equals("Dragon"));
-                                    Assert.assertNotNull(r.get("entityA").get("name"));
+                                    Assert.assertTrue(r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText().equals("Horse") ||
+                                            r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText().equals("Dragon"));
+                                    Assert.assertNotNull(r.get(GlobalConstants.EdgeSchema.SOURCE).get("name"));
                                     break;
                             }
                             break;
@@ -286,10 +287,10 @@ public class EntityTransformerTest {
                             Assert.assertNotNull(r.get("startDate"));
 
                             //side A redundant
-                            Assert.assertEquals(r.get("entityA").get("type").asText(), "Person");
+                            Assert.assertEquals(r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText(), "Person");
 
                             //side B redundant
-                            Assert.assertEquals("Person", r.get("entityB").get("type").asText());
+                            Assert.assertEquals("Person", r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText());
                             break;
                         case "MemberOf":
                             //         "startDate",
@@ -301,17 +302,17 @@ public class EntityTransformerTest {
                             switch (r.get("direction").asText()) {
                                 case "out":
                                     //side A redundant
-                                    Assert.assertEquals(r.get("entityA").get("type").asText(), "Person");
+                                    Assert.assertEquals(r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText(), "Person");
 
                                     //side B redundant
-                                    Assert.assertEquals("Guild", r.get("entityB").get("type").asText());
+                                    Assert.assertEquals("Guild", r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText());
                                     break;
                                 case "in":
                                     //side A redundant
-                                    Assert.assertEquals(r.get("entityB").get("type").asText(), "Person");
+                                    Assert.assertEquals(r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText(), "Person");
 
                                     //side B redundant
-                                    Assert.assertEquals("Guild", r.get("entityA").get("type").asText());
+                                    Assert.assertEquals("Guild", r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText());
                                     break;
                             }
                             break;
@@ -325,21 +326,21 @@ public class EntityTransformerTest {
                             switch (r.get("direction").asText()) {
                                 case "out":
                                     //side A redundant
-                                    Assert.assertTrue(r.get("entityA").get("type").asText().equals("Dragon") ||
-                                            r.get("entityA").get("type").asText().equals("Person") ||
-                                            r.get("entityA").get("type").asText().equals("Horse"));
+                                    Assert.assertTrue(r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText().equals("Dragon") ||
+                                            r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText().equals("Person") ||
+                                            r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText().equals("Horse"));
 
                                     //side B redundant
-                                    Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
+                                    Assert.assertEquals("Kingdom", r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText());
                                     break;
                                 case "in":
                                     //side A redundant
-                                    Assert.assertTrue(r.get("entityB").get("type").asText().equals("Dragon") ||
-                                            r.get("entityB").get("type").asText().equals("Person") ||
-                                            r.get("entityB").get("type").asText().equals("Horse"));
+                                    Assert.assertTrue(r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText().equals("Dragon") ||
+                                            r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText().equals("Person") ||
+                                            r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText().equals("Horse"));
 
                                     //side B redundant
-                                    Assert.assertEquals("Kingdom", r.get("entityA").get("type").asText());
+                                    Assert.assertEquals("Kingdom", r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText());
                                     break;
                             }
                             break;
@@ -354,14 +355,14 @@ public class EntityTransformerTest {
                             switch (r.get("direction").asText()) {
                                 case "out":
                                     //side A redundant
-                                    Assert.assertEquals("Person", r.get("entityA").get("type").asText());
+                                    Assert.assertEquals("Person", r.get(GlobalConstants.EdgeSchema.SOURCE).get("type").asText());
 
                                     //side B redundant
-                                    Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
+                                    Assert.assertEquals("Kingdom", r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText());
                                     break;
                                 case "in":
                                     //side A redundant
-                                    Assert.assertEquals("Person", r.get("entityB").get("type").asText());
+                                    Assert.assertEquals("Person", r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText());
 
                                     //side B redundant
                                     Assert.assertEquals("Kingdom", r.get("entityA").get("type").asText());
@@ -382,12 +383,12 @@ public class EntityTransformerTest {
                                             r.get("entityA").get("type").asText().equals("Horse"));
 
                                     //side B redundant
-                                    Assert.assertEquals("Kingdom", r.get("entityB").get("type").asText());
+                                    Assert.assertEquals("Kingdom", r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText());
                                     break;
                                 case "in":
                                     //side A redundant
-                                    Assert.assertTrue(r.get("entityB").get("type").asText().equals("Guild") ||
-                                            r.get("entityB").get("type").asText().equals("Horse"));
+                                    Assert.assertTrue(r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText().equals("Guild") ||
+                                            r.get(GlobalConstants.EdgeSchema.DEST).get("type").asText().equals("Horse"));
 
                                     //side B redundant
                                     Assert.assertEquals("Kingdom", r.get("entityA").get("type").asText());

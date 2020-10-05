@@ -19,6 +19,7 @@ import com.yangdb.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.yangdb.fuse.epb.plan.statistics.Statistics;
 import com.yangdb.fuse.epb.plan.validation.M2PlanValidator;
 import com.yangdb.fuse.epb.utils.PlanMockUtils;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.OntologyTestUtils;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.PlanAssert;
@@ -284,7 +285,7 @@ public class EpbJoinSelectionTests {
                                         Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()))),
                                 Direction.OUT,
-                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(GlobalConstants.EdgeSchema.DIRECTION, "out", "in")),
                                 Optional.empty(),
                                 Optional.of(relation.getrType().equals(OWN.getName()) ?
                                         new TimeSeriesIndexPartitions() {

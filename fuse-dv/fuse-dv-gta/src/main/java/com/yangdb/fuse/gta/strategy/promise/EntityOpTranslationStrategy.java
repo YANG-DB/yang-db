@@ -36,7 +36,7 @@ import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.EUntyped;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;

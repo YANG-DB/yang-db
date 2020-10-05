@@ -31,7 +31,7 @@ public class KnowledgeSimpleEntityWithFilterTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(false,false);
+//        Setup.setup(false,false); //todo remove remark when running IT tests
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
     }
 

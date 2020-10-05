@@ -53,6 +53,7 @@ import javaslang.collection.Stream;
 
 import java.awt.geom.Point2D;
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -175,7 +176,7 @@ public class Ontology {
 
     @Override
     public int hashCode() {
-        return Objects.hash(ont,directives, entityTypes, relationshipTypes, properties, metadata, enumeratedTypes, compositeTypes, primitiveTypes);
+        return Objects.hash(ont, directives, entityTypes, relationshipTypes, properties, metadata, enumeratedTypes, compositeTypes, primitiveTypes);
     }
 
     //endregion
@@ -274,6 +275,7 @@ public class Ontology {
             return this;
 
         }
+
         public OntologyBuilder withEnumeratedTypes(List<EnumeratedType> enumeratedTypes) {
             this.enumeratedTypes = enumeratedTypes;
             return this;
@@ -358,17 +360,17 @@ public class Ontology {
         }
 
         public Optional<DirectiveType> $directive(String name) {
-            return this.ontology.directives.stream().filter(d->d.getName().equals(name)).findFirst();
+            return this.ontology.directives.stream().filter(d -> d.getName().equals(name)).findFirst();
         }
 
         public DirectiveType $directive$(String name) {
-            return this.ontology.directives.stream().filter(d->d.getName().equals(name)).findFirst()
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology $directive$ for value ", "No Ontology $directive$ for value[" + name+"]")));
+            return this.ontology.directives.stream().filter(d -> d.getName().equals(name)).findFirst()
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology $directive$ for value ", "No Ontology $directive$ for value[" + name + "]")));
         }
 
         public EntityType $entity$(String eType) {
             return $entity(eType)
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology entity for value ", "No Ontology entity for value[" + eType+"]")));
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology entity for value ", "No Ontology entity for value[" + eType + "]")));
         }
 
         public Optional<EntityType> entity(String entityName) {
@@ -377,7 +379,7 @@ public class Ontology {
 
         public EntityType entity$(String entityName) {
             return entity(entityName)
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology entityType for value ", "No Ontology entityType for value[" + entityName+"]")));
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology entityType for value ", "No Ontology entityType for value[" + entityName + "]")));
         }
 
         public Optional<String> eType(String entityName) {
@@ -387,7 +389,7 @@ public class Ontology {
 
         public String eType$(String entityName) {
             return eType(entityName)
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology entityType for value ", "No Ontology entityType for value[" + entityName+"]")));
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology entityType for value ", "No Ontology entityType for value[" + entityName + "]")));
         }
 
         public Optional<RelationshipType> $relation(String rType) {
@@ -396,7 +398,7 @@ public class Ontology {
 
         public RelationshipType $relation$(String rType) {
             return $relation(rType)
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology Relation for value ", "No Ontology Relation for value[" + rType+"]")));
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology Relation for value ", "No Ontology Relation for value[" + rType + "]")));
         }
 
         public Optional<RelationshipType> relation(String relationName) {
@@ -405,7 +407,7 @@ public class Ontology {
 
         public RelationshipType relation$(String relationName) {
             return relation(relationName)
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology relationName for value ", "No Ontology relationName for value[" + relationName+"]")));
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology relationName for value ", "No Ontology relationName for value[" + relationName + "]")));
         }
 
         public Optional<String> rType(String relationName) {
@@ -415,7 +417,7 @@ public class Ontology {
 
         public String rType$(String relationName) {
             return rType(relationName)
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology relationName for value ", "No Ontology relationName for value[" + relationName+"]")));
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology relationName for value ", "No Ontology relationName for value[" + relationName + "]")));
         }
 
         public Optional<Property> $property(String pType) {
@@ -438,7 +440,7 @@ public class Ontology {
 
         public Property property$(String propertyName) {
             return property(propertyName)
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology propertyName for value ", "No Ontology propertyName for value[" + propertyName+"]")));
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology propertyName for value ", "No Ontology propertyName for value[" + propertyName + "]")));
         }
 
         public Optional<String> pType(String propertyName) {
@@ -448,7 +450,7 @@ public class Ontology {
 
         public String pType$(String propertyName) {
             return pType(propertyName)
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology propertyName for value ", "No Ontology propertyName for value[" + propertyName+"]")));
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology propertyName for value ", "No Ontology propertyName for value[" + propertyName + "]")));
         }
 
         public Iterable<String> pTypes() {
@@ -545,31 +547,75 @@ public class Ontology {
 
         /**
          * match named element to true type (included typed value identifier)
+         *
          * @param name
          * @return
          */
-        public Optional<Tuple2<NodeType,String>> matchNameToType(String name) {
+        public Optional<Tuple2<NodeType, String>> matchNameToType(String name) {
             //entity TYPE
-            if(eType(name).isPresent())
+            if (eType(name).isPresent())
                 return Optional.of(Tuple.of(NodeType.ENTITY, eType$(name)));
             //relation TYPE
-            if(rType(name).isPresent())
+            if (rType(name).isPresent())
                 return Optional.of(Tuple.of(NodeType.RELATION, rType$(name)));
             //property TYPE
-            if(property(name).isPresent())
+            if (property(name).isPresent())
                 return Optional.of(Tuple.of(NodeType.PROPERTY, property$(name).getpType()));
             //ENUMERATED TYPE
-            if(enumeratedType(name).isPresent())
+            if (enumeratedType(name).isPresent())
                 return Optional.of(Tuple.of(NodeType.ENUM, enumeratedType$(name).geteType()));
 
             return Optional.empty();
         }
 
         public enum NodeType {
-            ENUM,PROPERTY,RELATION,ENTITY
+            ENUM, PROPERTY, RELATION, ENTITY
         }
 
         //endregion
+    }
+
+    public enum OntologyPrimitiveType {
+        STRING,
+        TEXT,
+        DATE,
+        LONG,
+        INT,
+        FLOAT,
+        DOUBLE,
+        GEO;
+
+
+        public static OntologyPrimitiveType translate(String clazzName) {
+            if (String.class.getName().equals(clazzName))
+                return STRING;
+            if (Boolean.class.getName().equals(clazzName))
+                return STRING;//no special case for bool
+
+            if (Integer.class.getName().equals(clazzName))
+                return INT;
+
+            if (Float.class.getName().equals(clazzName))
+                return FLOAT;
+
+            if (Double.class.getName().equals(clazzName))
+                return DOUBLE;
+
+            if (Long.class.getName().equals(clazzName))
+                return LONG;
+            if (BigDecimal.class.getName().equals(clazzName))
+                return LONG;
+
+            if (java.sql.Date.class.getName().equals(clazzName))
+                return DATE;
+            if (java.sql.Timestamp.class.getName().equals(clazzName))
+                return DATE;
+            if (Date.class.getName().equals(clazzName))
+                return DATE;
+
+            return TEXT;
+        }
+
     }
     //endregion
 

@@ -1,7 +1,7 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.yangdb.fuse.services.engine2.NonRedundantTestSuite;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
 import javaslang.collection.Stream;

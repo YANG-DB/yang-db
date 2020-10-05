@@ -25,7 +25,7 @@ import com.yangdb.fuse.services.TestsConfiguration;
 import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
 import com.yangdb.fuse.unipop.promise.Promise;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
@@ -916,14 +916,14 @@ public abstract class EntityRelationEntityIT implements BaseITMarker {
                 fireEdge.put("id", FIRE.getName() + counter);
                 fireEdge.put("type", FIRE.getName());
                 fireEdge.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
-                fireEdge.put("direction", Direction.OUT);
+                fireEdge.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.OUT);
                 fireEdge.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
 
                 Map<String, Object> fireEdgeDual = new HashMap<>();
                 fireEdgeDual.put("id", FIRE.getName() + counter + 1);
                 fireEdgeDual.put("type", FIRE.getName());
                 fireEdgeDual.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
-                fireEdgeDual.put("direction", Direction.IN);
+                fireEdgeDual.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.IN);
                 fireEdgeDual.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
 
                 Map<String, Object> entityAI = new HashMap<>();
@@ -939,10 +939,10 @@ public abstract class EntityRelationEntityIT implements BaseITMarker {
                 entityBJ.put("id", "Dragon_" + j);
                 entityBJ.put("type", DRAGON.name);
 
-                fireEdge.put("entityA", entityAI);
-                fireEdge.put("entityB", entityBJ);
-                fireEdgeDual.put("entityA", entityAJ);
-                fireEdgeDual.put("entityB", entityBI);
+                fireEdge.put(GlobalConstants.EdgeSchema.SOURCE, entityAI);
+                fireEdge.put(GlobalConstants.EdgeSchema.DEST, entityBJ);
+                fireEdgeDual.put(GlobalConstants.EdgeSchema.SOURCE, entityAJ);
+                fireEdgeDual.put(GlobalConstants.EdgeSchema.DEST, entityBI);
 
                 fireEdges.addAll(Arrays.asList(fireEdge, fireEdgeDual));
 
@@ -957,12 +957,12 @@ public abstract class EntityRelationEntityIT implements BaseITMarker {
         return new Mapping()
                 .addProperty("type", new Property(Type.keyword))
                 .addProperty(TIMESTAMP.name, new Property(Type.date, "yyyy-MM-dd HH:mm:ss||date_optional_time||epoch_millis"))
-                .addProperty("direction", new Property(Type.keyword))
+                .addProperty(GlobalConstants.EdgeSchema.DIRECTION, new Property(Type.keyword))
                 .addProperty(TEMPERATURE.name, new Property(Type.integer))
-                .addProperty("entityA", new Property()
+                .addProperty(GlobalConstants.EdgeSchema.SOURCE, new Property()
                     .addProperty("id", new Property(Type.keyword))
                     .addProperty("type", new Property(Type.keyword)))
-                .addProperty("entityB", new Property()
+                .addProperty(GlobalConstants.EdgeSchema.DEST, new Property()
                         .addProperty("id", new Property(Type.keyword))
                         .addProperty("type", new Property(Type.keyword)));
     }

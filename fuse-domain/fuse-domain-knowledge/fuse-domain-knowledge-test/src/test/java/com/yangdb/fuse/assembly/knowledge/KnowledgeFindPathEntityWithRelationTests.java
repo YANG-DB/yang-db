@@ -43,7 +43,7 @@ public class KnowledgeFindPathEntityWithRelationTests {
     static SimpleDateFormat sdf;
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup();
+//        Setup.setup(); //todo remove remark when running IT tests
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 

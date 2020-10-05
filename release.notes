@@ -83,6 +83,7 @@ Bugs:
  - Add profiling concepts to cursor requests
 
 Refactorization:
+ - moved string constants to refer from GlobalConsts
  - Complete re-factor for ElasticIndexProviderMappingFactory
     - add support for Nested / Embedded / Unified style schema mapping
 

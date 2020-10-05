@@ -36,8 +36,8 @@ public class KnowledgeSimpleCypherTestSuite implements BaseSuiteMarker {
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("KnowledgeSimpleCypherTestSuite - setup");
-        Setup.setup();
-        loadData();
+        Setup.setup(); //DO NOT REMOVE
+        loadData();   //DO NOT REMOVE
 
     }
 

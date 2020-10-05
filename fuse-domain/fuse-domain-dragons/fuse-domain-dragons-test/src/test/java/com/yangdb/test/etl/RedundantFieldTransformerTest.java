@@ -1,5 +1,6 @@
 package com.yangdb.test.etl;
 
+import com.yangdb.fuse.model.GlobalConstants;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -34,7 +35,7 @@ public class RedundantFieldTransformerTest {
                 .addTransportAddress(new TransportAddress(InetAddress.getByName("52.166.57.208"), 9300));
 
         Map<String, String> fields = new HashMap<>();
-        fields.put("name", "entityB.name");
+        fields.put("name", GlobalConstants.EdgeSchema.DEST_NAME);
 
         //RedundantFieldTransformer transformer = new RedundantFieldTransformer(transportClient, fields, "EntityB.Id", "id", Arrays.asList("dragons"), "Dragon");
 

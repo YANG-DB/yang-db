@@ -3,6 +3,7 @@ package com.yangdb.fuse.assembly.knowledge.staging;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.client.BaseFuseClient;
 import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
@@ -2163,7 +2164,7 @@ public class RealClusterKnowledgeRuleBaseTest {
                                 .put("entityBId", propertyEntityId)
                                 .put("entityBCategory", propertyCategory)
                                 .put("relationId", relationIdString)
-                                .put("direction", "out")
+                                .put(GlobalConstants.EdgeSchema.DIRECTION, "out")
                                 .put("context", context)
                                 .put("category", category)
                                 .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
@@ -2182,7 +2183,7 @@ public class RealClusterKnowledgeRuleBaseTest {
                                 .put("entityAId", propertyEntityId)
                                 .put("entityACategory", propertyCategory)
                                 .put("relationId", relationIdString)
-                                .put("direction", "in")
+                                .put(GlobalConstants.EdgeSchema.DIRECTION, "in")
                                 .put("context", context)
                                 .put("category", category)
                                 .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))

@@ -1,5 +1,6 @@
 package com.yangdb.fuse.assembly.knowledge.cypher;
 
+import com.yangdb.fuse.assembly.knowledge.Setup;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
@@ -35,8 +36,8 @@ public class KnowledgeLoadMergeLogicalGraphTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(true);
-//        loadData();
+       // Setup.setup(true); //todo remove remark when running IT tests
+       // loadData();       //todo remove remark when running IT tests
     }
 
     private static void loadData() throws IOException {

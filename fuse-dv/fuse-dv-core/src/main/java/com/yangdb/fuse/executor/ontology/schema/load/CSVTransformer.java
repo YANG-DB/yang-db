@@ -71,8 +71,10 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
         String assembly = config.getString("assembly");
         this.accessor = new Ontology.Accessor(ontology.get(assembly).orElseThrow(
                 () -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly))));
-        this.indexProvider = indexProvider.get(assembly).orElseThrow(
-                () -> new FuseError.FuseErrorException(new FuseError("No Index Provider present for assembly", "No Index Provider for assembly" + assembly)));
+
+        //if no index provider found with assembly name - generate default one accoring to ontology and simple Static Index Partitioning strategy
+        this.indexProvider = indexProvider.get(assembly).orElseGet(() -> IndexProvider.Builder.generate(accessor.get()));
+
         this.schema = schema;
         this.idGenerator = idGenerator;
         this.client = client;

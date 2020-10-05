@@ -1,4 +1,4 @@
-package com.yangdb.fuse.unipop.controller.promise;
+package com.yangdb.fuse.model;
 
 /*-
  * #%L
@@ -24,10 +24,12 @@ package com.yangdb.fuse.unipop.controller.promise;
  * Created by lior.perry on 19/03/2017.
  */
 public class GlobalConstants {
+    public static String ID = "id";
+
     public static class HasKeys {
         public static final String PROMISE = "promise";
         public static final String CONSTRAINT = "constraint";
-        public static final String DIRECTION = "direction";
+        public static final String DIRECTION = GlobalConstants.EdgeSchema.DIRECTION;
         public static final String COUNT = "count";
     }
 
@@ -38,9 +40,16 @@ public class GlobalConstants {
     }
 
     public static class EdgeSchema {
-        public static String SOURCE_ID = "entityA.id";
-        public static String DEST_ID = "entityB.id";
+        public static String DIRECTION = "direction";
+
         public static String SOURCE = "entityA";
+        public static String SOURCE_ID = "entityA.id";
+        public static String SOURCE_TYPE = "entityA.type";
+        public static String SOURCE_NAME = "entityA.name";
+
         public static String DEST = "entityB";
+        public static String DEST_ID = "entityB.id";
+        public static String DEST_TYPE = "entityB.type";
+        public static String DEST_NAME = "entityB.name";
     }
 }

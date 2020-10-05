@@ -1,6 +1,7 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.services.TestsConfiguration;
 import com.yangdb.fuse.services.engine2.NonRedundantTestSuite;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
@@ -95,7 +96,7 @@ public class PromiseEdgeIT implements BaseITMarker {
     public void testPromiseEdges() {
 
         //basic edge constraint
-        Traversal constraint = __.and(__.has(T.label, "fire"), __.has("direction", "out"));
+        Traversal constraint = __.and(__.has(T.label, "fire"), __.has(GlobalConstants.EdgeSchema.DIRECTION, "out"));
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
@@ -234,13 +235,13 @@ public class PromiseEdgeIT implements BaseITMarker {
 
             Map<String, Object> entityA = new HashMap<>();
             entityA.put("id", "d" + r.nextInt(9));
-            fire.put("entityA", entityA);
+            fire.put(GlobalConstants.EdgeSchema.SOURCE, entityA);
 
             Map<String, Object> entityB = new HashMap<>();
             entityB.put("id", "d" + r.nextInt(9));
-            fire.put("entityB", entityB);
+            fire.put(GlobalConstants.EdgeSchema.DEST, entityB);
 
-            fire.put("direction", "out");
+            fire.put(GlobalConstants.EdgeSchema.DIRECTION, "out");
             fire.put("time", DateTime.now().toString());
 
             ownDocs.add(fire);

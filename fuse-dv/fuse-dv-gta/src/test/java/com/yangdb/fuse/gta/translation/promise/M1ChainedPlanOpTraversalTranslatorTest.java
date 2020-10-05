@@ -19,7 +19,7 @@ import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.EUntyped;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.promise.PromiseGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -67,7 +67,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                 __.start().V().as("A")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
                         .outE(GlobalConstants.Labels.PROMISE).as("A-->B")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has(GlobalConstants.EdgeSchema.DIRECTION, Direction.OUT))))
                         .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -83,7 +83,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                 new PromiseGraph().traversal().V().as("A")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
                         .outE(GlobalConstants.Labels.PROMISE).as("A-->B")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has(GlobalConstants.EdgeSchema.DIRECTION, Direction.OUT))))
                         .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -99,7 +99,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                 new PromiseGraph().traversal().V().as("B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                         .outE(GlobalConstants.Labels.PROMISE).as("B-->A")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has(GlobalConstants.EdgeSchema.DIRECTION, Direction.OUT))))
                         .otherV().as("A");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);

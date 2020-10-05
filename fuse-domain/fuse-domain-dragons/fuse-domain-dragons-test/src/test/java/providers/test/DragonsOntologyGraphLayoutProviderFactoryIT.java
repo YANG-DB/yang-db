@@ -1,5 +1,6 @@
 package providers.test;
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.schemaProviders.GraphLayoutProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import com.yangdb.test.BaseITMarker;
@@ -23,7 +24,7 @@ public class DragonsOntologyGraphLayoutProviderFactoryIT implements BaseITMarker
         GraphLayoutProvider layoutProvider = factory.get(createDragonsOntologyLong());
         Optional<GraphRedundantPropertySchema> property = layoutProvider.getRedundantProperty("Freez", new GraphRedundantPropertySchema.Impl("name", "name", "string"));
 
-        Assert.assertEquals(property.get().getPropertyRedundantName(),"entityB.name");
+        Assert.assertEquals(property.get().getPropertyRedundantName(), GlobalConstants.EdgeSchema.DEST_NAME);
         Assert.assertEquals(property.get().getType(),"string");
         Assert.assertEquals(property.get().getName(),"name");
         System.out.println("testSingleRedundantProp-Completed");
@@ -40,7 +41,7 @@ public class DragonsOntologyGraphLayoutProviderFactoryIT implements BaseITMarker
         Assert.assertEquals(property.get().getName(),"color");
 
         property = layoutProvider.getRedundantProperty("Fire", new GraphRedundantPropertySchema.Impl("name", "name", "string"));
-        Assert.assertEquals(property.get().getPropertyRedundantName(),"entityB.name");
+        Assert.assertEquals(property.get().getPropertyRedundantName(),GlobalConstants.EdgeSchema.DEST_NAME);
         Assert.assertEquals(property.get().getType(),"string");
         Assert.assertEquals(property.get().getName(),"name");
         System.out.println("testDoubleRedundantProp-Completed");

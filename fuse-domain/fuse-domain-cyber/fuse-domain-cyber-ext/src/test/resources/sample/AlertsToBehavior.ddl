@@ -30,7 +30,5 @@ create table AlertsToBehaviors
     CONSTRAINT fk_alrets_to_type_obj FOREIGN KEY (to_type_id) REFERENCES lov_CyberObjectTypes(type_id),
     CONSTRAINT fk_alerts_traces FOREIGN KEY (trace_id) REFERENCES Traces( trace_id)
 
-
-
 );
 

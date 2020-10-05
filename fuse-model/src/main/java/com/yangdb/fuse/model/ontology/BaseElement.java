@@ -26,6 +26,7 @@ import java.util.List;
  * common attributed element shared by any properties enabled element
  */
 public interface BaseElement {
+    String getIdField();
     List<String> getMetadata();
     List<String> fields();
     List<String> getProperties();

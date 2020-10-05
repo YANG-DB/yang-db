@@ -42,7 +42,7 @@ public class KnowledgeSimpleRvalueWithFilterE2ETests {
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(true);
+//        Setup.setup(true); //todo remove remark when running IT tests
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Rvalue entities for tests

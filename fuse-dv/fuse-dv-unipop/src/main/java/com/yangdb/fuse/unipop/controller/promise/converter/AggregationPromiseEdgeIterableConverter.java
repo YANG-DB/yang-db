@@ -20,7 +20,7 @@ package com.yangdb.fuse.unipop.controller.promise.converter;
  * #L%
  */
 
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
 import com.yangdb.fuse.unipop.controller.utils.labelProvider.LabelProvider;
 import com.yangdb.fuse.unipop.controller.common.converter.ElementConverter;
