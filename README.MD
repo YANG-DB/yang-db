@@ -11,19 +11,14 @@ From Graph to Elastic - A tail of a Yang-DB...
 
 ### Run 
 * Download [yang.db] (https://github.com/YANG-DB/yang-db) latest docker release docker pull yangdb/yang.db
-* Run: docker run -p 8888:88 --net=host -it yangdb/yang.db:Sep-2019-RC3
-* Changing yang.db's configuration using docker environment variable: <br> 
-
-> docker run \ <br>
-> -e ELASTICSEARCH_HOST=1.1.1.1 \ <br>
-> -e ELASTICSEARCH_CLUSTER_NAME='staging' \ <br>
-> -p 8888:88 -it yangdb/yang.db:Sep-2019-RC1    
+* Run: docker run -p 8888:88 --net=host -it yangdb/yang.db:latest
 
 #### Project YANG-DB
 * http://www.yangdb.org/ 
 
 * [wiki](https://github.com/YANG-DB/yang-db/wiki)
 * [Version Info](https://github.com/YANG-DB/yang-db/wiki/Version-Features-Summary)
+* [Release.notes](https://github.com/YANG-DB/yang-db/wiki/V0.51---Relaese.notes)
 
 ##### Members:
 
