@@ -830,7 +830,7 @@
       "ePairs": [
         {
           "eTypeA": "traceentities",
-          "eTypeB": "lov_behaviortypes"
+          "eTypeB": "lov_behaviorstypes"
         }
       ]
     },

@@ -23,7 +23,7 @@ create table TraceEntities
 
     CONSTRAINT fk_traces FOREIGN KEY (trace_id) REFERENCES Traces(trace_id),
     CONSTRAINT fk_trace_behavior FOREIGN KEY (behavior_id) REFERENCES Behaviors(behavior_id),
-    CONSTRAINT fk_trace_behavior_types FOREIGN KEY (behavior_type_id) REFERENCES lov_BehaviorTypes(type_id),
+    CONSTRAINT fk_trace_behavior_types FOREIGN KEY (behavior_type_id) REFERENCES lov_BehaviorsTypes(type_id),
     CONSTRAINT fk_trace_entities FOREIGN KEY (entity_id) REFERENCES Entities(entity_hash)
 
 );
