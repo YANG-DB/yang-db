@@ -10,8 +10,10 @@ From Graph to Elastic - A tail of a Yang-DB...
 * Download [yang.db](https://github.com/YANG-DB/yang-db) get latest docker release  docker pull yangdb/yang.db
 
 ### Run 
+* Download V0.5 zip file (https://github.com/YANG-DB/yang-db/releases/tag/v0.5)
 * Download [yang.db] (https://github.com/YANG-DB/yang-db) latest docker release docker pull yangdb/yang.db
-* Run: docker run -p 8888:88 --net=host -it yangdb/yang.db:latest
+* Run: docker run -p 8888:88 --net=host -it yangdb/yang.db:latest (https://hub.docker.com/r/yangdb/yang.db/tags)
+
 
 #### Project YANG-DB
 * http://www.yangdb.org/ 
