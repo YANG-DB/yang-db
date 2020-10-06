@@ -1,12 +1,9 @@
 package com.yangdb.fuse.dispatcher.query.rdf;
 
-import com.google.common.collect.Sets;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2OntologyTransformer;
 import com.yangdb.fuse.model.ontology.EnumeratedType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.ontology.Value;
-import graphql.schema.GraphQLSchema;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -27,11 +24,11 @@ public class OWLPizzaOntologyTranslatorTest {
     @BeforeClass
     public static void setUp() throws Exception {
         URL pizza = Thread.currentThread().getContextClassLoader().getResource("rdf/pizza.owl");
-        OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
+        OWLToOntologyTransformer transformer = new OWLToOntologyTransformer();
         //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
         assert pizza != null;
 
-        ontology = transformer.transform(Collections.singletonList(
+        ontology = transformer.transform("pizza", Collections.singletonList(
                 new String(Files.readAllBytes(new File(pizza.toURI()).toPath()))));
         Assert.assertNotNull(ontology);
     }

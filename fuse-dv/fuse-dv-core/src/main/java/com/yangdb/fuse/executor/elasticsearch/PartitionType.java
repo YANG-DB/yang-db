@@ -1,8 +1,8 @@
-package com.yangdb.fuse.dispatcher.ontology;
+package com.yangdb.fuse.executor.elasticsearch;
 
 /*-
  * #%L
- * fuse-core
+ * fuse-dv-core
  * %%
  * Copyright (C) 2016 - 2020 The YangDb Graph Database Project
  * %%
@@ -20,7 +20,11 @@ package com.yangdb.fuse.dispatcher.ontology;
  * #L%
  */
 
-public interface OntologyTransformerIfc<OntIn,OntOut> {
-    OntOut transform(String ontologyName, OntIn source);
-    OntIn translate(OntOut source);
+public enum PartitionType {
+    //a complete index
+    INDEX,
+    // a child (nested document)
+    CHILD,
+    //embedded document - flattened according to (elastic) dot pattern
+    EMBEDDED
 }

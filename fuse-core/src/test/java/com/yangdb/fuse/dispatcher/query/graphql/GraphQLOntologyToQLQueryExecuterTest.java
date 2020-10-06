@@ -30,10 +30,10 @@ public class GraphQLOntologyToQLQueryExecuterTest {
     public static void setUp() throws Exception {
         InputStream schemaInput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/starWars.graphql");
         InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql//");
-        GraphQL2OntologyTransformer graphQL2OntologyTransformer = new GraphQL2OntologyTransformer();
-        ontology = graphQL2OntologyTransformer.transform(schemaInput,whereInoput);
+        GraphQLToOntologyTransformer graphQLToOntologyTransformer = new GraphQLToOntologyTransformer();
+        ontology = graphQLToOntologyTransformer.transform(schemaInput,whereInoput);
         //creating the graphQL from the newly created ontology
-        GraphQLSchema qlSchema = graphQL2OntologyTransformer.transform(ontology);
+        GraphQLSchema qlSchema = graphQLToOntologyTransformer.transform(ontology);
         //registry definitions
         TypeDefinitionRegistry registry = new TypeDefinitionRegistry();
         Optional<GraphQLError> error = registry.addAll(qlSchema.getAllTypesAsList().stream()

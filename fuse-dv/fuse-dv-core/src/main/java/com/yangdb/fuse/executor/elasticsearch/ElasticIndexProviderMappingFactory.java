@@ -100,7 +100,7 @@ public class ElasticIndexProviderMappingFactory {
             } catch (ResourceAlreadyExistsException e) {
                 responses.add(new Tuple2<>(false,e.getIndex().getName()));
             } catch (Throwable t) {
-                t.printStackTrace();
+                throw new FuseError.FuseErrorException("Error Generating Indices for E/S ",t);
             }
         });
         return responses;
@@ -120,9 +120,8 @@ public class ElasticIndexProviderMappingFactory {
             return responses.stream().map(r -> new Tuple2<>(r._1, r._2.isAcknowledged()))
                     .collect(Collectors.toList());
         } catch (Throwable t) {
-            t.printStackTrace();
+            throw new FuseError.FuseErrorException("Error Generating Mapping for E/S ",t);
         }
-        return Collections.emptyList();
     }
 
     /**
@@ -485,7 +484,8 @@ public class ElasticIndexProviderMappingFactory {
      * @return
      */
     public Settings generateSettings(EntityType entityType, Entity entity, String label) {
-        if (!ontology.entity(entityType.getName()).get().getMetadata().contains("id"))
+        String idField = ontology.entity(entityType.getName()).get().getIdField();
+        if (!ontology.entity(entityType.getName()).get().fields().contains(idField))
             throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Entity " + label + " not containing id metadata property "));
 
         // TODO: 05/12/2019  - use index provider to correctly build index settings
@@ -498,7 +498,8 @@ public class ElasticIndexProviderMappingFactory {
      * @return
      */
     public Settings generateSettings(RelationshipType relationType, Relation rel, String label) {
-        if (!ontology.relation(relationType.getName()).get().getMetadata().contains("id"))
+        String idField = ontology.relation(relationType.getName()).get().getIdField();
+        if (!ontology.relation(relationType.getName()).get().getMetadata().contains(idField))
             throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Relationship " + label + " not containing id metadata property "));
 
         return builder(rel);

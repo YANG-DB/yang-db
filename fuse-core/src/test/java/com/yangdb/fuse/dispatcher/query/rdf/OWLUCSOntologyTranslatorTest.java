@@ -24,11 +24,11 @@ public class OWLUCSOntologyTranslatorTest {
     @BeforeClass
     public static void setUp() throws Exception {
         URL ucs = Thread.currentThread().getContextClassLoader().getResource("rdf/ucs.owl");
-        OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
+        OWLToOntologyTransformer transformer = new OWLToOntologyTransformer();
         //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
         assert ucs != null;
 
-        ontology = transformer.transform(Collections.singletonList(
+        ontology = transformer.transform("Cyber", Collections.singletonList(
                 new String(Files.readAllBytes(new File(ucs.toURI()).toPath()))));
         Assert.assertNotNull(ontology);
     }

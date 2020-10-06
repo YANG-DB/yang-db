@@ -22,7 +22,7 @@ public class GraphQLOntologyTranslatorTest {
     public static void setUp() throws Exception {
         InputStream schemaInput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/starWars.graphql");
         InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql");
-        GraphQL2OntologyTransformer transformer = new GraphQL2OntologyTransformer();
+        GraphQLToOntologyTransformer transformer = new GraphQLToOntologyTransformer();
 
         ontology = transformer.transform(whereInoput, schemaInput);
         graphQLSchema = transformer.getGraphQLSchema();
@@ -91,8 +91,8 @@ public class GraphQLOntologyTranslatorTest {
 
     @Test
     public void testOntology2GraphQLTransformation() {
-        GraphQLSchema targetSchema = new GraphQL2OntologyTransformer().transform(ontology);
-        Ontology ontologyTarget = new GraphQL2OntologyTransformer().transform(targetSchema);
+        GraphQLSchema targetSchema = new GraphQLToOntologyTransformer().transform(ontology);
+        Ontology ontologyTarget = new GraphQLToOntologyTransformer().transform(targetSchema);
 
         Assert.assertEquals(ontology.getEntityTypes(),ontologyTarget.getEntityTypes());
         Assert.assertEquals(ontology.getRelationshipTypes(),ontologyTarget.getRelationshipTypes());

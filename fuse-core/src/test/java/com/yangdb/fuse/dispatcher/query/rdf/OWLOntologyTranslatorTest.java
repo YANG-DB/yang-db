@@ -22,12 +22,12 @@ public class OWLOntologyTranslatorTest {
     public static void setUp() throws Exception {
         URL workspace = Thread.currentThread().getContextClassLoader().getResource("rdf/workspace.owl");
         URL user = Thread.currentThread().getContextClassLoader().getResource("rdf/user.owl");
-        OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
+        OWLToOntologyTransformer transformer = new OWLToOntologyTransformer();
         //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
         assert user != null;
         assert workspace != null;
 
-        ontology = transformer.transform(Arrays.asList(
+        ontology = transformer.transform("Social", Arrays.asList(
                 new String(Files.readAllBytes(new File(user.toURI()).toPath())),
                 new String(Files.readAllBytes(new File(workspace.toURI()).toPath()))));
         Assert.assertNotNull(ontology);

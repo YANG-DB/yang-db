@@ -35,7 +35,6 @@ create table Behaviors
     stage_id                   int,
 
     CONSTRAINT fk_behavior_types FOREIGN KEY (type_id) REFERENCES lov_BehaviorsTypes(type_id),
-    CONSTRAINT fk_behavior_types FOREIGN KEY (type_id) REFERENCES lov_BehaviorsTypes(type_id),
     CONSTRAINT fk_behavior_by_type_obj FOREIGN KEY (by_type_id) REFERENCES lov_CyberObjectTypes(type_id),
     CONSTRAINT fk_behavior_to_type_obj FOREIGN KEY (to_type_id) REFERENCES lov_CyberObjectTypes(type_id)
 

@@ -24,11 +24,11 @@ public class OWLSIOCOntologyTranslatorTest {
     @BeforeClass
     public static void setUp() throws Exception {
         URL sioc = Thread.currentThread().getContextClassLoader().getResource("rdf/sioc.owl");
-        OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
+        OWLToOntologyTransformer transformer = new OWLToOntologyTransformer();
         //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
         assert sioc != null;
 
-        ontology = transformer.transform(Collections.singletonList(
+        ontology = transformer.transform("Cyber", Collections.singletonList(
                 new String(Files.readAllBytes(new File(sioc.toURI()).toPath()))));
         Assert.assertNotNull(ontology);
     }

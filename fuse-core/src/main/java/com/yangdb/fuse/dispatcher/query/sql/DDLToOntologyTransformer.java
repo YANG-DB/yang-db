@@ -27,8 +27,6 @@ import com.yangdb.fuse.model.ontology.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static org.jooq.impl.ConstraintStatement.*;
@@ -42,20 +40,19 @@ import org.jooq.impl.*;
 /**
  * convert DDL (SQL Definition Language) structure into V1 ontology
  */
-public class DDL2OntologyTransformer implements OntologyTransformerIfc<List<String>, Ontology> {
+public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<String>, Ontology> {
     private DefaultDSLContext context;
     private Parser parser;
 
     @Inject
-    public DDL2OntologyTransformer() {
-
-    }
+    public DDLToOntologyTransformer() {}
 
     @Override
-    public Ontology transform(List<String> source) {
+    public Ontology transform(String ontologyName, List<String> source) {
         Ontology.OntologyBuilder ontologyBuilder = Ontology.OntologyBuilder.anOntology();
         parser = using(new DefaultConfiguration()).parser();
         source.forEach(s -> parseTable(s, ontologyBuilder));
+        ontologyBuilder.withOnt(ontologyName);
         return ontologyBuilder.build();
     }
 

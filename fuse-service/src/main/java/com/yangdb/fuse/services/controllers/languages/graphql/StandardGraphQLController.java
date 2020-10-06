@@ -22,7 +22,7 @@ package com.yangdb.fuse.services.controllers.languages.graphql;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.dispatcher.query.graphql.GraphQL2OntologyTransformer;
+import com.yangdb.fuse.dispatcher.query.graphql.GraphQLToOntologyTransformer;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;
@@ -42,7 +42,7 @@ public class StandardGraphQLController implements SchemaTranslatorController {
 
     //region Constructors
     @Inject
-    public StandardGraphQLController(GraphQL2OntologyTransformer transformer, OntologyProvider provider) {
+    public StandardGraphQLController(GraphQLToOntologyTransformer transformer, OntologyProvider provider) {
         this.transformer = transformer;
         this.provider = provider;
     }
@@ -51,9 +51,9 @@ public class StandardGraphQLController implements SchemaTranslatorController {
     //region CatalogController Implementation
 
     @Override
-    public ContentResponse<Ontology> translate(String graphQLSchema) {
+    public ContentResponse<Ontology> translate(String ontology, String graphQLSchema) {
         return Builder.<Ontology>builder(OK, NOT_FOUND)
-                .data(Optional.of(this.transformer.transform(graphQLSchema)))
+                .data(Optional.of(this.transformer.transform(ontology, graphQLSchema)))
                 .compose();
     }
 
@@ -71,7 +71,7 @@ public class StandardGraphQLController implements SchemaTranslatorController {
     //region Private Methods
 
     //region Fields
-    private GraphQL2OntologyTransformer transformer;
+    private GraphQLToOntologyTransformer transformer;
     private OntologyProvider provider;
 
     //endregion

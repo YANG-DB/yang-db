@@ -1,7 +1,11 @@
 package com.yangdb.cyber.ontology;
 
-import com.yangdb.fuse.dispatcher.query.sql.DDL2OntologyTransformer;
+import com.yangdb.fuse.dispatcher.query.sql.DDLToOntologyTransformer;
+import com.yangdb.fuse.executor.elasticsearch.MappingIndexType;
+import com.yangdb.fuse.executor.ontology.schema.DDLToIndexProviderTranslator;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.schema.IndexProvider;
+import com.yangdb.fuse.model.schema.Relation;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,12 +15,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+
+import static java.util.stream.Collectors.groupingBy;
 
 public class DDLToOntologyGenerator {
     public static List<String> tables ;
-    public static DDL2OntologyTransformer transformer;
-    public static Ontology ontology;
+    public static DDLToOntologyTransformer transformer;
+    public static DDLToIndexProviderTranslator indexProviderTranslator;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -31,15 +38,37 @@ public class DDLToOntologyGenerator {
                         e.printStackTrace();
                     }
                 });
-        transformer = new DDL2OntologyTransformer();
+        transformer = new DDLToOntologyTransformer();
+        indexProviderTranslator =  new DDLToIndexProviderTranslator();
     }
 
     @Test
+    /**
+     * test Ontology Creation according to given list of DDL queries
+     */
     public void testOntologyCreation() {
-        ontology = transformer.transform(tables);
+        Ontology ontology = transformer.transform("Cyber", tables);
         Assert.assertNotNull(ontology);
         Assert.assertEquals(12,ontology.getEntityTypes().size());
-        Assert.assertEquals(31,ontology.getRelationshipTypes().size());
+        Assert.assertEquals(30,ontology.getRelationshipTypes().size());
         Assert.assertEquals(406,ontology.getProperties().size());
+    }
+
+    @Test
+    /**
+     * test index provider creation according to given list of DDL queries + ontology
+     */
+    public void testIndexProviderCreation() {
+        IndexProvider indexProvider = indexProviderTranslator.translate("Cyber", tables);
+        Assert.assertNotNull(indexProvider);
+
+        Map<String, List<Relation>> map = indexProvider.getRelations().stream()
+                .filter(r -> r.getPartition().equals(MappingIndexType.UNIFIED.name()))
+                .collect(groupingBy(r->r.getProps().getValues().get(0)));
+
+        Assert.assertEquals(12,indexProvider.getEntities().size());
+        Assert.assertEquals(7, map.size());
+        Assert.assertEquals(30,indexProvider.getRelations().size());
+
     }
 }

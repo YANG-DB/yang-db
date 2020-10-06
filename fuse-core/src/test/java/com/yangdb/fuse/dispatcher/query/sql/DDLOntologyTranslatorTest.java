@@ -3,12 +3,9 @@ package com.yangdb.fuse.dispatcher.query.sql;
 import com.yangdb.fuse.model.ontology.Ontology;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -16,7 +13,7 @@ import java.util.*;
 public class DDLOntologyTranslatorTest {
     public static Ontology ontology;
     public static List<String> tables ;
-    public static DDL2OntologyTransformer transformer;
+    public static DDLToOntologyTransformer transformer;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -31,12 +28,12 @@ public class DDLOntologyTranslatorTest {
                         e.printStackTrace();
                     }
                 });
-        transformer = new DDL2OntologyTransformer();
+        transformer = new DDLToOntologyTransformer();
     }
 
     @Test
     public void testTranslation() {
-        ontology = transformer.transform(tables);
+        ontology = transformer.transform("Books", tables);
         Assert.assertNotNull(ontology);
         Assert.assertEquals(ontology.getEnumeratedTypes().size(), 0);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);

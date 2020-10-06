@@ -22,8 +22,7 @@ package com.yangdb.fuse.services.controllers.languages.sparql;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
-import com.yangdb.fuse.dispatcher.query.rdf.OWL2OntologyTransformer;
+import com.yangdb.fuse.dispatcher.query.rdf.OWLToOntologyTransformer;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;
@@ -44,7 +43,7 @@ public class StandardSparqlController implements SchemaTranslatorController {
 
     //region Constructors
     @Inject
-    public StandardSparqlController(OWL2OntologyTransformer transformer, OntologyProvider provider) {
+    public StandardSparqlController(OWLToOntologyTransformer transformer, OntologyProvider provider) {
         this.transformer = transformer;
         this.provider = provider;
     }
@@ -52,9 +51,9 @@ public class StandardSparqlController implements SchemaTranslatorController {
 
 
     @Override
-    public ContentResponse<Ontology> translate(String owlSchema) {
+    public ContentResponse<Ontology> translate(String ontology, String owlSchema) {
         return Builder.<Ontology>builder(OK, NOT_FOUND)
-                .data(Optional.of(this.transformer.transform(Arrays.asList(owlSchema))))
+                .data(Optional.of(this.transformer.transform(ontology, Arrays.asList(owlSchema))))
                 .compose();
     }
 
@@ -74,7 +73,7 @@ public class StandardSparqlController implements SchemaTranslatorController {
     //region Private Methods
 
     //region Fields
-    private OWL2OntologyTransformer transformer;
+    private OWLToOntologyTransformer transformer;
     private OntologyProvider provider;
 
     //endregion

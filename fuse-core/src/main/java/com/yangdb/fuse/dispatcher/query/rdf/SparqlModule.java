@@ -36,7 +36,7 @@ public class SparqlModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(OWL2OntologyTransformer.class).asEagerSingleton();
+        binder.bind(OWLToOntologyTransformer.class).asEagerSingleton();
     }
 
     //endregion

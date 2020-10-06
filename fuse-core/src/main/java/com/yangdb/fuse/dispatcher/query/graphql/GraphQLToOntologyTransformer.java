@@ -42,7 +42,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.yangdb.fuse.dispatcher.query.graphql.GraphQL2OntologyTransformer.WhereSupportGraphQL.*;
+import static com.yangdb.fuse.dispatcher.query.graphql.GraphQLToOntologyTransformer.WhereSupportGraphQL.*;
 import static graphql.Scalars.*;
 import static graphql.schema.GraphQLSchema.newSchema;
 import static graphql.schema.GraphQLTypeReference.typeRef;
@@ -50,7 +50,7 @@ import static graphql.schema.GraphQLTypeReference.typeRef;
 /**
  * API that will transform a GraphQL schema into YangDb ontology schema
  */
-public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<String, Ontology>, GraphQLSchemaUtils {
+public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<String, Ontology>, GraphQLSchemaUtils {
     //where input object
     public static final String QUERY = "Query";
 
@@ -66,7 +66,7 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
     private Set<Property> properties = new HashSet<>();
 
     @Inject
-    public GraphQL2OntologyTransformer() {
+    public GraphQLToOntologyTransformer() {
         languageTypes.addAll(Arrays.asList(QUERY, WHERE_OPERATOR, WHERE_CLAUSE, CONSTRAINT));
     }
 
@@ -93,8 +93,10 @@ public class GraphQL2OntologyTransformer implements OntologyTransformerIfc<Strin
      * @param source
      * @return
      */
-    public Ontology transform(String source) {
-        return transform(IOUtils.toInputStream(source));
+    public Ontology transform(String ontologyName, String source) {
+        Ontology ontology = transform(IOUtils.toInputStream(source));
+        ontology.setOnt(ontologyName);
+        return ontology;
     }
 
     @Override

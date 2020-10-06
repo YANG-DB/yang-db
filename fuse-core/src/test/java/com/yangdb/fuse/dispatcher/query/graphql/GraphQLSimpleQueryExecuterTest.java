@@ -25,9 +25,9 @@ public class GraphQLSimpleQueryExecuterTest {
     public static void setUp() throws Exception {
         InputStream schemaInput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/starWars.graphql");
         InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql");
-        GraphQL2OntologyTransformer graphQL2OntologyTransformer = new GraphQL2OntologyTransformer();
-        ontology = graphQL2OntologyTransformer.transform(schemaInput,whereInoput);
-        transformer = new GraphQL2QueryTransformer(graphQL2OntologyTransformer, new OntologyProvider() {
+        GraphQLToOntologyTransformer graphQLToOntologyTransformer = new GraphQLToOntologyTransformer();
+        ontology = graphQLToOntologyTransformer.transform(schemaInput,whereInoput);
+        transformer = new GraphQL2QueryTransformer(graphQLToOntologyTransformer, new OntologyProvider() {
             @Override
             public Optional<Ontology> get(String id) {
                 return Optional.of(ontology);

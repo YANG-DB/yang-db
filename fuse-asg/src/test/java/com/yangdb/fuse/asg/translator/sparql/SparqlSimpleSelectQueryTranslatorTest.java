@@ -2,7 +2,7 @@
 package com.yangdb.fuse.asg.translator.sparql;
 
 import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyProvider;
-import com.yangdb.fuse.dispatcher.query.rdf.OWL2OntologyTransformer;
+import com.yangdb.fuse.dispatcher.query.rdf.OWLToOntologyTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -38,18 +38,17 @@ public class SparqlSimpleSelectQueryTranslatorTest {
         URL personas = Thread.currentThread().getContextClassLoader().getResource("sparql/foaf.owl");
         URL dbpedia = Thread.currentThread().getContextClassLoader().getResource("sparql/dbpedia.owl");
 
-        OWL2OntologyTransformer transformer = new OWL2OntologyTransformer();
+        OWLToOntologyTransformer transformer = new OWLToOntologyTransformer();
         //load owl ontologies - the order of the ontologies is important in regards with the owl dependencies
         assert rdf_ns != null;
         assert personas != null;
         assert dbpedia != null;
 
-        Ontology ontology = transformer.transform(Arrays.asList(
+        Ontology ontology = transformer.transform(IRI.create( OntologyNameSpace.defaultNameSpace +"foaf").toString(), Arrays.asList(
                 new String(Files.readAllBytes(new File(rdf_ns.toURI()).toPath())),
                 new String(Files.readAllBytes(new File(personas.toURI()).toPath())),
                 new String(Files.readAllBytes(new File(dbpedia.toURI()).toPath()))));
 
-        ontology.setOnt(IRI.create(ontology.getOnt() + "foaf").toString());
         sparQLTransformer = new AsgSparQLTransformer(new SparqlTranslator(new SimpleOntologyProvider(ontology), new M1SparqlAsgStrategyRegistrar()));
         // transformer
         Assert.assertNotNull(ontology);

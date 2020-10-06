@@ -32,9 +32,7 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.impl.DefaultNodeSet;
 import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet;
-import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyDomainAxiomImpl;
@@ -49,13 +47,13 @@ import static com.yangdb.fuse.model.ontology.DirectiveType.DirectiveClasses.RESO
 /**
  * transform OWL RDF ontology schema to YangDB ontology support
  */
-public class OWL2OntologyTransformer implements OntologyTransformerIfc<List<String>, Ontology> {
+public class OWLToOntologyTransformer implements OntologyTransformerIfc<List<String>, Ontology> {
     private OWLOntologyManager manager;
     private OWLOntologyLoaderConfiguration config;
     private IRI root;
     private List<DirectiveType> directiveTypes;
 
-    public OWL2OntologyTransformer() {
+    public OWLToOntologyTransformer() {
         root = IRI.create(OntologyNameSpace.defaultNameSpace);
         config = new OWLOntologyLoaderConfiguration();
         manager = createOwlOntologyManager(config);
@@ -88,10 +86,11 @@ public class OWL2OntologyTransformer implements OntologyTransformerIfc<List<Stri
      * load owl ontologies -
      *  the order of the ontologies is important in regards with the owl dependencies
      */
-    public Ontology transform(List<String> source) {
+    public Ontology transform(String ontologyName, List<String> source) {
         Ontology.OntologyBuilder builder = Ontology.OntologyBuilder.anOntology();
         return importOWL(builder, source)
                 .withDirectives(directiveTypes)
+                .withOnt(ontologyName)
                 .build();
     }
 

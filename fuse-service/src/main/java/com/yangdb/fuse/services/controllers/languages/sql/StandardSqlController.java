@@ -22,7 +22,7 @@ package com.yangdb.fuse.services.controllers.languages.sql;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.dispatcher.query.sql.DDL2OntologyTransformer;
+import com.yangdb.fuse.dispatcher.query.sql.DDLToOntologyTransformer;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;
@@ -43,7 +43,7 @@ public class StandardSqlController implements SchemaTranslatorController {
 
     //region Constructors
     @Inject
-    public StandardSqlController(DDL2OntologyTransformer transformer, OntologyProvider provider) {
+    public StandardSqlController(DDLToOntologyTransformer transformer, OntologyProvider provider) {
         this.transformer = transformer;
         this.provider = provider;
     }
@@ -51,9 +51,9 @@ public class StandardSqlController implements SchemaTranslatorController {
 
 
     @Override
-    public ContentResponse<Ontology> translate(String ddlSchema) {
+    public ContentResponse<Ontology> translate(String ontology, String ddlSchema) {
         return Builder.<Ontology>builder(OK, NOT_FOUND)
-                .data(Optional.of(this.transformer.transform(Arrays.asList(ddlSchema))))
+                .data(Optional.of(this.transformer.transform(ontology, Arrays.asList(ddlSchema))))
                 .compose();
     }
 
@@ -72,7 +72,7 @@ public class StandardSqlController implements SchemaTranslatorController {
     //region Private Methods
 
     //region Fields
-    private DDL2OntologyTransformer transformer;
+    private DDLToOntologyTransformer transformer;
     private OntologyProvider provider;
 
     //endregion

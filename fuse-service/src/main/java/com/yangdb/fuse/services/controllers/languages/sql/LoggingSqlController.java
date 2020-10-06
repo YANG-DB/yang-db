@@ -57,7 +57,7 @@ public class LoggingSqlController extends LoggingControllerBase<SchemaTranslator
 
     //region CatalogController Implementation
     @Override
-    public ContentResponse<Ontology> translate(String sql) {
+    public ContentResponse<Ontology> translate(String ontology, String sql) {
         return new LoggingSyncMethodDecorator<ContentResponse<Ontology>>(
                 this.logger,
                 this.metricRegistry,
@@ -65,7 +65,7 @@ public class LoggingSqlController extends LoggingControllerBase<SchemaTranslator
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.translate(sql), this.resultHandler());
+                .decorate(() -> this.controller.translate(ontology, sql), this.resultHandler());
     }
 
     @Override

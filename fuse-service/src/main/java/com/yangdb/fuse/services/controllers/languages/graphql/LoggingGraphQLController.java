@@ -57,7 +57,7 @@ public class LoggingGraphQLController extends LoggingControllerBase<SchemaTransl
 
     //region CatalogController Implementation
     @Override
-    public ContentResponse<Ontology> translate(String graphqlschema) {
+    public ContentResponse<Ontology> translate(String ontology, String graphqlschema) {
         return new LoggingSyncMethodDecorator<ContentResponse<Ontology>>(
                 this.logger,
                 this.metricRegistry,
@@ -65,7 +65,7 @@ public class LoggingGraphQLController extends LoggingControllerBase<SchemaTransl
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.translate(graphqlschema), this.resultHandler());
+                .decorate(() -> this.controller.translate(ontology, graphqlschema), this.resultHandler());
     }
 
     @Override

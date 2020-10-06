@@ -24,8 +24,6 @@ import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.logging.Route;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.ContentResponse;
-import com.yangdb.fuse.services.controllers.SchemaTranslatorController;
-import com.yangdb.fuse.services.controllers.languages.graphql.StandardGraphQLController;
 import com.yangdb.fuse.services.controllers.languages.sparql.StandardSparqlController;
 import org.jooby.Jooby;
 import org.jooby.Results;
@@ -41,12 +39,12 @@ public class SparqlControllerRegistrar extends AppControllerRegistrarBase<Standa
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** create new ontology*/
-        app.post("/fuse/sparql/ontology"
+        app.post("/fuse/sparql/ontology/:id"
                 ,req -> {
                     Route.of("translateOwlSchema").write();
                     String owlSchmea = req.body(String.class);
                     req.set(String.class, owlSchmea);
-                    ContentResponse<Ontology> response = this.getController(app).translate(owlSchmea);
+                    ContentResponse<Ontology> response = this.getController(app).translate(req.param("id").value(), owlSchmea);
                     return Results.with(response, response.status());
                 });
     }

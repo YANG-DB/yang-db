@@ -57,7 +57,7 @@ public class LoggingSparqlController extends LoggingControllerBase<SchemaTransla
 
     //region CatalogController Implementation
     @Override
-    public ContentResponse<Ontology> translate(String sparqlSchema) {
+    public ContentResponse<Ontology> translate(String ontology, String sparqlSchema) {
         return new LoggingSyncMethodDecorator<ContentResponse<Ontology>>(
                 this.logger,
                 this.metricRegistry,
@@ -65,7 +65,7 @@ public class LoggingSparqlController extends LoggingControllerBase<SchemaTransla
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.translate(sparqlSchema), this.resultHandler());
+                .decorate(() -> this.controller.translate(ontology, sparqlSchema), this.resultHandler());
     }
 
     @Override

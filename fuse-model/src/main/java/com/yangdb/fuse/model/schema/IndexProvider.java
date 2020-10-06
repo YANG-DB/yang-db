@@ -62,9 +62,9 @@ public class IndexProvider {
     @JsonProperty("ontology")
     private String ontology;
     @JsonProperty("entities")
-    private List<Entity> entities = null;
+    private List<Entity> entities = new ArrayList<>();
     @JsonProperty("relations")
-    private List<Relation> relations = null;
+    private List<Relation> relations = new ArrayList<>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -115,6 +115,18 @@ public class IndexProvider {
     }
 
     @JsonIgnore
+    public IndexProvider withEntity(Entity entity) {
+        entities.add(entity);
+        return this;
+    }
+
+    @JsonIgnore
+    public IndexProvider withRelation(Relation relation) {
+        relations.add(relation);
+        return this;
+    }
+
+    @JsonIgnore
     public Optional<Entity> getEntity(String label) {
         Optional<Entity> nest = getEntities().stream().filter(e -> !e.getNested().isEmpty())
                 .flatMap(e -> e.getNested().stream())
@@ -139,6 +151,13 @@ public class IndexProvider {
     }
 
     public static class Builder {
+
+        public static IndexProvider generate(String ontologyName) {
+            IndexProvider provider = new IndexProvider();
+            provider.ontology = ontologyName;
+            return provider;
+        }
+
         /**
          * creates default index provider according to the given ontology - simple static index strategy
          * @param ontology

@@ -1,8 +1,8 @@
-package com.yangdb.fuse.dispatcher.ontology;
+package com.yangdb.fuse.model.schema;
 
 /*-
  * #%L
- * fuse-core
+ * fuse-model
  * %%
  * Copyright (C) 2016 - 2020 The YangDb Graph Database Project
  * %%
@@ -20,7 +20,6 @@ package com.yangdb.fuse.dispatcher.ontology;
  * #L%
  */
 
-public interface OntologyTransformerIfc<OntIn,OntOut> {
-    OntOut transform(String ontologyName, OntIn source);
-    OntIn translate(OntOut source);
+public interface IndexProviderTranslator<IN> {
+    IndexProvider translate(String ontology, IN input);
 }

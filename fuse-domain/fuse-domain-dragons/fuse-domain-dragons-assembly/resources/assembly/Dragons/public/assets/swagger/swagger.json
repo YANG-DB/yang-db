@@ -197,7 +197,7 @@
       }
     },
 
-    "/graphql/ontology": {
+    "/graphql/ontology/{id}": {
       "post": {
         "tags": [
           "catalog"
@@ -205,6 +205,13 @@
         "summary": "graphQL IDL into Ontology",
         "description": "Transform a graphQL IDL into V1 Ontology - see https://graphql.org/learn/schema/" ,
         "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "body",
             "name": "<body>",
@@ -224,7 +231,7 @@
         }
       }
     },
-    "/sparql/ontology": {
+    "/sparql/ontology/{id}": {
       "post": {
         "tags": [
           "catalog"
@@ -232,6 +239,13 @@
         "summary": "OWL IDL into Ontology",
         "description": "Transform a OWL IDL into V1 Ontology - see https://www.w3.org/TR/owl-features/" ,
         "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "body",
             "name": "<body>",
@@ -251,7 +265,7 @@
         }
       }
     },
-    "/sql/ontology": {
+    "/sql/ontology/{id}": {
       "post": {
         "tags": [
           "catalog"
@@ -259,6 +273,13 @@
         "summary": "SQL DDL into Ontology",
         "description": "Transform a SQL DDL into V1 Ontology " ,
         "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "body",
             "name": "<body>",

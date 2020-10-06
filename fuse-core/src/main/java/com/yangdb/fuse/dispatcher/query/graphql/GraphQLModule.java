@@ -37,11 +37,11 @@ public class GraphQLModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(GraphQLSchemaUtils.class)
-                .to(GraphQL2OntologyTransformer.class)
+                .to(GraphQLToOntologyTransformer.class)
                 .asEagerSingleton();
         binder.bind(GraphQL2QueryTransformer.class)
                 .asEagerSingleton();
-        binder.bind(GraphQL2OntologyTransformer.class)
+        binder.bind(GraphQLToOntologyTransformer.class)
                 .asEagerSingleton();
 
 
