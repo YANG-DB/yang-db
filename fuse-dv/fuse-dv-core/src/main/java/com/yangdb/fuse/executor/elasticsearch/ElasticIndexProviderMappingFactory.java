@@ -154,8 +154,8 @@ public class ElasticIndexProviderMappingFactory {
                         } else {
                             request.request().patterns().addAll(patterns);
                         }
-                        //dedup patterns - todo verify why this breaks tests
-                        // request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                        //dedup patterns
+                         request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
 
                         //no specific index sort order since it contains multiple entity types -
                         if (request.request().settings().isEmpty()) {
@@ -177,8 +177,8 @@ public class ElasticIndexProviderMappingFactory {
                         request.setPatterns(new ArrayList<>(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format("%s%s", v, "*"))))
                                 .setSettings(generateSettings(r, relation, label))
                                 .addMapping(label, generateRelationMapping(r, relation, label));
-                        //dedup patterns - todo verify why this breaks tests
-                        //request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                        //dedup patterns -
+                        request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
                         //add response to list of responses
                         requests.put(label.toLowerCase(), request);
                     });
@@ -192,8 +192,8 @@ public class ElasticIndexProviderMappingFactory {
                             .addMapping(label, generateRelationMapping(r, relation, label));
                     //add response to list of responses
 
-                    //dedup patterns - todo verify why this breaks tests
-                    //request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                    //dedup patterns -
+                    request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
 
                     //add the request
                     requests.put(relation.getType().toLowerCase(), request);
@@ -239,8 +239,8 @@ public class ElasticIndexProviderMappingFactory {
                                     } else {
                                         request.request().patterns().addAll(patterns);
                                     }
-                                    //dedup patterns - todo verify why this breaks tests
-                                    // request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                                    //dedup patterns -
+                                     request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
                                     //no specific index sort order since it contains multiple entity types -
                                     if (request.request().settings().isEmpty()) {
                                         request.setSettings(getSettings());
@@ -262,8 +262,8 @@ public class ElasticIndexProviderMappingFactory {
                                             .setSettings(generateSettings(e, entity, label))
                                             .addMapping(label, generateEntityMapping(e, entity, label));
 
-                                    //dedup patterns - todo verify why this breaks tests
-                                    // request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                                    //dedup patterns -
+                                     request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
 
                                     //add response to list of responses
                                     requests.put(v.toLowerCase(), request);
@@ -276,8 +276,8 @@ public class ElasticIndexProviderMappingFactory {
                                 request.setPatterns(new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format(entity.getProps().getIndexFormat(), "*"))))
                                         .setSettings(generateSettings(e, entity, label))
                                         .addMapping(label, generateEntityMapping(e, entity, label.toLowerCase()));
-                                //dedup patterns - todo verify why this breaks tests
-                                // request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                                //dedup patterns -
+                                 request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
 
                                 //add response to list of responses
 
