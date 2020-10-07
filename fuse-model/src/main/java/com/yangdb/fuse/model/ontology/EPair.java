@@ -44,6 +44,7 @@ package com.yangdb.fuse.model.ontology;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -64,6 +65,13 @@ public class EPair {
     public EPair(String eTypeA, String eTypeB) {
         this.eTypeA = eTypeA;
         this.eTypeB = eTypeB;
+    }
+
+    public EPair(String eTypeA,String sideAIdField, String eTypeB,String sideBIdField ) {
+        this.eTypeA = eTypeA;
+        this.sideAIdField = sideAIdField;
+        this.eTypeB = eTypeB;
+        this.sideBIdField = sideBIdField;
     }
 
     public String geteTypeA() {
@@ -98,24 +106,38 @@ public class EPair {
         this.sideBIdField = sideBIdField;
     }
 
+    @JsonIgnore
+    public EPair withSideAIdField(String sideAIdField) {
+        this.sideAIdField = sideAIdField;
+        return this;
+    }
+
+    @JsonIgnore
+    public EPair withSideBIdField(String sideBIdField) {
+        this.sideBIdField = sideBIdField;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EPair ePair = (EPair) o;
         return Objects.equals(eTypeA, ePair.eTypeA) &&
-                Objects.equals(eTypeB, ePair.eTypeB);
+                Objects.equals(sideAIdField, ePair.sideAIdField) &
+                Objects.equals(eTypeB, ePair.eTypeB) &
+                Objects.equals(sideBIdField, ePair.sideBIdField);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(eTypeA, eTypeB);
+        return Objects.hash(eTypeA,sideAIdField, eTypeB,sideBIdField);
     }
 
     @Override
     public String toString()
     {
-        return "EPair [eTypeB = "+eTypeB+", eTypeA = "+eTypeA+"]";
+        return "EPair [eTypeA= "+eTypeA+",sideAId= "+sideAIdField+", eTypeB = "+eTypeB+", sideAId = "+sideBIdField+"]";
     }
 
     //region Fields

@@ -49,9 +49,9 @@ public class DDLToOntologyGenerator {
     public void testOntologyCreation() {
         Ontology ontology = transformer.transform("Cyber", tables);
         Assert.assertNotNull(ontology);
-        Assert.assertEquals(12,ontology.getEntityTypes().size());
-        Assert.assertEquals(30,ontology.getRelationshipTypes().size());
-        Assert.assertEquals(406,ontology.getProperties().size());
+        Assert.assertEquals(17,ontology.getEntityTypes().size());
+        Assert.assertEquals(38,ontology.getRelationshipTypes().size());
+        Assert.assertEquals(602,ontology.getProperties().size());
     }
 
     @Test

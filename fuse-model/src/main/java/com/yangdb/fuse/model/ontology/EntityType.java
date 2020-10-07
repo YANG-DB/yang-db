@@ -209,6 +209,7 @@ public class EntityType implements BaseElement {
 
     //region Builder
     public static final class Builder {
+        private String idField = GlobalConstants.ID;
         private String eType;
         private String name;
         private List<String> mandatory = new ArrayList<>();
@@ -222,6 +223,12 @@ public class EntityType implements BaseElement {
 
         public static Builder get() {
             return new Builder();
+        }
+
+        @JsonIgnore
+        public Builder withIdField(String idField) {
+            this.idField = idField;
+            return this;
         }
 
         @JsonIgnore
@@ -287,6 +294,7 @@ public class EntityType implements BaseElement {
             entityType.setDisplay(display);
             entityType.setParentType(parentType);
             entityType.eType = this.eType;
+            entityType.idField = this.idField;
             return entityType;
         }
     }

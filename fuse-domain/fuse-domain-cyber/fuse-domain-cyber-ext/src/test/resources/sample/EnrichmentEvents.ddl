@@ -58,7 +58,7 @@ create table EnrichmentEvents
     to_endpoint_remoteip          int,
     to_endpoint_remotePort        int,
     to_endpoint_port              int,
-    data_remote_ip                int,
+    data_remote_ip                event_idint,
     insert_time                   timestamp ,
     stage_id                      int,
     rel_id                        int       default nextval('APD.seq_EnrichmentEventsIds') not null,

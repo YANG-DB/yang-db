@@ -59,6 +59,7 @@ public class ElasticIndexProviderMappingFactory {
     public static final String ENTITY_A = GlobalConstants.EdgeSchema.SOURCE;
     public static final String ENTITY_B = GlobalConstants.EdgeSchema.DEST;
     public static final String PROPERTIES = "properties";
+
     public static final String NESTED = "nested";
     public static final String CHILD = "child";
     public static final String EMBEDDED = "embedded";
@@ -148,12 +149,15 @@ public class ElasticIndexProviderMappingFactory {
                         String unifiedName = relation.getProps().getValues().isEmpty() ? label : relation.getProps().getValues().get(0);
                         ESPutIndexTemplateRequestBuilder request = requests.computeIfAbsent(unifiedName, s -> new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, unifiedName));
 
-                        List<String> patterns = Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format("%s%s", v, "*"));
+                        List<String> patterns = new ArrayList<>(Arrays.asList(r.getName().toLowerCase(), label, r.getName()));
                         if (Objects.isNull(request.request().patterns())) {
                             request.setPatterns(new ArrayList<>(patterns));
                         } else {
                             request.request().patterns().addAll(patterns);
                         }
+                        //dedup patterns
+                        request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+
                         //no specific index sort order since it contains multiple entity types -
                         if (request.request().settings().isEmpty()) {
                             request.setSettings(getSettings());
@@ -171,9 +175,11 @@ public class ElasticIndexProviderMappingFactory {
                     relation.getProps().getValues().forEach(v -> {
                         String label = r.getrType();
                         ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, label.toLowerCase());
-                        request.setPatterns(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format("%s%s", v, "*")))
+                        request.setPatterns(new ArrayList<>(Arrays.asList(r.getName().toLowerCase(), label, r.getName())))
                                 .setSettings(generateSettings(r, relation, label))
                                 .addMapping(label, generateRelationMapping(r, relation, label));
+                        //dedup patterns
+                        request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
                         //add response to list of responses
                         requests.put(label.toLowerCase(), request);
                     });
@@ -181,10 +187,15 @@ public class ElasticIndexProviderMappingFactory {
                 case TIME:
                     String label = r.getrType();
                     ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, relation.getType().toLowerCase());
-                    request.setPatterns(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format(relation.getProps().getIndexFormat(), "*")))
+                    // Only the time based partition will have a template suffix with astrix added to allow numbering and dates as part of the naming convention
+                    request.setPatterns(new ArrayList<>(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format(relation.getProps().getIndexFormat(), "*"))))
                             .setSettings(generateSettings(r, relation, label))
                             .addMapping(label, generateRelationMapping(r, relation, label));
                     //add response to list of responses
+
+                    //dedup patterns
+                    request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                    //add the request
                     requests.put(relation.getType().toLowerCase(), request);
                     break;
                 default:
@@ -222,12 +233,14 @@ public class ElasticIndexProviderMappingFactory {
                                     String unifiedName = entity.getProps().getValues().isEmpty() ? label : entity.getProps().getValues().get(0);
                                     ESPutIndexTemplateRequestBuilder request = requests.computeIfAbsent(unifiedName, s -> new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, unifiedName));
 
-                                    List<String> patterns = Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*"));
+                                    List<String> patterns = new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName()));
                                     if (Objects.isNull(request.request().patterns())) {
                                         request.setPatterns(new ArrayList<>(patterns));
                                     } else {
                                         request.request().patterns().addAll(patterns);
                                     }
+                                    //dedup patterns
+                                    request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
                                     //no specific index sort order since it contains multiple entity types -
                                     if (request.request().settings().isEmpty()) {
                                         request.setSettings(getSettings());
@@ -245,9 +258,11 @@ public class ElasticIndexProviderMappingFactory {
                                 entity.getProps().getValues().forEach(v -> {
                                     String label = e.geteType();
                                     ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, v.toLowerCase());
-                                    request.setPatterns(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*")))
+                                    request.setPatterns(new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName())))
                                             .setSettings(generateSettings(e, entity, label))
                                             .addMapping(label, generateEntityMapping(e, entity, label));
+                                    //dedup patterns
+                                    request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
                                     //add response to list of responses
                                     requests.put(v.toLowerCase(), request);
                                 });
@@ -256,9 +271,12 @@ public class ElasticIndexProviderMappingFactory {
                                 //time partitioned index
                                 ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, e.getName().toLowerCase());
                                 String label = entity.getType();
-                                request.setPatterns(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format(entity.getProps().getIndexFormat(), "*")))
+                                // Only the time based partition will have a template suffix with astrix added to allow numbering and dates as part of the naming convention
+                                request.setPatterns(new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format(entity.getProps().getIndexFormat(), "*"))))
                                         .setSettings(generateSettings(e, entity, label))
                                         .addMapping(label, generateEntityMapping(e, entity, label.toLowerCase()));
+                                //dedup patterns
+                                request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
                                 //add response to list of responses
                                 requests.put(e.getName().toLowerCase(), request);
                                 break;

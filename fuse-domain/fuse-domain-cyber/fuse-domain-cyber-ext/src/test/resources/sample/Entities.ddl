@@ -171,6 +171,10 @@ create table Entities
     file_date_accessed             timestamp,
     file_language                  varchar(64),
     file_signature_hash            int       default 0,
-    entity_attributes              varchar(2000)
+    entity_attributes              varchar(2000),
+
+
+-- add cyber obj FK
+        CONSTRAINT fk_entities_type_obj FOREIGN KEY (type_id) REFERENCES lov_CyberObjectTypes(type_id)
 );
 

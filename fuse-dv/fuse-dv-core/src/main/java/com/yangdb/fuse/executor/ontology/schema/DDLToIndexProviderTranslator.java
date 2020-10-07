@@ -75,7 +75,7 @@ public class DDLToIndexProviderTranslator implements IndexProviderTranslator<Lis
         foreignKey(statement.getConstraints())
                 .forEach(fk ->
                         indexProvider.withRelation(
-                                new Relation(fk.getName(),
+                                new Relation(fk.getName().toLowerCase(),
                                         UNIFIED.name(),
                                         "Index",
                                         false,

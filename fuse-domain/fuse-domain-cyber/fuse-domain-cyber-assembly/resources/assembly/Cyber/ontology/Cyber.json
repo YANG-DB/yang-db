@@ -582,8 +582,8 @@
       ]
     },
     {
-      "rType": "fk_trace_behavior",
-      "name": "fk_trace_behavior",
+      "rType": "fk_trace",
+      "name": "fk_trace",
       "directional": true,
       "ePairs": [
         {

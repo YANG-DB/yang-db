@@ -27,6 +27,7 @@ import com.yangdb.fuse.model.ontology.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static org.jooq.impl.ConstraintStatement.*;
@@ -45,7 +46,8 @@ public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<Str
     private Parser parser;
 
     @Inject
-    public DDLToOntologyTransformer() {}
+    public DDLToOntologyTransformer() {
+    }
 
     @Override
     public Ontology transform(String ontologyName, List<String> source) {
@@ -68,8 +70,8 @@ public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<Str
             Arrays.stream(queries.queries())
                     .filter(q -> q.getClass().getSimpleName().endsWith("CreateTableImpl"))
                     .forEach(q -> parse(q, builder));
-        }catch (Throwable t) {
-            throw new FuseError.FuseErrorException("Error Parsing DDL file "+table,t);
+        } catch (Throwable t) {
+            throw new FuseError.FuseErrorException("Error Parsing DDL file " + table, t);
         }
     }
 
@@ -84,8 +86,12 @@ public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<Str
                 .withEType(table.getName().toLowerCase());
 
         //build PK fields constraints
-        primaryKey(statement.getConstraints())
-                    .forEach(pk -> entityTypeBuilder.withMandatory(pk.getPrimaryKey()[0].getName().toLowerCase()));
+        List<String> mandatory = primaryKey(statement.getConstraints()).stream().map(pk -> pk.getPrimaryKey()[0].getName().toLowerCase()).collect(Collectors.toList());
+        //set mandatory fields
+        entityTypeBuilder.withMandatory(mandatory);
+        //set id field name
+        String idField = String.join("-", mandatory);
+        entityTypeBuilder.withIdField(idField);
 
         //build ontology properties (if none exist)
         List<Field<?>> fields = statement.getFields();
@@ -97,24 +103,29 @@ public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<Str
             String name = f.getName().toLowerCase();
             if (!builder.getProperty(name).isPresent()) {
                 //add field to properties
-                builder.addProperty(new Property(name, name, OntologyPrimitiveType.translate( f.getType().getName()).name().toLowerCase()));
+                builder.addProperty(new Property(name, name, OntologyPrimitiveType.translate(f.getType().getName()).name().toLowerCase()));
             }
         });
 
         //build relations
         foreignKey(statement.getConstraints())
-                        .forEach(fk ->
-                                builder.addRelationshipType(
-                                        RelationshipType.Builder.get()
-                                                .withName(fk.getName().toLowerCase())
-                                                .withRType(fk.getName().toLowerCase())
-                                                .withDirectional(true)
-                                                .withEPairs(singletonList(
-                                                        new EPair(table.getName().toLowerCase(),fk.get$referencesTable().getName().toLowerCase())))
-                                                .build()));
+                .forEach(fk ->
+                        builder.addRelationshipType(
+                                RelationshipType.Builder.get()
+                                        .withName(fk.getName().toLowerCase())
+                                        .withRType(fk.getName().toLowerCase())
+                                        .withDirectional(true)
+                                        .withEPairs(singletonList(
+                                                new EPair(table.getName().toLowerCase(),
+                                                        idField,
+                                                        fk.get$referencesTable().getName().toLowerCase(),
+                                                        fk.getForeignKey()[0].getName().toLowerCase())))
+                                        .build()));
 
 
-        builder.addEntityType(entityTypeBuilder.build());
+        EntityType build = entityTypeBuilder.build();
+        //compile entity
+        builder.addEntityType(build);
     }
 
 
