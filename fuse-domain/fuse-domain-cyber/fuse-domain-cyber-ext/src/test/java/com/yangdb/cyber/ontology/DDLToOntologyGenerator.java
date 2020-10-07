@@ -66,9 +66,9 @@ public class DDLToOntologyGenerator {
                 .filter(r -> r.getPartition().equals(MappingIndexType.UNIFIED.name()))
                 .collect(groupingBy(r->r.getProps().getValues().get(0)));
 
-        Assert.assertEquals(12,indexProvider.getEntities().size());
-        Assert.assertEquals(7, map.size());
-        Assert.assertEquals(30,indexProvider.getRelations().size());
+        Assert.assertEquals(17,indexProvider.getEntities().size());
+        Assert.assertEquals(10, map.size());
+        Assert.assertEquals(38,indexProvider.getRelations().size());
 
     }
 }

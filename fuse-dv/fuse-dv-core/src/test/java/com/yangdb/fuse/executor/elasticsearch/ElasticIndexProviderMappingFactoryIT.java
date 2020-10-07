@@ -301,7 +301,6 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
     }
 
     @Test
-    @Ignore("Todo - fix template pattern naming on ElasticIndexProviderMappingFactory(lines:152,178) ")
     public void createNestedIndicesTest() {
         RawSchema schema = nestedSchema;
         ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ontology, nestedProvider);
@@ -404,7 +403,6 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
     }
 
     @Test
-    @Ignore("Rejecting mapping update to [own] as the final mapping would have more than 1 type: [Own, ontology]")
     public void createEmbeddedIndicesTest() {
         RawSchema schema = embeddedSchema;
         ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ontology, embeddedProvider);

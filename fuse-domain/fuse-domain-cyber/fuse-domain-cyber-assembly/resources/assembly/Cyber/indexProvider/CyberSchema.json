@@ -67,6 +67,39 @@
       "mapping": "Index"
     },
     {
+      "type": "behavior_to_behavior",
+      "partition": "STATIC",
+      "props": {
+        "values": [
+          "behavior_to_behavior"
+        ]
+      },
+      "nested": [],
+      "mapping": "Index"
+    },
+    {
+      "type": "behaviorentities",
+      "partition": "STATIC",
+      "props": {
+        "values": [
+          "behaviorentities"
+        ]
+      },
+      "nested": [],
+      "mapping": "Index"
+    },
+    {
+      "type": "events_analysis",
+      "partition": "STATIC",
+      "props": {
+        "values": [
+          "events_analysis"
+        ]
+      },
+      "nested": [],
+      "mapping": "Index"
+    },
+    {
       "type": "alertstobehaviors",
       "partition": "STATIC",
       "props": {
@@ -122,11 +155,33 @@
       "mapping": "Index"
     },
     {
+      "type": "entitiesprocessandfiles",
+      "partition": "STATIC",
+      "props": {
+        "values": [
+          "entitiesprocessandfiles"
+        ]
+      },
+      "nested": [],
+      "mapping": "Index"
+    },
+    {
       "type": "alerts",
       "partition": "STATIC",
       "props": {
         "values": [
           "alerts"
+        ]
+      },
+      "nested": [],
+      "mapping": "Index"
+    },
+    {
+      "type": "behaviorevents",
+      "partition": "STATIC",
+      "props": {
+        "values": [
+          "behaviorevents"
         ]
       },
       "nested": [],
@@ -317,6 +372,97 @@
       "mapping": "Index"
     },
     {
+      "type": "fk_behavior2behavior_types",
+      "partition": "UNIFIED",
+      "symmetric": false,
+      "props": {
+        "values": [
+          "behavior_to_behavior"
+        ]
+      },
+      "nested": [],
+      "redundant": [],
+      "mapping": "Index"
+    },
+    {
+      "type": "fk_behavior2behavior_source",
+      "partition": "UNIFIED",
+      "symmetric": false,
+      "props": {
+        "values": [
+          "behavior_to_behavior"
+        ]
+      },
+      "nested": [],
+      "redundant": [],
+      "mapping": "Index"
+    },
+    {
+      "type": "fk_behavior2behavior_dest",
+      "partition": "UNIFIED",
+      "symmetric": false,
+      "props": {
+        "values": [
+          "behavior_to_behavior"
+        ]
+      },
+      "nested": [],
+      "redundant": [],
+      "mapping": "Index"
+    },
+    {
+      "type": "fk_behavior_entities_behavior",
+      "partition": "UNIFIED",
+      "symmetric": false,
+      "props": {
+        "values": [
+          "behaviorentities"
+        ]
+      },
+      "nested": [],
+      "redundant": [],
+      "mapping": "Index"
+    },
+    {
+      "type": "fk_behavior_entities_behavior_type",
+      "partition": "UNIFIED",
+      "symmetric": false,
+      "props": {
+        "values": [
+          "behaviorentities"
+        ]
+      },
+      "nested": [],
+      "redundant": [],
+      "mapping": "Index"
+    },
+    {
+      "type": "fk_behavior_entity_entity",
+      "partition": "UNIFIED",
+      "symmetric": false,
+      "props": {
+        "values": [
+          "behaviorentities"
+        ]
+      },
+      "nested": [],
+      "redundant": [],
+      "mapping": "Index"
+    },
+    {
+      "type": "fk_behavior_entity_entity_type",
+      "partition": "UNIFIED",
+      "symmetric": false,
+      "props": {
+        "values": [
+          "behaviorentities"
+        ]
+      },
+      "nested": [],
+      "redundant": [],
+      "mapping": "Index"
+    },
+    {
       "type": "fk_alerts_behaviors",
       "partition": "UNIFIED",
       "symmetric": false,
@@ -453,6 +599,19 @@
       "props": {
         "values": [
           "traceevents"
+        ]
+      },
+      "nested": [],
+      "redundant": [],
+      "mapping": "Index"
+    },
+    {
+      "type": "fk_entities_type_obj",
+      "partition": "UNIFIED",
+      "symmetric": false,
+      "props": {
+        "values": [
+          "entities"
         ]
       },
       "nested": [],

@@ -3,6 +3,7 @@
   "directives": [],
   "entityTypes": [
     {
+      "idField": "trace_id",
       "eType": "traces",
       "name": "traces",
       "mandatory": [
@@ -30,6 +31,7 @@
       ]
     },
     {
+      "idField": "event_id",
       "eType": "enrichmentevents",
       "name": "enrichmentevents",
       "mandatory": [
@@ -100,6 +102,7 @@
       ]
     },
     {
+      "idField": "type_id",
       "eType": "lov_behaviorstypes",
       "name": "lov_behaviorstypes",
       "mandatory": [
@@ -118,6 +121,7 @@
       ]
     },
     {
+      "idField": "trace_id",
       "eType": "tracestobehaviors",
       "name": "tracestobehaviors",
       "mandatory": [
@@ -146,6 +150,7 @@
       ]
     },
     {
+      "idField": "behavior_id",
       "eType": "behaviors",
       "name": "behaviors",
       "mandatory": [
@@ -187,6 +192,7 @@
       ]
     },
     {
+      "idField": "type_id",
       "eType": "lov_eventstypes",
       "name": "lov_eventstypes",
       "mandatory": [
@@ -203,6 +209,140 @@
       ]
     },
     {
+      "idField": "base_behavior_id",
+      "eType": "behavior_to_behavior",
+      "name": "behavior_to_behavior",
+      "mandatory": [
+        "base_behavior_id"
+      ],
+      "properties": [
+        "customer_id",
+        "source_id",
+        "behavior_id",
+        "behavior_type_id",
+        "attributes_hash",
+        "base_behavior_id",
+        "is_alerted",
+        "insert_time"
+      ]
+    },
+    {
+      "idField": "behavior_id",
+      "eType": "behaviorentities",
+      "name": "behaviorentities",
+      "mandatory": [
+        "behavior_id"
+      ],
+      "properties": [
+        "rel_id",
+        "behavior_id",
+        "behavior_frequency",
+        "behavior_type_id",
+        "customer_id",
+        "source_id",
+        "network_id",
+        "source_type",
+        "session_id",
+        "entity_id",
+        "md5",
+        "entity_hash",
+        "entity_name",
+        "entity_type_id",
+        "entity_file_type",
+        "is_linked_entity",
+        "is_in_merge",
+        "md5_hash",
+        "is_md5_null",
+        "insert_time",
+        "stage_id"
+      ]
+    },
+    {
+      "eType": "events_analysis",
+      "name": "events_analysis",
+      "properties": [
+        "event_id",
+        "stage_id",
+        "load_id",
+        "session_id",
+        "customer_id",
+        "source_id",
+        "source_event_id",
+        "type_id",
+        "severity",
+        "detected_time",
+        "alerted_time",
+        "insert_time",
+        "network_id",
+        "source_type",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_file_type",
+        "by_linked_entity_uid",
+        "by_file_md5",
+        "by_file_directory",
+        "by_file_alternate_file_stream",
+        "by_process_directory",
+        "by_process_pid",
+        "by_process_creation_time",
+        "by_process_integrity_level",
+        "by_sid",
+        "by_file_normalized_path",
+        "by_process_command_line",
+        "by_file_executable",
+        "by_directory_type",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_file_type",
+        "to_linked_entity_uid",
+        "to_file_extension",
+        "to_file_md5",
+        "to_file_directory",
+        "to_file_executable",
+        "to_file_alternate_file_stream",
+        "to_process_directory",
+        "to_process_pid",
+        "to_process_creation_time",
+        "to_process_integrity_level",
+        "to_endpoint_protocol",
+        "to_endpoint_ip",
+        "to_endpoint_port",
+        "to_endpoint_remoteip",
+        "to_endpoint_remoteport",
+        "to_registry_key",
+        "to_registry_data",
+        "to_registry_value_type",
+        "to_registry_permissions",
+        "to_sid",
+        "to_stripped_imagepath",
+        "to_file_normalized_path",
+        "to_process_command_line",
+        "to_directory_type",
+        "to_ip_version",
+        "data_network_send_bytecount",
+        "data_network_recv_bytecount",
+        "data_memory_dllname",
+        "data_memory_functionname",
+        "data_lnk_destination_path",
+        "data_file_sharemode",
+        "data_file_oldfilename",
+        "data_file_old_md5",
+        "data_registry_valuename",
+        "data_registry_newkeyname",
+        "data_registry_privilege",
+        "data_registry_file_path",
+        "data_registry_service_type",
+        "by_file_signature_hash",
+        "to_file_signature_hash",
+        "data_remote_ip",
+        "data_file_md5_already_seen",
+        "date_key"
+      ]
+    },
+    {
+      "idField": "behavior_id",
       "eType": "alertstobehaviors",
       "name": "alertstobehaviors",
       "mandatory": [
@@ -231,6 +371,7 @@
       ]
     },
     {
+      "idField": "trace_id",
       "eType": "traceevents",
       "name": "traceevents",
       "mandatory": [
@@ -272,6 +413,7 @@
       ]
     },
     {
+      "idField": "entity_hash",
       "eType": "entities",
       "name": "entities",
       "mandatory": [
@@ -452,6 +594,7 @@
       ]
     },
     {
+      "idField": "trace_id",
       "eType": "traceentities",
       "name": "traceentities",
       "mandatory": [
@@ -478,6 +621,7 @@
       ]
     },
     {
+      "idField": "type_id",
       "eType": "lov_cyberobjecttypes",
       "name": "lov_cyberobjecttypes",
       "mandatory": [
@@ -487,6 +631,55 @@
         "type_id",
         "title",
         "variable_name"
+      ]
+    },
+    {
+      "eType": "entitiesprocessandfiles",
+      "name": "entitiesprocessandfiles",
+      "properties": [
+        "entity_hash",
+        "uid",
+        "customer_id",
+        "source_id",
+        "name",
+        "type_id",
+        "parent_uid",
+        "parent_name",
+        "insert_time",
+        "update_time",
+        "linked_entity_uid",
+        "directory_type",
+        "file_extension",
+        "file_directory",
+        "file_size",
+        "file_attributes",
+        "file_executable",
+        "file_md5",
+        "file_sha1",
+        "file_sha256",
+        "file_type",
+        "file_pe_type",
+        "file_alternate_file_stream",
+        "file_normalized_path",
+        "file_is_directory",
+        "file_drive_type",
+        "file_date_created",
+        "file_date_modified",
+        "file_date_accessed",
+        "file_language",
+        "file_signature_hash",
+        "file_owner_account",
+        "process_pid",
+        "process_creation_time",
+        "process_directory",
+        "process_normalized_path",
+        "process_command_line",
+        "process_command_line_truncated",
+        "process_command_line_length",
+        "process_drive_type",
+        "process_integrity_level",
+        "profile_username",
+        "sid"
       ]
     },
     {
@@ -512,347 +705,593 @@
         "distinct_alerting_behavior_count",
         "trace_identifier"
       ]
+    },
+    {
+      "idField": "rel_id",
+      "eType": "behaviorevents",
+      "name": "behaviorevents",
+      "mandatory": [
+        "rel_id"
+      ],
+      "properties": [
+        "rel_id",
+        "behavior_id",
+        "behavior_type_id",
+        "network_id",
+        "source_type",
+        "session_id",
+        "customer_id",
+        "source_id",
+        "event_id",
+        "event_type_id",
+        "event_severity",
+        "event_detected_time",
+        "behavior_frequency",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_linked_entity_uid",
+        "by_file_type",
+        "by_file_md5",
+        "by_file_directory",
+        "by_file_alternate_file_stream",
+        "by_process_pid",
+        "by_process_directory",
+        "by_sid",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_linked_entity_uid",
+        "to_file_type",
+        "to_file_md5",
+        "to_file_directory",
+        "to_file_alternate_file_stream",
+        "to_process_pid",
+        "to_process_directory",
+        "to_registry_key",
+        "to_registry_value_type",
+        "to_registry_permissions",
+        "to_registry_data",
+        "to_endpoint_ip",
+        "to_endpoint_remoteip",
+        "to_endpoint_remoteport",
+        "to_endpoint_port",
+        "data_remote_ip",
+        "is_insight",
+        "insert_time",
+        "stage_id"
+      ]
     }
   ],
   "relationshipTypes": [
     {
+      "idField": "id",
       "rType": "fk_events_behaviors",
       "name": "fk_events_behaviors",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "enrichmentevents",
-          "eTypeB": "behaviors"
+          "sideAIdField": "event_id",
+          "eTypeB": "behaviors",
+          "sideBIdField": "behavior_entity_uid"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_events_behaviors_type",
       "name": "fk_events_behaviors_type",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "enrichmentevents",
-          "eTypeB": "lov_behaviorstypes"
+          "sideAIdField": "event_id",
+          "eTypeB": "lov_behaviorstypes",
+          "sideBIdField": "behavior_entity_type"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_events_entities",
       "name": "fk_events_entities",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "enrichmentevents",
-          "eTypeB": "entities"
+          "sideAIdField": "event_id",
+          "eTypeB": "entities",
+          "sideBIdField": "linked_entity_uid"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_events_type",
       "name": "fk_events_type",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "enrichmentevents",
-          "eTypeB": "lov_eventstypes"
+          "sideAIdField": "event_id",
+          "eTypeB": "lov_eventstypes",
+          "sideBIdField": "event_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_events_by_type_obj",
       "name": "fk_events_by_type_obj",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "enrichmentevents",
-          "eTypeB": "lov_cyberobjecttypes"
+          "sideAIdField": "event_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "by_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_events_to_type_obj",
       "name": "fk_events_to_type_obj",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "enrichmentevents",
-          "eTypeB": "lov_cyberobjecttypes"
+          "sideAIdField": "event_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "to_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace",
       "name": "fk_trace",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "tracestobehaviors",
-          "eTypeB": "traces"
+          "sideAIdField": "trace_id",
+          "eTypeB": "traces",
+          "sideBIdField": "trace_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace_behavior",
       "name": "fk_trace_behavior",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "tracestobehaviors",
-          "eTypeB": "behaviors"
+          "sideAIdField": "trace_id",
+          "eTypeB": "behaviors",
+          "sideBIdField": "behavior_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace_behavior_types",
       "name": "fk_trace_behavior_types",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "tracestobehaviors",
-          "eTypeB": "lov_behaviorstypes"
+          "sideAIdField": "trace_id",
+          "eTypeB": "lov_behaviorstypes",
+          "sideBIdField": "behavior_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_alrets_by_type_obj",
       "name": "fk_alrets_by_type_obj",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "tracestobehaviors",
-          "eTypeB": "lov_cyberobjecttypes"
+          "sideAIdField": "trace_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "by_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_alrets_to_type_obj",
       "name": "fk_alrets_to_type_obj",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "tracestobehaviors",
-          "eTypeB": "lov_cyberobjecttypes"
+          "sideAIdField": "trace_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "to_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_behavior_types",
       "name": "fk_behavior_types",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "behaviors",
-          "eTypeB": "lov_behaviorstypes"
+          "sideAIdField": "behavior_id",
+          "eTypeB": "lov_behaviorstypes",
+          "sideBIdField": "type_id"
         }
       ]
     },
     {
-      "rType": "fk_behavior_types",
-      "name": "fk_behavior_types",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": "behaviors",
-          "eTypeB": "lov_behaviorstypes"
-        }
-      ]
-    },
-    {
+      "idField": "id",
       "rType": "fk_behavior_by_type_obj",
       "name": "fk_behavior_by_type_obj",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "behaviors",
-          "eTypeB": "lov_cyberobjecttypes"
+          "sideAIdField": "behavior_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "by_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_behavior_to_type_obj",
       "name": "fk_behavior_to_type_obj",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "behaviors",
-          "eTypeB": "lov_cyberobjecttypes"
+          "sideAIdField": "behavior_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "to_type_id"
         }
       ]
     },
     {
+      "idField": "id",
+      "rType": "fk_behavior2behavior_types",
+      "name": "fk_behavior2behavior_types",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "behavior_to_behavior",
+          "sideAIdField": "base_behavior_id",
+          "eTypeB": "lov_behaviorstypes",
+          "sideBIdField": "behavior_type_id"
+        }
+      ]
+    },
+    {
+      "idField": "id",
+      "rType": "fk_behavior2behavior_source",
+      "name": "fk_behavior2behavior_source",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "behavior_to_behavior",
+          "sideAIdField": "base_behavior_id",
+          "eTypeB": "behaviors",
+          "sideBIdField": "base_behavior_id"
+        }
+      ]
+    },
+    {
+      "idField": "id",
+      "rType": "fk_behavior2behavior_dest",
+      "name": "fk_behavior2behavior_dest",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "behavior_to_behavior",
+          "sideAIdField": "base_behavior_id",
+          "eTypeB": "behaviors",
+          "sideBIdField": "behavior_id"
+        }
+      ]
+    },
+    {
+      "idField": "id",
+      "rType": "fk_behavior_entities_behavior",
+      "name": "fk_behavior_entities_behavior",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "behaviorentities",
+          "sideAIdField": "behavior_id",
+          "eTypeB": "behaviors",
+          "sideBIdField": "behavior_id"
+        }
+      ]
+    },
+    {
+      "idField": "id",
+      "rType": "fk_behavior_entities_behavior_type",
+      "name": "fk_behavior_entities_behavior_type",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "behaviorentities",
+          "sideAIdField": "behavior_id",
+          "eTypeB": "lov_behaviorstypes",
+          "sideBIdField": "behavior_type_id"
+        }
+      ]
+    },
+    {
+      "idField": "id",
+      "rType": "fk_behavior_entity_entity",
+      "name": "fk_behavior_entity_entity",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "behaviorentities",
+          "sideAIdField": "behavior_id",
+          "eTypeB": "entities",
+          "sideBIdField": "entity_hash"
+        }
+      ]
+    },
+    {
+      "idField": "id",
+      "rType": "fk_behavior_entity_entity_type",
+      "name": "fk_behavior_entity_entity_type",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "behaviorentities",
+          "sideAIdField": "behavior_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "entity_type_id"
+        }
+      ]
+    },
+    {
+      "idField": "id",
       "rType": "fk_alerts_behaviors",
       "name": "fk_alerts_behaviors",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "alertstobehaviors",
-          "eTypeB": "behaviors"
+          "sideAIdField": "behavior_id",
+          "eTypeB": "behaviors",
+          "sideBIdField": "behavior_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_alerts_behavior_types",
       "name": "fk_alerts_behavior_types",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "alertstobehaviors",
-          "eTypeB": "lov_behaviorstypes"
+          "sideAIdField": "behavior_id",
+          "eTypeB": "lov_behaviorstypes",
+          "sideBIdField": "behavior_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_alrets_by_type_obj",
       "name": "fk_alrets_by_type_obj",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "alertstobehaviors",
-          "eTypeB": "lov_cyberobjecttypes"
+          "sideAIdField": "behavior_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "by_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_alrets_to_type_obj",
       "name": "fk_alrets_to_type_obj",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "alertstobehaviors",
-          "eTypeB": "lov_cyberobjecttypes"
+          "sideAIdField": "behavior_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "to_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_alerts_traces",
       "name": "fk_alerts_traces",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "alertstobehaviors",
-          "eTypeB": "traces"
+          "sideAIdField": "behavior_id",
+          "eTypeB": "traces",
+          "sideBIdField": "trace_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace_entities",
       "name": "fk_trace_entities",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "traceevents",
-          "eTypeB": "traces"
+          "sideAIdField": "trace_id",
+          "eTypeB": "traces",
+          "sideBIdField": "trace_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace_events",
       "name": "fk_trace_events",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "traceevents",
-          "eTypeB": "enrichmentevents"
+          "sideAIdField": "trace_id",
+          "eTypeB": "enrichmentevents",
+          "sideBIdField": "event_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace_behavior",
       "name": "fk_trace_behavior",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "traceevents",
-          "eTypeB": "behaviors"
+          "sideAIdField": "trace_id",
+          "eTypeB": "behaviors",
+          "sideBIdField": "behavior_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace_behavior_types",
       "name": "fk_trace_behavior_types",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "traceevents",
-          "eTypeB": "lov_behaviorstypes"
+          "sideAIdField": "trace_id",
+          "eTypeB": "lov_behaviorstypes",
+          "sideBIdField": "behavior_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace_by_type_obj",
       "name": "fk_trace_by_type_obj",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "traceevents",
-          "eTypeB": "lov_cyberobjecttypes"
+          "sideAIdField": "trace_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "by_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace_to_type_obj",
       "name": "fk_trace_to_type_obj",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "traceevents",
-          "eTypeB": "lov_cyberobjecttypes"
+          "sideAIdField": "trace_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "to_type_id"
         }
       ]
     },
     {
+      "idField": "id",
+      "rType": "fk_entities_type_obj",
+      "name": "fk_entities_type_obj",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "entities",
+          "sideAIdField": "entity_hash",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "type_id"
+        }
+      ]
+    },
+    {
+      "idField": "id",
       "rType": "fk_traces",
       "name": "fk_traces",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "traceentities",
-          "eTypeB": "traces"
+          "sideAIdField": "trace_id",
+          "eTypeB": "traces",
+          "sideBIdField": "trace_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace_behavior",
       "name": "fk_trace_behavior",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "traceentities",
-          "eTypeB": "behaviors"
+          "sideAIdField": "trace_id",
+          "eTypeB": "behaviors",
+          "sideBIdField": "behavior_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace_behavior_types",
       "name": "fk_trace_behavior_types",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "traceentities",
-          "eTypeB": "lov_behaviorstypes"
+          "sideAIdField": "trace_id",
+          "eTypeB": "lov_behaviorstypes",
+          "sideBIdField": "behavior_type_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_trace_entities",
       "name": "fk_trace_entities",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "traceentities",
-          "eTypeB": "entities"
+          "sideAIdField": "trace_id",
+          "eTypeB": "entities",
+          "sideBIdField": "entity_id"
         }
       ]
     },
     {
+      "idField": "id",
       "rType": "fk_alert_trace",
       "name": "fk_alert_trace",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "alerts",
-          "eTypeB": "traces"
+          "eTypeB": "traces",
+          "sideBIdField": "trace_id"
         }
       ]
     }
@@ -1236,7 +1675,7 @@
     {
       "pType": "data_remote_ip",
       "name": "data_remote_ip",
-      "type": "int"
+      "type": "text"
     },
     {
       "pType": "insert_time",
@@ -1587,6 +2026,541 @@
       "pType": "move_path",
       "name": "move_path",
       "type": "string"
+    },
+    {
+      "pType": "customer_id",
+      "name": "customer_id",
+      "type": "int"
+    },
+    {
+      "pType": "source_id",
+      "name": "source_id",
+      "type": "long"
+    },
+    {
+      "pType": "behavior_id",
+      "name": "behavior_id",
+      "type": "int"
+    },
+    {
+      "pType": "behavior_type_id",
+      "name": "behavior_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "attributes_hash",
+      "name": "attributes_hash",
+      "type": "long"
+    },
+    {
+      "pType": "base_behavior_id",
+      "name": "base_behavior_id",
+      "type": "int"
+    },
+    {
+      "pType": "is_alerted",
+      "name": "is_alerted",
+      "type": "string"
+    },
+    {
+      "pType": "insert_time",
+      "name": "insert_time",
+      "type": "date"
+    },
+    {
+      "pType": "rel_id",
+      "name": "rel_id",
+      "type": "int"
+    },
+    {
+      "pType": "behavior_id",
+      "name": "behavior_id",
+      "type": "int"
+    },
+    {
+      "pType": "behavior_frequency",
+      "name": "behavior_frequency",
+      "type": "double"
+    },
+    {
+      "pType": "behavior_type_id",
+      "name": "behavior_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "customer_id",
+      "name": "customer_id",
+      "type": "int"
+    },
+    {
+      "pType": "source_id",
+      "name": "source_id",
+      "type": "long"
+    },
+    {
+      "pType": "network_id",
+      "name": "network_id",
+      "type": "string"
+    },
+    {
+      "pType": "source_type",
+      "name": "source_type",
+      "type": "string"
+    },
+    {
+      "pType": "session_id",
+      "name": "session_id",
+      "type": "int"
+    },
+    {
+      "pType": "entity_id",
+      "name": "entity_id",
+      "type": "int"
+    },
+    {
+      "pType": "md5",
+      "name": "md5",
+      "type": "string"
+    },
+    {
+      "pType": "entity_hash",
+      "name": "entity_hash",
+      "type": "int"
+    },
+    {
+      "pType": "entity_name",
+      "name": "entity_name",
+      "type": "string"
+    },
+    {
+      "pType": "entity_type_id",
+      "name": "entity_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "entity_file_type",
+      "name": "entity_file_type",
+      "type": "int"
+    },
+    {
+      "pType": "is_linked_entity",
+      "name": "is_linked_entity",
+      "type": "string"
+    },
+    {
+      "pType": "is_in_merge",
+      "name": "is_in_merge",
+      "type": "string"
+    },
+    {
+      "pType": "md5_hash",
+      "name": "md5_hash",
+      "type": "int"
+    },
+    {
+      "pType": "is_md5_null",
+      "name": "is_md5_null",
+      "type": "int"
+    },
+    {
+      "pType": "insert_time",
+      "name": "insert_time",
+      "type": "date"
+    },
+    {
+      "pType": "stage_id",
+      "name": "stage_id",
+      "type": "int"
+    },
+    {
+      "pType": "event_id",
+      "name": "event_id",
+      "type": "int"
+    },
+    {
+      "pType": "stage_id",
+      "name": "stage_id",
+      "type": "int"
+    },
+    {
+      "pType": "load_id",
+      "name": "load_id",
+      "type": "int"
+    },
+    {
+      "pType": "session_id",
+      "name": "session_id",
+      "type": "int"
+    },
+    {
+      "pType": "customer_id",
+      "name": "customer_id",
+      "type": "int"
+    },
+    {
+      "pType": "source_id",
+      "name": "source_id",
+      "type": "long"
+    },
+    {
+      "pType": "source_event_id",
+      "name": "source_event_id",
+      "type": "int"
+    },
+    {
+      "pType": "type_id",
+      "name": "type_id",
+      "type": "int"
+    },
+    {
+      "pType": "severity",
+      "name": "severity",
+      "type": "int"
+    },
+    {
+      "pType": "detected_time",
+      "name": "detected_time",
+      "type": "date"
+    },
+    {
+      "pType": "alerted_time",
+      "name": "alerted_time",
+      "type": "date"
+    },
+    {
+      "pType": "insert_time",
+      "name": "insert_time",
+      "type": "date"
+    },
+    {
+      "pType": "network_id",
+      "name": "network_id",
+      "type": "string"
+    },
+    {
+      "pType": "source_type",
+      "name": "source_type",
+      "type": "string"
+    },
+    {
+      "pType": "by_uid",
+      "name": "by_uid",
+      "type": "int"
+    },
+    {
+      "pType": "by_name",
+      "name": "by_name",
+      "type": "string"
+    },
+    {
+      "pType": "by_type_id",
+      "name": "by_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "by_file_type",
+      "name": "by_file_type",
+      "type": "int"
+    },
+    {
+      "pType": "by_linked_entity_uid",
+      "name": "by_linked_entity_uid",
+      "type": "int"
+    },
+    {
+      "pType": "by_file_md5",
+      "name": "by_file_md5",
+      "type": "string"
+    },
+    {
+      "pType": "by_file_directory",
+      "name": "by_file_directory",
+      "type": "string"
+    },
+    {
+      "pType": "by_file_alternate_file_stream",
+      "name": "by_file_alternate_file_stream",
+      "type": "string"
+    },
+    {
+      "pType": "by_process_directory",
+      "name": "by_process_directory",
+      "type": "string"
+    },
+    {
+      "pType": "by_process_pid",
+      "name": "by_process_pid",
+      "type": "int"
+    },
+    {
+      "pType": "by_process_creation_time",
+      "name": "by_process_creation_time",
+      "type": "date"
+    },
+    {
+      "pType": "by_process_integrity_level",
+      "name": "by_process_integrity_level",
+      "type": "int"
+    },
+    {
+      "pType": "by_sid",
+      "name": "by_sid",
+      "type": "string"
+    },
+    {
+      "pType": "by_file_normalized_path",
+      "name": "by_file_normalized_path",
+      "type": "string"
+    },
+    {
+      "pType": "by_process_command_line",
+      "name": "by_process_command_line",
+      "type": "string"
+    },
+    {
+      "pType": "by_file_executable",
+      "name": "by_file_executable",
+      "type": "string"
+    },
+    {
+      "pType": "by_directory_type",
+      "name": "by_directory_type",
+      "type": "int"
+    },
+    {
+      "pType": "to_uid",
+      "name": "to_uid",
+      "type": "int"
+    },
+    {
+      "pType": "to_name",
+      "name": "to_name",
+      "type": "string"
+    },
+    {
+      "pType": "to_type_id",
+      "name": "to_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "to_file_type",
+      "name": "to_file_type",
+      "type": "int"
+    },
+    {
+      "pType": "to_linked_entity_uid",
+      "name": "to_linked_entity_uid",
+      "type": "int"
+    },
+    {
+      "pType": "to_file_extension",
+      "name": "to_file_extension",
+      "type": "string"
+    },
+    {
+      "pType": "to_file_md5",
+      "name": "to_file_md5",
+      "type": "string"
+    },
+    {
+      "pType": "to_file_directory",
+      "name": "to_file_directory",
+      "type": "string"
+    },
+    {
+      "pType": "to_file_executable",
+      "name": "to_file_executable",
+      "type": "string"
+    },
+    {
+      "pType": "to_file_alternate_file_stream",
+      "name": "to_file_alternate_file_stream",
+      "type": "string"
+    },
+    {
+      "pType": "to_process_directory",
+      "name": "to_process_directory",
+      "type": "string"
+    },
+    {
+      "pType": "to_process_pid",
+      "name": "to_process_pid",
+      "type": "int"
+    },
+    {
+      "pType": "to_process_creation_time",
+      "name": "to_process_creation_time",
+      "type": "date"
+    },
+    {
+      "pType": "to_process_integrity_level",
+      "name": "to_process_integrity_level",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_protocol",
+      "name": "to_endpoint_protocol",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_ip",
+      "name": "to_endpoint_ip",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_port",
+      "name": "to_endpoint_port",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_remoteip",
+      "name": "to_endpoint_remoteip",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_remoteport",
+      "name": "to_endpoint_remoteport",
+      "type": "int"
+    },
+    {
+      "pType": "to_registry_key",
+      "name": "to_registry_key",
+      "type": "string"
+    },
+    {
+      "pType": "to_registry_data",
+      "name": "to_registry_data",
+      "type": "string"
+    },
+    {
+      "pType": "to_registry_value_type",
+      "name": "to_registry_value_type",
+      "type": "int"
+    },
+    {
+      "pType": "to_registry_permissions",
+      "name": "to_registry_permissions",
+      "type": "string"
+    },
+    {
+      "pType": "to_sid",
+      "name": "to_sid",
+      "type": "string"
+    },
+    {
+      "pType": "to_stripped_imagepath",
+      "name": "to_stripped_imagepath",
+      "type": "string"
+    },
+    {
+      "pType": "to_file_normalized_path",
+      "name": "to_file_normalized_path",
+      "type": "string"
+    },
+    {
+      "pType": "to_process_command_line",
+      "name": "to_process_command_line",
+      "type": "string"
+    },
+    {
+      "pType": "to_directory_type",
+      "name": "to_directory_type",
+      "type": "int"
+    },
+    {
+      "pType": "to_ip_version",
+      "name": "to_ip_version",
+      "type": "int"
+    },
+    {
+      "pType": "data_network_send_bytecount",
+      "name": "data_network_send_bytecount",
+      "type": "int"
+    },
+    {
+      "pType": "data_network_recv_bytecount",
+      "name": "data_network_recv_bytecount",
+      "type": "int"
+    },
+    {
+      "pType": "data_memory_dllname",
+      "name": "data_memory_dllname",
+      "type": "string"
+    },
+    {
+      "pType": "data_memory_functionname",
+      "name": "data_memory_functionname",
+      "type": "string"
+    },
+    {
+      "pType": "data_lnk_destination_path",
+      "name": "data_lnk_destination_path",
+      "type": "string"
+    },
+    {
+      "pType": "data_file_sharemode",
+      "name": "data_file_sharemode",
+      "type": "int"
+    },
+    {
+      "pType": "data_file_oldfilename",
+      "name": "data_file_oldfilename",
+      "type": "string"
+    },
+    {
+      "pType": "data_file_old_md5",
+      "name": "data_file_old_md5",
+      "type": "string"
+    },
+    {
+      "pType": "data_registry_valuename",
+      "name": "data_registry_valuename",
+      "type": "string"
+    },
+    {
+      "pType": "data_registry_newkeyname",
+      "name": "data_registry_newkeyname",
+      "type": "string"
+    },
+    {
+      "pType": "data_registry_privilege",
+      "name": "data_registry_privilege",
+      "type": "int"
+    },
+    {
+      "pType": "data_registry_file_path",
+      "name": "data_registry_file_path",
+      "type": "string"
+    },
+    {
+      "pType": "data_registry_service_type",
+      "name": "data_registry_service_type",
+      "type": "int"
+    },
+    {
+      "pType": "by_file_signature_hash",
+      "name": "by_file_signature_hash",
+      "type": "int"
+    },
+    {
+      "pType": "to_file_signature_hash",
+      "name": "to_file_signature_hash",
+      "type": "int"
+    },
+    {
+      "pType": "data_remote_ip",
+      "name": "data_remote_ip",
+      "type": "int"
+    },
+    {
+      "pType": "data_file_md5_already_seen",
+      "name": "data_file_md5_already_seen",
+      "type": "int"
+    },
+    {
+      "pType": "date_key",
+      "name": "date_key",
+      "type": "int"
     },
     {
       "pType": "insert_time",
@@ -2799,6 +3773,221 @@
       "type": "string"
     },
     {
+      "pType": "entity_hash",
+      "name": "entity_hash",
+      "type": "int"
+    },
+    {
+      "pType": "uid",
+      "name": "uid",
+      "type": "int"
+    },
+    {
+      "pType": "customer_id",
+      "name": "customer_id",
+      "type": "int"
+    },
+    {
+      "pType": "source_id",
+      "name": "source_id",
+      "type": "long"
+    },
+    {
+      "pType": "name",
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "pType": "type_id",
+      "name": "type_id",
+      "type": "int"
+    },
+    {
+      "pType": "parent_uid",
+      "name": "parent_uid",
+      "type": "int"
+    },
+    {
+      "pType": "parent_name",
+      "name": "parent_name",
+      "type": "string"
+    },
+    {
+      "pType": "insert_time",
+      "name": "insert_time",
+      "type": "date"
+    },
+    {
+      "pType": "update_time",
+      "name": "update_time",
+      "type": "date"
+    },
+    {
+      "pType": "linked_entity_uid",
+      "name": "linked_entity_uid",
+      "type": "int"
+    },
+    {
+      "pType": "directory_type",
+      "name": "directory_type",
+      "type": "int"
+    },
+    {
+      "pType": "file_extension",
+      "name": "file_extension",
+      "type": "string"
+    },
+    {
+      "pType": "file_directory",
+      "name": "file_directory",
+      "type": "string"
+    },
+    {
+      "pType": "file_size",
+      "name": "file_size",
+      "type": "int"
+    },
+    {
+      "pType": "file_attributes",
+      "name": "file_attributes",
+      "type": "int"
+    },
+    {
+      "pType": "file_executable",
+      "name": "file_executable",
+      "type": "string"
+    },
+    {
+      "pType": "file_md5",
+      "name": "file_md5",
+      "type": "string"
+    },
+    {
+      "pType": "file_sha1",
+      "name": "file_sha1",
+      "type": "string"
+    },
+    {
+      "pType": "file_sha256",
+      "name": "file_sha256",
+      "type": "string"
+    },
+    {
+      "pType": "file_type",
+      "name": "file_type",
+      "type": "int"
+    },
+    {
+      "pType": "file_pe_type",
+      "name": "file_pe_type",
+      "type": "int"
+    },
+    {
+      "pType": "file_alternate_file_stream",
+      "name": "file_alternate_file_stream",
+      "type": "string"
+    },
+    {
+      "pType": "file_normalized_path",
+      "name": "file_normalized_path",
+      "type": "string"
+    },
+    {
+      "pType": "file_is_directory",
+      "name": "file_is_directory",
+      "type": "string"
+    },
+    {
+      "pType": "file_drive_type",
+      "name": "file_drive_type",
+      "type": "int"
+    },
+    {
+      "pType": "file_date_created",
+      "name": "file_date_created",
+      "type": "date"
+    },
+    {
+      "pType": "file_date_modified",
+      "name": "file_date_modified",
+      "type": "date"
+    },
+    {
+      "pType": "file_date_accessed",
+      "name": "file_date_accessed",
+      "type": "date"
+    },
+    {
+      "pType": "file_language",
+      "name": "file_language",
+      "type": "string"
+    },
+    {
+      "pType": "file_signature_hash",
+      "name": "file_signature_hash",
+      "type": "int"
+    },
+    {
+      "pType": "file_owner_account",
+      "name": "file_owner_account",
+      "type": "string"
+    },
+    {
+      "pType": "process_pid",
+      "name": "process_pid",
+      "type": "int"
+    },
+    {
+      "pType": "process_creation_time",
+      "name": "process_creation_time",
+      "type": "date"
+    },
+    {
+      "pType": "process_directory",
+      "name": "process_directory",
+      "type": "string"
+    },
+    {
+      "pType": "process_normalized_path",
+      "name": "process_normalized_path",
+      "type": "string"
+    },
+    {
+      "pType": "process_command_line",
+      "name": "process_command_line",
+      "type": "string"
+    },
+    {
+      "pType": "process_command_line_truncated",
+      "name": "process_command_line_truncated",
+      "type": "string"
+    },
+    {
+      "pType": "process_command_line_length",
+      "name": "process_command_line_length",
+      "type": "int"
+    },
+    {
+      "pType": "process_drive_type",
+      "name": "process_drive_type",
+      "type": "int"
+    },
+    {
+      "pType": "process_integrity_level",
+      "name": "process_integrity_level",
+      "type": "int"
+    },
+    {
+      "pType": "profile_username",
+      "name": "profile_username",
+      "type": "string"
+    },
+    {
+      "pType": "sid",
+      "name": "sid",
+      "type": "string"
+    },
+    {
       "pType": "insert_time",
       "name": "insert_time",
       "type": "date"
@@ -2887,6 +4076,236 @@
       "pType": "trace_identifier",
       "name": "trace_identifier",
       "type": "long"
+    },
+    {
+      "pType": "rel_id",
+      "name": "rel_id",
+      "type": "int"
+    },
+    {
+      "pType": "behavior_id",
+      "name": "behavior_id",
+      "type": "int"
+    },
+    {
+      "pType": "behavior_type_id",
+      "name": "behavior_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "network_id",
+      "name": "network_id",
+      "type": "string"
+    },
+    {
+      "pType": "source_type",
+      "name": "source_type",
+      "type": "string"
+    },
+    {
+      "pType": "session_id",
+      "name": "session_id",
+      "type": "int"
+    },
+    {
+      "pType": "customer_id",
+      "name": "customer_id",
+      "type": "int"
+    },
+    {
+      "pType": "source_id",
+      "name": "source_id",
+      "type": "long"
+    },
+    {
+      "pType": "event_id",
+      "name": "event_id",
+      "type": "int"
+    },
+    {
+      "pType": "event_type_id",
+      "name": "event_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "event_severity",
+      "name": "event_severity",
+      "type": "int"
+    },
+    {
+      "pType": "event_detected_time",
+      "name": "event_detected_time",
+      "type": "date"
+    },
+    {
+      "pType": "behavior_frequency",
+      "name": "behavior_frequency",
+      "type": "double"
+    },
+    {
+      "pType": "by_uid",
+      "name": "by_uid",
+      "type": "int"
+    },
+    {
+      "pType": "by_name",
+      "name": "by_name",
+      "type": "string"
+    },
+    {
+      "pType": "by_type_id",
+      "name": "by_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "by_linked_entity_uid",
+      "name": "by_linked_entity_uid",
+      "type": "int"
+    },
+    {
+      "pType": "by_file_type",
+      "name": "by_file_type",
+      "type": "int"
+    },
+    {
+      "pType": "by_file_md5",
+      "name": "by_file_md5",
+      "type": "string"
+    },
+    {
+      "pType": "by_file_directory",
+      "name": "by_file_directory",
+      "type": "string"
+    },
+    {
+      "pType": "by_file_alternate_file_stream",
+      "name": "by_file_alternate_file_stream",
+      "type": "string"
+    },
+    {
+      "pType": "by_process_pid",
+      "name": "by_process_pid",
+      "type": "int"
+    },
+    {
+      "pType": "by_process_directory",
+      "name": "by_process_directory",
+      "type": "string"
+    },
+    {
+      "pType": "by_sid",
+      "name": "by_sid",
+      "type": "string"
+    },
+    {
+      "pType": "to_uid",
+      "name": "to_uid",
+      "type": "int"
+    },
+    {
+      "pType": "to_name",
+      "name": "to_name",
+      "type": "string"
+    },
+    {
+      "pType": "to_type_id",
+      "name": "to_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "to_linked_entity_uid",
+      "name": "to_linked_entity_uid",
+      "type": "int"
+    },
+    {
+      "pType": "to_file_type",
+      "name": "to_file_type",
+      "type": "int"
+    },
+    {
+      "pType": "to_file_md5",
+      "name": "to_file_md5",
+      "type": "string"
+    },
+    {
+      "pType": "to_file_directory",
+      "name": "to_file_directory",
+      "type": "string"
+    },
+    {
+      "pType": "to_file_alternate_file_stream",
+      "name": "to_file_alternate_file_stream",
+      "type": "string"
+    },
+    {
+      "pType": "to_process_pid",
+      "name": "to_process_pid",
+      "type": "int"
+    },
+    {
+      "pType": "to_process_directory",
+      "name": "to_process_directory",
+      "type": "string"
+    },
+    {
+      "pType": "to_registry_key",
+      "name": "to_registry_key",
+      "type": "string"
+    },
+    {
+      "pType": "to_registry_value_type",
+      "name": "to_registry_value_type",
+      "type": "int"
+    },
+    {
+      "pType": "to_registry_permissions",
+      "name": "to_registry_permissions",
+      "type": "string"
+    },
+    {
+      "pType": "to_registry_data",
+      "name": "to_registry_data",
+      "type": "string"
+    },
+    {
+      "pType": "to_endpoint_ip",
+      "name": "to_endpoint_ip",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_remoteip",
+      "name": "to_endpoint_remoteip",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_remoteport",
+      "name": "to_endpoint_remoteport",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_port",
+      "name": "to_endpoint_port",
+      "type": "int"
+    },
+    {
+      "pType": "data_remote_ip",
+      "name": "data_remote_ip",
+      "type": "int"
+    },
+    {
+      "pType": "is_insight",
+      "name": "is_insight",
+      "type": "string"
+    },
+    {
+      "pType": "insert_time",
+      "name": "insert_time",
+      "type": "date"
+    },
+    {
+      "pType": "stage_id",
+      "name": "stage_id",
+      "type": "int"
     }
   ],
   "enumeratedTypes": [],
