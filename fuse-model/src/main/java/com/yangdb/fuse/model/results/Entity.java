@@ -67,6 +67,13 @@ public class Entity implements Vertex<Entity> {
         this.properties = new HashMap<>();
         this.attachedProperties = Collections.emptyList();
     }
+
+    public Entity(Set<String> eTag, String eID, String eType, Map<String, Property> properties) {
+        this.eTag = eTag;
+        this.eID = eID;
+        this.eType = eType;
+        this.properties = properties;
+    }
     //endregion
 
     //region Properties
