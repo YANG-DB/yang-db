@@ -47,6 +47,7 @@ package com.yangdb.fuse.model.results;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.query.Query;
+import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -156,5 +157,17 @@ public class AssignmentsQueryResult<E,R> extends QueryResultBase {
         //endregion
     }
 
+    /**
+     * remove assignments duplicates
+     * @param assignmentsQueryResult
+     * @return
+     */
+    public static AssignmentsQueryResult<Entity,Relationship> distinct(AssignmentsQueryResult<Entity,Relationship> assignmentsQueryResult) {
+        assignmentsQueryResult.setAssignments(Stream.ofAll(assignmentsQueryResult.getAssignments())
+                .distinctBy(AssignmentDescriptor::print)
+                .toJavaList());
+        return assignmentsQueryResult;
+
+    }
 
 }

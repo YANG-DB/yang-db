@@ -28,6 +28,7 @@ import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.transport.cursor.FindPathTraversalCursorRequest;
 
 import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
+import static com.yangdb.fuse.model.results.AssignmentsQueryResult.distinct;
 
 
 public class FindPathsTraversalCursor extends PathsTraversalCursor {
@@ -61,7 +62,7 @@ public class FindPathsTraversalCursor extends PathsTraversalCursor {
             Assignment assignments = toAssignment(path);
             builder.withAssignment(assignments);
         });
-        return builder.build();
+        return distinct(builder.build());
     }
 
 }

@@ -30,13 +30,15 @@ import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
-import com.yangdb.fuse.model.results.Assignment;
-import com.yangdb.fuse.model.results.AssignmentsQueryResult;
+import com.yangdb.fuse.model.results.*;
+import javaslang.collection.Stream;
 import org.unipop.structure.UniElement;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
+import static com.yangdb.fuse.model.results.AssignmentsQueryResult.distinct;
 
 
 public class ForwardOnlyPathsTraversalCursor extends PathsTraversalCursor {
@@ -60,32 +62,14 @@ public class ForwardOnlyPathsTraversalCursor extends PathsTraversalCursor {
     //region Private Methods
     protected AssignmentsQueryResult toQuery(int numResults) {
         AssignmentsQueryResult.Builder builder = instance();
-        AsgQuery asgQuery = getContext().getQueryResource().getAsgQuery();
-        //check is Or quant exists -> if so take any largest path
-        if (AsgQueryUtil.element(asgQuery, Quant1.class).isPresent()
-                && AsgQueryUtil.element(asgQuery, Quant1.class).get().geteBase().getqType().equals(QuantType.some)) {
-            //in case of Union -> return all sub-paths regardless of max elements in path
-            (getContext().getTraversal().next(numResults)).forEach(path -> {
-                //todo make sure no circle exists in path
-                if(path.objects().stream().map(p-> ((UniElement)p).id().toString()).collect(Collectors.toSet()).size() == path.objects().size())
-                    builder.withAssignment(toAssignment(path));
-            });
-        } else {
-            int nodes = AsgQueryUtil.elements(asgQuery, EEntityBase.class).size();
-            int edges = AsgQueryUtil.elements(asgQuery, Rel.class).size();
-            final Query pattern = getContext().getQueryResource().getQuery();
-            builder.withPattern(pattern);
-            //build assignments
-            (getContext().getTraversal().next(numResults)).forEach(path -> {
-                Assignment assignments = toAssignment(path);
-                if (assignments.getEntities().size() == nodes && assignments.getRelationships().size() == edges) {
-                    //todo make sure no circle exists in path
-                    if(path.objects().stream().map(p-> ((UniElement)p).id().toString()).collect(Collectors.toSet()).size() == path.objects().size())
-                        builder.withAssignment(assignments);
-                }
-            });
-        }
-        return builder.build();
+        final Query pattern = getContext().getQueryResource().getQuery();
+        builder.withPattern(pattern);
+        (getContext().getTraversal().next(numResults)).forEach(path -> {
+            //makes sure no circle exists in path (no getting back - forward only assignments)
+            if (path.objects().stream().map(p -> ((UniElement) p).id().toString()).collect(Collectors.toSet()).size() == path.objects().size())
+                builder.withAssignment(toAssignment(path));
+        });
+        return distinct(builder.build());
     }
 
 }

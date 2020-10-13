@@ -12,9 +12,9 @@ package com.yangdb.fuse.model.results;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,6 +31,7 @@ import com.yangdb.fuse.model.asgQuery.AsgCompositeQuery;
 import javaslang.collection.Stream;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 21-Feb-17.
@@ -40,7 +41,7 @@ import java.util.*;
         @JsonSubTypes.Type(name = "Assignment", value = AssignmentCount.class)})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Assignment<E,R> {
+public class Assignment<E, R> {
     //region Constructors
     public Assignment() {
         this.entities = Collections.emptyList();
@@ -49,34 +50,52 @@ public class Assignment<E,R> {
     //endregion
 
     //region Properties
-    public List<R> getRelationships ()
-    {
+    public List<R> getRelationships() {
         return relationships;
     }
 
-    public void setRelationships (List<R> relationships)
-    {
+    public void setRelationships(List<R> relationships) {
         this.relationships = relationships;
     }
 
-    public List<E> getEntities ()
-    {
+    public List<E> getEntities() {
         return entities;
     }
 
-    public void setEntities (List<E> entities)
-    {
+    public void setEntities(List<E> entities) {
         this.entities = entities;
     }
     //endregion
 
     //region Override Methods
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Assignment [relationships = " + relationships + ", entities = " + entities + "]";
     }
     //endregion
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Assignment<?, ?> that = (Assignment<?, ?>) o;
+        return getEntities().stream()
+                .sorted().collect(Collectors.toList())
+                    .equals(that.getEntities().stream()
+                        .sorted().collect(Collectors.toList())) &&
+                getRelationships().stream()
+                        .sorted().collect(Collectors.toList())
+                        .equals(that.getRelationships().stream()
+                                .sorted().collect(Collectors.toList()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getEntities().stream()
+                        .sorted().collect(Collectors.toList()),
+                getRelationships().stream()
+                        .sorted().collect(Collectors.toList()));
+    }
 
     //region Fields
     private List<E> entities;
@@ -114,7 +133,7 @@ public class Assignment<E,R> {
             return this;
         }
 
-        public Builder withEntity(Entity entity,String tag) {
+        public Builder withEntity(Entity entity, String tag) {
             Entity currentEntity = this.entities.get(entity.geteID());
             if (currentEntity != null) {
                 entity = Entity.Builder.instance().withEntity(currentEntity).withEntity(entity).withETag(tag).build();
@@ -134,8 +153,8 @@ public class Assignment<E,R> {
             return this;
         }
 
-        public Assignment<Entity,Relationship> build() {
-            Assignment<Entity,Relationship> assignment = new Assignment<>();
+        public Assignment<Entity, Relationship> build() {
+            Assignment<Entity, Relationship> assignment = new Assignment<>();
             //assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
             assignment.setEntities(Stream.ofAll(this.entities.values()).sortBy(Entity::geteType).toJavaList());
             assignment.setRelationships(this.relationships);
@@ -149,7 +168,6 @@ public class Assignment<E,R> {
 
         //endregion
     }
-
 
 
 }

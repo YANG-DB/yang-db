@@ -160,6 +160,44 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
         // Check if expected results and actual results are equal
         QueryResultAssert.assertEquals(expectedResult, (AssignmentsQueryResult) pageData, true, true);
     }
+
+    @Test
+    public void testGetSomePathRelationCategory() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+
+    }
+
+    @Test
+    public void testGetSomeRelationCategory() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "Start", "Entity", 2, 0),
+                        new Quant1(2, QuantType.some, Arrays.asList(3,4,9), 0),
+                                new EProp(3, "category", Constraint.of(ConstraintOp.eq, e1.category)),
+                            new Rel(4, "hasRelation", R, null, 5, 0),
+                                new ETyped(5, "R-1", "Relation", 6, 0),
+                                new Rel(6, "hasRelation",L,null,7),
+                                new ETyped(7, "End-1", "Entity", 8,-1),
+                                    new EProp(8, "category", Constraint.of(ConstraintOp.eq, e2.category)),
+                            new Rel(9, "hasRelation", R, null, 10, 0),
+                                new ETyped(10, "R-2", "Relation", 11, 0),
+                                new Rel(11, "hasRelation", L,null,12),
+                                new ETyped(12, "Middle-2", "Entity", 13, 0),
+                                    new Rel(13, "hasRelation", R, null, 14, 0),
+                                        new ETyped(14, "R-3", "Relation", 15, 0),
+                                        new Rel(15, "hasRelation", L,null,16),
+                                        new ETyped(16, "End-2", "Entity", 17, 0),
+                                            new EProp(17, "category", Constraint.of(ConstraintOp.eq, e2.category))
+                    )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query);
+
+        // Check if expected results and actual results are equal
+        Assert.assertEquals(1, pageData.getSize());
+    }
     @Test
     public void testEqByEntityCategoryAndInRelationCategoryAndOutRel() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity

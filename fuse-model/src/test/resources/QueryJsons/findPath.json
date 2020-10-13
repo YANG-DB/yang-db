@@ -1,0 +1,168 @@
+{
+  "ont": "Knowledge",
+  "name": "query",
+  "elements": [
+    {
+      "type": "Start",
+      "eNum": 0,
+      "next": 1
+    },
+    {
+      "type": "ETyped",
+      "eNum": 1,
+      "eTag": "Start",
+      "next": 2,
+      "eType": "Entity",
+      "typed": "Entity"
+    },
+    {
+      "type": "Quant1",
+      "eNum": 2,
+      "qType": "some",
+      "next": [
+        3,
+        4,
+        9
+      ]
+    },
+    {
+      "type": "EProp",
+      "eNum": 3,
+      "pType": "logicalId",
+      "con": {
+        "type": "Constraint",
+        "op": "eq",
+        "expr": "e00000006",
+        "iType": "[]"
+      },
+      "projection": false,
+      "constraint": true
+    },
+    {
+      "type": "Rel",
+      "eNum": 4,
+      "rType": "hasRelation",
+      "dir": "R",
+      "next": 5,
+      "typed": "hasRelation"
+    },
+    {
+      "type": "ETyped",
+      "eNum": 5,
+      "eTag": "R-1",
+      "next": 6,
+      "eType": "Relation",
+      "typed": "Relation"
+    },
+    {
+      "type": "Rel",
+      "eNum": 6,
+      "rType": "hasRelation",
+      "dir": "L",
+      "next": 7,
+      "b": -1,
+      "typed": "hasRelation"
+    },
+    {
+      "type": "ETyped",
+      "eNum": 7,
+      "eTag": "End-1",
+      "next": 8,
+      "b": -1,
+      "eType": "Entity",
+      "typed": "Entity"
+    },
+    {
+      "type": "EProp",
+      "eNum": 8,
+      "pType": "logicalId",
+      "con": {
+        "type": "Constraint",
+        "op": "eq",
+        "expr": "e00000007",
+        "iType": "[]"
+      },
+      "projection": false,
+      "constraint": true
+    },
+    {
+      "type": "Rel",
+      "eNum": 9,
+      "rType": "hasRelation",
+      "dir": "R",
+      "next": 10,
+      "typed": "hasRelation"
+    },
+    {
+      "type": "ETyped",
+      "eNum": 10,
+      "eTag": "R-2",
+      "next": 11,
+      "eType": "Relation",
+      "typed": "Relation"
+    },
+    {
+      "type": "Rel",
+      "eNum": 11,
+      "rType": "hasRelation",
+      "dir": "L",
+      "next": 12,
+      "b": -1,
+      "typed": "hasRelation"
+    },
+    {
+      "type": "ETyped",
+      "eNum": 12,
+      "eTag": "Middle-2",
+      "next": 13,
+      "eType": "Entity",
+      "typed": "Entity"
+    },
+    {
+      "type": "Rel",
+      "eNum": 13,
+      "rType": "hasRelation",
+      "dir": "R",
+      "next": 14,
+      "typed": "hasRelation"
+    },
+    {
+      "type": "ETyped",
+      "eNum": 14,
+      "eTag": "R-3",
+      "next": 15,
+      "eType": "Relation",
+      "typed": "Relation"
+    },
+    {
+      "type": "Rel",
+      "eNum": 15,
+      "rType": "hasRelation",
+      "dir": "L",
+      "next": 16,
+      "b": -1,
+      "typed": "hasRelation"
+    },
+    {
+      "type": "ETyped",
+      "eNum": 16,
+      "eTag": "End-2",
+      "next": 17,
+      "eType": "Entity",
+      "typed": "Entity"
+    },
+    {
+      "type": "EProp",
+      "eNum": 17,
+      "pType": "logicalId",
+      "con": {
+        "type": "Constraint",
+        "op": "eq",
+        "expr": "e00000007",
+        "iType": "[]"
+      },
+      "projection": false,
+      "constraint": true
+    }
+  ]
+}

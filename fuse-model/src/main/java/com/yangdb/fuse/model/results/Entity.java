@@ -59,11 +59,17 @@ import java.util.stream.Collectors;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Entity implements Vertex {
+public class Entity implements Vertex, Comparable<Entity> {
     //region Constructors
     public Entity() {
         this.properties = new HashMap<>();
         this.attachedProperties = Collections.emptyList();
+    }
+
+    public Entity(Set<String> eTag, String eID, String eType) {
+        this.eTag = eTag;
+        this.eID = eID;
+        this.eType = eType;
     }
     //endregion
 
@@ -143,6 +149,18 @@ public class Entity implements Vertex {
 
 //endregion
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Entity entity = (Entity) o;
+        return geteTag().equals(entity.geteTag()) &&
+                geteID().equals(entity.geteID()) &&
+                geteType().equals(entity.geteType()) &&
+                Objects.equals(getProperties(), entity.getProperties()) &&
+                Objects.equals(getAttachedProperties(), entity.getAttachedProperties());
+    }
+
     //region Override Methods
     @Override
     public int hashCode() {
@@ -165,6 +183,11 @@ public class Entity implements Vertex {
     private String eType;
     private Map<String, Property> properties;
     private List<AttachedProperty> attachedProperties;
+
+    @Override
+    public int compareTo(Entity entity) {
+        return geteID().compareTo(entity.geteID());
+    }
 
     //endregion
 

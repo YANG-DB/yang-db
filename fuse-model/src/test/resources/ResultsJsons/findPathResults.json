@@ -1,0 +1,408 @@
+[
+  {
+    "entities": [
+      {
+        "eTag": [
+          "target"
+        ],
+        "eID": "e00000144",
+        "eType": "Entity",
+        "properties": [
+          {
+            "pType": "authorization",
+            "agg": "raw",
+            "value": 10
+          },
+          {
+            "pType": "creationTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          },
+          {
+            "pType": "logicalId",
+            "agg": "raw",
+            "value": "e00000144"
+          },
+          {
+            "pType": "category",
+            "agg": "raw",
+            "value": "http://huha.com/device#application"
+          },
+          {
+            "pType": "techId",
+            "agg": "raw",
+            "value": "DEVICE_APPLICATION__a1"
+          },
+          {
+            "pType": "lastUpdateTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          }
+        ]
+      },
+      {
+        "eTag": [
+          "end"
+        ],
+        "eID": "e00000145",
+        "eType": "Entity",
+        "properties": [
+          {
+            "pType": "authorization",
+            "agg": "raw",
+            "value": 10
+          },
+          {
+            "pType": "creationTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          },
+          {
+            "pType": "logicalId",
+            "agg": "raw",
+            "value": "e00000145"
+          },
+          {
+            "pType": "category",
+            "agg": "raw",
+            "value": "http://huha.com/device#device"
+          },
+          {
+            "pType": "techId",
+            "agg": "raw",
+            "value": "DEVICE_DEVICE__d1"
+          },
+          {
+            "pType": "lastUpdateTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          }
+        ]
+      },
+      {
+        "eTag": [
+          "source"
+        ],
+        "eID": "e00000143",
+        "eType": "Entity",
+        "properties": [
+          {
+            "pType": "authorization",
+            "agg": "raw",
+            "value": 10
+          },
+          {
+            "pType": "creationTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          },
+          {
+            "pType": "logicalId",
+            "agg": "raw",
+            "value": "e00000143"
+          },
+          {
+            "pType": "category",
+            "agg": "raw",
+            "value": "http://huha.com/device#device"
+          },
+          {
+            "pType": "techId",
+            "agg": "raw",
+            "value": "DEVICE_DEVICE__d0"
+          },
+          {
+            "pType": "lastUpdateTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "rID": "relatedEntitye00000143e00000145",
+        "agg": false,
+        "rType": "relatedEntity",
+        "directional": false,
+        "eID1": "e00000143",
+        "eID2": "e00000145",
+        "eTag1": "source",
+        "eTag2": "end",
+        "properties": [
+          {
+            "pType": "authorization",
+            "agg": "raw",
+            "value": 10
+          },
+          {
+            "pType": "creationTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:01.477+0000"
+          },
+          {
+            "pType": "category",
+            "agg": "raw",
+            "value": "http://huha.com/minimal#affiliatedWith"
+          },
+          {
+            "pType": "lastUpdateTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:01.477+0000"
+          }
+        ]
+      },
+      {
+        "rID": "relatedEntitye00000145e00000144",
+        "agg": false,
+        "rType": "relatedEntity",
+        "directional": false,
+        "eID1": "e00000145",
+        "eID2": "e00000144",
+        "eTag1": "end",
+        "eTag2": "target",
+        "properties": [
+          {
+            "pType": "authorization",
+            "agg": "raw",
+            "value": 10
+          },
+          {
+            "pType": "creationTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          },
+          {
+            "pType": "category",
+            "agg": "raw",
+            "value": "http://huha.com/device#operates"
+          },
+          {
+            "pType": "lastUpdateTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "entities": [
+      {
+        "eTag": [
+          "target"
+        ],
+        "eID": "e00000144",
+        "eType": "Entity",
+        "properties": [
+          {
+            "pType": "authorization",
+            "agg": "raw",
+            "value": 10
+          },
+          {
+            "pType": "creationTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          },
+          {
+            "pType": "logicalId",
+            "agg": "raw",
+            "value": "e00000144"
+          },
+          {
+            "pType": "category",
+            "agg": "raw",
+            "value": "http://huha.com/device#application"
+          },
+          {
+            "pType": "techId",
+            "agg": "raw",
+            "value": "DEVICE_APPLICATION__a1"
+          },
+          {
+            "pType": "lastUpdateTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          }
+        ]
+      },
+      {
+        "eTag": [
+          "end"
+        ],
+        "eID": "e00000145",
+        "eType": "Entity",
+        "properties": [
+          {
+            "pType": "authorization",
+            "agg": "raw",
+            "value": 10
+          },
+          {
+            "pType": "creationTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          },
+          {
+            "pType": "logicalId",
+            "agg": "raw",
+            "value": "e00000145"
+          },
+          {
+            "pType": "category",
+            "agg": "raw",
+            "value": "http://huha.com/device#device"
+          },
+          {
+            "pType": "techId",
+            "agg": "raw",
+            "value": "DEVICE_DEVICE__d1"
+          },
+          {
+            "pType": "lastUpdateTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          }
+        ]
+      },
+      {
+        "eTag": [
+          "source"
+        ],
+        "eID": "e00000143",
+        "eType": "Entity",
+        "properties": [
+          {
+            "pType": "authorization",
+            "agg": "raw",
+            "value": 10
+          },
+          {
+            "pType": "creationTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          },
+          {
+            "pType": "logicalId",
+            "agg": "raw",
+            "value": "e00000143"
+          },
+          {
+            "pType": "category",
+            "agg": "raw",
+            "value": "http://huha.com/device#device"
+          },
+          {
+            "pType": "techId",
+            "agg": "raw",
+            "value": "DEVICE_DEVICE__d0"
+          },
+          {
+            "pType": "lastUpdateTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "rID": "relatedEntitye00000143e00000081",
+        "agg": false,
+        "rType": "relatedEntity",
+        "directional": false,
+        "eID1": "e00000143",
+        "eID2": "e00000081",
+        "eTag1": "source",
+        "eTag2": "end",
+        "properties": [
+          {
+            "pType": "authorization",
+            "agg": "raw",
+            "value": 10
+          },
+          {
+            "pType": "creationTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:01.477+0000"
+          },
+          {
+            "pType": "category",
+            "agg": "raw",
+            "value": "http://huha.com/device#worksAt"
+          },
+          {
+            "pType": "lastUpdateTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:01.477+0000"
+          }
+        ]
+      },
+      {
+        "rID": "relatedEntitye00000081e00000145",
+        "agg": false,
+        "rType": "relatedEntity",
+        "directional": false,
+        "eID1": "e00000081",
+        "eID2": "e00000145",
+        "eTag1": "end",
+        "eTag2": "end",
+        "properties": [
+          {
+            "pType": "authorization",
+            "agg": "raw",
+            "value": 10
+          },
+          {
+            "pType": "creationTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:01.477+0000"
+          },
+          {
+            "pType": "category",
+            "agg": "raw",
+            "value": "http://huha.com/device#worksAt"
+          },
+          {
+            "pType": "lastUpdateTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:01.477+0000"
+          }
+        ]
+      },
+      {
+        "rID": "relatedEntitye00000145e00000144",
+        "agg": false,
+        "rType": "relatedEntity",
+        "directional": false,
+        "eID1": "e00000145",
+        "eID2": "e00000144",
+        "eTag1": "end",
+        "eTag2": "target",
+        "properties": [
+          {
+            "pType": "authorization",
+            "agg": "raw",
+            "value": 10
+          },
+          {
+            "pType": "creationTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          },
+          {
+            "pType": "category",
+            "agg": "raw",
+            "value": "http://huha.com/device#operates"
+          },
+          {
+            "pType": "lastUpdateTime",
+            "agg": "raw",
+            "value": "2020-10-07T18:51:00.342+0000"
+          }
+        ]
+      }
+    ]
+  }
+]
