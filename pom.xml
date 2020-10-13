@@ -215,7 +215,7 @@
 
         <json.io>4.10.1</json.io>
         <!-- test -->
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <easymock.version>3.2</easymock.version>
         <rest-assured.version>3.0.1</rest-assured.version>
         <mockito-all.version>1.10.19</mockito-all.version>
