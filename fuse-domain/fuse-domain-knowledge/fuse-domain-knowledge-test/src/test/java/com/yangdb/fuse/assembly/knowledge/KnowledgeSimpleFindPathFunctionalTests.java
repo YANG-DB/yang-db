@@ -2,11 +2,14 @@ package com.yangdb.fuse.assembly.knowledge;
 
 import com.yangdb.fuse.client.BaseFuseClient;
 import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.model.Tagged;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.query.RelPattern;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.ETyped;
+import com.yangdb.fuse.model.query.entity.EndPattern;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
@@ -63,6 +66,27 @@ public class KnowledgeSimpleFindPathFunctionalTests {
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, findPathQuery,new CreateForwardOnlyPathTraversalCursorRequest());
         // Check if expected results and actual results are equal
         Assert.assertEquals(10, pageData.getSize());
+
+    }
+
+    @Test
+    @Ignore("Fails due to endPattern Etype(eType=Relation) cant be without continue of additionl Etype(eType=Entity) when in mid path ")
+    public void testFindPathRelationCategory() throws IOException, InterruptedException {
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new EConcrete(1, "Start", "Entity","e00000006","e00000006", 2, 0),
+                        new Quant1(2,QuantType.all, Arrays.asList(3,4)),
+                        new RelPattern(4, "relatedEntity",new com.yangdb.fuse.model.Range(1,3), R, null, 5, 0),
+                        new EndPattern<>(new ETyped(5, Tagged.tagSeq("Middle"), "Relation", 6, 0)),
+                        new EConcrete(6, "End-2", "Entity","e00000007","e00000007", 0, 0)
+                )).build();
+        AssignmentsQueryResult<Entity, Relationship> pageData = (AssignmentsQueryResult<Entity, Relationship>) query(fuseClient, fuseResourceInfo, query,new CreateForwardOnlyPathTraversalCursorRequest());
+
+        // Check if expected results and actual results are equal
+        Assert.assertEquals(2, pageData.getSize());
+        Assert.assertEquals(2, new HashSet<>(pageData.getAssignments()).size());
 
     }
 
