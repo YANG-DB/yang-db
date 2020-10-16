@@ -1,10 +1,10 @@
-package com.yangdb.fuse.executor.elasticsearch;
+package com.yangdb.fuse.dispatcher.ontology;
 
 /*-
  * #%L
- * fuse-dv-core
+ * fuse-core
  * %%
- * Copyright (C) 2016 - 2020 The YangDb Graph Database Project
+ * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,20 @@ package com.yangdb.fuse.executor.elasticsearch;
  * #L%
  */
 
-public enum PartitionType {
-    //a complete index
-    INDEX,
-    // a child (nested document)
-    CHILD,
-    //embedded document - flattened according to (elastic) dot pattern
-    EMBEDDED
+
+
+import com.yangdb.fuse.model.schema.IndexProvider;
+
+import java.util.Collection;
+import java.util.Optional;
+
+/**
+ * Created by lior.perry on 3/16/2017.
+ */
+public interface IndexProviderFactory {
+    Optional<IndexProvider> get(String id);
+
+    Collection<IndexProvider> getAll();
+
+    IndexProvider add(IndexProvider provider);
 }

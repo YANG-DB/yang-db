@@ -2,6 +2,7 @@ package com.yangdb.fuse.services.engine2.data;
 
 import com.yangdb.fuse.services.engine2.SmartEpbRedundantTestSuite;
 import com.yangdb.fuse.model.GlobalConstants;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
 import javaslang.collection.Stream;
@@ -22,12 +23,12 @@ import java.util.List;
 public class SmartEpbRedundantEntityRelationEntityIT extends EntityRelationEntityIT {
     @BeforeClass
     public static void setup() throws Exception {
-        EntityRelationEntityIT.setup(SmartEpbRedundantTestSuite.elasticEmbeddedNode.getClient(), true);
+        EntityRelationEntityIT.setup(ElasticEmbeddedNode.getClient(), true);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        EntityRelationEntityIT.cleanup(SmartEpbRedundantTestSuite.elasticEmbeddedNode.getClient());
+        EntityRelationEntityIT.cleanup(ElasticEmbeddedNode.getClient());
     }
 
     @Override

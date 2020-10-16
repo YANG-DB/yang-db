@@ -52,6 +52,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.yangdb.fuse.model.schema.MappingIndexType.STATIC;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "entities",
@@ -71,8 +73,8 @@ public class IndexProvider {
     @JsonProperty("entities")
     public List<Entity> getEntities() {
         return Stream.concat(entities.stream()
-                    .filter(e -> !e.getNested().isEmpty())
-                    .flatMap(e -> e.getNested().stream()),entities.stream())
+                .filter(e -> !e.getNested().isEmpty())
+                .flatMap(e -> e.getNested().stream()), entities.stream())
                 .collect(Collectors.toList());
     }
 
@@ -85,7 +87,7 @@ public class IndexProvider {
     public List<Relation> getRelations() {
         return Stream.concat(relations.stream()
                 .filter(e -> !e.getNested().isEmpty())
-                .flatMap(e -> e.getNested().stream()),relations.stream())
+                .flatMap(e -> e.getNested().stream()), relations.stream())
                 .collect(Collectors.toList());
     }
 
@@ -160,6 +162,7 @@ public class IndexProvider {
 
         /**
          * creates default index provider according to the given ontology - simple static index strategy
+         *
          * @param ontology
          * @return
          */
@@ -167,14 +170,14 @@ public class IndexProvider {
             IndexProvider provider = new IndexProvider();
             provider.ontology = ontology.getOnt();
             //generate entities
-            provider.entities = ontology.getEntityTypes().stream().map(e->
-                    new Entity(e.getName(),"static","Index",
-                            new Props(ImmutableList.of(e.getName())),Collections.emptyList(), Collections.emptyMap()))
+            provider.entities = ontology.getEntityTypes().stream().map(e ->
+                    new Entity(e.getName(), STATIC.name(), PartitionType.INDEX.name(),
+                            new Props(ImmutableList.of(e.getName())), Collections.emptyList(), Collections.emptyMap()))
                     .collect(Collectors.toList());
             //generate relations
-            provider.relations = ontology.getRelationshipTypes().stream().map(e->
-                    new Relation(e.getName(),"static","Index",false, Collections.emptyList(),
-                            new Props(ImmutableList.of(e.getName())),Collections.emptyList(), Collections.emptyMap()))
+            provider.relations = ontology.getRelationshipTypes().stream().map(e ->
+                    new Relation(e.getName(), STATIC.name(), PartitionType.INDEX.name(), false, Collections.emptyList(),
+                            new Props(ImmutableList.of(e.getName())), Collections.emptyList(), Collections.emptyMap()))
                     .collect(Collectors.toList());
 
             return provider;

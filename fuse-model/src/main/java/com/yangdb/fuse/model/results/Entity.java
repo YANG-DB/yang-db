@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Entity implements Vertex<Entity> {
+public class Entity implements Vertex<Entity>, Comparable<Entity> {
     //region Constructors
     public Entity() {
         this.properties = new HashMap<>();
@@ -184,12 +184,22 @@ public class Entity implements Vertex<Entity> {
 //endregion
 
     //region Override Methods
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Entity entity = (Entity) o;
+        return geteTag().equals(entity.geteTag()) &&
+                geteID().equals(entity.geteID()) &&
+                geteType().equals(entity.geteType()) &&
+                Objects.equals(getProperties(), entity.getProperties()) &&
+                Objects.equals(getAttachedProperties(), entity.getAttachedProperties());
+    }
+
     @Override
     public int hashCode() {
-        int hashCode = eID.hashCode() * 31;
-        hashCode = hashCode * 31 + eType.hashCode();
-        hashCode = hashCode * 31 + eTag.hashCode();
-        return hashCode;
+        return Objects.hash(geteTag(), geteID(), geteType(), getProperties(), getAttachedProperties());
     }
 
     @Override
@@ -204,6 +214,11 @@ public class Entity implements Vertex<Entity> {
     private String eType;
     private Map<String, Property> properties;
     private List<AttachedProperty> attachedProperties;
+
+    @Override
+    public int compareTo(Entity entity) {
+        return this.geteID().compareTo(entity.geteID());
+    }
 
     //endregion
 

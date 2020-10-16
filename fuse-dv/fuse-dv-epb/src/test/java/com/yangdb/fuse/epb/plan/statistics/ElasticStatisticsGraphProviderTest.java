@@ -127,9 +127,9 @@ public class ElasticStatisticsGraphProviderTest {
         statConfig = StatConfigTestUtil.getStatConfig(buildStatContainer());
 
         elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
-        new MappingFileElasticConfigurer(statConfig.getStatIndexName(), MAPPING_STAT_FILE_PATH).configure(elasticEmbeddedNode.getClient());
+        new MappingFileElasticConfigurer(statConfig.getStatIndexName(), MAPPING_STAT_FILE_PATH).configure(ElasticEmbeddedNode.getClient());
 
-        statClient = elasticEmbeddedNode.getClient();
+        statClient = ElasticEmbeddedNode.getClient();
     }
 
     @AfterClass

@@ -229,7 +229,7 @@ public class RelationshipType implements BaseElement {
 
     @Override
     public String toString() {
-        return "RelationshipType [ePairs = " + ePairs + ", idField = " + idField + ", rType = " + rType + ", directional = " + directional + ", name = " + name + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
+        return "RelationshipType [name = " + name +", ePairs = " + ePairs + ", idField = " + idField + ", rType = " + rType + ", directional = " + directional + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
     }
 
     //region Fields

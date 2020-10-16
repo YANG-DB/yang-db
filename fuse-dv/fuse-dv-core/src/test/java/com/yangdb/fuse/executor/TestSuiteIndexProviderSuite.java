@@ -2,7 +2,7 @@ package com.yangdb.fuse.executor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactoryIT;
 import com.yangdb.fuse.executor.ontology.schema.*;
@@ -52,7 +52,7 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
     public static IndexProvider nestedProvider,embeddedProvider,singleIndexProvider;
 
     public static OntologyProvider ontologyProvider;
-    public static IndexProviderIfc nestedProviderIfc,embeddedProviderIfc,singleIndexProviderIfc;
+    public static IndexProviderFactory nestedProviderIfc,embeddedProviderIfc, singleIndexProviderFactory;
 
     public static Client client;
 
@@ -69,14 +69,14 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         ontology = mapper.readValue(ontologyStream, Ontology.class);
 
 
-        nestedProviderIfc = Mockito.mock(IndexProviderIfc.class);
+        nestedProviderIfc = Mockito.mock(IndexProviderFactory.class);
         when(nestedProviderIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(nestedProvider));
 
-        embeddedProviderIfc = Mockito.mock(IndexProviderIfc.class);
+        embeddedProviderIfc = Mockito.mock(IndexProviderFactory.class);
         when(embeddedProviderIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(embeddedProvider));
 
-        singleIndexProviderIfc = Mockito.mock(IndexProviderIfc.class);
-        when(singleIndexProviderIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(singleIndexProvider));
+        singleIndexProviderFactory = Mockito.mock(IndexProviderFactory.class);
+        when(singleIndexProviderFactory.get(any())).thenAnswer(invocationOnMock -> Optional.of(singleIndexProvider));
 
         ontologyProvider = Mockito.mock(OntologyProvider.class);
         when(ontologyProvider.get(any())).thenAnswer(invocationOnMock -> Optional.of(ontology));
@@ -86,7 +86,7 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
 
         GraphElementSchemaProvider nestedSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, nestedProviderIfc,ontologyProvider).get(ontology);
         GraphElementSchemaProvider embeddedSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, embeddedProviderIfc,ontologyProvider).get(ontology);
-        GraphElementSchemaProvider singleIndexSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, singleIndexProviderIfc,ontologyProvider).get(ontology);
+        GraphElementSchemaProvider singleIndexSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, singleIndexProviderFactory,ontologyProvider).get(ontology);
 
         nestedSchema = new RawSchema() {
             @Override
@@ -199,10 +199,10 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         // Start embedded ES
         if(embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
-            client = elasticEmbeddedNode.getClient();
+            client = ElasticEmbeddedNode.getClient();
         } else {
             //use existing running ES
-            client = elasticEmbeddedNode.getClient();
+            client = ElasticEmbeddedNode.getClient();
         }
 
     }

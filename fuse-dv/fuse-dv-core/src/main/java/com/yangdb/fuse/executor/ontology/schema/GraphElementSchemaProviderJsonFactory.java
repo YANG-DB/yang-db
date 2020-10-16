@@ -22,9 +22,9 @@ package com.yangdb.fuse.executor.ontology.schema;
 
 import com.google.inject.Inject;
 import com.typesafe.config.Config;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.executor.elasticsearch.MappingIndexType;
+import com.yangdb.fuse.model.schema.MappingIndexType;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.EPair;
@@ -69,7 +69,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     private Ontology.Accessor accessor;
 
     @Inject
-    public GraphElementSchemaProviderJsonFactory(Config config, IndexProviderIfc indexProvider, OntologyProvider ontologyProvider) {
+    public GraphElementSchemaProviderJsonFactory(Config config, IndexProviderFactory indexProvider, OntologyProvider ontologyProvider) {
         String assembly = config.getString("assembly");
 
         this.accessor = new Ontology.Accessor(ontologyProvider.get(assembly).orElseThrow(() ->
@@ -81,7 +81,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
     }
 
-    public GraphElementSchemaProviderJsonFactory(IndexProviderIfc indexProviderFactory, Ontology ontology) {
+    public GraphElementSchemaProviderJsonFactory(IndexProviderFactory indexProviderFactory, Ontology ontology) {
         this.accessor = new Ontology.Accessor(ontology);
         this.indexProvider = indexProviderFactory.get(ontology.getOnt())
                 .orElseGet(() -> IndexProvider.Builder.generate(ontology));

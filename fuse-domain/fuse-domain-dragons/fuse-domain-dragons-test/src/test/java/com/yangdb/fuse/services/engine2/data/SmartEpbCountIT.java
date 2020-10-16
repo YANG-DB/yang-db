@@ -36,6 +36,7 @@ import com.yangdb.fuse.services.engine2.SmartEpbCountTestSuite;
 import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.MappingFileElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
@@ -61,12 +62,12 @@ import static java.util.Collections.singletonList;
 public class SmartEpbCountIT implements BaseITMarker {
     @BeforeClass
     public static void setup() throws Exception {
-        setup(SmartEpbCountTestSuite.elasticEmbeddedNode.getClient(), true);
+        setup(ElasticEmbeddedNode.getClient(), true);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        cleanup(SmartEpbCountTestSuite.elasticEmbeddedNode.getClient());
+        cleanup(ElasticEmbeddedNode.getClient());
     }
 
 

@@ -1,10 +1,10 @@
-package com.yangdb.fuse.dispatcher.ontology;
+package com.yangdb.fuse.model.schema;
 
 /*-
  * #%L
- * fuse-core
+ * fuse-dv-core
  * %%
- * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
+ * Copyright (C) 2016 - 2020 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,16 @@ package com.yangdb.fuse.dispatcher.ontology;
  * #L%
  */
 
-
-
-import com.yangdb.fuse.model.schema.IndexProvider;
-
-import java.util.Collection;
-import java.util.Optional;
-
 /**
- * Created by lior.perry on 3/16/2017.
+ * the basic index mapping type currently supported for providing the physical elastic ontology schema
  */
-public interface IndexProviderIfc {
-    Optional<IndexProvider> get(String id);
-
-    Collection<IndexProvider> getAll();
-
-    IndexProvider add(IndexProvider provider);
+public enum MappingIndexType {
+    //static index
+    STATIC,
+    //common general index - unifies all entities under the same physical index
+    UNIFIED,
+    //time partitioned index
+    TIME,
+    //internal document which will be flattened to a dot separated key pathe
+    NESTED
 }

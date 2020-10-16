@@ -49,6 +49,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.logical.Edge;
 import com.yangdb.fuse.model.logical.Vertex;
 import com.yangdb.fuse.model.query.Query;
+import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -156,6 +157,19 @@ public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends Que
         private Query pattern;
         private List<Assignment<E,R>> assignments;
         //endregion
+    }
+
+    /**
+     * remove assignments duplicates
+     * @param assignmentsQueryResult
+     * @return
+     */
+    public static AssignmentsQueryResult<Entity,Relationship> distinct(AssignmentsQueryResult<Entity,Relationship> assignmentsQueryResult) {
+        assignmentsQueryResult.setAssignments(Stream.ofAll(assignmentsQueryResult.getAssignments())
+                .distinctBy(AssignmentDescriptor::print)
+                .toJavaList());
+        return assignmentsQueryResult;
+
     }
 
 

@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.services.TestsConfiguration;
 import com.yangdb.fuse.services.engine2.NonRedundantTestSuite;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.logging.LoggingSearchVertexController;
 import com.yangdb.fuse.unipop.controller.promise.PromiseVertexController;
@@ -57,7 +58,7 @@ public class PromiseEdgeIT implements BaseITMarker {
         String idField = "id";
         registry = new MetricRegistry();
 
-        client = NonRedundantTestSuite.elasticEmbeddedNode.getClient();
+        client = ElasticEmbeddedNode.getClient();
 
         new ElasticDataPopulator(
                 client,
@@ -82,7 +83,7 @@ public class PromiseEdgeIT implements BaseITMarker {
 
     @AfterClass
     public static void cleanup() throws Exception {
-        NonRedundantTestSuite.elasticEmbeddedNode.getClient().admin().indices()
+        ElasticEmbeddedNode.getClient().admin().indices()
                 .delete(new DeleteIndexRequest(INDEX_NAME)).actionGet();
     }
 

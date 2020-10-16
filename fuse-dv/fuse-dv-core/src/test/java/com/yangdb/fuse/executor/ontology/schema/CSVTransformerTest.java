@@ -3,7 +3,7 @@ package com.yangdb.fuse.executor.ontology.schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.DataTransformerContext;
@@ -12,7 +12,6 @@ import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -46,14 +45,14 @@ public class CSVTransformerTest {
     private static Client client;
     private static Config config;
     private static OntologyProvider ontologyProvider;
-    private static IndexProviderIfc providerIfc;
+    private static IndexProviderFactory providerIfc;
 
 
     @BeforeClass
     public static void setUp() throws Exception {
         client = Mockito.mock(Client.class);
 
-        providerIfc = Mockito.mock(IndexProviderIfc.class);
+        providerIfc = Mockito.mock(IndexProviderFactory.class);
         when(providerIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(provider));
 
         ontologyProvider = Mockito.mock(OntologyProvider.class);

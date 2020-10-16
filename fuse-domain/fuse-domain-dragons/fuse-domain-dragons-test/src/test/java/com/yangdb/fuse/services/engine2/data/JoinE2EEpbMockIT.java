@@ -38,6 +38,7 @@ import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.services.engine2.mocks.EpbMockModule;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.MappingFileElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
@@ -58,17 +59,18 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.yangdb.fuse.model.OntologyTestUtils.*;
+import static com.yangdb.fuse.services.engine2.JoinE2EEpbMockTestSuite.*;
 import static java.util.Collections.singleton;
 
 public class JoinE2EEpbMockIT implements BaseITMarker {
     @BeforeClass
     public static void setup() throws Exception {
-        setup(JoinE2EEpbMockTestSuite.elasticEmbeddedNode.getClient(), false);
+        setup(ElasticEmbeddedNode.getClient(), false);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        cleanup(JoinE2EEpbMockTestSuite.elasticEmbeddedNode.getClient());
+        cleanup(ElasticEmbeddedNode.getClient());
     }
 
 

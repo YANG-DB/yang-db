@@ -56,10 +56,10 @@ public abstract class Setup {
         // Start embedded ES
         if(embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("Dragons");
-            client = elasticEmbeddedNode.getClient();
+            client = ElasticEmbeddedNode.getClient();
         } else {
             //use existing running ES
-            client = elasticEmbeddedNode.getClient("Dragons", 9300);
+            client = ElasticEmbeddedNode.getClient("Dragons", 9300);
         }
 
         if(init) {

@@ -77,7 +77,7 @@ public class DiscreteElementReduceControllerTests {
                         return ImmutableSet.of(
                                 new ElementController(
                                         new DiscreteElementVertexController(
-                                                elasticEmbeddedNode.getClient(),
+                                                ElasticEmbeddedNode.getClient(),
                                                 elasticGraphConfiguration,
                                                 uniGraph,
                                                 schemaProvider,
@@ -85,13 +85,13 @@ public class DiscreteElementReduceControllerTests {
                                         null
                                 ),
                                 new DiscreteVertexController(
-                                        elasticEmbeddedNode.getClient(),
+                                        ElasticEmbeddedNode.getClient(),
                                         elasticGraphConfiguration,
                                         uniGraph,
                                         schemaProvider,
                                         new DefaultSearchOrderProvider()),
                                 new DiscreteElementReduceController(
-                                        elasticEmbeddedNode.getClient(),
+                                        ElasticEmbeddedNode.getClient(),
                                         elasticGraphConfiguration,
                                         uniGraph,
                                         schemaProvider)
@@ -105,7 +105,7 @@ public class DiscreteElementReduceControllerTests {
                 },
                 new StandardStrategyProvider());
 
-        TransportClient client = elasticEmbeddedNode.getClient();
+        TransportClient client = ElasticEmbeddedNode.getClient();
         client.admin().indices().preparePutTemplate("all")
                 .setTemplate("*")
                 .setSettings(Settings.builder()
@@ -136,13 +136,13 @@ public class DiscreteElementReduceControllerTests {
         new ElasticDataPopulator(client, "fire1", "pge", "id", true, null, false, () -> createFireEventsSingular(0, 5, 10, 3)).populate();
         new ElasticDataPopulator(client, "fire2", "pge", "id", true, null, false, () -> createFireEventsSingular(5, 10, 10, 3)).populate();
 
-        elasticEmbeddedNode.getClient().admin().indices().refresh(
+        ElasticEmbeddedNode.getClient().admin().indices().refresh(
                 new RefreshRequest("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2")).actionGet();
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        elasticEmbeddedNode.getClient().admin().indices().prepareDelete("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2").execute().actionGet();
+        ElasticEmbeddedNode.getClient().admin().indices().prepareDelete("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2").execute().actionGet();
     }
 
     @Before

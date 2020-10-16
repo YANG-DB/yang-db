@@ -23,7 +23,7 @@ package com.yangdb.fuse.executor.ontology.schema.load;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.typesafe.config.Config;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory;
 import com.yangdb.fuse.executor.ontology.schema.GraphElementSchemaProviderJsonFactory;
@@ -52,14 +52,14 @@ public class DefaultGraphInitiator implements GraphInitiator {
     private final RawSchema schema;
 
     private final String assembly;
-    private IndexProviderIfc indexProviderFactory;
+    private IndexProviderFactory indexProviderFactory;
     private final OntologyProvider ontologyProvider;
     private IndexProvider indexProvider;
     private ObjectMapper objectMapper;
     private ElasticIndexProviderMappingFactory mappingFactory;
 
     @Inject
-    public DefaultGraphInitiator(Config config, Client client, IndexProviderIfc indexProviderFactory, OntologyProvider ontologyProvider, RawSchema schema) {
+    public DefaultGraphInitiator(Config config, Client client, IndexProviderFactory indexProviderFactory, OntologyProvider ontologyProvider, RawSchema schema) {
         this.assembly = config.getString("assembly");
         this.indexProviderFactory = indexProviderFactory;
         this.ontologyProvider = ontologyProvider;

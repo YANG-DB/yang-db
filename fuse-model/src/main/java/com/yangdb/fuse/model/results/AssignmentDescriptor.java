@@ -17,7 +17,8 @@ public class AssignmentDescriptor implements Descriptor<Assignment<Entity, Relat
     private String patternValue(Assignment<Entity, Relationship> assignment) {
         StringJoiner joiner = new StringJoiner("-", "", "");
 
-        assignment.getRelationships().forEach(rel -> {
+        assignment.getRelationships().stream().sorted()
+                .forEach(rel -> {
             joiner.add(print(getEntityById(rel.geteID1(), assignment).orElseGet(() ->
                     new Entity(Collections.emptySet(), rel.geteID1(),"???", Collections.emptyMap() ))));
             joiner.add(print(rel));

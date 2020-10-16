@@ -53,7 +53,7 @@ public class KnowledgeIdGenSnowflakeTests {
         // Load fuse engine config file
         String confFilePath = Paths.get("resources", "assembly", "Knowledge", "config", "application.test.engine3.m1.dfs.knowledge.public.conf").toString();
         // Start elastic data manager
-        client = elasticEmbeddedNode.getClient();
+        client = ElasticEmbeddedNode.getClient();
         manager = new KnowledgeConfigManager(confFilePath, client);
         // Connect to elastic
 //        client = elasticEmbeddedNode.getClient("knowledge", 9300);

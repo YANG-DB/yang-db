@@ -31,7 +31,7 @@ import com.yangdb.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.dispatcher.ontology.DirectoryIndexProvider;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
@@ -46,7 +46,7 @@ public class CyberModule extends ModuleBase {
     protected void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         String indexName = conf.getString(conf.getString("assembly") + ".idGenerator_indexName");
         binder.bindConstant().annotatedWith(named(BasicIdGenerator.indexNameParameter)).to(indexName);
-        binder.bind(IndexProviderIfc.class).toInstance(getIndexProvider(conf));
+        binder.bind(IndexProviderFactory.class).toInstance(getIndexProvider(conf));
         binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>() {}).to(BasicIdGenerator.class).asEagerSingleton();
         binder.bind(EntityTransformer.class);
 
@@ -61,11 +61,11 @@ public class CyberModule extends ModuleBase {
 
     }
 
-    private IndexProviderIfc getIndexProvider(Config conf) throws Throwable{
+    private IndexProviderFactory getIndexProvider(Config conf) throws Throwable{
         try {
             return new DirectoryIndexProvider(conf.getString("fuse.index_provider_dir"));
         } catch (ConfigException e) {
-            return (IndexProviderIfc) Class.forName(conf.getString("fuse.index_provider")).getConstructor().newInstance();
+            return (IndexProviderFactory) Class.forName(conf.getString("fuse.index_provider")).getConstructor().newInstance();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

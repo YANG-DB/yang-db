@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,9 +33,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -54,24 +54,46 @@ import static com.yangdb.fuse.model.GlobalConstants.EdgeSchema.DEST_ID;
 import static com.yangdb.fuse.model.GlobalConstants.EdgeSchema.SOURCE_ID;
 
 /**
- * Created by benishue on 22-Feb-17.
+ * Epair represents the connection between two entities in the ontology
+ *  - TypeA states the side-A entity type
+ *  - sideAIdField states the side-A related (FK) field name as it appears in the connecting table
+ *      (the actual field name on the Side-A entity if stated according to that entity's own fieldID - PK )
+ *  - TypeB states the side-B entity type
+ *  - sideBIdField states the side-B related(FK)  field name as it appears in the connecting table
+ *      (the actual field name on the Side-B entity if stated according to that entity's own fieldID - PK )
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EPair {
-    public EPair() {}
-
-    public EPair(String eTypeA, String eTypeB) {
-        this.eTypeA = eTypeA;
-        this.eTypeB = eTypeB;
+    public EPair() {
     }
 
-    public EPair(String eTypeA,String sideAIdField, String eTypeB,String sideBIdField ) {
+    public EPair(String eTypeA, String eTypeB) {
+        this(eTypeA,eTypeB,String.format("%s->%s",eTypeA,eTypeB));
+    }
+
+    public EPair(String name, String eTypeA, String eTypeB) {
+        this.eTypeA = eTypeA;
+        this.eTypeB = eTypeB;
+        this.name = name;
+    }
+
+    public EPair(String name, String eTypeA, String sideAIdField, String eTypeB, String sideBIdField) {
+        this.name = name;
         this.eTypeA = eTypeA;
         this.sideAIdField = sideAIdField;
         this.eTypeB = eTypeB;
         this.sideBIdField = sideBIdField;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String geteTypeA() {
@@ -123,24 +145,26 @@ public class EPair {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EPair ePair = (EPair) o;
-        return Objects.equals(eTypeA, ePair.eTypeA) &&
+        return
+                Objects.equals(name, ePair.name) &&
+                Objects.equals(eTypeA, ePair.eTypeA) &&
                 Objects.equals(sideAIdField, ePair.sideAIdField) &
-                Objects.equals(eTypeB, ePair.eTypeB) &
-                Objects.equals(sideBIdField, ePair.sideBIdField);
+                        Objects.equals(eTypeB, ePair.eTypeB) &
+                        Objects.equals(sideBIdField, ePair.sideBIdField);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(eTypeA,sideAIdField, eTypeB,sideBIdField);
+        return Objects.hash(name,eTypeA, sideAIdField, eTypeB, sideBIdField);
     }
 
     @Override
-    public String toString()
-    {
-        return "EPair [eTypeA= "+eTypeA+",sideAId= "+sideAIdField+", eTypeB = "+eTypeB+", sideAId = "+sideBIdField+"]";
+    public String toString() {
+        return "EPair [name= " + name + ",eTypeA= " + eTypeA + ",sideAId= " + sideAIdField + ", eTypeB = " + eTypeB + ", sideAId = " + sideBIdField + "]";
     }
 
     //region Fields
+    private String name;
     private String eTypeA;
     private String sideAIdField = SOURCE_ID;
     private String eTypeB;
@@ -149,6 +173,7 @@ public class EPair {
     //endregion
 
     public static final class EPairBuilder {
+        private String name;
         private String eTypeA;
         private String eTypeB;
 
@@ -159,10 +184,14 @@ public class EPair {
             return new EPairBuilder();
         }
 
-        public EPair with(String eTypeA,String eTypeB) {
-            return new EPair(eTypeA,eTypeB);
+        public EPair with(String eTypeA, String eTypeB) {
+            return new EPair(eTypeA, eTypeB);
         }
 
+        public EPairBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
         public EPairBuilder withETypeA(String eTypeA) {
             this.eTypeA = eTypeA;
             return this;
@@ -174,10 +203,10 @@ public class EPair {
         }
 
         public EPair build() {
-            EPair ePair = new EPair();
-            ePair.eTypeA = this.eTypeA;
-            ePair.eTypeB = this.eTypeB;
-            return ePair;
+            if(name!=null)
+                return new EPair(name,eTypeA,eTypeB);
+
+            return new EPair(eTypeA,eTypeB);
         }
 
 

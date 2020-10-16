@@ -1,12 +1,17 @@
 package com.yangdb.fuse.executor.ontology.schema;
 
+import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.IndexProviderBasedCSVLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
 import com.yangdb.fuse.model.Range;
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.test.BaseITMarker;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
@@ -14,24 +19,46 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static com.yangdb.fuse.executor.TestSuiteIndexProviderSuite.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
+    private IndexProvider provider;
+    private static IndexProviderFactory providerFactory;
+
+    @Before
+    public void setUp() throws Exception {
+
+        providerFactory = Mockito.mock(IndexProviderFactory.class);
+        when(providerFactory.get(any())).thenAnswer(invocationOnMock -> Optional.of(provider));
+
+        ontologyProvider = Mockito.mock(OntologyProvider.class);
+        when(ontologyProvider.get(any())).thenAnswer(invocationOnMock -> Optional.of(ontology));
+
+        config = Mockito.mock(Config.class);
+        when(config.getString(any())).thenAnswer(invocationOnMock -> "Dragons");
+
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProviderNested.conf");
+        provider = mapper.readValue(stream, IndexProvider.class);
+        stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
+        ontology = mapper.readValue(stream, Ontology.class);
+    }
 
     @Test
     public void testSchema() throws IOException {
@@ -51,7 +78,7 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
 
         Assert.assertEquals(19,indices.length);
 
-        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,nestedSchema);
+        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,providerFactory, nestedSchema);
         // for stand alone test
 //        Assert.assertEquals(19,graphLoader.init());
 
@@ -80,7 +107,7 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
 
         Assert.assertEquals(19,indices.length);
 
-        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,nestedSchema);
+        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,providerFactory,nestedSchema);
         // for stand alone test
 //        Assert.assertEquals(19,graphLoader.init());
 

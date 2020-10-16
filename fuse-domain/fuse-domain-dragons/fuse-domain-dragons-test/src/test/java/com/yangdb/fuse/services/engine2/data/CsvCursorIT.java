@@ -27,6 +27,7 @@ import com.yangdb.fuse.services.engine2.CsvCursorTestSuite;
 import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.MappingFileElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
@@ -51,12 +52,12 @@ import static com.yangdb.test.data.DragonsOntology.*;
 public class CsvCursorIT implements BaseITMarker {
     @BeforeClass
     public static void setup() throws Exception {
-        setup(CsvCursorTestSuite.elasticEmbeddedNode.getClient(), true);
+        setup(ElasticEmbeddedNode.getClient(), true);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        cleanup(CsvCursorTestSuite.elasticEmbeddedNode.getClient());
+        cleanup(ElasticEmbeddedNode.getClient());
     }
 
 

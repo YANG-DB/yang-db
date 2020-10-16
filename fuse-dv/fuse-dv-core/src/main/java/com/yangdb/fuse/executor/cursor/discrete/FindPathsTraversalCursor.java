@@ -61,7 +61,7 @@ public class FindPathsTraversalCursor extends PathsTraversalCursor {
             Assignment assignments = toAssignment(path);
             builder.withAssignment(assignments);
         });
-        return builder.build();
+        return AssignmentsQueryResult.distinct(builder.build());
     }
 
 }

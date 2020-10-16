@@ -143,11 +143,11 @@ public class ElasticStatProviderTest {
         MappingFileElasticConfigurer configurerStat = new MappingFileElasticConfigurer(statConfig.getStatIndexName(), MAPPING_STAT_FILE_PATH);
 
         elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
-        configurerIndex1.configure(elasticEmbeddedNode.getClient());
-        configurerStat.configure(elasticEmbeddedNode.getClient());
+        configurerIndex1.configure(ElasticEmbeddedNode.getClient());
+        configurerStat.configure(ElasticEmbeddedNode.getClient());
 
-        dataClient = elasticEmbeddedNode.getClient();
-        statClient = elasticEmbeddedNode.getClient();
+        dataClient = ElasticEmbeddedNode.getClient();
+        statClient = ElasticEmbeddedNode.getClient();
 
         dragonsList = StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX,
                 DRAGON_MIN_AGE,

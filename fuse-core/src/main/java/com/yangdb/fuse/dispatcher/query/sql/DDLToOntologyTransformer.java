@@ -23,6 +23,11 @@ package com.yangdb.fuse.dispatcher.query.sql;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
 import com.yangdb.fuse.model.ontology.*;
+import com.yangdb.fuse.model.ontology.Ontology.OntologyPrimitiveType;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
+import org.jooq.*;
+import org.jooq.impl.CreateTableStatement;
+import org.jooq.impl.DefaultConfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,19 +35,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
-import static org.jooq.impl.ConstraintStatement.*;
-import static org.jooq.impl.DSL.*;
-
-import com.yangdb.fuse.model.ontology.Ontology.OntologyPrimitiveType;
-import com.yangdb.fuse.model.resourceInfo.FuseError;
-import org.jooq.*;
-import org.jooq.impl.*;
+import static org.jooq.impl.ConstraintStatement.foreignKey;
+import static org.jooq.impl.ConstraintStatement.primaryKey;
+import static org.jooq.impl.DSL.using;
 
 /**
  * convert DDL (SQL Definition Language) structure into V1 ontology
  */
 public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<String>, Ontology> {
-    private DefaultDSLContext context;
     private Parser parser;
 
     @Inject
@@ -65,7 +65,6 @@ public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<Str
 
     private void parseTable(String table, Ontology.OntologyBuilder builder) throws FuseError.FuseErrorException {
         try {
-            context = new DefaultDSLContext(SQLDialect.DEFAULT);
             Queries queries = parser.parse(table);
             Arrays.stream(queries.queries())
                     .filter(q -> q.getClass().getSimpleName().endsWith("CreateTableImpl"))
@@ -107,21 +106,27 @@ public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<Str
             }
         });
 
-        //build relations
-        foreignKey(statement.getConstraints())
-                .forEach(fk ->
-                        builder.addRelationshipType(
-                                RelationshipType.Builder.get()
-                                        .withName(fk.getName().toLowerCase())
-                                        .withRType(fk.getName().toLowerCase())
-                                        .withDirectional(true)
-                                        .withEPairs(singletonList(
-                                                new EPair(table.getName().toLowerCase(),
-                                                        idField,
-                                                        fk.get$referencesTable().getName().toLowerCase(),
-                                                        fk.getForeignKey()[0].getName().toLowerCase())))
-                                        .build()));
+        //todo - improve the functionality of creating a relation by thinking of the following:
+        // a) Number of F.K
+        // b) Name of table with relation to other tables
+        // c) Number of P.K
+        if (!foreignKey(statement.getConstraints()).isEmpty()) {
+            //build relations
+            RelationshipType.Builder relBuilder = RelationshipType.Builder.get()
+                    .withName(table.getName().toLowerCase())
+                    .withRType(table.getName().toLowerCase())
+                    .withDirectional(true);
 
+            foreignKey(statement.getConstraints())
+                    .forEach(fk -> relBuilder.withEPairs(singletonList(
+                            new EPair(fk.getName().toLowerCase(),
+                                    table.getName().toLowerCase(),
+                                    idField,
+                                    fk.get$referencesTable().getName().toLowerCase(),
+                                    fk.getForeignKey()[0].getName().toLowerCase())))
+                    );
+            builder.addRelationshipType(relBuilder.build());
+        }
 
         EntityType build = entityTypeBuilder.build();
         //compile entity

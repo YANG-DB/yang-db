@@ -49,10 +49,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.logical.Edge;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -61,7 +58,7 @@ import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Relationship implements Edge {
+public class Relationship implements Edge , Comparable<Relationship>{
     //region Constructors
     public Relationship() {
         this.properties = Collections.emptyList();
@@ -154,6 +151,33 @@ public class Relationship implements Edge {
         this.attachedProperties = attachedProperties;
     }
     //endregion
+
+    @Override
+    public int compareTo(Relationship relationship) {
+        return this.getrID().compareTo(relationship.getrID());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Relationship that = (Relationship) o;
+        return isAgg() == that.isAgg() &&
+                isDirectional() == that.isDirectional() &&
+                getrID().equals(that.getrID()) &&
+                getrType().equals(that.getrType()) &&
+                geteID1().equals(that.geteID1()) &&
+                geteID2().equals(that.geteID2()) &&
+                geteTag1().equals(that.geteTag1()) &&
+                geteTag2().equals(that.geteTag2()) &&
+                Objects.equals(getProperties(), that.getProperties()) &&
+                Objects.equals(getAttachedProperties(), that.getAttachedProperties());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getrID(), isAgg(), getrType(), isDirectional(), geteID1(), geteID2(), geteTag1(), geteTag2(), getProperties(), getAttachedProperties());
+    }
 
     //region Override Methods
     @Override

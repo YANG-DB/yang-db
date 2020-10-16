@@ -32,6 +32,7 @@ import com.yangdb.fuse.services.engine2.JoinE2ETestSuite;
 import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.test.BaseITMarker;
 import com.yangdb.test.data.DragonsOntology;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
@@ -68,12 +69,12 @@ import static java.util.Collections.singletonList;
 public class JoinE2EIT implements BaseITMarker {
     @BeforeClass
     public static void setup() throws Exception {
-        setup(JoinE2ETestSuite.elasticEmbeddedNode.getClient(), true);
+        setup(ElasticEmbeddedNode.getClient(), true);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        cleanup(JoinE2ETestSuite.elasticEmbeddedNode.getClient());
+        cleanup(ElasticEmbeddedNode.getClient());
     }
 
 

@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.ontology.schema;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package com.yangdb.fuse.executor.ontology.schema;
  */
 
 import com.google.common.collect.ImmutableList;
+import com.typesafe.config.Config;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.*;
 import org.jooq.Parser;
@@ -34,13 +35,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.yangdb.fuse.executor.elasticsearch.MappingIndexType.STATIC;
-import static com.yangdb.fuse.executor.elasticsearch.MappingIndexType.UNIFIED;
+import static com.yangdb.fuse.model.schema.MappingIndexType.STATIC;
+import static com.yangdb.fuse.model.schema.MappingIndexType.UNIFIED;
 import static org.jooq.impl.ConstraintStatement.foreignKey;
 import static org.jooq.impl.DSL.using;
 
 public class DDLToIndexProviderTranslator implements IndexProviderTranslator<List<String>> {
+    public static final String CREATE_RELATION_BY_FK = "create.relation.byFK";
     private Parser parser;
+    private Config config;
+
+    public DDLToIndexProviderTranslator(Config config) {
+        this.config = config;
+    }
 
     @Override
     public IndexProvider translate(String ontology, List<String> source) {
@@ -71,18 +78,25 @@ public class DDLToIndexProviderTranslator implements IndexProviderTranslator<Lis
         indexProvider.withEntity(new Entity(tableName, STATIC.name(), "Index",
                 new Props(ImmutableList.of(tableName)), Collections.emptyList(), Collections.emptyMap()));
 
-        //build relations
-        foreignKey(statement.getConstraints())
-                .forEach(fk ->
-                        indexProvider.withRelation(
-                                new Relation(fk.getName().toLowerCase(),
-                                        UNIFIED.name(),
-                                        "Index",
-                                        false,
-                                        Collections.emptyList(),
-                                        new Props(ImmutableList.of(tableName)),
-                                        Collections.emptyList(),
-                                        Collections.emptyMap())));
+        //build relations - FK will now be transformed into EPairs inside
+        boolean createRelationByFK = false;
+        try {
+            createRelationByFK = config.getBoolean(CREATE_RELATION_BY_FK);
+        } catch (Throwable ignored) {}
+
+        if (createRelationByFK) {
+            foreignKey(statement.getConstraints())
+                    .forEach(fk ->
+                            indexProvider.withRelation(
+                                    new Relation(fk.getName().toLowerCase(),
+                                            UNIFIED.name(),
+                                            "Index",
+                                            false,
+                                            Collections.emptyList(),
+                                            new Props(ImmutableList.of(tableName)),
+                                            Collections.emptyList(),
+                                            Collections.emptyMap())));
+        }
     }
 
 }
