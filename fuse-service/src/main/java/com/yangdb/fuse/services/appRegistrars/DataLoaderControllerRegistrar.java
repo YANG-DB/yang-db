@@ -61,13 +61,13 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
         // create mapping according to ontology & given indexProvider instructions
-        app.post("/fuse/load/ontology/:id/mapping",
+        app.get("/fuse/load/ontology/:id/mapping",
                 req -> Results.with(this.getController(app)
-                        .createMapping(req.param("id").value(),req.body(String.class))));
+                        .createMapping(req.param("id").value())));
         // create indices according to ontology & given indexProvider instructions
-        app.post("/fuse/load/ontology/:id/indices",
+        app.get("/fuse/load/ontology/:id/indices",
                 req -> Results.with(this.getController(app)
-                        .createIndices(req.param("id").value(),req.body(String.class))));
+                        .createIndices(req.param("id").value())));
 
         // Initiate Graph indices
         app.get("/fuse/load/ontology/:id/init",

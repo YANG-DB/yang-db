@@ -20,7 +20,7 @@ import java.util.*;
 import static com.yangdb.fuse.executor.ontology.schema.DDLToIndexProviderTranslator.CREATE_RELATION_BY_FK;
 import static java.util.stream.Collectors.groupingBy;
 
-public class DDLToOntologyGenerator {
+public class CyberDDLToOntologyGenerator {
     public static List<String> tables ;
     public static DDLToOntologyTransformer transformer;
     public static DDLToIndexProviderTranslator indexProviderTranslator;
@@ -48,8 +48,8 @@ public class DDLToOntologyGenerator {
     public void testOntologyCreation() {
         Ontology ontology = transformer.transform("Cyber", tables);
         Assert.assertNotNull(ontology);
-        Assert.assertEquals(17,ontology.getEntityTypes().size());
-        Assert.assertEquals(10,ontology.getRelationshipTypes().size());
+        Assert.assertEquals(10,ontology.getEntityTypes().size());
+        Assert.assertEquals(7,ontology.getRelationshipTypes().size());
         Assert.assertEquals(602,ontology.getProperties().size());
     }
 

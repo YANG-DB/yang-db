@@ -1216,15 +1216,6 @@
             "description": "ontology ID.",
             "required": true,
             "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "<body>",
-            "description": "Provider physical layer",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/OntologyPhysicalProvider"
-            }
           }
         ],
         "description": "Generate E/S indices with related mapping associated with the ontology according to given physical provider",
@@ -1251,15 +1242,6 @@
             "description": "ontology ID.",
             "required": true,
             "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "<body>",
-            "description": "Provider physical layer",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/OntologyPhysicalProvider"
-            }
           }
         ],
         "description": "Generate E/S templates mapping related to the ontology according to given physical provider",

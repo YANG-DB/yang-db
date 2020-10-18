@@ -206,16 +206,16 @@ public class StandardDataLoaderController implements DataLoaderController {
     }
 
     @Override
-    public ContentResponse<String> createMapping(String ontology, String indexProvider) {
+    public ContentResponse<String> createMapping(String ontology) {
         return Builder.<String>builder(OK, NOT_FOUND)
-                .data(Optional.of("mapping created:" + this.initiator.createTemplate(ontology,indexProvider)))
+                .data(Optional.of("mapping created:" + this.initiator.createTemplate(ontology)))
                 .compose();
     }
 
     @Override
-    public ContentResponse<String> createIndices(String ontology, String indexProvider) {
+    public ContentResponse<String> createIndices(String ontology) {
         return Builder.<String>builder(OK, NOT_FOUND)
-                .data(Optional.of("indices created:" + this.initiator.createIndices(ontology,indexProvider)))
+                .data(Optional.of("indices created:" + this.initiator.createIndices(ontology)))
                 .compose();
     }
 

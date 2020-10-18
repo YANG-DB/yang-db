@@ -533,10 +533,13 @@
   ],
   "relationshipTypes": [
     {
-      "idField": "id",
+      "idField": "trace_id",
       "rType": "tracestobehaviors",
       "name": "tracestobehaviors",
       "directional": true,
+      "mandatory": [
+        "trace_id"
+      ],
       "ePairs": [
         {
           "name": "fk_alrets_to_type_obj",
@@ -545,13 +548,37 @@
           "eTypeB": "lov_cyberobjecttypes",
           "sideBIdField": "to_type_id"
         }
+      ],
+      "properties": [
+        "insert_time",
+        "customer_id",
+        "source_id",
+        "trace_id",
+        "trace_type",
+        "behavior_id",
+        "behavior_type_id",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_linked_entity_uid",
+        "by_file_md5",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_linked_entity_uid",
+        "to_file_md5",
+        "behavior_is_alert",
+        "attributes_hash"
       ]
     },
     {
-      "idField": "id",
+      "idField": "base_behavior_id",
       "rType": "behavior_to_behavior",
       "name": "behavior_to_behavior",
       "directional": true,
+      "mandatory": [
+        "base_behavior_id"
+      ],
       "ePairs": [
         {
           "name": "fk_behavior2behavior_dest",
@@ -560,13 +587,26 @@
           "eTypeB": "behaviors",
           "sideBIdField": "behavior_id"
         }
+      ],
+      "properties": [
+        "customer_id",
+        "source_id",
+        "behavior_id",
+        "behavior_type_id",
+        "attributes_hash",
+        "base_behavior_id",
+        "is_alerted",
+        "insert_time"
       ]
     },
     {
-      "idField": "id",
+      "idField": "behavior_id",
       "rType": "behaviorentities",
       "name": "behaviorentities",
       "directional": true,
+      "mandatory": [
+        "behavior_id"
+      ],
       "ePairs": [
         {
           "name": "fk_behavior_entity_entity_type",
@@ -575,13 +615,39 @@
           "eTypeB": "lov_cyberobjecttypes",
           "sideBIdField": "entity_type_id"
         }
+      ],
+      "properties": [
+        "rel_id",
+        "behavior_id",
+        "behavior_frequency",
+        "behavior_type_id",
+        "customer_id",
+        "source_id",
+        "network_id",
+        "source_type",
+        "session_id",
+        "entity_id",
+        "md5",
+        "entity_hash",
+        "entity_name",
+        "entity_type_id",
+        "entity_file_type",
+        "is_linked_entity",
+        "is_in_merge",
+        "md5_hash",
+        "is_md5_null",
+        "insert_time",
+        "stage_id"
       ]
     },
     {
-      "idField": "id",
+      "idField": "behavior_id",
       "rType": "alertstobehaviors",
       "name": "alertstobehaviors",
       "directional": true,
+      "mandatory": [
+        "behavior_id"
+      ],
       "ePairs": [
         {
           "name": "fk_alerts_traces",
@@ -590,13 +656,37 @@
           "eTypeB": "traces",
           "sideBIdField": "trace_id"
         }
+      ],
+      "properties": [
+        "insert_time",
+        "customer_id",
+        "source_id",
+        "trace_id",
+        "trace_type",
+        "behavior_id",
+        "behavior_type_id",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_linked_entity_uid",
+        "by_file_md5",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_linked_entity_uid",
+        "to_file_md5",
+        "behavior_is_alert",
+        "attributes_hash"
       ]
     },
     {
-      "idField": "id",
+      "idField": "trace_id",
       "rType": "traceevents",
       "name": "traceevents",
       "directional": true,
+      "mandatory": [
+        "trace_id"
+      ],
       "ePairs": [
         {
           "name": "fk_trace_to_type_obj",
@@ -605,13 +695,50 @@
           "eTypeB": "lov_cyberobjecttypes",
           "sideBIdField": "to_type_id"
         }
+      ],
+      "properties": [
+        "trace_id",
+        "trace_type",
+        "behavior_id",
+        "behavior_type_id",
+        "customer_id",
+        "source_id",
+        "network_id",
+        "source_type",
+        "session_id",
+        "event_id",
+        "event_type_id",
+        "event_severity",
+        "event_detected_time",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_linked_entity_uid",
+        "by_file_type",
+        "by_file_md5",
+        "by_process_pid",
+        "by_file_directory",
+        "by_sid",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_linked_entity_uid",
+        "to_file_type",
+        "to_file_md5",
+        "to_process_pid",
+        "is_insight",
+        "insert_time",
+        "stage_id"
       ]
     },
     {
-      "idField": "id",
+      "idField": "trace_id",
       "rType": "traceentities",
       "name": "traceentities",
       "directional": true,
+      "mandatory": [
+        "trace_id"
+      ],
       "ePairs": [
         {
           "name": "fk_trace_entities",
@@ -620,6 +747,91 @@
           "eTypeB": "entities",
           "sideBIdField": "entity_id"
         }
+      ],
+      "properties": [
+        "trace_id",
+        "trace_type",
+        "behavior_id",
+        "behavior_type_id",
+        "customer_id",
+        "source_id",
+        "session_id",
+        "entity_id",
+        "md5",
+        "entity_hash",
+        "entity_name",
+        "entity_type_id",
+        "entity_file_type",
+        "is_linked_entity",
+        "is_in_merge",
+        "insert_time",
+        "update_time"
+      ]
+    },
+    {
+      "idField": "rel_id",
+      "rType": "behaviorevents",
+      "name": "behaviorevents",
+      "directional": true,
+      "mandatory": [
+        "rel_id"
+      ],
+      "ePairs": [
+        {
+          "name": "fk_events_to_type_obj",
+          "eTypeA": "behaviors",
+          "sideAIdField": "behavior_id",
+          "eTypeB": "lov_cyberobjecttypes",
+          "sideBIdField": "to_type_id"
+        }
+      ],
+      "properties": [
+        "rel_id",
+        "behavior_id",
+        "behavior_type_id",
+        "network_id",
+        "source_type",
+        "session_id",
+        "customer_id",
+        "source_id",
+        "event_id",
+        "event_type_id",
+        "event_severity",
+        "event_detected_time",
+        "behavior_frequency",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_linked_entity_uid",
+        "by_file_type",
+        "by_file_md5",
+        "by_file_directory",
+        "by_file_alternate_file_stream",
+        "by_process_pid",
+        "by_process_directory",
+        "by_sid",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_linked_entity_uid",
+        "to_file_type",
+        "to_file_md5",
+        "to_file_directory",
+        "to_file_alternate_file_stream",
+        "to_process_pid",
+        "to_process_directory",
+        "to_registry_key",
+        "to_registry_value_type",
+        "to_registry_permissions",
+        "to_registry_data",
+        "to_endpoint_ip",
+        "to_endpoint_remoteip",
+        "to_endpoint_remoteport",
+        "to_endpoint_port",
+        "data_remote_ip",
+        "is_insight",
+        "insert_time",
+        "stage_id"
       ]
     }
   ],
@@ -767,7 +979,7 @@
     {
       "pType": "behavior_entity_uid",
       "name": "behavior_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "behavior_entity_md5",
@@ -787,7 +999,7 @@
     {
       "pType": "behavior_entity_linked_uid",
       "name": "behavior_entity_linked_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "behavior_entity_file_type",
@@ -797,7 +1009,7 @@
     {
       "pType": "linked_entity_uid",
       "name": "linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "linked_entity_md5",
@@ -817,7 +1029,7 @@
     {
       "pType": "linked_entity_linked_uid",
       "name": "linked_entity_linked_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "linked_entity_file_type",
@@ -857,7 +1069,7 @@
     {
       "pType": "by_uid",
       "name": "by_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_name",
@@ -872,7 +1084,7 @@
     {
       "pType": "by_linked_entity_uid",
       "name": "by_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_file_type",
@@ -887,7 +1099,7 @@
     {
       "pType": "to_uid",
       "name": "to_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_name",
@@ -902,7 +1114,7 @@
     {
       "pType": "to_linked_entity_uid",
       "name": "to_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_file_type",
@@ -1102,7 +1314,7 @@
     {
       "pType": "by_uid",
       "name": "by_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_name",
@@ -1117,7 +1329,7 @@
     {
       "pType": "by_linked_entity_uid",
       "name": "by_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_file_md5",
@@ -1127,7 +1339,7 @@
     {
       "pType": "to_uid",
       "name": "to_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_name",
@@ -1142,7 +1354,7 @@
     {
       "pType": "to_linked_entity_uid",
       "name": "to_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_file_md5",
@@ -1212,7 +1424,7 @@
     {
       "pType": "by_uid",
       "name": "by_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_name",
@@ -1227,7 +1439,7 @@
     {
       "pType": "by_linked_entity_uid",
       "name": "by_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_is_linked",
@@ -1242,7 +1454,7 @@
     {
       "pType": "to_uid",
       "name": "to_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_name",
@@ -1257,7 +1469,7 @@
     {
       "pType": "to_linked_entity_uid",
       "name": "to_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_is_linked",
@@ -1572,7 +1784,7 @@
     {
       "pType": "by_uid",
       "name": "by_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_name",
@@ -1592,7 +1804,7 @@
     {
       "pType": "by_linked_entity_uid",
       "name": "by_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_file_md5",
@@ -1657,7 +1869,7 @@
     {
       "pType": "to_uid",
       "name": "to_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_name",
@@ -1677,7 +1889,7 @@
     {
       "pType": "to_linked_entity_uid",
       "name": "to_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_file_extension",
@@ -1927,7 +2139,7 @@
     {
       "pType": "by_uid",
       "name": "by_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_name",
@@ -1942,7 +2154,7 @@
     {
       "pType": "by_linked_entity_uid",
       "name": "by_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_file_md5",
@@ -1952,7 +2164,7 @@
     {
       "pType": "to_uid",
       "name": "to_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_name",
@@ -1967,7 +2179,7 @@
     {
       "pType": "to_linked_entity_uid",
       "name": "to_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_file_md5",
@@ -2052,7 +2264,7 @@
     {
       "pType": "by_uid",
       "name": "by_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_name",
@@ -2067,7 +2279,7 @@
     {
       "pType": "by_linked_entity_uid",
       "name": "by_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_file_type",
@@ -2097,7 +2309,7 @@
     {
       "pType": "to_uid",
       "name": "to_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_name",
@@ -2112,7 +2324,7 @@
     {
       "pType": "to_linked_entity_uid",
       "name": "to_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_file_type",
@@ -2177,7 +2389,7 @@
     {
       "pType": "parent_uid",
       "name": "parent_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "parent_name",
@@ -2197,7 +2409,7 @@
     {
       "pType": "linked_entity_uid",
       "name": "linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "directory_type",
@@ -3132,7 +3344,7 @@
     {
       "pType": "parent_uid",
       "name": "parent_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "parent_name",
@@ -3152,7 +3364,7 @@
     {
       "pType": "linked_entity_uid",
       "name": "linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "directory_type",
@@ -3472,7 +3684,7 @@
     {
       "pType": "by_uid",
       "name": "by_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_name",
@@ -3487,7 +3699,7 @@
     {
       "pType": "by_linked_entity_uid",
       "name": "by_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_file_type",
@@ -3527,7 +3739,7 @@
     {
       "pType": "to_uid",
       "name": "to_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_name",
@@ -3542,7 +3754,7 @@
     {
       "pType": "to_linked_entity_uid",
       "name": "to_linked_entity_uid",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_file_type",

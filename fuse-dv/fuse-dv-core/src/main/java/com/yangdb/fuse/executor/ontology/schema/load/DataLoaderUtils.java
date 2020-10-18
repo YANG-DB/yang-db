@@ -20,6 +20,7 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
+import com.github.sisyphsu.dateparser.DateParser;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import javaslang.collection.Stream;
@@ -44,9 +45,13 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Objects;
 import java.util.zip.InflaterInputStream;
 
+import static java.lang.Double.parseDouble;
+
 public interface DataLoaderUtils {
+    DateParser parser = DateParser.newBuilder().build();
 
     /**
      * init E/S indices templates
@@ -162,7 +167,7 @@ public interface DataLoaderUtils {
                     try {
                         return sdf.format(new Date(value.toString()));
                     } catch (Throwable e1) {
-                        return value.toString();
+                        return sdf.format(parser.parseDate(value.toString()));
                     }
                 }
             case "geo":
@@ -172,6 +177,74 @@ public interface DataLoaderUtils {
                         Double.valueOf(value.toString().split("[,]")[0]));
         }
         return value;
+    }
+
+    static boolean validateValue(String explicitType, Object value, DateFormat sdf) {
+        switch (explicitType) {
+            case "text":
+            case "string":
+            case "stringValue":
+                return Objects.nonNull(value);
+            case "int":
+            case "intValue":
+                try {
+                    Integer.valueOf(value.toString());
+                    return true;
+                } catch (NumberFormatException e) {
+                    try {
+                        Long.valueOf(value.toString());
+                        return true;
+                    } catch (NumberFormatException e1) {
+                        return false;
+                    }
+                }
+            case "long":
+            case "longValue":
+                try {
+                    Long.valueOf(value.toString());
+                    return true;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            case "float":
+            case "floatValue":
+                try {
+                    Float.valueOf(value.toString());
+                    return true;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            case "date":
+            case "dateValue":
+                try {
+                    sdf.parse(value.toString());
+                    return true;
+                } catch (ParseException e) {
+                    try {
+                        sdf.format(new Date(value.toString()));
+                        return true;
+                    } catch (Throwable e1) {
+                        try {
+                            parser.parseDate(value.toString());
+                            return true;
+                        }catch (Throwable err) {
+                            return false;
+                        }
+                    }
+
+                }
+            case "geo":
+            case "geoValue":
+                try {
+                    new Point(
+                            parseDouble(value.toString().split("[,]")[1]),
+                            parseDouble(value.toString().split("[,]")[0]));
+                    return true;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+        }
+        return false;
     }
 
 }

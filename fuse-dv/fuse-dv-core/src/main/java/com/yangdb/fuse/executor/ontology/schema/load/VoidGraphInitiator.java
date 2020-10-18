@@ -51,7 +51,17 @@ public class VoidGraphInitiator implements GraphInitiator {
     }
 
     @Override
+    public long createTemplate(String ontology) {
+        return 0;
+    }
+
+    @Override
     public long createIndices(String ontology, String schemaProvider)  {
+        return 0;
+    }
+
+    @Override
+    public long createIndices(String ontology) {
         return 0;
     }
     //endregion

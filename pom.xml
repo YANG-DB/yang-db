@@ -139,7 +139,8 @@
 
         <!-- jansi -->
         <jansi.version>1.16</jansi.version>
-
+        <!--ahocorasick-->
+        <ahocorasick>0.4.0</ahocorasick>>
         <!-- spatial4j -->
         <spatial4j.version>0.7</spatial4j.version>
 
@@ -189,8 +190,11 @@
         <com.eaio.uuid.version>3.2</com.eaio.uuid.version>
 
         <!-- opencsv / common csv  -->
-        <opencsv.version>3.8</opencsv.version>
+        <commons-validator>1.6</commons-validator>
         <commons.csv.version>1.7</commons.csv.version>
+        <opencsv.version>3.8</opencsv.version>
+        <!-- date - parser       -->
+        <dateparser>1.0.6</dateparser>
 
         <!-- javaslang -->
         <javaslang.version>2.0.4</javaslang.version>
@@ -504,6 +508,13 @@
             </dependency>
             <!-- jansi -->
 
+            <!--    Aho–Corasick algorithm        -->
+            <dependency>
+                <groupId>org.ahocorasick</groupId>
+                <artifactId>ahocorasick</artifactId>
+                <version>0.4.0</version>
+            </dependency>
+
             <!-- spatial4j -->
             <dependency>
                 <groupId>org.locationtech.spatial4j</groupId>
@@ -682,7 +693,16 @@
                 <version>${opencsv.version}</version>
             </dependency>
             <!-- opencsv -->
-
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${commons-validator}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.sisyphsu</groupId>
+                <artifactId>dateparser</artifactId>
+                <version>${dateparser}</version>
+            </dependency>
             <!-- javaslang -->
             <dependency>
                 <groupId>io.javaslang</groupId>

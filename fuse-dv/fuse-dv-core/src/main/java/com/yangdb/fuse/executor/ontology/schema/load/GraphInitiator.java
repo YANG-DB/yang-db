@@ -70,6 +70,14 @@ public interface GraphInitiator {
     long createTemplate(String ontology, String schemaProvider) ;
 
     /**
+     * generate the elasticsearch index template according to ontology and index schema provider json instructions
+     *
+     * @param ontology
+     * @return
+     */
+    long createTemplate(String ontology) ;
+
+    /**
      * create indices according to ontology and index schema provider json instructions
      * @param ontology
      * @param schemaProvider
@@ -77,4 +85,12 @@ public interface GraphInitiator {
      * @throws IOException
      */
     long createIndices(String ontology, String schemaProvider) ;
+
+   /**
+     * create indices according to ontology and index schema provider json instructions
+     * @param ontology
+     * @return
+     * @throws IOException
+     */
+    long createIndices(String ontology) ;
 }

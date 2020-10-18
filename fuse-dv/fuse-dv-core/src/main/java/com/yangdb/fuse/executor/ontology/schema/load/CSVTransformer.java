@@ -56,6 +56,7 @@ import static com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMapping
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.TYPE;
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.sdf;
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;
+import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.validateValue;
 
 public class CSVTransformer implements DataTransformer<DataTransformerContext, CSVTransformer.CsvElement> {
     public static final String SOURCE = "source";
@@ -185,7 +186,8 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
         node.entrySet()
                 .stream()
                 .filter(m -> accessor.$relation$(relation.getType()).containsMetadata(m.getKey()))
-                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
+                .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
+                    .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
                         parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
     }
 
@@ -201,7 +203,8 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
         node.entrySet()
                 .stream()
                 .filter(m -> accessor.$relation$(relation.getType()).containsProperty(m.getKey()))
-                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
+                .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
+                    .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
                         parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
 
         RelationshipType relationshipType = accessor.$relation$(relation.getType());
@@ -269,8 +272,9 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
         node.entrySet()
                 .stream()
                 .filter(m -> accessor.$entity$(entity.getType()).containsMetadata(m.getKey()))
-                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
+                    .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
+                            parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
     }
 
 
@@ -284,8 +288,9 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
         node.entrySet()
                 .stream()
                 .filter(m -> accessor.$entity$(entity.getType()).containsProperty(m.getKey()))
-                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
+                    .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
+                            parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
     }
 
 
@@ -295,6 +300,10 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
     public interface CsvElement {
         String label();
 
+        /**
+         * todo - calculate the type according to the ontology
+         * @return
+         */
         String type();
 
         Reader content();

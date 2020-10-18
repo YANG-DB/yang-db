@@ -34,8 +34,8 @@ import java.io.File;
 public interface DataLoaderController {
 
     ContentResponse<String> init(String ontology);
-    ContentResponse<String> createMapping(String ontology,String indexProvider);
-    ContentResponse<String> createIndices(String ontology,String indexProvider);
+    ContentResponse<String> createMapping(String ontology);
+    ContentResponse<String> createIndices(String ontology);
     ContentResponse<String> drop(String ontology);
 
     ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive);

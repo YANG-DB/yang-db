@@ -37,8 +37,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
 
     @Before
     public void setUp() throws Exception {
-//        setup(false, CYBER);
-        setup();//todo remove remark when running IT tests
+    //    setup(false, CYBER);//todo remove remark when running IT tests
     }
 
     @Test
@@ -57,7 +56,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
         String[] indices = StreamSupport.stream(schema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
         CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerFactory, schema, idGeneratorDriver, client);
 
-        Assert.assertEquals(16, indices.length);
+        Assert.assertEquals(17, indices.length);
 
         IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer, providerFactory, schema);
         // for stand alone test
@@ -87,7 +86,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
         String[] indices = StreamSupport.stream(schema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
         CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerFactory, schema, idGeneratorDriver, client);
 
-        Assert.assertEquals(16, indices.length);
+        Assert.assertEquals(17, indices.length);
 
         IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer, providerFactory, schema);
         // for stand alone test

@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 import static org.jooq.impl.ConstraintStatement.foreignKey;
@@ -78,60 +79,106 @@ public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<Str
         CreateTableStatement statement = new CreateTableStatement(createTable);
         //get table entity
         Table<?> table = statement.getTable();
+        if (isEntity(table.getName())) {
+            createEntity(builder, statement, table);
+        } else if(isRelation(table.getName())) {
+            createRelation(builder,statement,table);
+        }
 
-        //build ontology entity
-        EntityType.Builder entityTypeBuilder = EntityType.Builder.get()
-                .withName(table.getName().toLowerCase())
-                .withEType(table.getName().toLowerCase());
+    }
 
-        //build PK fields constraints
-        List<String> mandatory = primaryKey(statement.getConstraints()).stream().map(pk -> pk.getPrimaryKey()[0].getName().toLowerCase()).collect(Collectors.toList());
-        //set mandatory fields
-        entityTypeBuilder.withMandatory(mandatory);
-        //set id field name
-        String idField = String.join("-", mandatory);
-        entityTypeBuilder.withIdField(idField);
-
-        //build ontology properties (if none exist)
-        List<Field<?>> fields = statement.getFields();
-
-        //build entity fields
-        fields.forEach(field -> entityTypeBuilder.withProperty(field.getName().toLowerCase()));
-        //add fields as general properties in ontology
-        fields.forEach(f -> {
-            String name = f.getName().toLowerCase();
-            if (!builder.getProperty(name).isPresent()) {
-                //add field to properties
-                builder.addProperty(new Property(name, name, OntologyPrimitiveType.translate(f.getType().getName()).name().toLowerCase()));
-            }
-        });
-
-        //todo - improve the functionality of creating a relation by thinking of the following:
-        // a) Number of F.K
-        // b) Name of table with relation to other tables
-        // c) Number of P.K
+    private void createRelation(Ontology.OntologyBuilder ontBuilder, CreateTableStatement statement, Table<?> table) {
         if (!foreignKey(statement.getConstraints()).isEmpty()) {
             //build relations
-            RelationshipType.Builder relBuilder = RelationshipType.Builder.get()
+            RelationshipType.Builder builder = RelationshipType.Builder.get()
                     .withName(table.getName().toLowerCase())
                     .withRType(table.getName().toLowerCase())
                     .withDirectional(true);
 
+            //build PK fields constraints
+            List<String> mandatory = primaryKey(statement.getConstraints()).stream().map(pk -> pk.getPrimaryKey()[0].getName().toLowerCase()).collect(Collectors.toList());
+            //set mandatory fields
+            builder.withMandatory(mandatory);
+            //set id field name
+            String idField = String.join("-", mandatory);
+            builder.withIdField(idField);
+
+            //build ontology properties (if none exist)
+            List<Field<?>> fields = statement.getFields();
+
+            //build entity fields
+            fields.forEach(field -> builder.withProperty(field.getName().toLowerCase()));
+
+            //add fields as general properties in ontology
+            fields.forEach(f -> {
+                String name = f.getName().toLowerCase();
+                if (!ontBuilder.getProperty(name).isPresent()) {
+                    //add field to properties
+                    ontBuilder.addProperty(new Property(name, name, OntologyPrimitiveType.translate(f.getType().getName()).name().toLowerCase()));
+                }
+            });
+            //generate EPairs
             foreignKey(statement.getConstraints())
-                    .forEach(fk -> relBuilder.withEPairs(singletonList(
+                    .forEach(fk -> builder.withEPairs(singletonList(
                             new EPair(fk.getName().toLowerCase(),
                                     table.getName().toLowerCase(),
                                     idField,
                                     fk.get$referencesTable().getName().toLowerCase(),
                                     fk.getForeignKey()[0].getName().toLowerCase())))
                     );
-            builder.addRelationshipType(relBuilder.build());
+            //add rel to ontology
+            ontBuilder.addRelationshipType(builder.build());
         }
-
-        EntityType build = entityTypeBuilder.build();
-        //compile entity
-        builder.addEntityType(build);
     }
 
+    private void createEntity(Ontology.OntologyBuilder ontBuilder, CreateTableStatement statement, Table<?> table) {
+            //build ontology entity
+            EntityType.Builder builder = EntityType.Builder.get()
+                    .withName(table.getName().toLowerCase())
+                    .withEType(table.getName().toLowerCase());
+
+            //build PK fields constraints
+            List<String> mandatory = primaryKey(statement.getConstraints()).stream().map(pk -> pk.getPrimaryKey()[0].getName().toLowerCase()).collect(Collectors.toList());
+            //set mandatory fields
+            builder.withMandatory(mandatory);
+            //set id field name
+            String idField = String.join("-", mandatory);
+            builder.withIdField(idField);
+
+            //build ontology properties (if none exist)
+            List<Field<?>> fields = statement.getFields();
+
+            //build entity fields
+            fields.forEach(field -> builder.withProperty(field.getName().toLowerCase()));
+            //add fields as general properties in ontology
+            fields.forEach(f -> {
+                String name = f.getName().toLowerCase();
+                if (!ontBuilder.getProperty(name).isPresent()) {
+                    //add field to properties
+                    ontBuilder.addProperty(new Property(name, name, OntologyPrimitiveType.translate(f.getType().getName()).name().toLowerCase()));
+                }
+            });
+
+            EntityType build = builder.build();
+            //compile entity
+            ontBuilder.addEntityType(build);
+    }
+
+    /**
+     * see https://www.baeldung.com/string-contains-multiple-words
+     * @param name
+     * @return
+     */
+    private boolean isRelation(String name) {
+        //todo - improve the functionality of creating a relation by thinking of the following:
+        // a) Number of F.K
+        // b) Name of table with relation to other tables
+        // c) Number of P.K
+        return Stream.of("AlertsToBehaviors","behavior_to_behavior","BehaviorEntities","BehaviorEvents","TraceEntities","TraceEvents","TracesToBehaviors").map(String::toLowerCase).anyMatch(v->v.equals(name.toLowerCase()));
+    }
+
+    private boolean isEntity(String name) {
+        return !isRelation(name);
+    }
 
 }

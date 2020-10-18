@@ -76,6 +76,12 @@
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
         </dependency>
+        <!-- text searching with multiple keywords -->
+        <dependency>
+            <groupId>org.ahocorasick</groupId>
+            <artifactId>ahocorasick</artifactId>
+        </dependency>
+
         <!--json to csv -->
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>

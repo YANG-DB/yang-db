@@ -118,6 +118,22 @@ public class DefaultGraphInitiator implements GraphInitiator {
     }
 
     @Override
+    public long createTemplate(String ontology) {
+        Ontology ont = ontologyProvider.get(ontology)
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for name",
+                        "No Ontology present for name" + ontology)));
+
+        IndexProvider provider = indexProviderFactory.get(assembly)
+                .orElseGet(() -> IndexProvider.Builder.generate(ont));
+        //generate index raw schema
+        IndexProviderRawSchema rawSchema = new IndexProviderRawSchema(ont, new GraphElementSchemaProviderJsonFactory(provider, ont));
+        //generate E/S mapping factory
+        ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, rawSchema, ont, provider);
+        //generate mappings
+        return mappingFactory.generateMappings().size();
+    }
+
+    @Override
     public long createIndices(String ontology, String schemaProvider) {
         try {
             IndexProvider indexProvider = objectMapper.readValue(schemaProvider, IndexProvider.class);
@@ -132,6 +148,25 @@ public class DefaultGraphInitiator implements GraphInitiator {
         } catch (Throwable t) {
             throw new FuseError.FuseErrorException("Create Indices error " + ontology + " with schema " + schemaProvider, t);
         }
+    }
+
+    @Override
+    public long createIndices(String ontology) {
+        Ontology ont = ontologyProvider.get(ontology)
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for name",
+                        "No Ontology present for name" + ontology)));
+
+        IndexProvider provider = indexProviderFactory.get(assembly)
+                .orElseGet(() -> IndexProvider.Builder.generate(ont));
+        //generate index raw schema
+        IndexProviderRawSchema rawSchema = new IndexProviderRawSchema(ont, new GraphElementSchemaProviderJsonFactory(provider, ont));
+        //generate E/S mapping factory
+        ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, rawSchema, ont, provider);
+        //create indices
+        List<Tuple2<Boolean, String>> indices = mappingFactory.createIndices();
+        //refresh cluster
+        client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
+        return Stream.ofAll(indices).count(s -> !s._2.isEmpty());
     }
 
 

@@ -121,7 +121,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 .decorate(() -> this.controller.init(ontology), this.resultHandler());
     }
     @Override
-    public ContentResponse<String> createMapping(String ontology,String indexProvider ) {
+    public ContentResponse<String> createMapping(String ontology) {
         return new LoggingSyncMethodDecorator<ContentResponse<String>>(
                 this.logger,
                 this.metricRegistry,
@@ -129,10 +129,10 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.createMapping(ontology,indexProvider), this.resultHandler());
+                .decorate(() -> this.controller.createMapping(ontology), this.resultHandler());
     }
     @Override
-    public ContentResponse<String> createIndices(String ontology,String indexProvider ) {
+    public ContentResponse<String> createIndices(String ontology) {
         return new LoggingSyncMethodDecorator<ContentResponse<String>>(
                 this.logger,
                 this.metricRegistry,
@@ -140,7 +140,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.createIndices(ontology,indexProvider), this.resultHandler());
+                .decorate(() -> this.controller.createIndices(ontology), this.resultHandler());
     }
 
     @Override

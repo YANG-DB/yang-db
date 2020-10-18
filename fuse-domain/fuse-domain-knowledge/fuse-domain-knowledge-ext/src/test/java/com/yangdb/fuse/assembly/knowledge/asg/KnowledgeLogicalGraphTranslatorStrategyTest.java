@@ -38,8 +38,8 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
     @Before
     public void setUp() throws Exception {
         URL knowledge = Thread.currentThread().getContextClassLoader().getResource("ontology/Knowledge.json");
-        URL dragons = Thread.currentThread().getContextClassLoader().getResource("ontology/Dragons.json");
         knowledgeOnt = new Ontology.Accessor(new ObjectMapper().readValue(knowledge, Ontology.class));
+        URL dragons = Thread.currentThread().getContextClassLoader().getResource("ontology/Dragons.json");
         dragonsOnt = new Ontology.Accessor(new ObjectMapper().readValue(dragons, Ontology.class));
         provider = new OntologyProvider() {
             @Override
@@ -463,8 +463,8 @@ public class KnowledgeLogicalGraphTranslatorStrategyTest {
     //endregion
 
     //region Fields
-    private Ontology.Accessor knowledgeOnt;
     private Ontology.Accessor dragonsOnt;
+    private Ontology.Accessor knowledgeOnt;
     private OntologyProvider provider;
     private AsgQueryValidator validator;
     //endregion

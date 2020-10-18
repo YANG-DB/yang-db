@@ -1,8 +1,7 @@
 -- auto-generated definition
 create table BehaviorEvents
 (
-    rel_id                        int                           not null
-        primary key,
+    rel_id                        int                           not null        primary key,
     behavior_id                   int                           not null,
     behavior_type_id              int                           not null,
     network_id                    varchar(64),
@@ -15,10 +14,10 @@ create table BehaviorEvents
     event_severity                int,
     event_detected_time           timestamp                     not null,
     behavior_frequency            float,
-    by_uid                        int,
+    by_uid                        BIGINT,
     by_name                       varchar(256),
     by_type_id                    int,
-    by_linked_entity_uid          int,
+    by_linked_entity_uid                     BIGINT,
     by_file_type                  int,
     by_file_md5                   varchar(50),
     by_file_directory             varchar(1024),
@@ -26,10 +25,10 @@ create table BehaviorEvents
     by_process_pid                int,
     by_process_directory          varchar(1024),
     by_sid                        varchar(256),
-    to_uid                        int,
+    to_uid                        BIGINT,
     to_name                       varchar(256),
     to_type_id                    int,
-    to_linked_entity_uid          int,
+    to_linked_entity_uid          BIGINT,
     to_file_type                  int,
     to_file_md5                   varchar(50),
     to_file_directory             varchar(1024),
@@ -47,6 +46,16 @@ create table BehaviorEvents
     data_remote_ip                int,
     is_insight                    boolean                       not null,
     insert_time                   timestamp not null,
-    stage_id                      int
+    stage_id                      int,
+
+    CONSTRAINT fk_events_behaviors FOREIGN KEY (behavior_id) REFERENCES Behaviors( behavior_id),
+    CONSTRAINT fk_events_behaviors_type FOREIGN KEY (behavior_type_id) REFERENCES lov_BehaviorsTypes( type_id),
+    CONSTRAINT fk_events_events FOREIGN KEY (event_id) REFERENCES Events_Analysis( event_id),
+    CONSTRAINT fk_events_type FOREIGN KEY (event_type_id) REFERENCES lov_EventsTypes(type_id),
+
+    CONSTRAINT fk_events_source FOREIGN KEY (source_type) REFERENCES lov_CyberObjectTypes(type_id),
+    CONSTRAINT fk_events_by_type_obj FOREIGN KEY (by_type_id) REFERENCES lov_CyberObjectTypes(type_id),
+    CONSTRAINT fk_events_to_type_obj FOREIGN KEY (to_type_id) REFERENCES lov_CyberObjectTypes(type_id)
+
 );
 

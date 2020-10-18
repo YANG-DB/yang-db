@@ -34,6 +34,7 @@ public interface DataTransformer<T,G> {
         public static SimpleDateFormat sdf;
 
         static {
+            //todo load the pattern from the application.conf ${assembly}.storage_dateFormat
             sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         }
