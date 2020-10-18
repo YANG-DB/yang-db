@@ -1,7 +1,7 @@
 -- auto-generated definition
 create table Entities
 (
-    entity_hash                    int                                       not null        primary key,
+    entity_hash                    BIGINT                                       not null        primary key,
     uid                            int,
     customer_id                    int,
     source_id                      numeric(39)                               not null,
@@ -170,7 +170,7 @@ create table Entities
     file_date_modified             timestamp,
     file_date_accessed             timestamp,
     file_language                  varchar(64),
-    file_signature_hash            int       default 0,
+    file_signature_hash            BIGINT       default 0,
     entity_attributes              varchar(2000),
 
 

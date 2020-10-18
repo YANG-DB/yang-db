@@ -1097,12 +1097,12 @@
     {
       "pType": "md5_behavior_hash",
       "name": "md5_behavior_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "md5_linked_hash",
       "name": "md5_linked_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "by_uid",
@@ -1417,7 +1417,7 @@
     {
       "pType": "behavior_hash",
       "name": "behavior_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "customer_id",
@@ -1532,7 +1532,7 @@
     {
       "pType": "data_operation_system_hash",
       "name": "data_operation_system_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "data_directory",
@@ -1702,7 +1702,7 @@
     {
       "pType": "entity_hash",
       "name": "entity_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "entity_name",
@@ -1732,7 +1732,7 @@
     {
       "pType": "md5_hash",
       "name": "md5_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "is_md5_null",
@@ -2117,12 +2117,12 @@
     {
       "pType": "by_file_signature_hash",
       "name": "by_file_signature_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "to_file_signature_hash",
       "name": "to_file_signature_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "data_remote_ip",
@@ -2397,7 +2397,7 @@
     {
       "pType": "entity_hash",
       "name": "entity_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "uid",
@@ -3297,7 +3297,7 @@
     {
       "pType": "entity_hash",
       "name": "entity_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "entity_name",
@@ -3352,7 +3352,7 @@
     {
       "pType": "entity_hash",
       "name": "entity_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "uid",
@@ -3502,7 +3502,7 @@
     {
       "pType": "file_signature_hash",
       "name": "file_signature_hash",
-      "type": "int"
+      "type": "long"
     },
     {
       "pType": "file_owner_account",

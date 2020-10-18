@@ -19,7 +19,7 @@ create table AlertsToBehaviors
     to_linked_entity_uid                        BIGINT,
     to_file_md5          varchar(50),
     behavior_is_alert    boolean     default false,
-    attributes_hash      numeric(38) default 0,
+    attributes_hash      BIGINT default 0,
 
 -- missing alert ID here
     CONSTRAINT pk_alerts_behaviors primary key (behavior_id),

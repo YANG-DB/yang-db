@@ -9,7 +9,7 @@ create table TraceEntities
     session_id int,
     entity_id int,
     md5 varchar(50),
-    entity_hash int,
+    entity_hash BIGINT,
     entity_name varchar(256),
     entity_type_id int,
     entity_file_type int,

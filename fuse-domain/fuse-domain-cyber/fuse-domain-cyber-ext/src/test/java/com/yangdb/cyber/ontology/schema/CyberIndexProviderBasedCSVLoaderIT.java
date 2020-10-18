@@ -78,6 +78,36 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
     }
 
     @Test
+    public void testLoadBehaviors() throws IOException, URISyntaxException {
+        IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
+        when(idGeneratorDriver.getNext(anyString(), anyInt()))
+                .thenAnswer(invocationOnMock -> new Range(0, 1000));
+
+        String[] indices = StreamSupport.stream(schema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerFactory, schema, idGeneratorDriver, client);
+
+        Assert.assertEquals(17, indices.length);
+
+        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer, providerFactory, schema);
+        // for stand alone test
+//        Assert.assertEquals(19,graphLoader.init());
+
+        URL resource = Thread.currentThread().getContextClassLoader().getResource("sample/data/Behaviors.csv");
+        LoadResponse<String, FuseError> response = csvLoader.load("Entity", "behaviors", new File(resource.toURI()), GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(2, response.getResponses().size());
+        Assert.assertEquals(5249, response.getResponses().get(1).getSuccesses().size());
+
+        RefreshResponse actionGet = client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
+        Assert.assertNotNull(actionGet);
+
+        SearchRequestBuilder builder = client.prepareSearch();
+        builder.setIndices("behaviors");
+        SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
+        Assert.assertEquals(5249, resp.getHits().getTotalHits());
+
+    }
+
+    @Test
     public void testLoadTraceToBehaviors() throws IOException, URISyntaxException {
         IdGeneratorDriver<Range> idGeneratorDriver = Mockito.mock(IdGeneratorDriver.class);
         when(idGeneratorDriver.getNext(anyString(), anyInt()))

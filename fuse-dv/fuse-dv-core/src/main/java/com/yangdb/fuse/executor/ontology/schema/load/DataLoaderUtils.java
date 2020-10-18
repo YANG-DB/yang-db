@@ -162,7 +162,7 @@ public interface DataLoaderUtils {
             case "date":
             case "dateValue":
                 try {
-                    return sdf.parse(value.toString());
+                    return sdf.format(sdf.parse(value.toString()));
                 } catch (ParseException e) {
                     try {
                         return sdf.format(new Date(value.toString()));

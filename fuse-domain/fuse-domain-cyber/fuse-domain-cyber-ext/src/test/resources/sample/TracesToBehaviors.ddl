@@ -18,7 +18,7 @@ create table TracesToBehaviors
 	to_linked_entity_uid                        BIGINT,
 	to_file_md5 varchar(50),
 	behavior_is_alert boolean default false,
-	attributes_hash numeric(38) default 0,
+	attributes_hash BIGINT default 0,
 
     -- Does this state this table is a relation ?
     CONSTRAINT pk_trace_behavior primary key (trace_id,behavior_id),

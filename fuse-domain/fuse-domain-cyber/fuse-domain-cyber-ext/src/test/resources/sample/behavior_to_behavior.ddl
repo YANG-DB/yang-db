@@ -4,7 +4,7 @@ create table behavior_to_behavior
     source_id        numeric(39),
     behavior_id      int                           not null,
     behavior_type_id int                           not null,
-    attributes_hash  numeric(38)                   not null,
+    attributes_hash  BIGINT                   not null,
     base_behavior_id int                           not null,
     is_alerted       boolean   default true        not null,
     insert_time      timestamp not null,

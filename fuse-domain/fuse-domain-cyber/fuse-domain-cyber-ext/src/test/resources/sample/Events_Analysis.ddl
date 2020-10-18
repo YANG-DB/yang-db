@@ -74,8 +74,8 @@ create table Events_Analysis
     data_registry_privilege       int,
     data_registry_file_path       varchar(512),
     data_registry_service_type    int,
-    by_file_signature_hash        int,
-    to_file_signature_hash        int,
+    by_file_signature_hash        BIGINT,
+    to_file_signature_hash        BIGINT,
     data_remote_ip                int,
     data_file_md5_already_seen    int,
     date_key                      int

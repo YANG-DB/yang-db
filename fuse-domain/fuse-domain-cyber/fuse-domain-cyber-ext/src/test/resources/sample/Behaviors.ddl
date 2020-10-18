@@ -2,7 +2,7 @@
 create table Behaviors
 (
     behavior_id                int                           not null        primary key,
-    behavior_hash              int,
+    behavior_hash              BIGINT,
     customer_id                int                           not null,
     source_id                  numeric(39)                   not null,
     network_id                 varchar(64),
@@ -25,7 +25,7 @@ create table Behaviors
     to_file_md5                varchar(50),
     data_network_ratio         float,
     data_file_extension        varchar(32),
-    data_operation_system_hash int,
+    data_operation_system_hash BIGINT,
     data_directory             varchar(1024),
     created_by_analysis_id     int,
     port                       int,

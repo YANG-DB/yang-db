@@ -1,7 +1,7 @@
 -- auto-generated definition
 create table EntitiesProcessAndFiles
 (
-    entity_hash                    int                                       not null,
+    entity_hash                    BIGINT                                       not null,
     uid                            int,
     customer_id                    int,
     source_id                      numeric(39)                               not null,
@@ -31,7 +31,7 @@ create table EntitiesProcessAndFiles
     file_date_modified             timestamp,
     file_date_accessed             timestamp,
     file_language                  varchar(64),
-    file_signature_hash            int       default 0,
+    file_signature_hash            BIGINT       default 0,
     file_owner_account             varchar(64),
     process_pid                    int,
     process_creation_time          timestamp,
