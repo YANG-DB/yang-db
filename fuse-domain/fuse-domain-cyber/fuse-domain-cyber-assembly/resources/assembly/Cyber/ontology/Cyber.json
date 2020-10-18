@@ -3,7 +3,9 @@
   "directives": [],
   "entityTypes": [
     {
-      "idField": "trace_id",
+      "idField": [
+        "trace_id"
+      ],
       "eType": "traces",
       "name": "traces",
       "mandatory": [
@@ -31,7 +33,9 @@
       ]
     },
     {
-      "idField": "event_id",
+      "idField": [
+        "event_id"
+      ],
       "eType": "enrichmentevents",
       "name": "enrichmentevents",
       "mandatory": [
@@ -102,7 +106,9 @@
       ]
     },
     {
-      "idField": "type_id",
+      "idField": [
+        "type_id"
+      ],
       "eType": "lov_behaviorstypes",
       "name": "lov_behaviorstypes",
       "mandatory": [
@@ -121,7 +127,9 @@
       ]
     },
     {
-      "idField": "behavior_id",
+      "idField": [
+        "behavior_id"
+      ],
       "eType": "behaviors",
       "name": "behaviors",
       "mandatory": [
@@ -163,7 +171,9 @@
       ]
     },
     {
-      "idField": "type_id",
+      "idField": [
+        "type_id"
+      ],
       "eType": "lov_eventstypes",
       "name": "lov_eventstypes",
       "mandatory": [
@@ -264,7 +274,9 @@
       ]
     },
     {
-      "idField": "entity_hash",
+      "idField": [
+        "entity_hash"
+      ],
       "eType": "entities",
       "name": "entities",
       "mandatory": [
@@ -445,7 +457,9 @@
       ]
     },
     {
-      "idField": "type_id",
+      "idField": [
+        "type_id"
+      ],
       "eType": "lov_cyberobjecttypes",
       "name": "lov_cyberobjecttypes",
       "mandatory": [
@@ -533,12 +547,16 @@
   ],
   "relationshipTypes": [
     {
-      "idField": "trace_id",
+      "idField": [
+        "trace_id",
+        "behavior_id"
+      ],
       "rType": "tracestobehaviors",
       "name": "tracestobehaviors",
       "directional": true,
       "mandatory": [
-        "trace_id"
+        "trace_id",
+        "behavior_id"
       ],
       "ePairs": [
         {
@@ -572,12 +590,16 @@
       ]
     },
     {
-      "idField": "base_behavior_id",
+      "idField": [
+        "base_behavior_id",
+        "behavior_id"
+      ],
       "rType": "behavior_to_behavior",
       "name": "behavior_to_behavior",
       "directional": true,
       "mandatory": [
-        "base_behavior_id"
+        "base_behavior_id",
+        "behavior_id"
       ],
       "ePairs": [
         {
@@ -600,12 +622,16 @@
       ]
     },
     {
-      "idField": "behavior_id",
+      "idField": [
+        "behavior_id",
+        "entity_hash"
+      ],
       "rType": "behaviorentities",
       "name": "behaviorentities",
       "directional": true,
       "mandatory": [
-        "behavior_id"
+        "behavior_id",
+        "entity_hash"
       ],
       "ePairs": [
         {
@@ -641,7 +667,9 @@
       ]
     },
     {
-      "idField": "behavior_id",
+      "idField": [
+        "behavior_id"
+      ],
       "rType": "alertstobehaviors",
       "name": "alertstobehaviors",
       "directional": true,
@@ -680,12 +708,16 @@
       ]
     },
     {
-      "idField": "trace_id",
+      "idField": [
+        "trace_id",
+        "event_id"
+      ],
       "rType": "traceevents",
       "name": "traceevents",
       "directional": true,
       "mandatory": [
-        "trace_id"
+        "trace_id",
+        "event_id"
       ],
       "ePairs": [
         {
@@ -732,12 +764,16 @@
       ]
     },
     {
-      "idField": "trace_id",
+      "idField": [
+        "trace_id",
+        "entity_id"
+      ],
       "rType": "traceentities",
       "name": "traceentities",
       "directional": true,
       "mandatory": [
-        "trace_id"
+        "trace_id",
+        "entity_id"
       ],
       "ePairs": [
         {
@@ -769,7 +805,9 @@
       ]
     },
     {
-      "idField": "rel_id",
+      "idField": [
+        "rel_id"
+      ],
       "rType": "behaviorevents",
       "name": "behaviorevents",
       "directional": true,

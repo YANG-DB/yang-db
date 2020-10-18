@@ -96,12 +96,13 @@ public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<Str
                     .withDirectional(true);
 
             //build PK fields constraints
-            List<String> mandatory = primaryKey(statement.getConstraints()).stream().map(pk -> pk.getPrimaryKey()[0].getName().toLowerCase()).collect(Collectors.toList());
+            List<String> mandatory = primaryKey(statement.getConstraints()).stream()
+                    .flatMap(pk -> Arrays.stream(pk.getPrimaryKey()).distinct())
+                    .map(f->f.getName().toLowerCase()).collect(Collectors.toList());
             //set mandatory fields
             builder.withMandatory(mandatory);
             //set id field name
-            String idField = String.join("-", mandatory);
-            builder.withIdField(idField);
+            builder.withIdField(mandatory.toArray(new String[0]));
 
             //build ontology properties (if none exist)
             List<Field<?>> fields = statement.getFields();
@@ -122,7 +123,7 @@ public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<Str
                     .forEach(fk -> builder.withEPairs(singletonList(
                             new EPair(fk.getName().toLowerCase(),
                                     table.getName().toLowerCase(),
-                                    idField,
+                                    BaseElement.idFieldName(mandatory),
                                     fk.get$referencesTable().getName().toLowerCase(),
                                     fk.getForeignKey()[0].getName().toLowerCase())))
                     );
@@ -138,12 +139,13 @@ public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<Str
                     .withEType(table.getName().toLowerCase());
 
             //build PK fields constraints
-            List<String> mandatory = primaryKey(statement.getConstraints()).stream().map(pk -> pk.getPrimaryKey()[0].getName().toLowerCase()).collect(Collectors.toList());
+        List<String> mandatory = primaryKey(statement.getConstraints()).stream()
+                .flatMap(pk -> Arrays.stream(pk.getPrimaryKey()).distinct())
+                .map(f->f.getName().toLowerCase()).collect(Collectors.toList());
             //set mandatory fields
             builder.withMandatory(mandatory);
             //set id field name
-            String idField = String.join("-", mandatory);
-            builder.withIdField(idField);
+            builder.withIdField(mandatory.toArray(new String[0]));
 
             //build ontology properties (if none exist)
             List<Field<?>> fields = statement.getFields();

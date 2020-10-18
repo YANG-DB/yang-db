@@ -20,14 +20,25 @@ package com.yangdb.fuse.model.ontology;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * common attributed element shared by any properties enabled element
  */
 public interface BaseElement {
-    String getIdField();
+    List<String> getIdField();
     List<String> getMetadata();
     List<String> fields();
     List<String> getProperties();
+
+
+    @JsonIgnore
+    static String idFieldName(List<String> values) {
+        StringJoiner joiner = new StringJoiner("_");
+        values.forEach(joiner::add);
+        return joiner.toString();
+    }
 }

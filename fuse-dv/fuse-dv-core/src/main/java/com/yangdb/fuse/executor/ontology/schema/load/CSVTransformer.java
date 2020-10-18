@@ -47,10 +47,7 @@ import org.elasticsearch.client.Client;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory.*;
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.TYPE;
@@ -122,15 +119,16 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
             Entity entity = indexProvider.getEntity(entityType.geteType())
                     .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("CSV Transformation Error", "No matching node found with label " + entityType.geteType())));
             //put id (take according to ontology id field mapping or generate UUID of none found)
-            String idValue = node.getOrDefault(entityType.getIdField(), UUID.randomUUID().toString());
+            StringJoiner joiner = new StringJoiner(".");
+            entityType.getIdField().forEach(field->joiner.add(node.getOrDefault(field, UUID.randomUUID().toString())));
             //put classifiers
-            element.put(entityType.getIdField(), idValue);
+            element.put(entityType.idFieldName(), joiner.toString());
             element.put(TYPE, entity.getType());
 
             //populate fields
             populateMetadataFields(context, node, entity, element);
             populatePropertyFields(context, node, entity, element);
-            return new DocumentBuilder(element, idValue, entity.getType(), Optional.empty());
+            return new DocumentBuilder(element, joiner.toString(), entity.getType(), Optional.empty());
         } catch (FuseError.FuseErrorException e) {
             return new DocumentBuilder(e.getError());
         }
@@ -150,9 +148,12 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
             Relation relation = indexProvider.getRelation(relType.getrType())
                     .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("CSV Transformation Error", "No matching node found with label " + relType.getrType())));
             //put id (take according to ontology id field mapping or generate UUID of none found)
-            String id = String.format("%s.%s", node.getOrDefault(relType.getIdField(), UUID.randomUUID().toString()), direction);
+            StringJoiner joiner = new StringJoiner(".");
+            relType.getIdField().forEach(field->joiner.add(node.getOrDefault(field, UUID.randomUUID().toString())));
             //put classifiers
-            element.put(relType.getIdField(), id);
+            String id = String.format("%s.%s", joiner.toString(), direction);
+            //put classifiers
+            element.put(relType.idFieldName(), id);
             element.put(ElasticIndexProviderMappingFactory.TYPE, relation.getType());
             element.put(DIRECTION, direction);
 

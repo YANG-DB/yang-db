@@ -151,7 +151,7 @@ public class ElasticIndexProviderMappingFactory {
                             request.request().patterns().addAll(patterns);
                         }
                         //dedup patterns
-                         request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                        request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
 
                         //no specific index sort order since it contains multiple entity types -
                         if (request.request().settings().isEmpty()) {
@@ -236,7 +236,7 @@ public class ElasticIndexProviderMappingFactory {
                                         request.request().patterns().addAll(patterns);
                                     }
                                     //dedup patterns -
-                                     request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                                    request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
                                     //no specific index sort order since it contains multiple entity types -
                                     if (request.request().settings().isEmpty()) {
                                         request.setSettings(getSettings());
@@ -259,7 +259,7 @@ public class ElasticIndexProviderMappingFactory {
                                             .addMapping(label, generateEntityMapping(e, entity, label));
 
                                     //dedup patterns -
-                                     request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                                    request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
 
                                     //add response to list of responses
                                     requests.put(v.toLowerCase(), request);
@@ -273,7 +273,7 @@ public class ElasticIndexProviderMappingFactory {
                                         .setSettings(generateSettings(e, entity, label))
                                         .addMapping(label, generateEntityMapping(e, entity, label.toLowerCase()));
                                 //dedup patterns -
-                                 request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                                request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
 
                                 //add response to list of responses
 
@@ -295,6 +295,12 @@ public class ElasticIndexProviderMappingFactory {
         mapping.put(PROPERTIES, properties);
         //populate fields & metadata
         EntityType entityType = entity.get();
+
+        //generate field id -> only if field id array size > 1
+        if(entityType.getIdField().size()>1) {
+            properties.put(entityType.idFieldName(),Collections.singletonMap("type", "keyword"));
+        }//otherwise that field id is already a part of the regular fields
+
         populateProperty(ent, properties, entityType);
         return mapping;
     }
@@ -347,6 +353,13 @@ public class ElasticIndexProviderMappingFactory {
         Map<String, Object> properties = new HashMap<>();
         Map<String, Object> mapping = new HashMap<>();
         mapping.put(PROPERTIES, properties);
+
+        //generate field id -> only if field id array size > 1
+        if(relationshipType.getIdField().size()>1) {
+           properties.put(relationshipType.idFieldName(),Collections.singletonMap("type", "keyword"));
+        }//otherwise that field id is already a part of the regular fields
+
+
         //populate fields & metadata
         relation.get().getMetadata().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
         relation.get().getProperties().forEach(v -> properties.put(v, parseType(ontology.property$(v).getType())));
@@ -501,10 +514,10 @@ public class ElasticIndexProviderMappingFactory {
      * @return
      */
     public Settings generateSettings(EntityType entityType, Entity entity, String label) {
-        String idField = ontology.entity(entityType.getName()).get().getIdField();
-        if (!ontology.entity(entityType.getName()).get().fields().contains(idField))
-            throw new FuseError.FuseErrorException(new FuseError("Entity Schema generation exception", " Entity " + label + " not containing id metadata property "));
-
+        ontology.entity(entityType.getName()).get().getIdField().forEach(idField -> {
+            if (!ontology.entity(entityType.getName()).get().fields().contains(idField))
+                throw new FuseError.FuseErrorException(new FuseError("Entity Schema generation exception", " Entity " + label + " not containing id metadata property "));
+        });
         // TODO: 05/12/2019  - use index provider to correctly build index settings
         return builder(entity);
     }
@@ -515,10 +528,10 @@ public class ElasticIndexProviderMappingFactory {
      * @return
      */
     public Settings generateSettings(RelationshipType relationType, Relation rel, String label) {
-        String idField = ontology.relation(relationType.getName()).get().getIdField();
-        if (!ontology.relation(relationType.getName()).get().fields().contains(idField))
-            throw new FuseError.FuseErrorException(new FuseError("Relation Schema generation exception", " Relationship " + label + " not containing id metadata property "));
-
+        ontology.relation(relationType.getName()).get().getIdField().forEach(idField -> {
+            if (!ontology.relation(relationType.getName()).get().fields().contains(idField))
+                throw new FuseError.FuseErrorException(new FuseError("Relation Schema generation exception", " Relationship " + label + " not containing id metadata property "));
+        });
         return builder(rel);
     }
 
@@ -526,7 +539,7 @@ public class ElasticIndexProviderMappingFactory {
         Settings.Builder builder = getSettings();
         if (relation.getNested().isEmpty()) {
             //assuming id is a mandatory part of metadata/properties
-            builder.put("sort.field", ontology.relation$(relation.getType()).getIdField())
+            builder.put("sort.field", ontology.relation$(relation.getType()).idFieldName())
                     .put("sort.order", "asc");
         }
         return builder.build();
@@ -536,7 +549,7 @@ public class ElasticIndexProviderMappingFactory {
         Settings.Builder builder = getSettings();
         if (entity.getNested().isEmpty()) {
             //assuming id is a mandatory part of metadata/properties
-            builder.put("sort.field", ontology.entity$(entity.getType()).getIdField())
+            builder.put("sort.field", ontology.entity$(entity.getType()).idFieldName())
                     .put("sort.order", "asc");
         }
         return builder.build();
@@ -544,6 +557,7 @@ public class ElasticIndexProviderMappingFactory {
 
     /**
      * todo - get the shards & replication params from configuration
+     *
      * @return
      */
     private Settings.Builder getSettings() {

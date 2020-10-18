@@ -140,11 +140,11 @@ public class RelationshipType implements BaseElement {
         return metadata != null ? metadata : Collections.emptyList();
     }
 
-    public String getIdField() {
+    public List<String> getIdField() {
         return idField;
     }
 
-    public void setIdField(String idField) {
+    public void setIdField(List<String> idField) {
         this.idField = idField;
     }
 
@@ -232,8 +232,13 @@ public class RelationshipType implements BaseElement {
         return "RelationshipType [name = " + name +", ePairs = " + ePairs + ", idField = " + idField + ", rType = " + rType + ", directional = " + directional + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
     }
 
+    @JsonIgnore
+    public String idFieldName() {
+        return BaseElement.idFieldName(getIdField());
+    }
+
     //region Fields
-    private String idField = GlobalConstants.ID;
+    private List<String> idField = Collections.singletonList(GlobalConstants.ID);
     private String rType;
     private String name;
     private boolean directional;
@@ -273,7 +278,7 @@ public class RelationshipType implements BaseElement {
 
     //region Builder
     public static final class Builder {
-        private String idField = "id";
+        private List<String> idField = new ArrayList<>();
         private String rType;
         private String name;
         private boolean directional;
@@ -284,6 +289,7 @@ public class RelationshipType implements BaseElement {
         private List<String> metatada = new ArrayList<>();
 
         private Builder() {
+            idField.add(GlobalConstants.ID);
         }
 
         public static Builder get() {
@@ -336,8 +342,8 @@ public class RelationshipType implements BaseElement {
             return this;
         }
 
-        public Builder withIdField(String idField) {
-            this.idField = idField;
+        public Builder withIdField(String ... idField) {
+            this.idField = Arrays.asList(idField);
             return this;
         }
 

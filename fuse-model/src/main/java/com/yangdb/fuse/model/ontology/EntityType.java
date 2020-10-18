@@ -49,13 +49,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.GlobalConstants;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Streams.concat;
+import static java.util.Collections.singletonList;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -139,17 +137,22 @@ public class EntityType implements BaseElement {
         this.display = display;
     }
 
-    public String getIdField() {
+    public List<String> getIdField() {
         return idField;
     }
 
-    public void setIdField(String idField) {
+    public void setIdField(List<String> idField) {
         this.idField = idField;
     }
 
     @Override
     public String toString() {
         return "EntityType [idField = " + idField + ",eType = " + eType + ", name = " + name + ", display = " + display + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
+    }
+
+    @JsonIgnore
+    public String idFieldName() {
+        return BaseElement.idFieldName(getIdField());
     }
 
     @JsonIgnore
@@ -177,7 +180,7 @@ public class EntityType implements BaseElement {
     }
 
     //region Fields
-    private String idField = GlobalConstants.ID;
+    private List<String> idField = singletonList(GlobalConstants.ID);
     private String eType;
     private String name;
     private List<String> mandatory = new ArrayList<>();
@@ -209,7 +212,7 @@ public class EntityType implements BaseElement {
 
     //region Builder
     public static final class Builder {
-        private String idField = GlobalConstants.ID;
+        private List<String> idField = new ArrayList<>();
         private String eType;
         private String name;
         private List<String> mandatory = new ArrayList<>();
@@ -219,15 +222,17 @@ public class EntityType implements BaseElement {
         private List<String> parentType = new ArrayList<>();
 
         private Builder() {
+            idField.add(GlobalConstants.ID);
         }
+
 
         public static Builder get() {
             return new Builder();
         }
 
         @JsonIgnore
-        public Builder withIdField(String idField) {
-            this.idField = idField;
+        public Builder withIdField(String ... idField) {
+            this.idField = Arrays.asList(idField);
             return this;
         }
 
