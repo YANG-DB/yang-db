@@ -2,10 +2,7 @@ package com.yangdb.fuse.model;
 
 import com.yangdb.fuse.model.ontology.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.OntologyTestUtils.Color.TYPE_COLOR;
@@ -287,7 +284,7 @@ public class OntologyTestUtils {
         );
 
         //properties
-        ontologyShortObj.setProperties(new ArrayList<>(
+        ontologyShortObj.setProperties(new HashSet<>(
                 Arrays.asList(
                         get().build(FIRST_NAME.type, FIRST_NAME.name, STRING),
                         get().build(LAST_NAME.type, LAST_NAME.name, STRING),

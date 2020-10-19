@@ -36,11 +36,14 @@ create table TraceEvents
 
 -- Does this state this table is a relation ?
     CONSTRAINT pk_trace_events primary key (trace_id,event_id),
-
+--  two sides of the relation
     CONSTRAINT fk_trace_entities FOREIGN KEY (trace_id) REFERENCES Traces(trace_id),
     CONSTRAINT fk_trace_events FOREIGN KEY (event_id) REFERENCES EnrichmentEvents(event_id),
+    -- redundant table reference
     CONSTRAINT fk_trace_behavior FOREIGN KEY (behavior_id) REFERENCES Behaviors(behavior_id),
+    -- dictionary table
     CONSTRAINT fk_trace_behavior_types FOREIGN KEY (behavior_type_id) REFERENCES lov_BehaviorsTypes(type_id),
+    CONSTRAINT fk_trace_types FOREIGN KEY (trace_type) REFERENCES lov_TracesTypes(type_id),
     CONSTRAINT fk_trace_by_type_obj FOREIGN KEY (by_type_id) REFERENCES lov_CyberObjectTypes(type_id),
     CONSTRAINT fk_trace_to_type_obj FOREIGN KEY (to_type_id) REFERENCES lov_CyberObjectTypes(type_id)
 

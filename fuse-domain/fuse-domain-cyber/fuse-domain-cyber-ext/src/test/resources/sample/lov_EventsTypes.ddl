@@ -1,4 +1,4 @@
--- auto-generated definition
+-- dictionary table
 create table lov_EventsTypes
 (
     type_id     int         primary key,

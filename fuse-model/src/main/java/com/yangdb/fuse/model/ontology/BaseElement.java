@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.StringJoiner;
 
+import static com.yangdb.fuse.model.GlobalConstants.ID;
+
 /**
  * common attributed element shared by any properties enabled element
  */
@@ -39,6 +41,7 @@ public interface BaseElement {
     static String idFieldName(List<String> values) {
         StringJoiner joiner = new StringJoiner("_");
         values.forEach(joiner::add);
-        return joiner.toString();
+        return joiner.toString().length() >0 ?
+               joiner.toString() : ID;
     }
 }

@@ -140,7 +140,7 @@
         <!-- jansi -->
         <jansi.version>1.16</jansi.version>
         <!--ahocorasick-->
-        <ahocorasick>0.4.0</ahocorasick>>
+        <ahocorasick.version>0.4.0</ahocorasick.version>
         <!-- spatial4j -->
         <spatial4j.version>0.7</spatial4j.version>
 
@@ -512,7 +512,7 @@
             <dependency>
                 <groupId>org.ahocorasick</groupId>
                 <artifactId>ahocorasick</artifactId>
-                <version>0.4.0</version>
+                <version>${ahocorasick.version}</version>
             </dependency>
 
             <!-- spatial4j -->

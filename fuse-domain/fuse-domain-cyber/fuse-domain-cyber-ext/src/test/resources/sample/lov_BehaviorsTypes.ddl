@@ -1,3 +1,4 @@
+-- dictionary table
 create table lov_BehaviorsTypes
 (
     type_id               int         primary key,

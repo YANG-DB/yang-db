@@ -9,12 +9,13 @@ create table behavior_to_behavior
     is_alerted       boolean   default true        not null,
     insert_time      timestamp not null,
 
-    -- add cyber obj FK
+-- primary key from the two ids of two relations
     CONSTRAINT pk_behavior2behavior primary key (base_behavior_id,behavior_id),
-
-    CONSTRAINT fk_behavior2behavior_types FOREIGN KEY (behavior_type_id) REFERENCES lov_BehaviorsTypes(type_id),
+--  two sides of the relation
     CONSTRAINT fk_behavior2behavior_source FOREIGN KEY (base_behavior_id) REFERENCES Behaviors(behavior_id),
-    CONSTRAINT fk_behavior2behavior_dest FOREIGN KEY (behavior_id) REFERENCES Behaviors(behavior_id)
+    CONSTRAINT fk_behavior2behavior_dest FOREIGN KEY (behavior_id) REFERENCES Behaviors(behavior_id),
+--  doctionary
+    CONSTRAINT fk_behavior2behavior_types FOREIGN KEY (behavior_type_id) REFERENCES lov_BehaviorsTypes(type_id)
 
 );
 

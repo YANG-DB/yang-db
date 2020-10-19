@@ -174,7 +174,7 @@ create table Entities
     entity_attributes              varchar(2000),
 
 
--- add cyber obj FK
-        CONSTRAINT fk_entities_type_obj FOREIGN KEY (type_id) REFERENCES lov_CyberObjectTypes(type_id)
+--  dictionary
+    CONSTRAINT fk_entities_type_obj FOREIGN KEY (type_id) REFERENCES lov_CyberObjectTypes(type_id)
 );
 

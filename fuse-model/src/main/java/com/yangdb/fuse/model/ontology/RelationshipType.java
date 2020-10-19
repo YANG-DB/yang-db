@@ -332,6 +332,11 @@ public class RelationshipType implements BaseElement {
             return this;
         }
 
+        public Builder withEPair(EPair ePair) {
+            this.ePairs.add(ePair);
+            return this;
+        }
+
         public Builder withProperties(List<String> properties) {
             this.properties = properties;
             return this;

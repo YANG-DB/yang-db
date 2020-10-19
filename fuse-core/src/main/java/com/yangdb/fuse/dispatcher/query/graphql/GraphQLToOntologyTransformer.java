@@ -485,7 +485,7 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
     }
 
     private Ontology.OntologyBuilder properties(GraphQLSchema graphQLSchema, Ontology.OntologyBuilder context) {
-        context.withProperties(new ArrayList<>(properties));
+        context.withProperties(new HashSet<>(properties));
         return context;
     }
 

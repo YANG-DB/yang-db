@@ -74,7 +74,7 @@ public class Ontology {
         entityTypes = new ArrayList<>();
         relationshipTypes = new ArrayList<>();
         enumeratedTypes = new ArrayList<>();
-        properties = new ArrayList<>();
+        properties = new HashSet<>();
         compositeTypes = new ArrayList<>();
 
         primitiveTypes.add(new PrimitiveType("int", Long.class));
@@ -101,11 +101,11 @@ public class Ontology {
         return entityTypes;
     }
 
-    public List<Property> getProperties() {
+    public Set<Property> getProperties() {
         return this.properties;
     }
 
-    public void setProperties(List<Property> properties) {
+    public void setProperties(Set<Property> properties) {
         this.properties = properties;
     }
 
@@ -186,7 +186,7 @@ public class Ontology {
     private List<DirectiveType> directives;
     private List<EntityType> entityTypes;
     private List<RelationshipType> relationshipTypes;
-    private List<Property> properties;
+    private Set<Property> properties;
     private List<Property> metadata;
     private List<EnumeratedType> enumeratedTypes;
     private List<CompositeType> compositeTypes;
@@ -200,7 +200,7 @@ public class Ontology {
         private List<DirectiveType> directives;
         private List<EntityType> entityTypes;
         private List<RelationshipType> relationshipTypes;
-        private List<Property> properties;
+        private LinkedHashSet<Property> properties;
         private List<EnumeratedType> enumeratedTypes;
         private List<CompositeType> compositeTypes;
 
@@ -208,7 +208,7 @@ public class Ontology {
             this.directives = new ArrayList<>();
             this.entityTypes = new ArrayList<>();
             this.relationshipTypes = new ArrayList<>();
-            this.properties = new ArrayList<>();
+            this.properties = new LinkedHashSet<>();
             this.enumeratedTypes = new ArrayList<>();
             this.compositeTypes = new ArrayList<>();
         }
@@ -261,7 +261,7 @@ public class Ontology {
         }
 
         public Optional<Property> getProperty(String property) {
-            return this.properties.stream().filter(et -> et.getType().equals(property)).findAny();
+            return this.properties.stream().filter(et -> et.getName().equals(property)).findAny();
         }
 
         public OntologyBuilder withDirective(DirectiveType directive) {
@@ -291,8 +291,8 @@ public class Ontology {
             return this;
         }
 
-        public OntologyBuilder withProperties(List<Property> properties) {
-            this.properties = properties;
+        public OntologyBuilder withProperties(Set<Property> properties) {
+            this.properties = new LinkedHashSet<>(properties);
             return this;
         }
 
@@ -355,7 +355,15 @@ public class Ontology {
             return this.ontology.getOnt();
         }
 
-        public Optional<EntityType> $entity(String eType) {
+        public Optional<? extends BaseElement> $element(String type) {
+            if(this.entitiesByEtype.get(type)!=null)
+                return Optional.of(this.entitiesByEtype.get(type));
+            if(this.relationsByName.get(type)!=null)
+                return Optional.of(this.relationsByName.get(type));
+            return Optional.empty();
+        }
+
+       public Optional<EntityType> $entity(String eType) {
             return Optional.ofNullable(this.entitiesByEtype.get(eType));
         }
 
@@ -434,7 +442,7 @@ public class Ontology {
             return Optional.ofNullable(this.propertiesByName.get(propertyName));
         }
 
-        public List<Property> properties() {
+        public Set<Property> properties() {
             return this.ontology.properties;
         }
 

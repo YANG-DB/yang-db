@@ -23,10 +23,13 @@ create table BehaviorEntities
     insert_time        timestamp not null,
     stage_id           int,
 
+-- primary key from the two ids of two relations
     CONSTRAINT pk_behavior_entities primary key (behavior_id,entity_hash),
+--  two sides of the relation
     CONSTRAINT fk_behavior_entities_behavior FOREIGN KEY (behavior_id) REFERENCES Behaviors(behavior_id),
-    CONSTRAINT fk_behavior_entities_behavior_type FOREIGN KEY (behavior_type_id) REFERENCES lov_BehaviorsTypes(type_id),
     CONSTRAINT fk_behavior_entity_entity FOREIGN KEY (entity_hash) REFERENCES Entities(entity_hash),
+--  doctionary
+    CONSTRAINT fk_behavior_entities_behavior_type FOREIGN KEY (behavior_type_id) REFERENCES lov_BehaviorsTypes(type_id),
     CONSTRAINT fk_behavior_entity_entity_type FOREIGN KEY (entity_type_id) REFERENCES lov_CyberObjectTypes(type_id)
 
 

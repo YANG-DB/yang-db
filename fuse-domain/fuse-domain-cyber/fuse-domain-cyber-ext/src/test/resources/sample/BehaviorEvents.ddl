@@ -1,7 +1,7 @@
 -- auto-generated definition
 create table BehaviorEvents
 (
-    rel_id                        int                           not null        primary key,
+    rel_id                        int                           not null,
     behavior_id                   int                           not null,
     behavior_type_id              int                           not null,
     network_id                    varchar(64),
@@ -48,11 +48,14 @@ create table BehaviorEvents
     insert_time                   timestamp not null,
     stage_id                      int,
 
+-- primary key from the two ids of two relations
+    CONSTRAINT pk_behavior_events primary key (behavior_id,event_id),
+--  two sides of the relation
     CONSTRAINT fk_events_behaviors FOREIGN KEY (behavior_id) REFERENCES Behaviors( behavior_id),
-    CONSTRAINT fk_events_behaviors_type FOREIGN KEY (behavior_type_id) REFERENCES lov_BehaviorsTypes( type_id),
     CONSTRAINT fk_events_events FOREIGN KEY (event_id) REFERENCES Events_Analysis( event_id),
+--  doctionary
     CONSTRAINT fk_events_type FOREIGN KEY (event_type_id) REFERENCES lov_EventsTypes(type_id),
-
+    CONSTRAINT fk_events_behaviors_type FOREIGN KEY (behavior_type_id) REFERENCES lov_BehaviorsTypes( type_id),
     CONSTRAINT fk_events_source FOREIGN KEY (source_type) REFERENCES lov_CyberObjectTypes(type_id),
     CONSTRAINT fk_events_by_type_obj FOREIGN KEY (by_type_id) REFERENCES lov_CyberObjectTypes(type_id),
     CONSTRAINT fk_events_to_type_obj FOREIGN KEY (to_type_id) REFERENCES lov_CyberObjectTypes(type_id)

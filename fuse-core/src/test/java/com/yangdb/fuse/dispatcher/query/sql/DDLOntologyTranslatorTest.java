@@ -1,5 +1,6 @@
 package com.yangdb.fuse.dispatcher.query.sql;
 
+import com.typesafe.config.ConfigFactory;
 import com.yangdb.fuse.model.ontology.Ontology;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -9,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+
+import static com.yangdb.fuse.dispatcher.query.sql.DDLToOntologyTransformer.*;
 
 public class DDLOntologyTranslatorTest {
     public static Ontology ontology;
@@ -28,7 +31,12 @@ public class DDLOntologyTranslatorTest {
                         e.printStackTrace();
                     }
                 });
-        transformer = new DDLToOntologyTransformer();
+        Map config = new HashMap();
+        config.put("assembly","test");
+        config.put(String.format("%s.%s","test",RELATIONSHIPS),Arrays.asList("book_to_book_store"));
+        config.put(String.format("%s.%s","test",ENTITIES),Arrays.asList("book","book_store","author","language"));
+
+        transformer = new DDLToOntologyTransformer(ConfigFactory.parseMap(config));
     }
 
     @Test
@@ -37,37 +45,28 @@ public class DDLOntologyTranslatorTest {
         Assert.assertNotNull(ontology);
         Assert.assertEquals(ontology.getEnumeratedTypes().size(), 0);
         Ontology.Accessor accessor = new Ontology.Accessor(ontology);
-        Assert.assertEquals(5,accessor.get().getEntityTypes().size());
-        Assert.assertEquals(2,accessor.get().getRelationshipTypes().size());
-        Assert.assertEquals(18,accessor.get().getProperties().size());
+        Assert.assertEquals(4,accessor.get().getEntityTypes().size());
+        Assert.assertEquals(1,accessor.get().getRelationshipTypes().size());
+        Assert.assertEquals(15,accessor.get().getProperties().size());
 
         Assert.assertEquals(1,accessor.$entity$("book").getMandatory().size());
         Assert.assertEquals(5,accessor.$entity$("book").getProperties().size());
-        Assert.assertEquals(1,accessor.relationBySideA("book").size());
-        Assert.assertEquals(1,accessor.relationBySideB("book").size());
 
         Assert.assertEquals(1,accessor.$entity$("language").getMandatory().size());
         Assert.assertEquals(3,accessor.$entity$("language").getProperties().size());
-        Assert.assertEquals(0,accessor.relationBySideA("language").size());
-        Assert.assertEquals(1,accessor.relationBySideB("language").size());
 
         Assert.assertEquals(0,accessor.$entity$("book_store").getMandatory().size());
         Assert.assertEquals(1,accessor.$entity$("book_store").getProperties().size());
-        Assert.assertEquals(0,accessor.relationBySideA("book_store").size());
-        Assert.assertEquals(0,accessor.relationBySideB("book_store").size());
 
         Assert.assertEquals(1,accessor.$entity$("author").getMandatory().size());
         Assert.assertEquals(6,accessor.$entity$("author").getProperties().size());
-        Assert.assertEquals(0,accessor.relationBySideA("author").size());
-        Assert.assertEquals(0,accessor.relationBySideB("author").size());
 
-        Assert.assertEquals(1,accessor.$entity$("book_to_book_store").getMandatory().size());
-        Assert.assertEquals(3,accessor.$entity$("book_to_book_store").getProperties().size());
-        Assert.assertEquals(1,accessor.relationBySideA("book_to_book_store").size());
-        Assert.assertEquals(0,accessor.relationBySideB("book_to_book_store").size());
+        Assert.assertEquals(2,accessor.relation$("book_to_book_store").getMandatory().size());
+        Assert.assertEquals(3,accessor.relation$("book_to_book_store").getProperties().size());
 
-        Assert.assertEquals(1,accessor.$relation$("book").getePairs().size());
         Assert.assertEquals(1,accessor.$relation$("book_to_book_store").getePairs().size());
+        Assert.assertEquals(1,accessor.relationBySideB("book").size());
+        Assert.assertEquals(1,accessor.relationBySideA("book_store").size());
 
 
 

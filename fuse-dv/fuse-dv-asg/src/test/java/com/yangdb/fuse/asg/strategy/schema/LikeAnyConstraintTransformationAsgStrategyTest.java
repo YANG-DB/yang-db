@@ -42,7 +42,7 @@ public class LikeAnyConstraintTransformationAsgStrategyTest {
                 .withEntityTypes(Collections.singletonList(
                         EntityType.Builder.get().withEType("Person").withName("Person").withProperties(
                                 Collections.singletonList("name")).build()))
-                .withProperties(Collections.singletonList(
+                .withProperties(Collections.singleton(
                         Property.Builder.get().withPType("name").withName("name").withType("string").build()))
                 .build();
 

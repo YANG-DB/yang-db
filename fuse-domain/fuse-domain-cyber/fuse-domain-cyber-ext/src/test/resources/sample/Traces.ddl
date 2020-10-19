@@ -17,6 +17,10 @@ create table Traces
     status_update_time timestamp,
     update_by varchar(32),
     distinct_alerting_behavior_count int default 0 not null,
-    trace_identifier numeric(38) default Traces.trace_id
+    trace_identifier numeric(38) default Traces.trace_id,
+
+    -- dictionary table
+    CONSTRAINT fk_trace_to_type_obj FOREIGN KEY (trace_type) REFERENCES lov_CyberObjectTypes(type_id)
+
 );
 

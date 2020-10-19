@@ -141,33 +141,33 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
         switch (type) {
             case UNIFIED:
                 //todo verify correctness
-                return  e.getProps().getValues().stream()
-                                .map(v -> new GraphVertexSchema.Impl(
-                                        e.getType(),
-                                        new StaticIndexPartitions(v),
-                                        getGraphElementPropertySchemas(e.getType())))
-                                .collect(Collectors.toList());
+                return e.getProps().getValues().stream()
+                        .map(v -> new GraphVertexSchema.Impl(
+                                e.getType(),
+                                new StaticIndexPartitions(v),
+                                getGraphElementPropertySchemas(e.getType())))
+                        .collect(Collectors.toList());
             case NESTED:
-                return  e.getProps().getValues().stream()
-                                .map(v -> new GraphVertexSchema.Impl(
-                                        e.getType(),
-                                        new NestedIndexPartitions(v),
-                                        getGraphElementPropertySchemas(e.getType())))
-                                .collect(Collectors.toList());
+                return e.getProps().getValues().stream()
+                        .map(v -> new GraphVertexSchema.Impl(
+                                e.getType(),
+                                new NestedIndexPartitions(v),
+                                getGraphElementPropertySchemas(e.getType())))
+                        .collect(Collectors.toList());
             case STATIC:
-                return  e.getProps().getValues().stream()
-                                .map(v -> new GraphVertexSchema.Impl(
-                                        e.getType(),
-                                        new StaticIndexPartitions(v),
-                                        getGraphElementPropertySchemas(e.getType())))
-                                .collect(Collectors.toList());
+                return e.getProps().getValues().stream()
+                        .map(v -> new GraphVertexSchema.Impl(
+                                e.getType(),
+                                new StaticIndexPartitions(v),
+                                getGraphElementPropertySchemas(e.getType())))
+                        .collect(Collectors.toList());
             case TIME:
                 return e.getProps().getValues().stream()
-                                .map(v -> new GraphVertexSchema.Impl(
-                                        e.getType(),
-                                        new TimeBasedIndexPartitions(e.getProps()),
-                                        getGraphElementPropertySchemas(e.getType())))
-                                .collect(Collectors.toList());
+                        .map(v -> new GraphVertexSchema.Impl(
+                                e.getType(),
+                                new TimeBasedIndexPartitions(e.getProps()),
+                                getGraphElementPropertySchemas(e.getType())))
+                        .collect(Collectors.toList());
         }
         //default - when other partition type is declared
         String v = e.getProps().getValues().isEmpty() ? e.getType() : e.getProps().getValues().get(0);
@@ -243,10 +243,13 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
     }
 
+    /**
+     * todo  -verify is we need to examine each side of the pair as an Entity type of  both as relationship type
+     * @param pairList
+     */
     private void validateSchema(List<EPair> pairList) {
         pairList.forEach(pair -> {
-            if (!accessor.entity(pair.geteTypeA()).isPresent() ||
-                    !accessor.entity(pair.geteTypeB()).isPresent())
+            if ( !(accessor.$element(pair.geteTypeA()).isPresent()) || !(accessor.$element(pair.geteTypeB()).isPresent()))
                 throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Pair containing " + pair.toString() + " was not matched against the current ontology"));
         });
     }
@@ -276,10 +279,13 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     private List<GraphRedundantPropertySchema> getGraphRedundantPropertySchemas(String entitySide, String entityType, Relation rel) {
         List<GraphRedundantPropertySchema> redundantPropertySchemas = new ArrayList<>();
         //verify ontology
-        accessor.entity(entityType).get().getIdField().forEach(field-> {
-                    if (!accessor.entity(entityType).get().fields().contains(field))
-                        throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Entity " + entityType + " not containing " + ID + " metadata property "));
-                });
+        accessor.$element(entityType)
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Schema generation exception","No Element in Ontology "+entityType)))
+                .getIdField()
+                  .forEach(field -> {
+                    if (!accessor.$element(entityType).get().fields().contains(field))
+                        throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Element " + entityType + " not containing " + ID + " metadata property "));
+        });
         validateRedundant(entityType, entitySide, rel.getRedundant());
         redundantPropertySchemas.add(new GraphRedundantPropertySchema.Impl(ID, String.format("%s.%s", entitySide, ID), "string"));
         //add all RedundantProperty according to schema

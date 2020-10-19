@@ -1,7 +1,7 @@
 -- auto-generated definition
 create table Events_Analysis
 (
-    event_id                      int           not null,
+    event_id                      int           not null  primary key,
     stage_id                      int,
     load_id                       int,
     session_id                    int,
@@ -78,6 +78,10 @@ create table Events_Analysis
     to_file_signature_hash        BIGINT,
     data_remote_ip                int,
     data_file_md5_already_seen    int,
-    date_key                      int
+    date_key                      int,
+
+    CONSTRAINT fk_events_to_type_obj FOREIGN KEY (to_type_id) REFERENCES lov_CyberObjectTypes(type_id),
+    CONSTRAINT fk_events_by_type_obj FOREIGN KEY (by_type_id) REFERENCES lov_CyberObjectTypes(type_id)
+
 );
 

@@ -232,7 +232,8 @@ public class EntityType implements BaseElement {
 
         @JsonIgnore
         public Builder withIdField(String ... idField) {
-            this.idField = Arrays.asList(idField);
+            //only populate if fields are not empty so that the default GlobalConstants.ID would not vanish
+            if(idField.length>0) this.idField = Arrays.asList(idField);
             return this;
         }
 

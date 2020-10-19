@@ -43,6 +43,9 @@ create table EntitiesProcessAndFiles
     process_drive_type             int,
     process_integrity_level        int,
     profile_username               varchar(256),
-    sid                            varchar(256)
+    sid                            varchar(256),
+    --  dictionary
+    CONSTRAINT fk_entities_type_obj FOREIGN KEY (type_id) REFERENCES lov_CyberObjectTypes(type_id)
+
 );
 

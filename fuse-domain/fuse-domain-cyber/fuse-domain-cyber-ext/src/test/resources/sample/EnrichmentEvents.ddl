@@ -63,9 +63,11 @@ create table EnrichmentEvents
     stage_id                      int,
     rel_id                        int       default nextval('APD.seq_EnrichmentEventsIds') not null,
 
+--  redundant fields data
     CONSTRAINT fk_events_behaviors FOREIGN KEY (behavior_entity_uid) REFERENCES Behaviors( behavior_id),
-    CONSTRAINT fk_events_behaviors_type FOREIGN KEY (behavior_entity_type) REFERENCES lov_BehaviorsTypes( type_id),
     CONSTRAINT fk_events_entities FOREIGN KEY (linked_entity_uid) REFERENCES Entities(uid),
+--  doctionary
+    CONSTRAINT fk_events_behaviors_type FOREIGN KEY (behavior_entity_type) REFERENCES lov_BehaviorsTypes( type_id),
     CONSTRAINT fk_events_type FOREIGN KEY (event_type_id) REFERENCES lov_EventsTypes(type_id),
     CONSTRAINT fk_events_by_type_obj FOREIGN KEY (by_type_id) REFERENCES lov_CyberObjectTypes(type_id),
     CONSTRAINT fk_events_to_type_obj FOREIGN KEY (to_type_id) REFERENCES lov_CyberObjectTypes(type_id)
