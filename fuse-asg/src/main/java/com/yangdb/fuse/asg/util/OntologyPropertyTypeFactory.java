@@ -23,6 +23,7 @@ package com.yangdb.fuse.asg.util;
 
 
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.Property;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +35,7 @@ import java.util.function.Function;
 
 public class OntologyPropertyTypeFactory {
 
-    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     static {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }

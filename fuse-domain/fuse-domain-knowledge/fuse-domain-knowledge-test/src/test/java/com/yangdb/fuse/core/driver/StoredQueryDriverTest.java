@@ -11,6 +11,7 @@ import com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder;
 import com.yangdb.fuse.dispatcher.driver.QueryDriver;
 import com.yangdb.fuse.executor.BaseModuleInjectionTest;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.query.Rel;
@@ -58,7 +59,7 @@ import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.not
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.*;
 
 public class StoredQueryDriverTest extends BaseModuleInjectionTest {
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     static KnowledgeWriterContext ctx;
     static FileBuilder f1, f2;
 

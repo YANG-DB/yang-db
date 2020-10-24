@@ -3,6 +3,7 @@ package com.yangdb.fuse.assembly.queries;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.assembly.Setup;
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
@@ -38,7 +39,7 @@ import static com.yangdb.fuse.client.FuseClientSupport.query;
 
 public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
     public static final String DRAGONS = "Dragons";
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
     @BeforeClass
     public static void setup() throws Exception {

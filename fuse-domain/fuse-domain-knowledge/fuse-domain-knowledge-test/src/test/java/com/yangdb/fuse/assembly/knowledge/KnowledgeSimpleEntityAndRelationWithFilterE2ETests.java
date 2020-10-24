@@ -3,6 +3,7 @@ package com.yangdb.fuse.assembly.knowledge;
 import com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
@@ -49,7 +50,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
     static KnowledgeWriterContext ctx;
     static EntityBuilder e1, e2, e3, e4, e5, e6, e7, e8, e9, e10;
     static RelationBuilder rel1, rel2, rel3, rel4, rel5;
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
 
     @BeforeClass

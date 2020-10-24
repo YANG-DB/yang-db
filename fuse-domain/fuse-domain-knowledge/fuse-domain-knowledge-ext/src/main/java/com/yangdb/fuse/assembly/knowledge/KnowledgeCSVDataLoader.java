@@ -32,6 +32,7 @@ import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerProvider;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.executor.ontology.schema.load.*;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -56,7 +57,7 @@ public class KnowledgeCSVDataLoader implements CSVDataLoader {
     public static final String E_VALUES = "eValues";
     public static final String R_VALUES = "rValues";
 
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
     static {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));

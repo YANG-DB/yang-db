@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.IndexProvider;
@@ -54,7 +55,7 @@ import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extr
  * - load with file
  */
 public class IndexProviderBasedCSVLoader implements CSVDataLoader {
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     private static Map<String, Range.StatefulRange> ranges = new HashMap<>();
 
     static {

@@ -19,8 +19,8 @@ public abstract class Setup {
     public static Path path = Paths.get( "src","resources", "assembly", "Dragons", "config", "application.test.engine3.m1.dfs.dragons.public.conf");
     public static String userDir = Paths.get( "src","resources", "assembly", "Dragons").toFile().getAbsolutePath();
 
-    public static FuseApp app = null;
     public static ElasticEmbeddedNode elasticEmbeddedNode = null;
+    public static FuseApp app = null;
     public static FuseClient fuseClient = null;
     public static TransportClient client = null;
 
@@ -53,6 +53,8 @@ public abstract class Setup {
     }
 
     private static void init(boolean embedded, boolean init, boolean startFuse) throws Exception {
+        //set location aware user directory
+        System.setProperty("user.dir",userDir);
         // Start embedded ES
         if(embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance("Dragons");
@@ -66,9 +68,10 @@ public abstract class Setup {
             //todo some init stuff
         }
 
-        //set location aware user directory
-        System.setProperty("user.dir",userDir);
+        startFuse(startFuse);
+    }
 
+    private static void startFuse(boolean startFuse) {
         // Start fuse app (based on Jooby app web server)
         if(startFuse) {
             // Load fuse engine config file

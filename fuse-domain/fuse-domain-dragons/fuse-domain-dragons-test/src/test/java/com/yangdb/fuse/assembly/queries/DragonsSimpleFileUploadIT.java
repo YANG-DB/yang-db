@@ -2,6 +2,7 @@ package com.yangdb.fuse.assembly.queries;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.assembly.Setup;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.ResultResourceInfo;
 import com.yangdb.test.BaseITMarker;
@@ -23,7 +24,7 @@ import static com.yangdb.fuse.assembly.Setup.fuseClient;
 public class DragonsSimpleFileUploadIT implements BaseITMarker {
     public static final String DRAGONS = "Dragons";
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
     @BeforeClass
     public static void setup() throws Exception {

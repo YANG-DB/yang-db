@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -57,7 +58,7 @@ import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extr
  *  - load with file
  */
 public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, FuseError> {
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     public static final int NUM_IDS = 1000;
     private static Map<String, Range.StatefulRange> ranges = new HashMap<>();
 

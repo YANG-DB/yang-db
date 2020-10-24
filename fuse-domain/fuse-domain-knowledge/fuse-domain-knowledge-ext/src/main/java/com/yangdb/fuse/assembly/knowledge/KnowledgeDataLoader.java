@@ -34,6 +34,7 @@ import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
 import com.yangdb.fuse.executor.ontology.schema.load.Response;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
@@ -61,7 +62,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     public static final String E_VALUES = "eValues";
     public static final String R_VALUES = "rValues";
 
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
     static {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));

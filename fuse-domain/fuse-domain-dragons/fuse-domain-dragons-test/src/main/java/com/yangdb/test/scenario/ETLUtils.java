@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.jayway.jsonpath.JsonPath;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Utils;
 import com.yangdb.fuse.model.execution.plan.Direction;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -95,7 +96,7 @@ public abstract class ETLUtils {
     static String confDragonsIndexProvider = readJsonFile("schema/" + "DragonsIndexProvider.conf");
 
     static {
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
@@ -184,7 +185,7 @@ public abstract class ETLUtils {
         ObjectReader reader = new CsvMapper().reader(schema).forType(new TypeReference<Map<String, String>>() {
         });
 
-        Partitioner partitioner = new DateFieldPartitioner(partitionField, "%s", "yyyy-MM-dd HH:mm:ss.SSS", "yyyyMM");
+        Partitioner partitioner = new DateFieldPartitioner(partitionField, "%s", GlobalConstants.DEFAULT_DATE_FORMAT, "yyyyMM");
 
         Map<String, List<String>> bufferedPartitions = new HashMap<>();
         int maxBufferedLines = 100000;

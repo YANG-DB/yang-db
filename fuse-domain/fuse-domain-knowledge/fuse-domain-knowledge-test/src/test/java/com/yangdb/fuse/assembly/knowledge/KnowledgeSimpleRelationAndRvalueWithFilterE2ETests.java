@@ -4,6 +4,7 @@ package com.yangdb.fuse.assembly.knowledge;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.RvalueBuilder;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
@@ -45,7 +46,7 @@ public class KnowledgeSimpleRelationAndRvalueWithFilterE2ETests {
     static KnowledgeWriterContext ctx;
     static RelationBuilder rel1, rel2, rel3, rel4, rel5;
     static RvalueBuilder rv1, rv2, rv3, rv4, rv5, rv6, rv7, rv8, rv9;
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
     @BeforeClass
     public static void setup() throws Exception {

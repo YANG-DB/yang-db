@@ -738,7 +738,7 @@
     {
       "pType": "trace_type",
       "name": "trace_type",
-      "type": "int"
+      "type": "lov_tracestypes"
     },
     {
       "pType": "trace_status",

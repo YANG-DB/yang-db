@@ -25,6 +25,8 @@ package com.yangdb.fuse.model;
  */
 public class GlobalConstants {
     public static String ID = "id";
+    public static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+
 
     public static class HasKeys {
         public static final String PROMISE = "promise";

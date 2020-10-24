@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -57,7 +58,7 @@ public class KnowledgeDataInfraManager  {
     public KnowledgeDataInfraManager(KnowledgeConfigManager configManager) {
         this.configManager = configManager;
         this.client = configManager.getClient();
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
     }
@@ -66,7 +67,7 @@ public class KnowledgeDataInfraManager  {
     ObjectMapper _mapper;
 
     private void PrepareReferenceValues() throws JsonProcessingException, ParseException {
-        _references = new ArrayList<String>();
+        _references = new ArrayList<>();
 
         List<String> auth = Arrays.asList("source1.procedure1", "source1.procedure1");
         KnowledgeReference ref = new KnowledgeReference();

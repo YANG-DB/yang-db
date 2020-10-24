@@ -6,6 +6,7 @@ import com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.ValueBuilder;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
@@ -46,7 +47,7 @@ public class KnowledgeMassInsertionGraphTest {
     public static int valuesCount;
     public static  int relationCount;
 
-    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     static KnowledgeWriterContext ctx;
     static Random rand;
 

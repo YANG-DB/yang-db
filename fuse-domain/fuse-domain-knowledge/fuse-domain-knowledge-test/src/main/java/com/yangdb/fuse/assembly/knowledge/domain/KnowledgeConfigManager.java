@@ -24,6 +24,7 @@ import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
+import com.yangdb.fuse.model.GlobalConstants;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -56,7 +57,7 @@ public class KnowledgeConfigManager {
             this.conf = ConfigFactory.parseFileAnySyntax(configFile, ConfigParseOptions.defaults().setAllowMissing(false));
             this.schema = ((Class<? extends RawSchema>) Class.forName(conf.getString(conf.getString("assembly") + ".physical_raw_schema"))).newInstance();
 
-            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         } catch (Exception exc) {
             throw new RuntimeException(exc);

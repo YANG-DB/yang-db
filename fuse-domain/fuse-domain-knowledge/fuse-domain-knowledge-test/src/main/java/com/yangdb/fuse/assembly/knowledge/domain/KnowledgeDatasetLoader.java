@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -95,7 +96,7 @@ public class KnowledgeDatasetLoader {
             this.conf = ConfigFactory.parseFileAnySyntax(configFile, ConfigParseOptions.defaults().setAllowMissing(false));
             this.schema = ((Class<? extends RawSchema>) Class.forName(conf.getString(conf.getString("assembly") + ".physical_raw_schema"))).newInstance();
 
-            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         } catch (Exception exc) {
             String exception = exc.getMessage();

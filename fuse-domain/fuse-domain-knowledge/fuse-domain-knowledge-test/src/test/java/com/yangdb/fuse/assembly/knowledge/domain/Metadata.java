@@ -3,6 +3,7 @@ package com.yangdb.fuse.assembly.knowledge.domain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.results.Property;
 
 import java.text.SimpleDateFormat;
@@ -13,7 +14,7 @@ public abstract class Metadata extends KnowledgeDomainBuilder {
     static SimpleDateFormat sdf;
 
     static {
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 

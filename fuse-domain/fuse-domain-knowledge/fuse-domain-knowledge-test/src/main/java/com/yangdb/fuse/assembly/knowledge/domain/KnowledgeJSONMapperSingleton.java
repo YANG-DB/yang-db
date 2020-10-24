@@ -21,6 +21,7 @@ package com.yangdb.fuse.assembly.knowledge.domain;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.model.GlobalConstants;
 
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
@@ -39,7 +40,7 @@ public class KnowledgeJSONMapperSingleton {
      */
     private KnowledgeJSONMapperSingleton(){
         _mapper = new ObjectMapper();
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         _mapper.setDateFormat(sdf);
     }

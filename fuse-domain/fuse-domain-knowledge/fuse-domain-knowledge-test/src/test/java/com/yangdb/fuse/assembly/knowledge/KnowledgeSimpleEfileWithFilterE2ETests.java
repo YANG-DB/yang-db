@@ -2,6 +2,7 @@ package com.yangdb.fuse.assembly.knowledge;
 
 import com.yangdb.fuse.assembly.knowledge.domain.FileBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.ETyped;
@@ -37,7 +38,7 @@ public class KnowledgeSimpleEfileWithFilterE2ETests {
 
     static KnowledgeWriterContext ctx;
     static FileBuilder f1, f2, f3, f4, f5, f6, f7;
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
     @BeforeClass
     public static void setup() throws Exception {

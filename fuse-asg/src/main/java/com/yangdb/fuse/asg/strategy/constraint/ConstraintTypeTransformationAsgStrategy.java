@@ -9,9 +9,9 @@ package com.yangdb.fuse.asg.strategy.constraint;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,12 +21,12 @@ package com.yangdb.fuse.asg.strategy.constraint;
  */
 
 
-
 import com.yangdb.fuse.asg.strategy.AsgStrategy;
 import com.yangdb.fuse.model.asgQuery.AsgStrategyContext;
 import com.yangdb.fuse.asg.util.OntologyPropertyTypeFactory;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.ontology.Property;
+import com.yangdb.fuse.model.ontology.Value;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.EBase;
@@ -52,23 +52,30 @@ public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
         getEprops(query).stream()
-                .filter(prop -> prop.getCon()!=null)
+                .filter(prop -> prop.getCon() != null)
                 .forEach(eProp -> applyExpressionTransformation(context, eProp, EProp.class));
 
         getRelProps(query).stream()
-                .filter(prop -> prop.getCon()!=null)
+                .filter(prop -> prop.getCon() != null)
                 .forEach(relProp -> applyExpressionTransformation(context, relProp, RelProp.class));
     }
 
     //region Private Methods
 
     private void applyExpressionTransformation(AsgStrategyContext context, EBase eBase, Class klass) {
-        if (klass == EProp.class){
+        if (klass == EProp.class) {
             EProp eProp = (EProp) eBase;
             Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
 
             ConstraintOp op = eProp.getCon().getOp();
-            if (property.isPresent() && isSingleElementOp(op) && !ignorableConstraints.contains(eProp.getCon().getClass())) {
+            if (property.isPresent() && context.getOntologyAccessor().enumeratedType(property.get().getType()).isPresent()) {
+                //replace string content with enum value
+                Constraint newCon = eProp.getCon().clone();
+                newCon.setExpr(context.getOntologyAccessor().enumeratedType$(property.get().getType()).valueOf(eProp.getCon().getExpr().toString())
+                        .orElse(new Value(-1, eProp.getCon().getExpr().toString()))
+                        .getVal());
+                eProp.setCon(newCon);
+            } else if (property.isPresent() && isSingleElementOp(op) && !ignorableConstraints.contains(eProp.getCon().getClass())) {
                 Constraint newCon = eProp.getCon().clone();
                 newCon.setExpr(new OntologyPropertyTypeFactory().supply(property.get(), eProp.getCon().getExpr()));
                 eProp.setCon(newCon);
@@ -77,7 +84,14 @@ public class ConstraintTypeTransformationAsgStrategy implements AsgStrategy {
         if (klass == RelProp.class) {
             RelProp relProp = (RelProp) eBase;
             Optional<Property> property = context.getOntologyAccessor().$property(relProp.getpType());
-            if(relProp.getCon() != null) {
+            if (property.isPresent() && context.getOntologyAccessor().enumeratedType(property.get().getType()).isPresent()) {
+                //replace string content with enum value
+                Constraint newCon = relProp.getCon().clone();
+                newCon.setExpr(context.getOntologyAccessor().enumeratedType$(property.get().getType()).valueOf(relProp.getCon().getExpr().toString())
+                        .orElse(new Value(-1, relProp.getCon().getExpr().toString()))
+                        .getVal());
+                relProp.setCon(newCon);
+            } else if (relProp.getCon() != null) {
                 ConstraintOp op = relProp.getCon().getOp();
                 if (property.isPresent() && isSingleElementOp(op) && !ignorableConstraints.contains(relProp.getCon().getClass())) {
                     Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), relProp.getCon().getExpr()));

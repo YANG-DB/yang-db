@@ -3,13 +3,19 @@ package com.yangdb.cyber.ontology;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.yangdb.cyber.ontology.schema.CyberIndexProviderBasedCSVLoaderIT;
+import com.yangdb.cyber.ontology.schema.CyberQueryIT;
+import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.executor.ontology.schema.GraphElementSchemaProviderJsonFactory;
 import com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
+import com.yangdb.fuse.services.FuseApp;
+import com.yangdb.fuse.services.FuseUtils;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -21,7 +27,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.mockito.Mockito;
 
+import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,9 +43,13 @@ import static org.mockito.Mockito.when;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        CyberIndexProviderBasedCSVLoaderIT.class
+        CyberIndexProviderBasedCSVLoaderIT.class,
+        CyberQueryIT.class
 })
 public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
+    public static Path path = Paths.get( "src","resources", "assembly", "Cyber", "config", "application.test.engine3.m1.dfs.cyber.public.conf");
+    public static String userDir = Paths.get( "src","resources", "assembly", "Cyber").toFile().getAbsolutePath();
+
     private static ElasticEmbeddedNode elasticEmbeddedNode;
 
     public static ObjectMapper mapper = new ObjectMapper();
@@ -50,6 +63,8 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
     public static IndexProviderFactory providerFactory;
 
     public static Client client;
+    public static FuseApp app = null;
+    public static FuseClient fuseClient = null;
 
     public static void setUpInternal() throws Exception {
         InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/CyberSchema.json");
@@ -125,6 +140,8 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
     }
 
     private static void init(boolean embedded, String name) throws Exception {
+        //set location aware user directory
+        System.setProperty("user.dir", userDir);
         // Start embedded ES
         if (embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
@@ -133,7 +150,7 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
             //use existing running ES
             client = ElasticEmbeddedNode.getClient(name);
         }
-
+        fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
     }
 
     public static void tearDown() throws Exception {
@@ -145,7 +162,22 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
         return client;
     }
 
-    //region Fields
-    private static Jooby app;
-    //endregion
+    public static void startFuse(boolean startFuse) {
+        // Start fuse app (based on Jooby app web server)
+        if(startFuse) {
+            // Load fuse engine config file
+            String confFilePath = path.toString();
+            //load configuration
+            Config config = FuseUtils.loadConfig(new File(confFilePath),"activeProfile" );
+            String[] joobyArgs = new String[]{
+                    "logback.configurationFile="+Paths.get("src", "test","resources", "config", "logback.xml").toString() ,
+                    "server.join=false"
+            };
+
+            app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                    .conf(path.toFile(), "activeProfile");
+            app.start("server.join=false");
+        }
+    }
+
 }

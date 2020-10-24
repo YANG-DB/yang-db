@@ -1615,7 +1615,7 @@ public class RealClusterKnowledgeRuleBaseTest {
     @Test
     @Ignore
     public void loadData() throws IOException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         Settings settings = Settings.builder().put("cluster.name", "knowledge").build();

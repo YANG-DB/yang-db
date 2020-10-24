@@ -4,6 +4,7 @@ import com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.assembly.knowledge.domain.RefBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.ValueBuilder;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
@@ -47,7 +48,7 @@ public class KnowledgeSimpleSomeTests {
     static ValueBuilder ev1, ev2, ev3, ev4, ev5;
     static EntityBuilder e1, e2, e3, e4;
     static RefBuilder ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
 
     @BeforeClass
