@@ -95,7 +95,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("sample/data/Behaviors.csv");
         LoadResponse<String, FuseError> response = csvLoader.load("Entity", "behaviors", new File(resource.toURI()), GraphDataLoader.Directive.INSERT);
         Assert.assertEquals(2, response.getResponses().size());
-        Assert.assertEquals(5249, response.getResponses().get(1).getSuccesses().size());
+        Assert.assertEquals(5253, response.getResponses().get(1).getSuccesses().size());
 
         RefreshResponse actionGet = client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
         Assert.assertNotNull(actionGet);
@@ -103,7 +103,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
         SearchRequestBuilder builder = client.prepareSearch();
         builder.setIndices("behaviors");
         SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
-        Assert.assertEquals(5249, resp.getHits().getTotalHits());
+        Assert.assertEquals(5253, resp.getHits().getTotalHits());
 
     }
 
