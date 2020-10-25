@@ -51,6 +51,7 @@ import com.yangdb.fuse.model.query.properties.EProp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by lior.perry on 16-Feb-17.
@@ -75,14 +76,14 @@ public class UnTypedEndPattern<T extends EUntyped> extends EUntyped implements E
     }
 
     @Override
-    public void setvTypes(List<String> vTypes) {
+    public void setvTypes(Set<String> vTypes) {
         super.setvTypes(vTypes);
         if(Objects.nonNull(endEntity))
             endEntity.setvTypes(vTypes);
     }
 
     @Override
-    public void setNvTypes(List<String> nvTypes) {
+    public void setNvTypes(Set<String> nvTypes) {
         super.setNvTypes(nvTypes);
         if(Objects.nonNull(endEntity))
             endEntity.setNvTypes(nvTypes);

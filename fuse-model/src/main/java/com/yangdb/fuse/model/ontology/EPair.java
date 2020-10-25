@@ -70,7 +70,7 @@ public class EPair {
     }
 
     public EPair(String eTypeA, String eTypeB) {
-        this(eTypeA,eTypeB,String.format("%s->%s",eTypeA,eTypeB));
+        this(String.format("%s->%s",eTypeA,eTypeB),eTypeA,eTypeB);
     }
 
     public EPair(String name, String eTypeA, String eTypeB) {

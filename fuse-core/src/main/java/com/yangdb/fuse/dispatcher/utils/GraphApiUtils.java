@@ -125,7 +125,7 @@ public abstract class GraphApiUtils {
                         new Start(0, 1),
                         new ETyped(1, sourceEntity, sourceEntity, 2),
                         new RelPattern(2, relationType, new com.yangdb.fuse.model.Range(1, maxHops), R, null, 3, 0),
-                        new UnTypedEndPattern<>(new EUntyped(3, Tagged.tagSeq("AnyOf"), Arrays.asList(targetEntities),Collections.emptyList(),-1, 0))
+                        new UnTypedEndPattern<>(new EUntyped(3, Tagged.tagSeq("AnyOf"), new HashSet<>(Arrays.asList(targetEntities)),Collections.emptySet(),-1, 0))
                 )).build();
     }
 

@@ -31,6 +31,7 @@ import com.yangdb.fuse.asg.strategy.schema.LikeAnyConstraintTransformationAsgStr
 import com.yangdb.fuse.asg.strategy.schema.LikeConstraintTransformationAsgStrategy;
 import com.yangdb.fuse.asg.strategy.selection.DefaultETagAsgStrategy;
 import com.yangdb.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
+import com.yangdb.fuse.asg.strategy.type.AnyRelationInferTypeAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.RelationPatternRangeAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
@@ -60,6 +61,7 @@ public class M2AsgStrategyRegistrar  implements AsgStrategyRegistrar {
                 new AsgNamedParametersStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
                 new RelationPatternRangeAsgStrategy(),
+                new AnyRelationInferTypeAsgStrategy(),
                 new EPropGroupingAsgStrategy(),
                 new HQuantPropertiesGroupingAsgStrategy(),
                 new Quant1PropertiesGroupingAsgStrategy(),

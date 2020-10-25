@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 /**
  * try to infer type for empty list of vTypes in an UnTyped entity
+ * Also
  */
 public class UntypedInferTypeLeftSideRelationAsgStrategy implements AsgStrategy {
 

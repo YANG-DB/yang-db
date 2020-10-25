@@ -31,6 +31,7 @@ import com.yangdb.fuse.asg.strategy.schema.ExactConstraintTransformationAsgStrat
 import com.yangdb.fuse.asg.strategy.selection.DefaultETagAsgStrategy;
 import com.yangdb.fuse.asg.strategy.selection.DefaultRelationSelectionAsgStrategy;
 import com.yangdb.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
+import com.yangdb.fuse.asg.strategy.type.AnyRelationInferTypeAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.RelationPatternRangeAsgStrategy;
 import com.yangdb.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
 import com.yangdb.fuse.dispatcher.ontology.OntologyMappingProvider;
@@ -59,6 +60,7 @@ public class CyberM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new AsgMappingStrategy(this.ontologyProvider,this.mappingProvider),
                 new AsgNamedParametersStrategy(),
                 new RelationPatternRangeAsgStrategy(),
+                new AnyRelationInferTypeAsgStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),
                 new EPropGroupingAsgStrategy(),
                 new HQuantPropertiesGroupingAsgStrategy(),

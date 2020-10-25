@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.asgQuery;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -115,19 +115,19 @@ public class AsgQueryUtil {
     }
 
     /**
-     *
      * @param byTag
      * @param query
      * @param parentQuantType
      * @return
      */
     public static AsgEBase<? extends EBase> createOrGetQuant(AsgEBase<? extends EBase> byTag,
-                                           AsgQuery query,QuantType parentQuantType) {
-       return createOrGetQuant(byTag,query,byTag,parentQuantType);
+                                                             AsgQuery query, QuantType parentQuantType) {
+        return createOrGetQuant(byTag, query, byTag, parentQuantType);
     }
 
     /**
      * create or get relevant quant element on query
+     *
      * @param byTag
      * @param query
      * @param context
@@ -135,12 +135,12 @@ public class AsgQueryUtil {
      * @return
      */
     public static AsgEBase<? extends EBase> createOrGetQuant(AsgEBase<? extends EBase> byTag,
-                                           AsgQuery query,
-                                          AsgEBase<? extends EBase> context,
-                                           QuantType parentQuantType) {
+                                                             AsgQuery query,
+                                                             AsgEBase<? extends EBase> context,
+                                                             QuantType parentQuantType) {
         //next find the quant associated with this element - if none found create one
         if (AsgQueryUtil.nextAdjacentDescendants(byTag, QuantBase.class).stream().noneMatch(g -> ((QuantBase) g.geteBase()).getqType().equals(parentQuantType))) {
-            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(max(query) +1,  parentQuantType, new ArrayList<>(), 0));
+            final AsgEBase<Quant1> quantAsg = new AsgEBase<>(new Quant1(max(query) + 1, parentQuantType, new ArrayList<>(), 0));
             //is scope already has next - add them to the newly added quant
             if (context.hasNext()) {
                 final List<AsgEBase<? extends EBase>> next = context.getNext();
@@ -175,7 +175,7 @@ public class AsgQueryUtil {
     public static <T extends EBase> Optional<? extends BaseProp> getByPropTag(AsgEBase<T> asgEBase, String pTag) {
         return java.util.stream.Stream
                 .concat(getEprops(asgEBase).stream(), getRelProps(asgEBase).stream())
-                .filter(p -> p.getpTag()!=null)
+                .filter(p -> p.getpTag() != null)
                 .filter(p -> p.getpTag().equals(pTag))
                 .findFirst();
     }
@@ -203,7 +203,7 @@ public class AsgQueryUtil {
 
         return elements
                 .stream()
-                .collect(Collectors.groupingBy(o->((Tagged) o.geteBase()).geteTag()));
+                .collect(Collectors.groupingBy(o -> ((Tagged) o.geteBase()).geteTag()));
 
     }
 
@@ -664,13 +664,14 @@ public class AsgQueryUtil {
 
     /**
      * flatten query graph to assignments pathes
+     *
      * @param query
      * @return
      */
     public static List<List<AsgEBase<? extends EBase>>> flattenQuery(AsgQuery query) {
-        List<AsgEBase<EBase>> ends = elements(query.getStart(), emptyIterableFunction,  AsgEBase::getNext, truePredicate, truePredicate, Collections.emptyList())
+        List<AsgEBase<EBase>> ends = elements(query.getStart(), emptyIterableFunction, AsgEBase::getNext, truePredicate, truePredicate, Collections.emptyList())
                 .stream()
-                .filter(e->!e.hasNext()).collect(Collectors.toList());
+                .filter(e -> !e.hasNext()).collect(Collectors.toList());
         List<List<AsgEBase<? extends EBase>>> pathes = ends.stream().map(e -> path(query.getStart(), e)).collect(Collectors.toList());
         return pathes;
 
@@ -678,11 +679,12 @@ public class AsgQueryUtil {
 
     /**
      * print list of pathes
+     *
      * @param pathes
      * @return
      */
     public static List<String> patterns(List<List<AsgEBase<? extends EBase>>> pathes) {
-        return pathes.stream().map(p->pattern(p)).collect(Collectors.toList());
+        return pathes.stream().map(p -> pattern(p)).collect(Collectors.toList());
     }
 
     public static String pattern(AsgQuery query) {
@@ -806,11 +808,11 @@ public class AsgQueryUtil {
         //update etag
         //this will cause creation of new tags that will not be associated with former tags that was cloned from and therefore will not be found
         if ((clone instanceof Tagged) && (((Tagged) clone).geteTag() != null) && cloneTags) {
-            if (isSeq((Tagged) clone) ) {
+            if (isSeq((Tagged) clone)) {
                 Tagged.setSeq(clone.geteNum(), (Tagged) clone);
             } else {
                 //clone tag according to running sequence
-                ((Tagged) clone).seteTag(String.format("%s:%d",((Tagged) clone).geteTag(),clone.geteNum()));
+                ((Tagged) clone).seteTag(String.format("%s:%d", ((Tagged) clone).geteTag(), clone.geteNum()));
             }
         }
 
@@ -877,10 +879,11 @@ public class AsgQueryUtil {
 
     /**
      * replace the targets parent with the new given one
+     *
      * @param newParent
      * @param oldParent
      */
-    public static void replaceParents(AsgEBase newParent,AsgEBase oldParent) {
+    public static void replaceParents(AsgEBase newParent, AsgEBase oldParent) {
         //assuming single parent strategy
         List<AsgEBase<? extends EBase>> next = new ArrayList<>(oldParent.getNext());
         next.forEach(oldParent::removeNextChild);
@@ -918,8 +921,8 @@ public class AsgQueryUtil {
         //remove source (if exists a quant inside - remove only when quent is empty beside target)
         parents.stream()
                 .filter(p -> p.geteBase() instanceof QuantBase)
-                .filter(p -> !((QuantBase)p.geteBase()).hasNext())
-                .forEach( p-> remove(query, p));
+                .filter(p -> !((QuantBase) p.geteBase()).hasNext())
+                .forEach(p -> remove(query, p));
         //remove rel
         parents.stream()
                 .filter(p -> !(p.geteBase() instanceof QuantBase))
@@ -929,21 +932,37 @@ public class AsgQueryUtil {
     }
 
 
-
     /**
      * removes all elements from query
+     *
      * @param query
      * @param element
      * @return
      */
-    public static AsgQuery remove(AsgQuery query, AsgEBase<? extends EBase> ... element) {
+    public static AsgQuery remove(AsgQuery query, AsgEBase<? extends EBase>... element) {
         for (AsgEBase<? extends EBase> asgEBase : element) {
-           _remove(query, asgEBase);
+            _remove(query, asgEBase);
         }
         return query;
     }
 
-    private static void  _remove(AsgQuery query, AsgEBase<? extends EBase> element) {
+    /**
+     * removes all elements from query
+     *
+     * @param query
+     * @param elements
+     * @return
+     */
+    public static AsgQuery removePath(AsgQuery query, AsgEBase<? extends EBase>... elements) {
+        query.getElements().removeAll(Arrays.asList(elements));
+        List<? extends AsgEBase<? extends EBase>> parents = Arrays.asList(elements).stream().map(element -> element.getParents().get(0)).collect(Collectors.toList());
+        for (int i = 0; i < elements.length; i++) {
+            parents.get(i).removeNextChild(elements[i]);
+        }
+        return query;
+    }
+
+    private static void _remove(AsgQuery query, AsgEBase<? extends EBase> element) {
         List<AsgEBase<? extends EBase>> newParents = new ArrayList<>(element.getParents());
         newParents.forEach(p -> p.removeNextChild(element));
         newParents.forEach(p -> p.addNextChild(element.getNext()));
@@ -956,12 +975,13 @@ public class AsgQueryUtil {
 
     /**
      * REPLACE all tagged elements with tag name starting with 'statringTagValue' with functional value placer
+     *
      * @param query
      * @param statringTagValue
      * @param function
      * @return
      */
-    public static AsgQuery replaceTagsStartingWith(AsgQuery query,String statringTagValue,Function<EBase,String> function) {
+    public static AsgQuery replaceTagsStartingWith(AsgQuery query, String statringTagValue, Function<EBase, String> function) {
         elements(query.getStart(), emptyIterableFunction, AsgEBase::getNext,
                 p -> (EEntityBase.class.isAssignableFrom(p.geteBase().getClass()) &&
                         ((EEntityBase) p.geteBase()).geteTag() != null &&
@@ -970,8 +990,8 @@ public class AsgQueryUtil {
                         (Rel.class.isAssignableFrom(p.geteBase().getClass()) &&
                                 ((Rel) p.geteBase()).getWrapper() != null &&
                                 ((Rel) p.geteBase()).getWrapper().startsWith(statringTagValue))
-                , truePredicate,Collections.emptyList())
-                .forEach(e->((Tagged)e.geteBase()).seteTag(function.apply(e.geteBase())));
+                , truePredicate, Collections.emptyList())
+                .forEach(e -> ((Tagged) e.geteBase()).seteTag(function.apply(e.geteBase())));
         return query;
     }
 
@@ -1193,13 +1213,13 @@ public class AsgQueryUtil {
     }
 
 
-    public static  <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz,List<Class<? extends EBase>> allowedInPath) {
+    public static <T extends EBase> Optional<AsgEBase<T>> calculateNextAncestor(AsgEBase<? extends EBase> eProp, Class<T> clazz, List<Class<? extends EBase>> allowedInPath) {
         final List<AsgEBase<? extends EBase>> path = AsgQueryUtil.pathToAncestor(eProp, clazz);
-        if(path.isEmpty()) return Optional.empty();
+        if (path.isEmpty()) return Optional.empty();
         //go over internal path elements make sure they all comply with allowedInPath restriction
-        if(path.stream().limit(path.size() - 1).skip(1).anyMatch(e -> !allowedInPath.contains(e.geteBase().getClass())))
+        if (path.stream().limit(path.size() - 1).skip(1).anyMatch(e -> !allowedInPath.contains(e.geteBase().getClass())))
             return Optional.empty();
-        return Optional.of((AsgEBase<T>) path.get(path.size()-1));
+        return Optional.of((AsgEBase<T>) path.get(path.size() - 1));
 
     }
 

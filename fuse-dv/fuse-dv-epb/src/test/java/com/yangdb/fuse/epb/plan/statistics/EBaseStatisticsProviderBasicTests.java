@@ -314,7 +314,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eUnTypedHistogramTest() {
         EUntyped eUntyped = new EUntyped();
-        eUntyped.setvTypes(Arrays.asList("Person","Dragon"));
+        eUntyped.setvTypes(new HashSet<>(Arrays.asList("Person","Dragon")));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeStatistics(eUntyped);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(2d, nodeStatistics.getTotal(), 0);
@@ -323,7 +323,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eUnTypedDateFilterEqHistogramTest() {
         EUntyped eUntyped = new EUntyped();
-        eUntyped.setvTypes(Collections.singletonList("Person"));
+        eUntyped.setvTypes(Collections.singleton("Person"));
         EProp prop = EProp.of(0, "birthDate", Constraint.of(ConstraintOp.eq, new Date()));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 

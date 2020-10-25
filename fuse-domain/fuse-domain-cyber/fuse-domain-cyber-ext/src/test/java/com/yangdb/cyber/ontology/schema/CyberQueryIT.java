@@ -7,6 +7,7 @@ import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.ETyped;
+import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
@@ -116,6 +117,31 @@ public class CyberQueryIT implements BaseITMarker {
                             new EProp(5, "status_update_time", Constraint.of(ConstraintOp.ge,parser.parseDate("2018-10-01 11:42"))),
                         new Rel(6, "tracestobehaviors", Rel.Direction.R, "hasBehavior", 7),
                             new ETyped(7, "behavior", "behaviors", 8, 0)
+                )).build();
+        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query,new CreateGraphCursorRequest(new CreatePageRequest()));
+
+        Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
+        Assert.assertEquals(6, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
+        Assert.assertEquals(4, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().size());
+    }
+
+    @Test
+    public void testQueryTraceToAll() throws IOException, InterruptedException {
+        // Create v1 query to fetch newly created entity
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Assert.assertNotNull(fuseResourceInfo);
+
+
+        Query query = Query.Builder.instance().withName("query").withOnt(CYBER)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new ETyped(1, "trace", "traces", 2, 0),
+                        new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5, 6)),
+                            new EProp(3, "trace_status", Constraint.of(ConstraintOp.eq,0)),
+                            new EProp(4, "trace_type", Constraint.of(ConstraintOp.eq,"Sequence based")),
+                            new EProp(5, "status_update_time", Constraint.of(ConstraintOp.ge,parser.parseDate("2018-10-01 11:42"))),
+                        new Rel(6, "*", Rel.Direction.R, "hasRelation", 7),
+                            new EUntyped(7, "any", 8, 0)
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query,new CreateGraphCursorRequest(new CreatePageRequest()));
 

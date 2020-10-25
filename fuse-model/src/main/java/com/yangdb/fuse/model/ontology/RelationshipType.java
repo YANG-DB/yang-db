@@ -121,12 +121,12 @@ public class RelationshipType implements BaseElement {
     }
 
     @JsonIgnore
-    public Set<String> getSources() {
+    public Set<String> getSidesA() {
         return ePairs.stream().map(EPair::geteTypeA).collect(Collectors.toSet());
     }
 
     @JsonIgnore
-    public Set<String> getTargets() {
+    public Set<String> getSidesB() {
         return ePairs.stream().map(EPair::geteTypeB).collect(Collectors.toSet());
     }
 
