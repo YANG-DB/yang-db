@@ -22,10 +22,7 @@ package com.yangdb.fuse.dispatcher.asg.builder;
 
 
 import com.yangdb.fuse.dispatcher.asg.BellowFactory;
-import com.yangdb.fuse.model.query.EBase;
-import com.yangdb.fuse.model.query.Rel;
-import com.yangdb.fuse.model.query.RelPattern;
-import com.yangdb.fuse.model.query.Start;
+import com.yangdb.fuse.model.query.*;
 import com.yangdb.fuse.model.query.aggregation.Agg;
 import com.yangdb.fuse.model.query.aggregation.CountComp;
 import com.yangdb.fuse.model.query.entity.*;
@@ -53,6 +50,7 @@ public class BNextFactory implements BellowFactory{
         this.map.put(Agg.class, ebase -> ((Agg)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Agg) ebase).getB()));
         this.map.put(Quant1.class, ebase -> ((Quant1)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Quant1) ebase).getB()));
         this.map.put(Rel.class, ebase -> ((Rel)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getB()));
+        this.map.put(RelUntyped.class, ebase -> ((RelUntyped)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((RelUntyped) ebase).getB()));
         this.map.put(RelPattern.class, ebase -> ((Rel)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getB()));
         this.map.put(TypedEndPattern.class, ebase -> ((TypedEndPattern)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((TypedEndPattern) ebase).getB()));
         this.map.put(UnTypedEndPattern.class, ebase -> ((UnTypedEndPattern)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((UnTypedEndPattern) ebase).getB()));

@@ -6,7 +6,7 @@ import javaslang.collection.Stream;
 import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class RelUntyped extends Rel {
+public class RelUntyped extends Rel implements Untyped{
 
     public RelUntyped() {
         super();
@@ -49,7 +49,7 @@ public class RelUntyped extends Rel {
     }
 
     @Override
-    public Rel clone() {
+    public RelUntyped clone() {
         return clone(geteNum());
     }
 

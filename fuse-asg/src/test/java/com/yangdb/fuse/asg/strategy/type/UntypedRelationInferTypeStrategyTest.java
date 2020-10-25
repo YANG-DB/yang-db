@@ -16,7 +16,6 @@ import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.RelPattern;
 import com.yangdb.fuse.model.query.RelUntyped;
 import com.yangdb.fuse.model.query.entity.ETyped;
-import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.RelProp;
@@ -56,7 +55,7 @@ import static com.yangdb.fuse.model.query.quant.QuantType.all;
  * -[:R,type2]->(:E)
  * -[:R,type3]->(:E)
  */
-public class AnyRelationInferTypeStrategyTest {
+public class UntypedRelationInferTypeStrategyTest {
     static Ontology ontology;
     static AsgQueryValidator queryValidator;
 
@@ -91,7 +90,7 @@ public class AnyRelationInferTypeStrategyTest {
                 .next(unTyped(3, "end"))
                 .build();
 
-        AnyRelationInferTypeAsgStrategy strategy = new AnyRelationInferTypeAsgStrategy();
+        UntypedRelationInferTypeAsgStrategy strategy = new UntypedRelationInferTypeAsgStrategy();
         strategy.apply(query, new AsgStrategyContext(ont));
 
         Optional<AsgEBase<Quant1>> quant = AsgQueryUtil.elements(query, Quant1.class).stream().filter(q -> q.geteBase().getqType().equals(QuantType.some)).findAny();
@@ -122,7 +121,7 @@ public class AnyRelationInferTypeStrategyTest {
 
                 .build();
 
-        AnyRelationInferTypeAsgStrategy strategy = new AnyRelationInferTypeAsgStrategy();
+        UntypedRelationInferTypeAsgStrategy strategy = new UntypedRelationInferTypeAsgStrategy();
         strategy.apply(query, new AsgStrategyContext(ont));
 
         Optional<AsgEBase<Quant1>> quant = AsgQueryUtil.elements(query, Quant1.class).stream().filter(q -> q.geteBase().getqType().equals(QuantType.some)).findAny();
@@ -159,7 +158,7 @@ public class AnyRelationInferTypeStrategyTest {
                 )
                 .build();
 
-        AnyRelationInferTypeAsgStrategy strategy = new AnyRelationInferTypeAsgStrategy();
+        UntypedRelationInferTypeAsgStrategy strategy = new UntypedRelationInferTypeAsgStrategy();
         strategy.apply(query, new AsgStrategyContext(ont));
 
         Optional<AsgEBase<Quant1>> quant = AsgQueryUtil.elements(query, Quant1.class).stream().filter(q -> q.geteBase().getqType().equals(QuantType.some)).findAny();

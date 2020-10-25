@@ -5,6 +5,7 @@ import com.yangdb.cyber.ontology.CyberTestSuiteIndexProviderSuite;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.query.RelUntyped;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.EUntyped;
@@ -140,13 +141,13 @@ public class CyberQueryIT implements BaseITMarker {
                             new EProp(3, "trace_status", Constraint.of(ConstraintOp.eq,0)),
                             new EProp(4, "trace_type", Constraint.of(ConstraintOp.eq,"Sequence based")),
                             new EProp(5, "status_update_time", Constraint.of(ConstraintOp.ge,parser.parseDate("2018-10-01 11:42"))),
-                        new Rel(6, "*", Rel.Direction.R, "hasRelation", 7),
+                        new RelUntyped(6, Arrays.asList("tracestobehaviors","traceentities","traceevents"), Rel.Direction.R, "anyRelation", 7),
                             new EUntyped(7, "any", 8, 0)
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query,new CreateGraphCursorRequest(new CreatePageRequest()));
 
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
-        Assert.assertEquals(6, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
+        Assert.assertEquals(21, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
         Assert.assertEquals(4, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().size());
     }
 }

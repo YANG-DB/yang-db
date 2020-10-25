@@ -46,6 +46,7 @@ package com.yangdb.fuse.model.query.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.query.EBase;
+import com.yangdb.fuse.model.query.Untyped;
 import javaslang.collection.Stream;
 
 import java.util.*;
@@ -55,7 +56,7 @@ import java.util.*;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class EUntyped extends EEntityBase {
+public class EUntyped extends EEntityBase implements Untyped {
     //region Constructors
     public EUntyped() {
         super();
@@ -111,18 +112,22 @@ public class EUntyped extends EEntityBase {
 //endregion
 
     //region Properties
+    @Override
     public Set<String> getvTypes() {
         return vTypes;
     }
 
+    @Override
     public void setvTypes(Set<String> vTypes) {
         this.vTypes = vTypes;
     }
 
+    @Override
     public Set<String> getNvTypes() {
         return nvTypes;
     }
 
+    @Override
     public void setNvTypes(Set<String> nvTypes) {
         this.nvTypes = nvTypes;
     }

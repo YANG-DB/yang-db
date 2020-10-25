@@ -320,8 +320,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                     .withInnerQueryResources(getQueryResourceInfos(innerQuery)));
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(),
-                            err.toString())));
+                    new FuseError(Query.class.getSimpleName(),err)));
         }
     }
 

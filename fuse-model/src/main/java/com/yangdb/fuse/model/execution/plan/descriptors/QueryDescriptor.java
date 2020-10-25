@@ -46,9 +46,7 @@ package com.yangdb.fuse.model.execution.plan.descriptors;
 import com.yangdb.fuse.model.Next;
 import com.yangdb.fuse.model.asgQuery.IQuery;
 import com.yangdb.fuse.model.descriptors.Descriptor;
-import com.yangdb.fuse.model.query.EBase;
-import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.query.*;
 import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.ETyped;
@@ -136,11 +134,13 @@ public class QueryDescriptor implements Descriptor<Query> {
                 joiner.add("Q" + "[" + id + "]").add("{" + join + "}");
             }
         } else if (e instanceof EUntyped)
-            joiner.add("UnTyp" + "[" + id + "]");
+            joiner.add("EUntyped" + "(" + "["+String.join(",", ((Untyped) e).getvTypes())+"]" + ":" + id + ")");
         else if (e instanceof EConcrete)
             joiner.add("Conc" + "[" + ((EConcrete) e).geteType() + ":" + id + ":ID["+((EConcrete) e).geteID()+"]]");
         else if (e instanceof ETyped)
             joiner.add("Typ" + "[" + ((ETyped) e).geteType() + ":" + id + "]");
+        else if (e instanceof RelUntyped)
+            joiner.add("RelUntyped" + "(" + "["+String.join(",", ((Untyped) e).getvTypes())+"]" + ":" + id + ")");
         else if (e instanceof Rel)
             joiner.add("Rel" + "(" + ((Rel) e).getrType() + ":" + id + ")");
         else if (e instanceof EPropGroup)

@@ -22,10 +22,7 @@ package com.yangdb.fuse.dispatcher.asg.builder;
 
 
 import com.yangdb.fuse.dispatcher.asg.NextFactory;
-import com.yangdb.fuse.model.query.EBase;
-import com.yangdb.fuse.model.query.Rel;
-import com.yangdb.fuse.model.query.RelPattern;
-import com.yangdb.fuse.model.query.Start;
+import com.yangdb.fuse.model.query.*;
 import com.yangdb.fuse.model.query.aggregation.Agg;
 import com.yangdb.fuse.model.query.aggregation.CountComp;
 import com.yangdb.fuse.model.query.entity.*;
@@ -61,6 +58,7 @@ public class NextEbaseFactory implements NextFactory {
         this.map.put(EPropGroup.class, (ebase) -> (Collections.emptyList()));
         this.map.put(Quant1.class, (ebase) -> ((Quant1) ebase).getNext());
         this.map.put(Rel.class, (ebase) -> ((Rel)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getNext()));
+        this.map.put(RelUntyped.class, (ebase) -> ((RelUntyped)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((RelUntyped) ebase).getNext()));
         this.map.put(RelPattern.class, (ebase) -> ((Rel)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getNext()));
         this.map.put(TypedEndPattern.class, (ebase) -> ((TypedEndPattern)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((TypedEndPattern) ebase).getNext()));
         this.map.put(UnTypedEndPattern.class, (ebase) -> ((UnTypedEndPattern)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((UnTypedEndPattern) ebase).getNext()));

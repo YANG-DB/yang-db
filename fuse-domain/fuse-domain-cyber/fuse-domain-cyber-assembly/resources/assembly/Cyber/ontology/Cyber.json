@@ -612,10 +612,10 @@
       "ePairs": [
         {
           "name": "fk_trace_entities",
-          "eTypeA": "entities",
-          "sideAIdField": "entity_id",
-          "eTypeB": "traces",
-          "sideBIdField": "trace_id"
+          "eTypeA": "traces",
+          "sideAIdField": "trace_id",
+          "eTypeB": "entities",
+          "sideBIdField": "entity_id"
         }
       ],
       "properties": [
