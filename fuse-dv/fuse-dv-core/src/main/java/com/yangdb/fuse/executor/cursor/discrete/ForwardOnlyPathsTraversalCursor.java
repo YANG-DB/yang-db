@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.cursor.discrete;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,18 +23,10 @@ package com.yangdb.fuse.executor.cursor.discrete;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
-import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.Rel;
-import com.yangdb.fuse.model.query.entity.EEntityBase;
-import com.yangdb.fuse.model.query.quant.Quant1;
-import com.yangdb.fuse.model.query.quant.QuantType;
-import com.yangdb.fuse.model.results.*;
-import javaslang.collection.Stream;
+import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import org.unipop.structure.UniElement;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
@@ -64,11 +56,13 @@ public class ForwardOnlyPathsTraversalCursor extends PathsTraversalCursor {
         AssignmentsQueryResult.Builder builder = instance();
         final Query pattern = getContext().getQueryResource().getQuery();
         builder.withPattern(pattern);
-        (getContext().getTraversal().next(numResults)).forEach(path -> {
-            //makes sure no circle exists in path (no getting back - forward only assignments)
-            if (path.objects().stream().map(p -> ((UniElement) p).id().toString()).collect(Collectors.toSet()).size() == path.objects().size())
-                builder.withAssignment(toAssignment(path));
-        });
+        do {
+            (getContext().getTraversal().next(numResults)).forEach(path -> {
+                //makes sure no circle exists in path (no getting back - forward only assignments)
+                if (path.objects().stream().map(p -> ((UniElement) p).id().toString()).collect(Collectors.toSet()).size() == path.objects().size())
+                    builder.withAssignment(toAssignment(path));
+            });
+        } while (distinct(builder.build()).getSize() < numResults && getContext().getTraversal().hasNext());
         return distinct(builder.build());
     }
 

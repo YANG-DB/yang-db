@@ -25,28 +25,22 @@ import com.yangdb.fuse.model.transport.CreatePageRequest;
 public class FindPathTraversalCursorRequest extends CreateCursorRequest {
 
     public static final String CursorType = "findPaths";
-    private int amount;
 
     public FindPathTraversalCursorRequest() {
     }
 
     //region Constructors
-    public FindPathTraversalCursorRequest(int amount) {
-        super(CursorType);
-        this.amount = amount;
+    public FindPathTraversalCursorRequest(int pageSize) {
+        super(CursorType,new CreatePageRequest(pageSize));
     }
 
-    public FindPathTraversalCursorRequest(int amount, CreatePageRequest createPageRequest) {
+    public FindPathTraversalCursorRequest(CreatePageRequest createPageRequest) {
         super(CursorType, createPageRequest);
-        this.amount = amount;
     }
 
-    public FindPathTraversalCursorRequest(int amount, Include include, CreatePageRequest createPageRequest) {
+    public FindPathTraversalCursorRequest(Include include, CreatePageRequest createPageRequest) {
         super(CursorType, include, createPageRequest);
-        this.amount = amount;
     }
 
-    public int getAmount() {
-        return amount;
-    }
+
 }
