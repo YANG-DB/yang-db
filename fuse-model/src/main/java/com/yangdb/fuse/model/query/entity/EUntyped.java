@@ -68,6 +68,10 @@ public class EUntyped extends EEntityBase implements Untyped {
         this(eNum, eTag, Collections.emptySet(), Collections.emptySet(), next, b);
     }
 
+    public EUntyped(int eNum, String eTag, Set<String> vTypes, int next, int b) {
+            this(eNum,eTag,vTypes,new HashSet<>(),next,b );
+    }
+
     public EUntyped(int eNum, String eTag, Set<String> vTypes, Set<String> nvTypes, int next, int b) {
         super(eNum, eTag, next, b);
         this.vTypes = Stream.ofAll(vTypes).toJavaSet();

@@ -9,9 +9,9 @@ package com.yangdb.fuse.dispatcher.utils;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,13 +21,12 @@ package com.yangdb.fuse.dispatcher.utils;
  */
 
 import com.yangdb.fuse.model.Tagged;
-import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.RelPattern;
-import com.yangdb.fuse.model.query.Start;
+import com.yangdb.fuse.model.query.*;
 import com.yangdb.fuse.model.query.entity.*;
 
 import java.util.*;
 
+import static com.yangdb.fuse.model.GlobalConstants._ALL;
 import static com.yangdb.fuse.model.query.Rel.Direction.R;
 
 public abstract class GraphApiUtils {
@@ -125,8 +124,42 @@ public abstract class GraphApiUtils {
                         new Start(0, 1),
                         new ETyped(1, sourceEntity, sourceEntity, 2),
                         new RelPattern(2, relationType, new com.yangdb.fuse.model.Range(1, maxHops), R, null, 3, 0),
-                        new UnTypedEndPattern<>(new EUntyped(3, Tagged.tagSeq("AnyOf"), new HashSet<>(Arrays.asList(targetEntities)),Collections.emptySet(),-1, 0))
+                        new UnTypedEndPattern<>(new EUntyped(3, Tagged.tagSeq("AnyOf"), new HashSet<>(Arrays.asList(targetEntities)), Collections.emptySet(), -1, 0))
                 )).build();
     }
 
+    /**
+     * get vertex by id & type
+     * @param ontology
+     * @param type
+     * @param id
+     * @return
+     */
+    public static Query getVertex(String ontology,String type, String id) {
+        return Query.Builder.instance().withName(UUID.randomUUID().toString())
+                .withOnt(ontology)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new EConcrete(1,id,type,id,id,0)
+                )).build();
+    }
+
+    /**
+     * get vertex and its neighbors by id and type
+     * @param ontology
+     * @param type
+     * @param id
+     * @return
+     */
+    public static Query getNeighbors(String ontology,String type, String id) {
+        Set<String> all = Collections.singleton(_ALL);
+        return Query.Builder.instance().withName(UUID.randomUUID().toString())
+                .withOnt(ontology)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new EConcrete(1,id,type,id,id,2),
+                        new RelUntyped(2, all, R,"relation",3 ),
+                        new EUntyped(3,"neighbor",all,0,0)
+                )).build();
+    }
 }

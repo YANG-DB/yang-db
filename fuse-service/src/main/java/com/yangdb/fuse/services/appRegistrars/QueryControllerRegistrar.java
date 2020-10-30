@@ -319,6 +319,34 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         }
 
+        public static Result getVertex(Jooby app, final Request req, QueryController controller) {
+            Route.of("getVertex").write();
+
+            req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
+
+            ContentResponse<Object> response = controller.getVertex(
+                    req.param("ontology").value(),
+                    req.param("type").value(),
+                    req.param("id").value());
+
+            return Results.json(response.getData());
+
+        }
+
+        public static Result getNeighbors(Jooby app, final Request req, QueryController controller) {
+            Route.of("getNeighbors").write();
+
+            req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
+
+            ContentResponse<Object> response = controller.getNeighbors(
+                    req.param("ontology").value(),
+                    req.param("type").value(),
+                    req.param("id").value());
+
+            return Results.json(response.getData());
+
+        }
+
         public static Result plan(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("planByQuery").write();
 

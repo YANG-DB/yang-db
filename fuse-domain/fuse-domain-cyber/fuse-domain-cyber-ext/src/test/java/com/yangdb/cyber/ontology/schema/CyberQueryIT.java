@@ -29,6 +29,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.TimeZone;
 
 import static com.yangdb.cyber.ontology.CyberTestSuiteIndexProviderSuite.app;
@@ -141,7 +142,7 @@ public class CyberQueryIT implements BaseITMarker {
                             new EProp(3, "trace_status", Constraint.of(ConstraintOp.eq,0)),
                             new EProp(4, "trace_type", Constraint.of(ConstraintOp.eq,"Sequence based")),
                             new EProp(5, "status_update_time", Constraint.of(ConstraintOp.ge,parser.parseDate("2018-10-01 11:42"))),
-                        new RelUntyped(6, Arrays.asList("tracestobehaviors","traceentities","traceevents"), Rel.Direction.R, "anyRelation", 7),
+                        new RelUntyped(6, new HashSet<>(Arrays.asList("tracestobehaviors","traceentities","traceevents")), Rel.Direction.R, "anyRelation", 7),
                             new EUntyped(7, "any", 8, 0)
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query,new CreateGraphCursorRequest(new CreatePageRequest()));

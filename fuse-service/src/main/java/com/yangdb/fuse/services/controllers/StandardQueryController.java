@@ -109,6 +109,23 @@ public class StandardQueryController implements QueryController<QueryController,
     }
 
     @Override
+    public ContentResponse<Object> getVertex(String ontology, String type, String id) {
+        return Builder.builder(CREATED, SERVER_ERROR )
+                .data(Optional.of(driver().getVertex(ontology,type,id)))
+                .successPredicate(objectContentResponse -> true)
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<Object> getNeighbors(String ontology, String type, String id) {
+        return Builder.builder(CREATED, SERVER_ERROR )
+                .data(Optional.of(driver().getNeighbors(ontology,type,id)))
+                .successPredicate(objectContentResponse -> true)
+                .compose();
+
+    }
+
+    @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology) {
         return Builder.builder(CREATED, SERVER_ERROR )
                 .data(driver().runCypher(cypher,ontology))

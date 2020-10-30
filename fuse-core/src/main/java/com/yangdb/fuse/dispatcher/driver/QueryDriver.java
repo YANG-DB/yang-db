@@ -86,4 +86,10 @@ public interface QueryDriver {
     Optional<GraphTraversal> traversal(Query query);
 
     Optional<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops);
+
+    Optional<Object> getVertex(String ontology, String type, String vertexId);
+
+    Optional<Object> getNeighbors(String ontology, String type, String vertexId);
+
+
 }

@@ -150,6 +150,40 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     }
 
     @Override
+    public ContentResponse<Object> getVertex(String ontology, String type, String id) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                validate,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    new LogMessage.Impl(this.logger, debug, String.format("getVertex: [%s,%s] { }",
+                            ontology,type,id), Sequence.incr(), LogType.of(log), createAndFetch)
+                            .log();
+                    return this.controller.getVertex(ontology,type,id);
+                }, this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<Object> getNeighbors(String ontology, String type, String id) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                validate,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    new LogMessage.Impl(this.logger, debug, String.format("getNeighbors: [%s,%s] { }",
+                            ontology,type,id), Sequence.incr(), LogType.of(log), createAndFetch)
+                            .log();
+                    return this.controller.getNeighbors(ontology,type,id);
+                }, this.resultHandler());
+    }
+
+    @Override
     public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops){
         return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
                 this.logger,

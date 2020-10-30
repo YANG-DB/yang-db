@@ -44,7 +44,7 @@ public class MockDriver {
                 QueryValidator<AsgQuery> queryValidator,
                 ResourceStore resourceStore,
                 AppUrlSupplier urlSupplier) {
-            super(cursorDriver, pageDriver, queryTransformer,transformerFactory , queryValidator, resourceStore, urlSupplier);
+            super(cursorDriver, pageDriver, queryTransformer, transformerFactory, queryValidator, resourceStore, urlSupplier);
         }
         //endregion
 
@@ -123,7 +123,8 @@ public class MockDriver {
                                     },
                                     queryResource,
                                     cursorRequest)),
-                    new QueryProfileInfo.QueryProfileInfoImpl(new ImmutableMetrics() {}),
+                    new QueryProfileInfo.QueryProfileInfoImpl(new ImmutableMetrics() {
+                    }),
                     cursorRequest);
         }
         //endregion
@@ -143,7 +144,7 @@ public class MockDriver {
         //region Constructors
         @Inject
         public Page(ResourceStore resourceStore, AppUrlSupplier urlSupplier, GraphWriterStrategy writerMap) {
-            super(resourceStore, urlSupplier,writerMap);
+            super(resourceStore, urlSupplier, writerMap);
         }
         //endregion
 

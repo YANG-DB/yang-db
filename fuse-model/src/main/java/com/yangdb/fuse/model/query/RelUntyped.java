@@ -14,15 +14,15 @@ public class RelUntyped extends Rel implements Untyped{
         this.nvTypes = new HashSet<>();
     }
 
-    public RelUntyped(int eNum, List<String> rType, Direction dir, String wrapper, int next) {
-        this(eNum, rType, Collections.emptyList(),dir,wrapper, next);
+    public RelUntyped(int eNum, Set<String> rType, Direction dir, String wrapper, int next) {
+        this(eNum, rType, Collections.emptySet(),dir,wrapper, next);
     }
 
     public RelUntyped(int eNum, String rType, Direction dir, String wrapper, int next) {
-        this(eNum, Collections.singletonList(rType), Collections.emptyList(),dir,wrapper, next);
+        this(eNum, Collections.singleton(rType), Collections.emptySet(),dir,wrapper, next);
     }
 
-    public RelUntyped(int eNum, List<String> rType,List<String> nvType, Direction dir, String wrapper, int next) {
+    public RelUntyped(int eNum, Set<String> rType,Set<String> nvType, Direction dir, String wrapper, int next) {
         super(eNum,null,dir,wrapper,next);
         this.vTypes = Stream.ofAll(rType).toJavaSet();
         this.nvTypes = Stream.ofAll(nvType).toJavaSet();

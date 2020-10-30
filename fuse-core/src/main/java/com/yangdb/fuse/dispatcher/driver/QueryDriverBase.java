@@ -28,6 +28,7 @@ import com.yangdb.fuse.dispatcher.resource.PageResource;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.yangdb.fuse.dispatcher.utils.GraphApiUtils;
 import com.yangdb.fuse.dispatcher.validation.QueryValidator;
 import com.yangdb.fuse.model.asgQuery.AsgCompositeQuery;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
@@ -237,6 +238,58 @@ public abstract class QueryDriverBase implements QueryDriver {
             CreateQueryRequest queryRequest = new CreateQueryRequest(id,
                     id,
                     pathQuery,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } catch (Throwable e) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(), "failed building the findPath query request ")));
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
+
+    @Override
+    public Optional<Object> getVertex(String ontology, String type, String vertexId) {
+        String id = UUID.randomUUID().toString();
+        try {
+            Query getVertex = GraphApiUtils.getVertex(ontology,type,vertexId);
+            CreateQueryRequest queryRequest = new CreateQueryRequest(id,
+                    id,
+                    getVertex,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } catch (Throwable e) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(), "failed building the findPath query request ")));
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
+
+    @Override
+    public Optional<Object> getNeighbors(String ontology, String type, String vertexId) {
+        String id = UUID.randomUUID().toString();
+        try {
+            Query getVertex = GraphApiUtils.getNeighbors(ontology,type,vertexId);
+            CreateQueryRequest queryRequest = new CreateQueryRequest(id,
+                    id,
+                    getVertex,
                     new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())

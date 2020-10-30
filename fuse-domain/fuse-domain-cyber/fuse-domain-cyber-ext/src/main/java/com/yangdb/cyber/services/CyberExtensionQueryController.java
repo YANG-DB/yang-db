@@ -146,6 +146,16 @@ public class CyberExtensionQueryController implements QueryController<QueryContr
     }
 
     @Override
+    public ContentResponse<Object> getVertex(String ontology, String type, String id) {
+        return controller.getVertex(ontology,ontology,id);
+    }
+
+    @Override
+    public ContentResponse<Object> getNeighbors(String ontology, String type, String id) {
+        return controller.getNeighbors(ontology,type,id);
+    }
+
+    @Override
     public ContentResponse<PlanNode<Plan>> planVerbose(String queryId) {
         return controller.planVerbose(queryId);
     }

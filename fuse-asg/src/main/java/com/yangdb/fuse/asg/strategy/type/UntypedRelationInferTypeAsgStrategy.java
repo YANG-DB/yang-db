@@ -40,6 +40,9 @@ import javaslang.collection.Stream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static com.yangdb.fuse.model.GlobalConstants._ALL;
 
 /**
  * for each relation with "*" rel-type (that is Any) replace that 'Any' relation with all 'acceptable'
@@ -51,6 +54,9 @@ public class UntypedRelationInferTypeAsgStrategy implements AsgStrategy {
     public void apply(AsgQuery query, AsgStrategyContext context) {
         Stream.ofAll(AsgQueryUtil.elements(query, RelUntyped.class))
                 .forEach(relation -> {
+                    //replace implicit types wildcard call with explicit types
+                    replaceImplicitUntypes(context, relation);
+                    //for each ancestor clone
                     Optional<AsgEBase<EBase>> sideA = AsgQueryUtil.ancestor(relation, EEntityBase.class);
                     if (sideA.isPresent()) {
                         //get or generate the Union Quant
@@ -63,6 +69,32 @@ public class UntypedRelationInferTypeAsgStrategy implements AsgStrategy {
                         AsgQueryUtil.removePath(query, relation);
                     }
                 });
+    }
+
+    public void replaceImplicitUntypes(AsgStrategyContext context, AsgEBase<RelUntyped> relation) {
+        if (relation.geteBase().getvTypes().contains(_ALL)) {
+            //replace the "_all" statement with each existing type - according to allowed types as they are present in the ancestor type element
+            Optional<AsgEBase<EEntityBase>> sideA = AsgQueryUtil.ancestor(relation, EEntityBase.class);
+            if (sideA.get().geteBase() instanceof ETyped) {
+                //replace "_all" relations according to allowed side A types
+                String sideAType = ((ETyped) sideA.get().geteBase()).geteType();
+                List<RelationshipType> allowedRelations = context.getOntologyAccessor().relationBySideA(sideAType);
+                relation.geteBase().setvTypes(allowedRelations.stream().map(RelationshipType::getrType).collect(Collectors.toSet()));
+            } else if (sideA.get().geteBase() instanceof EUntyped) {
+                //replace "_all" relations according to allowed side A types
+                Set<String> sideATypes = ((EUntyped) sideA.get().geteBase()).getvTypes();
+                if (!sideATypes.isEmpty()) {
+                    //assuming the "_all" type was already replaced with the explicit types in the prior UntypedInferTypeLeftSideRelationAsgStrategy asg strategy
+                    java.util.stream.Stream<Set<RelationshipType>> types = sideATypes.stream().map(sideAType ->
+                            new HashSet<>(context.getOntologyAccessor().relationBySideA(sideAType)));
+                    //intersect relations sets to minimal common intersection set
+                    relation.geteBase().setvTypes(intersectSort(types).stream().map(RelationshipType::getrType).collect(Collectors.toSet()));
+                } else {
+                    //else when no explicit entity type appears - use _all rel types
+                    relation.geteBase().setvTypes(context.getOntologyAccessor().relations().stream().map(RelationshipType::getrType).collect(Collectors.toSet()));
+                }
+            }
+        }
     }
 
     private void addRelationPath(AtomicInteger counter, AsgStrategyContext context, AsgEBase<? extends EBase> quant, String relType, AsgEBase<RelUntyped> relation) {
@@ -97,10 +129,23 @@ public class UntypedRelationInferTypeAsgStrategy implements AsgStrategy {
                     //replace to multiple types untyped
                     currentSideB.seteBase(new EUntyped(currentSideB.geteNum(),
                             String.format("%s.%s", currentSideB.geteBase().geteTag(), relType),
-                            sideBTypes,Collections.emptySet(),
+                            sideBTypes, Collections.emptySet(),
                             currentSideB.geteBase().getNext(), currentSideB.geteBase().getB()));
             }
         }
     }
+
+    public static <T, U extends Collection<T>> Collection<T> intersectSort(java.util.stream.Stream<U> stream) {
+        final Iterator<U> allLists = stream.sorted(Comparator.comparingInt(Collection::size)).iterator();
+
+        if (!allLists.hasNext()) return Collections.emptySet();
+
+        final Set<T> result = new HashSet<>(allLists.next());
+        while (allLists.hasNext()) {
+            result.retainAll(new HashSet<>(allLists.next()));
+        }
+        return result;
+    }
+
     //endregion
 }

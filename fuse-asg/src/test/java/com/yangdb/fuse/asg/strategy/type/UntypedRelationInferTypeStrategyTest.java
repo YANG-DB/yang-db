@@ -81,6 +81,91 @@ public class UntypedRelationInferTypeStrategyTest {
     }
 
     @Test
+    public void testUntypedAllToTypedStrategyWithoutQuantsInPath() {
+        Ontology.Accessor ont = new Ontology.Accessor(ontology);
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
+                .next(typed(1, OntologyTestUtils.PERSON.type))
+                .next(relUntyped(2, R, "_all"))
+                .next(unTyped(3, "end"))
+                .build();
+
+        UntypedRelationInferTypeAsgStrategy strategy = new UntypedRelationInferTypeAsgStrategy();
+        strategy.apply(query, new AsgStrategyContext(ont));
+
+        Optional<AsgEBase<Quant1>> quant = AsgQueryUtil.elements(query, Quant1.class).stream().filter(q -> q.geteBase().getqType().equals(QuantType.some)).findAny();
+        Assert.assertFalse(AsgQueryUtil.element(query, RelUntyped.class).isPresent());
+        Assert.assertTrue(quant.isPresent());
+        Assert.assertEquals(4, quant.get().getNext().size());
+        Assert.assertTrue(queryValidator.validate(query).toString(), queryValidator.validate(query).valid());
+        Assert.assertNotNull(AsgQueryDescriptor.print(query));
+        Assert.assertEquals("[└── Start, \n" +
+                        "    ──Typ[:Person null#1]──Q[4:some]:{7|10|13|16}, \n" +
+                        "                                             └-> Rel(:subject null.subject#7)──Typ[:Kingdom end.Kingdom#6], \n" +
+                        "                                             └-> Rel(:own null.own#10)──UnTyp[:[Horse, Dragon] end.own#9], \n" +
+                        "                                             └-> Rel(:know null.know#13)──Typ[:Person end.Person#12], \n" +
+                        "                                             └-> Rel(:memberOf null.memberOf#16)──Typ[:Guild end.Guild#15]]",
+                AsgQueryDescriptor.print(query));
+
+    }
+
+    @Test
+    public void testUntypedAllToAllUnTypedStrategyWithoutQuantsInPath() {
+        Ontology.Accessor ont = new Ontology.Accessor(ontology);
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
+                .next(unTyped(1))
+                .next(relUntyped(2, R, "_all"))
+                .next(unTyped(3, "end"))
+                .build();
+
+        UntypedRelationInferTypeAsgStrategy strategy = new UntypedRelationInferTypeAsgStrategy();
+        strategy.apply(query, new AsgStrategyContext(ont));
+
+        Optional<AsgEBase<Quant1>> quant = AsgQueryUtil.elements(query, Quant1.class).stream().filter(q -> q.geteBase().getqType().equals(QuantType.some)).findAny();
+        Assert.assertFalse(AsgQueryUtil.element(query, RelUntyped.class).isPresent());
+        Assert.assertTrue(quant.isPresent());
+        Assert.assertEquals(8, quant.get().getNext().size());
+        Assert.assertTrue(queryValidator.validate(query).toString(), queryValidator.validate(query).valid());
+        Assert.assertNotNull(AsgQueryDescriptor.print(query));
+        Assert.assertEquals("[└── Start, \n" +
+                        "    ──UnTyp[:[] null#1]──Q[4:some]:{7|10|13|16|19|22|25|28}, \n" +
+                        "                                                       └-> Rel(:freeze null.freeze#7)──Typ[:Dragon end.Dragon#6], \n" +
+                        "                                                       └-> Rel(:subject null.subject#10)──Typ[:Kingdom end.Kingdom#9], \n" +
+                        "                                                       └-> Rel(:origin null.origin#13)──Typ[:Kingdom end.Kingdom#12], \n" +
+                        "                                                       └-> Rel(:own null.own#16)──UnTyp[:[Horse, Dragon] end.own#15], \n" +
+                        "                                                       └-> Rel(:know null.know#19)──Typ[:Person end.Person#18], \n" +
+                        "                                                       └-> Rel(:registered null.registered#22)──UnTyp[:[Kingdom, Guild] end.registered#21], \n" +
+                        "                                                       └-> Rel(:fire null.fire#25)──Typ[:Dragon end.Dragon#24], \n" +
+                        "                                                       └-> Rel(:memberOf null.memberOf#28)──Typ[:Guild end.Guild#27]]",
+                AsgQueryDescriptor.print(query));
+
+    }
+
+    @Test
+    public void testUntypedFewToAllUnTypedStrategyWithoutQuantsInPath() {
+        Ontology.Accessor ont = new Ontology.Accessor(ontology);
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
+                .next(unTyped(1, OntologyTestUtils.HORSE.type,OntologyTestUtils.DRAGON.type))
+                .next(relUntyped(2, R, "_all"))
+                .next(unTyped(3, "end"))
+                .build();
+
+        UntypedRelationInferTypeAsgStrategy strategy = new UntypedRelationInferTypeAsgStrategy();
+        strategy.apply(query, new AsgStrategyContext(ont));
+
+        Optional<AsgEBase<Quant1>> quant = AsgQueryUtil.elements(query, Quant1.class).stream().filter(q -> q.geteBase().getqType().equals(QuantType.some)).findAny();
+        Assert.assertFalse(AsgQueryUtil.element(query, RelUntyped.class).isPresent());
+        Assert.assertTrue(quant.isPresent());
+        Assert.assertEquals(1, quant.get().getNext().size());
+        Assert.assertTrue(queryValidator.validate(query).toString(), queryValidator.validate(query).valid());
+        Assert.assertNotNull(AsgQueryDescriptor.print(query));
+        Assert.assertEquals("[└── Start, \n" +
+                        "    ──UnTyp[:[Horse, Dragon] null#1]──Q[4:some]:{7}, \n" +
+                        "                                               └-> Rel(:registered null.registered#7)──UnTyp[:[Kingdom, Guild] end.registered#6]]",
+                AsgQueryDescriptor.print(query));
+
+    }
+
+    @Test
     public void testUntypedToTypedStrategyWithoutQuantsInPath() {
         Ontology.Accessor ont = new Ontology.Accessor(ontology);
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
