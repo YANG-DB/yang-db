@@ -261,8 +261,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
     }
 
     private void graphApi(Jooby app, AppUrlSupplier appUrlSupplier) {
-        /** validate a v1 query */
         app.get(appUrlSupplier.queryStoreUrl() + "/graph/api/findPath", req -> API.findPath(app, req, this.getController(app)));
+        app.get(appUrlSupplier.queryStoreUrl() + "/graph/api/getVertex", req -> API.getVertex(app, req, this.getController(app)));
+        app.get(appUrlSupplier.queryStoreUrl() + "/graph/api/getNeighbors", req -> API.getNeighbors(app, req, this.getController(app)));
     }
     //endregion
 

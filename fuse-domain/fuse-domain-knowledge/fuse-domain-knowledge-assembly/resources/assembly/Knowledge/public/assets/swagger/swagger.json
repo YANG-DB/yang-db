@@ -302,6 +302,87 @@
       }
     },
 
+    "/query/graph/api/getVertex": {
+      "get": {
+        "tags": [
+          "GraphApi"
+        ],
+        "summary": "Execute get vertex by id",
+        "description": "Execute find specific vertex by id",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "entity type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "vertex Id ",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+    "/query/graph/api/getNeighbors": {
+      "get": {
+        "tags": [
+          "GraphApi"
+        ],
+        "summary": "Execute get vertex & neighbors by id",
+        "description": "Execute find specific vertex & its neighbors by id",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "entity type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "vertex Id ",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+
     "/query/graph/api/findPath": {
       "get": {
         "tags": [
