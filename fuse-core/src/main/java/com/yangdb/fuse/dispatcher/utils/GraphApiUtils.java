@@ -23,6 +23,7 @@ package com.yangdb.fuse.dispatcher.utils;
 import com.yangdb.fuse.model.Tagged;
 import com.yangdb.fuse.model.query.*;
 import com.yangdb.fuse.model.query.entity.*;
+import com.yangdb.fuse.model.query.optional.OptionalComp;
 
 import java.util.*;
 
@@ -158,8 +159,9 @@ public abstract class GraphApiUtils {
                 .withElements(Arrays.asList(
                         new Start(0, 1),
                         new EConcrete(1,id,type,id,id,2),
-                        new RelUntyped(2, all, R,"relation",3 ),
-                        new EUntyped(3,"neighbor",all,0,0)
+                        new OptionalComp(2,3),
+                        new RelUntyped(3, all, R,"relation",4 ),
+                        new EUntyped(4,"neighbor",all,0,0)
                 )).build();
     }
 }
