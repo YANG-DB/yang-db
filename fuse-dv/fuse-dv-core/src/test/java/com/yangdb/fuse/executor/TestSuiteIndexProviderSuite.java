@@ -209,9 +209,7 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        if(elasticEmbeddedNode!=null)
-            elasticEmbeddedNode.close();
-
+        GlobalElasticEmbeddedNode.close();
     }
 
 

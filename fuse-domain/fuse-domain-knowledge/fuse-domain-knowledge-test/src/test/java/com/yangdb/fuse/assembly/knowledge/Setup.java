@@ -106,8 +106,7 @@ public abstract class Setup {
             }
         }
         if (elastic) {
-            if (elasticEmbeddedNode != null)
-                elasticEmbeddedNode.close();
+            GlobalElasticEmbeddedNode.close();
         }
     }
 }

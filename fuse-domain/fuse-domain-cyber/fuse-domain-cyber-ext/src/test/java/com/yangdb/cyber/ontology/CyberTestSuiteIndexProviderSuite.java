@@ -49,10 +49,11 @@ import static org.mockito.Mockito.when;
         CyberQueryIT.class
 })
 public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
-    public static Path path = Paths.get("src", "resources", "assembly", "Cyber", "config", "application.test.engine3.m1.dfs.cyber.public.conf");
-    public static String userDir = Paths.get("src", "resources", "assembly", "Cyber").toFile().getAbsolutePath();
+    public static final String CYBER = "Cyber";
 
-    private static ElasticEmbeddedNode elasticEmbeddedNode;
+    public static Path path = Paths.get("src","resources","assembly", "Cyber","config", "application.test.engine3.m1.dfs.cyber.public.conf");
+    public static String userDir = Paths.get("src",  "resources", "assembly", "Cyber").toFile().getAbsolutePath();
+
 
     public static ObjectMapper mapper = new ObjectMapper();
     public static Config config;
@@ -121,17 +122,16 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
                 return IndexProviderRawSchema.indices(schemaProvider);
             }
         };
-
     }
 
     @BeforeClass
     public static void setup() throws Exception {
-        setup(true, FUSE_TEST_ELASTIC);
+        setup(true, CYBER);
         setUpInternal();
     }
 
     public static void setup(boolean embedded) throws Exception {
-        init(embedded, FUSE_TEST_ELASTIC);
+        init(embedded, CYBER);
         //init elasticsearch provider mapping factory
         setUpInternal();
     }
@@ -147,7 +147,7 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
         System.setProperty("user.dir", userDir);
         // Start embedded ES
         if (embedded) {
-            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+            GlobalElasticEmbeddedNode.getInstance(name);
             client = ElasticEmbeddedNode.getClient(name);
         } else {
             //use existing running ES
@@ -163,8 +163,7 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
 
 
     public static void tearDown() throws Exception {
-        if (elasticEmbeddedNode != null)
-            elasticEmbeddedNode.close();
+        GlobalElasticEmbeddedNode.close();
     }
 
     public static Client getClient() {

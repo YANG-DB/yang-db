@@ -80,27 +80,27 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //endregion
 
     //region Constructors
-    public ElasticEmbeddedNode(String clusterName) throws Exception {
+    ElasticEmbeddedNode(String clusterName) throws Exception {
         this("target/es", 9200, 9300, clusterName);
     }
 
-    public ElasticEmbeddedNode(String clusterName, int numberOfShards) throws Exception {
+    ElasticEmbeddedNode(String clusterName, int numberOfShards) throws Exception {
         this("target/es", 9200, 9300, clusterName, numberOfShards);
     }
 
-    public ElasticEmbeddedNode() throws Exception {
+    ElasticEmbeddedNode() throws Exception {
         this("target/es", 9200, 9300, "fuse.test_elastic");
     }
 
-    public ElasticEmbeddedNode(ElasticIndexConfigurer... configurers) throws Exception {
+    ElasticEmbeddedNode(ElasticIndexConfigurer... configurers) throws Exception {
         this("target/es", 9200, 9300, "fuse.test_elastic", configurers);
     }
 
-    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer... configurers) throws Exception {
+    ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer... configurers) throws Exception {
         this(esWorkingDir, httpPort, httpTransportPort, nodeName, 1, configurers);
     }
 
-    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards, ElasticIndexConfigurer... configurers) throws Exception {
+    ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards, ElasticIndexConfigurer... configurers) throws Exception {
         ElasticEmbeddedNode.httpTransportPort = httpTransportPort;
         ElasticEmbeddedNode.nodeName = nodeName;
         ElasticEmbeddedNode.esWorkingDir = esWorkingDir;

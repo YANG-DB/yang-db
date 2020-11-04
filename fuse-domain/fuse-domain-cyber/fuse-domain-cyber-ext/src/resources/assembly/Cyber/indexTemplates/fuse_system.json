@@ -1,0 +1,12 @@
+{
+  "order": 0,
+  "template": "fuse_system*",
+  "settings": {
+    "index": {
+      "number_of_shards": "5",
+      "number_of_replicas": "0"
+    }
+  },
+  "mappings": {},
+  "aliases": {}
+}

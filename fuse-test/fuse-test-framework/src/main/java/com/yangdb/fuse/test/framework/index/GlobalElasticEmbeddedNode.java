@@ -9,9 +9,9 @@ package com.yangdb.fuse.test.framework.index;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,18 +24,37 @@ package com.yangdb.fuse.test.framework.index;
  * Created by roman.margolis on 01/01/2018.
  */
 public class GlobalElasticEmbeddedNode {
+    private static ElasticEmbeddedNode instance;
+    private static String nodeName;
 
     public static ElasticEmbeddedNode getInstance() throws Exception {
         return getInstance("fuse.test_elastic");
     }
 
     public static ElasticEmbeddedNode getInstance(String nodeName) throws Exception {
-        if (instance == null) {
-            instance = new ElasticEmbeddedNode("target/es", 9200, 9300, nodeName);
+        synchronized (ElasticEmbeddedNode.class) {
+            if (instance == null) {
+                instance = new ElasticEmbeddedNode("target/es", 9200, 9300, nodeName);
+            } else if(!GlobalElasticEmbeddedNode.nodeName.equals(nodeName)) {
+                close();
+                instance = new ElasticEmbeddedNode("target/es", 9200, 9300, nodeName);
+            }
+            GlobalElasticEmbeddedNode.nodeName = nodeName;
+            return instance;
         }
-
-        return instance;
     }
 
-    private static ElasticEmbeddedNode instance;
+
+    public static void close() {
+        synchronized (ElasticEmbeddedNode.class) {
+            if (instance != null) {
+                try {
+                    instance.close();
+                    instance = null;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
 }

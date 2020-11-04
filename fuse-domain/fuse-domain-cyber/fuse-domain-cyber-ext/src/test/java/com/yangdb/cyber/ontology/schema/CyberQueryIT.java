@@ -29,20 +29,20 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.TimeZone;
 
-import static com.yangdb.cyber.ontology.CyberTestSuiteIndexProviderSuite.app;
-import static com.yangdb.cyber.ontology.CyberTestSuiteIndexProviderSuite.getFuseClient;
+import static com.yangdb.cyber.ontology.CyberTestSuiteIndexProviderSuite.*;
 import static com.yangdb.fuse.client.FuseClientSupport.query;
 
 @Ignore("Todo run in seperated mode for new E/S embedded instance under Cyber")
 public class CyberQueryIT implements BaseITMarker {
-    public static final String CYBER = "Cyber";
     static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     static private DateParser parser = DateParser.newBuilder().build();
 
     @BeforeClass
     public static void setup() throws Exception {
-        CyberTestSuiteIndexProviderSuite.setup(true, CYBER);//todo remove remark when running IT tests
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        CyberTestSuiteIndexProviderSuite.setup(true, CYBER);//todo remove remark when running IT tests
+        startFuse(true);
     }
 
     @AfterClass

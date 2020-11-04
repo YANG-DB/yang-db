@@ -33,7 +33,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
-    public static final String CYBER = "Cyber";
 
     @Before
     public void setUp() throws Exception {
@@ -43,7 +42,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
 
     @Test
     public void testSchema() {
-        Set<String> strings = Stream.of("events_analysis", "behaviors", "alertstobehaviors", "lov_cyberobjecttypes", "traces", "traceevents", "behavior_to_behavior", "tracestobehaviors", "enrichmentevents", "behaviorentities", "lov_behaviorstypes", "alerts", "entities", "entitiesprocessandfiles", "lov_eventstypes", "traceentities").collect(Collectors.toSet());
+        Set<String> strings = Stream.of("behaviorevents", "events_analysis", "entities", "behaviors", "traces", "traceentities", "traceevents", "behavior_to_behavior", "tracestobehaviors", "enrichmentevents", "behaviorentities").collect(Collectors.toSet());
         Assert.assertEquals(strings, StreamSupport.stream(schema.indices().spliterator(), false).collect(Collectors.toSet()));
     }
 
