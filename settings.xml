@@ -1,0 +1,50 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <activeProfiles>
+        <activeProfile>github</activeProfile>
+    </activeProfiles>
+
+    <profiles>
+        <profile>
+            <id>github</id>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>https://repo1.maven.org/maven2</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </repository>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub YANG-DB Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/YANG-DB/yang-db</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+    <servers>
+        <!--
+                <server>
+                    <id>ossrh</id>
+                    <username>yangdb</username>
+                    <password>a*9***X*h***</password>
+                </server>
+        -->
+        <!--
+                <server>
+                    <id>github</id>
+                    <username>yang-db</username>
+                    <password>1d5b28baf6381e950812611d8c9d7776ad93c913</password>
+                </server>
+        -->
+        <server>
+            <id>bintray-yangdbos-yangdb</id>
+            <username>yangdb</username>
+            <password>**********</password>
+        </server>
+    </servers>
+</settings>
