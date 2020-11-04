@@ -23,11 +23,13 @@ import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.test.BaseSuiteMarker;
 import org.elasticsearch.client.Client;
 import org.jooby.Jooby;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.mockito.Mockito;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,8 +49,8 @@ import static org.mockito.Mockito.when;
         CyberQueryIT.class
 })
 public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
-    public static Path path = Paths.get( "src","resources", "assembly", "Cyber", "config", "application.test.engine3.m1.dfs.cyber.public.conf");
-    public static String userDir = Paths.get( "src","resources", "assembly", "Cyber").toFile().getAbsolutePath();
+    public static Path path = Paths.get("src", "resources", "assembly", "Cyber", "config", "application.test.engine3.m1.dfs.cyber.public.conf");
+    public static String userDir = Paths.get("src", "resources", "assembly", "Cyber").toFile().getAbsolutePath();
 
     private static ElasticEmbeddedNode elasticEmbeddedNode;
 
@@ -122,6 +124,7 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
 
     }
 
+    @BeforeClass
     public static void setup() throws Exception {
         setup(true, FUSE_TEST_ELASTIC);
         setUpInternal();
@@ -150,8 +153,14 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
             //use existing running ES
             client = ElasticEmbeddedNode.getClient(name);
         }
-        fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
     }
+
+    public static FuseClient getFuseClient() throws IOException {
+        if (fuseClient == null)
+            fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
+        return fuseClient;
+    }
+
 
     public static void tearDown() throws Exception {
         if (elasticEmbeddedNode != null)
@@ -164,13 +173,13 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
 
     public static void startFuse(boolean startFuse) {
         // Start fuse app (based on Jooby app web server)
-        if(startFuse) {
+        if (startFuse) {
             // Load fuse engine config file
             String confFilePath = path.toString();
             //load configuration
-            Config config = FuseUtils.loadConfig(new File(confFilePath),"activeProfile" );
+            Config config = FuseUtils.loadConfig(new File(confFilePath), "activeProfile");
             String[] joobyArgs = new String[]{
-                    "logback.configurationFile="+Paths.get("src", "test","resources", "config", "logback.xml").toString() ,
+                    "logback.configurationFile=" + Paths.get("src", "test", "resources", "config", "logback.xml").toString(),
                     "server.join=false"
             };
 

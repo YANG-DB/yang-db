@@ -3,7 +3,7 @@
   "directives": [],
   "entityTypes": [
     {
-      "idField": "id",
+      "idField": ["id"],
       "eType": "Person",
       "name": "Person",
       "properties": [
@@ -16,7 +16,7 @@
       ]
     },
     {
-      "idField": "id",
+      "idField": ["id"],
       "eType": "Dragon",
       "name": "Dragon",
       "properties": [
@@ -24,7 +24,7 @@
       ]
     },
     {
-      "idField": "id",
+      "idField": ["id"],
       "eType": "Guild",
       "name": "Guild",
       "properties": [
@@ -34,7 +34,7 @@
   ],
   "relationshipTypes": [
     {
-      "idField": "id",
+      "idField": ["id"],
       "rType": "own",
       "name": "own",
       "directional": true,
@@ -52,7 +52,7 @@
       ]
     },
     {
-      "idField": "id",
+      "idField": ["id"],
       "rType": "memberOf",
       "name": "memberOf",
       "directional": true,

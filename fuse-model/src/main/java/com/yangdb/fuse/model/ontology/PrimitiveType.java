@@ -43,6 +43,8 @@ package com.yangdb.fuse.model.ontology;
  *
  */
 
+import java.util.Objects;
+
 /**
  * Created by moti on 4/18/2017.
  */
@@ -61,5 +63,19 @@ public class PrimitiveType {
 
     public Class getJavaType() {
         return javaType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PrimitiveType that = (PrimitiveType) o;
+        return getType().equals(that.getType()) &&
+                getJavaType().equals(that.getJavaType());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getType(), getJavaType());
     }
 }

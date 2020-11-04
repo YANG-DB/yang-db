@@ -56,8 +56,6 @@ import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.pars
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.validateValue;
 
 public class CSVTransformer implements DataTransformer<DataTransformerContext, CSVTransformer.CsvElement> {
-    public static final String SOURCE = "source";
-    public static final String TARGET = "target";
     private final Ontology.Accessor accessor;
     private IndexProvider indexProvider;
     private final RawSchema schema;

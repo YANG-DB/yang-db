@@ -1,4 +1,4 @@
-id,source,source.type,target,target.type,startDate
+id,entityA,entityA.type,entityB,entityB.type,startDate
 KNOW_P01P02,P01_Napoleon,Person,P02_Mlle.Baptistine,Person,1/11/1800
 KNOW_P02P03,P02_Mlle.Baptistine,Person,P03_CountessdeLo,Person,3/2/1750
 KNOW_P03P01,P03_CountessdeLo,Person,P01_Napoleon,Person,12/12/1758

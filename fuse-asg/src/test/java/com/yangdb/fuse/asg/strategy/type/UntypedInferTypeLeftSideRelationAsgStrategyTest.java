@@ -45,7 +45,7 @@ public class UntypedInferTypeLeftSideRelationAsgStrategyTest {
         strategy.apply(query,new AsgStrategyContext(ont));
 
         AsgEBase<EUntyped> after = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
-        Assert.assertEquals(after.geteBase().getvTypes(), Collections.singletonList(OntologyTestUtils.PERSON.type));
+        Assert.assertEquals(after.geteBase().getvTypes(), Collections.singleton(OntologyTestUtils.PERSON.type));
 
 
 
@@ -68,7 +68,7 @@ public class UntypedInferTypeLeftSideRelationAsgStrategyTest {
         strategy.apply(query,new AsgStrategyContext(ont));
 
         AsgEBase<EUntyped> after = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
-        Assert.assertEquals(after.geteBase().getvTypes(), Collections.singletonList(OntologyTestUtils.PERSON.type));
+        Assert.assertEquals(after.geteBase().getvTypes(), Collections.singleton(OntologyTestUtils.PERSON.type));
 
 
 
@@ -94,7 +94,7 @@ public class UntypedInferTypeLeftSideRelationAsgStrategyTest {
         AsgEBase<EUntyped> afterSideA = iterator.next();
         AsgEBase<EUntyped> afterSideB = iterator.next();
 
-        Assert.assertEquals(Collections.singletonList(OntologyTestUtils.PERSON.type), afterSideA.geteBase().getvTypes());
+        Assert.assertEquals(Collections.singleton(OntologyTestUtils.PERSON.type), afterSideA.geteBase().getvTypes());
         Assert.assertTrue(afterSideB.geteBase().getvTypes().contains(OntologyTestUtils.DRAGON.type) &&
                 afterSideB.geteBase().getvTypes().contains(OntologyTestUtils.HORSE.type));
 

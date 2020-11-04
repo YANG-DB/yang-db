@@ -75,6 +75,7 @@ public class Ontology {
         relationshipTypes = new ArrayList<>();
         enumeratedTypes = new ArrayList<>();
         properties = new HashSet<>();
+        metadata = new ArrayList<>();
         compositeTypes = new ArrayList<>();
 
         primitiveTypes.add(new PrimitiveType("int", Long.class));

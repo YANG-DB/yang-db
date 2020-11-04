@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.yangdb.fuse.model.query.properties.constraint.Constraint.of;
@@ -86,7 +87,7 @@ public class EntityFilterOpTranslationStrategyTest {
             ageProperty.setName("age");
             ageProperty.setType("int");
 
-            return Arrays.asList(nameProperty, ageProperty);
+            return new HashSet<>(Arrays.asList(nameProperty, ageProperty));
         });
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
@@ -139,7 +140,7 @@ public class EntityFilterOpTranslationStrategyTest {
             ageProperty.setName("age");
             ageProperty.setType("int");
 
-            return Arrays.asList(nameProperty, ageProperty);
+            return new HashSet<>(Arrays.asList(nameProperty, ageProperty));
         });
 
         TranslationContext context = Mockito.mock(TranslationContext.class);

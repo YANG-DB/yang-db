@@ -107,7 +107,7 @@ public class OntologySchemaProviderTest {
         nameProp.setName("name");
         nameProp.setpType("1");
 
-        when(ontology.getProperties()).then(invocationOnMock -> Collections.singletonList(nameProp));
+        when(ontology.getProperties()).then(invocationOnMock -> Collections.singleton(nameProp));
 
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {

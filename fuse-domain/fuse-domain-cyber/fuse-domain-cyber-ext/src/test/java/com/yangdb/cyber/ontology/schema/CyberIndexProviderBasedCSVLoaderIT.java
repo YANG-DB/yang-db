@@ -37,7 +37,8 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
 
     @Before
     public void setUp() throws Exception {
-        setup(false, CYBER);//todo remove remark when running IT tests
+//        setup(false, CYBER);//todo remove remark when running IT tests
+//        setUpInternal();//remove when running test in standalone mode
     }
 
     @Test

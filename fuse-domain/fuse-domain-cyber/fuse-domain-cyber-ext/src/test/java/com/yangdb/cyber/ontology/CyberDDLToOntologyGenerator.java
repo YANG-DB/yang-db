@@ -78,9 +78,9 @@ public class CyberDDLToOntologyGenerator {
                 .filter(r -> r.getPartition().equals(MappingIndexType.UNIFIED.name()))
                 .collect(groupingBy(r->r.getProps().getValues().get(0)));
 
-        Assert.assertEquals(17,indexProvider.getEntities().size());
-        Assert.assertEquals(10, map.size());
-        Assert.assertEquals(38,indexProvider.getRelations().size());
+        Assert.assertEquals(15,indexProvider.getEntities().size());
+        Assert.assertEquals(12, map.size());
+        Assert.assertEquals(46,indexProvider.getRelations().size());
 
     }
 
@@ -93,7 +93,7 @@ public class CyberDDLToOntologyGenerator {
         IndexProvider indexProvider = indexProviderTranslator.translate("Cyber", tables);
         Assert.assertNotNull(indexProvider);
 
-        Assert.assertEquals(17,indexProvider.getEntities().size());
+        Assert.assertEquals(15,indexProvider.getEntities().size());
         Assert.assertEquals(0,indexProvider.getRelations().size());
 
     }
@@ -109,8 +109,8 @@ public class CyberDDLToOntologyGenerator {
         IndexProvider indexProvider = IndexProvider.Builder.generate(ontology);
         Assert.assertNotNull(indexProvider);
 
-        Assert.assertEquals(17,indexProvider.getEntities().size());
-        Assert.assertEquals(10,indexProvider.getRelations().size());
+        Assert.assertEquals(5,indexProvider.getEntities().size());
+        Assert.assertEquals(6,indexProvider.getRelations().size());
 
     }
 

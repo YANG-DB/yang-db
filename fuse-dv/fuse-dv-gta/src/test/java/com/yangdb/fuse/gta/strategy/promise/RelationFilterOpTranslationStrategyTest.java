@@ -80,7 +80,7 @@ public class RelationFilterOpTranslationStrategyTest {
             timestampProperty.setName("timestamp");
             timestampProperty.setType("int");
 
-            return Collections.singletonList(timestampProperty);
+            return Collections.singleton(timestampProperty);
         });
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
@@ -127,7 +127,7 @@ public class RelationFilterOpTranslationStrategyTest {
             timestampProperty.setName("timestamp");
             timestampProperty.setType("int");
 
-            return Collections.singletonList(timestampProperty);
+            return Collections.singleton(timestampProperty);
         });
 
         TranslationContext context = Mockito.mock(TranslationContext.class);

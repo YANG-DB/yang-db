@@ -265,7 +265,7 @@ public class ElasticStatisticsGraphProviderTest {
         Property nameProp = new Property(DATA_FIELD_NAME_NAME, DATA_FIELD_NAME_NAME, "string");
         Property ageProp = new Property(DATA_FIELD_NAME_AGE, DATA_FIELD_NAME_AGE, "int");
 
-        when(ontology.getProperties()).then(invocationOnMock -> Collections.singletonList(nameProp));
+        when(ontology.getProperties()).then(invocationOnMock -> Collections.singleton(nameProp));
 
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {

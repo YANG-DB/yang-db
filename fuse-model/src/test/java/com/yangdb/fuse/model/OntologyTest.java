@@ -29,7 +29,7 @@ public class OntologyTest {
         Ontology resultObj = new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class);
         Assert.assertNotNull(resultObj);
         String ontologyActualJSON = mapper.writeValueAsString(resultObj);
-        assertEquals(mapper.readTree(ontologyExpectedJson), mapper.readTree(ontologyActualJSON));
+        Assert.assertEquals(mapper.readValue(ontologyExpectedJson,Ontology.class), mapper.readValue(ontologyActualJSON,Ontology.class));
 
     }
 

@@ -45,14 +45,14 @@ public class GlobalConstants {
     public static class EdgeSchema {
         public static String DIRECTION = "direction";
 
-        public static String SOURCE = "entityA";
-        public static String SOURCE_ID = "entityA.id";
-        public static String SOURCE_TYPE = "entityA.type";
-        public static String SOURCE_NAME = "entityA.name";
+        public static String SOURCE = "entityA";//formally was source
+        public static String SOURCE_ID = "entityA.id";//formally was source.id
+        public static String SOURCE_TYPE = "entityA.type";//formally was source.type
+        public static String SOURCE_NAME = "entityA.name";//formally was source.name
 
-        public static String DEST = "entityB";
-        public static String DEST_ID = "entityB.id";
-        public static String DEST_TYPE = "entityB.type";
-        public static String DEST_NAME = "entityB.name";
+        public static String DEST = "entityB";//formally was target
+        public static String DEST_ID = "entityB.id";//formally was target.id
+        public static String DEST_TYPE = "entityB.type";//formally was target.type
+        public static String DEST_NAME = "entityB.name";//formally was target.name
     }
 }

@@ -21,10 +21,7 @@ import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.test.BaseITMarker;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -33,9 +30,10 @@ import java.util.HashSet;
 import java.util.TimeZone;
 
 import static com.yangdb.cyber.ontology.CyberTestSuiteIndexProviderSuite.app;
-import static com.yangdb.cyber.ontology.CyberTestSuiteIndexProviderSuite.fuseClient;
+import static com.yangdb.cyber.ontology.CyberTestSuiteIndexProviderSuite.getFuseClient;
 import static com.yangdb.fuse.client.FuseClientSupport.query;
 
+@Ignore("Todo run in seperated mode for new E/S embedded instance under Cyber")
 public class CyberQueryIT implements BaseITMarker {
     public static final String CYBER = "Cyber";
     static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
@@ -43,7 +41,7 @@ public class CyberQueryIT implements BaseITMarker {
 
     @BeforeClass
     public static void setup() throws Exception {
-        CyberTestSuiteIndexProviderSuite.setup(false, CYBER);//todo remove remark when running IT tests
+        CyberTestSuiteIndexProviderSuite.setup(true, CYBER);//todo remove remark when running IT tests
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
@@ -60,7 +58,7 @@ public class CyberQueryIT implements BaseITMarker {
     @Test
     public void testQueryTraces() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        FuseResourceInfo fuseResourceInfo = getFuseClient().getFuseInfo();
         Assert.assertNotNull(fuseResourceInfo);
 
 
@@ -73,7 +71,7 @@ public class CyberQueryIT implements BaseITMarker {
                         new EProp(4, "trace_type", Constraint.of(ConstraintOp.eq,"Sequence based")),
                         new EProp(5, "status_update_time", Constraint.of(ConstraintOp.ge,parser.parseDate("2018-10-01 11:42")))
                 )).build();
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, 1000, query);
+        QueryResultBase pageData = query(getFuseClient(), fuseResourceInfo, 1000, query);
 
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
         Assert.assertEquals(17, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
@@ -82,7 +80,7 @@ public class CyberQueryIT implements BaseITMarker {
     @Test
     public void testQueryBehaviors() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        FuseResourceInfo fuseResourceInfo = getFuseClient().getFuseInfo();
         Assert.assertNotNull(fuseResourceInfo);
 
 
@@ -95,7 +93,7 @@ public class CyberQueryIT implements BaseITMarker {
                         new EProp(4, "by_name", Constraint.of(ConstraintOp.like,"*.exe")),
                         new EProp(5, "insert_time", Constraint.of(ConstraintOp.ge,parser.parseDate("2018-10-01 11:42")))
                 )).build();
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, 1000, query);
+        QueryResultBase pageData = query(getFuseClient(), fuseResourceInfo, 1000, query);
 
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
         Assert.assertEquals(472, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
@@ -105,7 +103,7 @@ public class CyberQueryIT implements BaseITMarker {
     @Test
     public void testQueryTraceToBehaviors() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        FuseResourceInfo fuseResourceInfo = getFuseClient().getFuseInfo();
         Assert.assertNotNull(fuseResourceInfo);
 
 
@@ -120,7 +118,7 @@ public class CyberQueryIT implements BaseITMarker {
                         new Rel(6, "tracestobehaviors", Rel.Direction.R, "hasBehavior", 7),
                             new ETyped(7, "behavior", "behaviors", 8, 0)
                 )).build();
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query,new CreateGraphCursorRequest(new CreatePageRequest()));
+        QueryResultBase pageData = query(getFuseClient(), fuseResourceInfo, query,new CreateGraphCursorRequest(new CreatePageRequest()));
 
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
         Assert.assertEquals(6, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
@@ -130,7 +128,7 @@ public class CyberQueryIT implements BaseITMarker {
     @Test
     public void testQueryTraceToAll() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        FuseResourceInfo fuseResourceInfo = getFuseClient().getFuseInfo();
         Assert.assertNotNull(fuseResourceInfo);
 
 
@@ -145,7 +143,7 @@ public class CyberQueryIT implements BaseITMarker {
                         new RelUntyped(6, new HashSet<>(Arrays.asList("tracestobehaviors","traceentities","traceevents")), Rel.Direction.R, "anyRelation", 7),
                             new EUntyped(7, "any", 8, 0)
                 )).build();
-        QueryResultBase pageData = query(fuseClient, fuseResourceInfo, query,new CreateGraphCursorRequest(new CreatePageRequest()));
+        QueryResultBase pageData = query(getFuseClient(), fuseResourceInfo, query,new CreateGraphCursorRequest(new CreatePageRequest()));
 
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
         Assert.assertEquals(21, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
